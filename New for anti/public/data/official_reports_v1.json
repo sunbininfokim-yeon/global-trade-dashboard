@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-21T05:02:35.158176+00:00",
+  "generated_at": "2026-09-21T15:08:41.296084+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 159,
-    "scored": 159,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 165,
+    "scored": 165,
     "selected": 40,
     "indicators": 19
   },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 503: Service Unavailable",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -467,6 +467,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "fcc347c0fd221134",
+      "published_at": null,
+      "source": {
+        "id": "us_usda_fas_newsroom",
+        "name": "USDA FAS",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.fas.usda.gov/newsroom/usda-announces-expanded-suite-trade-development-and-food-security-opportunities-venezuela",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "agriculture",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela",
+        "original_lang": "en",
+        "ko": "[USA·농업] USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.938,
+        "final": 2.938
+      },
+      "rank_reasons": [
+        "domains:economy,agriculture",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "2c49d640f007c948",
       "published_at": "2026-09-15T06:00:00+00:00",
       "source": {
@@ -841,6 +876,41 @@
       "rank_reasons": [
         "domains:economy,finance",
         "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "9c50248613cf1a60",
+      "published_at": "2026-09-21T13:17:18+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-releases-details-ahead-of-his-excellency-xi-jinping-president-of-the-peoples-republic-of-china-and-madame-peng-liyuans-visit-to-the-white-house/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Releases Details Ahead of His Excellency Xi Jinping, President of The People’s Republic of China, and Madame Peng Liyuan’s Visit to The White House",
+        "original_lang": "en",
+        "ko": "[USA·외교] First Lady Melania Trump Releases Details Ahead of His Excellency Xi Jinping, President of The People’s Republic of China, and Madame Peng Liyuan’s Visit to The White House"
+      },
+      "summary": "President Donald J. Trump and First Lady Melania Trump will welcome His Excellency Xi Jinping, President of the People’s Republic of China and Madame Peng Liyuan to the White House on Thursday, September 24, 2026, for an official state visit. This visit comes more than a decade s",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1689,77 +1759,20 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "653cb0f748a5876b",
-      "published_at": "2026-09-10T13:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "450a54499fa92683",
-      "published_at": "2026-09-01T16:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     }
   ],
   "pending_review": [
+    {
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
+      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Philip R. Lane: Outlook for the euro area economy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf",
@@ -1813,6 +1826,17 @@
         "economy"
       ],
       "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Bank of England announces new office space in Leeds",
+      "url": "https://www.bankofengland.co.uk/news/2026/september/bank-of-england-announces-new-office-space-in-leeds",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1893,29 +1917,8 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Minutes of the London FXJSC Main Committee Meeting – 26 March 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-main-committee-meeting-26-march-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
       "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
       "country": "USA",
       "domains": [
         "finance"
@@ -2030,6 +2033,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "fcc347c0fd221134",
+      "published_at": null,
+      "source": {
+        "id": "us_usda_fas_newsroom",
+        "name": "USDA FAS",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.fas.usda.gov/newsroom/usda-announces-expanded-suite-trade-development-and-food-security-opportunities-venezuela",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "agriculture",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela",
+        "original_lang": "en",
+        "ko": "[USA·농업] USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.938,
+        "final": 2.938
+      },
+      "rank_reasons": [
+        "domains:economy,agriculture",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "2c49d640f007c948",
       "published_at": "2026-09-15T06:00:00+00:00",
       "source": {
@@ -2404,6 +2442,41 @@
       "rank_reasons": [
         "domains:economy,finance",
         "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "9c50248613cf1a60",
+      "published_at": "2026-09-21T13:17:18+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-releases-details-ahead-of-his-excellency-xi-jinping-president-of-the-peoples-republic-of-china-and-madame-peng-liyuans-visit-to-the-white-house/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Releases Details Ahead of His Excellency Xi Jinping, President of The People’s Republic of China, and Madame Peng Liyuan’s Visit to The White House",
+        "original_lang": "en",
+        "ko": "[USA·외교] First Lady Melania Trump Releases Details Ahead of His Excellency Xi Jinping, President of The People’s Republic of China, and Madame Peng Liyuan’s Visit to The White House"
+      },
+      "summary": "President Donald J. Trump and First Lady Melania Trump will welcome His Excellency Xi Jinping, President of the People’s Republic of China and Madame Peng Liyuan to the White House on Thursday, September 24, 2026, for an official state visit. This visit comes more than a decade s",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -3240,74 +3313,6 @@
         "original": "Christine Lagarde: A new age of capital: growth, sovereignty and AI",
         "original_lang": "en",
         "ko": "[EUR·경제] Christine Lagarde: A new age of capital: growth, sovereignty and AI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "653cb0f748a5876b",
-      "published_at": "2026-09-10T13:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "450a54499fa92683",
-      "published_at": "2026-09-01T16:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
       },
       "summary": "",
       "scores": {
