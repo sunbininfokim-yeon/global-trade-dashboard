@@ -636,7 +636,13 @@
   }
 
   function viewCommittee(committeeId, overview, extra) {
-    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === committeeId);
+    // extra.detail.committee_id is the canonical id _worker.js resolved
+    // committeeId to (identical to committeeId unless committeeId is an old
+    // alias, e.g. one of JEC's three source codes) -- the overview list only
+    // ever carries the canonical row, so an alias must resolve through this
+    // or every old bookmarked/shared committee link "disappears".
+    const resolvedId = extra?.detail?.committee_id || committeeId;
+    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId);
     if (!listed) return shell(empty('위원회를 찾을 수 없습니다'));
 
     const { detail, billPage, card: committeeCard } = extra;
@@ -1139,8 +1145,14 @@
     switch (view) {
       case 'congress': return '의회';
       case 'executive': return '행정부';
-      case 'committee':
-        return overview?.congress_overview?.committees?.find((c) => c.committee_id === id)?.name || '상임위';
+      case 'committee': {
+        // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
+        // code) to its canonical committee_id -- the overview list only ever
+        // carries the canonical row, so look that up instead of the raw id
+        // or an old link falls back to the generic label below.
+        const resolvedId = extra?.detail?.committee_id || id;
+        return overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId)?.name || '상임위';
+      }
       case 'agency':
         return overview?.executive_overview?.agencies?.find((a) => a.agency_id === id)?.name || '기관';
       case 'area':
