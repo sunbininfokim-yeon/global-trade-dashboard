@@ -1968,12 +1968,25 @@ const ensureClimateMapPointerFallback = () => {
 let electionsCanvasPointerWired = false;
 let electionsPointerDown = null;
 let currentElectionMapOnClick = null;
+// pointerup and click both fire for one gesture (see onPointerLikeClick
+// below), so this runs twice per real click. Without a debounce here,
+// onCountryOpen/onStateOpen fired twice back-to-back -- neither showCountry
+// nor showUsaState guards against a second call arriving mid-flight, so the
+// two overlapping renders fought over the same map viewState and it visibly
+// jumped/spun ("왜 자동으로 주가 돌아감?", 2026-09-21), on top of fetching
+// every screen's data twice (reported as slowness in the same message).
+// climate's equivalent path already had this same guard
+// (handleClimateDeckClick's lastClimatePickAt); this one never got it.
+let lastElectionsPickAt = 0;
 const tryElectionsMapPick = (clientX, clientY) => {
     if (currentCommodity !== 'elections' || !currentElectionMapOnClick || !deckgl?.pickObject) return;
     const xy = climateCanvasLocalXY(clientX, clientY);
     if (!xy) return;
     const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 0 });
     if (!info?.object) return;
+    const now = performance.now();
+    if (now - lastElectionsPickAt < 300) return;
+    lastElectionsPickAt = now;
     currentElectionMapOnClick(info);
 };
 const ensureElectionsMapPointerFallback = () => {
