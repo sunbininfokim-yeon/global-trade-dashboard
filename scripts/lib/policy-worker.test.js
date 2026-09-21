@@ -71,3 +71,61 @@ test('semantic search keeps grouped bill metadata and regulation links after exa
   assert.equal(b.items[0].law_number, '119-1');
   assert.equal(b.items[1].source_url, 'https://www.federalregister.gov/test');
 });
+test('usOverview reads committee_directory and uses canonical_bill_count, not three JEC rows', async () => {
+  const paths = [];
+  const w = worker(async url => {
+    const u = new URL(url);
+    paths.push(u.pathname);
+    if (u.pathname === '/rest/v1/committee_directory') {
+      return Response.json([
+        { committee_id: '119-joint-jjec00', name: 'Joint Economic Committee', chamber: 'joint', committee_type: 'joint', official_url: null, jurisdiction_summary: null, display_order: null, canonical_bill_count: 7, source_committee_ids: ['119-joint-jhje00', '119-joint-jjec00', '119-joint-jsec00'] },
+        { committee_id: '119-house-hsag00', name: 'Committee on Agriculture', chamber: 'house', committee_type: 'standing', official_url: null, jurisdiction_summary: null, display_order: null, canonical_bill_count: 42, source_committee_ids: ['119-house-hsag00'] },
+      ]);
+    }
+    if (['/rest/v1/agencies', '/rest/v1/policy_areas', '/rest/v1/cfr_titles', '/rest/v1/bills', '/rest/v1/executive_order_agencies', '/rest/v1/regulation_cfr_references', '/rest/v1/committee_agency_jurisdictions'].includes(u.pathname)) return Response.json([]);
+    throw new Error(`Unexpected path ${u.pathname}`);
+  });
+  const response = await w.fetch(new Request('https://test/api/us/overview'), env, {});
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.congress_overview.committees.length, 2, 'exactly one JEC row, not three');
+  const jec = body.congress_overview.committees.find(c => c.committee_id === '119-joint-jjec00');
+  assert.equal(jec.bill_count, 7, 'bill_count comes from canonical_bill_count');
+  assert.ok(!paths.includes('/rest/v1/committees'), 'must not query the raw committees table any more');
+  assert.ok(!paths.includes('/rest/v1/bill_committees'), 'must not run the old per-committee bill count aggregation');
+});
+test('usCommitteeDetail resolves a JEC alias id to its canonical id before querying subcommittees', async () => {
+  const w = worker(async url => {
+    const u = new URL(url);
+    if (u.pathname === '/rest/v1/committee_identity') {
+      assert.equal(u.searchParams.get('source_committee_id'), 'eq.119-joint-jhje00');
+      return Response.json([{ canonical_committee_id: '119-joint-jjec00' }]);
+    }
+    if (u.pathname === '/rest/v1/committee_directory') {
+      assert.equal(u.searchParams.get('canonical_parent_committee_id'), 'eq.119-joint-jjec00', 'subcommittee lookup must use the canonical id, not the alias requested');
+      return Response.json([]);
+    }
+    throw new Error(`Unexpected path ${u.pathname}`);
+  });
+  const response = await w.fetch(new Request('https://test/api/us/congress/committees?committee_id=119-joint-jhje00'), env, {});
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.committee_id, '119-joint-jjec00', 'response reports the canonical id');
+  assert.equal(body.requested_committee_id, '119-joint-jhje00');
+});
+test('usBillList filters bills by every JEC source id, not just the requested one', async () => {
+  const w = worker(async url => {
+    const u = new URL(url);
+    if (u.pathname === '/rest/v1/committee_identity') return Response.json([{ canonical_committee_id: '119-joint-jjec00' }]);
+    if (u.pathname === '/rest/v1/committee_directory') return Response.json([{ source_committee_ids: ['119-joint-jhje00', '119-joint-jjec00', '119-joint-jsec00'] }]);
+    if (u.pathname === '/rest/v1/bills') {
+      const filter = u.searchParams.get('bill_committees.committee_id');
+      assert.ok(filter, 'bill query must carry a committee_id filter');
+      assert.match(filter, /^in\.\(.*jhje00.*jjec00.*jsec00.*\)$/, `expected all three source ids in the filter, got: ${filter}`);
+      return Response.json([]);
+    }
+    throw new Error(`Unexpected path ${u.pathname}`);
+  });
+  const response = await w.fetch(new Request('https://test/api/us/congress/bills?committee_id=119-joint-jsec00'), env, {});
+  assert.equal(response.status, 200);
+});
