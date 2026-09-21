@@ -5020,26 +5020,30 @@ const electionHost = () => ({
         // fixed framing, unlike setElectionMap's country drill-in which passes
         // its own viewState on purpose. Without the reset, returning here from
         // a country left currentViewState at that country's centroid (e.g. USA
-        // around -98°) -- with repeat:false there's no wraparound to paper over
-        // an off-center world, so the whole map visibly shifted right, opening
-        // a gap on the west side and cropping Asia/Australia against the right
-        // edge (reported 2026-09-12, reproduced: world map centered on -98°
-        // longitude after a USA drill-in + back-to-world round trip).
+        // around -98°), so the whole map visibly shifted right, opening a gap
+        // on the west side and cropping Asia/Australia against the right edge
+        // (reported 2026-09-12, reproduced: world map centered on -98°
+        // longitude after a USA drill-in + back-to-world round trip). Kept
+        // even after the repeat:false -> repeat:true switch below (2026-09-21)
+        // -- still the one fixed framing this view is meant to open on.
         currentViewState = clampGlobeView({ ...currentViewState, longitude: 0, latitude: 15, zoom: GLOBE_ZOOM });
         currentElectionMapOnClick = onClick;
-        // repeat:false here, unlike the other maps this app shares. At the
-        // default GLOBE_ZOOM (0.85) the viewport is wider than one world, so
-        // repeat:true draws multiple side-by-side copies -- and deck.gl's
-        // picking only ever resolves against one of them, so a click on a
-        // large, correctly-coloured country like the US silently missed at
-        // that zoom and only worked once zoomed in past one-world-width
-        // (confirmed 2026-09-11: 0/5 clicks landed with repeat:true at
-        // default zoom, 5/5 with repeat:false, both on real countries).
-        // This map is single-click-to-drill-down, not a continuously
-        // scrolled one, so losing antimeridian wraparound costs nothing a
-        // user would notice.
+        // repeat:true again (2026-09-21) -- was repeat:false from 2026-09-11
+        // to 2026-09-20 because deck.gl's onClick prop only ever resolved
+        // against one repeated copy, missing clicks at this zoom (0/5 landed
+        // with repeat:true, 5/5 with repeat:false, confirmed then). But
+        // repeat:false has its own cost, reported 2026-09-21: at GLOBE_ZOOM
+        // (0.85) the whole world already fits inside the viewport, and a
+        // non-repeating MapView clamps panning to keep [-180,180] in frame
+        // -- with nowhere to pan to, dragging silently did nothing (viewState
+        // updated in JS, the canvas never moved). ensureElectionsMapPointerFallback
+        // above replaced the onClick prop with a pickObject() call at the
+        // exact clicked pixel, which resolves whichever repeated copy is
+        // actually under the cursor -- the original miss doesn't apply to it.
+        // Reverified with repeat:true: 10/10 clicks landed, dragging works,
+        // antimeridian wraparound is back as a side benefit.
         deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: false })],
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick,
