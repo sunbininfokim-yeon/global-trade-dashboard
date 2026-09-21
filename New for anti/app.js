@@ -259,13 +259,16 @@ const signalSlotHtml = (slot) => {
     const asOf = entry ? signalAsOf(entry.asOf || entry.date) : '';
     const clickable = !!slot.symbol;
 
-    // A slot is pending either because it was declared that way, or because the
-    // feed answered with something unparseable -- both read the same to a viewer.
+    // A slot with no value yet is either (a) wired to a real feed that just
+    // hasn't answered -- "로딩 중", never "연동 예정", since that reads as
+    // "this will never work" -- or (b) declared with no feed behind it at
+    // all, which is the only case 연동 예정 (or a custom slot.pending label)
+    // still applies to.
     const body = shown
         ? `<span class="signal-slot-value">${finEsc(shown)}${
               slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || '연동 예정')}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || (slot.value ? '불러오는 중' : '연동 예정'))}</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
