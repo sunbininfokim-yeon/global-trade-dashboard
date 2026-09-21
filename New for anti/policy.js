@@ -528,9 +528,35 @@
         </button>`).join('')}</div>`
     : empty('목록 준비 중'));
 
-  const committeeTiles = (overview, chamber) => tileGrid(
+  // usOverview only ever returns top-level bodies (parent_committee_id is
+  // null server-side), so committee_type alone says which bucket a row
+  // belongs in -- reliable as of the 2026-09-21 committee hierarchy repair
+  // (docs/policy-committee-repair-20260921.md, PR #342), which corrected the
+  // 53 rows this screen reads and put a DB trigger in front of them so
+  // future syncs can't quietly re-break it. An earlier version of this
+  // classified by matching committee names against a hand-written regex
+  // list; Codex's review of that PR found the regexes didn't match the
+  // DB's actual names at all (e.g. "Aging (Special) Committee" never matched
+  // /special committee on aging/i), so this uses the type field instead.
+  const COMMITTEE_KIND_BY_TYPE = {
+    standing: 'standing',
+    select: 'select',
+    special: 'select',
+    joint: 'joint',
+    commission_or_caucus: 'other',
+    caucus: 'other',
+    other: 'other',
+  };
+
+  // A type this map doesn't recognize (a new one the repair didn't
+  // anticipate, or a row the repair hasn't reached yet) must not silently
+  // read as "standing" -- that was the original bug. It gets its own bucket
+  // instead, so a real gap stays visible rather than being miscounted.
+  const committeeKind = (c) => COMMITTEE_KIND_BY_TYPE[c.committee_type] || 'unknown';
+
+  const committeeTiles = (overview, chamber, kind) => tileGrid(
     (overview?.congress_overview?.committees || [])
-      .filter((c) => c.chamber === chamber)
+      .filter((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind)
       .map((c) => ({
         view: 'committee', id: c.committee_id, full: c.name,
         label: fit(committeeLabel(c.name), c.short_name),
@@ -590,12 +616,21 @@
   /* ---------------------------------------------------------------- views */
 
   // Branch level -- the committees and the CRS policy areas, each a way in.
+  // House/Senate standing committees get their own cards, separate from
+  // each chamber's select/special committees; a card only appears when that
+  // bucket actually has something in it, so a chamber with none in the data
+  // doesn't show an empty box.
   function viewCongress(_id, overview) {
-    const hasJoint = (overview?.congress_overview?.committees || []).some((c) => c.chamber === 'joint');
+    const committees = overview?.congress_overview?.committees || [];
+    const has = (chamber, kind) => committees.some((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind);
     return shell(`
-      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house'))}
-      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate'))}
-      ${hasJoint ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles(overview, 'joint')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'standing'))}
+      ${has('house', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'select')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'standing'))}
+      ${has('senate', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'select')) : ''}
+      ${has(null, 'joint') ? card(`합동위원회`, committeeTiles(overview, null, 'joint')) : ''}
+      ${has(null, 'other') ? card(`기타 기구`, committeeTiles(overview, null, 'other')) : ''}
+      ${has(null, 'unknown') ? card(`미확인 유형`, committeeTiles(overview, null, 'unknown')) : ''}
       ${collapsibleCard('crs', 'CRS 정책분야', policyAreaTiles(overview), (overview?.policy_areas || []).length)}
     `);
   }
