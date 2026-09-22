@@ -147,12 +147,39 @@
         }
 
         const bills = favorites.filter((f) => f.item_kind === 'bill');
-        const others = favorites.filter((f) => f.item_kind !== 'bill');
+        const commodities = favorites.filter((f) => f.item_kind === 'commodity');
+        const others = favorites.filter((f) => f.item_kind !== 'bill' && f.item_kind !== 'commodity');
 
         el.innerHTML = `
             ${bills.length ? '<p class="mypage-section-title">법안</p><div class="policy-bill-list" id="mypage-fav-bills"></div>' : ''}
+            ${commodities.length ? '<p class="mypage-section-title">원자재</p><div class="policy-bill-list" id="mypage-fav-commodities"></div>' : ''}
             ${others.length ? '<p class="mypage-section-title">그 외</p><div class="policy-bill-list" id="mypage-fav-others"></div>' : ''}
         `;
+
+        if (commodities.length) {
+            const container = el.querySelector('#mypage-fav-commodities');
+            container.innerHTML = commodities.map((f) => `
+                <div class="policy-fav-bill-card">
+                    <div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div>
+                    <div class="policy-fav-bill-actions">
+                        <button type="button" class="policy-fav-star" data-remove-commodity-id="${esc(f.item_id)}" title="즐겨찾기 해제" aria-label="즐겨찾기 해제">★</button>
+                    </div>
+                </div>`).join('');
+            container.addEventListener('click', async (e) => {
+                const btn = e.target.closest('[data-remove-commodity-id]');
+                if (!btn) return;
+                btn.disabled = true;
+                try {
+                    await window.Auth.removeFavorite('commodity', btn.dataset.removeCommodityId);
+                    loaded.delete('favorites');
+                    loaded.delete('mailing'); // its commodity checkboxes read the same favorites
+                    renderFavorites();
+                } catch (err) {
+                    btn.disabled = false;
+                    console.error('Failed to remove commodity favorite:', err);
+                }
+            });
+        }
 
         if (others.length) {
             const container = el.querySelector('#mypage-fav-others');
@@ -240,7 +267,7 @@
             <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…</p></div>
 
             <p class="mypage-section-title">원자재</p>
-            <p class="mypage-empty">최근 8일 이내 리포트를 기관별로 모아 매주 월요일 오전 8시(KST)에 발송합니다. 체크를 풀면 그 기관만 빠집니다.</p>
+            <p class="mypage-empty">박스 제목을 체크한 원자재만 최근 8일 이내 리포트를 매주 월요일 오전 8시(KST)에 보내드립니다. 체크 안 한 원자재는 그 안의 기관 체크와 상관없이 메일이 가지 않습니다. 아래 기관 체크는 즐겨찾기한 원자재 안에서 어느 기관 소식만 뺄지 고르는 용도입니다.</p>
             <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
 
             <p class="mypage-section-title">시장 미시구조</p>
@@ -278,15 +305,16 @@
         });
 
         const billListEl = el.querySelector('#mypage-mail-bills');
+        let favorites = [];
         try {
-            const favorites = await window.Auth.listFavorites();
+            favorites = await window.Auth.listFavorites();
             if (token !== renderToken) return;
-            const bills = favorites.filter((f) => f.item_kind === 'bill');
-            renderFavoriteBillCards(billListEl, bills, token);
+            renderFavoriteBillCards(billListEl, favorites.filter((f) => f.item_kind === 'bill'), token);
         } catch (err) {
             if (token !== renderToken) return;
             billListEl.innerHTML = `<p class="mypage-empty">즐겨찾기한 법안을 불러오지 못했습니다: ${esc(err.message)}</p>`;
         }
+        const favoritedCommodityKeys = new Set(favorites.filter((f) => f.item_kind === 'commodity').map((f) => f.item_id));
 
         const container = el.querySelector('#mypage-source-filter');
         try {
@@ -295,16 +323,30 @@
                 window.Auth.listDisabledCommoditySources(),
             ]);
             if (token !== renderToken) return;
-            const { groups, sourceIds } = groupSourcesByCommodity(reportsRes);
-            const totalSources = sourceIds.size;
-            const disabledActive = disabled.filter((id) => sourceIds.has(id)).length;
-            commodityTile.querySelector('.v').textContent = `월 08:00 · ${totalSources - disabledActive}/${totalSources} 소스`;
+            const { groups } = groupSourcesByCommodity(reportsRes);
+            const updateCommodityTile = () => {
+                commodityTile.querySelector('.v').textContent = favoritedCommodityKeys.size
+                    ? `월 08:00 · ${favoritedCommodityKeys.size}개 즐겨찾기`
+                    : '즐겨찾기 없음 · 발송 안 됨';
+            };
+            updateCommodityTile();
             if (!groups.length) {
                 container.innerHTML = '<p class="mypage-empty">현재 연동된 원자재 소스가 없습니다.</p>';
                 return;
             }
-            container.innerHTML = window.Auth.commoditySourceFilterHtml(groups, disabled);
+            container.innerHTML = window.Auth.commoditySourceFilterHtml(groups, disabled, favoritedCommodityKeys);
             window.Auth.bindCommoditySourceFilter(container);
+            window.Auth.bindCommodityFavoriteFilter(container);
+            container.addEventListener('change', (e) => {
+                const checkbox = e.target.closest('.commodity-fav-checkbox');
+                if (!checkbox) return;
+                // Optimistic, same as bindCommodityFavoriteFilter's own write --
+                // rolls back together with the checkbox if that write fails.
+                if (checkbox.checked) favoritedCommodityKeys.add(checkbox.dataset.commodityKey);
+                else favoritedCommodityKeys.delete(checkbox.dataset.commodityKey);
+                updateCommodityTile();
+                loaded.delete('favorites'); // 즐겨찾기 탭의 원자재 목록도 같이 바뀌었으니 다음에 열 때 새로 불러옴
+            });
         } catch (err) {
             if (token !== renderToken) return;
             commodityTile.querySelector('.v').textContent = '불러오지 못함';

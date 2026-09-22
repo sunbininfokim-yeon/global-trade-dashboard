@@ -413,6 +413,16 @@ body {
     font-weight: 600;
     margin-bottom: 4px;
 }
+/* Commodity-info-panel header: the h2 gets a star next to it (favorite this
+   commodity) instead of stacking directly on #current-view-desc below, so
+   this row is scoped rather than making every .panel-header a flex row. */
+.panel-header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.panel-header-title-row h2 { margin-bottom: 0; }
+.commodity-fav-star { font-size: 19px; }
 
 /* === Elections module ==================================================== */
 /* Scoped styles: data rendering stays in js/elections/, never in app.js. */
@@ -3761,10 +3771,17 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
 .commodity-source-header {
     flex: 0 0 auto;
     min-width: 64px;
+}
+.commodity-fav-check {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-size: 13px;
     font-weight: 600;
     color: #f1f5f9;
+    cursor: pointer;
 }
+.commodity-fav-checkbox { accent-color: #facc15; width: 15px; height: 15px; flex: 0 0 auto; }
 .commodity-source-checks {
     display: flex;
     flex-wrap: wrap;

@@ -43,6 +43,86 @@ const climateMapLegendEl = document.getElementById('climate-map-legend');
 const panelHide = (el) => { if (el) el.classList.add('hidden'); };
 const panelShow = (el) => { if (el) el.classList.remove('hidden'); };
 
+const commodityFavStarEl = document.getElementById('commodity-fav-star');
+
+// --- 원자재 즐겨찾기 (commodity-info-panel header star) ----------------------
+// item_kind 'commodity', item_id is the same slug window.TradeData/data-target
+// already use (e.g. 'oil'), so it lines up with notify-commodity-digest.js's
+// weekly send and shows up in My Page's 즐겨찾기 tab next to bills. Mirrors
+// policy.js's bill star (favState/loadFavorites/toggleFavorite) but scoped to
+// this one persistent button instead of a per-row control, since the commodity
+// screen has exactly one commodity in view at a time.
+const commodityFavKeys = new Set();
+let commodityFavAuthSubscribed = false;
+
+async function loadCommodityFavorites() {
+    if (!window.Auth?.currentUser?.()) { commodityFavKeys.clear(); return; }
+    try {
+        const rows = await window.Auth.listFavorites();
+        commodityFavKeys.clear();
+        rows.filter((r) => r.item_kind === 'commodity').forEach((r) => commodityFavKeys.add(r.item_id));
+    } catch (err) {
+        console.error('Failed to load commodity favorites:', err);
+    }
+}
+
+function paintCommodityFavStar() {
+    if (!commodityFavStarEl) return;
+    const id = commodityFavStarEl.dataset.commodityId;
+    const on = !!(id && commodityFavKeys.has(id));
+    commodityFavStarEl.classList.toggle('is-on', on);
+    commodityFavStarEl.setAttribute('aria-pressed', String(on));
+    commodityFavStarEl.title = on ? '즐겨찾기 해제' : '즐겨찾기';
+    const icon = commodityFavStarEl.querySelector('.policy-fav-icon');
+    if (icon) icon.textContent = on ? '★' : '☆';
+}
+
+// Called from the TradeData(target) branch of setView for every real
+// commodity; label is TradeData[target].title with its "글로벌 OOO: " prefix
+// and any trailing "(English)" stripped, e.g. "글로벌 에너지: 원유" -> "원유".
+function updateCommodityFavStar(target, fullTitle) {
+    if (!commodityFavStarEl) return;
+    const label = String(fullTitle || target).split(': ').pop().replace(/\s*\([^)]*\)\s*$/, '').trim();
+    commodityFavStarEl.dataset.commodityId = target;
+    commodityFavStarEl.dataset.commodityTitle = label;
+    commodityFavStarEl.classList.remove('hidden');
+    paintCommodityFavStar();
+}
+
+function hideCommodityFavStar() {
+    commodityFavStarEl?.classList.add('hidden');
+}
+
+commodityFavStarEl?.addEventListener('click', async () => {
+    if (!window.Auth?.currentUser?.()) { window.Auth?.openModal?.('signup'); return; }
+    const id = commodityFavStarEl.dataset.commodityId;
+    if (!id) return;
+    const on = commodityFavKeys.has(id);
+    commodityFavStarEl.disabled = true;
+    try {
+        if (on) {
+            await window.Auth.removeFavorite('commodity', id);
+            commodityFavKeys.delete(id);
+        } else {
+            await window.Auth.addFavorite('commodity', id, commodityFavStarEl.dataset.commodityTitle);
+            commodityFavKeys.add(id);
+        }
+        paintCommodityFavStar();
+    } catch (err) {
+        console.error('Failed to toggle commodity favorite:', err);
+    } finally {
+        commodityFavStarEl.disabled = false;
+    }
+});
+
+function subscribeCommodityFavAuth() {
+    if (commodityFavAuthSubscribed || !window.Auth?.onChange) return;
+    commodityFavAuthSubscribed = true;
+    window.Auth.onChange(() => { loadCommodityFavorites().then(paintCommodityFavStar); });
+}
+subscribeCommodityFavAuth();
+loadCommodityFavorites().then(paintCommodityFavStar);
+
 
 const totalVolumeEl = document.getElementById('total-volume');
 const topExporterEl = document.getElementById('top-exporter');
@@ -3852,6 +3932,7 @@ const showClimateWorld = async () => {
     setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status';
+    hideCommodityFavStar();
 
     document.getElementById('commodity-info-panel')?.classList.remove('hidden');
 
@@ -5509,6 +5590,7 @@ const setView = (target) => {
         currentViewTitle.textContent = '작황 모니터';
         currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
         topExporterEl.textContent = 'Status coloring';
+        hideCommodityFavStar(); // 작황 모니터는 개별 원자재가 아니라 집계 화면이라 즐겨찾기 대상이 아님
 
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
@@ -5531,6 +5613,7 @@ const setView = (target) => {
         currentViewTitle.textContent = data.title;
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
+        updateCommodityFavStar(target, data.title);
 
         // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');

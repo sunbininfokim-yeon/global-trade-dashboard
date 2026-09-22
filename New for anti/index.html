@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=81">
+    <link rel="stylesheet" href="style.css?v=82">
 </head>
 <body>
     <div id="app">
@@ -231,7 +231,12 @@
                 <!-- Commodity Overview (Always top when a commodity is selected) -->
                 <div class="panel-section hidden" id="commodity-info-panel">
                     <div class="panel-header">
-                        <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                        <div class="panel-header-title-row">
+                            <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                            <button type="button" class="policy-fav commodity-fav-star hidden" id="commodity-fav-star" aria-pressed="false" title="즐겨찾기">
+                                <span class="policy-fav-icon" aria-hidden="true">☆</span>
+                            </button>
+                        </div>
                         <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
                     </div>
                     
@@ -419,7 +424,7 @@
          renderers run. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="auth-config.js?v=1"></script>
-    <script src="auth.js?v=10"></script>
+    <script src="auth.js?v=11"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and
@@ -444,8 +449,8 @@
     <script src="policy.js?v=23"></script>
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
-    <script src="mypage.js?v=4"></script>
-    <script src="app.js?v=122"></script>
+    <script src="mypage.js?v=5"></script>
+    <script src="app.js?v=123"></script>
     <script src="gas-storage.js?v=2"></script>
     <script src="trade.js?v=gas-storage-2"></script>
     <script type="module" src="js/elections/index.js?v=4"></script>
