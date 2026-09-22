@@ -240,9 +240,16 @@ const Auth = (() => {
     // commodity; the same source can appear in more than one box (e.g. EIA
     // covers both oil and gas), so its checkbox state is kept in sync across
     // every box it shows up in by bindCommoditySourceFilter below.
-    function commoditySourceFilterHtml(groups, disabledIds) {
+    //
+    // favoritedKeys: Set of commodity keys with a user_favorites row
+    // (item_kind 'commodity'). notify-commodity-digest.js only mails
+    // favorited commodities in the first place -- the source checkboxes
+    // inside a box only matter once that box's own commodity is favorited --
+    // so each header gets its own checkbox for that, not just a static label.
+    function commoditySourceFilterHtml(groups, disabledIds, favoritedKeys) {
         const disabled = new Set(disabledIds);
-        return groups.map(({ label, sources }) => {
+        const favorited = favoritedKeys || new Set();
+        return groups.map(({ key, label, sources }) => {
             // Two sources under the same commodity can share one agency code
             // (e.g. two different EIA feeds both covering oil) -- append the
             // source id itself as a generic, always-correct tie-breaker
@@ -263,10 +270,37 @@ const Auth = (() => {
             }).join('');
             return `
             <div class="commodity-source-group">
-                <div class="commodity-source-header">${escSourceLabel(label)}</div>
+                <div class="commodity-source-header">
+                    <label class="commodity-fav-check" title="즐겨찾기하지 않은 원자재는 다이제스트에 포함되지 않습니다">
+                        <input type="checkbox" class="commodity-fav-checkbox" data-commodity-key="${escSourceLabel(key)}" data-commodity-label="${escSourceLabel(label)}" ${favorited.has(key) ? 'checked' : ''}>
+                        ${escSourceLabel(label)}
+                    </label>
+                </div>
                 <div class="commodity-source-checks">${rows}</div>
             </div>`;
         }).join('');
+    }
+
+    // Attach once; toggling favorites this commodity for the weekly digest
+    // (notify-commodity-digest.js reads user_favorites where item_kind is
+    // 'commodity' and mails nothing for a commodity that isn't in it).
+    function bindCommodityFavoriteFilter(container) {
+        container.addEventListener('change', async (e) => {
+            const checkbox = e.target.closest('.commodity-fav-checkbox');
+            if (!checkbox) return;
+            const key = checkbox.dataset.commodityKey;
+            const label = checkbox.dataset.commodityLabel;
+            checkbox.disabled = true;
+            try {
+                if (checkbox.checked) await addFavorite('commodity', key, label);
+                else await removeFavorite('commodity', key);
+            } catch (err) {
+                checkbox.checked = !checkbox.checked; // roll back the click on a failed write
+                console.error('Failed to update commodity favorite:', err);
+            } finally {
+                checkbox.disabled = false;
+            }
+        });
     }
 
     // Attach once to the list's container; delegates so re-rendering the
@@ -486,7 +520,7 @@ const Auth = (() => {
         currentUser, onChange, signUp, signIn, signOut, openModal,
         listFavorites, addFavorite, removeFavorite, setFavoriteNotifyEnabled,
         listDisabledCommoditySources, setCommoditySourceEnabled,
-        commoditySourceFilterHtml, bindCommoditySourceFilter,
+        commoditySourceFilterHtml, bindCommoditySourceFilter, bindCommodityFavoriteFilter,
         changePassword, myProfile, updateNickname, resetPasswordForEmail,
         billNotificationsPaused, setBillNotificationsPaused,
     };
