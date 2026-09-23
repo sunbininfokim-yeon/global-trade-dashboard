@@ -1,0 +1,47 @@
+name: Refresh Fed SOMA Treasury maturity buckets
+
+# build_soma_maturity.py already fetches the real NY Fed SOMA holdings
+# (public API, no key) into public/data/soma_maturity_v1.json, and has for
+# a while -- but nothing ever connected that file to the indicators
+# themselves (fed_ust_le_1y/1_5y/5_10y/gt_10y, still fixture_synth/demo)
+# or to their derived sum fed_ust_holdings (engine.py only computes that
+# composite once, at full-build time; a graft-only refresh never re-derives
+# it on its own). wire_soma_maturity.py does both: overlays the four bucket
+# indicators with real weekly SOMA data (asof = the actual observation
+# date, not a month-end grid point) and recomputes fed_ust_holdings as
+# their sum.
+#
+# Note: fed_total_assets' own asset-composition chart (build_fed_balance_sheet.py)
+# reads a separate FRED-CSV-based dataset, not this one -- that script has
+# no workflow either and is a separate follow-up, not covered here.
+
+on:
+  schedule:
+    # Weekly: NY Fed publishes SOMA holdings on a weekly cadence.
+    - cron: '45 18 * * 3'
+  workflow_dispatch:
+
+jobs:
+  refresh-soma-maturity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch NY Fed SOMA maturity buckets
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_soma_maturity.py
+      - name: Wire into macro_monitor_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python wire_soma_maturity.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/soma_maturity_v1.json" \
+                  "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh Fed SOMA Treasury maturity buckets" || exit 0
+          git push
