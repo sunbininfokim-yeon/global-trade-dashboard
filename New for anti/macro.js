@@ -763,8 +763,17 @@ const mmLineChart = (dates, values, opts = {}) => {
     };
 
     const line = path(values);
-    const first = idx[0][0], last = idx[idx.length - 1][0];
-    const area = `${line}L${sx(last).toFixed(1)},${sy(lo).toFixed(1)}L${sx(first).toFixed(1)},${sy(lo).toFixed(1)}Z`;
+    // One closed fill per unbroken run. A single polygon over a series with
+    // gaps joined the runs' ends through the baseline and drew a wedge across
+    // days that have no value.
+    let area = '';
+    for (let i = 0; i < n; i++) {
+        if (!Number.isFinite(values[i])) continue;
+        let j = i;
+        while (j + 1 < n && Number.isFinite(values[j + 1])) j++;
+        area += `${path(values, i, j)}L${sx(j).toFixed(1)},${sy(lo).toFixed(1)}L${sx(i).toFixed(1)},${sy(lo).toFixed(1)}Z`;
+        i = j;
+    }
 
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
