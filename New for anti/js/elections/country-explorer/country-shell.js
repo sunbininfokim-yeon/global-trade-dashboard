@@ -1,9 +1,15 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
-import { escapeHtml, formatDate, stateLabel } from '../ui.js';
+import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaSections } from './special/usa.js';
-import { usaLegislature } from './special/usa-legislature.js';
+import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
-import { chinaSections, chinaContent } from './special/china.js';
+import { chinaSections } from './special/china.js';
+import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
+import { jpnSections } from './special/jpn.js';
+import { jpnExecutive } from './special/jpn-executive.js';
+import { jpnLegislature } from './special/jpn-legislature.js';
+import { jpnFactions } from './special/jpn-factions.js';
+import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js';
 
@@ -13,6 +19,7 @@ const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'e
 // custom tab sets predate this screen, so it's appended here rather than
 // duplicated into their own files.
 const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
+    : iso3 === 'JPN' ? jpnSections
     : iso3 === 'CHN' ? [...chinaSections, RACE_PROGRESS_TAB]
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
     : genericSections;
@@ -39,7 +46,14 @@ const values = (object) => {
 };
 const partyName = (party) => party?.name_ko || party?.display || party?.name_en || party?.abbr || '불명';
 const affiliation = (abbr) => ({ LDP: '자민당', DPK: '더불어민주당', PPP: '국민의힘', IND: '무소속' }[abbr] || abbr || '');
-const personLabel = (row) => [row?.name_ko || row?.name_en || '불명', affiliation(row?.party_abbr)].filter(Boolean).join(' · ');
+// Returns safe HTML, not plain text: official_url (present on executive_live
+// core/cabinet rows for most tracked countries, absent on legislature
+// leadership rows) links the name to that person's official page. Callers
+// must not escapeHtml() this a second time.
+const personLabel = (row) => {
+    const label = escapeHtml([row?.name_ko || row?.name_en || '불명', affiliation(row?.party_abbr)].filter(Boolean).join(' · '));
+    return personLinkHtml(label, row?.official_url);
+};
 
 const executiveContent = (country) => {
     const executive = country.executive_live;
@@ -49,8 +63,8 @@ const executiveContent = (country) => {
     const sourceLabels = (executive.sources || []).map((source) => [source.org, source.as_of ? `${source.as_of} 기준` : '공개 명부'].filter(Boolean).join(' · '));
     const coverageNotice = executive.coverage?.includes('source_aged') ? '이 행은 출처 기준일이 오래되어 최신 공식 명부 재확인이 필요합니다.' : '';
     return `
-        <div class="elections-card-grid">${core.map((row) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(row.office_ko || row.portfolio_ko || '직책')}</div><div class="elections-card-value">${escapeHtml(personLabel(row))}</div></article>`).join('')}</div>
-        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>국무위원 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${escapeHtml(personLabel(row))}</strong></div>`).join('')}</div></details>` : ''}
+        <div class="elections-card-grid">${core.map((row) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(row.office_ko || row.portfolio_ko || '직책')}</div><div class="elections-card-value">${personLabel(row)}</div></article>`).join('')}</div>
+        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>국무위원 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${personLabel(row)}</strong></div>`).join('')}</div></details>` : ''}
         ${sourceLabels.length ? `<p class="elections-panel-note">공개 명부: ${escapeHtml(sourceLabels.join(' / '))}</p>` : ''}
         ${coverageNotice ? `<p class="elections-panel-note">${escapeHtml(coverageNotice)}</p>` : ''}
         ${(executive.source_conflicts_excluded || []).length ? `<p class="elections-panel-note">공개 명부 충돌로 이번 행에서는 보류: ${escapeHtml(executive.source_conflicts_excluded.join(', '))}</p>` : ''}
@@ -73,7 +87,7 @@ const legislatureContent = (country) => {
     const leaders = legislature.chamber_leadership || legislature.floor_leadership || [];
     return `
         ${cards ? `<div class="elections-card-grid">${cards}</div>` : ''}
-        ${leaders.length ? `<details class="elections-disclosure"><summary>의장단·원내지도부 보기</summary><div class="elections-disclosure-rows">${leaders.map((row) => `<div><span>${escapeHtml(row.office_ko || row.office || row.title || row.chamber || '직책')}</span><strong>${escapeHtml(personLabel(row))}</strong></div>`).join('')}</div></details>` : ''}
+        ${leaders.length ? `<details class="elections-disclosure"><summary>의장단·원내지도부 보기</summary><div class="elections-disclosure-rows">${leaders.map((row) => `<div><span>${escapeHtml(row.office_ko || row.office || row.title || row.chamber || '직책')}</span><strong>${personLabel(row)}</strong></div>`).join('')}</div></details>` : ''}
         ${!cards && !leaders.length ? '<p class="elections-muted">확보된 공개 의회 요약이 없습니다.</p>' : ''}
     `;
 };
@@ -106,17 +120,38 @@ const sourceObject = (country, section) => {
 // country's own module rather than through the shared flattener.
 const specialContent = (country, section) => {
     if (section === 'race_progress') return raceProgressContent(country);
-    if (country.iso3 === 'CHN') return chinaContent(country, section);
+    if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
+    if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
+    if (country.iso3 === 'CHN' && section === 'state_council') return chnStateCouncil(country);
     if (country.iso3 === 'USA' && section === 'legislature') return usaLegislature(country);
     if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
+    if (country.iso3 === 'JPN' && section === 'executive') return jpnExecutive(country);
+    if (country.iso3 === 'JPN' && section === 'legislature') return jpnLegislature(country);
+    if (country.iso3 === 'JPN' && section === 'factions') return jpnFactions(country);
+    if (country.iso3 === 'JPN' && section === 'subnational_map') return jpnSubnational(country);
     return null;
+};
+
+// A screen the manifest calls `disabled` but this module can actually draw --
+// 중국 행정부 is built from leadership.*, which the manifest only blesses under
+// its own power_structure key -- is not "데이터 수집 예정". Reporting it as such
+// while the screen is full of names is the one reading that is definitely
+// wrong, so a renderable screen reports 일부 표시 instead. It never upgrades a
+// screen the manifest already rates, and never invents content: it only
+// believes the renderer that just produced some.
+const effectiveStatus = (manifest, country, section) => {
+    const status = screenStatus(manifest, country.iso3, section);
+    if (status !== 'disabled' || section === 'calendar') return status;
+    return specialContent(country, section) ? 'partial' : status;
 };
 
 const sectionContent = (country, section, status) => {
     if (section === 'calendar') return calendar(country);
-    if (status === 'disabled') return '<p class="elections-muted">이 화면은 공개 데이터가 확보되면 연결됩니다.</p>';
+    // Tried before the disabled bail: a renderer that produces content proves
+    // the data is there, whatever the manifest says about the screen key.
     const special = specialContent(country, section);
     if (special) return special;
+    if (status === 'disabled') return '<p class="elections-muted">이 화면은 공개 데이터가 확보되면 연결됩니다.</p>';
     if (section === 'executive') {
         const live = executiveContent(country);
         if (live) return live;
@@ -143,7 +178,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
 
     const openSection = (key) => {
         const label = tabs.find(([, tabKey]) => tabKey === key)?.[0] || '';
-        const status = screenStatus(manifest, country.iso3, key);
+        const status = effectiveStatus(manifest, country, key);
         const missing = screenFor(key)?.missing || [];
         active = key;
         markActive();
@@ -159,7 +194,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             // goes back out through the host adapter rather than this module
             // reaching into the legacy router itself.
             onAction: (action, dataset) => {
-                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.committeeId);
+                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.chamber, dataset.committeeName);
                 if (action === 'policy-committees') host?.openPolicyCommittee?.();
             },
         });
@@ -172,7 +207,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
     };
 
     const draw = () => {
-        const mapStatus = hasMapBlock ? screenStatus(manifest, country.iso3, MAP_SECTION) : null;
+        const mapStatus = hasMapBlock ? effectiveStatus(manifest, country, MAP_SECTION) : null;
         root.className = 'panel-section elections-country';
         root.innerHTML = `
             <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back>← 세계 지도</button></div>
@@ -180,7 +215,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             ${overview(country)}
             <p class="section-title">권력 구조 · 블록을 누르면 지도 위에 펼쳐집니다</p>
             <div class="elections-block-grid">${tabs.map(([label, key]) => {
-                const status = screenStatus(manifest, country.iso3, key);
+                const status = effectiveStatus(manifest, country, key);
                 return `<button class="elections-block" type="button" data-election-tab="${key}" ${status === 'disabled' ? 'data-election-disabled="1"' : ''}>
                     <span class="elections-block-label">${escapeHtml(label)}</span>
                     <span class="elections-block-state">${escapeHtml(stateLabel(status))}</span>

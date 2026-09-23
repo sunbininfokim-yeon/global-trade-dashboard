@@ -12,14 +12,14 @@ requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 const RESEND_API_KEY = requireEnv('RESEND_API_KEY');
 const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
-const SITE_URL = 'https://chokemonitor.com/us-policy-hub';
+const SITE_URL = 'https://chokemonitor.com/policy/us';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 async function fetchFavorites() {
-  return supabaseGet('user_favorites', { select: 'user_id,item_kind,item_id,title' });
+  return supabaseGet('user_favorites', { select: 'user_id,item_kind,item_id,title,notify_enabled' });
 }
 
 async function fetchBills(ids) {
@@ -56,10 +56,10 @@ async function fetchExecutiveOrders(ids) {
 async function fetchProfiles(userIds) {
   if (!userIds.length) return new Map();
   const rows = await supabaseGet('profiles', {
-    select: 'id,email',
+    select: 'id,email,bill_notifications_paused',
     id: `in.(${userIds.join(',')})`,
   });
-  return new Map(rows.map((row) => [row.id, row.email]));
+  return new Map(rows.map((row) => [row.id, { email: row.email, paused: !!row.bill_notifications_paused }]));
 }
 
 async function fetchLastSeen(pairs) {
@@ -132,8 +132,13 @@ async function run() {
     const changed = previouslySeen && new Date(item.changedAt) > new Date(previouslySeen);
 
     if (changed) {
-      if (!byUser.has(fav.user_id)) byUser.set(fav.user_id, []);
-      byUser.get(fav.user_id).push({ title: fav.title || item.title, summaryLine: item.summaryLine, detailLine: item.detailLine });
+      // notify_enabled false mutes just this one favorite (My Page's
+      // per-card checkbox); the baseline below is still recorded either
+      // way, so re-enabling it later doesn't email everything missed.
+      if (fav.notify_enabled !== false) {
+        if (!byUser.has(fav.user_id)) byUser.set(fav.user_id, []);
+        byUser.get(fav.user_id).push({ title: fav.title || item.title, summaryLine: item.summaryLine, detailLine: item.detailLine });
+      }
       seenUpdates.push({
         user_id: fav.user_id, item_kind: fav.item_kind, item_id: fav.item_id,
         last_seen_updated_at: item.changedAt, last_notified_at: new Date().toISOString(),
@@ -151,15 +156,20 @@ async function run() {
   if (!byUser.size) {
     console.log('No favorited items changed since they were last checked.');
   } else {
-    const emails = await fetchProfiles([...byUser.keys()]);
+    const profiles = await fetchProfiles([...byUser.keys()]);
     let sent = 0;
+    let paused = 0;
     for (const [userId, changes] of byUser) {
-      const email = emails.get(userId);
-      if (!email) continue;
-      await sendDigest(email, changes);
+      const profile = profiles.get(userId);
+      if (!profile || !profile.email) continue;
+      // Paused users still get their favorite_notifications baseline
+      // updated below, so nothing piles up into one email once resumed --
+      // this only skips the send itself.
+      if (profile.paused) { paused += 1; continue; }
+      await sendDigest(profile.email, changes);
       sent += 1;
     }
-    console.log(`Sent ${sent} digest email(s) for ${byUser.size} user(s) with changed favorites.`);
+    console.log(`Sent ${sent} digest email(s) for ${byUser.size} user(s) with changed favorites${paused ? ` (${paused} paused)` : ''}.`);
   }
 
   if (seenUpdates.length) {

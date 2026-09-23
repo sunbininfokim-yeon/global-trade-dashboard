@@ -1,0 +1,186 @@
+{
+  "iso3": "POL",
+  "year": 2026,
+  "as_of": "2026-09-18",
+  "region": "europe",
+  "null_policy": {
+    "없음": "해당 일정/선거 없음",
+    "불명": "발표·확정 전 또는 출처에 날짜 없음"
+  },
+  "sources": [
+    {
+      "id": "pkw_portal",
+      "org": "Państwowa Komisja Wyborcza",
+      "url": "https://wybory.gov.pl/index/",
+      "retrieved": "2026-09-18"
+    },
+    {
+      "id": "wiki_next_sejm",
+      "url": "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election"
+    },
+    {
+      "id": "dziennik_ustaw_krakow_2026",
+      "org": "Dziennik Ustaw",
+      "url": "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf",
+      "covers": [
+        "krakow_mayor_early_election"
+      ]
+    }
+  ],
+  "notes": [
+    "2026 has no nationwide presidential, Sejm/Senate, or local-government general.",
+    "Confirmed 2026 rows: Civic Coalition leadership (8 Mar) and Kraków mayor early election (27 Sep).",
+    "Next Sejm/Senate must be held by 11 Nov 2027; next nationwide locals are the 2024–2029 term (2029)."
+  ],
+  "events": [
+    {
+      "id": "pol-2025-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (2025, 현 임기)",
+      "label_en": "Presidential election 2025",
+      "date": "2025-05-18",
+      "first_round_date": "2025-05-18",
+      "runoff_date": "2025-06-01",
+      "status": "completed",
+      "system_id": "pol-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "carry_forward_incumbent": true,
+      "board_include_years": [
+        2026
+      ],
+      "winner": {
+        "name_en": "Karol Nawrocki",
+        "name_ko": "카롤 나브로츠키"
+      },
+      "notes": "1차 2025-05-18, 결선 2025-06-01. 2026 보드: 현 대통령. 다음 정기 대선은 pol-2030-presidential.",
+      "sources": [
+        "https://wybory.gov.pl/index/",
+        "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
+      ]
+    },
+    {
+      "id": "pol-2030-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Next presidential election",
+      "date": "2030-05",
+      "date_note": "5년 임기 만료에 따른 통상 시기. 대통령이 공고하며, 정확한 일요일은 미정.",
+      "status": "outside_year",
+      "system_id": "pol-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "2025 결선 이후 다음 정기 회차. 조기선거가 있으면 앞당겨질 수 있음.",
+      "sources": [
+        "https://wybory.gov.pl/index/",
+        "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
+      ]
+    },
+    {
+      "id": "pol-2027-sejm-senate",
+      "type": "general",
+      "label_ko": "세임·상원 총선",
+      "label_en": "Sejm and Senate",
+      "date": "2027-10",
+      "date_note": "현 의회 임기 만료에 따른 통상 시기. 법정 최후 2027-11-11. 가능 일요일 10/17·10/24·10/31·11/7. 대통령이 공고하며 조기 해산 시 앞당겨질 수 있음.",
+      "status": "outside_year",
+      "system_id": "pol-sejm",
+      "level": "national",
+      "chamber": "sejm",
+      "contested_ko": "세임 460석 전원 + 상원 100석 전원",
+      "previous": {
+        "date": "2023-10-15",
+        "by_party": {
+          "PiS": 194,
+          "KO": 157,
+          "Third Way": 65,
+          "The Left": 26,
+          "Confederation": 18
+        },
+        "source": "https://en.wikipedia.org/wiki/2023_Polish_parliamentary_election"
+      },
+      "government_formed_ko": "최다 의석 PiS가 연립을 못 만들어, KO 도날트 투스크 총리의 연립이 구성됨.",
+      "notes": "2026년 총선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election",
+        "https://en.wikipedia.org/wiki/2023_Polish_parliamentary_election"
+      ]
+    },
+    {
+      "id": "pol-2029-local",
+      "type": "local",
+      "label_ko": "전국 지방선거 (다음 정기)",
+      "label_en": "Nationwide local elections",
+      "date": "2029-04",
+      "date_note": "2024-04-07 전국 지방선거 다음 회차. 현 임기 2024–2029. 정확한 일요일은 총리가 PKW 의견을 들어 공고.",
+      "status": "outside_year",
+      "system_id": "pol-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "주·군·면 의회와 직선 단체장 (전국 동시)",
+      "notes": "2026년 전국 지방 회차 아님. 임기 중 조기·보궐은 별도 행.",
+      "sources": [
+        "https://wybory.gov.pl/index/",
+        "https://adwokatlancutbozek.pl/kiedy-wybory-samorzadowe-nastepny-termin-to-2029-a-nie-2028-rok"
+      ]
+    },
+    {
+      "id": "pol-2026-krakow-mayor",
+      "type": "by_election",
+      "label_ko": "크라쿠프 시장 조기선거",
+      "label_en": "Kraków mayor early election",
+      "date": "2026-09-27",
+      "status": "scheduled",
+      "system_id": "pol-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "크라쿠프 시장 1인",
+      "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 전국 지방 회차가 아닌 임기 중 조기선거.",
+      "sources": [
+        "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
+      ]
+    },
+    {
+      "id": "pol-2026-ko-leadership",
+      "type": "party_leadership",
+      "party_id": "ko",
+      "party_abbr": "KO",
+      "label_ko": "시민연합(KO) 당대표 선거",
+      "label_en": "Civic Coalition leadership",
+      "date": "2026-03-08",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "시민연합 당대표 1인",
+      "electorate_ko": "당비 완납 당원 직접투표 (유효 16,695표)",
+      "winner": {
+        "name_en": "Donald Tusk",
+        "name_ko": "도날트 투스크"
+      },
+      "notes": "PO·Nowoczesna·Inicjatywa Polska 합당 후 첫 당대표 선거. 단독 후보, 찬성 16,316 (97%).",
+      "sources": [
+        "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition",
+        "https://wiadomosci.gazeta.pl/polityka/7,198012,32648397,wybory-na-przewodniczacego-ko-bezkonkurencyjnie-wygrywa-donald.html"
+      ]
+    },
+    {
+      "id": "pol-2026-pis-leadership",
+      "type": "party_leadership",
+      "party_id": "pis",
+      "party_abbr": "PiS",
+      "label_ko": "법과정의당(PiS) 당대표 선거",
+      "label_en": "Law and Justice leadership",
+      "date": "없음",
+      "status": "없음",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "법과정의당 당대표 1인",
+      "notes": "2026년 당대표 교체 공고를 찾지 못함. 2026-03 전당에서 체르네크를 2027 총리 후보로 지명한 것은 당대표 선거가 아님.",
+      "sources": [
+        "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition"
+      ]
+    }
+  ]
+}

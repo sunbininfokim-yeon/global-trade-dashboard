@@ -1,3 +1,5 @@
+import PolicyEvidence from './New for anti/policy-evidence.js';
+
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
@@ -2615,7 +2617,7 @@ async function handleUsPolicy(request, env) {
 
     try {
         if (path === 'overview') {
-            return await kvCachedJson(env, 'us:overview:v1', US_TTL.overview,
+            return await kvCachedJson(env, 'us:overview:v2', US_TTL.overview,
                 () => usOverview(env));
         }
 
@@ -2629,14 +2631,14 @@ async function handleUsPolicy(request, env) {
 
         if (path === 'congress/bills') {
             const filter = usBillFilter(q);
-            return await kvCachedJson(env, `us:bills:v1:${filter.cacheKey}`, US_TTL.list,
+            return await kvCachedJson(env, `us:bills:v2:${filter.cacheKey}`, US_TTL.list,
                 () => usBillList(env, filter));
         }
 
         let m = path.match(/^congress\/bills\/(.+)$/);
         if (m) {
             const billId = decodeURIComponent(m[1]);
-            return await kvCachedJson(env, `us:bill:v1:${billId}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:bill:v3:${billId}`, US_TTL.detail,
                 () => usBillDetail(env, billId));
         }
 
@@ -2661,7 +2663,7 @@ async function handleUsPolicy(request, env) {
         if (path === 'congress/committees') {
             const id = q.get('committee_id');
             if (!id) return usError('committee_id is required', 400);
-            return await kvCachedJson(env, `us:committee:v1:${id}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:committee:v2:${id}`, US_TTL.detail,
                 () => usCommitteeDetail(env, id));
         }
 
@@ -2681,8 +2683,8 @@ async function handleUsPolicy(request, env) {
         if (path === 'search') {
             const filter = usSearchFilter(q);
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v2:${filter.cacheKey}`, US_TTL.search,
+            if (!filter.billRef && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
+            return await kvCachedJson(env, `us:search:v3:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -2719,7 +2721,7 @@ async function usFetch(env, table, query, { count } = {}) {
     const base = env.SUPABASE_URL.replace(/\/+$/, '');
     const headers = {
         apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
         Accept: 'application/json',
     };
     if (count) headers.Prefer = `count=${count}`;
@@ -2749,7 +2751,7 @@ async function usRpc(env, name, args) {
         method: 'POST',
         headers: {
             apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+            ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
@@ -2832,12 +2834,25 @@ async function geminiEmbedQuery(env, text) {
 function usSearchFilter(q) {
     const query = (q.get('q') || '').trim().slice(0, 200);
     const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
-    return { query, limit, cacheKey: `${query}|${limit}` };
+    const billRef = PolicyEvidence.parseBillQuery(query);
+    return { query, limit, billRef, cacheKey: `${query}|${limit}` };
 }
 
 // search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
+    if (f.billRef) {
+        const ref = f.billRef;
+        const query = new URLSearchParams({ select: 'bill_id,title,congress_number,bill_type,bill_number,congress_url,current_stage,origin_chamber,law_type,law_number,latest_action_date',
+            bill_type: `eq.${ref.type}`, bill_number: `eq.${ref.number}`, order: 'congress_number.desc', limit: String(f.limit) });
+        if (ref.congress) query.set('congress_number', `eq.${ref.congress}`);
+        const rows = await usFetch(env, 'bills', query.toString());
+        return { ok: true, body: { query: f.query, search_mode: 'bill_number', items: rows.map(r => ({
+            type: 'bill', id: r.bill_id, title: r.title, congress_number: r.congress_number,
+            bill_type: r.bill_type, bill_number: r.bill_number, current_stage: r.current_stage, origin_chamber: r.origin_chamber,
+            law_type: r.law_type, law_number: r.law_number, latest_action_date: r.latest_action_date, match_type: 'exact_bill_number', source_url: PolicyEvidence.billUrl(r.congress_number, r.bill_type, r.bill_number) || r.congress_url,
+        })) } };
+    }
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
@@ -2863,13 +2878,44 @@ async function usSearch(env, f) {
             `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
     }
-    const items = (rows || []).map((r) => ({
-        type: r.source_type,
-        id: r.source_id,
-        title: r.title,
-        similarity_score: r.similarity_score,
-        source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
-    }));
+    // search_policy_corpus (Supabase RPC, owned separately -- see
+    // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
+    // returns source_type/source_id/title/similarity_score: a 'bill' hit
+    // carries no signal for whether it's already a law or still moving
+    // through Congress. The policy UI groups results into enacted/pending
+    // blocks, so that needs law_number/current_stage -- fetched the same way
+    // regulationUrls is above, a follow-up lookup keyed by the RPC's own
+    // result ids rather than a change to the RPC itself.
+    const billIds = [...new Set((rows || [])
+        .filter((r) => r.source_type === 'bill')
+        .map((r) => r.source_id))];
+    const billMeta = new Map();
+    if (billIds.length) {
+        const billRows = await usFetch(env, 'bills',
+            `select=bill_id,congress_number,bill_type,bill_number,origin_chamber,current_stage,law_type,law_number,latest_action_date`
+            + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const b of billRows) billMeta.set(b.bill_id, b);
+    }
+    const items = (rows || []).map((r) => {
+        const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
+        return {
+            type: r.source_type,
+            id: r.source_id,
+            title: r.title,
+            similarity_score: r.similarity_score,
+            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            ...(bill ? {
+                congress_number: bill.congress_number,
+                bill_type: bill.bill_type,
+                bill_number: bill.bill_number,
+                origin_chamber: bill.origin_chamber,
+                current_stage: bill.current_stage,
+                law_type: bill.law_type,
+                law_number: bill.law_number,
+                latest_action_date: bill.latest_action_date,
+            } : {}),
+        };
+    });
     return { ok: true, body: { query: f.query, items } };
 }
 
@@ -2970,13 +3016,19 @@ async function usCoverage(env) {
 async function usOverview(env) {
     const [
         committees, agencies, policyAreas, cfrTitles,
-        billsPerCommittee, billsPerArea, eosPerAgency, regsPerTitle,
+        billsPerArea, eosPerAgency, regsPerTitle,
         committeeAgencyRows,
     ] = await Promise.all([
         // Top-level bodies only. Subcommittees belong to the committee screen,
         // and mixing them into the grid would bury the standing committees.
-        usFetch(env, 'committees',
-            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order'
+        // committee_directory (docs/policy-jec-crs-handoff-20260921.md) reads
+        // as `committees` but collapses a committee's alias codes (JEC's
+        // three source ids) into one row, with canonical_bill_count already
+        // deduplicated across them and source_committee_ids listing every
+        // code that row stands in for -- both needed below.
+        usFetch(env, 'committee_directory',
+            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order,'
+            + 'canonical_bill_count,source_committee_ids'
             + '&parent_committee_id=is.null&order=chamber.asc,name.asc&limit=500'),
         usFetch(env, 'agencies',
             'select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url'
@@ -2985,7 +3037,6 @@ async function usOverview(env) {
             'select=policy_area_id,name&active=is.true&order=name.asc&limit=200'),
         usFetch(env, 'cfr_titles',
             'select=title_number,title_name,reserved&order=title_number.asc&limit=50'),
-        usCountBy(env, 'bill_committees', 'committee_id'),
         usCountBy(env, 'bills', 'policy_area_id'),
         usCountBy(env, 'executive_order_agencies', 'agency_id'),
         usCountBy(env, 'regulation_cfr_references', 'title_number'),
@@ -3004,6 +3055,16 @@ async function usOverview(env) {
         const list = agencyNamesByCommittee.get(row.committee_id);
         if (list) list.push(name); else agencyNamesByCommittee.set(row.committee_id, [name]);
     }
+    // A jurisdiction row could be filed under any of a committee's alias
+    // codes, not just its canonical one, so this checks every code the
+    // canonical row stands in for and dedupes across them.
+    const agenciesFor = (c) => {
+        const names = new Set();
+        for (const sourceId of c.source_committee_ids?.length ? c.source_committee_ids : [c.committee_id]) {
+            for (const name of agencyNamesByCommittee.get(sourceId) || []) names.add(name);
+        }
+        return [...names];
+    };
 
     return {
         ok: true,
@@ -3017,8 +3078,8 @@ async function usOverview(env) {
                     committee_type: c.committee_type,
                     official_url: c.official_url,
                     jurisdiction_summary: c.jurisdiction_summary,
-                    bill_count: countOf(billsPerCommittee, c.committee_id),
-                    agencies: agencyNamesByCommittee.get(c.committee_id) || [],
+                    bill_count: c.canonical_bill_count ?? 0,
+                    agencies: agenciesFor(c),
                 })),
             },
             executive_overview: {
@@ -3086,11 +3147,29 @@ const BILL_LIST_COLUMNS = 'bill_id,congress_number,bill_type,bill_number,title,s
     + 'introduced_date,current_stage,current_status,latest_action_date,latest_action_text,'
     + 'congress_url,policy_area_id,detail_level';
 
+// A committee_id can be a JEC alias (jhje00/jsec00 -- see
+// docs/policy-jec-crs-handoff-20260921.md) whose bills are filed under any
+// of its three source codes. committee_identity resolves whichever id was
+// requested to its canonical form; committee_directory's source_committee_ids
+// then gives every code a bill list for that committee needs to search
+// across. A non-aliased committee resolves to itself as a one-element array,
+// so this is the same query shape for every committee, not a JEC special case.
+async function resolveCommitteeSourceIds(env, committeeId) {
+    const identityRows = await usFetch(env, 'committee_identity',
+        `select=canonical_committee_id&source_committee_id=eq.${encodeURIComponent(committeeId)}&limit=1`);
+    const canonicalId = identityRows[0]?.canonical_committee_id || committeeId;
+    const dirRows = await usFetch(env, 'committee_directory',
+        `select=source_committee_ids&committee_id=eq.${encodeURIComponent(canonicalId)}&limit=1`);
+    const sourceIds = dirRows[0]?.source_committee_ids;
+    return { canonicalId, sourceIds: sourceIds?.length ? sourceIds : [canonicalId] };
+}
+
 function usBillWhere(f) {
     const parts = [];
     // !inner turns the embed into a join filter, so this narrows bills rather
     // than merely attaching an empty bill_committees array to every row.
-    if (f.committeeId) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeId)}`);
+    if (f.committeeIds?.length === 1) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeIds[0])}`);
+    else if (f.committeeIds?.length) parts.push(`bill_committees.committee_id=in.(${f.committeeIds.map(encodeURIComponent).join(',')})`);
     if (f.policyAreaId) parts.push(`policy_area_id=eq.${encodeURIComponent(f.policyAreaId)}`);
     if (f.stages.length) parts.push(`current_stage=in.(${f.stages.join(',')})`);
     if (f.congress) parts.push(`congress_number=eq.${f.congress}`);
@@ -3098,8 +3177,10 @@ function usBillWhere(f) {
 }
 
 async function usBillList(env, f) {
-    const embed = f.committeeId ? ',bill_committees!inner(committee_id)' : '';
-    const where = usBillWhere(f);
+    const committeeIds = f.committeeId ? (await resolveCommitteeSourceIds(env, f.committeeId)).sourceIds : null;
+    const fIds = { ...f, committeeIds };
+    const embed = committeeIds ? ',bill_committees!inner(committee_id)' : '';
+    const where = usBillWhere(fIds);
     const query = [
         `select=${BILL_LIST_COLUMNS}${embed}`,
         where,
@@ -3111,8 +3192,8 @@ async function usBillList(env, f) {
     // Stage counts drive the tab badges and must ignore the stage filter itself,
     // otherwise every tab would report only its own total.
     const stageQuery = [
-        `select=current_stage,count()${f.committeeId ? ',bill_committees!inner(committee_id)' : ''}`,
-        usBillWhere({ ...f, stages: [] }),
+        `select=current_stage,count()${committeeIds ? ',bill_committees!inner(committee_id)' : ''}`,
+        usBillWhere({ ...fIds, stages: [] }),
     ].filter(Boolean).join('&');
 
     const [page, stageRows] = await Promise.all([
@@ -3158,10 +3239,10 @@ async function usBillDetail(env, billId) {
         usFetch(env, 'bills',
             `select=*,policy_areas(policy_area_id,name),`
             + `bill_summaries(action_date,action_description,version_code,summary_text),`
-            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
-            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_actions(bill_action_id,action_date,action_text,action_code,action_type,chamber,normalized_stage,source_url),`
+            + `bill_votes(vote_id,chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
             + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
-            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_committees(committee_id,activity_names,first_referred_at,last_activity_at,raw_source,committees(name,chamber,official_url)),`
             + `bill_subjects(legislative_subjects(subject_id,name))`
             + `&bill_id=eq.${id}&limit=1`),
         // !bill_relations_target_bill_id_fkey disambiguates from the other FK
@@ -3186,13 +3267,33 @@ async function usBillDetail(env, billId) {
     delete bill.raw_source;
     for (const v of bill.bill_text_versions || []) delete v.raw_source;
 
+    // A referral recorded against a JEC alias code (jhje00/jsec00) would
+    // otherwise show a chip whose data-id the committee grid no longer has a
+    // tile for (committee_directory collapsed it into jjec00) -- resolve
+    // every referred committee_id to its canonical form before building chips.
+    const referredIds = [...new Set((bill.bill_committees || []).map((bc) => bc.committee_id))];
+    const canonicalByReferredId = new Map();
+    if (referredIds.length) {
+        const identityRows = await usFetch(env, 'committee_identity',
+            `select=source_committee_id,canonical_committee_id&source_committee_id=in.(${referredIds.map((rid) => encodeURIComponent(rid)).join(',')})`)
+            .catch((err) => { console.log(`[us] committee_identity lookup unavailable: ${err.message}`); return []; });
+        for (const row of identityRows) canonicalByReferredId.set(row.source_committee_id, row.canonical_committee_id);
+    }
+
     bill.committees = (bill.bill_committees || []).map((bc) => ({
-        committee_id: bc.committee_id,
+        committee_id: canonicalByReferredId.get(bc.committee_id) || bc.committee_id,
+        activity_names: bc.activity_names || [],
+        activities: (bc.raw_source?.activities || []).map(a => ({ name: a.name, date: a.date || null })),
+        first_referred_at: bc.first_referred_at,
+        last_activity_at: bc.last_activity_at,
         name: bc.committees?.name,
         chamber: bc.committees?.chamber,
         official_url: bc.committees?.official_url,
     }));
     delete bill.bill_committees;
+
+    bill.lifecycle = PolicyEvidence.buildLifecycle(bill);
+    bill.congress_url = PolicyEvidence.billUrl(bill.congress_number, bill.bill_type, bill.bill_number) || bill.congress_url;
 
     bill.official_related_bills = shapeRelations(relations, false);
     bill.similar_bills = shapeRelations(relations, true);
@@ -3327,10 +3428,17 @@ async function usRegulationList(env, f) {
 // not in the schema yet, so the screen keeps its "위원장 정보 준비 중"
 // placeholder for those regardless.
 async function usCommitteeDetail(env, committeeId) {
-    const subcommittees = await usFetch(env, 'committees',
+    // committeeId may be a JEC alias code reached through an old link
+    // (jhje00/jsec00) -- resolve it to the canonical id the overview grid
+    // now uses (committee_directory) before looking up subcommittees, or a
+    // stale link would 404 against an id that no longer heads its own row.
+    const identityRows = await usFetch(env, 'committee_identity',
+        `select=canonical_committee_id&source_committee_id=eq.${encodeURIComponent(committeeId)}&limit=1`);
+    const canonicalId = identityRows[0]?.canonical_committee_id || committeeId;
+    const subcommittees = await usFetch(env, 'committee_directory',
         `select=committee_id,name,chamber,official_url`
-        + `&parent_committee_id=eq.${encodeURIComponent(committeeId)}&order=name.asc&limit=100`);
-    return { ok: true, body: { committee_id: committeeId, subcommittees } };
+        + `&canonical_parent_committee_id=eq.${encodeURIComponent(canonicalId)}&order=name.asc&limit=100`);
+    return { ok: true, body: { committee_id: canonicalId, requested_committee_id: committeeId, subcommittees } };
 }
 
 // The CFR title screen: regulations filed under the title, plus the executive

@@ -1,0 +1,52 @@
+# COPY this file to the repo root as:
+#   .github/workflows/elections_committees_quarterly.yml
+# Cursor/codex branches cannot land that path (ownership_guard). Claude owns
+# .github/workflows/**. See HANDOFF_CLAUDE_POLICY_USA_COMMITTEES.md.
+name: USA standing committee roster
+
+on:
+  schedule:
+    # 1st of Jan/Feb/Mar (Q1 monthly) and Apr/Jul/Oct (other quarter starts)
+    # at 10:00 UTC (19:00 KST). Existing contract: committees quarterly,
+    # monthly during Q1 organization.
+    - cron: '0 10 1 1,2,3,4,7,10 *'
+  workflow_dispatch:
+
+jobs:
+  refresh-usa-committees:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Parser tests
+        working-directory: New for anti/scripts/election_watch
+        run: python -m unittest tests.test_usa_committee_cards -v
+
+      - name: Fetch official rosters, join cards, rebuild board
+        run: bash "New for anti/scripts/election_watch/ci/run_usa_committees_quarterly.sh"
+
+      - name: Commit extracted roster, cards, and public board
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            "data/policy/committee-memberships.json" \
+            "New for anti/scripts/election_watch/config/extracted/usa_committees.json" \
+            "New for anti/scripts/election_watch/config/extracted/usa_committee_cards.json" \
+            "New for anti/public/data/elections_board_v1.json" \
+            "New for anti/public/data/elections_ui_manifest_v1.json"
+          git commit -m "chore: refresh USA standing committee leadership cards" || exit 0
+          git push

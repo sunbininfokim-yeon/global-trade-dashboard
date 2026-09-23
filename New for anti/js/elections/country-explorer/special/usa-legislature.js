@@ -1,4 +1,6 @@
 import { escapeHtml } from '../../ui.js';
+import { hemicycle, seatLegend } from './hemicycle.js';
+import { chamberSwitch } from './chamber-switch.js';
 
 // The 의회 screen is one fixed dashboard reused by both chambers -- 하원 and
 // 상원 differ only in the numbers behind it, which is also what
@@ -46,54 +48,6 @@ const seatEntries = (byParty) => Object.entries(byParty || {})
 
 const majorityAbbr = (byParty) => seatEntries(byParty)[0]?.[0] || null;
 const minorityAbbr = (byParty) => seatEntries(byParty)[1]?.[0] || null;
-
-// A Wikipedia-style hemicycle: seats spread over concentric arcs, each arc
-// holding a share proportional to its radius, then coloured left to right in
-// the order the groups are given. Seat position carries no meaning beyond the
-// grouping -- no member is bound to a dot.
-const hemicycle = (groups) => {
-    const total = groups.reduce((sum, group) => sum + group.count, 0);
-    if (!total) return '';
-    const rowCount = total > 300 ? 12 : total > 120 ? 8 : 5;
-    const radii = Array.from({ length: rowCount }, (_, index) => 42 + 58 * (rowCount === 1 ? 0 : index / (rowCount - 1)));
-    const weight = radii.reduce((sum, radius) => sum + radius, 0);
-    const perRow = radii.map((radius) => Math.max(1, Math.round((total * radius) / weight)));
-    for (let drift = total - perRow.reduce((a, b) => a + b, 0), i = perRow.length - 1; drift !== 0; i = (i - 1 + perRow.length) % perRow.length) {
-        const step = drift > 0 ? 1 : -1;
-        if (perRow[i] + step >= 1) { perRow[i] += step; drift -= step; }
-    }
-    const seats = [];
-    radii.forEach((radius, rowIndex) => {
-        const count = perRow[rowIndex];
-        for (let index = 0; index < count; index += 1) {
-            const t = count === 1 ? 0.5 : index / (count - 1);
-            seats.push({ t, rowIndex, radius });
-        }
-    });
-    seats.sort((a, b) => a.t - b.t || a.rowIndex - b.rowIndex);
-
-    let cursor = 0;
-    const dots = [];
-    groups.forEach((group) => {
-        for (let i = 0; i < group.count && cursor < seats.length; i += 1, cursor += 1) {
-            const seat = seats[cursor];
-            const angle = Math.PI * (1 - seat.t);
-            const x = (100 + seat.radius * Math.cos(angle)).toFixed(2);
-            const y = (104 - seat.radius * Math.sin(angle)).toFixed(2);
-            dots.push(`<circle cx="${x}" cy="${y}" r="2.1" fill="${group.color}"${group.stroke ? ` stroke="${group.stroke}" stroke-width="0.7"` : ''}/>`);
-        }
-    });
-    return `
-        <svg class="elections-hemicycle" viewBox="0 0 200 112" role="img" aria-label="${escapeHtml(`의석 ${total}석 정당별 분포`)}">
-            ${dots.join('')}
-            <text x="100" y="100" text-anchor="middle" class="elections-hemicycle-total">${total}</text>
-        </svg>`;
-};
-
-const seatLegend = (groups) => `
-    <div class="elections-seat-legend">
-        ${groups.map((group) => `<span class="elections-seat-legend-item"><i style="background:${group.color}"></i>${escapeHtml(`${group.label} ${group.count}석`)}</span>`).join('')}
-    </div>`;
 
 const chamberGroups = (chamber, summary) => {
     const byParty = chamber === 'house' ? summary.house_by_party : summary.senate_by_party;
@@ -157,10 +111,15 @@ const committeePanel = (chamber, committees) => {
     }
     const rows = committees.filter((row) => row.chamber === chamber);
     if (!rows.length) return '<p class="elections-muted">이 원의 상임위 목록이 비어 있습니다.</p>';
+    // chamber + name (not row.committee_id) travel to the handoff: this
+    // panel's own code scheme (election_watch's usa_committees.json) doesn't
+    // match Congress.gov's systemCode the policy module keys its committees
+    // on -- see openPolicyCommittee() in app.js for how the two get matched.
     return `<div class="elections-committee-chips">${rows.map((row) => `
         <button class="elections-committee-chip" type="button"
             data-election-action="policy-committee"
-            data-committee-id="${escapeHtml(row.committee_id)}"
+            data-chamber="${escapeHtml(row.chamber)}"
+            data-committee-name="${escapeHtml(row.name || '')}"
             title="${escapeHtml(row.name || '')}">${escapeHtml(row.short_name || row.name || row.committee_id)}</button>`).join('')}</div>
         <p class="elections-panel-note">누르면 정책 › 미국 › 상임위 화면으로 이동합니다.</p>`;
 };
@@ -307,20 +266,10 @@ export const usaLegislature = (country) => {
     };
     const summary = congress.summary;
 
-    // A CSS-only chamber switch: the modal body is inserted as static HTML, so
-    // the two panels ship together and the checked radio decides which shows.
-    // The radios stay focusable (clipped, not display:none) so arrow keys move
-    // between chambers the way a native tab list does.
     return `
-        <div class="elections-chamber-switch">
-            <input class="elections-chamber-radio" type="radio" name="elections-chamber" id="elections-chamber-house" checked>
-            <input class="elections-chamber-radio" type="radio" name="elections-chamber" id="elections-chamber-senate">
-            <div class="elections-chamber-tabs" role="tablist">
-                <label for="elections-chamber-house">하원 ${summary.house_voting_seats || ''}석</label>
-                <label for="elections-chamber-senate">상원 ${Object.values(summary.senate_by_party || {}).reduce((sum, value) => sum + value, 0) || ''}석</label>
-            </div>
-            <div class="elections-chamber-panel" data-chamber="house">${chamberPanel('house', ctx)}</div>
-            <div class="elections-chamber-panel" data-chamber="senate">${chamberPanel('senate', ctx)}</div>
-        </div>
+        ${chamberSwitch([
+        { label: `하원 ${summary.house_voting_seats || ''}석`, panel: chamberPanel('house', ctx) },
+        { label: `상원 ${Object.values(summary.senate_by_party || {}).reduce((sum, value) => sum + value, 0) || ''}석`, panel: chamberPanel('senate', ctx) },
+    ])}
         <p class="elections-panel-note">하원 정당 의석은 표결권 기준(현원 ${summary.house_voting_members} / ${summary.house_voting_seats}석)이며, DC·준주 대표단 ${Object.values(summary.house_delegates_by_party || {}).reduce((sum, value) => sum + value, 0)}명이 포함된 명부 ${summary.house_roster_rows_including_delegates}행과 합산하지 않습니다.</p>`;
 };

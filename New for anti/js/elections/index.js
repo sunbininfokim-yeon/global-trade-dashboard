@@ -1,8 +1,9 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js';
+import { createCountryExplorer } from './country-explorer/index.js?v=2';
 import { renderTimeline } from './timeline/index.js';
+import { briefKeyFor, openBrief } from './briefs/index.js';
 
 const state = createElectionState();
 let host = null;
@@ -20,15 +21,22 @@ const render = async () => {
     const current = state.get();
     if (current.mode === 'country' && current.iso3) {
         host.setPanels({ timeline: false, country: true, left: false, right: true });
-        explorer.showCountry(current.iso3);
+        // showCountry() is async (USA/CHN fetch a chart before building the
+        // shell) -- missing this await let openWorld()'s `await render()`
+        // resolve before `shell` existed, so a fresh load at a country+screen
+        // URL (/politics/USA/executive) called explorer.openScreen() while
+        // shell was still null and silently no-opped, dropping the screen.
+        await explorer.showCountry(current.iso3);
         return;
     }
     host.setPanels({ timeline: true, country: false, left: true, right: false });
     renderTimeline(host.roots.timeline, {
         calendar: bundle.calendar,
         countries: bundle.countries,
-        month: current.month,
-        onMonthChange: (month) => state.set({ month }),
+        // 브리핑을 그릴 수 있는 일정만 버튼이 된다. 창은 지도 위에 열리므로 왼쪽
+        // 일정 목록은 그대로 보인다 -- 누른 줄과 창이 같이 보인다.
+        briefFor: (event) => briefKeyFor(event, bundle),
+        onBriefOpen: (key, event) => openBrief(key, { bundle, modal: explorer.modal, event }),
     });
     await explorer.showWorld();
 };

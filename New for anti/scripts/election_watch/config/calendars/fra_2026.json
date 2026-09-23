@@ -1,7 +1,7 @@
 {
   "iso3": "FRA",
   "year": 2026,
-  "as_of": "2026-08-08",
+  "as_of": "2026-09-18",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -34,7 +34,10 @@
       "label_ko": "르네상스(여) 당대표/전당",
       "date": "불명",
       "status": "tentative",
-      "notes": "2026 확정 일정 불명 — 발표 시 채움"
+      "notes": "2026 확정 일정 불명 — 발표 시 채움",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "르네상스(여) 당대표/전당"
     },
     {
       "id": "fra-2026-rn-congres-19",
@@ -58,27 +61,10 @@
       "sources": [
         "https://rassemblementnational.fr/congres2026",
         "https://fr.wikipedia.org/wiki/XIXe_congr%C3%A8s_du_Rassemblement_national"
-      ]
-    },
-    {
-      "id": "fra-2026-presidential",
-      "type": "presidential",
-      "label_ko": "대선",
-      "date": "없음",
-      "status": "없음",
-      "sources": [
-        "wiki_national_calendar_2026"
-      ]
-    },
-    {
-      "id": "fra-2026-assemblee",
-      "type": "general",
-      "label_ko": "하원(Assemblée) 총선",
-      "date": "없음",
-      "status": "없음",
-      "sources": [
-        "wiki_national_calendar_2026"
-      ]
+      ],
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "국민연합(RN) 제19차 전당대회"
     },
     {
       "id": "fra-2026-municipal-r1",
@@ -88,7 +74,10 @@
       "status": "scheduled",
       "sources": [
         "wiki_elections_2026"
-      ]
+      ],
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "코뮌 의회·단체장"
     },
     {
       "id": "fra-2026-municipal-r2",
@@ -98,18 +87,26 @@
       "status": "scheduled",
       "sources": [
         "wiki_elections_2026"
-      ]
+      ],
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "코뮌 의회·단체장"
     },
     {
       "id": "fra-2026-senate",
       "type": "general",
       "label_ko": "상원(Sénat) 간선",
-      "date": "불명",
+      "date": "2026-09",
       "status": "scheduled",
       "notes": "2026년 9월 series 2; 일자 공고 전",
       "sources": [
         "wiki_national_calendar_2026"
-      ]
+      ],
+      "date_note": "2026년 9월 series 2. 일자 데크레 공고 전.",
+      "system_id": "fra-senate",
+      "level": "national",
+      "chamber": "senate",
+      "contested_ko": "상원 간선 (해당 series 改選분)"
     },
     {
       "id": "fra-2027-presidential",
@@ -121,7 +118,14 @@
       "sources": [
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 3
+      "market_significance_invest_lens": 3,
+      "system_id": "fra-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차+결선)",
+      "date_note": "2026년 회차 아님. Invest Lens 1차 4/11 결선 4/25.",
+      "first_round_date": "2027-04-11",
+      "runoff_date": "2027-04-25"
     },
     {
       "id": "fra-2027-assemblee",
@@ -133,7 +137,12 @@
       "sources": [
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 2
+      "market_significance_invest_lens": 2,
+      "system_id": "fra-assemblee",
+      "level": "national",
+      "chamber": "assemblee",
+      "contested_ko": "국민의회 의석 전원",
+      "date_note": "2026년 회차 아님. 대선 직후 실시 가정(Invest Lens)."
     }
   ]
 }

@@ -1,0 +1,1815 @@
+{
+  "schema": "elections_system_v1",
+  "as_of": "2026-09-19",
+  "null_policy": {
+    "없음": "해당 없음",
+    "불명": "미확정"
+  },
+  "note_ko": "국가 × 선거 종류 1행. 이벤트 행은 system_id 로만 참조한다. 필드명은 HANDOFF_CURSOR_ELECTION_BRIEF_SCHEMA.md 그대로.",
+  "sources": [
+    "https://www.house.gov/the-house-explained",
+    "https://www.senate.gov/senators/qualifications_termsofservice.htm",
+    "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/",
+    "https://www.bundeswahlleiterin.de/en/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html",
+    "https://im.baden-wuerttemberg.de/de/land-kommunen/lebendige-demokratie/wahlen/landtagswahl-2026"
+  ],
+  "systems": [
+    {
+      "id": "usa-house",
+      "iso3": "USA",
+      "type": "general",
+      "chamber": "house",
+      "name_ko": "미국 연방하원",
+      "name_en": "U.S. House of Representatives",
+      "term_years": 2,
+      "seats_total": 435,
+      "seats_note_ko": "투표권 있는 의석 435. 수도·자치령 대의원은 별도이며 본회의 표결권이 없다.",
+      "method_ko": "소선거구 최다득표 (FPTP)",
+      "method_detail_ko": "유권자는 자기 하원 선거구에서 후보 1명에게 1표를 던진다. 각 구에서 최다득표자가 당선되며 전국 득표율로 의석을 재배분하지 않는다. 알래스카·메인 등 일부 주는 순위선택투표를 쓴다. 2년마다 435석을 모두 뽑는다.",
+      "districts": {
+        "count": 435,
+        "kind_ko": "소선거구",
+        "geometry_asset": "public/data/congressional_districts/USA/"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "연방 일반규칙은 결선 없음. 조지아 등 일부 주는 과반 미달 시 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도의 선거인단 선거.",
+      "sources": [
+        "https://www.house.gov/the-house-explained",
+        "https://clerk.house.gov/member_info/electionInfo/2024election/"
+      ]
+    },
+    {
+      "id": "usa-senate",
+      "iso3": "USA",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "미국 연방상원",
+      "name_en": "U.S. Senate",
+      "term_years": 6,
+      "term_note_ko": "임기 6년. 2년마다 Class 1·2·3 중 한 묶음(약 33석)만 정기 改選. 공석은 주법에 따라 임명 또는 재보궐.",
+      "seats_total": 100,
+      "method_ko": "주 단위 최다득표 (주당 2인)",
+      "method_detail_ko": "각 주는 상원의원 2인을 둔다. 유권자는 그 주에서 改選 대상 좌석마다 후보에게 투표하고, 대부분 주는 최다득표자가 당선된다. 전국 비례 배분은 없다.",
+      "districts": {
+        "count": 50,
+        "kind_ko": "주 단위",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "연방 일반규칙은 결선 없음. 조지아 등은 과반 미달 시 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 부통령이 상원의장을 겸하지만 이 선거로 뽑지 않는다.",
+      "sources": [
+        "https://www.senate.gov/senators/qualifications_termsofservice.htm",
+        "https://www.senate.gov/senators/Class.htm"
+      ]
+    },
+    {
+      "id": "usa-president",
+      "iso3": "USA",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "미국 대통령 선거",
+      "name_en": "U.S. presidential election",
+      "term_years": 4,
+      "term_note_ko": "수정헌법 22조로 선출 임기는 2회로 제한. 2026년 대선은 없다.",
+      "seats_total": 1,
+      "method_ko": "주별 선거인단",
+      "method_detail_ko": "유권자는 주(및 DC)에서 선거인단 명부에 투표한다. 거의 모든 주는 주 전체 최다득표 명부가 그 주 선거인단을 전부 가져간다. 당선은 선거인단 과반(270/538). 전국 득표 1위가 반드시 당선되는 제도가 아니다.",
+      "districts": {
+        "count": 51,
+        "kind_ko": "주+DC 선거인단",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "선거인단 270",
+      "rounds": 1,
+      "runoff_rule_ko": "선거인단이 과반을 못 내면 하원이 주당 1표로 대통령을 뽑는다.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선에 가까운 선거인단 선거. 의회가 총리를 지명하는 방식이 아님.",
+      "sources": [
+        "https://www.archives.gov/electoral-college/about",
+        "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
+      ]
+    },
+    {
+      "id": "usa-governor",
+      "iso3": "USA",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "미국 주지사",
+      "name_en": "U.S. state governors",
+      "term_years": 4,
+      "term_note_ko": "50개 주 중 뉴햄프셔·버몬트만 임기 2년. 연임 제한은 주마다 다름.",
+      "seats_total": 50,
+      "method_ko": "주 단위 최다득표",
+      "method_detail_ko": "각 주 유권자가 그 주 지사 1인을 뽑는다. 연방 하원처럼 전국 비례는 없다. 2026년 11월 중간선거일과 겹치는 본선은 36개 주와 일부 자치령이다.",
+      "districts": {
+        "count": 50,
+        "kind_ko": "주",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "대부분 결선 없음. 일부 주는 과반 미달 시 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "주지사는 주 유권자 직선. 주 의회가 지명하지 않는다.",
+      "sources": [
+        "https://www.nga.org/governors/elections/"
+      ]
+    },
+    {
+      "id": "jpn-shugiin",
+      "iso3": "JPN",
+      "type": "general",
+      "chamber": "shugiin",
+      "name_ko": "일본 중의원",
+      "name_en": "House of Representatives",
+      "term_years": 4,
+      "term_note_ko": "임기 4년이나 해산이 있어 만료일이 곧 선거일은 아니다.",
+      "seats_total": 465,
+      "method_ko": "병립형 — 소선거구 289 + 비례대표 176",
+      "method_detail_ko": "유권자는 2표를 던진다. 소선거구 289석은 각 구 최다득표자, 비례대표 176석은 11개 권역 정당명부에서 뽑는다. 두 배분은 서로 연동되지 않는다(병립형). 중복입후보가 가능해 지역구에서 진 후보가 석패율로 비례 부활할 수 있다.",
+      "districts": {
+        "count": 289,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "내각총리대신은 국회가 지명하며 중의원 의결이 우선한다(헌법 67조).",
+      "sources": [
+        "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/",
+        "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf"
+      ]
+    },
+    {
+      "id": "jpn-sangiin",
+      "iso3": "JPN",
+      "type": "general",
+      "chamber": "sangiin",
+      "name_ko": "일본 참의원",
+      "name_en": "House of Councillors",
+      "term_years": 6,
+      "term_note_ko": "임기 6년. 3년마다 절반을 뽑는다. 해산 없다.",
+      "seats_total": 248,
+      "method_ko": "병립형 — 선거구 148 + 비례대표 100",
+      "method_detail_ko": "통상선거마다 124석을 뽑는다. 도도부현 선거구 74석(일부 합구)은 대선거구·최다득표, 비례 50석은 전국 정당명부(비구속 명부, 개인명 투표 가능)다. 중의원과 달리 내각 불신임으로 해산되지 않는다.",
+      "districts": {
+        "count": 45,
+        "kind_ko": "도도부현 선거구(일부 합구)",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "내각총리대신 지명은 중의원 의결이 우선한다. 참의원 단독으로 총리를 정하지 않는다.",
+      "sources": [
+        "https://www.soumu.go.jp/senkyo/27sansokuhou/index.html",
+        "https://www.sangiin.go.jp/japanese/gianjoho/old_gaiyo/218/2180000-1-n.pdf"
+      ]
+    },
+    {
+      "id": "jpn-prefecture-governor",
+      "iso3": "JPN",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "일본 도도부현 지사",
+      "name_en": "Prefectural governor",
+      "term_years": 4,
+      "seats_total": 47,
+      "method_ko": "도도부현 단위 최다득표",
+      "method_detail_ko": "각 도도부현 유권자가 지사 1인을 뽑는다. 해산 없이 임기 4년. 국정 총선과 같은 날이 될 수는 있으나 제도는 별개다.",
+      "districts": {
+        "count": 47,
+        "kind_ko": "도도부현",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "지사는 해당 도도부현 유권자 직선.",
+      "sources": [
+        "https://www.soumu.go.jp/senkyo/senkyo_s/data/chihou/index.html"
+      ]
+    },
+    {
+      "id": "deu-bundestag",
+      "iso3": "DEU",
+      "type": "general",
+      "chamber": "bundestag",
+      "name_ko": "독일 연방하원 (분데스탁)",
+      "name_en": "Bundestag",
+      "term_years": 4,
+      "seats_total": 630,
+      "seats_note_ko": "2023년 선거법 개정으로 초과의석·보정의석 폐지, 정수 630 고정",
+      "method_ko": "연동형 비례대표 (혼합비례)",
+      "method_detail_ko": "유권자는 2표를 던진다. 제1표(Erststimme)는 299개 지역구에서 최다득표자를 뽑고, 제2표(Zweitstimme)는 주별 정당명부에 던진다. 의석 총수 배분은 제2표 득표율만으로 정해지며, 지역구 당선자는 그 정당 몫 안에서 채워진다. 2023년 개정 이후 정당 몫을 넘긴 지역구 당선자는 의석을 받지 못한다.",
+      "districts": {
+        "count": 299,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "제2표 5% 이상 또는 지역구 3석 이상. 소수민족 정당(SSW)은 봉쇄조항 적용 제외.",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리(Bundeskanzler)는 연방하원이 선출한다. 직선 아님.",
+      "sources": [
+        "https://www.bundeswahlleiterin.de/en/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html",
+        "https://www.gesetze-im-internet.de/bwahlg/"
+      ]
+    },
+    {
+      "id": "deu-landtag-bw",
+      "iso3": "DEU",
+      "type": "local",
+      "chamber": "landtag",
+      "name_ko": "바덴뷔르템베르크 주의회",
+      "name_en": "Landtag of Baden-Württemberg",
+      "term_years": 5,
+      "seats_total": 120,
+      "seats_note_ko": "법정 정수 120(지역구 70 + 명부 50). 초과의석·보정의석으로 늘어날 수 있다. 2026년 확정 결과는 157석.",
+      "method_ko": "연동형 비례 (2022년 개정, 2026년 첫 적용)",
+      "method_detail_ko": "2022년 주헌법·주선거법 개정으로 유권자는 2표를 던진다. 제1표는 70개 지역구 최다득표자, 제2표는 정당 주명부. 총의석 배분은 제2표(생트라귀/셰퍼스)가 정하고, 5% 봉쇄를 넘긴 정당만 명부 의석을 받는다. 선거권 연령은 16세(피선거권은 18세).",
+      "districts": {
+        "count": 70,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "제2표 5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": false,
+      "head_selection_ko": "주지사(Ministerpräsident)는 주의회가 선출한다. 직선 아님.",
+      "sources": [
+        "https://im.baden-wuerttemberg.de/de/land-kommunen/lebendige-demokratie/wahlen/landtagswahl-2026",
+        "https://www.baden-wuerttemberg.de/de/service/presse/pressemitteilung/pid/endgueltiges-ergebnis-der-landtagswahl-2026",
+        "https://www.landtagswahl-bw.de/wahlrecht"
+      ]
+    },
+    {
+      "id": "deu-landtag-rlp",
+      "iso3": "DEU",
+      "type": "local",
+      "chamber": "landtag",
+      "name_ko": "라인란트팔츠 주의회",
+      "name_en": "Landtag of Rhineland-Palatinate",
+      "term_years": 5,
+      "seats_total": 101,
+      "method_ko": "연동형 비례",
+      "method_detail_ko": "유권자는 지역구 후보와 정당명부에 각각 투표한다. 주의회 정수 101. 주지사는 주의회가 선출한다.",
+      "threshold_ko": "5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "주지사는 주의회가 선출한다. 직선 아님.",
+      "sources": [
+        "https://www.bundeswahlleiterin.de/service/wahltermine.html",
+        "https://www.das-parlament.de/inland/bundeslaender/diese-fuenf-landtagswahlen-stehen-in-2026-an"
+      ]
+    },
+    {
+      "id": "deu-landtag-st",
+      "iso3": "DEU",
+      "type": "local",
+      "chamber": "landtag",
+      "name_ko": "작센안할트 주의회",
+      "name_en": "Landtag of Saxony-Anhalt",
+      "term_years": 5,
+      "seats_total": 97,
+      "method_ko": "연동형 비례",
+      "method_detail_ko": "유권자는 지역구 후보와 정당명부에 각각 투표한다. 주의회 정수 97. 주지사는 주의회가 선출한다.",
+      "threshold_ko": "5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "주지사는 주의회가 선출한다. 직선 아님.",
+      "sources": [
+        "https://www.bundeswahlleiterin.de/service/wahltermine.html",
+        "https://wahlen.sachsen-anhalt.de/zu-den-wahlen/landtagswahl/faq-zur-landtagswahl-2026"
+      ]
+    },
+    {
+      "id": "deu-landtag-berlin",
+      "iso3": "DEU",
+      "type": "local",
+      "chamber": "abgeordnetenhaus",
+      "name_ko": "베를린 주의회 (Abgeordnetenhaus)",
+      "name_en": "Abgeordnetenhaus of Berlin",
+      "term_years": 5,
+      "seats_total": 130,
+      "seats_note_ko": "법정 정수 130. 초과의석·보정의석으로 늘어날 수 있다.",
+      "method_ko": "연동형 비례",
+      "method_detail_ko": "베를린은 주이자 도시다. 유권자는 지역구 후보와 정당명부에 각각 투표한다. 시장(Regierender Bürgermeister)은 주의회가 선출한다.",
+      "threshold_ko": "5% 또는 직접의석 요건(주법)",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "베를린 시장은 주의회가 선출한다. 직선 아님.",
+      "sources": [
+        "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      ]
+    },
+    {
+      "id": "deu-landtag-mv",
+      "iso3": "DEU",
+      "type": "local",
+      "chamber": "landtag",
+      "name_ko": "메클렌부르크포어포메른 주의회",
+      "name_en": "Landtag of Mecklenburg-Vorpommern",
+      "term_years": 5,
+      "seats_total": 71,
+      "seats_note_ko": "법정 정수 71. 초과의석으로 늘어날 수 있다.",
+      "method_ko": "연동형 비례",
+      "method_detail_ko": "유권자는 지역구 후보와 정당명부에 각각 투표한다. 주지사는 주의회가 선출한다.",
+      "threshold_ko": "5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "주지사는 주의회가 선출한다. 직선 아님.",
+      "sources": [
+        "https://www.bundeswahlleiterin.de/service/wahltermine.html",
+        "https://www.landtag-mv.de/landtag/rund-um-wahlen/landtagswahl-2026"
+      ]
+    },
+    {
+      "id": "fra-senate",
+      "iso3": "FRA",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "프랑스 상원 (Sénat)",
+      "name_en": "Sénat",
+      "term_years": 6,
+      "term_note_ko": "임기 6년. 3년마다 시리즈 절반을 간선으로 改選.",
+      "seats_total": 348,
+      "method_ko": "지방 대의원 간선 (시리즈 절반 改選)",
+      "method_detail_ko": "일반 유권자가 아니라 시의원 대표 등 대의원(grands électeurs)이 뽑는다. 정수 348은 헌법상 상한. 의석 3석 이상 도는 비례, 1~2석은 다수결이며 같은 날 2라운드가 열릴 수 있다. 2026년 시리즈 2는 178석이다.",
+      "threshold_ko": "없음",
+      "rounds": 2,
+      "runoff_rule_ko": "다수결 도만 같은 날 2라운드. 비례 도는 1라운드.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령·하원 총선과 별개. 상원이 행정수반을 뽑지 않는다.",
+      "sources": [
+        "https://senatoriales2026.senat.fr/",
+        "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053925339"
+      ]
+    },
+    {
+      "id": "rus-duma",
+      "iso3": "RUS",
+      "type": "general",
+      "chamber": "duma",
+      "name_ko": "러시아 국가두마",
+      "name_en": "State Duma",
+      "term_years": 5,
+      "seats_total": 450,
+      "method_ko": "병립형 — 소선거구 225 + 연방명부 비례 225",
+      "method_detail_ko": "유권자는 지역구 후보와 정당 연방명부에 각각 투표한다. 225석은 단석 최다득표, 225석은 5% 봉쇄를 넘긴 정당 명부에 비례 배분하며 두 배분은 연동되지 않는다. 2026년은 대통령령상 선거일 9월 20일, 중앙선관위가 18–20일 3일 투표를 승인했다.",
+      "districts": {
+        "count": 225,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "연방명부 5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선. 총리 지명은 대통령이 하고 두마가 동의한다.",
+      "sources": [
+        "http://en.kremlin.ru/acts/news/80036",
+        "http://www.cikrf.ru/",
+        "https://tass.com/politics/1341997"
+      ]
+    },
+    {
+      "id": "kor-na",
+      "iso3": "KOR",
+      "type": "general",
+      "chamber": "national_assembly",
+      "name_ko": "대한민국 국회 (국회의원)",
+      "name_en": "National Assembly of the Republic of Korea",
+      "term_years": 4,
+      "seats_total": 300,
+      "seats_note_ko": "지역구 254 + 비례대표 46. 제22대(2024)부터 이 정수.",
+      "method_ko": "병립형 — 소선거구 254 + 비례 46",
+      "method_detail_ko": "유권자는 지역구 후보와 정당(비례)에 각각 한 표씩 던진다. 지역구 254석은 각 구 최다득표, 비례 46석은 정당투표 3% 이상(또는 지역구 5석 이상) 정당에 배분한다. 최근 총선에서는 위성정당이 비례 명부를 따로 냈다.",
+      "districts": {
+        "count": 254,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "비례 정당투표 3% 또는 지역구 5석",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선. 국무총리는 대통령이 지명하고 국회가 동의한다.",
+      "sources": [
+        "https://www.nec.go.kr/",
+        "https://info.nec.go.kr/",
+        "https://www.yna.co.kr/"
+      ]
+    },
+    {
+      "id": "kor-president",
+      "iso3": "KOR",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "대한민국 대통령 선거",
+      "name_en": "President of the Republic of Korea",
+      "term_years": 5,
+      "term_note_ko": "단임 5년. 2025년 조기 대선 이후 2026년 정기 대선은 없다.",
+      "seats_total": 1,
+      "method_ko": "전국 1인 최다득표 (결선 없음)",
+      "method_detail_ko": "유권자는 대통령 후보 1명에게 1표를 던진다. 최다득표자가 당선되며 과반이 아니어도 결선이 없다.",
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://www.nec.go.kr/",
+        "https://info.nec.go.kr/"
+      ]
+    },
+    {
+      "id": "kor-local",
+      "iso3": "KOR",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "전국동시지방선거",
+      "name_en": "Nationwide local elections",
+      "term_years": 4,
+      "seats_total": 16,
+      "seats_note_ko": "광역단체장 정수. 2026년은 전남·광주 통합으로 16곳. 기초단체장·광역·기초의원은 별도 정수이며 여기 합산하지 않는다.",
+      "method_ko": "광역·기초 단체장 최다득표, 의원은 소선거구·비례 병행",
+      "method_detail_ko": "같은 날 광역단체장·기초단체장·광역의원·기초의원·교육감을 뽑는다. 단체장은 해당 구역 최다득표. 의원은 지역구와 비례가 섞인다. 이 행의 seats_total 은 광역단체장만.",
+      "districts": {
+        "count": 16,
+        "kind_ko": "광역자치단체",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "광역·기초 단체장은 해당 지역 유권자 직선.",
+      "sources": [
+        "https://info.nec.go.kr/main/showDocument.xhtml?electionId=0020260603&secondMenuId=BIGI04&topMenuId=BI",
+        "https://en.yna.co.kr/view/AEN20260602008360315"
+      ]
+    },
+    {
+      "id": "fra-assemblee",
+      "iso3": "FRA",
+      "type": "general",
+      "chamber": "assemblee",
+      "name_ko": "프랑스 국민의회 (하원)",
+      "name_en": "Assemblée nationale",
+      "term_years": 5,
+      "seats_total": 577,
+      "method_ko": "소선거구 2라운드 다수결",
+      "method_detail_ko": "577개 선거구에서 각각 1인을 뽑는다. 1차에서 유효표 과반이면서 등록 유권자 25% 이상을 얻으면 당선. 아니면 일정 득표 후보가 같은 주 일요일 2차에 오르고, 2차는 최다득표자가 당선된다.",
+      "districts": {
+        "count": 577,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 당선: 유효표 과반 + 등록자 25%",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반·등록자 25% 미달 시 다음 주 일요일 2차. 2차는 최다득표.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선. 총리는 대통령이 임명한다.",
+      "sources": [
+        "https://www.archives-resultats-elections.interieur.gouv.fr/resultats/legislatives2024/ensemble_geographique/index.php",
+        "https://www.elections.interieur.gouv.fr/"
+      ]
+    },
+    {
+      "id": "fra-president",
+      "iso3": "FRA",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "프랑스 대통령 선거",
+      "name_en": "President of France",
+      "term_years": 5,
+      "term_note_ko": "5년 임기. 2027년 1차 4/11·결선 4/25이 다음 정기. 2026년 대선 없음.",
+      "seats_total": 1,
+      "method_ko": "2라운드 다수결",
+      "method_detail_ko": "1차에서 유효표 과반이면 당선. 아니면 상위 2인이 2주 뒤 결선에서 맞붙는다.",
+      "threshold_ko": "1차 유효표 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 상위 2인 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://www.elections.interieur.gouv.fr/"
+      ]
+    },
+    {
+      "id": "gbr-commons",
+      "iso3": "GBR",
+      "type": "general",
+      "chamber": "house_of_commons",
+      "name_ko": "영국 하원 (커먼스)",
+      "name_en": "House of Commons",
+      "term_years": 5,
+      "term_note_ko": "Dissolution and Calling of Parliament Act 2022 이후 최대 5년. 조기 해산 가능. 2026년 총선 일정 없음.",
+      "seats_total": 650,
+      "method_ko": "소선거구 최다득표 (FPTP)",
+      "method_detail_ko": "650개 선거구에서 각각 1인을 뽑는다. 각 구 최다득표자가 당선되며 전국 득표율로 의석을 재배분하지 않는다.",
+      "districts": {
+        "count": 650,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 하원에서 다수를 확보한 정당 대표가 국왕의 임명을 받는다. 직선 아님.",
+      "sources": [
+        "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026",
+        "https://commonslibrary.parliament.uk/research-briefings/cbp-10009/"
+      ]
+    },
+    {
+      "id": "gbr-holyrood",
+      "iso3": "GBR",
+      "type": "local",
+      "chamber": "scottish_parliament",
+      "name_ko": "스코틀랜드 의회 (홀리루드)",
+      "name_en": "Scottish Parliament",
+      "term_years": 5,
+      "seats_total": 129,
+      "method_ko": "추가의석제 (AMS) — 지역구 73 + 권역 56",
+      "method_detail_ko": "유권자는 지역구 후보와 권역 정당에 각각 투표한다. 73석은 소선거구 최다득표, 56석은 8개 권역에서 추가의석으로 비례를 보정한다. 과반은 65석.",
+      "districts": {
+        "count": 73,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "권역 봉쇄조항 없음 (의석 산술로만 배분)",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": false,
+      "head_selection_ko": "스코틀랜드 행정부 수반(First Minister)은 의회가 지명한다. 직선 아님.",
+      "sources": [
+        "https://www.parliament.scot/msps/elections/2026-election-results",
+        "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026"
+      ]
+    },
+    {
+      "id": "gbr-senedd",
+      "iso3": "GBR",
+      "type": "local",
+      "chamber": "senedd",
+      "name_ko": "웨일스 의회 (세네드)",
+      "name_en": "Senedd Cymru",
+      "term_years": 5,
+      "seats_total": 96,
+      "seats_note_ko": "2026년부터 정수 96(16개 선거구×6). 이전 주기는 60석 AMS였다.",
+      "method_ko": "폐쇄명부 비례 (2026년 개정)",
+      "method_detail_ko": "2026년 5월 7일부터 16개 선거구에서 정당 폐쇄명부로 각 6인을 뽑는다. 배분은 돈트. 유권자는 정당(또는 무소속)에 1표. 과반은 49석.",
+      "districts": {
+        "count": 16,
+        "kind_ko": "폐쇄명부 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": false,
+      "head_selection_ko": "웨일스 행정부 수반(First Minister)은 세네드가 지명한다. 직선 아님.",
+      "sources": [
+        "https://vote.wales/election-results/",
+        "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026"
+      ]
+    },
+    {
+      "id": "ind-lok-sabha",
+      "iso3": "IND",
+      "type": "general",
+      "chamber": "lok_sabha",
+      "name_ko": "인도 로크사바 (하원)",
+      "name_en": "Lok Sabha",
+      "term_years": 5,
+      "term_note_ko": "2024년 총선 이후. 2026년 로크사바 총선 일정 없음.",
+      "seats_total": 543,
+      "method_ko": "소선거구 최다득표 (FPTP)",
+      "method_detail_ko": "543개 의회선거구에서 각각 1인을 뽑는다. 각 구 최다득표자가 당선되며 전국 비례 재배분은 없다. 총리는 하원 다수 세력이 정한다.",
+      "districts": {
+        "count": 543,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 로크사바에서 다수를 입증한 사람이 대통령의 임명을 받는다. 직선 아님.",
+      "sources": [
+        "https://www.eci.gov.in/general-election-to-loksabha-2024-statistical-reports",
+        "https://results.eci.gov.in/"
+      ]
+    },
+    {
+      "id": "ind-rajya-sabha",
+      "iso3": "IND",
+      "type": "general",
+      "chamber": "rajya_sabha",
+      "name_ko": "인도 라지야사바 (상원)",
+      "name_en": "Rajya Sabha",
+      "term_years": 6,
+      "term_note_ko": "임기 6년. 2년마다 약 1/3이 주 의회 간선으로 갈린다. 12석은 대통령 지명.",
+      "seats_total": 245,
+      "method_ko": "주 의회 간선 (단일양도성)",
+      "method_detail_ko": "일반 유권자가 아니라 주 입법의회 의원이 단일양도성투표(STV)로 뽑는다. 정수 245 중 233이 주·연방직할지 할당, 12은 대통령 지명. 각 묶음(롤)마다 만료 좌석 수가 다르다.",
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 총리·대통령을 이 선거로 뽑지 않는다.",
+      "sources": [
+        "https://www.eci.gov.in/"
+      ]
+    },
+    {
+      "id": "bra-president",
+      "iso3": "BRA",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "브라질 대통령 선거",
+      "name_en": "President of Brazil",
+      "term_years": 4,
+      "seats_total": 1,
+      "method_ko": "2라운드 다수결",
+      "method_detail_ko": "1차에서 유효표 과반이면 당선. 아니면 상위 2인이 3주 뒤(10월 마지막 일요일) 결선에서 맞붙는다. 16–17세와 70세 이상은 임의, 18–70세는 의무투표.",
+      "threshold_ko": "1차 유효표 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 10월 마지막 일요일 결선.",
+      "voting_age": 16,
+      "compulsory": true,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/100-das-secoes-totalizadas-confira-como-ficou-o-quadro-eleitoral-apos-o-2o-turno",
+        "https://dadosabertos.tse.jus.br/"
+      ]
+    },
+    {
+      "id": "bra-chamber",
+      "iso3": "BRA",
+      "type": "general",
+      "chamber": "chamber_of_deputies",
+      "name_ko": "브라질 연방하원",
+      "name_en": "Câmara dos Deputados",
+      "term_years": 4,
+      "seats_total": 513,
+      "method_ko": "주 단위 개방명부 비례",
+      "method_detail_ko": "유권자는 하원 후보(또는 정당)에 투표한다. 주(연방구)별로 개방명부 비례로 513석을 배분하며 결선이 없다. 대선·주지사·상원과 같은 날 1차에 뽑는다.",
+      "districts": {
+        "count": 27,
+        "kind_ko": "주·연방구 명부",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "조항장벽(cláusula de barreira)은 정당 존속·공적 재원 기준이며 의석 산술과 별개",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": true,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://www.tse.jus.br/eleicoes/tabela-com-a-representatividade-dos-partidos-politicos-e-das-federacoes-na-camara-dos-deputados-e-no-senado-federal",
+        "https://dadosabertos.tse.jus.br/"
+      ]
+    },
+    {
+      "id": "bra-senate",
+      "iso3": "BRA",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "브라질 연방상원",
+      "name_en": "Senado Federal",
+      "term_years": 8,
+      "term_note_ko": "임기 8년. 4년마다 주당 1석 또는 2석을 갈라 뽑는다. 주당 정수 3, 전국 81.",
+      "seats_total": 81,
+      "method_ko": "주 단위 최다득표 (1인 또는 2인)",
+      "method_detail_ko": "각 주·연방구는 상원의원 3인. 총선 주기마다 1인(1/3) 또는 2인(2/3)을 최다득표로 뽑는다. 결선 없음.",
+      "districts": {
+        "count": 27,
+        "kind_ko": "주·연방구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": true,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://www.tse.jus.br/eleicoes/tabela-com-a-representatividade-dos-partidos-politicos-e-das-federacoes-na-camara-dos-deputados-e-no-senado-federal"
+      ]
+    },
+    {
+      "id": "twn-president",
+      "iso3": "TWN",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "총통 선거",
+      "name_en": "Presidential election",
+      "term_years": 4,
+      "term_note_ko": "취임일은 5월 20일. 2024년 당선자 임기는 2028-05-20까지.",
+      "seats_total": 1,
+      "method_ko": "상대다수 1차 (결선 없음)",
+      "method_detail_ko": "유권자는 총통·부총통 러닝메이트 1조에 1표를 던진다. 최다득표 조가 당선되며 과반을 요구하지 않는다. 입법위원 선거와 같은 날 치르는 것이 관례다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선. 행정원장은 총통이 임명한다.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Taiwanese_presidential_election",
+        "https://focustaiwan.tw/politics/202303100014"
+      ]
+    },
+    {
+      "id": "twn-ly",
+      "iso3": "TWN",
+      "type": "general",
+      "chamber": "legislative_yuan",
+      "name_ko": "입법위원 선거",
+      "name_en": "Legislative Yuan",
+      "term_years": 4,
+      "seats_total": 113,
+      "seats_note_ko": "지역구 73 + 비례 34 + 원주민 6.",
+      "method_ko": "병립형 (지역구 최다득표 + 정당명부 비례)",
+      "method_detail_ko": "유권자는 지역구 후보 1표와 정당명부 1표를 던진다. 지역구 73석은 소선거구 최다득표, 비례 34석은 정당득표로 배분한다. 원주민 6석은 별도 선거구.",
+      "districts": {
+        "count": 73,
+        "kind_ko": "소선거구+비례+원주민",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "정당명부 5%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 총통은 별도 선거.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Taiwanese_legislative_election"
+      ]
+    },
+    {
+      "id": "twn-local",
+      "iso3": "TWN",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "지방공직인원 선거 (구합일)",
+      "name_en": "Local elections (nine-in-one)",
+      "term_years": 4,
+      "seats_total": 11051,
+      "seats_note_ko": "2026-08-20 중앙선관위 공고: 이번 회차 선출 공직 11,051명. 회차마다 수가 달라질 수 있다.",
+      "method_ko": "직위별 최다득표 (동시)",
+      "method_detail_ko": "같은 날 직할시·현시장, 시의원, 향진장, 향진민대표, 이장 등 아홉 종류를 뽑는다. 유권자는 자기 주소지의 해당 직위마다 투표한다. 전국 비례 배분은 없다.",
+      "districts": {
+        "count": 8906,
+        "kind_ko": "지방 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "각 지방 행정수반은 해당 직위 직선. 총통 선거가 아님.",
+      "sources": [
+        "https://focustaiwan.tw/politics/202608200010",
+        "https://www.cna.com.tw/news/aipl/202608200078.aspx"
+      ]
+    },
+    {
+      "id": "pol-president",
+      "iso3": "POL",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "폴란드 대통령 선거",
+      "name_en": "President of Poland",
+      "term_years": 5,
+      "seats_total": 1,
+      "method_ko": "2라운드 절대다수",
+      "method_detail_ko": "유권자는 대통령 후보 1명에게 1표를 던진다. 1차에서 과반을 얻은 후보가 없으면 상위 2인이 결선에 오른다. 임기 5년, 연임 1회.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 상위 2인 결선",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선. 총리는 세임 다수 연립이 구성한다.",
+      "sources": [
+        "https://wybory.gov.pl/index/",
+        "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
+      ]
+    },
+    {
+      "id": "pol-sejm",
+      "iso3": "POL",
+      "type": "general",
+      "chamber": "sejm",
+      "name_ko": "폴란드 세임 (하원)",
+      "name_en": "Sejm",
+      "term_years": 4,
+      "term_note_ko": "대통령이 공고. 조기 해산이 있으면 만료일 전에 총선이 열릴 수 있다.",
+      "seats_total": 460,
+      "method_ko": "정당명부 비례 (돌트법)",
+      "method_detail_ko": "유권자는 지역구 명부의 후보에게 1표를 던진다. 의석은 정당 득표에 비례해 배분되고, 개인 득표가 명부 순위를 가른다. 상원 100석은 같은 날 별도 소선거구로 뽑는다.",
+      "districts": {
+        "count": 41,
+        "kind_ko": "다인 지역구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "정당 5%, 연합 8% (소수민족 예외)",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 세임이 승인하는 내각. 대통령 직선과 별개.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sejm",
+        "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election"
+      ]
+    },
+    {
+      "id": "pol-senate",
+      "iso3": "POL",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "폴란드 상원",
+      "name_en": "Senate of Poland",
+      "term_years": 4,
+      "seats_total": 100,
+      "method_ko": "소선거구 최다득표",
+      "method_detail_ko": "100개 상원 선거구에서 각 1인을 최다득표로 뽑는다. 세임과 같은 날 치르지만 비례 배분은 없다.",
+      "districts": {
+        "count": 100,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Senate_of_Poland"
+      ]
+    },
+    {
+      "id": "pol-local",
+      "iso3": "POL",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "폴란드 지방자치 선거",
+      "name_en": "Local government elections",
+      "term_years": 5,
+      "term_note_ko": "현 임기 2024–2029. 전국 동시 회차는 총리가 공고한다.",
+      "seats_total": 2477,
+      "seats_note_ko": "2024년 그미나(면) 수. 의원·단체장 정수 합계가 아니다. 합산하지 말 것.",
+      "method_ko": "계층별 의회 비례 + 단체장 결선",
+      "method_detail_ko": "유권자는 자기 면·군·주 의회와 단체장에 투표한다. 단체장은 과반 미달 시 결선. 2024-04-07이 직전 전국 회차.",
+      "districts": {
+        "count": 2477,
+        "kind_ko": "그미나 등 지방단위",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "불명",
+      "rounds": 2,
+      "runoff_rule_ko": "단체장 1차 과반 미달 시 결선",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "단체장은 직선. 총리·대통령과 별개.",
+      "sources": [
+        "https://wybory.gov.pl/index/"
+      ]
+    },
+    {
+      "id": "usa-house-special",
+      "iso3": "USA",
+      "type": "by_election",
+      "chamber": "house",
+      "name_ko": "미국 연방하원 재보궐",
+      "name_en": "U.S. House special election",
+      "term_years": 2,
+      "term_note_ko": "잔여임기만 채운다. 주 법률로 예비·본선·결선 일정이 달라진다.",
+      "seats_total": 1,
+      "seats_note_ko": "공석 1석마다 별도 선거. 정수는 하원 435의 부분집합.",
+      "method_ko": "해당 선거구 최다득표 (주법 결선 가능)",
+      "method_detail_ko": "공석이 난 하원 선거구에서 잔여임기 의원을 뽑는다. 연방 일반규칙은 최다득표이며 일부 주는 결선을 둔다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "해당 하원 선거구",
+        "geometry_asset": "public/data/congressional_districts/USA/"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "주법에 따름. 조지아 등은 과반 미달 시 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음",
+      "sources": [
+        "https://www.fec.gov/help-candidates-and-committees/dates-and-deadlines/"
+      ]
+    },
+    {
+      "id": "gbr-england-local",
+      "iso3": "GBR",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "잉글랜드 지방선거",
+      "name_en": "English local elections",
+      "term_years": 4,
+      "term_note_ko": "의회마다 전원 改選·3분의1 改選 주기가 다르다.",
+      "seats_total": 1,
+      "seats_note_ko": "한 날의 잉글랜드 지방선거 묶음. 의석 합계가 아니며 합산하지 말 것. 대상 의회는 Electoral Commission 2026 key dates.",
+      "method_ko": "대체로 소선거구 최다득표",
+      "method_detail_ko": "잉글랜드 지방의원과 일부 시장은 보통 최다득표로 뽑는다. 같은 날의 스코틀랜드 의회·세네드는 별도 제도 행이다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "지방 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 총리는 하원.",
+      "sources": [
+        "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026"
+      ]
+    },
+    {
+      "id": "can-commons",
+      "iso3": "CAN",
+      "type": "general",
+      "chamber": "house_of_commons",
+      "name_ko": "캐나다 하원",
+      "name_en": "House of Commons of Canada",
+      "term_years": 4,
+      "seats_total": 343,
+      "method_ko": "소선거구 최다득표 (FPTP)",
+      "method_detail_ko": "유권자는 자기 선거구에서 후보 1명에게 1표를 던진다. 각 구 최다득표자가 당선되며 전국 득표율로 의석을 재배분하지 않는다. 2025 총선부터 정수 343.",
+      "districts": {
+        "count": 343,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 하원에서 다수를 확보한 정당 대표가 총독의 임명을 받는다. 직선 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/House_of_Commons_of_Canada",
+        "https://en.wikipedia.org/wiki/46th_Canadian_federal_election"
+      ],
+      "term_note_ko": "최대 약 4년. Canada Elections Act가 최후 투표일을 정하고, 그 전에 해산할 수 있다."
+    },
+    {
+      "id": "can-local",
+      "iso3": "CAN",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "캐나다 주의회",
+      "name_en": "Provincial legislatures",
+      "term_years": 4,
+      "seats_total": 127,
+      "method_ko": "소선거구 최다득표 (주마다 다름)",
+      "method_detail_ko": "각 주가 자기 의회를 뽑는다. 이 보드의 2026 행은 퀘벡 주의회 127석이다. 연방 하원이 아님. 정수 127은 퀘벡 2026 회차이지 전 주 합계가 아니다.",
+      "districts": {
+        "count": 127,
+        "kind_ko": "퀘벡 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 총리는 연방 하원.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Quebec_general_election"
+      ],
+      "seats_note_ko": "퀘벡 2026 회차 127석. 전 주 합산 금지."
+    },
+    {
+      "id": "mex-president",
+      "iso3": "MEX",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "멕시코 대통령 선거",
+      "name_en": "President of Mexico",
+      "term_years": 6,
+      "seats_total": 1,
+      "method_ko": "전국 상대다수 (결선 없음)",
+      "method_detail_ko": "유권자는 대통령 후보 1명에게 1표를 던진다. 최다득표자가 당선된다. 임기 6년, 재선 없음.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2024_Mexican_general_election",
+        "https://www.ine.mx/"
+      ],
+      "term_note_ko": "단임 6년. 2024-06-02 다음 정기 대선은 2030년 6월 주기."
+    },
+    {
+      "id": "mex-deputies",
+      "iso3": "MEX",
+      "type": "general",
+      "chamber": "deputies",
+      "name_ko": "멕시코 하원",
+      "name_en": "Chamber of Deputies",
+      "term_years": 3,
+      "seats_total": 500,
+      "method_ko": "하원 500석 (3년)",
+      "method_detail_ko": "유권자는 하원의원을 뽑는다. 2027-06-06 회차는 500석 전원. 상원·대선과 주기가 다르다.",
+      "districts": {
+        "count": 500,
+        "kind_ko": "하원 선거구·비례 (세부는 헌법 50–70조)",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election",
+        "https://en.wikipedia.org/wiki/Chamber_of_Deputies_(Mexico)"
+      ]
+    },
+    {
+      "id": "mex-senate",
+      "iso3": "MEX",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "멕시코 상원",
+      "name_en": "Senate of the Republic",
+      "term_years": 6,
+      "seats_total": 128,
+      "method_ko": "상원 128석 (6년)",
+      "method_detail_ko": "상원의원 128인을 6년 임기로 뽑는다. 대선과 같은 6년 주기. 2027 중간선거에는 상원이 없다.",
+      "districts": {
+        "count": 128,
+        "kind_ko": "주·비례",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Senate_of_the_Republic_(Mexico)"
+      ]
+    },
+    {
+      "id": "arg-president",
+      "iso3": "ARG",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "아르헨티나 대통령 선거",
+      "name_en": "President of Argentina",
+      "term_years": 4,
+      "seats_total": 1,
+      "method_ko": "결선 (45% 또는 40%+10%p)",
+      "method_detail_ko": "대통령·부통령을 한 표로 뽑는다. 1차에서 45% 이상, 또는 40% 이상이면서 2위와 10%p 이상 차이면 당선. 아니면 결선.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 당선: 45%, 또는 40%이면서 2위와 10%p",
+      "rounds": 2,
+      "runoff_rule_ko": "1차가 45% 미달이면서 (40%+10%p)도 못 채우면 결선.",
+      "voting_age": 16,
+      "compulsory": true,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Argentina"
+      ],
+      "term_note_ko": "의무투표는 18–70세. 참정 연령은 16세부터."
+    },
+    {
+      "id": "arg-deputies",
+      "iso3": "ARG",
+      "type": "general",
+      "chamber": "deputies",
+      "name_ko": "아르헨티나 하원",
+      "name_en": "Chamber of Deputies",
+      "term_years": 4,
+      "seats_total": 257,
+      "method_ko": "정당명부 비례 (주 단위)",
+      "method_detail_ko": "하원 257인을 주(및 연방수도) 다인 선거구 정당명부로 뽑는다. 2년마다 약 절반이 改選된다. 상원 72석은 별도.",
+      "districts": {
+        "count": 24,
+        "kind_ko": "주·연방수도 다인 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 16,
+      "compulsory": true,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Argentine_Chamber_of_Deputies"
+      ],
+      "seats_note_ko": "하원 정수 257. 한 회차 改選분은 이보다 적다. 합산하지 말 것."
+    },
+    {
+      "id": "chl-president",
+      "iso3": "CHL",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "칠레 대통령 선거",
+      "name_en": "President of Chile",
+      "term_years": 4,
+      "seats_total": 1,
+      "method_ko": "2라운드 절대다수",
+      "method_detail_ko": "1차에서 과반을 얻은 후보가 없으면 상위 2인이 결선에 오른다. 2025년은 11월 16일 1차, 12월 14일 결선.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 상위 2인 결선.",
+      "voting_age": 18,
+      "compulsory": true,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election",
+        "https://en.wikipedia.org/wiki/Elections_in_Chile"
+      ],
+      "term_note_ko": "투표는 의무. 자동 등록."
+    },
+    {
+      "id": "chl-deputies",
+      "iso3": "CHL",
+      "type": "general",
+      "chamber": "deputies",
+      "name_ko": "칠레 하원",
+      "name_en": "Chamber of Deputies",
+      "term_years": 4,
+      "seats_total": 155,
+      "method_ko": "정당명부 비례",
+      "method_detail_ko": "하원 155석을 뽑는다. 상원 50석 중 일부는 같은 날 改選. 2025년은 하원 전원과 상원 23석.",
+      "districts": {
+        "count": 155,
+        "kind_ko": "하원 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": true,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election",
+        "https://en.wikipedia.org/wiki/Chamber_of_Deputies_of_Chile"
+      ],
+      "seats_note_ko": "하원 정수 155. 상원 50과 합산하지 말 것."
+    },
+    {
+      "id": "col-president",
+      "iso3": "COL",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "콜롬비아 대통령 선거",
+      "name_en": "President of Colombia",
+      "term_years": 4,
+      "seats_total": 1,
+      "method_ko": "2라운드 절대다수",
+      "method_detail_ko": "1차에서 과반을 얻은 후보가 없으면 상위 2인이 결선에 오른다. 2026년은 5월 31일 1차, 6월 21일 결선. 연임 금지.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 상위 2인 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ]
+    },
+    {
+      "id": "col-chamber",
+      "iso3": "COL",
+      "type": "general",
+      "chamber": "chamber",
+      "name_ko": "콜롬비아 하원",
+      "name_en": "Chamber of Representatives",
+      "term_years": 4,
+      "seats_total": 183,
+      "method_ko": "비례대표 (지역구 등)",
+      "method_detail_ko": "2026 의회선거 페이지: 하원 183, 상원 103(전국 100+원주민 2+대선 차점 1). Elections in Colombia 문서는 하원 162·상원 102로 적어 병기한다. 이 행의 정수는 2026 회차 페이지를 따른다.",
+      "districts": {
+        "count": 183,
+        "kind_ko": "하원 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election",
+        "https://en.wikipedia.org/wiki/Congress_of_Colombia"
+      ],
+      "seats_note_ko": "하원 183(2026 회차 페이지). 다른 위키 요약은 162. 상원과 합산하지 말 것."
+    },
+    {
+      "id": "ita-chamber",
+      "iso3": "ITA",
+      "type": "general",
+      "chamber": "chamber",
+      "name_ko": "이탈리아 하원",
+      "name_en": "Chamber of Deputies",
+      "term_years": 5,
+      "seats_total": 400,
+      "method_ko": "양원 총선 (하원 400·선출 상원 200)",
+      "method_detail_ko": "하원 400석(국내 392 + 재외 8)과 선출 상원 200석을 같은 총선에서 뽑는다. 대통령은 이 선거로 뽑지 않는다.",
+      "districts": {
+        "count": 400,
+        "kind_ko": "하원 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 의회 다수. 대통령은 양원 합동 간선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Italy",
+        "https://en.wikipedia.org/wiki/Chamber_of_Deputies_(Italy)"
+      ],
+      "term_note_ko": "최대 약 5년. 2022-09-25 다음 법정 최후 2027-12-22."
+    },
+    {
+      "id": "aus-house",
+      "iso3": "AUS",
+      "type": "general",
+      "chamber": "house",
+      "name_ko": "호주 하원",
+      "name_en": "House of Representatives",
+      "term_years": 3,
+      "seats_total": 150,
+      "method_ko": "하원 순위선택 + 상원 비례(절반)",
+      "method_detail_ko": "하원 150석은 소선거구 순위선택투표. 상원 76석 중 약 절반을 같은 연방 총선에서 뽑는다. 투표는 의무.",
+      "districts": {
+        "count": 150,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": true,
+      "head_selection_ko": "총리는 하원. 국가원수는 군주·총독.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Australian_federal_election",
+        "https://www.aec.gov.au/elections/"
+      ],
+      "term_note_ko": "하원 최대 3년. 다음 연방 총선 법정 최후 2028-05-20(하원+반수 상원)."
+    },
+    {
+      "id": "aus-local",
+      "iso3": "AUS",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "호주 주의회",
+      "name_en": "State parliaments",
+      "term_years": 4,
+      "seats_total": 47,
+      "method_ko": "주 하원 소선거구 (주마다 다름)",
+      "method_detail_ko": "각 주가 자기 의회를 뽑는다. 이 보드의 2026 행은 사우스오스트레일리아 하원 47석이다. 연방 하원이 아님.",
+      "districts": {
+        "count": 47,
+        "kind_ko": "SA 하원 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": true,
+      "head_selection_ko": "없음. 총리는 연방 하원.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_South_Australian_state_election"
+      ],
+      "seats_note_ko": "SA 2026 하원 47. 전 주 합산 금지."
+    },
+    {
+      "id": "tha-house",
+      "iso3": "THA",
+      "type": "general",
+      "chamber": "house",
+      "name_ko": "태국 하원",
+      "name_en": "House of Representatives",
+      "term_years": 4,
+      "seats_total": 500,
+      "method_ko": "소선거구 400 + 나머지 정당명부",
+      "method_detail_ko": "하원 500인 중 400인은 소선거구, 나머지는 정당명부. 투표는 의무. 상원은 이 직선 하원과 별개(임명·선별).",
+      "districts": {
+        "count": 400,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": true,
+      "head_selection_ko": "총리는 의회에서 나온다. 국가원수는 국왕.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/House_of_Representatives_(Thailand)",
+        "https://en.wikipedia.org/wiki/Elections_in_Thailand"
+      ],
+      "seats_note_ko": "정수 500. 400이 소선거구."
+    },
+    {
+      "id": "phl-president",
+      "iso3": "PHL",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "필리핀 대통령 선거",
+      "name_en": "President of the Philippines",
+      "term_years": 6,
+      "seats_total": 1,
+      "method_ko": "전국 상대다수 (결선 없음)",
+      "method_detail_ko": "대통령과 부통령을 각각 직선한다. 임기 6년, 대통령 재선 없음. 하원·상원 일부·지방과 같은 날이 관례.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election",
+        "https://en.wikipedia.org/wiki/Elections_in_the_Philippines"
+      ]
+    },
+    {
+      "id": "phl-house",
+      "iso3": "PHL",
+      "type": "general",
+      "chamber": "house",
+      "name_ko": "필리핀 하원",
+      "name_en": "House of Representatives",
+      "term_years": 3,
+      "seats_total": 317,
+      "method_ko": "지역구 + 정당명부 (3년)",
+      "method_detail_ko": "하원의원 임기 3년. 2025 중간선거 페이지는 하원 317석이라고 적는다. 상원 24석 중 12석을 3년마다 뽑는다.",
+      "districts": {
+        "count": 317,
+        "kind_ko": "지역구+정당명부",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Philippine_general_election",
+        "https://en.wikipedia.org/wiki/House_of_Representatives_of_the_Philippines"
+      ],
+      "seats_note_ko": "2025 회차 페이지의 317. 회차마다 달라질 수 있음. 상원과 합산하지 말 것."
+    },
+    {
+      "id": "phl-local",
+      "iso3": "PHL",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "필리핀 지방·자치구 선거",
+      "name_en": "Local and BARMM elections",
+      "term_years": 3,
+      "seats_total": 78,
+      "method_ko": "지방 단체장·의회 (BARMM 포함)",
+      "method_detail_ko": "주지사·시장 등과 방사모로 의회를 뽑는다. 2026-09-14 행은 방사모로 의회 80석 중 78석이다. 전국 하원이 아님.",
+      "districts": {
+        "count": 78,
+        "kind_ko": "방사모로 지구·정당·부문",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election"
+      ],
+      "seats_note_ko": "BARMM 2026 회차 78. 전국 지방 합산 금지."
+    },
+    {
+      "id": "mys-dewan-rakyat",
+      "iso3": "MYS",
+      "type": "general",
+      "chamber": "dewan_rakyat",
+      "name_ko": "말레이시아 하원",
+      "name_en": "Dewan Rakyat",
+      "term_years": 5,
+      "seats_total": 222,
+      "method_ko": "소선거구 최다득표",
+      "method_detail_ko": "하원 222인을 소선거구 최다득표로 뽑는다. 총리는 하원에서 나온다. 상원(Dewan Negara)은 이 직선이 아니다.",
+      "districts": {
+        "count": 222,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리는 하원. 국가원수는 국왕.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dewan_Rakyat",
+        "https://en.wikipedia.org/wiki/Next_Malaysian_general_election"
+      ],
+      "term_note_ko": "최대 5년. 다음 총선은 2028년 2월 이전."
+    },
+    {
+      "id": "mys-local",
+      "iso3": "MYS",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "말레이시아 주의회",
+      "name_en": "State legislative assemblies",
+      "term_years": 5,
+      "seats_total": 56,
+      "method_ko": "소선거구 최다득표",
+      "method_detail_ko": "각 주가 자기 주의회를 뽑는다. 이 보드의 2026 행은 조호르 56석이다. 연방 하원이 아님.",
+      "districts": {
+        "count": 56,
+        "kind_ko": "조호르 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Johor_state_election"
+      ],
+      "seats_note_ko": "조호르 2026 회차 56. 전 주 합산 금지."
+    },
+    {
+      "id": "vnm-na",
+      "iso3": "VNM",
+      "type": "general",
+      "chamber": "national_assembly",
+      "name_ko": "베트남 국회",
+      "name_en": "National Assembly of Vietnam",
+      "term_years": 5,
+      "seats_total": 500,
+      "method_ko": "국회 직선 (조국전선 추천)",
+      "method_detail_ko": "국회 500인을 5년 임기로 뽑는다. 후보는 공산당이 이끄는 조국전선이 사전 추천한다. 복수 정당 경쟁이 아니다. 국가주석은 국회가 선출한다.",
+      "districts": {
+        "count": 500,
+        "kind_ko": "국회 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음 (복수 정당 봉쇄조항 해당 없음)",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "국가주석은 국회 선출. 유권자 직선 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/National_Assembly_of_Vietnam",
+        "https://en.wikipedia.org/wiki/Elections_in_Vietnam"
+      ]
+    },
+    {
+      "id": "idn-president",
+      "iso3": "IDN",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "인도네시아 대통령 선거",
+      "name_en": "President of Indonesia",
+      "term_years": 5,
+      "seats_total": 1,
+      "method_ko": "2라운드 절대다수",
+      "method_detail_ko": "대통령·부통령 러닝메이트를 직선한다. 1차 과반 미달 시 결선. 2024년 본선은 2월 14일, 취임 10월 20일.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 상위 2조 결선.",
+      "voting_age": 17,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2024_Indonesian_general_election",
+        "https://www.kpu.go.id/"
+      ],
+      "term_note_ko": "5년. 2024 다음 전국 주기는 2029년. KPU 일자 공고 전."
+    },
+    {
+      "id": "idn-dpr",
+      "iso3": "IDN",
+      "type": "general",
+      "chamber": "dpr",
+      "name_ko": "인도네시아 하원 (DPR)",
+      "name_en": "People's Representative Council",
+      "term_years": 5,
+      "seats_total": 580,
+      "method_ko": "공개명부 비례 (DPR) + DPD 별도",
+      "method_detail_ko": "DPR 580인을 비례로 뽑고, DPD는 별도 지역대표 원이다. 2024년은 대선과 같은 날. 2024 DPD는 152석이라고 Elections in Indonesia가 적는다. 이 행의 정수는 DPR 580이며 DPD와 합산하지 않는다.",
+      "districts": {
+        "count": 580,
+        "kind_ko": "DPR 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 17,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/House_of_Representatives_(Indonesia)",
+        "https://en.wikipedia.org/wiki/Elections_in_Indonesia"
+      ],
+      "seats_note_ko": "DPR 580. DPD 152(2024)와 합산하지 말 것."
+    },
+    {
+      "id": "tur-president",
+      "iso3": "TUR",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "튀르키예 대통령 선거",
+      "name_en": "President of Turkey",
+      "term_years": 5,
+      "seats_total": 1,
+      "method_ko": "2라운드 절대다수",
+      "method_detail_ko": "1차에서 과반을 얻은 후보가 없으면 결선. 다음 정기 1차의 법정 최후는 2028-05-14이며 의회 선거와 같은 총선 해다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "1차 과반",
+      "rounds": 2,
+      "runoff_rule_ko": "1차 과반 미달 시 결선.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Turkish_presidential_election"
+      ]
+    },
+    {
+      "id": "tur-assembly",
+      "iso3": "TUR",
+      "type": "general",
+      "chamber": "assembly",
+      "name_ko": "튀르키예 대국민의회",
+      "name_en": "Grand National Assembly",
+      "term_years": 5,
+      "seats_total": 600,
+      "method_ko": "폐쇄명부 비례 (동트)",
+      "method_detail_ko": "600인을 5년 임기 폐쇄명부 비례(동트)로 뽑는다. 다음 정기 법정 최후는 2028-05-07.",
+      "districts": {
+        "count": 600,
+        "kind_ko": "정당명부",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "불명",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey",
+        "https://en.wikipedia.org/wiki/Next_Turkish_parliamentary_election"
+      ],
+      "seats_note_ko": "정수 600. 봉쇄조항 숫자는 이 수집에서 확정하지 못함 → 불명."
+    },
+    {
+      "id": "zaf-na",
+      "iso3": "ZAF",
+      "type": "general",
+      "chamber": "national_assembly",
+      "name_ko": "남아프리카공화국 국민의회",
+      "name_en": "National Assembly",
+      "term_years": 5,
+      "seats_total": 400,
+      "method_ko": "정당명부 비례",
+      "method_detail_ko": "국민의회 400인을 정당명부 비례로 뽑는다. 절반은 주 명부, 절반은 전국 명부로 비례를 맞춘다. 대통령은 의회가 선출한다.",
+      "districts": {
+        "count": 400,
+        "kind_ko": "정당명부",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "대통령은 국민의회가 선출. 유권자 직선 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/National_Assembly_(South_Africa)",
+        "https://en.wikipedia.org/wiki/Elections_in_South_Africa"
+      ]
+    },
+    {
+      "id": "zaf-local",
+      "iso3": "ZAF",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "남아프리카공화국 지방정부선거",
+      "name_en": "Local Government Elections",
+      "term_years": 5,
+      "seats_total": 1,
+      "method_ko": "지방 의회·와드",
+      "method_detail_ko": "지방정부 의원·와드를 뽑는다. 2026-11-04가 IEC가 공고한 투표일이다. 이 행의 seats_total 1은 한 회의 묶음이지 의석 합계가 아니다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "지방 선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 국민의회.",
+      "sources": [
+        "https://www.elections.org.za/pw/"
+      ],
+      "seats_note_ko": "한 날의 지방선거 묶음. 의석 합계가 아니며 합산하지 말 것."
+    },
+    {
+      "id": "nga-president",
+      "iso3": "NGA",
+      "type": "presidential",
+      "chamber": "없음",
+      "name_ko": "나이지리아 대통령 선거",
+      "name_en": "President of Nigeria",
+      "term_years": 4,
+      "seats_total": 1,
+      "method_ko": "전국 다수 + 주 분산 요건",
+      "method_detail_ko": "대통령을 직선한다. 임기 4년. 다음 주기는 2027년 2월 계열. INEC 일자 공고 전.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "불명",
+      "rounds": 2,
+      "runoff_rule_ko": "헌법상 결선·재투표 요건이 있다. 세부 숫자는 이 수집에서 확정하지 못함 → notes.",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/List_of_next_general_elections",
+        "https://en.wikipedia.org/wiki/Elections_in_Nigeria"
+      ],
+      "term_note_ko": "직전 본선 2023-02. 분산 요건(주 득표)의 정확한 숫자는 공고·원문을 못 열어 불명으로 둔다."
+    },
+    {
+      "id": "nga-house",
+      "iso3": "NGA",
+      "type": "general",
+      "chamber": "house",
+      "name_ko": "나이지리아 하원",
+      "name_en": "House of Representatives",
+      "term_years": 4,
+      "seats_total": 360,
+      "method_ko": "하원 소선거구 + 상원 주당 3인",
+      "method_detail_ko": "하원 360인은 소선거구 최다득표. 상원 109인(주당 3 + 수도 1)은 별도. 대선과 같은 주기에 뽑는다.",
+      "districts": {
+        "count": 360,
+        "kind_ko": "소선거구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/National_Assembly_(Nigeria)"
+      ],
+      "seats_note_ko": "하원 360. 상원 109와 합산하지 말 것."
+    },
+    {
+      "id": "mex-local",
+      "iso3": "MEX",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "멕시코 주지사 등 주 선거",
+      "name_en": "Mexican state elections",
+      "term_years": 6,
+      "seats_total": 1,
+      "seats_note_ko": "한 날의 주 선거 묶음. 의석·주 수 합계가 아니며 합산하지 말 것. 2027-06-06은 하원 중간과 동시.",
+      "method_ko": "주 단위 단체장·주의회",
+      "method_detail_ko": "각 주가 자기 지사·주의회를 뽑는다. 연방 하원 중간선거와 같은 날이 될 수 있다. 이 행은 2027 회차 위키 페이지의 동시 주 선거를 가리키며, 대상 주 전수는 여기 합산하지 않는다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "주",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "없음",
+      "rounds": 1,
+      "runoff_rule_ko": "불명",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "주지사는 해당 주 직선. 대통령과 별개.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election"
+      ]
+    }
+  ]
+}

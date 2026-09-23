@@ -13,6 +13,10 @@ Cursor `cursor/*` 브랜치는 `ownership_guard.yml` 때문에 `.github/workflow
 2. `main`에 merge. 이후 매월 1일 10:00 UTC cron + `workflow_dispatch`.
 3. UI는 아직 `executive_live.core` + `cabinet`만 읽는다. 수석·위원회는  
    `executive_live.white_house` 에 있다. 카드가 필요하면 그 객체를 읽으면 된다.  
+   주제별 보좌관(NSA·차르·특사·신앙)은  
+   `executive_live.white_house.topical_advisors` — 상세는 `HANDOFF_CLAUDE_ELECTIONS_WH_ADVISORS.md`.  
+   「명단 수집 예정」 칸은 `executive_live.white_house.office_status` — `HANDOFF_CLAUDE_ELECTIONS_WH_VACANCIES.md`.  
+   `vacant: true`만 공석. 이름 없는 공식 페이지는 미확인이지 공석이 아니다.  
    `app.js` 하드코딩 국가 목록은 만들지 말 것.
 
 ## 잡이 하는 일
@@ -34,6 +38,8 @@ python3 build_ui_manifest.py
 ## 커밋되는 파일
 
 - `scripts/election_watch/config/extracted/usa_eop.json`
+- `scripts/election_watch/config/extracted/usa_wh_topical_advisors.json`
+- `scripts/election_watch/config/extracted/usa_wh_office_status.json`
 - `scripts/election_watch/config/extracted/tier12_executives.json`
 - `scripts/election_watch/config/extracted/usa_eop_refresh_report_v1.json`
 - `public/data/elections_board_v1.json`

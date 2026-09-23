@@ -18,7 +18,7 @@
     referred: '회부',
     subcommittee: '소위',
     committee_consideration: '위원회 심사',
-    reported: '상임위 통과',
+    reported: '상임위 보고',
     passed_origin_chamber: '본회의 통과',
     second_chamber: '상대원 심사',
     resolving_differences: '양원 조정',
@@ -31,23 +31,13 @@
 
   const CHAMBER_LABELS = { house: '하원', senate: '상원', joint: '합동' };
 
-  // The pipeline a US bill walks, in order. Several schema stages collapse
-  // into one step (a bill sitting in subcommittee has not cleared committee
-  // yet, so both read as 발의·회부), which keeps the rail to seven steps
-  // instead of thirteen.
-  const STAGE_FLOW = [
-    { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-    { label: '상임위 통과', stages: ['reported'] },
-    { label: '본회의 통과', stages: ['passed_origin_chamber'] },
-    { label: '상대원 심사', stages: ['second_chamber'] },
-    { label: '양원 조정', stages: ['resolving_differences'] },
-    { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
-    { label: '법률 제정', stages: ['enacted'] },
-  ];
-
-  // Ends that are not a point on the rail: the bill stopped instead of
-  // advancing, so they hang off the end of whatever it did reach.
-  const TERMINAL_LABELS = { vetoed: '거부', failed: '부결' };
+  // Use the same evidence contract as ingestion and the API.
+  const TERMINAL_LABELS = { vetoed: '거부권 행사', failed: '부결' };
+  function resolveBillStage(bill) {
+    const lifecycle = bill.lifecycle || window.PolicyEvidence.buildLifecycle(bill);
+    const stageFlow = lifecycle.steps;
+    return { lifecycle, stageFlow, currentIndex: stageFlow.findIndex(s => s.id === lifecycle.current.step_id) };
+  }
 
   const esc = (value) => {
     if (value === null || value === undefined) return '';
@@ -65,7 +55,7 @@
   const STAGE_TAB_DEFS = [
     { label: '전체 보기', stages: [] },
     { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-    { label: '상임위 통과/보고', stages: ['reported'] },
+    { label: '상임위 보고', stages: ['reported'] },
     { label: '발의원 본회의 통과', stages: ['passed_origin_chamber'] },
     { label: '상대원 심사', stages: ['second_chamber'] },
     { label: '양원 조정', stages: ['resolving_differences'] },
@@ -128,6 +118,32 @@
   };
 
   const loadOverview = () => (overviewPromise ||= api('/overview'));
+
+  // Chair/ranking-member/agency-jurisdiction/official-URL for the USA
+  // standing committees don't come from the /congress API at all -- they're
+  // pre-joined onto the election board by the election_watch pipeline
+  // (Clerk XML + Senate CVC + House Rule X/Senate Rule XXV agency rows,
+  // never a client-side guess) and read from there once, the same static
+  // fetch js/elections/data/core-service.js already uses for the board.
+  // See scripts/election_watch/HANDOFF_CLAUDE_POLICY_USA_COMMITTEES.md.
+  let committeeCardsPromise = null;
+  const loadCommitteeCards = () => {
+    if (!committeeCardsPromise) {
+      committeeCardsPromise = fetch('/public/data/elections_board_v1.json', { cache: 'no-store' })
+        .then((res) => {
+          if (!res.ok) throw new Error(`elections_board_v1.json (${res.status})`);
+          return res.json();
+        })
+        .then((board) => {
+          const usa = (board.countries || []).find((c) => c.iso3 === 'USA');
+          const cards = usa?.ui_ready?.congress?.standing_committee_cards || null;
+          const list = cards?.standing || [...(cards?.house || []), ...(cards?.senate || [])];
+          return { urlTemplates: cards?.url_templates || null, byId: new Map(list.map((c) => [c.committee_id, c])) };
+        })
+        .catch(() => ({ urlTemplates: null, byId: new Map() }));
+    }
+    return committeeCardsPromise;
+  };
 
   const loadBillList = (params) => cached(
     billListCache, `${params.committee_id || ''}|${params.policy_area_id || ''}|${params.stage || ''}`,
@@ -196,14 +212,64 @@
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
 
-  const SEARCH_TYPE_LABELS = { bill: '법안', executive_order: 'EO', regulation: '규정' };
   const SEARCH_TYPE_VIEWS = { bill: 'bill', executive_order: 'eo' };
 
-  const searchResultRow = (item) => {
+  // search_policy_corpus's source_type ('bill'/'executive_order'/'regulation')
+  // doesn't say whether a bill is already law -- that split is invisible in
+  // the raw type, so a mixed result list used to read as one undifferentiated
+  // pile: no way to tell an enacted law from a bill still in committee from
+  // an EO at a glance. usSearch (_worker.js) enriches bill hits with
+  // law_number/current_stage; searchGroupKey turns that into the four
+  // buckets a reader actually asks about.
+  const SEARCH_GROUPS = [
+    { key: 'enacted', cls: 'is-enacted', label: '제정법안', badgeLabel: '법률' },
+    { key: 'pending', cls: 'is-pending', label: '발의법안', badgeLabel: '법안' },
+    { key: 'executive_order', cls: 'is-eo', label: '행정명령', badgeLabel: 'EO' },
+    { key: 'regulation', cls: 'is-regulation', label: '규정', badgeLabel: '규정' },
+  ];
+  const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
+
+  const searchGroupKey = (item) => (item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
+
+  // Groups in a fixed order, and drops any group with no hits for this query
+  // -- three blocks most of the time, a fourth only when a regulation result
+  // actually turned up, rather than an empty "규정" column every search.
+  function groupSearchItems(items) {
+    const buckets = new Map();
+    for (const item of items) {
+      const key = searchGroupKey(item);
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(item);
+    }
+    return SEARCH_GROUPS
+      .map((def) => ({ ...def, items: buckets.get(def.key) || [] }))
+      .filter((g) => g.items.length);
+  }
+
+  // Only a bill has anything worth a second line here: an enacted one cites
+  // its public/private law number, a pending one its own bill number and
+  // current stage. EO/regulation rows stay title-only, same as before.
+  const searchResultMeta = (item) => {
+    if (item.type !== 'bill') return '';
+    const cite = billNumberLabel({ ...item, bill_id: item.id });
+    if (item.law_number) {
+      const lawLabel = `${item.law_type === 'private' ? '사법' : '공법'} ${item.law_number}`;
+      return item.latest_action_date ? `${lawLabel} · ${item.latest_action_date}` : lawLabel;
+    }
+    return `${cite} · ${stageLabel(item.current_stage)}`;
+  };
+
+  // opts.compact drops the meta line for the header dropdown, which has no
+  // room for it -- the full search page (viewSearch below) keeps it.
+  const searchResultRow = (item, opts = {}) => {
+    const group = SEARCH_GROUP_BY_KEY.get(searchGroupKey(item));
     const view = SEARCH_TYPE_VIEWS[item.type];
-    const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
-    const body = `<span class="policy-search-result-type">${esc(typeLabel)}</span>
-        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>`;
+    const meta = !opts.compact ? searchResultMeta(item) : '';
+    const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
+        <span class="policy-search-result-body">
+          <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
+          ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
+        </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
@@ -217,6 +283,16 @@
     return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
   };
 
+  const searchGroupBlock = (group, opts = {}) => `
+    <section class="policy-search-group">
+      <div class="policy-search-group-head ${group.cls}">
+        <span class="policy-search-group-dot ${group.cls}" aria-hidden="true"></span>
+        <span class="policy-search-group-label">${esc(group.label)}</span>
+        <span class="policy-search-group-count">${group.items.length}건</span>
+      </div>
+      <div class="policy-search-group-rows">${group.items.map((item) => searchResultRow(item, opts)).join('')}</div>
+    </section>`;
+
   function renderSearchMessage(message) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;
@@ -229,7 +305,7 @@
     if (!box) return;
     if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
     if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
-    box.innerHTML = body.items.map(searchResultRow).join('');
+    box.innerHTML = groupSearchItems(body.items).map((g) => searchGroupBlock(g, { compact: true })).join('');
     box.hidden = false;
   }
 
@@ -316,36 +392,22 @@
 
   // "어디까지 갔나"를 한눈에. How far a bill got is not the same question as
   // what stage it is in now -- a vetoed bill's current_stage is off the rail
-  // entirely -- so reached steps come from the action history's
-  // normalized_stage, with the current stage folded in for bills whose
-  // history has not been backfilled.
+  // entirely -- so this is driven by resolveBillStage's furthest-reached
+  // computation (action history + a chamber's own recorded floor votes),
+  // not by current_stage alone.
   const stageRail = (bill) => {
-    const reached = new Set((bill.bill_actions || []).map((a) => a.normalized_stage).filter(Boolean));
-    if (bill.current_stage) reached.add(bill.current_stage);
-
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
-    let furthest = currentIndex;
-    STAGE_FLOW.forEach((step, i) => {
-      if (step.stages.some((s) => reached.has(s))) furthest = Math.max(furthest, i);
-    });
-
-    const steps = STAGE_FLOW.map((step, i) => {
-      const current = i === currentIndex;
-      const done = !current && i <= furthest;
-      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}">
-                <span class="policy-stage-step-dot" aria-hidden="true"></span>
-                <span class="policy-stage-step-label">${esc(step.label)}</span>
-              </li>`;
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const steps = stageFlow.map((step, i) => {
+      const observed = step.state === 'observed';
+      const evidence = step.evidence.at(-1);
+      const title = evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
+      return `<li class="policy-stage-step${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
-
-    const terminal = TERMINAL_LABELS[bill.current_stage]
-      ? `<li class="policy-stage-step is-terminal is-current">
-           <span class="policy-stage-step-dot" aria-hidden="true"></span>
-           <span class="policy-stage-step-label">${esc(TERMINAL_LABELS[bill.current_stage])}</span>
-         </li>`
-      : '';
-
-    return `<ol class="policy-stage-rail" aria-label="${esc('입법 단계')}">${steps}${terminal}</ol>`;
+    const alert = lifecycle.procedural_alert;
+    return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(alert.label)} — 법안 통과 여부와 별도입니다.</p>` : ''}
+      <p class="policy-notice">${esc(lifecycle.note)}</p>
+      ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
 
   /* ------------------------------------------------------------ favorites */
@@ -466,9 +528,35 @@
         </button>`).join('')}</div>`
     : empty('목록 준비 중'));
 
-  const committeeTiles = (overview, chamber) => tileGrid(
+  // usOverview only ever returns top-level bodies (parent_committee_id is
+  // null server-side), so committee_type alone says which bucket a row
+  // belongs in -- reliable as of the 2026-09-21 committee hierarchy repair
+  // (docs/policy-committee-repair-20260921.md, PR #342), which corrected the
+  // 53 rows this screen reads and put a DB trigger in front of them so
+  // future syncs can't quietly re-break it. An earlier version of this
+  // classified by matching committee names against a hand-written regex
+  // list; Codex's review of that PR found the regexes didn't match the
+  // DB's actual names at all (e.g. "Aging (Special) Committee" never matched
+  // /special committee on aging/i), so this uses the type field instead.
+  const COMMITTEE_KIND_BY_TYPE = {
+    standing: 'standing',
+    select: 'select',
+    special: 'select',
+    joint: 'joint',
+    commission_or_caucus: 'other',
+    caucus: 'other',
+    other: 'other',
+  };
+
+  // A type this map doesn't recognize (a new one the repair didn't
+  // anticipate, or a row the repair hasn't reached yet) must not silently
+  // read as "standing" -- that was the original bug. It gets its own bucket
+  // instead, so a real gap stays visible rather than being miscounted.
+  const committeeKind = (c) => COMMITTEE_KIND_BY_TYPE[c.committee_type] || 'unknown';
+
+  const committeeTiles = (overview, chamber, kind) => tileGrid(
     (overview?.congress_overview?.committees || [])
-      .filter((c) => c.chamber === chamber)
+      .filter((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind)
       .map((c) => ({
         view: 'committee', id: c.committee_id, full: c.name,
         label: fit(committeeLabel(c.name), c.short_name),
@@ -509,39 +597,89 @@
         </a>
       </li>`).join('')}</ul>`;
 
-  const leaderRow = (label, person, placeholder) => `
+  // `person` is a standing_committee_cards chair/ranking_member row when
+  // present ({ name, member_office_url, ... }) -- linked straight to the
+  // Clerk/bioguide URL the pipeline already resolved, never assembled from a
+  // lastname guess client-side.
+  const leaderRow = (label, person, placeholder) => {
+    const url = person?.member_office_url || person?.bioguide_url || null;
+    const value = person?.name
+      ? (url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(person.name)}</a>` : esc(person.name))
+      : esc(placeholder);
+    return `
     <div class="policy-leader">
       <span class="policy-leader-label">${esc(label)}</span>
-      <span class="policy-leader-value${person ? '' : ' is-placeholder'}">${esc(person?.name || placeholder)}</span>
+      <span class="policy-leader-value${person?.name ? '' : ' is-placeholder'}">${value}</span>
     </div>`;
+  };
 
   /* ---------------------------------------------------------------- views */
 
   // Branch level -- the committees and the CRS policy areas, each a way in.
+  // House/Senate standing committees get their own cards, separate from
+  // each chamber's select/special committees; a card only appears when that
+  // bucket actually has something in it, so a chamber with none in the data
+  // doesn't show an empty box.
   function viewCongress(_id, overview) {
-    const hasJoint = (overview?.congress_overview?.committees || []).some((c) => c.chamber === 'joint');
+    const committees = overview?.congress_overview?.committees || [];
+    const has = (chamber, kind) => committees.some((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind);
     return shell(`
-      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house'))}
-      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate'))}
-      ${hasJoint ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles(overview, 'joint')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'standing'))}
+      ${has('house', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'select')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'standing'))}
+      ${has('senate', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'select')) : ''}
+      ${has(null, 'joint') ? card(`합동위원회`, committeeTiles(overview, null, 'joint')) : ''}
+      ${has(null, 'other') ? card(`기타 기구`, committeeTiles(overview, null, 'other')) : ''}
+      ${has(null, 'unknown') ? card(`미확인 유형`, committeeTiles(overview, null, 'unknown')) : ''}
       ${collapsibleCard('crs', 'CRS 정책분야', policyAreaTiles(overview), (overview?.policy_areas || []).length)}
     `);
   }
 
   function viewCommittee(committeeId, overview, extra) {
-    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === committeeId);
+    // extra.detail.committee_id is the canonical id _worker.js resolved
+    // committeeId to (identical to committeeId unless committeeId is an old
+    // alias, e.g. one of JEC's three source codes) -- the overview list only
+    // ever carries the canonical row, so an alias must resolve through this
+    // or every old bookmarked/shared committee link "disappears".
+    const resolvedId = extra?.detail?.committee_id || committeeId;
+    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId);
     if (!listed) return shell(empty('위원회를 찾을 수 없습니다'));
 
-    const { detail, billPage } = extra;
+    const { detail, billPage, card: committeeCard } = extra;
 
-    const leadership = `
-      ${leaderRow('위원장', null, '위원장 정보 준비 중')}
-      ${leaderRow('간사', null, '간사 정보 준비 중')}`;
+    // committeeCard is the pre-joined standing_committee_cards row (chair/
+    // ranking_member/agencies/committee_url straight from Clerk XML + Senate
+    // CVC + Rule X/XXV) when this committee is one of the 20 House + 16
+    // Senate standing committees it covers. Select/joint committees outside
+    // that set have no card -- placeholders stay placeholders rather than
+    // guessing, exactly as before this pipeline existed.
+    const leadership = committeeCard
+      ? `${leaderRow('위원장', committeeCard.chair, '위원장 정보 준비 중')}${leaderRow('간사', committeeCard.ranking_member, '간사 정보 준비 중')}`
+      : `${leaderRow('위원장', null, '위원장 정보 준비 중')}${leaderRow('간사', null, '간사 정보 준비 중')}`;
 
-    const agencies = listed.agencies || [];
-    const agencyList = agencies.length
-      ? `<div class="policy-tag-row">${agencies.map((a) => `<span class="policy-tag">${esc(a)}</span>`).join('')}</div>`
-      : empty('검증된 담당기관 매핑 준비 중');
+    // agency_id resolves against the same Federal Register agency list the
+    // executive-branch tiles already use, so a committee's agency chip
+    // reuses that name and its data-view="agency" click-through instead of
+    // showing a bare fr-* slug. A card with agencies:[] (jurisdiction
+    // researched, no Rule X/XXV row names an agency) stays empty rather than
+    // falling back to any guessed mapping -- only a missing card at all
+    // falls back to the old listed.agencies.
+    const agencyName = (agencyId) => overview?.executive_overview?.agencies
+      ?.find((a) => a.agency_id === agencyId);
+    const agencyChip = (agencyId) => {
+      const found = agencyName(agencyId);
+      return found
+        ? `<button type="button" class="policy-tag policy-chip is-compact" data-view="agency" data-id="${esc(agencyId)}">${esc(found.short_name || found.name)}</button>`
+        : `<span class="policy-tag">${esc(agencyId)}</span>`;
+    };
+    const agencyList = committeeCard
+      ? (committeeCard.agencies?.length
+        ? `<div class="policy-tag-row">${committeeCard.agencies.map((a) => agencyChip(a.agency_id)).join('')}</div>`
+        : empty('공식 규칙 조항에 부처명을 적은 소관 없음'))
+      : ((listed.agencies || []).length
+        ? `<div class="policy-tag-row">${listed.agencies.map((a) => `<span class="policy-tag">${esc(a)}</span>`).join('')}</div>`
+        : empty('검증된 담당기관 매핑 준비 중'));
+    const officialUrl = committeeCard?.committee_url || listed.official_url;
 
     const subs = detail?.subcommittees || [];
     const subList = subs.length
@@ -562,7 +700,7 @@
           ${card(listed.name, `
             ${listed.jurisdiction_summary ? `<p class="policy-prose">${esc(listed.jurisdiction_summary)}</p>` : ''}
             <div class="policy-leaders">${leadership}</div>
-            ${listed.official_url ? `<a class="policy-external" href="${esc(listed.official_url)}" target="_blank" rel="noopener noreferrer">공식 사이트</a>` : ''}
+            ${officialUrl ? `<a class="policy-external" href="${esc(officialUrl)}" target="_blank" rel="noopener noreferrer">공식 사이트</a>` : ''}
           `)}
           ${card('담당 기관', agencyList)}
           ${card('소위원회', subList)}
@@ -624,23 +762,32 @@
     return bill.congress_number ? `${bill.congress_number}대 · ${cite}` : cite;
   };
 
-  // Compact card for a favorited bill (My Page favorites list), reusing the
-  // same stage rail and vote data as the full bill detail panel below so the
-  // two views can never disagree about what "next stage" means. There is no
-  // curated short/abbreviated title anywhere in the schema -- bill.title is
-  // the official long title -- so this shows that title as-is rather than
-  // fabricate an abbreviation.
-  function favoriteBillCardHtml(bill) {
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+  // Compact card for a favorited bill (My Page favorites/mailing lists),
+  // reusing the same stage rail and vote data as the full bill detail panel
+  // below so the two views can never disagree about what "next stage" means.
+  // There is no curated short/abbreviated title anywhere in the schema --
+  // bill.title is the official long title -- so this shows that title as-is
+  // rather than fabricate an abbreviation.
+  //
+  // notifyEnabled reflects user_favorites.notify_enabled for this bill (not
+  // part of the `bills` row loadBillById returns), defaulting to true when
+  // omitted so a caller that doesn't track it yet still gets a checked box.
+  // bill.bill_id doubles as the favorite's item_id -- callers only ever load
+  // this card for item_kind 'bill', and loadBillById(item_id) returns the
+  // row keyed by that same id.
+  function favoriteBillCardHtml(bill, notifyEnabled) {
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
-    const currentLabel = terminalLabel || (currentIndex >= 0 ? STAGE_FLOW[currentIndex].label : stageLabel(bill.current_stage));
-    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < STAGE_FLOW.length - 1
-      ? STAGE_FLOW[currentIndex + 1].label
+    const currentLabel = lifecycle.current.label;
+    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
+      ? stageFlow[currentIndex + 1].label
       : null;
 
-    const votes = bill.bill_votes || [];
-    const lastVote = votes[votes.length - 1];
-    const voteText = lastVote ? `투표 찬 ${esc(lastVote.yea_count)}명 반 ${esc(lastVote.nay_count)}명` : null;
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
+    const lastVote = [...votes].sort((a, b) => String(b.vote_date).localeCompare(String(a.vote_date)))[0];
+    const voteInfo = lastVote ? window.PolicyEvidence.voteEvidence(lastVote) : null;
+    const voteText = voteInfo ? `${voteInfo.kind === 'cloture' ? '토론 종결' : '표결'} 찬 ${esc(voteInfo.yea_count ?? '미확인')} · 반 ${esc(voteInfo.nay_count ?? '미확인')}` : null;
+    const itemId = esc(bill.bill_id);
 
     return `<div class="policy-fav-bill-card">
       <div class="policy-fav-bill-title">${esc(bill.title)}</div>
@@ -649,18 +796,30 @@
         <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
         ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
       </div>
+      <div class="policy-fav-bill-actions">
+        <label class="policy-fav-bill-notify">
+          <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
+          메일 알림
+        </label>
+        <button type="button" class="policy-fav-star" data-remove-item-id="${itemId}" title="즐겨찾기 해제" aria-label="즐겨찾기 해제">★</button>
+      </div>
     </div>`;
   }
 
-  const actionRow = (a) => `
+  const actionRow = (row) => {
+    const evidence = window.PolicyEvidence.classifyAction(row);
+    const a = { ...row, chamber: evidence.chamber };
+    const label = ({ passage: '본회의 통과', passage_failed: '본회의 통과 표결 부결', procedural_vote: '절차 표결', other: '기타' })[evidence.kind] || stageLabel(evidence.kind);
+    return `
     <li class="policy-action">
       <span class="policy-action-date">${esc(a.action_date || '')}</span>
       <span class="policy-action-body">
         ${a.chamber ? `<span class="policy-action-chamber">${esc(CHAMBER_LABELS[a.chamber] || a.chamber)}</span>` : ''}
         <span>${esc(a.action_text || '')}</span>
       </span>
-      ${a.normalized_stage ? `<span class="policy-tag">${esc(stageLabel(a.normalized_stage))}</span>` : ''}
+      <span class="policy-tag">${esc(label)}</span>
     </li>`;
+  };
 
   // Version rows link out only. docs/api-spec.md forbids storing or
   // re-serving the document text itself, so the official copy is the copy.
@@ -676,20 +835,24 @@
   };
 
   function billPanel(bill) {
-    const votes = bill.bill_votes || [];
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
+    // Same resolution stageRail uses below, so the badge and the rail's
+    // highlighted step can never name two different stages for one bill.
+    const { lifecycle: badgeLifecycle, stageFlow: badgeStageFlow, currentIndex: badgeCurrentIndex } = resolveBillStage(bill);
+    const currentStageLabel = badgeLifecycle.current.label;
 
     const voteBody = votes.length
       ? votes.map((v) => `
           <div class="policy-vote">
             <div class="policy-vote-head">
               <span>${esc(CHAMBER_LABELS[v.chamber] || v.chamber)} · ${esc(v.question)}</span>
-              <span class="policy-vote-result">${esc(v.result)}</span>
+              <span class="policy-vote-result">${esc(({ passed: '가결', failed: '부결', unknown: '결과 미확인' })[v.result] || v.result)}</span>
             </div>
             <div class="policy-vote-counts">
-              <span class="yea">찬성 ${esc(v.yea_count)}</span>
-              <span class="nay">반대 ${esc(v.nay_count)}</span>
-              <span>기권 ${esc(v.present_count)}</span>
-              <span>불참 ${esc(v.not_voting_count)}</span>
+              <span class="yea">찬성 ${esc(v.yea_count ?? '미확인')}</span>
+              <span class="nay">반대 ${esc(v.nay_count ?? '미확인')}</span>
+              <span>기권 ${esc(v.present_count ?? '미확인')}</span>
+              <span>불참 ${esc(v.not_voting_count ?? '미확인')}</span>
             </div>
             <div class="policy-vote-foot">
               <span>${esc(v.vote_date)}</span>
@@ -725,7 +888,7 @@
         ${favButton('bill', bill.bill_id, bill.title)}
       </div>
       <div class="policy-bill-meta">
-        ${stageBadge(bill.current_stage)}
+        <span class="policy-stage-badge">${esc(currentStageLabel)}</span>
         <span class="policy-bill-cite">${esc(billNumberLabel(bill))}</span>
         ${bill.sponsor ? `<span>발의자 ${esc(bill.sponsor)}</span>` : ''}
         ${bill.introduced_date ? `<span>발의일 ${esc(bill.introduced_date)}</span>` : ''}
@@ -946,8 +1109,9 @@
     if (!body) return shell(card(heading, empty('검색 결과를 불러오지 못했습니다')));
     if (body.unavailable) return shell(card(heading, empty('검색 기능 준비 중입니다')));
     if (!body.items?.length) return shell(card(heading, empty('검색 결과가 없습니다')));
+    const groups = groupSearchItems(body.items);
     return shell(card(`${heading} (${body.items.length}건)`,
-      `<div class="policy-search-page-results">${body.items.map(searchResultRow).join('')}</div>`));
+      `<div class="policy-search-page-results">${groups.map((g) => searchGroupBlock(g, { compact: false })).join('')}</div>`));
   }
 
   /* -------------------------------------------------------------- routing */
@@ -981,8 +1145,14 @@
     switch (view) {
       case 'congress': return '의회';
       case 'executive': return '행정부';
-      case 'committee':
-        return overview?.congress_overview?.committees?.find((c) => c.committee_id === id)?.name || '상임위';
+      case 'committee': {
+        // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
+        // code) to its canonical committee_id -- the overview list only ever
+        // carries the canonical row, so look that up instead of the raw id
+        // or an old link falls back to the generic label below.
+        const resolvedId = extra?.detail?.committee_id || id;
+        return overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId)?.name || '상임위';
+      }
       case 'agency':
         return overview?.executive_overview?.agencies?.find((a) => a.agency_id === id)?.name || '기관';
       case 'area':
@@ -1008,11 +1178,12 @@
   async function fetchViewData(view, id) {
     switch (view) {
       case 'committee': {
-        const [detail, billPage] = await Promise.all([
+        const [detail, billPage, committeeCards] = await Promise.all([
           loadCommittee(id),
           loadBillList({ committee_id: id, stage: state.stage }),
+          loadCommitteeCards(),
         ]);
-        return { detail, billPage };
+        return { detail, billPage, card: committeeCards.byId.get(id) || null };
       }
       case 'area': {
         const billPage = await loadBillList({ policy_area_id: id, stage: state.stage });
@@ -1072,23 +1243,110 @@
     });
   }
 
-  // Mirrors the current leaf into the URL's query string so a bill, EO, or
-  // search result is a real link -- reload, share, browser back/forward --
-  // instead of living only in `state.trail`. The pathname stays whatever
-  // app.js's top-level router already set (/us-policy-hub etc.); only
-  // ?view=&id= here changes underneath it.
-  function syncUrl(view, id, opts = {}) {
-    const target = host?.dataset.policyTarget;
-    const isDefaultLeaf = view === (TARGET_VIEWS[target] || 'congress') && id === undefined;
-    const params = new URLSearchParams();
-    if (!isDefaultLeaf) {
-      params.set('view', view);
-      if (id !== undefined && id !== null) params.set('id', String(id));
+  // Committees and agencies get a human-readable slug (from their official
+  // name) instead of their opaque id everywhere a URL is built or parsed.
+  // Built once per render() from the already-loaded overview -- nothing
+  // extra to fetch. Two committees/agencies landing on the same slug (a
+  // generic subcommittee name reused across parents, say) get a numeric
+  // suffix so neither silently overwrites the other in the lookup.
+  let committeeSlugById = new Map();
+  let committeeIdBySlug = new Map();
+  let agencySlugById = new Map();
+  let agencyIdBySlug = new Map();
+
+  function slugify(text) {
+    return String(text || '')
+      .toLowerCase()
+      .normalize('NFKD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function buildSlugMaps(list, idKey, nameOf = (item) => item.name) {
+    const slugById = new Map();
+    const idBySlug = new Map();
+    for (const item of list || []) {
+      const id = item?.[idKey];
+      if (!id) continue;
+      const base = slugify(nameOf(item)) || slugify(id);
+      let slugValue = base;
+      let n = 2;
+      while (idBySlug.has(slugValue)) slugValue = `${base}-${n++}`;
+      slugById.set(id, slugValue);
+      idBySlug.set(slugValue, id);
     }
-    const qs = params.toString();
-    const url = window.location.pathname + (qs ? `?${qs}` : '');
-    if (url === window.location.pathname + window.location.search) return; // no-op, skip a duplicate history entry
+    return { slugById, idBySlug };
+  }
+
+  // Congress.gov's committee.name carries no chamber ("Committee on
+  // Appropriations", "Committee on Armed Services", "Committee on the
+  // Budget", "Committee on the Judiciary", "Committee on Veterans' Affairs"
+  // are each the literal, identical name in both chambers), so slugifying
+  // the bare name alone would hand one chamber's committee an arbitrary
+  // "-2" suffix instead of a name that says which chamber it is -- and
+  // which one loses the tie isn't guaranteed stable if the API's row order
+  // ever shifts. Joint committees keep their bare name: their names already
+  // read as "Joint Committee on Taxation" etc., so prefixing would repeat
+  // "joint" and they don't collide with the house/senate pattern anyway.
+  function committeeSlugName(c) {
+    return c.chamber === 'house' || c.chamber === 'senate' ? `${c.chamber} ${c.name}` : c.name;
+  }
+
+  // Exposed for the 정치 › 미국 하원/상원 committee chips (usa-legislature.js):
+  // that panel's committee list comes from a different pipeline
+  // (election_watch's usa_committees.json) whose `code` field uses its own
+  // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that does not
+  // match Congress.gov's systemCode this module's committee_id is built
+  // from -- guessing a translation between the two id schemes risked
+  // silently landing on the wrong committee. Building the slug the exact
+  // same way from the shared official name instead means it either matches
+  // a real committee_id (via committeeIdBySlug in parseLeafFromPath) or
+  // visibly fails to, never silently wrong.
+  const committeeSlug = (chamber, name) => (name ? slugify(committeeSlugName({ chamber, name })) : undefined);
+
+  const POLICY_BASE_PATH = '/policy/us';
+
+  // Mirrors the current leaf into the URL's path so a bill, EO, committee, or
+  // agency is a real link -- reload, share, browser back/forward -- instead
+  // of living only in `state.trail`. app.js's top-level router only cares
+  // whether the path starts with /policy/us and whether the next segment is
+  // "executive"; everything past that is ours to shape.
+  function pathForLeaf(view, id) {
+    if (view === 'congress') return POLICY_BASE_PATH;
+    if (view === 'executive' && id === undefined) return `${POLICY_BASE_PATH}/executive`;
+    const segment = view === 'committee' ? (committeeSlugById.get(id) || id)
+      : view === 'agency' ? (agencySlugById.get(id) || id)
+      : id;
+    return `${POLICY_BASE_PATH}/${view}${segment !== undefined && segment !== null ? `/${encodeURIComponent(segment)}` : ''}`;
+  }
+
+  function syncUrl(view, id, opts = {}) {
+    const url = pathForLeaf(view, id);
+    if (url === window.location.pathname) return; // no-op, skip a duplicate history entry
     window.history[opts.replace ? 'replaceState' : 'pushState']({ policyView: view, policyId: id }, '', url);
+  }
+
+  // Reverses pathForLeaf(): whatever follows /policy/us in the URL, resolved
+  // back to a {view, id} go() can navigate to. A committee/agency segment is
+  // tried as a slug first and falls back to treating it as the raw id
+  // directly -- a link built before overview loaded, or built by another
+  // module (the elections handoff uses the raw committee_id), still resolves.
+  function parseLeafFromPath(pathname) {
+    const trimmed = pathname.replace(/^\/+|\/+$/g, '');
+    if (trimmed !== 'policy/us' && !trimmed.startsWith('policy/us/')) return null;
+    const rest = trimmed === 'policy/us' ? '' : trimmed.slice('policy/us/'.length);
+    if (!rest || rest === 'congress') return null; // default congress leaf, nothing to restore
+    if (rest === 'executive') return { view: 'executive', id: undefined };
+    const slashIdx = rest.indexOf('/');
+    const view = slashIdx < 0 ? rest : rest.slice(0, slashIdx);
+    if (!VIEWS[view]) return null;
+    let idRaw = slashIdx < 0 ? '' : rest.slice(slashIdx + 1);
+    if (!idRaw) return null;
+    try { idRaw = decodeURIComponent(idRaw); } catch { /* keep as-is */ }
+    const id = view === 'committee' ? (committeeIdBySlug.get(idRaw) || idRaw)
+      : view === 'agency' ? (agencyIdBySlug.get(idRaw) || idRaw)
+      : idRaw;
+    return { view, id };
   }
 
   async function go(view, id, opts = {}) {
@@ -1214,16 +1472,18 @@
     }
     if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
 
+    ({ slugById: committeeSlugById, idBySlug: committeeIdBySlug } =
+      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id', committeeSlugName));
+    ({ slugById: agencySlugById, idBySlug: agencyIdBySlug } =
+      buildSlugMaps(overview?.executive_overview?.agencies, 'agency_id'));
+
     // Entering from the top menu starts a fresh trail at that level -- unless
     // the URL already names a deeper view (a shared link, a reload, or the
     // browser back/forward button landing back on this same path).
     state.trail = [];
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlView = urlParams.get('view');
-    const urlId = urlParams.get('id');
-    const needsId = urlView && urlView !== 'congress' && urlView !== 'executive';
-    const restored = urlView && VIEWS[urlView] && (!needsId || urlId);
-    await go(restored ? urlView : (TARGET_VIEWS[target] || 'congress'), restored ? urlId : undefined, { replace: true });
+    const leaf = parseLeafFromPath(window.location.pathname);
+    const restored = leaf && VIEWS[leaf.view] && (leaf.view === 'executive' ? true : leaf.id);
+    await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
@@ -1261,5 +1521,6 @@
     unmount,
     loadBillById: (billId) => api(`/congress/bills/${encodeURIComponent(billId)}`),
     favoriteBillCardHtml,
+    committeeSlug,
   };
 })();

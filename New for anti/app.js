@@ -43,6 +43,86 @@ const climateMapLegendEl = document.getElementById('climate-map-legend');
 const panelHide = (el) => { if (el) el.classList.add('hidden'); };
 const panelShow = (el) => { if (el) el.classList.remove('hidden'); };
 
+const commodityFavStarEl = document.getElementById('commodity-fav-star');
+
+// --- 원자재 즐겨찾기 (commodity-info-panel header star) ----------------------
+// item_kind 'commodity', item_id is the same slug window.TradeData/data-target
+// already use (e.g. 'oil'), so it lines up with notify-commodity-digest.js's
+// weekly send and shows up in My Page's 즐겨찾기 tab next to bills. Mirrors
+// policy.js's bill star (favState/loadFavorites/toggleFavorite) but scoped to
+// this one persistent button instead of a per-row control, since the commodity
+// screen has exactly one commodity in view at a time.
+const commodityFavKeys = new Set();
+let commodityFavAuthSubscribed = false;
+
+async function loadCommodityFavorites() {
+    if (!window.Auth?.currentUser?.()) { commodityFavKeys.clear(); return; }
+    try {
+        const rows = await window.Auth.listFavorites();
+        commodityFavKeys.clear();
+        rows.filter((r) => r.item_kind === 'commodity').forEach((r) => commodityFavKeys.add(r.item_id));
+    } catch (err) {
+        console.error('Failed to load commodity favorites:', err);
+    }
+}
+
+function paintCommodityFavStar() {
+    if (!commodityFavStarEl) return;
+    const id = commodityFavStarEl.dataset.commodityId;
+    const on = !!(id && commodityFavKeys.has(id));
+    commodityFavStarEl.classList.toggle('is-on', on);
+    commodityFavStarEl.setAttribute('aria-pressed', String(on));
+    commodityFavStarEl.title = on ? '즐겨찾기 해제' : '즐겨찾기';
+    const icon = commodityFavStarEl.querySelector('.policy-fav-icon');
+    if (icon) icon.textContent = on ? '★' : '☆';
+}
+
+// Called from the TradeData(target) branch of setView for every real
+// commodity; label is TradeData[target].title with its "글로벌 OOO: " prefix
+// and any trailing "(English)" stripped, e.g. "글로벌 에너지: 원유" -> "원유".
+function updateCommodityFavStar(target, fullTitle) {
+    if (!commodityFavStarEl) return;
+    const label = String(fullTitle || target).split(': ').pop().replace(/\s*\([^)]*\)\s*$/, '').trim();
+    commodityFavStarEl.dataset.commodityId = target;
+    commodityFavStarEl.dataset.commodityTitle = label;
+    commodityFavStarEl.classList.remove('hidden');
+    paintCommodityFavStar();
+}
+
+function hideCommodityFavStar() {
+    commodityFavStarEl?.classList.add('hidden');
+}
+
+commodityFavStarEl?.addEventListener('click', async () => {
+    if (!window.Auth?.currentUser?.()) { window.Auth?.openModal?.('signup'); return; }
+    const id = commodityFavStarEl.dataset.commodityId;
+    if (!id) return;
+    const on = commodityFavKeys.has(id);
+    commodityFavStarEl.disabled = true;
+    try {
+        if (on) {
+            await window.Auth.removeFavorite('commodity', id);
+            commodityFavKeys.delete(id);
+        } else {
+            await window.Auth.addFavorite('commodity', id, commodityFavStarEl.dataset.commodityTitle);
+            commodityFavKeys.add(id);
+        }
+        paintCommodityFavStar();
+    } catch (err) {
+        console.error('Failed to toggle commodity favorite:', err);
+    } finally {
+        commodityFavStarEl.disabled = false;
+    }
+});
+
+function subscribeCommodityFavAuth() {
+    if (commodityFavAuthSubscribed || !window.Auth?.onChange) return;
+    commodityFavAuthSubscribed = true;
+    window.Auth.onChange(() => { loadCommodityFavorites().then(paintCommodityFavStar); });
+}
+subscribeCommodityFavAuth();
+loadCommodityFavorites().then(paintCommodityFavStar);
+
 
 const totalVolumeEl = document.getElementById('total-volume');
 const topExporterEl = document.getElementById('top-exporter');
@@ -259,13 +339,16 @@ const signalSlotHtml = (slot) => {
     const asOf = entry ? signalAsOf(entry.asOf || entry.date) : '';
     const clickable = !!slot.symbol;
 
-    // A slot is pending either because it was declared that way, or because the
-    // feed answered with something unparseable -- both read the same to a viewer.
+    // A slot with no value yet is either (a) wired to a real feed that just
+    // hasn't answered -- "로딩 중", never "연동 예정", since that reads as
+    // "this will never work" -- or (b) declared with no feed behind it at
+    // all, which is the only case 연동 예정 (or a custom slot.pending label)
+    // still applies to.
     const body = shown
         ? `<span class="signal-slot-value">${finEsc(shown)}${
               slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || '연동 예정')}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || (slot.value ? '불러오는 중' : '연동 예정'))}</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
@@ -1953,6 +2036,65 @@ const ensureClimateMapPointerFallback = () => {
     mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
     mapContainer.addEventListener('click', onPointerLikeClick, true);
 };
+
+// Same pointerdown/pointerup fallback as climate, for the elections world map
+// and country drill-in (setWorldMap/setElectionMap below) -- they hit the
+// identical MapView-controller-swallows-onClick bug: deckgl.pickObject()
+// found the clicked country reliably every time in testing (2026-09-20,
+// "정치 -> 미국 등 지도가 클릭이 안되냐"), but the onClick prop wired through
+// deckgl.setProps only fired on roughly 1 in 10 real clicks at the same
+// pixel. electionHost.setWorldMap/setElectionMap capture their onClick into
+// currentElectionMapOnClick so this fallback can call the same handler.
+let electionsCanvasPointerWired = false;
+let electionsPointerDown = null;
+let currentElectionMapOnClick = null;
+// pointerup and click both fire for one gesture (see onPointerLikeClick
+// below), so this runs twice per real click. Without a debounce here,
+// onCountryOpen/onStateOpen fired twice back-to-back -- neither showCountry
+// nor showUsaState guards against a second call arriving mid-flight, so the
+// two overlapping renders fought over the same map viewState and it visibly
+// jumped/spun ("왜 자동으로 주가 돌아감?", 2026-09-21), on top of fetching
+// every screen's data twice (reported as slowness in the same message).
+// climate's equivalent path already had this same guard
+// (handleClimateDeckClick's lastClimatePickAt); this one never got it.
+let lastElectionsPickAt = 0;
+const tryElectionsMapPick = (clientX, clientY) => {
+    if (currentCommodity !== 'elections' || !currentElectionMapOnClick || !deckgl?.pickObject) return;
+    const xy = climateCanvasLocalXY(clientX, clientY);
+    if (!xy) return;
+    const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 0 });
+    if (!info?.object) return;
+    const now = performance.now();
+    if (now - lastElectionsPickAt < 300) return;
+    lastElectionsPickAt = now;
+    currentElectionMapOnClick(info);
+};
+const ensureElectionsMapPointerFallback = () => {
+    if (electionsCanvasPointerWired || !mapContainer) return;
+    electionsCanvasPointerWired = true;
+    mapContainer.addEventListener('pointerdown', (e) => {
+        if (currentCommodity !== 'elections') return;
+        if (e.button !== 0) return;
+        electionsPointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    }, true);
+    const onPointerLikeClick = (e) => {
+        if (currentCommodity !== 'elections') return;
+        if (e.button != null && e.button !== 0) return;
+        if (!electionsPointerDown) {
+            if (e.type === 'click') tryElectionsMapPick(e.clientX, e.clientY);
+            return;
+        }
+        const dx = e.clientX - electionsPointerDown.x;
+        const dy = e.clientY - electionsPointerDown.y;
+        const dt = performance.now() - electionsPointerDown.t;
+        electionsPointerDown = null;
+        if (dt > 600 || Math.hypot(dx, dy) > 8) return;
+        tryElectionsMapPick(e.clientX, e.clientY);
+    };
+    mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
+    mapContainer.addEventListener('click', onPointerLikeClick, true);
+};
+ensureElectionsMapPointerFallback();
 
 // Single deck click router for climate — layer onClick alone is flaky when
 // basemap + MapView controller steal events after GlobeView switches.
@@ -3672,6 +3814,14 @@ const renderClimateWorldLeft = async () => {
     const amo = g?.north_atlantic || {};
     const continents = g?.continent_temp_anomaly?.values || [];
     const maxAbsC = Math.max(0.5, ...continents.map(c => Math.abs(c.anomaly || 0)));
+    // "27°C" and "+1.8" mean nothing without knowing whether the number
+    // behind them is this week's or a stale snapshot from a broken cron.
+    const climateAsOf = g?.generated_at
+        ? new Date(g.generated_at).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+        : null;
+    const cityWxAsOf = cityWxDoc?.generated_at
+        ? new Date(cityWxDoc.generated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        : null;
 
     forecastCountryTitle.textContent = '전역 기후 모니터';
     forecastContentEl.innerHTML = `
@@ -3684,6 +3834,7 @@ const renderClimateWorldLeft = async () => {
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
                 ${renderEnsoBars(enso.series)}
+                <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">
                 <h3>IOD · 인도양 쌍극자 <span class="src-tag">${iod.source || 'NOAA PSL'}</span></h3>
@@ -3729,6 +3880,7 @@ const renderClimateWorldLeft = async () => {
             </div>
             <div class="climate-card">
                 <h3>주요 산지 기상 <span class="src-tag">최근 ${cityWxDoc?.window?.days ?? 30}일 · ${cityWxDoc?.normal || '평년 대비'}</span></h3>
+                <div class="climate-sub" style="margin-bottom:6px;">기준일: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 갱신)</div>
                 ${(cityWxDoc?.cities || g?.cities || []).map(c => {
                     const w = (cityWxDoc?.cities || []).find(x => x.name === c.name) || {};
                     const live = climateCityWx[c.name];
@@ -3753,7 +3905,9 @@ const renderClimateWorldLeft = async () => {
                 }).join('') || '<div class="climate-sub">도시 seed 없음</div>'}
             </div>
             <p style="font-size:10px;color:#64748b;line-height:1.5;">
-                지수 seed: <code>climate_global_v1.json</code>. 상세 시계열·파생상품 풀셋은 이후 갱신.
+                ENSO·IOD 갱신: ${climateAsOf || '—'} (NOAA CPC/PSL · 주 1회 자동 갱신)
+                · 산지 기상 갱신: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 자동 갱신)
+                ${g?.note ? `<br/>${g.note}` : ''}
             </p>
         </div>`;
 };
@@ -3778,6 +3932,7 @@ const showClimateWorld = async () => {
     setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status';
+    hideCommodityFavStar();
 
     document.getElementById('commodity-info-panel')?.classList.remove('hidden');
 
@@ -4931,8 +5086,16 @@ const electionTimelinePanelEl = document.getElementById('elections-timeline-pane
 const electionCountryPanelEl = document.getElementById('elections-country-panel');
 const electionModalHostEl = document.getElementById('elections-modal-host');
 
-// Order matters only for how the query string reads; the module names them.
-const ELECTION_ROUTE_KEYS = ['country', 'state', 'screen', 'view', 'district'];
+// country/screen (or country/state for the USA drill-down) live as path
+// segments after /politics/ -- /politics/USA/executive, /politics/USA/CA --
+// not query params, so a shared link reads like the rest of the site's
+// per-view URLs. State codes are always exactly two letters and screen keys
+// (executive, legislature, party, military, state_council, ...) never are,
+// so the second segment's length alone disambiguates them without needing
+// the country's own data at parse time. view/district (USA state finance
+// drill-down only) stay query params -- they're a third level deep and rare
+// enough that a path segment would just add another disambiguation case.
+const isUsStateCode = (segment) => /^[A-Za-z]{2}$/.test(segment || '');
 
 const electionHost = () => ({
     deckgl,
@@ -4947,20 +5110,34 @@ const electionHost = () => ({
         return resolveCountry(name)?.iso || '';
     },
     setWorldMap(layers, onClick) {
-        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
-        // repeat:false here, unlike the other maps this app shares. At the
-        // default GLOBE_ZOOM (0.85) the viewport is wider than one world, so
-        // repeat:true draws multiple side-by-side copies -- and deck.gl's
-        // picking only ever resolves against one of them, so a click on a
-        // large, correctly-coloured country like the US silently missed at
-        // that zoom and only worked once zoomed in past one-world-width
-        // (confirmed 2026-09-11: 0/5 clicks landed with repeat:true at
-        // default zoom, 5/5 with repeat:false, both on real countries).
-        // This map is single-click-to-drill-down, not a continuously
-        // scrolled one, so losing antimeridian wraparound costs nothing a
-        // user would notice.
+        // longitude/latitude reset to center, not just zoom: this view has one
+        // fixed framing, unlike setElectionMap's country drill-in which passes
+        // its own viewState on purpose. Without the reset, returning here from
+        // a country left currentViewState at that country's centroid (e.g. USA
+        // around -98°), so the whole map visibly shifted right, opening a gap
+        // on the west side and cropping Asia/Australia against the right edge
+        // (reported 2026-09-12, reproduced: world map centered on -98°
+        // longitude after a USA drill-in + back-to-world round trip). Kept
+        // even after the repeat:false -> repeat:true switch below (2026-09-21)
+        // -- still the one fixed framing this view is meant to open on.
+        currentViewState = clampGlobeView({ ...currentViewState, longitude: 0, latitude: 15, zoom: GLOBE_ZOOM });
+        currentElectionMapOnClick = onClick;
+        // repeat:true again (2026-09-21) -- was repeat:false from 2026-09-11
+        // to 2026-09-20 because deck.gl's onClick prop only ever resolved
+        // against one repeated copy, missing clicks at this zoom (0/5 landed
+        // with repeat:true, 5/5 with repeat:false, confirmed then). But
+        // repeat:false has its own cost, reported 2026-09-21: at GLOBE_ZOOM
+        // (0.85) the whole world already fits inside the viewport, and a
+        // non-repeating MapView clamps panning to keep [-180,180] in frame
+        // -- with nowhere to pan to, dragging silently did nothing (viewState
+        // updated in JS, the canvas never moved). ensureElectionsMapPointerFallback
+        // above replaced the onClick prop with a pickObject() call at the
+        // exact clicked pixel, which resolves whichever repeated copy is
+        // actually under the cursor -- the original miss doesn't apply to it.
+        // Reverified with repeat:true: 10/10 clicks landed, dragging works,
+        // antimeridian wraparound is back as a side benefit.
         deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: false })],
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick,
@@ -4970,6 +5147,7 @@ const electionHost = () => ({
     },
     setElectionMap(layers, onClick, viewState) {
         if (viewState) currentViewState = viewState;
+        currentElectionMapOnClick = onClick;
         deckgl.setProps({
             views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,
@@ -4990,41 +5168,59 @@ const electionHost = () => ({
         currentViewDesc.textContent = description;
     },
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
-    // view from ?view=&id= on render, so writing those params before the view
+    // view from the URL path on render, so writing that path before the view
     // switch is the whole handoff -- no second entry point to keep in sync.
-    openPolicyCommittee(committeeId) {
-        const params = new URLSearchParams();
-        if (committeeId) {
-            params.set('view', 'committee');
-            params.set('id', committeeId);
-        }
-        const qs = params.toString();
-        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+    // Takes (chamber, name) rather than a committee id: the 정치 module's own
+    // committee list (election_watch's usa_committees.json) uses its own code
+    // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that doesn't
+    // match this app's committee_id (Congress.gov systemCode, e.g.
+    // "119-house-hsag00") -- guessing a translation between the two risks
+    // silently landing on the wrong committee. Building the slug the same
+    // way policy.js itself would, from the official name both sides share,
+    // means it either resolves to the real committee or visibly doesn't;
+    // never silently wrong. policy.js's script tag loads up front, so
+    // window.USPolicy is available even before its view is ever rendered.
+    openPolicyCommittee(chamber, name) {
+        const slug = window.USPolicy?.committeeSlug?.(chamber, name);
+        const path = slug ? `/policy/us/committee/${encodeURIComponent(slug)}` : '/policy/us';
+        window.history.pushState({}, '', path);
         setView('us-policy-hub');
     },
     // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
     // could not be linked, reloaded, or reached with the back button. The
-    // election module keeps its place in the query string the same way
-    // policy.js does, on top of the /elections pathname this view already
-    // owns -- the module never touches history itself, it goes through here.
+    // election module keeps its place in the path the same way every other
+    // view's /macro_monitor, /shipping_fleet, ... does -- the module never
+    // touches history itself, it goes through here.
     readRoute() {
-        const params = new URLSearchParams(window.location.search);
+        const path = window.location.pathname.replace(/^\/politics\/?/, '').replace(/\/+$/, '');
+        const segments = path ? path.split('/') : [];
         const route = {};
-        ELECTION_ROUTE_KEYS.forEach((key) => {
-            const value = params.get(key);
-            if (value) route[key] = value;
-        });
+        if (segments[0]) route.country = segments[0].toUpperCase();
+        if (segments[1]) {
+            if (isUsStateCode(segments[1])) route.state = segments[1].toUpperCase();
+            else route.screen = segments[1];
+        }
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('view');
+        const district = params.get('district');
+        if (view) route.view = view;
+        if (district) route.district = district;
         return route;
     },
     writeRoute(route, { replace = false } = {}) {
+        const segments = ['politics'];
+        if (route?.country) {
+            segments.push(route.country);
+            if (route.state) segments.push(route.state);
+            else if (route.screen) segments.push(route.screen);
+        }
         const params = new URLSearchParams();
-        ELECTION_ROUTE_KEYS.forEach((key) => {
-            if (route?.[key]) params.set(key, String(route[key]));
-        });
+        if (route?.view) params.set('view', String(route.view));
+        if (route?.district) params.set('district', String(route.district));
         const qs = params.toString();
-        const url = `/elections${qs ? `?${qs}` : ''}`;
+        const url = `/${segments.join('/')}${qs ? `?${qs}` : ''}`;
         if (url === window.location.pathname + window.location.search) return;
-        window.history[replace ? 'replaceState' : 'pushState']({ target: 'elections' }, '', url);
+        window.history[replace ? 'replaceState' : 'pushState']({ target: 'politics' }, '', url);
     },
     roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });
@@ -5123,7 +5319,7 @@ const routeMetaDescription = (target, label) => {
     if (target.startsWith('fin_')) return `${label} — 매크로·금융 지표를 ChokePoint Monitor에서 실시간으로 확인하세요.`;
     if (target.startsWith('inst_')) return `${label} 데이터 출처와 공식 리포트를 ChokePoint Monitor에서 확인하세요.`;
     if (target === 'climate') return '전세계 작황·기후 모니터 — 주요 원자재 생산지의 기상 상황을 ChokePoint Monitor 지구본 지도에서 실시간으로 확인하세요.';
-    if (target === 'elections') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
+    if (target === 'politics') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
     if (target === 'macro_monitor') return '국가별 매크로 지표(금리·물가·환율 등)를 ChokePoint Monitor에서 실시간으로 확인하세요.';
     return `${label} 시세·공급망·무역 흐름을 하나의 지구본 지도에서 실시간으로 확인하세요. ChokePoint Monitor.`;
 };
@@ -5242,7 +5438,7 @@ const setView = (target) => {
         // Restart rotation
         startRotation();
 
-    } else if (target === 'elections') {
+    } else if (target === 'politics') {
         showElectionView();
     } else if (isPolicyView) {
         // Document-style screen, same full-bleed treatment as shipping and
@@ -5394,6 +5590,7 @@ const setView = (target) => {
         currentViewTitle.textContent = '작황 모니터';
         currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
         topExporterEl.textContent = 'Status coloring';
+        hideCommodityFavStar(); // 작황 모니터는 개별 원자재가 아니라 집계 화면이라 즐겨찾기 대상이 아님
 
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
@@ -5416,6 +5613,7 @@ const setView = (target) => {
         currentViewTitle.textContent = data.title;
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
+        updateCommodityFavStar(target, data.title);
 
         // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');
@@ -5690,10 +5888,18 @@ initSignalPanel();
 // /shipping_fleet, ...) instead of staying on '/' for every view, so
 // sections are shareable, back/forward works, and each is a distinct URL
 // for search engines. 'home' is the one target that maps to '/' itself.
-const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
+// /politics and /policy/us each own a sub-router (country/screen, or
+// committee/agency/bill/... live as extra segments after that prefix, e.g.
+// /politics/USA/executive or /policy/us/committee/<slug>) -- match on the
+// first segment only so those don't fail to resolve to a data-target at all.
+// /policy/us is the one target keyed by its first segment alone ("policy")
+// rather than by a real data-target of that name -- see policy.js's
+// pathForLeaf/parseLeafFromPath, which own everything past the prefix.
+const pathForTarget = (target) => (target === 'home' ? '/' : target === 'us-policy-hub' ? '/policy/us' : `/${target}`);
 const targetFromPath = (pathname) => {
-    const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    const slug = pathname.replace(/^\/+/, '').split('/')[0].replace(/\/+$/, '');
     if (!slug) return 'home';
+    if (slug === 'policy') return 'us-policy-hub';
     return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
 };
 const navigateTo = (target) => {
@@ -5843,8 +6049,17 @@ if ((!initialView || initialView === 'home') && window.location.hash.startsWith(
 }
 if (!initialView) initialView = 'home';
 const normalizedPath = pathForTarget(initialView);
-if (window.location.pathname !== normalizedPath || window.location.hash) {
+// /politics owns everything past its own segment (/politics/USA/executive)
+// -- collapsing straight to normalizedPath here would cut a shared deep
+// link down to the world view before js/elections/index.js ever gets to
+// read it. Only replace when the path isn't already normalizedPath itself
+// or a sub-path of it; a stray hash still gets stripped either way.
+const pathUnderTarget = window.location.pathname === normalizedPath
+    || window.location.pathname.startsWith(`${normalizedPath}/`);
+if (!pathUnderTarget) {
     window.history.replaceState({ target: initialView }, '', normalizedPath);
+} else if (window.location.hash) {
+    window.history.replaceState({ target: initialView }, '', window.location.pathname + window.location.search);
 }
 setView(initialView);
 updateNewsPanel('Global Market');

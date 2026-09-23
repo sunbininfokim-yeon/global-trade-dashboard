@@ -1,11 +1,107 @@
 {
-  "generated_at": "2026-09-04T19:10:58.778705+00:00",
+  "generated_at": "2026-09-19T15:02:11.587142+00:00",
   "season": 2026,
   "country": "China",
   "source_note": "Targets: USDA PSD (grains, oilseeds) and FAOSTAT (vegetables), both national. China's own statistical bureau blocks automated access, so province-level official yields are unavailable and every guide's regional question is answered against a national series. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
   "methodology_note": "One model per guide in Regions/중국. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold.",
   "headline_finding": "None of the six models beats a trend-only baseline out of sample. The national targets carry very little year-to-year movement to explain -- 1.6% for rice, 3.7% for wheat, against 24.5% for a Brazilian state soybean series -- because aggregating a continent cancels regional weather and because the PSD series is an estimate rather than a survey measurement. Every number below should be read as a trend extrapolation.",
   "regions": {
+    "northeast_soy": {
+      "label": "Northeast China soybeans (Heilongjiang, Jilin, Liaoning)",
+      "target_label": "soybean yield",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2036.9,
+      "range_68": [
+        2002.7,
+        2071.0
+      ],
+      "range_95": [
+        1969.9,
+        2103.8
+      ],
+      "trend": 1966.1,
+      "weather_effect_pct": 3.6,
+      "last_actual": {
+        "year": 2025,
+        "value": 2030.0
+      },
+      "presentation": "trend extrapolation",
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -1.35,
+        "weather_skill": -1.35,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "sigma": 34.2,
+        "sigma_unit": "kg/ha",
+        "uncertainty_basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+      },
+      "provenance": {
+        "guide": "Regions/중국/동북3성/대두_옥수수/대두_옥수수_상세분석_및_수식.md",
+        "label_source": "USDA PSD, national",
+        "region_share": "The Northeast produces roughly 40% of China's soybeans, so a perfect regional model still leaves 60% of the national target driven by weather this point set never sees.",
+        "caveat": "The guide's first instruction is to recompute planted area from Sentinel-1 SAR rather than accept the official figure. That needs a SAR archive and a classifier this pipeline does not have, so area is not corrected and only yield is modelled. Maturity is tracked by accumulated GDD from a fixed 5 May planting date, not an observed one, and one GDD-to-maturity constant stands for the whole region's cultivar mix.",
+        "non_weather_drivers": "Chinese soybean area and yield both move with the state procurement price and the rotation subsidy that pays farmers to switch between soy and corn, and Heilongjiang's subsidy has been retuned repeatedly since 2016. None of that is weather, and the national target absorbs it directly.",
+        "weather_through": "2026-09-13",
+        "critical_window_observed": 0.815,
+        "season_complete": false,
+        "notes": []
+      }
+    },
+    "northeast_corn": {
+      "label": "Northeast China corn (Heilongjiang, Jilin, Liaoning)",
+      "target_label": "corn yield",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 6705.0,
+      "range_68": [
+        6643.0,
+        6767.0
+      ],
+      "range_95": [
+        6583.5,
+        6826.5
+      ],
+      "trend": 6652.4,
+      "weather_effect_pct": 0.79,
+      "last_actual": {
+        "year": 2025,
+        "value": 6700.0
+      },
+      "presentation": "trend extrapolation",
+      "enso": {
+        "state": "strong El Nino",
+        "oni_growing_season": 1.8
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.76,
+        "weather_skill": -0.76,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "sigma": 62.0,
+        "sigma_unit": "kg/ha",
+        "uncertainty_basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+      },
+      "provenance": {
+        "guide": "Regions/중국/동북3성/대두_옥수수/대두_옥수수_상세분석_및_수식.md",
+        "label_source": "USDA PSD, national",
+        "region_share": "The Northeast grows roughly 30% of China's corn. The North China Plain summer crop, which this point set excludes by design, is a comparable share and has entirely different weather.",
+        "caveat": "Same SAR-area departure as the soybean model. Silking is placed by days after a fixed planting date rather than observed phenology.",
+        "non_weather_drivers": "The 2016 abolition of the corn stockpiling programme cut planted area sharply and then policy pushed it back up; the national yield series also carries a steady varietal and density trend that the log trend absorbs rather than the weather features.",
+        "weather_through": "2026-09-13",
+        "critical_window_observed": 0.815,
+        "season_complete": false,
+        "notes": []
+      }
+    },
     "henan_wheat": {
       "label": "Henan + Huang-Huai-Hai winter wheat",
       "target_label": "wheat yield",
@@ -48,7 +144,7 @@
         "region_share": "Henan alone is about a quarter of Chinese wheat and the Huang-Huai-Hai plain as a whole roughly three quarters, so the national target is closer to a regional one here than for any other config in the set.",
         "caveat": "SIF (solar-induced fluorescence) from §2A is omitted: the satellite record starts in 2007 and would cut the series roughly in half. The guide's proposal to reverse-engineer bad years from UN Comtrade milling-wheat imports is implemented as a separate diagnostic in imports.py rather than as a second label, because rewriting the target from trade data would make the yield model unfalsifiable.",
         "non_weather_drivers": "The guide's own example is the point: in 2023 Beijing reported a 0.9% wheat decline while quality collapsed and milling-wheat imports hit a record. A tonnage yield series cannot represent a quality failure, so the single most consequential Henan weather event of the last decade is largely invisible in this target by construction.",
-        "weather_through": "2026-08-28",
+        "weather_through": "2026-09-13",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -96,8 +192,56 @@
         "region_share": "The Yangtze basin provinces are the majority of Chinese rice, but the national series also averages single-season japonica in the Northeast against double-cropped indica in the far south -- three cropping systems with three different weather sensitivities in one number.",
         "caveat": "The guide's dynamic crop calendar -- back out each pixel's heading date from an NDVI time series -- is replaced by a fixed July-August heading window, because MODIS starts in 2000 and would halve the record. The Sentinel-1 inundation mask is replaced by the heaviest 7-day rainfall total, named max_7day_rain.",
         "non_weather_drivers": "Rice area has been shifting from double- to single-cropping for two decades, which raises measured yield per harvested hectare without any agronomic improvement. That composition drift sits inside the trend, not the weather features.",
-        "weather_through": "2026-08-28",
-        "critical_window_observed": 0.952,
+        "weather_through": "2026-09-13",
+        "critical_window_observed": 1.0,
+        "season_complete": true,
+        "notes": []
+      }
+    },
+    "south_china_rice_area": {
+      "label": "South China rice cropping intensity (harvested area)",
+      "target_label": "rice area harvested",
+      "season": 2026,
+      "unit": "1000 ha",
+      "point": 30222.2,
+      "range_68": [
+        29621.2,
+        30823.1
+      ],
+      "range_95": [
+        29044.3,
+        31400.0
+      ],
+      "trend": 30219.7,
+      "weather_effect_pct": 0.01,
+      "last_actual": {
+        "year": 2025,
+        "value": 29000.0
+      },
+      "presentation": "trend extrapolation",
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -1.077,
+        "weather_skill": -1.077,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "sigma": 601.0,
+        "sigma_unit": "1000 ha",
+        "uncertainty_basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+      },
+      "provenance": {
+        "guide": "Regions/중국/남부_화남/복합식량안보_및_다모작/식량안보_레드라인_다모작_분석.md",
+        "label_source": "USDA PSD, national",
+        "region_share": "Guangdong and Guangxi are where double-cropping is actually being abandoned, but they are a minority of national rice area, so most of the movement in this target is Jiangxi, Hunan and Hubei -- and most of that is policy.",
+        "caveat": "The guide's method is a Sentinel-1 SAR time series read for the flood-transplant-flood signature of a second crop, classified by CNN-LSTM. None of that is implemented. This substitutes national harvested area as an aggregate proxy for cropping intensity and the weather events that make a farmer abandon the second crop. It is a much weaker instrument than the guide's and should be read as a screening indicator, not a compliance measurement.",
+        "non_weather_drivers": "Cropping intensity in South China is set by the minimum purchase price, the rural wage that makes a second crop uneconomic, urbanisation taking paddy out of production, and since 2021 the 退林还耕 campaign forcing it back in. Policy dominates weather here by a wide margin, and a weather model failing on this target is the expected result rather than a broken one.",
+        "weather_through": "2026-09-13",
+        "critical_window_observed": 0.61,
         "season_complete": false,
         "notes": []
       }
@@ -144,16 +288,12 @@
         "region_share": "Shandong is around a tenth of national vegetable output. This is the weakest region-to-target match in the set, and unlike the other five the label cannot fall back on USDA: PSD carries no vegetables, so FAOSTAT's China figures -- compiled from the very NBS returns every guide says to distrust -- are the only series available.",
         "caveat": "The guide's actual method is Swin-UNet segmentation of Sentinel-2 and GF-2 imagery to map plastic greenhouse area, on the argument that built area sets the production ceiling and weather only modulates it. None of that is implemented; greenhouse expansion is left entirely to the technology trend, which is why the weather features here are expected to add little. This is the largest departure from any guide in the China set.",
         "non_weather_drivers": "Vegetable output is driven by how much protected-cultivation structure exists, which is an investment series, not a climate one. The guide says so itself in §1: greenhouse crops are largely insulated from outside weather, which is the reason the conventional climate model fails on them.",
-        "weather_through": "2026-08-28",
+        "weather_through": "2026-09-13",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
       }
     }
   },
-  "skipped": {
-    "northeast_soy": "features unavailable: frost_penalty",
-    "northeast_corn": "features unavailable: frost_penalty, frost_days_sep",
-    "south_china_rice_area": "features unavailable: cold_dew_days"
-  }
+  "skipped": {}
 }

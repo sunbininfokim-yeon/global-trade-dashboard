@@ -1,4 +1,4 @@
-import { renderCountryShell } from './country-shell.js';
+import { renderCountryShell } from './country-shell.js?v=2';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js';
@@ -8,6 +8,8 @@ import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadFinanceDisplayContract } from '../data/finance-service.js';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 import { applyEopChart } from './special/usa-executive.js';
+import { applyCnPartyChart } from './special/chn-org.js';
+import { loadCnPartyChart } from '../data/chn-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onRoute }) => {
     const modal = createModal(host.roots.modal);
@@ -31,6 +33,9 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 country.us_committees = await loadUsCommittees();
                 applyEopChart(await loadEopChart());
             }
+            // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
+            // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
+            if (iso3 === 'CHN') applyCnPartyChart(await loadCnPartyChart());
             onRoute?.({ country: iso3 });
             shell = renderCountryShell(host.roots.country, {
                 country, manifest: bundle.manifest, onBack, modal, host,

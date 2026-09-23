@@ -1,0 +1,892 @@
+{
+  "schema": "elections_contest_v1",
+  "event_id": "rus-2026-single-voting-day-regions",
+  "iso3": "RUS",
+  "date": "2026-09-20",
+  "as_of": "2026-09-19",
+  "sources": [
+    "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+    "https://en.wikipedia.org/wiki/2026_Russian_regional_elections",
+    "https://ru.wikipedia.org/wiki/%D0%95%D0%B4%D0%B8%D0%BD%D1%8B%D0%B9_%D0%B4%D0%B5%D0%BD%D1%8C_%D0%B3%D0%BE%D0%BB%D0%BE%D1%81%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F_20_%D1%81%D0%B5%D0%BD%D1%82%D1%8F%D0%B1%D1%80%D1%8F_2026_%D0%B3%D0%BE%D0%B4%D0%B0",
+    "https://tass.com/politics/2189299",
+    "https://tass.com/politics/2146991",
+    "https://www.vedomosti.ru/politics/articles/2026/09/18/1229785-kogo-budut-vibirat-v-2026",
+    "http://www.cikrf.ru/"
+  ],
+  "parties": [
+    {
+      "abbr": "UR",
+      "name_ru": "Единая Россия",
+      "name_ko": "통합러시아",
+      "name_en": "United Russia",
+      "leader_ko": "드미트리 메드베데프",
+      "note_ko": "여당. 직선 주지사 8곳 중 7곳에서 현직·권한대행을 냄. 울리야놉스크는 현직이 공산당이라 후보를 내지 않았다."
+    },
+    {
+      "abbr": "CPRF",
+      "name_ru": "КПРФ",
+      "name_ko": "러시아연방공산당",
+      "name_en": "Communist Party of the Russian Federation",
+      "leader_ko": "겐나디 주가노프",
+      "note_ko": "직선 8곳 전원 후보지. 울리야놉스크 현직 루스키흐."
+    },
+    {
+      "abbr": "LDPR",
+      "name_ru": "ЛДПР",
+      "name_ko": "자유민주당",
+      "name_en": "Liberal Democratic Party of Russia",
+      "leader_ko": "레오니드 슬루츠키",
+      "note_ko": "직선 8곳 중 체첸을 뺀 7곳 후보지(체첸 수장은 3명만 등록)."
+    },
+    {
+      "abbr": "SR",
+      "name_ru": "Справедливая Россия",
+      "name_ko": "정의러시아",
+      "name_en": "A Just Russia",
+      "leader_ko": "세르게이 미로노프",
+      "note_ko": "직선 8곳 전원 후보지."
+    },
+    {
+      "abbr": "NL",
+      "name_ru": "Новые люди",
+      "name_ko": "새로운 사람들",
+      "name_en": "New People",
+      "leader_ko": "알렉세이 네차예프",
+      "note_ko": "직선은 모르도바·투바·브랸스크·울리야놉스크. 주의회 명부는 체첸·축치에는 없음(Atlas)."
+    },
+    {
+      "abbr": "Greens",
+      "name_ru": "Российская экологическая партия «Зелёные»",
+      "name_ko": "녹색당",
+      "name_en": "The Greens",
+      "leader_ko": "콘스탄틴 아타얀",
+      "note_ko": "직선은 모르도바 마세로프."
+    },
+    {
+      "abbr": "RPPSS",
+      "name_ru": "Российская партия пенсионеров за социальную справедливость",
+      "name_ko": "연금생활자당",
+      "name_en": "Russian Party of Pensioners for Social Justice",
+      "leader_ko": "에릭 프라즈드니코프",
+      "note_ko": "직선은 벨고로드·펜자·트베리."
+    },
+    {
+      "abbr": "CR",
+      "name_ru": "Коммунисты России",
+      "name_ko": "러시아공산주의자들",
+      "name_en": "Communists of Russia",
+      "leader_ko": "세르게이 말린코비치",
+      "note_ko": "직선은 트베리 말린코비치."
+    },
+    {
+      "abbr": "Rodina",
+      "name_ru": "Родина",
+      "name_ko": "조국당",
+      "name_en": "Rodina",
+      "leader_ko": "알렉세이 주라블료프",
+      "note_ko": "벨고로드 예스코프는 공천 다음날 사퇴, 투표용지에 없음. 주의회 명부는 일부 주만."
+    },
+    {
+      "abbr": "Yabloko",
+      "name_ru": "Яблоко",
+      "name_ko": "야블로코",
+      "name_en": "Yabloko",
+      "leader_ko": "니콜라이 리바코프",
+      "note_ko": "카렐리야·상트페테르부르크·레닌그라드주 주의회 명부는 등록 취소(Atlas)."
+    },
+    {
+      "abbr": "PPD",
+      "name_ru": "Партия прямой демократии",
+      "name_ko": "직접민주당",
+      "name_en": "Party of Direct Democracy",
+      "leader_ko": "타티야나 콜나우스",
+      "note_ko": "주의회 명부는 유대인자치주만(Atlas)."
+    }
+  ],
+  "columns": [
+    {
+      "key": "heads",
+      "label_ko": "지방 수장",
+      "current": {
+        "by_party": {
+          "UR": 10,
+          "CPRF": 1
+        },
+        "total": 11,
+        "as_of": "2026-09-19",
+        "note_ko": "이번 회차 11개 지방 수장 자리의 현직·권한대행. 통합러시아 10(카디로프·즈두노프·호발릭·슈바예프·코발추크·멜니첸코·코롤료프·슈추킨·템레조프·멘야일로), 공산당 1(루스키흐). 10+1=11. 간선 3곳의 숏리스트는 아직 출처에 없다.",
+        "vacancies": 0
+      },
+      "contested_ko": "8곳 직선 + 3곳 주의회 간선. 투표 2026-09-18–20, 집계 전.",
+      "seat_note_ko": "Atlas Table 1: 직선 8곳 공천 40·등록 39(벨고로드 로디나 사퇴). 간선 3곳은 대통령 숏리스트 미공개.",
+      "districts": [
+        {
+          "id": "mordovia",
+          "name_ko": "모르도바 수장",
+          "name_ru": "Глава Республики Мордовия",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "현직 즈두노프 재출마. Atlas 등록 6명. 영문 위키 표는 툴라예프(NL)가 빠져 있어 Atlas를 쓴다.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Zdunov, Artyom",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Aleksandrov, Alexander",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Geraskin, Timur",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "Greens",
+              "name": "Masserov, Dmitry",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "NL",
+              "name": "Tulayev, Vladislav",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Tyurin, Yevgeny",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "tuva",
+          "name_ko": "투바 수장",
+          "name_ru": "Глава Республики Тыва",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "현직 호발릭 재출마. Atlas·영문 위키 등록 5명.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Khovalyg, Vladislav",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Kuular, Lodoy-Damba",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Chanzan, Aziat",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Chistyakov, Yegor",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "NL",
+              "name": "Irgit, Artysh",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "chechnya",
+          "name_ko": "체첸 수장",
+          "name_ru": "Глава Чеченской Республики",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "현직 카디로프 재출마. Atlas 등록 3명(직선 중 최소).",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Kadyrov, Ramzan",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Nakayev, Khalid",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Denilkhanov, Ismail",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "belgorod",
+          "name_ko": "벨고로드 주지사",
+          "name_ru": "Губернатор Белгородской области",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "글라드코프 사퇴 후 권한대행 슈바예프 출마. 로디나 예스코프는 공천 다음날 사퇴라 투표용지에 없음.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Shuvaev, Alexander",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Shevlyakov, Valery",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Abelmazov, Vladimir",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Dremov, Yevgeny",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "RPPSS",
+              "name": "Zotov, Artyom",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "bryansk",
+          "name_ko": "브랸스크 주지사",
+          "name_ru": "Губернатор Брянской области",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "보고마즈 사퇴 후 권한대행 코발추크 출마. 조기선거.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Kovalchuk, Yegor",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Arkhitsky, Andrey",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "NL",
+              "name": "Kazachkova, Alexandra",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Timoshkov, Aleksey",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Titov, Ruslan",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "penza",
+          "name_ko": "펜자 주지사",
+          "name_ru": "Губернатор Пензенской области",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "현직 멜니첸코 재출마. Atlas 등록 5명.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Melnichenko, Oleg",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Shalyapin, Oleg",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Kulikov, Pavel",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "RPPSS",
+              "name": "Yeroshenko, Viktor",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Lisin, Mikhail",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "tver",
+          "name_ko": "트베리 주지사",
+          "name_ru": "Губернатор Тверской области",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "루데냐 사퇴 후 권한대행 코롤료프 출마. Atlas 등록 6명.",
+          "candidates": [
+            {
+              "party_abbr": "UR",
+              "name": "Korolyov, Vitaly",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "CPRF",
+              "name": "Vorobyova, Lyudmila",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Levina, Olga",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "CR",
+              "name": "Malinkovich, Sergey",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Petrova, Tatyana",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "RPPSS",
+              "name": "Yakovenko, Igor",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "ulyanovsk",
+          "name_ko": "울리야놉스크 주지사",
+          "name_ru": "Губернатор Ульяновской области",
+          "group_ko": "직선",
+          "seats": 1,
+          "status": "nominated",
+          "note_ko": "현직 루스키흐(공산당) 재출마. 통합러시아는 후보를 내지 않았다(Vedomosti·Atlas).",
+          "candidates": [
+            {
+              "party_abbr": "CPRF",
+              "name": "Russkikh, Aleksey",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026",
+              "incumbent": true
+            },
+            {
+              "party_abbr": "SR",
+              "name": "Kim, Marina",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "LDPR",
+              "name": "Marinin, Sergey",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            },
+            {
+              "party_abbr": "NL",
+              "name": "Yasaitis, Yulia",
+              "status": "nominated",
+              "source": "https://atlas.vyborov.org/en/articles/89/osobennosti-regionalnoj-konkurencii-2026-itogi-vydvizheniya-i-registracii-kandidatov-i-partijnyh-spiskov-na-regionalnyh-vyborah-20-sentyabrya-2026"
+            }
+          ]
+        },
+        {
+          "id": "dagestan",
+          "name_ko": "다게스탄 수장(간선)",
+          "name_ru": "Глава Республики Дагестан",
+          "group_ko": "간선",
+          "seats": 1,
+          "status": "scheduled",
+          "note_ko": "멜리코프 사퇴 후 권한대행 슈추킨(통합러시아). 대통령이 3인을 주의회에 제출. 8기 인민회의 첫 회기에서 뽑는다. 숏리스트는 출처에 없어 후보를 비운다.",
+          "candidates": []
+        },
+        {
+          "id": "karachay-cherkessia",
+          "name_ko": "카라차예보체르케스 수장(간선)",
+          "name_ru": "Глава Карачаево-Черкесской Республики",
+          "group_ko": "간선",
+          "seats": 1,
+          "status": "scheduled",
+          "note_ko": "현직 템레조프 재출마 보도. 대통령 숏리스트 3인은 출처에 없어 후보를 비운다. 투표일 2026-09-20.",
+          "candidates": []
+        },
+        {
+          "id": "north-ossetia",
+          "name_ko": "북오세티야 수장(간선)",
+          "name_ru": "Глава Республики Северная Осетия",
+          "group_ko": "간선",
+          "seats": 1,
+          "status": "scheduled",
+          "note_ko": "현직 멘야일로 재출마 보도. 대통령 숏리스트 3인은 출처에 없어 후보를 비운다. 투표일 2026-09-20.",
+          "candidates": []
+        }
+      ]
+    },
+    {
+      "key": "legislatures",
+      "label_ko": "주의회",
+      "current": {
+        "by_party": {
+          "UR": 1180
+        },
+        "total": 1694,
+        "as_of": "2021-09-19",
+        "note_ko": "39개 주의회를 한 원으로 더한 숫자가 아니다. total 1694은 2021 선출 당시 정수 합(리페츠크 42, 무르만스크 32). UR 1180은 영문 위키 2021 통합러시아 의석 합. 나머지 정당 분해·2026 공시전 이적은 출처에 없어 넣지 않았다. 1180≠1694. 이번 회차 정수가 바뀐 주는 각 행 note_ko."
+      },
+      "contested_ko": "39개 주의회 전원. 명부·소선거구 후보는 전수 미수록(partial).",
+      "seat_note_ko": "TASS·러 위키: 39개 주. Atlas: 등록 명부 254. UR·CPRF·LDPR·SR는 39곳 전원, NL은 체첸·축치 제외. 시·구 의회와 다른 주 보궐은 이 이벤트에 넣지 않았다.",
+      "districts": [
+        {
+          "id": "adygea",
+          "name_ko": "아디게야 국가회의",
+          "name_ru": "Государственный совет-Хасэ Республики Адыгея",
+          "group_ko": "공화국",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 40/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "dagestan",
+          "name_ko": "다게스탄 인민회의",
+          "name_ru": "Народное собрание Республики Дагестан",
+          "group_ko": "공화국",
+          "seats": 90,
+          "status": "scheduled",
+          "note_ko": "이번 정수 90. 2021 통합러시아 69/90. 명부 비례. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "ingushetia",
+          "name_ko": "인구셰티야 인민회의",
+          "name_ru": "Народное Собрание Республики Ингушетия",
+          "group_ko": "공화국",
+          "seats": 32,
+          "status": "scheduled",
+          "note_ko": "이번 정수 32. 2021 통합러시아 27/32. 명부 비례. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "karelia",
+          "name_ko": "카렐리야 입법회의",
+          "name_ru": "Законодательное собрание Республики Карелия",
+          "group_ko": "공화국",
+          "seats": 36,
+          "status": "scheduled",
+          "note_ko": "이번 정수 36. 2021 통합러시아 22/36. 병립 18+18. 야블로코 명부 등록 취소. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "mordovia",
+          "name_ko": "모르도바 국가회의",
+          "name_ru": "Государственное Собрание Республики Мордовия",
+          "group_ko": "공화국",
+          "seats": 48,
+          "status": "scheduled",
+          "note_ko": "이번 정수 48. 2021 통합러시아 42/48. 병립 24+24. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "chechnya",
+          "name_ko": "체첸 의회",
+          "name_ru": "Парламент Чеченской Республики",
+          "group_ko": "공화국",
+          "seats": 41,
+          "status": "scheduled",
+          "note_ko": "이번 정수 41. 2021 통합러시아 37/41. 명부 비례. NL 명부 없음. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "chuvashia",
+          "name_ko": "추바시야 국가회의",
+          "name_ru": "Государственный Совет Чувашской Республики",
+          "group_ko": "공화국",
+          "seats": 44,
+          "status": "scheduled",
+          "note_ko": "이번 정수 44. 2021 통합러시아 30/44. 병립 22+22. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "altai-krai",
+          "name_ko": "알타이 변경 입법회의",
+          "name_ru": "Алтайское краевое законодательное собрание",
+          "group_ko": "변경",
+          "seats": 68,
+          "status": "scheduled",
+          "note_ko": "이번 정수 68. 2021 통합러시아 31/68. 병립 34+34. 2021만 통합러시아 과반 아님. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "kamchatka",
+          "name_ko": "캄차카 변경 입법회의",
+          "name_ru": "Законодательное собрание Камчатского края",
+          "group_ko": "변경",
+          "seats": 28,
+          "status": "scheduled",
+          "note_ko": "이번 정수 28. 2021 통합러시아 18/28. 병립 14+14. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "krasnoyarsk",
+          "name_ko": "크라스노야르스크 변경 입법회의",
+          "name_ru": "Законодательное собрание Красноярского края",
+          "group_ko": "변경",
+          "seats": 52,
+          "status": "scheduled",
+          "note_ko": "이번 정수 52. 2021 통합러시아 34/52. 병립. 러 위키 26+26(22×1+2×2). 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "perm",
+          "name_ko": "페름 변경 입법회의",
+          "name_ru": "Законодательное Собрание Пермского края",
+          "group_ko": "변경",
+          "seats": 60,
+          "status": "scheduled",
+          "note_ko": "이번 정수 60. 2021 통합러시아 40/60. 병립 30+30. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "primorsky",
+          "name_ko": "연해주 입법회의",
+          "name_ru": "Законодательное Собрание Приморского края",
+          "group_ko": "변경",
+          "seats": 40,
+          "status": "scheduled",
+          "note_ko": "이번 정수 40. 2021 통합러시아 23/40. 병립 20+20. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "stavropol",
+          "name_ko": "스타브로폴 변경 두마",
+          "name_ru": "Дума Ставропольского края",
+          "group_ko": "변경",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 43/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "amur",
+          "name_ko": "아무르주 입법회의",
+          "name_ru": "Законодательное собрание Амурской области",
+          "group_ko": "주",
+          "seats": 27,
+          "status": "scheduled",
+          "note_ko": "이번 정수 27. 2021 통합러시아 18/27. 병립 9+18. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "astrakhan",
+          "name_ko": "아스트라한주 두마",
+          "name_ru": "Дума Астраханской области",
+          "group_ko": "주",
+          "seats": 44,
+          "status": "scheduled",
+          "note_ko": "이번 정수 44. 2021 통합러시아 27/44. 병립 22+22. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "vologda",
+          "name_ko": "볼로그다주 입법회의",
+          "name_ru": "Законодательное Собрание Вологодской области",
+          "group_ko": "주",
+          "seats": 34,
+          "status": "scheduled",
+          "note_ko": "이번 정수 34. 2021 통합러시아 24/34. 병립 17+17. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "kaliningrad",
+          "name_ko": "칼리닌그라드주 입법회의",
+          "name_ru": "Законодательное собрание Калининградской области",
+          "group_ko": "주",
+          "seats": 40,
+          "status": "scheduled",
+          "note_ko": "이번 정수 40. 2021 통합러시아 29/40. 병립 20+20. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "kirov",
+          "name_ko": "키로프주 입법회의",
+          "name_ru": "Законодательное собрание Кировской области",
+          "group_ko": "주",
+          "seats": 40,
+          "status": "scheduled",
+          "note_ko": "이번 정수 40. 2021 통합러시아 24/40. 러 위키 이번 40(13+27). 영문 위키는 45(기존 40, 15+30). 병기.. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "kursk",
+          "name_ko": "쿠르스크주 두마",
+          "name_ru": "Курская областная дума",
+          "group_ko": "주",
+          "seats": 45,
+          "status": "scheduled",
+          "note_ko": "이번 정수 45. 2021 통합러시아 31/45. 병립. 러 위키 22+23, 영문 위키 21+24. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "leningrad",
+          "name_ko": "레닌그라드주 입법회의",
+          "name_ru": "Законодательное собрание Ленинградской области",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 35/50. 병립 25+25. 야블로코 명부 등록 취소. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "lipetsk",
+          "name_ko": "리페츠크주 의회",
+          "name_ru": "Липецкий областной совет депутатов",
+          "group_ko": "주",
+          "seats": 36,
+          "status": "scheduled",
+          "note_ko": "이번 정수 36. 2021 통합러시아 23/42. 병립 9+27. 정수 42→36. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "moscow-oblast",
+          "name_ko": "모스크바주 두마",
+          "name_ru": "Московская областная дума",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 36/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "murmansk",
+          "name_ko": "무르만스크주 두마",
+          "name_ru": "Мурманская областная дума",
+          "group_ko": "주",
+          "seats": 28,
+          "status": "scheduled",
+          "note_ko": "이번 정수 28. 2021 통합러시아 25/32. 병립 10+18. 정수 32→28. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "nizhny-novgorod",
+          "name_ko": "니즈니노브고로드주 입법회의",
+          "name_ru": "Законодательное собрание Нижегородской области",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 40/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "novgorod",
+          "name_ko": "노브고로드주 두마",
+          "name_ru": "Новгородская областная дума",
+          "group_ko": "주",
+          "seats": 32,
+          "status": "scheduled",
+          "note_ko": "이번 정수 32. 2021 통합러시아 23/32. 정수 32. 러 위키 16+16, 영문 위키 12+20. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "omsk",
+          "name_ko": "옴스크주 입법회의",
+          "name_ru": "Законодательное собрание Омской области",
+          "group_ko": "주",
+          "seats": 44,
+          "status": "scheduled",
+          "note_ko": "이번 정수 44. 2021 통합러시아 26/44. 병립 22+22. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "orenburg",
+          "name_ko": "오렌부르크주 입법회의",
+          "name_ru": "Законодательное собрание Оренбургской области",
+          "group_ko": "주",
+          "seats": 47,
+          "status": "scheduled",
+          "note_ko": "이번 정수 47. 2021 통합러시아 29/47. 병립 24+23. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "oryol",
+          "name_ko": "오룔주 인민대의원회의",
+          "name_ru": "Орловский областной Совет народных депутатов",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 27/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "pskov",
+          "name_ko": "프스코프주 입법회의",
+          "name_ru": "Законодательное собрание Псковской области",
+          "group_ko": "주",
+          "seats": 26,
+          "status": "scheduled",
+          "note_ko": "이번 정수 26. 2021 통합러시아 19/26. 병립 13+13. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "samara",
+          "name_ko": "사마라주 두마",
+          "name_ru": "Самарская Губернская дума",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 36/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "sverdlovsk",
+          "name_ko": "스베르들롭스크주 입법회의",
+          "name_ru": "Законодательное собрание Свердловской области",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 33/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "tambov",
+          "name_ko": "탐보프주 두마",
+          "name_ru": "Тамбовская областная дума",
+          "group_ko": "주",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 42/50. 병립 25+25. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "tver-leg",
+          "name_ko": "트베리주 입법회의",
+          "name_ru": "Законодательное собрание Тверской области",
+          "group_ko": "주",
+          "seats": 40,
+          "status": "scheduled",
+          "note_ko": "이번 정수 40. 2021 통합러시아 29/40. 병립 20+20. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "tomsk",
+          "name_ko": "톰스크주 입법두마",
+          "name_ru": "Законодательная дума Томской области",
+          "group_ko": "주",
+          "seats": 42,
+          "status": "scheduled",
+          "note_ko": "이번 정수 42. 2021 통합러시아 27/42. 병립 21+21. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "tyumen",
+          "name_ko": "튜멘주 두마",
+          "name_ru": "Тюменская областная дума",
+          "group_ko": "주",
+          "seats": 48,
+          "status": "scheduled",
+          "note_ko": "이번 정수 48. 2021 통합러시아 38/48. 병립 24+24. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "spb",
+          "name_ko": "상트페테르부르크 입법회의",
+          "name_ru": "Законодательное собрание Санкт-Петербурга",
+          "group_ko": "연방시",
+          "seats": 50,
+          "status": "scheduled",
+          "note_ko": "이번 정수 50. 2021 통합러시아 29/50. 병립 25+25. 야블로코 명부 등록 취소. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "eao",
+          "name_ko": "유대인자치주 입법회의",
+          "name_ru": "Законодательное собрание Еврейской АО",
+          "group_ko": "자치주",
+          "seats": 19,
+          "status": "scheduled",
+          "note_ko": "이번 정수 19. 2021 통합러시아 14/19. 병립 10+9. PPD 명부 1곳(Atlas). 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "khmao",
+          "name_ko": "한티만시 두마",
+          "name_ru": "Дума Ханты-Мансийского АО — Югры",
+          "group_ko": "자치구",
+          "seats": 38,
+          "status": "scheduled",
+          "note_ko": "이번 정수 38. 2021 통합러시아 29/38. 러 위키 이번 38(19+19). 영문 위키는 40(기존 38). 병기.. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        },
+        {
+          "id": "chukotka",
+          "name_ko": "축치 두마",
+          "name_ru": "Дума Чукотского АО",
+          "group_ko": "자치구",
+          "seats": 15,
+          "status": "scheduled",
+          "note_ko": "이번 정수 15. 2021 통합러시아 11/15. 병립. NL 명부 없음. 등록 명부·소선거구 후보는 전수 미수록.",
+          "candidates": []
+        }
+      ]
+    }
+  ]
+}

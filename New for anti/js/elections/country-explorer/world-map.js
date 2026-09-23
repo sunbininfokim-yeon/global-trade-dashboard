@@ -7,6 +7,23 @@ const spectrumColors = {
     authoritarian_personalist: [100, 116, 139, 185],
     authoritarian_party_state: [71, 85, 105, 185],
     theocratic_authoritarian: [20, 83, 45, 185],
+    // CHN/SAU/ARE/RUS carry these three instead of the generic
+    // authoritarian_* keys above, so without an entry here they fell through
+    // to `neutral` -- indistinguishable from a country with no spectrum data
+    // at all (reported 2026-09-12: "중국은 왜 색깔이 없는거야?").
+    // authoritarian_cpc: user asked for CCP red specifically (2026-09-12).
+    // This is the party's own flag color (PRC flag red, 中国红), not the
+    // US conservative-party red reused for `conservative` above -- picked a
+    // visibly different red (more vermilion/orange-leaning) so the two don't
+    // collide as the same hue on the map. Still distinct from putting China
+    // on the conservative/progressive axis, which CLAUDE.md rules out.
+    authoritarian_cpc: [222, 41, 16, 195],
+    // authoritarian_ur = United Russia (Единая Россия, Putin's party
+    // vehicle) -- user asked for "Putin's color" (2026-09-12). This is the
+    // party's own official brand blue, #2056AE, not `progressive`'s brighter
+    // blue [37,99,235] -- distinct enough not to collide as the same hue.
+    authoritarian_ur: [32, 86, 174, 195],
+    authoritarian_monarchy: [110, 90, 60, 185],
 };
 const neutral = [43, 52, 66, 255];
 
