@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=82">
+    <link rel="stylesheet" href="style.css?v=83">
 </head>
 <body>
     <div id="app">
@@ -183,12 +183,8 @@
                         <a href="#" data-target="us-policy-hub">미국</a>
                     </div>
                 </div>
-                <div class="menu-item" style="margin-left: 20px;">
-                    <span style="color: #cbd5e1;">주요 기관</span>
-                    <div class="dropdown">
-                        <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
-                        <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
-                    </div>
+                <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
                 </div>
                 <!-- Hidden until signed in -- auth.js toggles this on every
                      auth state change, same as it does the login/logout
@@ -450,7 +446,8 @@
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
     <script src="mypage.js?v=5"></script>
-    <script src="app.js?v=123"></script>
+    <script src="tutorial.js?v=1"></script>
+    <script src="app.js?v=124"></script>
     <script src="gas-storage.js?v=2"></script>
     <script src="trade.js?v=gas-storage-2"></script>
     <script type="module" src="js/elections/index.js?v=4"></script>
