@@ -523,6 +523,9 @@
         platinum: { hsCode: "7110", colorScheme: { source: [226, 232, 240], target: [241, 245, 249] } }
     };
 
+    // Partner codes in the monthly bilateral files are M49 too (trade-monthly.js).
+    window.ComtradeM49Names = M49_MAP;
+
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
     //

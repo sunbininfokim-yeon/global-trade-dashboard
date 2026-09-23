@@ -1850,6 +1850,51 @@ body.trade-map-mode .right-pane {
 .trade-focus-clear:hover { border-color: #38bdf8; color: #e2e8f0; }
 .trade-focus-sub { font-size: 11px; color: #94a3b8; margin: 0 0 10px; }
 
+/* 무역 지도 기간 표시 / 연간·월별 토글 (trade-monthly.js).
+   토글은 월별 자료가 있는 국가·품목에서만 배지를 대신해 나타난다. */
+.tm-period-badge {
+    display: inline-block; font-size: 10.5px; color: #bae6fd; white-space: nowrap;
+    padding: 2px 7px; border-radius: 999px;
+    border: 1px solid rgba(56,189,248,.35); background: rgba(56,189,248,.08);
+}
+.trade-focus-head { flex-wrap: wrap; }
+.trade-focus-head .tm-period-badge { margin-left: auto; }
+/* Own full-width row under the country name: the side panel is ~340px and
+   "월별 · 2026년 5월" next to the name and 전체 지도 got clipped. */
+.tm-toggle {
+    order: 3; flex: 1 0 100%; display: flex;
+    border: 1px solid rgba(148,163,184,.35); border-radius: 7px; overflow: hidden;
+}
+.tm-toggle button {
+    flex: 1; font: inherit; font-size: 11px; color: #94a3b8; background: transparent;
+    border: 0; padding: 5px 8px; cursor: pointer; white-space: nowrap;
+}
+.tm-toggle button + button { border-left: 1px solid rgba(148,163,184,.35); }
+.tm-toggle button:hover { color: #e2e8f0; }
+.tm-toggle button.is-on { color: #0f172a; background: #7dd3fc; font-weight: 700; }
+.tm-toggle button:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.tm-annual[hidden], .tm-monthly[hidden] { display: none; }
+
+.tm-series {
+    margin: 0 0 10px; padding: 8px 10px;
+    border: 1px solid rgba(148,163,184,.16); border-radius: 7px; background: rgba(15,23,42,.4);
+}
+.tm-series.tm-ref { border-color: rgba(250,204,21,.28); background: rgba(250,204,21,.05); }
+.tm-series-head { display: flex; align-items: baseline; gap: 6px; font-size: 10.5px; color: #94a3b8; }
+.tm-flow { font-weight: 700; padding: 0 5px; border-radius: 4px; }
+.tm-flow-X { color: #86efac; background: rgba(134,239,172,.1); }
+.tm-flow-M { color: #fca5a5; background: rgba(252,165,165,.1); }
+.tm-ref .tm-flow { color: #fde68a; background: rgba(250,204,21,.12); }
+.tm-src { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tm-latest { display: flex; align-items: baseline; gap: 5px; flex-wrap: wrap; margin: 4px 0 2px; }
+.tm-latest strong { font-size: 17px; color: #e2e8f0; font-variant-numeric: tabular-nums; }
+.tm-unit { font-size: 10.5px; color: #64748b; }
+.tm-when { margin-left: auto; font-size: 10.5px; color: #94a3b8; }
+.tm-when.is-stale { color: #fbbf24; }
+.tm-note { font-size: 10.5px; color: rgba(148,163,184,.8); margin: 4px 0 0; line-height: 1.45; }
+.tm-bilateral .tm-note { margin-bottom: 8px; }
+.tm-note.is-warn { color: #fbbf24; }
+
 /* 선물 시세 카드 (1단계 좌측, 최대 수출국 통계 바로 아래) */
 .fut-card {
     margin: 0 0 10px; padding: 8px 10px;

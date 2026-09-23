@@ -108,6 +108,9 @@ const focusTradeCountry = (countryName) => {
     // primaryValue by 1e6 regardless of commodity. Gold and silver were labelled
     // "Tonnes eq.", which named a quantity the figure is not.
     const unit = 'M USD';
+    // Which Comtrade year these routes are from (the Worker picks the
+    // newest complete one), e.g. "2025년 연간".
+    const annualLabel = typeof comtradePeriodLabel === 'function' ? comtradePeriodLabel(arcs) : '';
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
     const maxVol = focused[0]?.volume || 1;
     const rows = focused.slice(0, 14).map((a, i) => {
@@ -168,17 +171,24 @@ const focusTradeCountry = (countryName) => {
             <div class="trade-focus-card">
                 <div class="trade-focus-head">
                     <strong>${displayName}</strong>
+                    ${annualLabel ? `<span class="tm-period-badge">${annualLabel}</span>` : ''}
                     <button type="button" class="trade-focus-clear" id="trade-focus-clear">전체 지도</button>
                 </div>
-                <p class="trade-focus-sub">수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
-                ${statsHtml}
-                ${depHtml}
-                <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
+                <div class="tm-annual">
+                    <p class="trade-focus-sub">${annualLabel ? `${annualLabel} · ` : ''}수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
+                    ${statsHtml}
+                    ${depHtml}
+                    <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
+                </div>
+                <div class="tm-monthly" hidden></div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
             e.preventDefault();
             clearTradeFocus();
         });
+        // 연간 / 월별 toggle, only where monthly data exists (trade-monthly.js).
+        window.TradeMonthly?.attach(newsContentEl.querySelector('.trade-focus-card'),
+            { commodity: currentCommodity, countryName, annualLabel });
     }
     renderRigCountCountry(countryName);
     window.GasStorage?.render(countryName);
@@ -842,7 +852,7 @@ const renderTradeWorldPanel = (arcs) => {
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
             <div id="futures-slot"></div>
-            <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
+            <p class="trade-focus-sub">${typeof comtradePeriodLabel === 'function' && comtradePeriodLabel(arcs) ? `<span class="tm-period-badge">${comtradePeriodLabel(arcs)}</span> ` : ''}비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
