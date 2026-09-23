@@ -20,6 +20,8 @@
 | 레버 ETF 유형 분해 | 지수/섹터/해외/단일종목 TV | FDR ETF Name classify | observed |
 | 홍콩 단일종목 레버 | HK LETF AUM·거래 | HKEX / 리서치 PDF | observed (국내와 **분리**) |
 | US SOXL / KORU | 미국 레버 ETF | Yahoo 등 | observed |
+| K200 선물·콜·풋 투자자별 수급 (2019~) | 외국인·기관·개인·기타법인 매수/매도/순매수 거래대금 | KRX 15007 정규화 이력 (`krx-month-paste` `data/normalized/krx_15007_k200_investor`) → `build_krx_deriv_flow.py` → `krx_deriv_flow_v1.json` | observed (OI 아님) |
+| K200 선물 최근월물 종가·OI | 정규장 종가 · 시장 전체 미결제약정 | KRX 15003 (`kospi200_futures_oi`) → 같은 파일 `futures_front` | observed (외국인 OI 아님) |
 
 ## 쓰지 않는 것 / 없는 것
 
