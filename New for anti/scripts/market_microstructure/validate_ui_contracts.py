@@ -120,6 +120,48 @@ def validate_15007_leg(value: Any, *, where: str) -> None:
         raise ContractError(f"{where}.buy_krw - sell_krw must equal net_krw")
 
 
+def validate_krx_deriv_flow(value: dict[str, Any]) -> None:
+    """Columnar KRX 15007 history: every column must line up with `dates`."""
+    if value.get("schema_version") != "krx-deriv-flow-v1":
+        raise ContractError("krx_deriv_flow schema_version mismatch")
+    dates = value.get("dates")
+    if not isinstance(dates, list) or not dates:
+        raise ContractError("krx_deriv_flow.dates must be a non-empty list")
+    if dates != sorted(set(dates)):
+        raise ContractError("krx_deriv_flow.dates must be sorted and unique")
+    if value.get("as_of") != dates[-1]:
+        raise ContractError("krx_deriv_flow.as_of must equal the last date")
+    flow = require_object(value, "flow", where="krx_deriv_flow")
+    for product in ("futures", "options_call", "options_put"):
+        cols = require_object(flow, product, where="krx_deriv_flow.flow")
+        for col in ("foreign_net", "institution_net", "retail_net", "other_corp_net",
+                    "foreign_buy", "foreign_sell", "market_total_buy"):
+            arr = cols.get(col)
+            if not isinstance(arr, list) or len(arr) != len(dates):
+                raise ContractError(f"krx_deriv_flow.flow.{product}.{col} must align with dates")
+            if any(v is not None and (isinstance(v, bool) or not isinstance(v, int)) for v in arr):
+                raise ContractError(f"krx_deriv_flow.flow.{product}.{col} must be int or null")
+    front = require_object(value, "futures_front", where="krx_deriv_flow")
+    for col in ("close", "open_interest"):
+        if len(front.get(col) or []) != len(dates):
+            raise ContractError(f"krx_deriv_flow.futures_front.{col} must align with dates")
+    options = require_object(value, "option_oi", where="krx_deriv_flow")
+    for col in ("expiry", "call_oi", "put_oi", "pc_oi", "call_wall", "put_wall", "atm_strike", "atm_iv"):
+        if len(options.get(col) or []) != len(dates):
+            raise ContractError(f"krx_deriv_flow.option_oi.{col} must align with dates")
+    program = require_object(value, "program", where="krx_deriv_flow")
+    pdates = program.get("dates")
+    if not isinstance(pdates, list) or pdates != sorted(set(pdates)):
+        raise ContractError("krx_deriv_flow.program.dates must be sorted and unique")
+    for col in ("arbitrage_net", "non_arbitrage_net", "total_net"):
+        if len(program.get(col) or []) != len(pdates):
+            raise ContractError(f"krx_deriv_flow.program.{col} must align with program.dates")
+    last = require_object(value, "last_dates", where="krx_deriv_flow")
+    for key in ("flow", "option_oi"):
+        if last.get(key) is not None and last[key] not in dates:
+            raise ContractError(f"krx_deriv_flow.last_dates.{key} must be one of dates")
+
+
 def validate_detailed_15007(value: Any) -> None:
     if not isinstance(value, dict):
         raise ContractError("derivatives_board.kr.investor_nets.detailed_15007 must be object")
@@ -203,6 +245,8 @@ def validate() -> None:
 
     concentration = load_json("kospi_concentration_history_v1.json")
     require(concentration, "as_of", where="kospi_concentration_history")
+
+    validate_krx_deriv_flow(load_json("krx_deriv_flow_v1.json"))
 
     validate_history("derivatives_activity_history_v1.jsonl")
     validate_history("leverage_direction_history_v1.jsonl")

@@ -89,6 +89,12 @@ jobs:
           path: krx-month-paste
           sparse-checkout: |
             data/raw/krx_15007
+            data/normalized/krx_15007_k200_investor
+            data/normalized/kospi200_futures_oi
+            data/normalized/kospi200_option_oi
+            data/normalized/kospi_program
+            data/manifests/krx_15007_k200_investor.json
+            data/manifests/kospi_program.json
           sparse-checkout-cone-mode: false
 
       - name: Resolve latest complete KRX 15007 raw date
@@ -135,6 +141,17 @@ jobs:
       - name: Append derivatives and LETF history
         run: python append_derivatives_history.py --print-stats
 
+      # K200 derivatives microstructure history from the normalized hive in
+      # the same checkout: 15007 investor flow (futures/call/put x foreign,
+      # institution, retail, other-corp; 2019~), 15003 front futures, 15018
+      # front option chain OI, 12012 program trading. The builder merges onto
+      # the committed file, so a stalled or partial source never erases the
+      # days already published; a failed checkout leaves the file untouched.
+      - name: KRX derivatives microstructure history
+        if: steps.krx15007_checkout.outcome == 'success'
+        continue-on-error: true
+        run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
+
       - name: Investor × price levels (real data; marcap + high-vol in top100)
         continue-on-error: true
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
@@ -164,6 +181,7 @@ jobs:
             "New for anti/public/data/us_kr_hitrate_v1.json" \
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
+            "New for anti/public/data/krx_deriv_flow_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
             "New for anti/public/data/market_microstructure_v1.json" \
             "New for anti/public/data/ai_casino_brief_v1.json" \
