@@ -22,6 +22,8 @@
 | US SOXL / KORU | 미국 레버 ETF | Yahoo 등 | observed |
 | K200 선물·콜·풋 투자자별 수급 (2019~) | 외국인·기관·개인·기타법인 매수/매도/순매수 거래대금 | KRX 15007 정규화 이력 (`krx-month-paste` `data/normalized/krx_15007_k200_investor`) → `build_krx_deriv_flow.py` → `krx_deriv_flow_v1.json` | observed (OI 아님) |
 | K200 선물 최근월물 종가·OI | 정규장 종가 · 시장 전체 미결제약정 | KRX 15003 (`kospi200_futures_oi`) → 같은 파일 `futures_front` | observed (외국인 OI 아님) |
+| K200 옵션 최근월물 체인 OI·ATM IV | 콜/풋 OI 합계·최대 OI 행사가·P/C OI·ATM IV, 최신일 행사가별 OI | KRX 15018 (`kospi200_option_oi`) → 같은 파일 `option_oi` | observed (외국인 OI 아님, 만기일 OI 미공시) |
+| 프로그램매매 (유가증권) | 차익·비차익·전체 순매수 | KRX 12012 (`kospi_program`) → 같은 파일 `program` (자체 날짜축) | observed (수집률 67%, 빈 기간 있음) |
 
 ## 쓰지 않는 것 / 없는 것
 

@@ -91,7 +91,10 @@ jobs:
             data/raw/krx_15007
             data/normalized/krx_15007_k200_investor
             data/normalized/kospi200_futures_oi
+            data/normalized/kospi200_option_oi
+            data/normalized/kospi_program
             data/manifests/krx_15007_k200_investor.json
+            data/manifests/kospi_program.json
           sparse-checkout-cone-mode: false
 
       - name: Resolve latest complete KRX 15007 raw date
@@ -138,11 +141,13 @@ jobs:
       - name: Append derivatives and LETF history
         run: python append_derivatives_history.py --print-stats
 
-      # Full KRX 15007 investor table (K200 futures/call/put × foreign,
-      # institution, retail, other-corp; 2019~) from the normalized hive in
-      # the same checkout. A failed checkout or a shorter hive keeps the
-      # committed file (the builder refuses to shrink the history).
-      - name: KRX 15007 investor-flow history
+      # K200 derivatives microstructure history from the normalized hive in
+      # the same checkout: 15007 investor flow (futures/call/put x foreign,
+      # institution, retail, other-corp; 2019~), 15003 front futures, 15018
+      # front option chain OI, 12012 program trading. The builder merges onto
+      # the committed file, so a stalled or partial source never erases the
+      # days already published; a failed checkout leaves the file untouched.
+      - name: KRX derivatives microstructure history
         if: steps.krx15007_checkout.outcome == 'success'
         continue-on-error: true
         run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats

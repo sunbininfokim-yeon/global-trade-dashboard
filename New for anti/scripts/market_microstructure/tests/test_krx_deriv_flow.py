@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from build_krx_deriv_flow import build  # noqa: E402
+from build_krx_deriv_flow import build, merge_with_previous  # noqa: E402
 
 
 def flow_row(day: str, product: str, *, foreign=(100, 60), collected="2026-09-01T00:00:00Z",
@@ -107,6 +107,79 @@ class TestKrxDerivFlow(unittest.TestCase):
         self.assertEqual(front["close"], [1100.5, 1101.0])
         self.assertEqual(front["open_interest"], [130000, None])
         self.assertEqual(front["contract"], ["202609", "202612"])
+
+    def test_option_chain_totals_walls_and_expiry_iv(self):
+        write_hive(self.norm / "krx_15007_k200_investor", [
+            flow_row("2026-09-09", "futures"), flow_row("2026-09-10", "futures"), flow_row("2026-09-11", "futures"),
+        ])
+        write_hive(self.norm / "kospi200_futures_oi", [
+            {"date": d, "session": "regular", "close": 1100.0, "open_interest_contracts": 1, "expiry_or_contract_month": "202612"}
+            for d in ("2026-09-09", "2026-09-10", "2026-09-11")
+        ])
+        chain = []
+        for d, exp in (("2026-09-09", "202609"), ("2026-09-10", "202609"), ("2026-09-11", "202610")):
+            for t, strike, oi, iv in (("call", 1100.0, 50, 30.0), ("call", 1150.0, 90, 28.0),
+                                      ("put", 1100.0, 40, 32.0), ("put", 1000.0, 70, 40.0),
+                                      ("put", 950.0, 0, 200.0)):
+                chain.append({"date": d, "session": "regular", "option_type": t, "strike": strike,
+                              "open_interest_contracts": oi, "implied_volatility": iv,
+                              "expiry_or_contract_month": exp})
+            chain.append({"date": d, "session": "night", "option_type": "call", "strike": 1100.0,
+                          "open_interest_contracts": 999999, "expiry_or_contract_month": exp})
+        write_hive(self.norm / "kospi200_option_oi", chain)
+        payload, _ = build(self.root)
+        o = payload["option_oi"]
+        self.assertEqual(o["call_oi"], [140, 140, 140])  # night session ignored
+        self.assertEqual(o["put_oi"], [110, 110, 110])  # zero OI is a blank, not a strike
+        self.assertEqual(o["call_wall"], [1150.0] * 3)
+        self.assertEqual(o["put_wall"], [1000.0] * 3)
+        self.assertEqual(o["atm_strike"], [1100.0] * 3)
+        # 09-10 is September's expiry (2nd Thursday, and the front rolls next day).
+        self.assertEqual(o["atm_iv"], [31.0, None, 31.0])
+        self.assertEqual(o["profile"]["date"], "2026-09-11")
+
+    def test_program_block_has_its_own_axis(self):
+        write_hive(self.norm / "krx_15007_k200_investor", [flow_row("2026-09-08", "futures")])
+        mn = 1_000_000
+        write_hive(self.norm / "kospi_program", [
+            {"date": "2026-09-07", "program_type": t, "buy_krw": 10 * mn, "sell_krw": 4 * mn, "net_krw": 6 * mn}
+            for t in ("arbitrage", "non_arbitrage", "total")
+        ] + [{"date": "2026-09-04", "program_type": "total", "buy_krw": 1 * mn, "sell_krw": 4 * mn, "net_krw": 9 * mn}])
+        payload, stats = build(self.root)
+        p = payload["program"]
+        self.assertEqual(p["dates"], ["2026-09-04", "2026-09-07"])
+        self.assertEqual(p["total_net"], [None, 6])  # 1 - 4 != 9: dropped
+        self.assertEqual(p["arbitrage_net"], [None, 6])
+        self.assertEqual(stats["program_inconsistent"], 1)
+        self.assertEqual(payload["last_dates"]["program"], "2026-09-07")
+        self.assertEqual(payload["last_dates"]["flow"], "2026-09-08")
+
+    def test_merge_keeps_history_the_source_no_longer_has(self):
+        write_hive(self.norm / "krx_15007_k200_investor", [
+            flow_row("2026-09-01", "futures", foreign=(100, 60)),
+            flow_row("2026-09-02", "futures", foreign=(50, 80)),
+        ])
+        old, _ = build(self.root)
+        # The source now holds only the last day, re-collected with a new value,
+        # plus one new day.
+        for part in (self.norm / "krx_15007_k200_investor").rglob("*.gz"):
+            part.unlink()
+        write_hive(self.norm / "krx_15007_k200_investor", [
+            flow_row("2026-09-02", "futures", foreign=(55, 80)),
+            flow_row("2026-09-03", "futures", foreign=(70, 70)),
+        ])
+        new, _ = build(self.root)
+        merged = merge_with_previous(old, new)
+        self.assertEqual(merged["dates"], ["2026-09-01", "2026-09-02", "2026-09-03"])
+        self.assertEqual(merged["flow"]["futures"]["foreign_net"], [40, -25, 0])
+        self.assertEqual(merged["futures_front"]["close"], [None, None, None])
+        self.assertEqual(merged["as_of"], "2026-09-03")
+        self.assertEqual(merged["last_dates"]["flow"], "2026-09-03")
+        # A stalled source (the same build again, nothing new) leaves the
+        # published file unchanged, 09-01 included.
+        stalled = merge_with_previous(merged, new)
+        self.assertEqual(stalled["dates"], merged["dates"])
+        self.assertEqual(stalled["flow"]["futures"]["foreign_net"], [40, -25, 0])
 
     def test_missing_hive_raises(self):
         with self.assertRaises(FileNotFoundError):

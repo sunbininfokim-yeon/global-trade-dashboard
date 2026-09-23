@@ -145,6 +145,21 @@ def validate_krx_deriv_flow(value: dict[str, Any]) -> None:
     for col in ("close", "open_interest"):
         if len(front.get(col) or []) != len(dates):
             raise ContractError(f"krx_deriv_flow.futures_front.{col} must align with dates")
+    options = require_object(value, "option_oi", where="krx_deriv_flow")
+    for col in ("expiry", "call_oi", "put_oi", "pc_oi", "call_wall", "put_wall", "atm_strike", "atm_iv"):
+        if len(options.get(col) or []) != len(dates):
+            raise ContractError(f"krx_deriv_flow.option_oi.{col} must align with dates")
+    program = require_object(value, "program", where="krx_deriv_flow")
+    pdates = program.get("dates")
+    if not isinstance(pdates, list) or pdates != sorted(set(pdates)):
+        raise ContractError("krx_deriv_flow.program.dates must be sorted and unique")
+    for col in ("arbitrage_net", "non_arbitrage_net", "total_net"):
+        if len(program.get(col) or []) != len(pdates):
+            raise ContractError(f"krx_deriv_flow.program.{col} must align with program.dates")
+    last = require_object(value, "last_dates", where="krx_deriv_flow")
+    for key in ("flow", "option_oi"):
+        if last.get(key) is not None and last[key] not in dates:
+            raise ContractError(f"krx_deriv_flow.last_dates.{key} must be one of dates")
 
 
 def validate_detailed_15007(value: Any) -> None:
