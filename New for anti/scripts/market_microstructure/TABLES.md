@@ -81,21 +81,21 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 | venue | metric | USD |
 |-------|--------|----:|
 | KR single-stock LETF | notional AUM×\|L\| | 9869739719.78 |
-| HK CSOP swap LETF | notional AUM×\|L\| | 1402866100.51 |
-| Crypto Binance perps | OI notional | 0.0 |
+| HK CSOP swap LETF | notional AUM×\|L\| | None |
+| Crypto Binance perps | OI notional | None |
 | Crypto Binance perps | 24h quote volume | 0.0 |
-| Stack (KR+HK+crypto OI) | sum (reference only) | 210149250820.3 |
+| Stack (KR+HK+crypto OI) | sum (reference only) | 208746384719.78 |
 
 | underlying | HK notional USD | Crypto OI USD | HK/spot ADV | Crypto OI/spot ADV |
 |------------|----------------:|--------------:|------------:|-------------------:|
-| 000660 | 1100228923.08 | 0.0 | 0.2496 | 0.0 |
-| 005930 | 302637177.44 | 0.0 | 0.0836 | 0.0 |
+| 000660 | None | 0.0 | None | 0.0 |
+| 005930 | None | 0.0 | None | 0.0 |
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
-| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 550114461.5384616 | 554479713.6814587 | indirect_swap |
-| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 63371247.692307696 | indirect_swap |
-| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 6050417.488016226 | indirect_swap |
+| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | None | None | 338278879.7452108 | indirect_swap |
+| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | None | None | 80385897.03018998 | indirect_swap |
+| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | None | None | 4869344.293604491 | indirect_swap |
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
@@ -132,9 +132,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 981386.13 | 2026-09-21 | observed |
-| 신용잔고 | 330554.86 | 2026-09-21 | observed |
-| 신용/예탁금 % | 33.682 |  |  |
+| 고객예탁금 | 1009825.55 | 2026-09-22 | observed |
+| 신용잔고 | 328191.68 | 2026-09-22 | observed |
+| 신용/예탁금 % | 32.5 |  |  |
 
 ## 8. KOSPI market investor flows
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 2.618 | 74.14 | 9.314 |
-| overseas | 26 | 0.015 | 0.42 | 0.052 |
-| sector | 8 | 0.387 | 10.97 | 1.379 |
-| single_stock | 16 | 0.511 | 14.47 | 1.817 |
+| index | 53 | 2.565 | 68.26 | 11.619 |
+| overseas | 26 | 0.017 | 0.45 | 0.076 |
+| sector | 8 | 0.632 | 16.81 | 2.861 |
+| single_stock | 16 | 0.544 | 14.49 | 2.466 |
 
 ## 10. Short interest
 
