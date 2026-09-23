@@ -523,24 +523,38 @@
         platinum: { hsCode: "7110", colorScheme: { source: [226, 232, 240], target: [241, 245, 249] } }
     };
 
+    // Partner codes in the monthly bilateral files are M49 too (trade-monthly.js).
+    window.ComtradeM49Names = M49_MAP;
+
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
-    window.fetchComtradeArcs = async function(commodityKey) {
+    //
+    // opts.freq   'A' (default) or 'M'.
+    // opts.period Omit for annual: the Worker serves the newest year it has
+    //             fully cached and says which one (X-Comtrade-Period). It was
+    //             a literal "2023" here until 2026-09. Monthly has no default
+    //             month -- pass YYYYMM[,YYYYMM...].
+    //
+    // The returned arcs carry `period` / `freq`, so the UI labels the year it
+    // actually got rather than the year it thinks it asked for.
+    window.fetchComtradeArcs = async function(commodityKey, opts = {}) {
         const config = COMMODITY_API_CONFIG[commodityKey];
         if (!config) {
             console.warn(`[Comtrade] No API config for commodity: ${commodityKey}`);
             return [];
         }
 
-        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode})...`);
+        const freq = opts.freq === 'M' ? 'M' : 'A';
+        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode}, ${freq})...`);
 
         try {
-            // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
             // Reporter/partner list intentionally omitted: the Worker supplies
             // its own canonical list, so this request lands on exactly the
-            // cache key the nightly warm-up wrote.
-            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&period=2023`;
-            const res = await fetch(proxyUrl);
+            // cache key the scheduled warm-up wrote. Same for the year.
+            const params = new URLSearchParams({ hs: config.hsCode });
+            if (freq === 'M') params.set('freq', 'M');
+            if (opts.period) params.set('period', opts.period);
+            const res = await fetch(`/api/comtrade?${params}`);
 
             if (!res.ok) {
                 console.warn(`[Comtrade] Proxy returned ${res.status} for ${commodityKey}`);
@@ -552,9 +566,15 @@
                 console.warn(`[Comtrade] No data returned for ${commodityKey}`);
                 return [];
             }
+            const period = res.headers.get('X-Comtrade-Period') || json.period || opts.period || null;
 
-            // Use a map to deduplicate arcs and combine X (Export) and M (Import) 'Mirror Data'
-            const arcMap = {};
+            // Two passes. Within one period, a route appears up to twice --
+            // the exporter's report (X) and the importer's mirror (M) -- and
+            // the larger of the two wins, as before. Across periods (a
+            // multi-month request) the winners are then summed. Keeping only
+            // the max across all rows, as this did when every call was a
+            // single year, would report one month's trade as the whole window.
+            const perPeriod = {};
 
             // Position lookup. COUNTRIES is a 65-entry hand-written table; anything
             // outside it used to be dropped here, which is why newly added
@@ -586,27 +606,43 @@
                     targetName = partnerName;
                 }
 
-                const arcKey = `${sourceName}-${targetName}`;
-                const volume = Math.round(tradeValue / 1000000); // Millions USD
-                const netWeightMt = Math.round(netWeight / 1000000000 * 100) / 100;
+                const periodKey = `${row.period ?? ''}|${sourceName}|${targetName}`;
+                const seen = perPeriod[periodKey];
+                if (!seen || seen.usdValue < tradeValue) {
+                    perPeriod[periodKey] = { sourceName, targetName, usdValue: tradeValue, netWeight };
+                }
+            });
 
-                if (!arcMap[arcKey] || arcMap[arcKey].usdValue < tradeValue) {
+            const arcMap = {};
+            for (const r of Object.values(perPeriod)) {
+                const arcKey = `${r.sourceName}-${r.targetName}`;
+                if (!arcMap[arcKey]) {
                     arcMap[arcKey] = {
-                        sourceName,
-                        targetName,
-                        sourcePosition: posOf(sourceName),
-                        targetPosition: posOf(targetName),
-                        volume,
-                        netWeightMt,
+                        sourceName: r.sourceName,
+                        targetName: r.targetName,
+                        sourcePosition: posOf(r.sourceName),
+                        targetPosition: posOf(r.targetName),
+                        volume: 0,
+                        netWeightMt: 0,
                         percentage: 0,
                         typeName: config.hsCode,
                         sourceColor: config.colorScheme.source,
                         targetColor: config.colorScheme.target,
-                        usdValue: tradeValue,
+                        usdValue: 0,
+                        netWeightKg: 0,
+                        period,
+                        freq,
                         dataSource: "UN Comtrade (comtradeapi.un.org)"
                     };
                 }
-            });
+                arcMap[arcKey].usdValue += r.usdValue;
+                arcMap[arcKey].netWeightKg += r.netWeight;
+            }
+            for (const a of Object.values(arcMap)) {
+                a.volume = Math.round(a.usdValue / 1000000); // Millions USD
+                a.netWeightMt = Math.round(a.netWeightKg / 1000000000 * 100) / 100;
+                delete a.netWeightKg;
+            }
 
             // No Comex Stat override here any more.
             //
@@ -636,7 +672,7 @@
             // Sort by volume descending
             arcs.sort((a, b) => b.volume - a.volume);
 
-            console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
+            console.log(`[Comtrade] ✅ ${commodityKey} ${period || '?'}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
             return arcs;
 
         } catch (e) {

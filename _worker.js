@@ -214,41 +214,100 @@ async function warmComtradeCache(env) {
     }
 
     // One listing instead of a lookup per commodity: KV list returns names
-    // without values, so this stays cheap no matter how large the entries are.
-    const warm = new Set();
+    // (and the small metadata comtradeMeta() writes) without values, so this
+    // stays cheap no matter how large the entries are.
+    const warm = new Map();
     let cursor;
     do {
         const page = await env.API_CACHE.list({ prefix: 'comtrade:A:', cursor }).catch(() => null);
         if (!page) break;
-        for (const k of page.keys) warm.add(k.name);
+        for (const k of page.keys) warm.set(k.name, k.metadata || null);
         cursor = page.list_complete ? null : page.cursor;
     } while (cursor);
 
-    let filled = 0, fresh = 0, failed = 0, deferred = 0;
+    const published = publishedComtradeYear(await readComtradePeriodRecord(env));
+    // The year after the published one, while it can exist at all.
+    const next = published < comtradeYearBounds().fresh ? published + 1 : null;
+
+    const keyFor = (hs, year) =>
+        comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+
+    // What visitors are looking at comes first; the next year only gets
+    // whatever budget is left over.
+    const work = [];
+    for (const hs of Object.keys(COMTRADE_TTL)) work.push([hs, published]);
+    if (next) for (const hs of Object.keys(COMTRADE_TTL)) work.push([hs, next]);
+
+    let filled = 0, alreadyWarm = 0, failed = 0, deferred = 0;
 
     // Sequential on purpose: firing these at once risks tripping Comtrade's
     // rate limiting, and the cron run has no deadline pressure.
-    for (const hs of Object.keys(COMTRADE_TTL)) {
-        const key = comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
-        if (warm.has(key)) { fresh++; continue; }
+    for (const [hs, year] of work) {
+        const key = keyFor(hs, year);
+        if (warm.has(key)) { alreadyWarm++; continue; }
         if (filled >= WARM_FETCH_BUDGET) { deferred++; continue; }
 
         try {
-            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
+            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
             if (!result.ok) {
                 failed++;
-                console.log(`[warm] ${hs} upstream ${result.status}`);
+                console.log(`[warm] ${hs}/${year} upstream ${result.status}`);
                 continue;
             }
-            await env.API_CACHE.put(key, JSON.stringify(result.body), { expirationTtl: COMTRADE_TTL[hs] });
+            const metadata = comtradeMeta(result.body);
+            await env.API_CACHE.put(key, JSON.stringify(result.body), { expirationTtl: COMTRADE_TTL[hs], metadata });
+            warm.set(key, metadata);
             filled++;
         } catch (err) {
             failed++;
-            console.log(`[warm] ${hs} error: ${err.message}`);
+            console.log(`[warm] ${hs}/${year} error: ${err.message}`);
         }
     }
 
-    console.log(`[warm] done: ${filled} filled, ${fresh} already warm, ${deferred} deferred, ${failed} failed`);
+    console.log(`[warm] ${published} (next ${next ?? '-'}): ${filled} filled, ${alreadyWarm} already warm, ${deferred} deferred, ${failed} failed`);
+
+    if (next) await advanceComtradePeriod(env, warm, keyFor, published, next);
+}
+
+// Move the published year forward by one, if the next year is ready. Ready
+// means every commodity for it is already in KV -- so the switch never lands
+// visitors on a cold query -- and, for the year that has only just ended,
+// that enough reporters have filed (see FRESH_YEAR_MIN_COVERAGE).
+async function advanceComtradePeriod(env, warm, keyFor, published, next) {
+    const hsList = Object.keys(COMTRADE_TTL);
+    const cold = hsList.filter(hs => !warm.has(keyFor(hs, next)));
+    if (cold.length) {
+        console.log(`[period] ${next} not promoted: ${cold.length}/${hsList.length} commodities not cached yet`);
+        return;
+    }
+
+    let coverage = null;
+    if (next > comtradeYearBounds().mature) {
+        // Reporter counts come from KV metadata. A published entry written
+        // before metadata existed has none; leave that commodity out of both
+        // sides rather than count it as zero.
+        let have = 0, had = 0;
+        for (const hs of hsList) {
+            const now = warm.get(keyFor(hs, next));
+            const then = warm.get(keyFor(hs, published));
+            if (!Number.isFinite(now?.reporters) || !Number.isFinite(then?.reporters)) continue;
+            have += now.reporters;
+            had += then.reporters;
+        }
+        if (had === 0) {
+            console.log(`[period] ${next} not promoted: no ${published} reporter counts to compare against`);
+            return;
+        }
+        coverage = Math.round((have / had) * 1000) / 1000;
+        if (coverage < FRESH_YEAR_MIN_COVERAGE) {
+            console.log(`[period] ${next} not promoted: reporter coverage ${coverage} < ${FRESH_YEAR_MIN_COVERAGE} (${have}/${had})`);
+            return;
+        }
+    }
+
+    const record = { period: String(next), previous: String(published), coverage, promotedAt: new Date().toISOString() };
+    await env.API_CACHE.put(COMTRADE_PERIOD_KEY, JSON.stringify(record));
+    console.log(`[period] promoted ${published} -> ${next}` + (coverage === null ? ' (complete year)' : ` (coverage ${coverage})`));
 }
 
 const JSON_HEADERS = {
@@ -536,7 +595,7 @@ async function loadStaticJson(env, origin, filename) {
 //
 // `doFetch` must resolve to { ok, status, statusText, body }, where `body` is
 // the already-parsed JSON to cache.
-async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
+async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch, metaOf) {
     const kv = env.API_CACHE;
 
     if (kv) {
@@ -565,7 +624,9 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
         // Never let a cache write failure take down a request that already has
         // its data -- serve the response and just skip caching this time.
         try {
-            await kv.put(cacheKey, json, { expirationTtl: ttlSeconds });
+            const opts = { expirationTtl: ttlSeconds };
+            if (metaOf) opts.metadata = metaOf(result.body);
+            await kv.put(cacheKey, json, opts);
         } catch (err) {
             console.log(`[cache] put failed for ${cacheKey}: ${err.message}`);
         }
@@ -627,7 +688,61 @@ const COMTRADE_TTL = {
     "7110": 604800   // Platinum group
 };
 
-const COMTRADE_PERIOD = "2023";
+// Which annual Comtrade year the trade map shows. Not pinned: this was a
+// literal "2023" until 2026-09, which left the map a year behind once 2024
+// was complete and two behind once 2025 had filled in.
+//
+// The published year lives in KV under COMTRADE_PERIOD_KEY, and only the cron
+// moves it -- one year at a time, and only once every commodity for the next
+// year is already cached (advanceComtradePeriod). So a promotion never sends
+// visitors to a cold UN Comtrade query.
+//
+// Annual data fills in over roughly 18 months: the large reporters file
+// within a few months of year-end, the long tail much later. A year two or
+// more back counts as complete. The year just ended is promoted only once
+// its filing reporters reach FRESH_YEAR_MIN_COVERAGE of the year before on
+// the same commodities -- a year with a third of the reporters missing would
+// read on the map as trade collapsing.
+const COMTRADE_PERIOD_KEY = 'comtrade:period:A';
+const FRESH_YEAR_MIN_COVERAGE = 0.9;
+// Last resort when KV holds no record (first deploy, namespace wiped) or the
+// record has fallen this far behind because the cron stopped. Three years
+// back is complete for every reporter -- and on the first deploy it is 2023,
+// the year the cache is already warm for, so the switch costs visitors nothing
+// while the cron walks the map forward.
+const COMTRADE_FLOOR_LAG = 3;
+
+function comtradeYearBounds(now = new Date()) {
+    const year = now.getUTCFullYear();
+    return {
+        floor: year - COMTRADE_FLOOR_LAG,
+        mature: year - 2, // newest year promoted without a coverage check
+        fresh: year - 1   // newest year that can exist at all
+    };
+}
+
+async function readComtradePeriodRecord(env) {
+    if (!env.API_CACHE) return null;
+    return env.API_CACHE.get(COMTRADE_PERIOD_KEY, { type: 'json', cacheTtl: 300 }).catch(() => null);
+}
+
+function publishedComtradeYear(record, now = new Date()) {
+    const { floor, fresh } = comtradeYearBounds(now);
+    const y = Number(record && record.period);
+    if (!Number.isInteger(y)) return floor;
+    return Math.min(Math.max(y, floor), fresh);
+}
+
+// Distinct reporters with a non-zero row. Stored as KV metadata next to each
+// cached payload so the cron can compare two years' coverage from a key
+// listing alone, without re-reading and parsing every body.
+function comtradeMeta(body) {
+    const reporters = new Set();
+    for (const row of (body && body.data) || []) {
+        if (row.primaryValue > 0) reporters.add(row.reporterCode);
+    }
+    return { reporters: reporters.size };
+}
 
 // USDA FAS Export Sales Report: weekly US export sales by destination country.
 // This is US-only -- it answers "who bought from the US this week", not who
@@ -904,8 +1019,13 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
         console.log(`[comtrade] ${hs} partial result after error: ${err.message}`);
     }
 
-    return { ok: true, body: { count: merged.length, data: merged } };
+    // period/freq travel with the rows so a consumer never has to remember
+    // what it asked for -- the default year is chosen here, not by the caller.
+    return { ok: true, body: { count: merged.length, period, freq, data: merged } };
 }
+
+const NUMERIC_LIST = /^\d+(,\d+)*$/;
+const PERIOD_SHAPE = { A: /^\d{4}(,\d{4})*$/, M: /^\d{6}(,\d{6})*$/ };
 
 async function handleComtrade(request, env, ctx) {
     const url = new URL(request.url);
@@ -914,14 +1034,49 @@ async function handleComtrade(request, env, ctx) {
     const partners = url.searchParams.get('partners') || DEFAULT_M49_CODES;
     // freq=M returns monthly rows (period must then look like "202403").
     const freq = url.searchParams.get('freq') === 'M' ? 'M' : 'A';
-    const period = url.searchParams.get('period') || (freq === 'M' ? '202403' : COMTRADE_PERIOD);
+    const periodParam = url.searchParams.get('period');
+
+    const bad = (error, hint) => new Response(JSON.stringify(hint ? { error, hint } : { error }),
+        { status: 400, headers: JSON_HEADERS });
+
+    // Every one of these is spliced into the upstream query string, so
+    // anything but digits and commas could append parameters of its own to a
+    // request that carries our subscription key.
+    if (![hs, reporters, partners].every(v => NUMERIC_LIST.test(v))) {
+        return bad("hs, reporters and partners must be comma-separated numeric codes");
+    }
+
+    let period;
+    if (periodParam && periodParam !== 'latest') {
+        if (!PERIOD_SHAPE[freq].test(periodParam)) {
+            return bad(`period does not match freq=${freq}`,
+                freq === 'M' ? "monthly periods are YYYYMM[,YYYYMM...]" : "annual periods are YYYY[,YYYY...]");
+        }
+        period = periodParam;
+    } else if (freq === 'A') {
+        period = String(publishedComtradeYear(await readComtradePeriodRecord(env)));
+    } else {
+        // Monthly used to fall back to a fixed "202403", which served data two
+        // and a half years stale without saying so. There is no latest-month
+        // resolver yet; until one exists, the caller has to name the months.
+        return bad("period is required when freq=M",
+            "Pass YYYYMM[,YYYYMM...]. There is no default month.");
+    }
 
     if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
 
     const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
 
-    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
-        () => fetchComtrade(env, hs, reporters, partners, period, freq));
+    const res = await kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
+        () => fetchComtrade(env, hs, reporters, partners, period, freq), comtradeMeta);
+
+    // Also in the headers: entries cached before the body carried `period`
+    // stay readable until they expire, and a HIT returns them verbatim.
+    const headers = new Headers(res.headers);
+    headers.set('X-Comtrade-Period', period);
+    headers.set('X-Comtrade-Freq', freq);
+    headers.set('Access-Control-Expose-Headers', 'X-Comtrade-Period, X-Comtrade-Freq, X-Cache');
+    return new Response(res.body, { status: res.status, headers });
 }
 
 async function handleUsdaNass(request, env, ctx) {
