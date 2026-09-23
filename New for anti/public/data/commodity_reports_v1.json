@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-23T13:49:54.130138+00:00",
+  "generated_at": "2026-09-23T19:51:17.855371+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,9 +17,9 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 3,
-    "raw_items": 150,
+    "sources_ok": 8,
+    "sources_failed": 4,
+    "raw_items": 140,
     "scored": 63,
     "published": 37,
     "commodities": 8,
@@ -28,9 +28,9 @@
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": true,
-      "count": 10,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
@@ -567,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.224,
+      "importance": 4.205,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -598,7 +598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.474,
+      "importance": 2.463,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -628,7 +628,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.283,
+      "importance": 2.282,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -657,7 +657,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.978,
+      "importance": 1.97,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -935,7 +935,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.512,
+      "importance": 1.505,
       "reasons": [
         "country_in_text"
       ]
@@ -963,7 +963,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.481,
+      "importance": 1.48,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1084,7 +1084,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.387,
+      "importance": 1.383,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1317,7 +1317,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.14,
+      "importance": 1.135,
       "reasons": [
         "country_in_text"
       ]
@@ -1345,7 +1345,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.122,
+      "importance": 1.118,
       "reasons": [
         "country_in_text"
       ]
@@ -1459,7 +1459,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.912,
+      "importance": 0.908,
       "reasons": []
     },
     {
@@ -1483,7 +1483,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.912,
+      "importance": 0.908,
       "reasons": []
     },
     {
@@ -1615,7 +1615,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.549,
+      "importance": 0.548,
       "reasons": []
     }
   ]
