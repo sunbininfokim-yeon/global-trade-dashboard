@@ -5317,7 +5317,7 @@ const setMetaContent = (selector, content) => {
 const routeMetaDescription = (target, label) => {
     if (target.startsWith('shipping_')) return `${label} — 글로벌 해운 항로·선대·초크포인트 실시간 현황을 ChokePoint Monitor에서 확인하세요.`;
     if (target.startsWith('fin_')) return `${label} — 매크로·금융 지표를 ChokePoint Monitor에서 실시간으로 확인하세요.`;
-    if (target.startsWith('inst_')) return `${label} 데이터 출처와 공식 리포트를 ChokePoint Monitor에서 확인하세요.`;
+    if (target === 'tutorial') return '화면별 사용설명서 — 원자재·금융·정치&정책·해운 화면에서 무엇을 누르면 무엇이 열리는지 실제 화면과 함께 설명합니다.';
     if (target === 'climate') return '전세계 작황·기후 모니터 — 주요 원자재 생산지의 기상 상황을 ChokePoint Monitor 지구본 지도에서 실시간으로 확인하세요.';
     if (target === 'politics') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
     if (target === 'macro_monitor') return '국가별 매크로 지표(금리·물가·환율 등)를 ChokePoint Monitor에서 실시간으로 확인하세요.';
@@ -5375,6 +5375,10 @@ const setView = (target) => {
     if (!isMyPageView) {
         window.MyPage?.unmount(chartView);
         document.body.classList.remove('mypage-mode');
+    }
+    if (target !== 'tutorial') {
+        window.Tutorial?.unmount(chartView);
+        document.body.classList.remove('tutorial-mode');
     }
     if (!isShippingView) document.body.classList.remove('shipping-mode');
     if (!isFinanceView) {
@@ -5524,56 +5528,26 @@ const setView = (target) => {
         }
         renderFinanceView(target, chartView);
 
-    } else if (target === 'inst_intl' || target === 'inst_country') {
+    } else if (target === 'tutorial') {
+        // Same full-bleed document treatment as finance/mypage: a manual has no map.
         currentCommodity = target;
-        togglePanels({ forecast: true, left: true });
-        
-        deckgl.setProps({ layers: [] }); // Clear map
-        
-        if (target === 'inst_intl') {
-            currentViewTitle.textContent = "데이터 출처: 국제 기구";
-            currentViewDesc.textContent = "글로벌 거시 및 무역 지표를 제공하는 주요 국제 기구 API 현황";
-            forecastCountryTitle.textContent = "국제 기구 리스트";
-            forecastContentEl.innerHTML = `
-                <div class="forecast-box">
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>UN Comtrade</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">전 세계 170여 개국의 수출입 통계 데이터</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>USDA (미 농무부)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">글로벌 농산물 수급 전망 (WASDE) 및 작황 데이터</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>World Bank / IMF</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">원자재 가격 지수 및 주요 거시 경제 지표</span>
-                    </div>
-                </div>
-            `;
-        } else {
-            currentViewTitle.textContent = "데이터 출처: 국가별 주요 기관";
-            currentViewDesc.textContent = "각 국가의 1차 데이터(Primary Data)를 제공하는 핵심 정부/공공 기관 API";
-            forecastCountryTitle.textContent = "국가별 기관 리스트";
-            forecastContentEl.innerHTML = `
-                <div class="forecast-box">
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>CONAB (브라질 국가식량공급공사)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">브라질 대두/옥수수 생산량 및 기후 리포트</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>BCCR (아르헨티나 로사리오 곡물거래소)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">팜파스 지역 작황 동향 및 무역 전망치</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>Open-Meteo</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">전 세계 고해상도 실시간 기상/기후 API</span>
-                    </div>
-                </div>
-            `;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        document.body.classList.add('tutorial-mode');
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        if (mapContainer) {
+            mapContainer.style.display = 'none';
+            mapContainer.style.pointerEvents = 'none';
         }
-        
-        totalVolumeEl.textContent = "API / Data Sources";
-        topExporterEl.textContent = "-";
+        if (chartView) {
+            chartView.classList.remove('hidden');
+            chartView.style.pointerEvents = 'auto';
+            chartView.style.zIndex = '40';
+        }
+        window.Tutorial?.render(chartView);
+
     } else if (target === 'climate') {
         currentCommodity = 'climate';
         setClimateCommodityHeader('climate');
