@@ -823,6 +823,24 @@ const handleLineClick = (info) => {
  * monitor keeps full names -- it reads as a country workspace, not a league
  * table.
  */
+// Which Comtrade period the trade map is showing, as fetchComtradeArcs()
+// reports it: "2025년 연간", "2026년 6월", "2026년 4월~2026년 6월". The year is
+// chosen by the Worker (newest fully cached year), so the label has to come
+// from the response, not from anything the page assumed.
+function comtradePeriodLabel(arcs) {
+    const first = arcs && arcs[0];
+    if (!first || !first.period) return '';
+    const parts = String(first.period).split(',').sort();
+    const fmt = (v) => (v.length === 6 ? `${v.slice(0, 4)}년 ${Number(v.slice(4))}월` : `${v}년`);
+    if (parts.length === 1) return first.freq === 'M' ? fmt(parts[0]) : `${fmt(parts[0])} 연간`;
+    return `${fmt(parts[0])}~${fmt(parts[parts.length - 1])}`;
+}
+
+function comtradeSourceText(arcs) {
+    const when = comtradePeriodLabel(arcs);
+    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트)`;
+}
+
 // Static ISO3 fallback for the reporter/partner names Comtrade uses most.
 // resolveCountry needs the world GeoJSON in memory; when the trade panel
 // renders before that fetch resolves, every unresolved name fell back to its
@@ -5625,7 +5643,7 @@ const setView = (target) => {
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
-            currentViewDesc.textContent = "📡 UN Comtrade API에서 실시간 무역 데이터 로딩 중...";
+            currentViewDesc.textContent = "📡 UN Comtrade 최신 무역 통계 로딩 중...";
             
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
@@ -5641,7 +5659,7 @@ const setView = (target) => {
                 
                 if (arcs.length > 0) {
                     data.arcs = arcs; // Cache for future clicks
-                    currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+                    currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(arcs)} · 국가 클릭 → 수출 대상 순위`;
                     renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
@@ -5656,7 +5674,7 @@ const setView = (target) => {
             // Already have data (cached from previous click or hardcoded)
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-            currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+            currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(data.arcs)} · 국가 클릭 → 수출 대상 순위`;
             renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
