@@ -36,7 +36,12 @@ jobs:
           python-version: '3.12'
       - name: Install test deps
         working-directory: New for anti/scripts/macro_monitor
-        run: pip install pytest
+        # openpyxl parses the ESRI Cabinet Office Excel release
+        # (macro_monitor/japan_growth.py) -- missing here since this
+        # workflow's first version, so every run since 2026-08-24 failed at
+        # test collection (ModuleNotFoundError) before ever reaching the
+        # actual refresh steps.
+        run: pip install pytest openpyxl
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
         run: python -m pytest tests/test_japan_growth.py -v
