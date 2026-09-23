@@ -1255,7 +1255,8 @@ const msMultiChart = (dates, series, opts = {}) => {
     }
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
     const payload = { dates, n, bars: !!opts.bars, unit: opts.unit || '', digits: opts.digits ?? 0, signed: opts.signed !== false, abs: !!opts.abs,
-        series: series.map((s) => ({ label: s.label, color: s.color, values: s.values.map((v) => Number.isFinite(v) ? v : null) })) };
+        series: series.map((s) => ({ label: s.label, color: s.color, values: s.values.map((v) => Number.isFinite(v) ? v : null),
+            ...(Array.isArray(s.daily) ? { daily: s.daily.map((v) => Number.isFinite(v) ? v : null) } : {}) })) };
     return `
     <div class="mm-chart-box ms-mc-box" data-ms-mc='${finEsc(JSON.stringify(payload))}'>
         <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(opts.label || '시계열')} 차트">
@@ -1299,7 +1300,8 @@ const msWireMultiCharts = (host) => {
                 ? `${P.signed && v >= 0 ? '+' : ''}${(P.abs ? Math.abs(v) : v).toLocaleString('ko-KR', { minimumFractionDigits: P.digits, maximumFractionDigits: P.digits })}${P.unit}`
                 : '관측 없음';
             tip.innerHTML = `<span class="mm-tip-date">${finEsc(P.dates[i] || '')}</span>`
-                + P.series.map((s) => `<span class="ms-mc-tip-row"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)} <b>${fmt(s.values[i])}</b></span>`).join('');
+                + P.series.map((s) => `<span class="ms-mc-tip-row"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)} <b>${fmt(s.values[i])}</b>${
+                    s.daily ? `<em>당일 ${fmt(s.daily[i])}</em>` : ''}</span>`).join('');
             tip.style.display = '';
             tip.style.left = `${Math.min(Math.max(px / MM_W * 100, 12), 82)}%`;
         });
@@ -1345,9 +1347,29 @@ const msFlowSection = (D) => {
     const cumSeries = MS_FLOW_INVESTORS.map((inv) => {
         const raw = msFlowCol(F, P.key, `${inv.key}_net`).slice(-n);
         let acc = 0;
-        return { label: inv.ko, color: inv.color,
+        return { label: inv.ko, color: inv.color, daily: raw.map((v) => msFlowScale(v, P)),
             values: raw.map((v) => { if (!Number.isFinite(v)) return null; acc += v; return msFlowScale(acc, P); }) };
     });
+    // Days that dominate the window. A cumulative line is only as readable as
+    // its biggest steps -- one block-sized day can outweigh a month -- so the
+    // window's largest foreign days are listed with their counterparties and
+    // a multiple of the product's usual (2019~ median) day.
+    const fAll = msFlowCol(F, P.key, 'foreign_net');
+    const absSorted = fAll.filter(Number.isFinite).map(Math.abs).sort((a, b) => a - b);
+    const typical = absSorted.length ? absSorted[Math.floor(absSorted.length / 2)] : null;
+    const bigDays = F.dates.map((d, i) => i).slice(-n)
+        .filter((i) => Number.isFinite(fAll[i]))
+        .sort((a, b) => Math.abs(fAll[b]) - Math.abs(fAll[a]))
+        .slice(0, 5)
+        .map((i) => [
+            finEsc(F.dates[i]),
+            ...MS_FLOW_INVESTORS.slice(0, 3).map((inv) => {
+                const v = msFlowCol(F, P.key, `${inv.key}_net`)[i];
+                return `<span class="${msSignCls(v)}">${msFlowFmt(v, P)}</span>`;
+            }),
+            msKrwEokLevel(Number.isFinite(msFlowCol(F, P.key, 'market_total_buy')[i]) ? msFlowCol(F, P.key, 'market_total_buy')[i] * 1e6 : null),
+            typical ? `${(Math.abs(fAll[i]) / typical).toFixed(0)}배` : '—',
+        ]);
     const foreignDaily = msFlowCol(F, P.key, 'foreign_net').slice(-n).map((v) => msFlowScale(v, P));
 
     const front = F.futures_front || {};
@@ -1383,8 +1405,15 @@ const msFlowSection = (D) => {
             ${msWinBar('ms-flow-win', MS_FLOW_WIN)}
         </div>
 
-        <h3 class="fin-sub">${finEsc(P.ko)} · 주체별 누적 순매수 (${finEsc(dates[0])}부터, ${P.unit}원)</h3>
+        <h3 class="fin-sub">${finEsc(P.ko)} · 주체별 누적 순매수 (${finEsc(dates[0])} = 0 에서 시작, ${P.unit}원)</h3>
         ${msMultiChart(dates, cumSeries, { unit: P.unit, digits: P.digits, label: `${P.ko} 누적 순매수` })}
+        <p class="fin-note">누적은 선택한 기간의 첫날을 0으로 두고 더합니다. 그래서 기간(20·60·120일…)을 바꾸면 같은 날짜의 누적 수준은 달라지고,
+            하루 사이의 계단 높이(그날 순매수)는 그대로입니다. 차트에 마우스를 올리면 누적과 함께 당일 값이 나옵니다.</p>
+        ${bigDays.length ? `
+        <h3 class="fin-sub">이 기간 외국인 순매수가 가장 컸던 날 · ${finEsc(P.ko)}</h3>
+        ${msTable(['날짜', ...MS_FLOW_INVESTORS.slice(0, 3).map((i) => i.ko), '시장 전체 거래대금', '평소 대비'], bigDays)}
+        <p class="fin-note">평소 대비 = 그날 외국인 순매수 절댓값 ÷ 2019년 이후 같은 상품의 일별 절댓값 중앙값(${typical ? msFlowFmt(typical, P).replace('+', '') : '—'}).
+            한쪽이 크게 사고 다른 주체가 거의 같은 금액을 판 날은 한 번에 체결된 대량 거래일 가능성이 큽니다 — 원자료에서 확인되는 사실은 주체별 금액까지입니다.</p>` : ''}
 
         <h3 class="fin-sub">${finEsc(P.ko)} · 외국인 일별 순매수 (${P.unit}원)</h3>
         ${msMultiChart(dates, [{ label: '외국인', color: MS_FLOW_INVESTORS[0].color, values: foreignDaily }],
