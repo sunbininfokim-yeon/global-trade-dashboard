@@ -1,6 +1,6 @@
 {
   "schema_version": "market-microstructure-v1",
-  "as_of": "2026-09-22",
+  "as_of": "2026-09-23",
   "disclaimer_ko": "공개 상품 AUM·거래대금 기반 추정. 증권사 고객 레버리지 공시가 아님. 투자 권유 아님.",
   "broker_leverage_disclosure": {
     "available": false,
@@ -19,9 +19,9 @@
   },
   "fx_usdkrw": 1400.0,
   "concentration": {
-    "conc_top2_samsung_hynix_pct": 51.0877,
-    "conc_top5_pct": 58.5105,
-    "conc_top10_pct": 64.405,
+    "conc_top2_samsung_hynix_pct": 51.7618,
+    "conc_top5_pct": 59.384,
+    "conc_top10_pct": 65.1655,
     "top5_tickers": [
       "005930",
       "000660",
@@ -42,48 +42,48 @@
       "028260"
     ],
     "top5_mcap_krw": [
-      1616496035112000.0,
-      1344105951600000.0,
-      169701509434500.0,
-      149469889734000.0,
-      110994832256000.0
+      1669112542584000.0,
+      1360176783630000.0,
+      176521664660000.0,
+      156989557620000.0,
+      112563399872000.0
     ],
     "top10_mcap_krw": [
-      1616496035112000.0,
-      1344105951600000.0,
-      169701509434500.0,
-      149469889734000.0,
-      110994832256000.0,
-      82017000000000.0,
-      73349670366000.0,
-      64390712841000.0,
-      62318634863800.0,
+      1669112542584000.0,
+      1360176783630000.0,
+      176521664660000.0,
+      156989557620000.0,
+      112563399872000.0,
+      82251000000000.0,
+      71925404922000.0,
+      63233439066000.0,
+      61431915528800.0,
       59515502227000.0
     ],
-    "universe_mcap_krw": 5795141020080960.0,
+    "universe_mcap_krw": 5852361438621668.0,
     "n_constituents_in_input": 30,
     "note_ko": "Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30 보관이어도 분모는 전종목 합; Top10은 시총 정렬로 확정.",
     "quality": "observed",
-    "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20260922"
+    "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20260923"
   },
   "foreign_vs_retail": {
-    "foreign_net_krw": -217854238500,
-    "retail_net_krw": -1148495838000,
-    "institution_net_krw": -222068946500,
+    "foreign_net_krw": 103638508500,
+    "retail_net_krw": -2367088605000,
+    "institution_net_krw": 613464272500,
     "scope": "covered_underlyings_spot",
     "quality": "estimated",
     "source": "Naver dealTrendInfos (share nets × close)"
   },
   "market_levered_etf": {
-    "aum_krw": 25085724901418.0,
-    "aum_usd": 17918374929.58,
-    "single_stock_kr_aum_krw": 6908817803848.0,
+    "aum_krw": 0.0,
+    "aum_usd": 0.0,
+    "single_stock_kr_aum_krw": 0.0,
     "quality": "observed",
-    "source": "KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20260922"
+    "source": "KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20260923"
   },
   "market_letf_derivatives_ratios": {
     "label_ko": "코스피·전시장 레버/곱버스·파생 비중",
-    "levered_inverse_etf_tv_over_kospi_cash_tv_pct": 17.022,
+    "levered_inverse_etf_tv_over_kospi_cash_tv_pct": 16.608,
     "long_tv_jo": 2.794,
     "inverse_tv_jo": 0.963,
     "gobus_tv_jo": 0.257,
@@ -95,7 +95,7 @@
         "trading_value_jo": 0.257,
         "aum_proxy_krw": 9601000000.0,
         "share_of_lev_tv_pct": 6.85,
-        "share_of_kospi_tv_pct": 1.165
+        "share_of_kospi_tv_pct": 1.137
       },
       "inverse": {
         "n_products": 31,
@@ -103,7 +103,7 @@
         "trading_value_jo": 0.626,
         "aum_proxy_krw": 14814000000.0,
         "share_of_lev_tv_pct": 16.67,
-        "share_of_kospi_tv_pct": 2.837
+        "share_of_kospi_tv_pct": 2.768
       },
       "inverse_2x": {
         "n_products": 2,
@@ -111,7 +111,7 @@
         "trading_value_jo": 0.079,
         "aum_proxy_krw": 1235000000.0,
         "share_of_lev_tv_pct": 2.11,
-        "share_of_kospi_tv_pct": 0.36
+        "share_of_kospi_tv_pct": 0.351
       },
       "long": {
         "n_products": 62,
@@ -119,14 +119,14 @@
         "trading_value_jo": 2.794,
         "aum_proxy_krw": 231647000000.0,
         "share_of_lev_tv_pct": 74.38,
-        "share_of_kospi_tv_pct": 12.66
+        "share_of_kospi_tv_pct": 12.352
       }
     },
     "by_letf_category_tv_share_of_kospi_pct": {
-      "index": 11.619,
-      "single_stock": 2.466,
-      "sector": 2.861,
-      "overseas": 0.076
+      "index": 11.337,
+      "single_stock": 2.406,
+      "sector": 2.791,
+      "overseas": 0.074
     },
     "top_inverse_gobus_by_tv": [
       {
@@ -221,14 +221,14 @@
     },
     "quality": "observed",
     "source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
-    "as_of": "2026-09-22"
+    "as_of": "2026-09-23"
   },
   "global_leverage_stack": {
     "note_ko": "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력).",
     "hedge_channel_ko": "홍콩/미국 레버 펀드·옵션 레짐 변화 → 스왑 상대(한국·글로벌 기관) 헷지 요청 → 국내 현물·선물·국내 LETF에 압력이 붙을 수 있음 (유튜브 wag-the-dog reverse 계열).",
-    "kr_single_stock_letf_notional_usd": 9869739719.78,
-    "kr_single_stock_long_notional_usd": 9687211432.6,
-    "kr_single_stock_inverse_notional_usd": 182528287.18,
+    "kr_single_stock_letf_notional_usd": 0.0,
+    "kr_single_stock_long_notional_usd": 0.0,
+    "kr_single_stock_inverse_notional_usd": 0.0,
     "hk_swap_letf_notional_usd": null,
     "hk_direction_split": {
       "long_notional_usd": 0.0,
@@ -260,7 +260,7 @@
     },
     "crypto_perp_oi_notional_usd": null,
     "crypto_perp_quote_volume_24h_usd": 0.0,
-    "global_stack_usd": 208746384719.78,
+    "global_stack_usd": 198876645000.0,
     "global_stack_unobserved_venues": [
       "hk",
       "crypto"
@@ -395,14 +395,14 @@
           "name": "Direxion Daily Semiconductor Bu",
           "aum": 19311783936.0,
           "currency": "USD",
-          "nav": 142.207,
-          "previous_close": 141.837,
-          "volume": 65009024,
-          "average_volume": 63419650,
+          "nav": 152.113,
+          "previous_close": 151.95,
+          "volume": 61043803,
+          "average_volume": 63336901,
           "last_bar": {
-            "close": 141.8369903564453,
-            "volume": 65009024.0,
-            "as_of": "2026-09-21"
+            "close": 146.25,
+            "volume": 61043803.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -427,14 +427,14 @@
           "name": "Direxion Daily Semiconductor Be",
           "aum": 1403304960.0,
           "currency": "USD",
-          "nav": 35.315,
-          "previous_close": 34.8936,
-          "volume": 83766464,
-          "average_volume": 61109053,
+          "nav": 32.398,
+          "previous_close": 32.42,
+          "volume": 81507773,
+          "average_volume": 61479972,
           "last_bar": {
-            "close": 34.89400100708008,
-            "volume": 83766464.0,
-            "as_of": "2026-09-21"
+            "close": 33.65999984741211,
+            "volume": 81507773.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -459,14 +459,14 @@
           "name": "Direxion Daily South Korea Bull",
           "aum": 1527001984.0,
           "currency": "USD",
-          "nav": 22.583,
-          "previous_close": 22.55,
-          "volume": 21398407,
-          "average_volume": 30183149,
+          "nav": 23.805,
+          "previous_close": 23.77,
+          "volume": 18265717,
+          "average_volume": 29789777,
           "last_bar": {
-            "close": 22.549999237060547,
-            "volume": 21398407.0,
-            "as_of": "2026-09-21"
+            "close": 21.270000457763672,
+            "volume": 18265717.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -491,14 +491,14 @@
           "name": "Direxion Daily Technology Bull ",
           "aum": 5934523904.0,
           "currency": "USD",
-          "nav": 229.785,
-          "previous_close": 229.83,
-          "volume": 464151,
-          "average_volume": 663791,
+          "nav": 234.737,
+          "previous_close": 234.79,
+          "volume": 423578,
+          "average_volume": 660649,
           "last_bar": {
-            "close": 229.62100219726562,
-            "volume": 464151.0,
-            "as_of": "2026-09-21"
+            "close": 231.0,
+            "volume": 423578.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -523,14 +523,14 @@
           "name": "Direxion Technology Bear 3X ETF",
           "aum": 65672536.0,
           "currency": "USD",
-          "nav": 53.012,
-          "previous_close": 52.5597,
-          "volume": 396473,
-          "average_volume": 520365,
+          "nav": 51.375,
+          "previous_close": 51.41,
+          "volume": 290130,
+          "average_volume": 518406,
           "last_bar": {
-            "close": 52.560001373291016,
-            "volume": 396473.0,
-            "as_of": "2026-09-21"
+            "close": 52.189998626708984,
+            "volume": 290130.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -555,14 +555,14 @@
           "name": "ProShares UltraPro QQQ",
           "aum": 36114247680.0,
           "currency": "USD",
-          "nav": 78.9494,
-          "previous_close": 78.91,
-          "volume": 44433622,
-          "average_volume": 57887814,
+          "nav": 80.8656,
+          "previous_close": 80.674,
+          "volume": 51435137,
+          "average_volume": 57679033,
           "last_bar": {
-            "close": 78.91000366210938,
-            "volume": 44433622.0,
-            "as_of": "2026-09-21"
+            "close": 78.66000366210938,
+            "volume": 51435137.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -587,14 +587,14 @@
           "name": "ProShares UltraPro Short QQQ",
           "aum": 1935680000.0,
           "currency": "USD",
-          "nav": 34.5951,
-          "previous_close": 34.6,
-          "volume": 41229552,
-          "average_volume": 51018353,
+          "nav": 33.7599,
+          "previous_close": 33.2966,
+          "volume": 49848246,
+          "average_volume": 50866182,
           "last_bar": {
-            "close": 34.599998474121094,
-            "volume": 41229552.0,
-            "as_of": "2026-09-21"
+            "close": 34.13999938964844,
+            "volume": 49848246.0,
+            "as_of": "2026-09-23"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -613,45 +613,45 @@
       "ticker": "000660",
       "name": "SK하이닉스",
       "venue": "kr",
-      "adv_spot_krw": 6171466634764.0,
-      "spot_trading_value_krw": 6171466634764.0,
-      "free_float_mcap_krw": 967756285152000.0,
+      "adv_spot_krw": 5480333530143.0,
+      "spot_trading_value_krw": 5480333530143.0,
+      "free_float_mcap_krw": 979327284213600.0,
       "free_float_ratio_assumed": 0.72,
-      "market_cap_krw": 1344105951600000.0,
-      "close": 1840000.0,
-      "day_return": -0.015,
-      "letf_aum_sum_krw": 4188905806126.0,
-      "letf_aum_long_krw": 4073345576630.0,
-      "letf_aum_inverse_krw": 115560229496.0,
+      "market_cap_krw": 1360176783630000.0,
+      "close": 1862000.0,
+      "day_return": 0.012,
+      "letf_aum_sum_krw": 0.0,
+      "letf_aum_long_krw": 0.0,
+      "letf_aum_inverse_krw": 0.0,
       "letf_aum_quality": "observed",
-      "letf_trading_value_krw": 576312610831.0,
-      "leverage_exposure_pct": 0.8657,
-      "letf_turnover_ratio": 0.0934,
+      "letf_trading_value_krw": 377368608752.0,
+      "leverage_exposure_pct": 0.0,
+      "letf_turnover_ratio": 0.0689,
       "foreign_hold_ratio_pct": 50.15,
       "flows_krw": {
-        "foreign_net_krw": -400303040000,
-        "institution_net_krw": -293809360000,
-        "retail_net_krw": -399885360000
+        "foreign_net_krw": -1185041970000,
+        "institution_net_krw": 228929176000,
+        "retail_net_krw": -188687632000
       },
       "flows_shares": {
-        "as_of": "20260922",
-        "foreign_net": -217556,
-        "institution_net": -159679,
-        "retail_net": -217329
+        "as_of": "20260923",
+        "foreign_net": -636435,
+        "institution_net": 122948,
+        "retail_net": -101336
       },
       "flow_tangle": {
-        "letf_vs_spot_turnover": 0.0934,
-        "long_aum_share": 0.9724,
-        "inverse_aum_share": 0.0276,
-        "long_tv_share": 0.825,
-        "inverse_tv_share": 0.175,
+        "letf_vs_spot_turnover": 0.0689,
+        "long_aum_share": null,
+        "inverse_aum_share": null,
+        "long_tv_share": 0.8175,
+        "inverse_tv_share": 0.1825,
         "retail_vs_foreign_net_krw": {
-          "retail": -399885360000,
-          "foreign": -400303040000,
-          "institution": -293809360000,
-          "retail_minus_foreign": 417680000
+          "retail": -188687632000,
+          "foreign": -1185041970000,
+          "institution": 228929176000,
+          "retail_minus_foreign": 996354338000
         },
-        "realized_ir_pct": 2.1486,
+        "realized_ir_pct": 0.0,
         "realized_band": "low",
         "wag_the_dog_band": "mid",
         "wag_the_dog_thresholds_pct": {
@@ -666,42 +666,42 @@
       "scenarios": {
         "r_minus_5pct": {
           "R": -0.05,
-          "tr_total": -442002626511.8,
-          "tr_abs_sum": 442002626511.8,
-          "tr_long": -407334557663.0,
-          "tr_inverse": -34668068848.8,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 7.162,
-          "band": "watch"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_minus_10pct": {
           "R": -0.1,
-          "tr_total": -884005253023.6,
-          "tr_abs_sum": 884005253023.6,
-          "tr_long": -814669115326.0,
-          "tr_inverse": -69336137697.6,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 14.3241,
-          "band": "high"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_plus_5pct": {
           "R": 0.05,
-          "tr_total": 442002626511.8,
-          "tr_abs_sum": 442002626511.8,
-          "tr_long": 407334557663.0,
-          "tr_inverse": 34668068848.8,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 7.162,
-          "band": "watch"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_realized": {
-          "R": -0.015,
-          "tr_total": -132600787953.53998,
-          "tr_abs_sum": 132600787953.53998,
-          "tr_long": -122200367298.89998,
-          "tr_inverse": -10400420654.64,
+          "R": 0.012,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_total",
-          "ir_pct": 2.1486,
+          "ir_pct": 0.0,
           "band": "low"
         }
       },
@@ -710,10 +710,10 @@
           "ticker": "0193T0",
           "name": "KODEX SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum": 2358092592207.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 317205764406.0,
+          "trading_value": 196117608756.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -722,10 +722,10 @@
           "ticker": "0195S0",
           "name": "TIGER SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum": 1538140927081.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 153926573174.0,
+          "trading_value": 110127197254.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -734,10 +734,10 @@
           "ticker": "0194T0",
           "name": "ACE SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum": 54790634573.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 957444182.0,
+          "trading_value": 324593750.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -746,10 +746,10 @@
           "ticker": "0192L0",
           "name": "RISE SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum": 39649029126.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 540981192.0,
+          "trading_value": 193602349.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -758,10 +758,10 @@
           "ticker": "0197W0",
           "name": "SOL SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum": 44013391338.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 1775870189.0,
+          "trading_value": 420250569.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -770,10 +770,10 @@
           "ticker": "0194R0",
           "name": "KIWOOM SK하이닉스선물단일종목레버리지",
           "L": 2.0,
-          "aum": 12921246000.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 342272665.0,
+          "trading_value": 63616160.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "long"
@@ -782,10 +782,10 @@
           "ticker": "0198D0",
           "name": "1Q SK하이닉스선물단일종목레버리지",
           "L": 2.0,
-          "aum": 25737756305.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 705825900.0,
+          "trading_value": 1268078800.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "long"
@@ -794,10 +794,10 @@
           "ticker": "0197X0",
           "name": "SOL SK하이닉스선물단일종목인버스2X",
           "L": -2.0,
-          "aum": 115560229496.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 100857879123.0,
+          "trading_value": 68853661114.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "inverse"
@@ -845,45 +845,45 @@
       "ticker": "005930",
       "name": "삼성전자",
       "venue": "kr",
-      "adv_spot_krw": 5066867516850.0,
-      "spot_trading_value_krw": 5066867516850.0,
-      "free_float_mcap_krw": 1131547224578400.0,
+      "adv_spot_krw": 5926486634990.0,
+      "spot_trading_value_krw": 5926486634990.0,
+      "free_float_mcap_krw": 1168378779808800.0,
       "free_float_ratio_assumed": 0.7,
-      "market_cap_krw": 1616496035112000.0,
-      "close": 276500.0,
-      "day_return": 0.0091,
-      "letf_aum_sum_krw": 2719911997722.0,
-      "letf_aum_long_krw": 2707702426192.0,
-      "letf_aum_inverse_krw": 12209571530.0,
+      "market_cap_krw": 1669112542584000.0,
+      "close": 285500.0,
+      "day_return": 0.0325,
+      "letf_aum_sum_krw": 0.0,
+      "letf_aum_long_krw": 0.0,
+      "letf_aum_inverse_krw": 0.0,
       "letf_aum_quality": "observed",
-      "letf_trading_value_krw": 199211564187.0,
-      "leverage_exposure_pct": 0.4807,
-      "letf_turnover_ratio": 0.0393,
+      "letf_trading_value_krw": 166899126096.0,
+      "leverage_exposure_pct": 0.0,
+      "letf_turnover_ratio": 0.0282,
       "foreign_hold_ratio_pct": 46.55,
       "flows_krw": {
-        "foreign_net_krw": 182448801500,
-        "institution_net_krw": 71740413500,
-        "retail_net_krw": -748610478000
+        "foreign_net_krw": 1288680478500,
+        "institution_net_krw": 384535096500,
+        "retail_net_krw": -2178400973000
       },
       "flows_shares": {
-        "as_of": "20260922",
-        "foreign_net": 659851,
-        "institution_net": 259459,
-        "retail_net": -2707452
+        "as_of": "20260923",
+        "foreign_net": 4513767,
+        "institution_net": 1346883,
+        "retail_net": -7630126
       },
       "flow_tangle": {
-        "letf_vs_spot_turnover": 0.0393,
-        "long_aum_share": 0.9955,
-        "inverse_aum_share": 0.0045,
-        "long_tv_share": 0.9649,
-        "inverse_tv_share": 0.0351,
+        "letf_vs_spot_turnover": 0.0282,
+        "long_aum_share": null,
+        "inverse_aum_share": null,
+        "long_tv_share": 0.9371,
+        "inverse_tv_share": 0.0629,
         "retail_vs_foreign_net_krw": {
-          "retail": -748610478000,
-          "foreign": 182448801500,
-          "institution": 71740413500,
-          "retail_minus_foreign": -931059279500
+          "retail": -2178400973000,
+          "foreign": 1288680478500,
+          "institution": 384535096500,
+          "retail_minus_foreign": -3467081451500
         },
-        "realized_ir_pct": 0.9858,
+        "realized_ir_pct": 0.0,
         "realized_band": "low",
         "wag_the_dog_band": "low",
         "wag_the_dog_thresholds_pct": {
@@ -898,42 +898,42 @@
       "scenarios": {
         "r_minus_5pct": {
           "R": -0.05,
-          "tr_total": -274433114078.19998,
-          "tr_abs_sum": 274433114078.19998,
-          "tr_long": -270770242619.19998,
-          "tr_inverse": -3662871459.0,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 5.4162,
-          "band": "watch"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_minus_10pct": {
           "R": -0.1,
-          "tr_total": -548866228156.39996,
-          "tr_abs_sum": 548866228156.39996,
-          "tr_long": -541540485238.39996,
-          "tr_inverse": -7325742918.0,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 10.8325,
-          "band": "high"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_plus_5pct": {
           "R": 0.05,
-          "tr_total": 274433114078.19998,
-          "tr_abs_sum": 274433114078.19998,
-          "tr_long": 270770242619.19998,
-          "tr_inverse": 3662871459.0,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_abs_sum",
-          "ir_pct": 5.4162,
-          "band": "watch"
+          "ir_pct": 0.0,
+          "band": "low"
         },
         "r_realized": {
-          "R": 0.0091,
-          "tr_total": 49946826762.2324,
-          "tr_abs_sum": 49946826762.2324,
-          "tr_long": 49280184156.6944,
-          "tr_inverse": 666642605.538,
+          "R": 0.0325,
+          "tr_total": 0.0,
+          "tr_abs_sum": 0.0,
+          "tr_long": 0.0,
+          "tr_inverse": 0.0,
           "ir_basis": "tr_total",
-          "ir_pct": 0.9858,
+          "ir_pct": 0.0,
           "band": "low"
         }
       },
@@ -942,10 +942,10 @@
           "ticker": "0193W0",
           "name": "KODEX 삼성전자단일종목레버리지",
           "L": 2.0,
-          "aum": 1597648232309.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 123252775766.0,
+          "trading_value": 109561375242.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -954,10 +954,10 @@
           "ticker": "0195R0",
           "name": "TIGER 삼성전자단일종목레버리지",
           "L": 2.0,
-          "aum": 992708577731.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 66935216158.0,
+          "trading_value": 44686687272.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -966,10 +966,10 @@
           "ticker": "0194M0",
           "name": "ACE 삼성전자단일종목레버리지",
           "L": 2.0,
-          "aum": 43488740424.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 730588914.0,
+          "trading_value": 1117335231.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -978,10 +978,10 @@
           "ticker": "0192M0",
           "name": "RISE 삼성전자단일종목레버리지",
           "L": 2.0,
-          "aum": 30850790154.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 482085065.0,
+          "trading_value": 301713180.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -990,10 +990,10 @@
           "ticker": "0193K0",
           "name": "PLUS 삼성전자단일종목레버리지",
           "L": 2.0,
-          "aum": 15251180983.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 180324118.0,
+          "trading_value": 230686410.0,
           "beta": 1.0,
           "structure": "cash",
           "direction": "long"
@@ -1002,10 +1002,10 @@
           "ticker": "0194N0",
           "name": "KIWOOM 삼성전자선물단일종목레버리지",
           "L": 2.0,
-          "aum": 9359513407.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 190695645.0,
+          "trading_value": 206805932.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "long"
@@ -1014,10 +1014,10 @@
           "ticker": "0198B0",
           "name": "1Q 삼성전자선물단일종목레버리지",
           "L": 2.0,
-          "aum": 18395391184.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 444960345.0,
+          "trading_value": 290254946.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "long"
@@ -1026,10 +1026,10 @@
           "ticker": "0193L0",
           "name": "PLUS 삼성전자선물단일종목인버스2X",
           "L": -2.0,
-          "aum": 12209571530.0,
+          "aum": 0.0,
           "aum_source": "INVSTASST_NETASST_TOTAMT",
           "aum_quality": "observed",
-          "trading_value": 6994918176.0,
+          "trading_value": 10504267883.0,
           "beta": 1.0,
           "structure": "futures",
           "direction": "inverse"
@@ -1097,23 +1097,23 @@
     {
       "field": "levered_etf_aum_usd",
       "paper_anchor": 26000000000.0,
-      "model_value": 17918374929.58,
-      "delta_pct": -31.083173347752748,
+      "model_value": 0.0,
+      "delta_pct": -100.0,
       "note": "KR levered ETF AUM only (paper Korea chart); FX for USD",
       "quality": "observed"
     },
     {
       "field": "leverage_exposure_pct_aum_over_ff",
       "paper_anchor": 2.1,
-      "model_value": 0.5772,
-      "delta_pct": -72.51586402011286,
+      "model_value": 0.0,
+      "delta_pct": -100.0,
       "note": "paper-style: KR total levered ETF AUM / KOSPI free float (no |L|)",
       "quality": "estimated"
     },
     {
       "field": "leverage_exposure_pct_notional",
       "paper_anchor": null,
-      "model_value": 0.6582,
+      "model_value": 0.0,
       "delta_pct": null,
       "note": "brief §4.3: Σ AUM×|L|×β / free_float of covered underlyings (KR only)",
       "quality": "estimated"
@@ -1124,7 +1124,7 @@
     "watch_lt_pct": 10.0
   },
   "public_extras": {
-    "fetched_at": "2026-09-23T09:44:24.899036+00:00",
+    "fetched_at": "2026-09-23T23:41:25.593451+00:00",
     "deposit_credit": {
       "as_of": "2026-09-22",
       "unit_native": "억원",
@@ -4385,11 +4385,11 @@
       "source": "https://finance.naver.com/sise/investorDealTrendDay.naver",
       "note_ko": "코스피 시장 전체 투자자별 순매수. 종목별 수급과 별도.",
       "as_of": "2026-09-16",
-      "carried_at": "2026-09-22"
+      "carried_at": "2026-09-23"
     },
     "letf_category_share": {
-      "kospi_cash_tv_krw": 22072595521288.0,
-      "kospi_cash_tv_jo": 22.07,
+      "kospi_cash_tv_krw": 22622748935927.0,
+      "kospi_cash_tv_jo": 22.62,
       "levered_inverse_tv_krw": 3757177000000.0,
       "levered_inverse_tv_jo": 3.76,
       "long_tv_krw": 2794438000000.0,
@@ -4406,7 +4406,7 @@
           "trading_value_jo": 2.565,
           "aum_proxy_krw": 128944000000.0,
           "share_of_lev_tv_pct": 68.26,
-          "share_of_kospi_tv_pct": 11.619
+          "share_of_kospi_tv_pct": 11.337
         },
         "overseas": {
           "n_products": 26,
@@ -4414,7 +4414,7 @@
           "trading_value_jo": 0.017,
           "aum_proxy_krw": 17238000000.0,
           "share_of_lev_tv_pct": 0.45,
-          "share_of_kospi_tv_pct": 0.076
+          "share_of_kospi_tv_pct": 0.074
         },
         "sector": {
           "n_products": 8,
@@ -4422,7 +4422,7 @@
           "trading_value_jo": 0.632,
           "aum_proxy_krw": 39224000000.0,
           "share_of_lev_tv_pct": 16.81,
-          "share_of_kospi_tv_pct": 2.861
+          "share_of_kospi_tv_pct": 2.791
         },
         "single_stock": {
           "n_products": 16,
@@ -4430,7 +4430,7 @@
           "trading_value_jo": 0.544,
           "aum_proxy_krw": 71891000000.0,
           "share_of_lev_tv_pct": 14.49,
-          "share_of_kospi_tv_pct": 2.466
+          "share_of_kospi_tv_pct": 2.406
         }
       },
       "by_direction": {
@@ -4440,7 +4440,7 @@
           "trading_value_jo": 0.257,
           "aum_proxy_krw": 9601000000.0,
           "share_of_lev_tv_pct": 6.85,
-          "share_of_kospi_tv_pct": 1.165
+          "share_of_kospi_tv_pct": 1.137
         },
         "inverse": {
           "n_products": 31,
@@ -4448,7 +4448,7 @@
           "trading_value_jo": 0.626,
           "aum_proxy_krw": 14814000000.0,
           "share_of_lev_tv_pct": 16.67,
-          "share_of_kospi_tv_pct": 2.837
+          "share_of_kospi_tv_pct": 2.768
         },
         "inverse_2x": {
           "n_products": 2,
@@ -4456,7 +4456,7 @@
           "trading_value_jo": 0.079,
           "aum_proxy_krw": 1235000000.0,
           "share_of_lev_tv_pct": 2.11,
-          "share_of_kospi_tv_pct": 0.36
+          "share_of_kospi_tv_pct": 0.351
         },
         "long": {
           "n_products": 62,
@@ -4464,7 +4464,7 @@
           "trading_value_jo": 2.794,
           "aum_proxy_krw": 231647000000.0,
           "share_of_lev_tv_pct": 74.38,
-          "share_of_kospi_tv_pct": 12.66
+          "share_of_kospi_tv_pct": 12.352
         }
       },
       "top_products_by_tv": [
@@ -4642,7 +4642,7 @@
       "quality": "observed",
       "source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
       "note_ko": "이름에 레버리지·인버스·곱버스가 든 상장 ETF의 당일 거래대금이다. 방향은 상품명 분류이며 투자자의 실제 순포지션이 아니다.",
-      "as_of": "2026-09-22"
+      "as_of": "2026-09-23"
     },
     "short_interest": {
       "by_ticker": {},
@@ -4664,7 +4664,7 @@
     "quality": "carried_forward",
     "date_raw": "26.09.16",
     "as_of": "2026-09-16",
-    "carried_at": "2026-09-22"
+    "carried_at": "2026-09-23"
   },
   "deposit_credit": {
     "as_of": "2026-09-22",
@@ -7819,8 +7819,8 @@
     "note_ko": "금투협 FreeSIS 공개 집계. 종목·증권사·계좌별 아님. UI 기본은 예탁금·신용거래융자·미수·반대매매만 표시. 예탁증권담보융자·대주·광의신용공여(융자+담보)는 원본 필드만 유지·기본 표 제외 (코스피 가격대 수급 설명력 낮음). 반대매매는 시장 전체 미수 대비 금액·비중만 공개."
   },
   "letf_category_share": {
-    "kospi_cash_tv_krw": 22072595521288.0,
-    "kospi_cash_tv_jo": 22.07,
+    "kospi_cash_tv_krw": 22622748935927.0,
+    "kospi_cash_tv_jo": 22.62,
     "levered_inverse_tv_krw": 3757177000000.0,
     "levered_inverse_tv_jo": 3.76,
     "long_tv_krw": 2794438000000.0,
@@ -7837,7 +7837,7 @@
         "trading_value_jo": 2.565,
         "aum_proxy_krw": 128944000000.0,
         "share_of_lev_tv_pct": 68.26,
-        "share_of_kospi_tv_pct": 11.619
+        "share_of_kospi_tv_pct": 11.337
       },
       "overseas": {
         "n_products": 26,
@@ -7845,7 +7845,7 @@
         "trading_value_jo": 0.017,
         "aum_proxy_krw": 17238000000.0,
         "share_of_lev_tv_pct": 0.45,
-        "share_of_kospi_tv_pct": 0.076
+        "share_of_kospi_tv_pct": 0.074
       },
       "sector": {
         "n_products": 8,
@@ -7853,7 +7853,7 @@
         "trading_value_jo": 0.632,
         "aum_proxy_krw": 39224000000.0,
         "share_of_lev_tv_pct": 16.81,
-        "share_of_kospi_tv_pct": 2.861
+        "share_of_kospi_tv_pct": 2.791
       },
       "single_stock": {
         "n_products": 16,
@@ -7861,7 +7861,7 @@
         "trading_value_jo": 0.544,
         "aum_proxy_krw": 71891000000.0,
         "share_of_lev_tv_pct": 14.49,
-        "share_of_kospi_tv_pct": 2.466
+        "share_of_kospi_tv_pct": 2.406
       }
     },
     "by_direction": {
@@ -7871,7 +7871,7 @@
         "trading_value_jo": 0.257,
         "aum_proxy_krw": 9601000000.0,
         "share_of_lev_tv_pct": 6.85,
-        "share_of_kospi_tv_pct": 1.165
+        "share_of_kospi_tv_pct": 1.137
       },
       "inverse": {
         "n_products": 31,
@@ -7879,7 +7879,7 @@
         "trading_value_jo": 0.626,
         "aum_proxy_krw": 14814000000.0,
         "share_of_lev_tv_pct": 16.67,
-        "share_of_kospi_tv_pct": 2.837
+        "share_of_kospi_tv_pct": 2.768
       },
       "inverse_2x": {
         "n_products": 2,
@@ -7887,7 +7887,7 @@
         "trading_value_jo": 0.079,
         "aum_proxy_krw": 1235000000.0,
         "share_of_lev_tv_pct": 2.11,
-        "share_of_kospi_tv_pct": 0.36
+        "share_of_kospi_tv_pct": 0.351
       },
       "long": {
         "n_products": 62,
@@ -7895,7 +7895,7 @@
         "trading_value_jo": 2.794,
         "aum_proxy_krw": 231647000000.0,
         "share_of_lev_tv_pct": 74.38,
-        "share_of_kospi_tv_pct": 12.66
+        "share_of_kospi_tv_pct": 12.352
       }
     },
     "top_products_by_tv": [
@@ -8073,7 +8073,7 @@
     "quality": "observed",
     "source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
     "note_ko": "이름에 레버리지·인버스·곱버스가 든 상장 ETF의 당일 거래대금이다. 방향은 상품명 분류이며 투자자의 실제 순포지션이 아니다.",
-    "as_of": "2026-09-22"
+    "as_of": "2026-09-23"
   },
   "short_interest_meta": {
     "by_ticker": {},
