@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-24T05:18:04.839882+00:00",
+  "generated_at": "2026-09-24T13:46:05.669300+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 2,
-    "raw_items": 162,
-    "scored": 65,
-    "published": 39,
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 150,
+    "scored": 63,
+    "published": 37,
     "commodities": 8,
-    "buckets": 12
+    "buckets": 10
   },
   "feed_status": [
     {
@@ -105,9 +105,9 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": true,
-      "count": 12,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -476,21 +476,7 @@
         "39ac9e91f73a0776"
       ]
     },
-    "cotton": {
-      "_global": [
-        "0eb0404d29d2bbc2"
-      ],
-      "USA": [
-        "094f2c679d643322",
-        "d2560303da2802d2",
-        "e4530ccde436c92d",
-        "82ad0c3c992ec514"
-      ]
-    },
-    "soybeans": {
-      "TWN": [
-        "8f29624b5d0167ec"
-      ],
+    "corn": {
       "USA": [
         "9a2e4f0c6cc38378",
         "9d9ab72fff81736d",
@@ -502,7 +488,7 @@
         "9dd7845c2d4fc51e"
       ]
     },
-    "corn": {
+    "soybeans": {
       "USA": [
         "9a2e4f0c6cc38378",
         "9d9ab72fff81736d",
@@ -524,6 +510,14 @@
         "389d4a4328f23545",
         "f9e7ed8b73ce1fa5",
         "e4530ccde436c92d"
+      ]
+    },
+    "cotton": {
+      "USA": [
+        "094f2c679d643322",
+        "d2560303da2802d2",
+        "e4530ccde436c92d",
+        "82ad0c3c992ec514"
       ]
     },
     "rice": {
@@ -573,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.176,
+      "importance": 4.149,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -604,37 +598,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.446,
+      "importance": 2.431,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "0eb0404d29d2bbc2",
-      "title": {
-        "original": "Senegal: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to decrease 7.7 percent to 1.79 million bales when compared to the April 2026 report. The late...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
-      "published_at": "2026-09-17T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.357,
-      "reasons": [
-        "has_figure"
       ]
     },
     {
@@ -660,39 +628,11 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.281,
+      "importance": 2.279,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "8f29624b5d0167ec",
-      "title": {
-        "original": "Taiwan: Taiwan Further Extends Tariff and Business Tax Cuts for Selected Imported Agricultural Commodities",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "On September 16, 2026, Taiwan’s Executive Yuan announced the 18th wave of tariff and business tax cuts on selected agricultural imports, extending relief through March 31, 2027. The measures maintain full waivers on the business tax for soybeans...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/taiwan-taiwan-further-extends-tariff-and-business-tax-cuts-selected-imported-agricultural",
-      "published_at": "2026-09-18T09:12:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TWN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.994,
-      "reasons": [
         "country_in_text"
       ]
     },
@@ -717,7 +657,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.956,
+      "importance": 1.944,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -995,7 +935,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.493,
+      "importance": 1.483,
       "reasons": [
         "country_in_text"
       ]
@@ -1023,7 +963,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.477,
+      "importance": 1.475,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1144,7 +1084,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.378,
+      "importance": 1.373,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1377,7 +1317,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 1.122,
       "reasons": [
         "country_in_text"
       ]
@@ -1405,7 +1345,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.111,
+      "importance": 1.105,
       "reasons": [
         "country_in_text"
       ]
@@ -1519,7 +1459,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
+      "importance": 0.898,
       "reasons": []
     },
     {
@@ -1543,7 +1483,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
+      "importance": 0.898,
       "reasons": []
     },
     {
