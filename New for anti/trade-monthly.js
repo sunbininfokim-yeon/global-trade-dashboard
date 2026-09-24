@@ -310,6 +310,145 @@
             comparisons: compareSources(series), latest: months[months.length - 1] || null };
     };
 
+    // ---- UN Comtrade monthly series, per country ---------------------------
+    //
+    // The pipeline files above cover ~15 reporters. Comtrade itself has monthly
+    // returns for most of the world, and the Worker already holds the key, so
+    // a clicked country gets its own 36-month export and import series vs
+    // World straight from /api/comtrade (3 calls of 12 months, cached in KV).
+
+    const SERIES_MONTHS = 36;
+    const RANGES = [12, 24, 36];
+
+    // Comtrade's own reporter codes where they differ from plain M49 (the
+    // traps documented at M49_MAP in data.js): querying 840 for the US
+    // returns nothing, 842 is what Comtrade files it under.
+    const COMTRADE_REPORTER = { USA: 842, FRA: 251, IND: 699, NOR: 579, CHE: 757, TWN: 490 };
+    const reporterCodeFor = (iso3) => {
+        if (!iso3) return null;
+        if (COMTRADE_REPORTER[iso3]) return COMTRADE_REPORTER[iso3];
+        for (const [code, name] of Object.entries(window.ComtradeM49Names || {})) {
+            if (typeof countryCode === 'function' && countryCode(name) === iso3) return Number(code);
+        }
+        return null;
+    };
+
+    /** The last 36 complete months, as three YYYYMM lists of 12, oldest first. */
+    const monthBlocks = (now = new Date()) => {
+        const months = [];
+        for (let i = SERIES_MONTHS; i >= 1; i--) {
+            const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+            months.push(`${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`);
+        }
+        return [months.slice(0, 12), months.slice(12, 24), months.slice(24)];
+    };
+
+    /**
+     * Rows -> { X: [{month, usd, kg}], M: [...] }. Comtrade can return
+     * breakdown rows (mode of transport, customs procedure) beside the total
+     * for the same month; the total is the largest, so the max per
+     * (month, flow, HS code) is kept, then HS codes are summed.
+     */
+    const aggregateComtradeMonthly = (rows) => {
+        const best = new Map();
+        for (const r of rows || []) {
+            if (!(r.primaryValue > 0) || !['X', 'M'].includes(r.flowCode)) continue;
+            if (r.partnerCode != null && String(r.partnerCode) !== '0') continue;
+            const k = `${r.period}|${r.flowCode}|${r.cmdCode ?? ''}`;
+            const b = best.get(k);
+            if (!b || r.primaryValue > b.usd) {
+                best.set(k, { period: r.period, flow: r.flowCode, usd: r.primaryValue, kg: r.netWgt > 0 ? r.netWgt : null });
+            }
+        }
+        const out = { X: new Map(), M: new Map() };
+        for (const b of best.values()) {
+            const month = monthKey(b.period);
+            if (!month) continue;
+            const cur = out[b.flow].get(month) || { month, usd: 0, kg: 0, kgKnown: true };
+            cur.usd += b.usd;
+            if (b.kg == null) cur.kgKnown = false;
+            else cur.kg += b.kg;
+            out[b.flow].set(month, cur);
+        }
+        const list = (m) => [...m.values()].sort((a, b) => (a.month < b.month ? -1 : 1));
+        return { X: list(out.X), M: list(out.M) };
+    };
+
+    const liveCache = new Map();
+    const loadComtradeSeries = (hs, m49) => {
+        const key = `${hs}|${m49}`;
+        if (!liveCache.has(key)) {
+            liveCache.set(key, (async () => {
+                const rows = [];
+                let failures = 0;
+                let period = null;
+                // Newest block first: it is the one most likely to be cold.
+                for (const block of monthBlocks().reverse()) {
+                    try {
+                        const params = new URLSearchParams({
+                            hs, freq: 'M', period: block.join(','), reporters: String(m49), partners: '0',
+                        });
+                        const r = await fetch(`/api/comtrade?${params}`);
+                        if (!r.ok) { failures++; continue; }
+                        const j = await r.json();
+                        for (const row of j.data || []) rows.push(row);
+                        period = period || block[block.length - 1];
+                    } catch {
+                        failures++;
+                    }
+                }
+                if (failures === 3) liveCache.delete(key);   // let a later click retry
+                return { ...aggregateComtradeMonthly(rows), failures, hs };
+            })());
+        }
+        return liveCache.get(key);
+    };
+
+    const pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);
+
+    const liveFlowHtml = (flow, points, range) => {
+        if (!points.length) {
+            return `<div class="tm-live-flow"><span class="tm-flow tm-flow-${flow}">${FLOW_LABEL[flow]}</span>
+                <span class="tm-note">최근 ${SERIES_MONTHS}개월 보고 없음</span></div>`;
+        }
+        const last = points[points.length - 1];
+        const lastYear = points.find((p) => monthsBetween(p.month, last.month) === 12);
+        const yoy = lastYear ? pct(last.usd, lastYear.usd) : null;
+        const shown = points.filter((p) => monthsBetween(p.month, last.month) < range);
+        const kt = last.kgKnown && last.kg > 0 ? ` · ${fmtValue(last.kg / 1e6)} 천 톤` : '';
+        const chart = typeof sparkChartHtml === 'function' && shown.length >= 2 ? sparkChartHtml({
+            points: shown.map((p) => ({ label: p.month, value: p.usd / 1e6 })),
+            unit: 'M USD',
+            formatValue: fmtValue,
+            ariaLabel: `UN Comtrade ${FLOW_LABEL[flow]} 월별 ${range}개월`,
+        }) : '';
+        return `<div class="tm-live-flow">
+            <div class="tm-latest">
+                <span class="tm-flow tm-flow-${flow}">${FLOW_LABEL[flow]}</span>
+                <strong>${fmtValue(last.usd / 1e6)}</strong> <span class="tm-unit">M USD${kt}</span>
+                ${yoy != null ? `<span class="tm-yoy ${yoy >= 0 ? 'up' : 'down'}">전년 동월 ${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%</span>` : ''}
+                <span class="tm-when">${monthLabel(last.month)}</span>
+            </div>
+            ${chart || '<p class="tm-note">관측이 부족해 추이를 그리지 않습니다</p>'}
+            <p class="tm-note">${range}개월 중 ${shown.length}개월 보고 · 빠진 달은 0이 아니라 미보고입니다</p>
+        </div>`;
+    };
+
+    const liveCardHtml = (data, range, countryLabel) => `<div class="tm-series tm-live-card">
+        <div class="tm-series-head">
+            <span class="tm-flow tm-flow-X">월별</span>
+            <span class="tm-src">UN Comtrade · HS ${esc(data.hs)} · 대세계(World)</span>
+        </div>
+        <div class="tm-range" role="group" aria-label="기간">
+            ${RANGES.map((n) => `<button type="button" data-range="${n}" class="${n === range ? 'is-on' : ''}"
+                aria-pressed="${n === range}">${n}개월</button>`).join('')}
+        </div>
+        ${liveFlowHtml('X', data.X, range)}
+        ${liveFlowHtml('M', data.M, range)}
+        <p class="tm-note">${esc(countryLabel)}이(가) UN Comtrade에 직접 신고한 값 · 금액은 신고 통화의 USD 환산${data.failures
+            ? ` · ${data.failures}개 구간을 불러오지 못했습니다` : ''}</p>
+    </div>`;
+
     // ---- data loading ------------------------------------------------------
 
     let docsPromise = null;
@@ -357,7 +496,7 @@
             formatValue: fmtValue,
             ariaLabel: `${FLOW_LABEL[s.flow]} ${s.sourceLabel} 월별 추이`,
         }) : '';
-        return `<div class="tm-series">
+        return `<div class="tm-series" data-source="${esc(s.source)}">
             <div class="tm-series-head">
                 <span class="tm-flow tm-flow-${s.flow}">${FLOW_LABEL[s.flow] || s.flow}</span>
                 <span class="tm-src">${esc(s.sourceLabel)}${s.hs ? ` · HS ${esc(s.hs)}` : ''}</span>
@@ -502,42 +641,94 @@
     const attach = async (card, { commodity, countryName, annualLabel }) => {
         if (!card) return;
         const iso3 = typeof countryCode === 'function' ? countryCode(countryName) : null;
-        if (!MONTHLY_ID[commodity] || !iso3) return;
+        if (!iso3) return;
+        const hs = window.ComtradeHsCodes?.[commodity] || null;
+        const m49 = hs ? reporterCodeFor(iso3) : null;
         const token = `${commodity}|${iso3}|${Date.now()}`;
         card.dataset.tmToken = token;
+        const alive = () => card.isConnected && card.dataset.tmToken === token;
 
-        const view = buildView(await loadDocs(), commodity, iso3);
+        const view = MONTHLY_ID[commodity] ? buildView(await loadDocs(), commodity, iso3) : null;
         // The user may have clicked elsewhere while the files loaded.
-        if (!view || !card.isConnected || card.dataset.tmToken !== token) return;
+        if (!alive() || (!view && !m49)) return;
 
         const badge = card.querySelector('.tm-period-badge');
         const monthly = card.querySelector('.tm-monthly');
         if (!badge || !monthly) return;
         badge.outerHTML = `<div class="tm-toggle" role="group" aria-label="기간 단위">
             <button type="button" data-mode="annual">${esc(annualLabel || '연간')}</button>
-            <button type="button" data-mode="monthly">월별 · ${esc(monthLabel(view.latest))}</button>
+            <button type="button" data-mode="monthly">월별${view?.latest ? ` · ${esc(monthLabel(view.latest))}` : ''}</button>
         </div>`;
-        monthly.innerHTML = monthlyHtml(view);
+        const staticHtml = (v) => (v ? monthlyHtml(v)
+            : '<p class="trade-focus-sub">월별 · UN Comtrade 보고국 신고 기준 · 지도의 노선은 연간 데이터입니다</p>');
+        monthly.innerHTML = `${m49 ? '<div class="tm-live"></div>' : ''}<div class="tm-static">${staticHtml(view)}</div>`;
         if (typeof wireSparkCharts === 'function') wireSparkCharts(monthly);
 
+        let liveStarted = false;
+        const startLive = async () => {
+            if (liveStarted || !m49) return;
+            liveStarted = true;
+            const slot = monthly.querySelector('.tm-live');
+            slot.innerHTML = '<p class="tm-note">UN Comtrade 월별 36개월 불러오는 중… 처음 여는 국가·품목은 수십 초 걸릴 수 있습니다</p>';
+            const data = await loadComtradeSeries(hs, m49);
+            if (!alive()) return;
+            const label = (typeof resolveCountry === 'function' && resolveCountry(countryName)?.label) || countryName;
+            if (!data.X.length && !data.M.length) {
+                slot.innerHTML = `<p class="tm-note">${data.failures === 3
+                    ? 'UN Comtrade 월별 자료를 지금 불러오지 못했습니다. 잠시 후 다시 눌러 주세요.'
+                    : `${esc(label)}은(는) 최근 ${SERIES_MONTHS}개월 이 품목을 UN Comtrade에 월별로 신고하지 않았습니다.`}</p>`;
+                if (data.failures === 3) liveStarted = false;
+                return;
+            }
+            let range = SERIES_MONTHS;
+            const draw = () => {
+                slot.innerHTML = liveCardHtml(data, range, label);
+                if (typeof wireSparkCharts === 'function') wireSparkCharts(slot);
+                slot.querySelectorAll('.tm-range button').forEach((btn) => btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    range = Number(btn.dataset.range);
+                    draw();
+                }));
+            };
+            draw();
+            // The pipeline's Comtrade preview is a subset of this series; showing
+            // both would put the same source on the card twice.
+            if (view) {
+                const trimmed = { ...view, series: view.series.filter((x) => x.source !== 'comtrade_preview') };
+                trimmed.comparisons = compareSources(trimmed.series);
+                monthly.querySelector('.tm-static').innerHTML = staticHtml(trimmed);
+                if (typeof wireSparkCharts === 'function') wireSparkCharts(monthly.querySelector('.tm-static'));
+                if (trimmed.bilateral) fillBilateral(trimmed.bilateral);
+            }
+            const latest = [data.X.at(-1)?.month, data.M.at(-1)?.month, view?.latest].filter(Boolean).sort().at(-1);
+            const btn = card.querySelector('.tm-toggle button[data-mode="monthly"]');
+            if (btn && latest) btn.textContent = `월별 · ${monthLabel(latest)}`;
+        };
+
+        const fillBilateral = async (entry) => {
+            const part = await loadPart(entry.path);
+            if (!alive()) return;
+            const slot = monthly.querySelector('.tm-bilateral');
+            if (slot && part?.meta?.reporter_iso3 === iso3) slot.innerHTML = bilateralHtml(part, entry);
+        };
+
+        const choose = (mode) => {
+            setMode(card, mode);
+            if (mode === 'monthly') startLive();
+        };
         card.querySelectorAll('.tm-toggle button').forEach((b) => b.addEventListener('click', (e) => {
             e.preventDefault();
             preferred = b.dataset.mode;
-            setMode(card, preferred);
+            choose(preferred);
         }));
-        setMode(card, preferred);
+        choose(preferred);
 
-        if (view.bilateral) {
-            const part = await loadPart(view.bilateral.path);
-            if (!card.isConnected || card.dataset.tmToken !== token) return;
-            const slot = monthly.querySelector('.tm-bilateral');
-            if (slot && part?.meta?.reporter_iso3 === iso3) slot.innerHTML = bilateralHtml(part, view.bilateral);
-        }
+        if (view?.bilateral) fillBilateral(view.bilateral);
     };
 
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
+        _internal: { aggregateComtradeMonthly, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
     };
 })();

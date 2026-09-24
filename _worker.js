@@ -1016,7 +1016,9 @@ function comtradeCacheKey(hs, reporters, partners, period, freq) {
 // the limit far away as the country list grows.
 // "period" is carried so monthly rows stay distinguishable (e.g. 202403);
 // on annual queries it is just the year and costs almost nothing.
-const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period"];
+// "cmdCode" keeps multi-HS commodities (cobalt = 8105,2822,283329) apart in
+// a monthly country series, where the three codes are summed per month.
+const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period", "cmdCode"];
 
 function slimComtradeBody(body) {
     const rows = Array.isArray(body?.data) ? body.data : [];

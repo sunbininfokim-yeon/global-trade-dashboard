@@ -537,6 +537,9 @@
 
     // Partner codes in the monthly bilateral files are M49 too (trade-monthly.js).
     window.ComtradeM49Names = M49_MAP;
+    // Commodity key -> HS code(s), for the per-country monthly Comtrade series.
+    window.ComtradeHsCodes = Object.fromEntries(
+        Object.entries(COMMODITY_API_CONFIG).map(([key, cfg]) => [key, cfg.hsCode]));
 
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유

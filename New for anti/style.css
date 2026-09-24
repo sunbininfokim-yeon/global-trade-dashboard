@@ -1900,6 +1900,18 @@ body.trade-map-mode .right-pane {
 }
 .tm-compare b { color: #7dd3fc; font-weight: 700; }
 .tm-compare p { margin: 3px 0 0; }
+.tm-live-card { border-color: rgba(125,211,252,.28); }
+.tm-range { display: flex; gap: 4px; margin: 6px 0 4px; }
+.tm-range button {
+    font: inherit; font-size: 10.5px; color: #94a3b8; background: transparent; cursor: pointer;
+    border: 1px solid rgba(148,163,184,.3); border-radius: 5px; padding: 2px 8px;
+}
+.tm-range button.is-on { color: #0f172a; background: #7dd3fc; border-color: #7dd3fc; font-weight: 700; }
+.tm-live-flow { margin-top: 8px; }
+.tm-live-flow + .tm-live-flow { border-top: 1px solid rgba(148,163,184,.12); padding-top: 6px; }
+.tm-yoy { font-size: 10.5px; font-weight: 700; }
+.tm-yoy.up { color: #86efac; }
+.tm-yoy.down { color: #fca5a5; }
 
 /* 선물 시세 카드 (1단계 좌측, 최대 수출국 통계 바로 아래) */
 .fut-card {
