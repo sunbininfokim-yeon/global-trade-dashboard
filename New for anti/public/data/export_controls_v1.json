@@ -2,7 +2,7 @@
   "schema_version": "export-controls-v1",
   "as_of": "2026-09",
   "status": "curated_seed",
-  "note_ko": "수기 정리본이다. 농산물 확인일은 2026-09-24. 인도 쌀 수출금지 해제(2024-10)는 12개월이 지나 삭제했다. 인도 설탕은 DGFT 고시 16/2026-27 사본으로 2026-09-30까지 금지. 러시아 석유제품은 정부 결의 954 원문. 금속 행은 2026-08 이후 원문 재확인이 필요하다. 주간 절차는 New for anti/scripts/export_controls/README.md.",
+  "note_ko": "수기 정리본이다. 농산물 확인일은 2026-09-24. 인도 쌀 수출금지 해제(2024-10)는 12개월이 지나 삭제했다. 인도 설탕은 DGFT 고시 16/2026-27 사본으로 2026-09-30까지 금지. 러시아 석유제품은 정부 결의 954 원문. 금속·광물 7행은 2026-09-24 원문 링크로 재확인(중국 대미 조치 유예는 2026-11-10·11-27 만료 → review_valid_until). 주간 절차는 New for anti/scripts/export_controls/README.md.",
   "levels": {
     "prohibited": {
       "label_ko": "수출 금지",
@@ -315,19 +315,19 @@
       ],
       "level": "prohibited",
       "since": "2020-01",
-      "measure_ko": "니켈 원광 수출 금지 — 국내 제련 유도",
-      "source": "Indonesia MEMR / Reuters",
-      "url": "https://www.reuters.com/markets/commodities/",
-      "confidence": "low",
+      "measure_ko": "니켈 원광 수출 전면 금지(2020-01~, ESDM 장관령 11/2019) — 국내 제련 유도",
+      "source": "ESDM 장관령 11/2019 (IEA 정책 DB)",
+      "url": "https://www.iea.org/policies/16084-prohibition-of-the-export-of-nickel-ore",
+      "confidence": "medium",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2604"
       ],
       "effective_from": "2020-01-01",
-      "verified_as_of": "2026-08-01",
+      "verified_as_of": "2026-09-24",
       "measure_type": "ban",
-      "needs_reconfirm": true
+      "needs_reconfirm": false
     },
     {
       "id": "idn-bauxite",
@@ -339,19 +339,19 @@
       ],
       "level": "prohibited",
       "since": "2023-06",
-      "measure_ko": "보크사이트 원광 수출 금지",
-      "source": "Indonesia MEMR",
-      "url": "https://www.esdm.go.id/",
+      "measure_ko": "보크사이트 원광(세척광 포함) 수출 금지(2023-06~) — 국내 제련 의무",
+      "source": "인도네시아 국회(DPR) 연구 브리프 / ESDM",
+      "url": "https://berkas.dpr.go.id/pusaka/files/info_singkat/Info%20Singkat-XV-4-II-P3DI-Februari-2023-191-EN.pdf",
       "confidence": "medium",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2606"
       ],
       "effective_from": "2023-06-01",
-      "verified_as_of": "2026-08-01",
+      "verified_as_of": "2026-09-24",
       "measure_type": "ban",
-      "needs_reconfirm": true
+      "needs_reconfirm": false
     },
     {
       "id": "chn-gallium",
@@ -363,20 +363,21 @@
       ],
       "level": "restricted",
       "since": "2023-08",
-      "measure_ko": "갈륨·게르마늄 수출 허가제",
-      "source": "MOFCOM Announcement 23/2023",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "medium",
+      "measure_ko": "갈륨·게르마늄 수출 허가제(2023-08~, 공고 23/2023). 2024-12 대미 수출 원칙 불허(공고 46/2024 2항)는 공고 72/2025로 2026-11-27까지 유예 — 기본 허가제는 유지",
+      "source": "MOFCOM·해관총서 공고 23/2023, MOFCOM 공고 72/2025",
+      "url": "https://www.mofcom.gov.cn/zcfb/dwmygl/art/2023/art_52b9a321087f402bb3d310d18b07967e.html",
+      "confidence": "high",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "811292",
         "811299"
       ],
       "effective_from": "2023-08-01",
-      "verified_as_of": "2026-08-01",
+      "verified_as_of": "2026-09-24",
       "measure_type": "licensing",
-      "needs_reconfirm": true
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-27"
     },
     {
       "id": "chn-graphite",
@@ -387,20 +388,21 @@
       ],
       "level": "restricted",
       "since": "2023-12",
-      "measure_ko": "흑연 수출 허가제",
-      "source": "MOFCOM",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "medium",
+      "measure_ko": "고순도·고강도·고밀도 인조흑연, 천연 인상·구상·팽창흑연 수출 허가제(2023-12~, 공고 39/2023). 대미 최종사용자 강화 심사는 2026-11-27까지 유예(공고 72/2025)",
+      "source": "MOFCOM·해관총서 공고 39/2023, MOFCOM 공고 72/2025",
+      "url": "https://www.mofcom.gov.cn/zcfb/blgg/art/2023/art_f6b1bc49e2c8482f8eb749012bc66dec.html",
+      "confidence": "high",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2504",
         "3801"
       ],
       "effective_from": "2023-12-01",
-      "verified_as_of": "2026-08-01",
+      "verified_as_of": "2026-09-24",
       "measure_type": "licensing",
-      "needs_reconfirm": true
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-27"
     },
     {
       "id": "chn-rare-earths",
@@ -410,21 +412,22 @@
         "rare_earths"
       ],
       "level": "restricted",
-      "since": "2023-12",
-      "measure_ko": "희토류 추출·분리 기술 수출 금지 (기술 통제)",
-      "source": "MOFCOM 기술수출금지·제한목록",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "medium",
+      "since": "2025-04",
+      "measure_ko": "중·중희토 7종(사마륨·가돌리늄·테르븀·디스프로슘·루테튬·스칸듐·이트륨) 금속·산화물·합금·화합물 수출 허가제(2025-04-04~, 공고 18/2025). 2025-10 확대 조치(역외 적용 등)는 2026-11-10까지 유예. 추출·분리 기술 수출 금지(2023-12)는 별도 유지",
+      "source": "MOFCOM·해관총서 공고 18/2025, MOFCOM 공고 70/2025",
+      "url": "https://www.mofcom.gov.cn/zwgk/zcfb/art/2025/art_9c2108ccaf754f22a34abab2fedaa944.html",
+      "confidence": "high",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2805",
         "2846"
       ],
-      "effective_from": "2023-12-01",
-      "verified_as_of": "2026-08-01",
-      "measure_type": "ban",
-      "needs_reconfirm": true
+      "effective_from": "2025-04-04",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "licensing",
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-10"
     },
     {
       "id": "cod-cobalt",
@@ -434,22 +437,24 @@
         "cobalt"
       ],
       "level": "restricted",
-      "since": "2025-02",
-      "measure_ko": "코발트 수출 쿼터·일시 중단 조치",
-      "source": "ARECOMS / Reuters",
-      "url": "https://www.reuters.com/markets/commodities/",
-      "confidence": "low",
+      "since": "2025-10",
+      "measure_ko": "코발트 수출 쿼터 — 2025-02~10 수출 중단 후 2025-10-16부터 쿼터제. 2026·2027년 연 96,600톤(월 7,250톤, 그중 9,600톤은 ARECOMS 재량 전략 쿼터). 2026-06 미사용 쿼터 회수",
+      "source": "ARECOMS 결정 004·005/2025 (IEA 정책 DB)",
+      "url": "https://www.iea.org/policies/29138-drc-arecoms-decision-no-0042025-cobalt-quota-system",
+      "confidence": "medium",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2605",
         "2822",
         "8105"
       ],
-      "effective_from": "2025-02-01",
-      "verified_as_of": "2026-08-01",
+      "effective_from": "2025-10-16",
+      "verified_as_of": "2026-09-24",
       "measure_type": "quota",
-      "needs_reconfirm": true
+      "needs_reconfirm": false,
+      "until": "2027-12-31",
+      "effective_to": "2027-12-31"
     },
     {
       "id": "chl-lithium",
@@ -460,21 +465,21 @@
       ],
       "level": "watch",
       "since": "2023-04",
-      "measure_ko": "국가 리튬 전략 — 신규 개발 국영 참여 의무 (수출 금지 아님)",
-      "source": "Gobierno de Chile",
-      "url": "https://www.gob.cl/",
+      "measure_ko": "국가 리튬 전략(2023-04) — 전략 염호는 국영 과반 참여, 코델코·SQM 합작 NovaAndino(2025-12 출범). 수출 제한은 아님",
+      "source": "Gobierno de Chile (UNCTAD 투자정책 모니터)",
+      "url": "https://investmentpolicy.unctad.org/investment-policy-monitor/measures/4305/chile-launches-a-new-national-strategy-for-lithium",
       "confidence": "medium",
       "category": "minerals",
-      "verified_at": "2026-08-01",
+      "verified_at": "2026-09-24",
       "hs_prefixes": [
         "2530",
         "2825",
         "2836"
       ],
       "effective_from": "2023-04-01",
-      "verified_as_of": "2026-08-01",
+      "verified_as_of": "2026-09-24",
       "measure_type": "licensing",
-      "needs_reconfirm": true
+      "needs_reconfirm": false
     },
     {
       "id": "idn-ferroalloys-single-gate",
