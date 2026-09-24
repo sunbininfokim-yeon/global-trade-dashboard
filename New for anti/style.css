@@ -6509,8 +6509,23 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 
 
 /* 작황모니터 · 주요 농산물 수출국 수출통제 목록 */
-.ag-controls .ac-country { margin-top: 10px; }
-.ag-controls .ac-name { font-size: 12.5px; font-weight: 700; color: #e2e8f0; }
+.ag-controls .ac-country { border-top: 1px solid rgba(148,163,184,.14); }
+.ag-controls .ac-country summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 7px 2px;
+}
+.ag-controls .ac-country summary::-webkit-details-marker { display: none; }
+.ag-controls .ac-country summary::before { content: '▸'; color: #64748b; font-size: 10px; transition: transform .15s; }
+.ag-controls .ac-country[open] summary::before { transform: rotate(90deg); }
+.ag-controls .ac-country summary:hover .ac-name { color: #7dd3fc; }
+.ag-controls .ac-country summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; border-radius: 4px; }
+.ag-controls .ac-country ul { padding-bottom: 8px; }
+.ag-controls .ac-name { font-size: 12.5px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+.ag-controls .ac-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-left: auto; justify-content: flex-end; }
+.ag-controls .ac-chip { font-size: 9.5px; padding: 1px 6px; border-radius: 999px; background: rgba(148,163,184,.14); color: #cbd5e1; white-space: nowrap; }
+.ag-controls .ac-chip.ctl-prohibited { color: #fecaca; background: rgba(248,113,113,.18); }
+.ag-controls .ac-chip.ctl-restricted { color: #fed7aa; background: rgba(251,146,60,.16); }
+.ag-controls .ac-chip.ctl-watch { color: #fef08a; background: rgba(250,204,21,.14); }
+.ag-controls .ac-chip.ctl-lifted { opacity: .6; }
 .ag-controls .ac-iso { font-size: 10px; color: #64748b; font-weight: 400; margin-left: 4px; }
 .ag-controls ul { list-style: none; margin: 4px 0 0; padding: 0; }
 .ag-controls .ac-item { padding: 6px 8px; margin-top: 4px; border-radius: 6px; background: rgba(15,23,42,.45);
