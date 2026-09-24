@@ -1,0 +1,93 @@
+name: Export controls weekly survey
+
+# Installed from New for anti/scripts/export_controls/workflow.yml.example
+# (Cursor, PR #373). Weekly, not fortnightly: measures that change at a month
+# boundary (India sugar to 2026-09-30, Russia fuel-product exemptions) would
+# otherwise go a week unseen.
+#
+# Monday 02:00 UTC (11:00 KST). Validates export_controls_v1.json and writes
+# that ISO week's record to surveys/weeks.json, even when nothing changed. The
+# catalogue itself is only edited by hand, row by row, after reading the
+# source; this job never touches it, never pushes to main and never edits UI.
+#
+# One difference from the example: the record branch is reused while its PR
+# is unmerged. The example recreated it from main every week with a force
+# push, which would have dropped the previous week's record whenever a
+# survey PR sat for more than a week.
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: export-controls-weekly
+  cancel-in-progress: false
+
+env:
+  BRANCH: cursor/export-controls-weekly-survey
+  WEEKS: New for anti/scripts/export_controls/surveys/weeks.json
+
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Continue the open record branch, if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+            # Bring in catalogue edits made on main since the last record.
+            git merge --no-edit origin/main
+          else
+            git checkout -B "$BRANCH"
+          fi
+
+      # A failed validation fails the job, so a broken catalogue is never
+      # recorded as a clean week.
+      - name: Validate and record the week
+        working-directory: New for anti/scripts
+        run: python3 -m export_controls.survey
+
+      - name: Commit, push, open or update the survey PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add "$WEEKS"
+          if git diff --cached --quiet; then
+            echo "this ISO week is already recorded"
+          else
+            git commit -m "chore(controls): record the weekly export-control survey"
+          fi
+          if [ "$(git rev-list --count origin/main..HEAD)" = "0" ]; then
+            echo "nothing ahead of main; no PR needed"
+            exit 0
+          fi
+          git push -u origin "$BRANCH"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr comment "$BRANCH" --body "Weekly survey record updated on this branch."
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(controls): weekly export-control survey" \
+              --body-file - <<'EOF'
+          ## Summary
+          - Weekly validation of `export_controls_v1.json` and one ISO-week record per run.
+          - Unchecked country-commodity pairs are gaps, not a clearance.
+          - The catalogue itself changes only in a separate, sourced edit.
+
+          ## Test plan
+          - [ ] `cd "New for anti/scripts" && python3 -m export_controls.validate`
+          - [ ] Open questions in the week record still match what a person has to read
+          EOF
+          fi
