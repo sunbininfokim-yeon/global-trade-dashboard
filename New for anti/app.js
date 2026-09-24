@@ -1216,7 +1216,14 @@ const loadClimateRegistry = () => {
             CLIMATE_COUNTRIES = countries;
             CLIMATE_TRADE_POLICY = policy;
             console.log(`[Climate] registry: ${Object.keys(countries).length} countries`);
-            return doc;
+            return loadExportControls().then(() => {
+                if (!exportControlsDoc) return doc;
+                const byIso = agriControlsByIso();
+                for (const [name, cfg] of Object.entries(countries)) {
+                    CLIMATE_TRADE_POLICY[name] = policyFromControls(byIso.get(cfg.iso));
+                }
+                return doc;
+            });
         })
         .catch((err) => {
             // An empty climate map is a visible, honest failure. Falling back to
@@ -3825,6 +3832,50 @@ const renderEnsoBars = (series) => {
     </div>`;
 };
 
+/**
+ * Every agricultural export measure in export_controls_v1.json, by country:
+ * what is controlled, how, since when, and where it was checked. Lifted
+ * measures stay listed (greyed) for a while -- a ban that ended last month
+ * is exactly what a reader looking at this year's flows needs to know.
+ */
+const LEVEL_SHORT_KO = { prohibited: '금지', restricted: '제한', watch: '검토', lifted: '최근 해제' };
+const MEASURE_TYPE_KO = {
+    ban: '수출 금지', quota: '쿼터', duty: '수출세', licensing: '허가제',
+    state_trading: '국영 단일창구', levy: '부담금', min_price: '최저수출가',
+};
+
+const agriControlsCardHtml = () => {
+    const byIso = agriControlsByIso();
+    if (!byIso.size) return '';
+    const rank = (c) => exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
+    const rows = [...byIso.entries()]
+        .sort(([, a], [, b]) => Math.max(...b.map(rank)) - Math.max(...a.map(rank)))
+        .map(([iso, list]) => {
+            const name = resolveCountry(list[0].country)?.label || list[0].country;
+            const items = [...list].sort((a, b) => rank(b) - rank(a)).map((c) => {
+                const lv = [LEVEL_SHORT_KO[c.level] || c.level, MEASURE_TYPE_KO[c.measure_type]]
+                    .filter(Boolean).join(' · ');
+                const crops = c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
+                    .filter((v, i, a) => a.indexOf(v) === i).join('·');
+                const when = c.level === 'lifted'
+                    ? `${c.since || ''}~${c.lifted_at || ''} 해제`
+                    : `${c.since || ''}~${c.until ? ` ${c.until}` : ''}`;
+                return `<li class="ac-item ac-${c.level}">
+                    <div class="ac-top"><b>${crops}</b><span class="ac-lv ctl-${c.level}">${lv}</span></div>
+                    <div class="ac-measure">${c.measure_ko}</div>
+                    <div class="ac-src">${when} · ${c.source || ''}${c.url ? ` <a href="${c.url}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}
+                        ${c.verified_at ? ` · 확인 ${c.verified_at}` : ''}</div>
+                </li>`;
+            }).join('');
+            return `<div class="ac-country"><div class="ac-name">${name} <span class="ac-iso">${iso}</span></div><ul>${items}</ul></div>`;
+        }).join('');
+    return `<div class="climate-card ag-controls">
+        <h3>주요 농산물 수출국 · 수출통제 <span class="src-tag">${exportControlsDoc?.as_of || ''} 수기 정리</span></h3>
+        <div class="climate-sub" style="margin-bottom:8px;">금지·쿼터·수출세·국영 단일창구 등 현재 조치와 최근 해제 조치. 정책은 자주 바뀌므로 원문 링크로 최신 여부를 확인하세요.</div>
+        ${rows}
+    </div>`;
+};
+
 const renderClimateWorldLeft = async () => {
     const g = await loadClimateGlobal();
     await loadCityWx();
@@ -3843,8 +3894,10 @@ const renderClimateWorldLeft = async () => {
         : null;
 
     forecastCountryTitle.textContent = '전역 기후 모니터';
+    await loadExportControls();
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
+            ${agriControlsCardHtml()}
             <div class="climate-card">
                 <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
@@ -5013,11 +5066,53 @@ const CONTROL_ALIASES = {
     rubber: ['rubber'],
 };
 
+// Korean names for the commodity tags used in export_controls_v1.json.
+const CONTROL_COMMODITY_KO = {
+    wheat: '밀', corn: '옥수수', barley: '보리', soybeans: '대두', sugar: '설탕', rice: '쌀',
+    palm_oil: '팜유', cocoa: '코코아', rapeseed: '유채', sunflower_oil: '해바라기유',
+    sunflower_seed: '해바라기씨', sunflower: '해바라기', fertilizer: '비료', urea: '요소',
+    phosphate: '인산비료', coffee: '커피', rubber: '천연고무',
+};
+
+/**
+ * The crop monitor's trade status per country, derived from
+ * export_controls_v1.json -- the same file the trade map colours from.
+ * It used to come from a hand "seed" in climate_registry_v1.json that had
+ * drifted: Argentina corn and China corn/wheat as export-prohibited (they
+ * are an export tax and nothing, respectively), Indonesian palm oil as
+ * banned (a three-week ban in 2022; now levy + DMO + state single gate).
+ */
+const agriControlsByIso = () => {
+    const out = new Map();
+    for (const c of exportControlsDoc?.controls || []) {
+        if (c.category !== 'agri' || !c.iso) continue;
+        if (!out.has(c.iso)) out.set(c.iso, []);
+        out.get(c.iso).push(c);
+    }
+    return out;
+};
+const policyFromControls = (list) => {
+    const live = (list || []).filter((c) => c.level !== 'lifted');
+    const crops = (c) => c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
+        .filter((v, i, a) => a.indexOf(v) === i).join('·');
+    const note = live.length
+        ? live.map((c) => `${crops(c)}: ${c.measure_ko}`).join(' / ')
+        : ((list || []).length ? `최근 해제 — ${list.map((c) => `${crops(c)} ${c.lifted_at || ''}`).join(', ')}` : '확인된 농산물 수출통제 없음');
+    return {
+        restricted: live.some((c) => c.level === 'restricted' || c.level === 'watch'),
+        prohibitedCrops: live.filter((c) => c.level === 'prohibited').flatMap((c) => c.commodities),
+        note,
+        fromControls: true,
+    };
+};
+
 /** Controls affecting `commodity`, keyed by resolved country. */
 const controlsFor = (commodity) => {
     const out = new Map();
     const terms = CONTROL_ALIASES[commodity] || [commodity];
     for (const c of exportControlsDoc?.controls || []) {
+        // "최근 해제" is listed for context, never painted as a live control.
+        if (c.level === 'lifted') continue;
         if (!(c.commodities || []).some((x) => terms.includes(x))) continue;
         const key = resolveCountry(c.country)?.key || c.country;
         const rank = exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
