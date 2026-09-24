@@ -4,6 +4,11 @@ export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
 
+        // Which annual year the map is on, and how far the next one has got.
+        if (url.pathname === '/api/comtrade/status') {
+            return await handleComtradeStatus(env);
+        }
+
         // API Route: UN Comtrade Proxy
         if (url.pathname.startsWith('/api/comtrade')) {
             return await handleComtrade(request, env, ctx);
@@ -267,6 +272,52 @@ async function warmComtradeCache(env) {
     console.log(`[warm] ${published} (next ${next ?? '-'}): ${filled} filled, ${alreadyWarm} already warm, ${deferred} deferred, ${failed} failed`);
 
     if (next) await advanceComtradePeriod(env, warm, keyFor, published, next);
+}
+
+/**
+ * Read-only progress report for the annual year: the published year, and how
+ * many commodities are cached for it and for the next one. Without this the
+ * only way to tell "still warming" from "stuck" was the Workers log.
+ */
+async function handleComtradeStatus(env) {
+    const record = await readComtradePeriodRecord(env);
+    const published = publishedComtradeYear(record);
+    const bounds = comtradeYearBounds();
+    const next = published < bounds.fresh ? published + 1 : null;
+    const keys = new Map();
+    if (env.API_CACHE) {
+        let cursor;
+        do {
+            const page = await env.API_CACHE.list({ prefix: 'comtrade:A:', cursor }).catch(() => null);
+            if (!page) break;
+            for (const k of page.keys) keys.set(k.name, k.metadata || null);
+            cursor = page.list_complete ? null : page.cursor;
+        } while (cursor);
+    }
+    const hsList = Object.keys(COMTRADE_TTL);
+    const count = (year) => hsList.filter(hs =>
+        keys.has(comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A'))).length;
+    const reporters = (year) => hsList.reduce((sum, hs) => {
+        const m = keys.get(comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A'));
+        return sum + (Number.isFinite(m?.reporters) ? m.reporters : 0);
+    }, 0);
+    const body = {
+        published: String(published),
+        record: record || null,
+        floor: String(bounds.floor),
+        commodities: hsList.length,
+        cached: { [published]: count(published) },
+        reporters: { [published]: reporters(published) },
+        next: next ? String(next) : null,
+        next_rule: next ? (next > bounds.mature
+            ? `all cached and reporters >= ${FRESH_YEAR_MIN_COVERAGE * 100}% of ${published}`
+            : 'all cached (complete year)') : null,
+    };
+    if (next) {
+        body.cached[next] = count(next);
+        body.reporters[next] = reporters(next);
+    }
+    return new Response(JSON.stringify(body), { headers: { ...JSON_HEADERS, 'Cache-Control': 'no-store' } });
 }
 
 // Move the published year forward by one, if the next year is ready. Ready

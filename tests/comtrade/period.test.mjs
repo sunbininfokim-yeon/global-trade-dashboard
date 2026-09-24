@@ -202,3 +202,18 @@ test('fetchComtradeArcs: mirror max within a period, summed across periods', asy
     assert.equal(arcs[0].netWeightMt, 23);
     assert.equal(arcs[0].freq, 'M');
 });
+
+test('status endpoint reports the published year and next-year progress', async () => {
+    const { env, cron } = await setup();
+    const worker = await loadWorker();
+    const status = async () => (await worker.fetch(new Request('https://x/api/comtrade/status'), env, {})).json();
+    let st = await status();
+    assert.equal(st.published, String(floor));
+    assert.equal(st.next, String(floor + 1));
+    assert.equal(st.cached[floor + 1], 0);
+    const log = console.log;
+    console.log = () => {};
+    try { await cron(); } finally { console.log = log; }
+    st = await status();
+    assert.ok(st.cached[floor] + st.cached[floor + 1] > 0);
+});
