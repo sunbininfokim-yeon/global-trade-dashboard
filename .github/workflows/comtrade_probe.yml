@@ -4,8 +4,8 @@ name: Comtrade probe
 # map is on, fills the next years' cache so the cron can promote, and measures
 # how much monthly bilateral data Comtrade returns. See tools/ops/comtrade_probe.py.
 #
-# Manual, plus a run whenever the probe itself changes on a claude/ branch so a
-# change can be checked before it merges. It only issues GETs to the public
+# Manual only: every run spends real Comtrade calls through the production
+# Worker, so it should not fire on pushes. It only issues GETs to the public
 # site; the Comtrade key stays in the Worker.
 
 on:
@@ -19,11 +19,6 @@ on:
         description: "Probe monthly bilateral coverage"
         type: boolean
         default: true
-  push:
-    branches: ['claude/**']
-    paths:
-      - tools/ops/comtrade_probe.py
-      - .github/workflows/comtrade_probe.yml
 
 permissions:
   contents: read

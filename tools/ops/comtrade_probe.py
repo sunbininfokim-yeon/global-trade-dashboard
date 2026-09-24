@@ -118,12 +118,14 @@ def main():
                 s = summarize(body) if st == 200 else None
                 say(f"| {hs} | {year} | {st} | {hdr.get('X-Cache', hdr.get('x-cache', '-'))} | "
                     f"{s['reporters'] if s else '-'} | {s['rows'] if s else '-'} | {secs:.0f} |")
-                if st == 502 and b"429" in body or st == 429:
-                    say(f"\n**Comtrade 호출 한도(429)에 걸려 중단.** 남은 항목은 cron이 채운다.")
+                if st != 200:
+                    say(f"  - 오류 본문: `{body[:200].decode('utf-8', 'replace')}`")
+                if st == 429 or (st == 502 and b"429" in body):
+                    say("\n**Comtrade 호출 한도(429)에 걸려 중단.** 남은 항목은 cron이 채운다.")
                     limited = True
                     break
                 if hdr.get("X-Cache", hdr.get("x-cache")) != "HIT":
-                    time.sleep(3)
+                    time.sleep(10)
             if limited:
                 break
 
@@ -147,11 +149,14 @@ def main():
                 say(f"| {name} {hs} | {period} | {st} | {s['reporters'] if s else '-'} | "
                     f"{s['partners'] if s else '-'} | {s['rows'] if s else '-'} | {s['usd_b'] if s else '-'} | "
                     f"{', '.join(s['key_missing']) if s else '-'} |")
+                if st != 200:
+                    say(f"  - 오류 본문: `{body[:200].decode('utf-8', 'replace')}`")
                 if st == 429 or (st == 502 and b"429" in body):
                     say("\n**Comtrade 호출 한도(429)에 걸려 중단.**")
                     limited = True
                     break
-                time.sleep(3)
+                if hdr.get("X-Cache", hdr.get("x-cache")) != "HIT":
+                    time.sleep(10)
             if limited:
                 break
 

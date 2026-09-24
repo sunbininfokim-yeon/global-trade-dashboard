@@ -260,7 +260,8 @@ async function warmComtradeCache(env) {
                 continue;
             }
             const metadata = comtradeMeta(result.body);
-            await env.API_CACHE.put(key, JSON.stringify(result.body), { expirationTtl: COMTRADE_TTL[hs], metadata });
+            await env.API_CACHE.put(key, JSON.stringify(result.body),
+                { expirationTtl: result.ttl || COMTRADE_TTL[hs], metadata });
             warm.set(key, metadata);
             filled++;
         } catch (err) {
@@ -295,8 +296,9 @@ async function handleComtradeStatus(env) {
         } while (cursor);
     }
     const hsList = Object.keys(COMTRADE_TTL);
-    const count = (year) => hsList.filter(hs =>
-        keys.has(comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A'))).length;
+    const keyOf = (hs, year) => comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+    const count = (year) => hsList.filter(hs => keys.has(keyOf(hs, year)) && !keys.get(keyOf(hs, year))?.partial).length;
+    const partial = (year) => hsList.filter(hs => keys.get(keyOf(hs, year))?.partial);
     const reporters = (year) => hsList.reduce((sum, hs) => {
         const m = keys.get(comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A'));
         return sum + (Number.isFinite(m?.reporters) ? m.reporters : 0);
@@ -307,6 +309,7 @@ async function handleComtradeStatus(env) {
         floor: String(bounds.floor),
         commodities: hsList.length,
         cached: { [published]: count(published) },
+        partial: { [published]: partial(published) },
         reporters: { [published]: reporters(published) },
         next: next ? String(next) : null,
         next_rule: next ? (next > bounds.mature
@@ -315,6 +318,7 @@ async function handleComtradeStatus(env) {
     };
     if (next) {
         body.cached[next] = count(next);
+        body.partial[next] = partial(next);
         body.reporters[next] = reporters(next);
     }
     return new Response(JSON.stringify(body), { headers: { ...JSON_HEADERS, 'Cache-Control': 'no-store' } });
@@ -326,9 +330,11 @@ async function handleComtradeStatus(env) {
 // that enough reporters have filed (see FRESH_YEAR_MIN_COVERAGE).
 async function advanceComtradePeriod(env, warm, keyFor, published, next) {
     const hsList = Object.keys(COMTRADE_TTL);
-    const cold = hsList.filter(hs => !warm.has(keyFor(hs, next)));
+    // A partial entry (some reporter chunks failed) does not count: promoting
+    // on it would publish a year with countries missing from the map.
+    const cold = hsList.filter(hs => !warm.has(keyFor(hs, next)) || warm.get(keyFor(hs, next))?.partial);
     if (cold.length) {
-        console.log(`[period] ${next} not promoted: ${cold.length}/${hsList.length} commodities not cached yet`);
+        console.log(`[period] ${next} not promoted: ${cold.length}/${hsList.length} commodities not fully cached yet`);
         return;
     }
 
@@ -675,7 +681,7 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch, metaOf) {
         // Never let a cache write failure take down a request that already has
         // its data -- serve the response and just skip caching this time.
         try {
-            const opts = { expirationTtl: ttlSeconds };
+            const opts = { expirationTtl: result.ttl || ttlSeconds };
             if (metaOf) opts.metadata = metaOf(result.body);
             await kv.put(cacheKey, json, opts);
         } catch (err) {
@@ -793,8 +799,11 @@ function comtradeMeta(body) {
     for (const row of (body && body.data) || []) {
         if (row.primaryValue > 0) reporters.add(row.reporterCode);
     }
-    return { reporters: reporters.size };
+    return body && body.partial ? { reporters: reporters.size, partial: true } : { reporters: reporters.size };
 }
+
+// How long a result with missing reporter chunks is kept (see fetchComtrade).
+const COMTRADE_PARTIAL_TTL = 3600;
 
 // USDA FAS Export Sales Report: weekly US export sales by destination country.
 // This is US-only -- it answers "who bought from the US this week", not who
@@ -1028,17 +1037,34 @@ function slimComtradeBody(body) {
 // the previous chunk's full response be collected before the next arrives.
 const REPORTER_CHUNK_SIZE = 16;
 
+// Comtrade rate-limits bursts. The 2026-09-24 probe got a 429 on the tenth
+// chunk call in about 35 seconds, and the cron, which fires 8 commodities x 5
+// chunks back to back, was being cut off the same way -- after 18 hours only 6
+// of the 2024 commodities were cached. Chunks are spaced, and a 429 waits and
+// retries instead of ending the commodity.
+const COMTRADE_CHUNK_GAP_MS = 1500;
+const COMTRADE_429_RETRIES = 2;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
     // freq A = annual (period "2023"), M = monthly (period "202403").
     // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
     const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/${freq}/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
 
-    const res = await fetch(comtradeUrl, {
-        headers: {
-            "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
-            "Accept": "application/json"
-        }
-    });
+    let res;
+    for (let attempt = 0; ; attempt++) {
+        res = await fetch(comtradeUrl, {
+            headers: {
+                "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
+                "Accept": "application/json"
+            }
+        });
+        if (res.status !== 429 || attempt >= COMTRADE_429_RETRIES) break;
+        await res.body?.cancel();
+        const after = Number(res.headers.get('Retry-After'));
+        const base = Number(env.COMTRADE_RETRY_BASE_MS ?? 4000);
+        await sleep(Math.min(Number.isFinite(after) && after > 0 ? after * 1000 : base * (attempt + 1), 15000));
+    }
 
     if (!res.ok) {
         return { ok: false, status: res.status, statusText: res.statusText };
@@ -1050,16 +1076,22 @@ async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
 async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     const codes = reporters.split(',').filter(Boolean);
     const merged = [];
+    const chunks = Math.ceil(codes.length / REPORTER_CHUNK_SIZE);
+    let failed = 0;
+    let lastFailure = null;
 
     try {
         for (let i = 0; i < codes.length; i += REPORTER_CHUNK_SIZE) {
+            // env override exists for tests only; production uses the constant.
+            if (i > 0) await sleep(Number(env.COMTRADE_CHUNK_GAP_MS ?? COMTRADE_CHUNK_GAP_MS));
             const chunk = codes.slice(i, i + REPORTER_CHUNK_SIZE).join(',');
             const result = await fetchComtradeChunk(env, hs, chunk, partners, period, freq);
 
             // One bad chunk shouldn't discard the countries that did come back.
             if (!result.ok) {
-                if (merged.length === 0) return result;
-                console.log(`[comtrade] ${hs} chunk ${i} failed: ${result.status}`);
+                failed++;
+                lastFailure = result;
+                console.log(`[comtrade] ${hs}/${period} chunk ${i} failed: ${result.status}`);
                 continue;
             }
             for (const row of result.rows) merged.push(row);
@@ -1067,13 +1099,25 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     } catch (err) {
         // Catchable failures (bad JSON, network) surface as a labelled 502
         // rather than an opaque 1101 with an empty map behind it.
-        if (merged.length === 0) return { ok: false, status: 502, statusText: err.message };
-        console.log(`[comtrade] ${hs} partial result after error: ${err.message}`);
+        failed = chunks;
+        lastFailure = { ok: false, status: 502, statusText: err.message };
+        console.log(`[comtrade] ${hs}/${period} error after ${merged.length} rows: ${err.message}`);
     }
+    if (merged.length === 0 && failed) return lastFailure;
 
     // period/freq travel with the rows so a consumer never has to remember
     // what it asked for -- the default year is chosen here, not by the caller.
-    return { ok: true, body: { count: merged.length, period, freq, data: merged } };
+    const body = { count: merged.length, period, freq, data: merged };
+    // Some reporters are missing. Still worth showing, but not worth keeping:
+    // cached for the full TTL it would stand in for the complete answer for
+    // up to two weeks (zinc 2024 came back with 49 reporters where every
+    // neighbour had 57-60). It lives an hour and is refetched.
+    if (failed) {
+        body.partial = true;
+        body.missing_chunks = failed;
+        return { ok: true, body, ttl: COMTRADE_PARTIAL_TTL };
+    }
+    return { ok: true, body };
 }
 
 const NUMERIC_LIST = /^\d+(,\d+)*$/;

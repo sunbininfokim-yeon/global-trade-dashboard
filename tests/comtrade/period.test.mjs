@@ -69,7 +69,7 @@ async function setup(filers = { [floor]: 12, [floor + 1]: 12, [floor + 2]: 8 }) 
     const worker = await loadWorker();
     const upstream = makeUpstream(filers);
     globalThis.fetch = upstream.fetch;
-    const env = { COMTRADE_API_KEY: 'k', API_CACHE: makeKV() };
+    const env = { COMTRADE_API_KEY: 'k', API_CACHE: makeKV(), COMTRADE_CHUNK_GAP_MS: 0, COMTRADE_RETRY_BASE_MS: 0 };
     const call = (qs) => worker.fetch(new Request(`https://x/api/comtrade?${qs}`), env, {});
     const cron = async () => {
         const waits = [];
@@ -216,4 +216,48 @@ test('status endpoint reports the published year and next-year progress', async 
     try { await cron(); } finally { console.log = log; }
     st = await status();
     assert.ok(st.cached[floor] + st.cached[floor + 1] > 0);
+});
+
+test('a rate-limited chunk is retried; one that stays failed is cached briefly and never promotes', async () => {
+    const { env, call, cron, published, upstream } = await setup();
+    // Chunk 2 (reporters starting 764,...) of the next year: first call
+    // 429 then fine; for the year after, always 429.
+    const real = globalThis.fetch;
+    const hits = new Map();
+    globalThis.fetch = async (url) => {
+        const u = new URL(url);
+        const second = u.searchParams.get('reporterCode').startsWith('764,');
+        const key = `${u.searchParams.get('cmdCode')}|${u.searchParams.get('period')}`;
+        if (second && u.searchParams.get('period') === String(floor + 1)) {
+            const n = (hits.get(key) || 0) + 1;
+            hits.set(key, n);
+            if (n === 1) return new Response('slow down', { status: 429 });
+        }
+        if (second && u.searchParams.get('period') === String(floor + 2)) {
+            return new Response('slow down', { status: 429 });
+        }
+        return real(url);
+    };
+    let r = await call(`hs=7502&period=${floor + 1}`);
+    let body = await r.json();
+    assert.equal(body.partial, undefined);              // retried, complete
+    r = await call(`hs=7502&period=${floor + 2}`);
+    body = await r.json();
+    assert.equal(body.partial, true);
+    assert.equal(body.missing_chunks, 1);
+    const key = [...env.API_CACHE.store.keys()].find((k) => k.includes(`:7502:${floor + 2}:`));
+    assert.equal(env.API_CACHE.store.get(key).metadata.partial, true);
+
+    const log = console.log;
+    console.log = () => {};
+    try {
+        for (let i = 0; i < 20 && published()?.period !== String(floor + 1); i++) await cron();
+        assert.equal(published().period, String(floor + 1));
+        // floor+2 always has a partial chunk: it must stay unpublished.
+        for (let i = 0; i < 20; i++) await cron();
+        assert.equal(published().period, String(floor + 1));
+    } finally {
+        console.log = log;
+        globalThis.fetch = real;
+    }
 });
