@@ -199,6 +199,12 @@ def main():
     if check:
         print("(--check: 파일을 쓰지 않음)")
         return 0
+    if len(out) < len(REGIONS):
+        # A region that came back empty would silently vanish from the map's
+        # click targets. Keep last week's complete file instead.
+        print(f"해역 {len(REGIONS) - len(out)}곳이 비어 있어 파일을 덮어쓰지 않음",
+              file=sys.stderr)
+        return 1
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(doc, fh, ensure_ascii=False, separators=(",", ":"))
         fh.write("\n")
