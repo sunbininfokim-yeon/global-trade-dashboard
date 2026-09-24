@@ -1,0 +1,901 @@
+{
+  "schema_version": "export-controls-universe-v1",
+  "defined_on": "2026-09-24",
+  "cadence": "weekly",
+  "cadence_reason_ko": "매주 월요일. 인도 설탕 시즌(10월 1일), 러시아 석유제품 금지의 예외 기한, 인도네시아·말레이시아 팜유 기준가가 한 달 안에서 바뀐다. 바뀐 조치가 없는 주도 그 주 점검 기록은 남긴다. 카탈로그는 원문을 본 항목만 고친다.",
+  "method_ko": "카테고리별 30개국은 2023–2024년 1차 수출이 큰 나라다. 농산물은 USDA PSD·FAO, 귀금속·광물은 USGS 광산 생산과 정련 수출, 에너지는 IEA 원유·가스·석탄 수출을 봤다. 재수출 허브는 빼다. 운영 Comtrade 쿼터로 매주 순위를 다시 뽑지 않는다.",
+  "commodity_keys": [
+    "wheat",
+    "corn",
+    "barley",
+    "soybeans",
+    "rice",
+    "sugar",
+    "coffee",
+    "cocoa",
+    "palm_oil",
+    "rubber",
+    "rapeseed",
+    "sunflower_oil",
+    "sunflower_seed",
+    "fertilizer",
+    "urea",
+    "phosphate",
+    "cotton",
+    "beef",
+    "pork",
+    "poultry",
+    "dairy",
+    "bananas",
+    "shrimp",
+    "olive_oil",
+    "fruit",
+    "oil",
+    "gas",
+    "lng",
+    "thermal_coal",
+    "met_coal",
+    "coal",
+    "petroleum_products",
+    "uranium",
+    "copper",
+    "aluminum",
+    "bauxite",
+    "zinc",
+    "nickel",
+    "cobalt",
+    "lithium",
+    "graphite",
+    "rare_earths",
+    "gallium",
+    "germanium",
+    "antimony",
+    "tungsten",
+    "iron_ore",
+    "manganese",
+    "chromium",
+    "tin",
+    "lead",
+    "gold",
+    "silver",
+    "platinum",
+    "palladium",
+    "diamonds",
+    "ferroalloys"
+  ],
+  "excluded_entrepots": [
+    {
+      "iso": "NLD",
+      "name": "Netherlands",
+      "why": "농산물·석유제품 재수출 허브"
+    },
+    {
+      "iso": "BEL",
+      "name": "Belgium",
+      "why": "농산물·다이아몬드 재수출 허브"
+    },
+    {
+      "iso": "SGP",
+      "name": "Singapore",
+      "why": "석유제품 혼재·재수출"
+    },
+    {
+      "iso": "CHE",
+      "name": "Switzerland",
+      "why": "금 거래 허브. 광산 수출국이 아님"
+    },
+    {
+      "iso": "HKG",
+      "name": "Hong Kong",
+      "why": "금·농산물 재수출"
+    }
+  ],
+  "pinned_outside_role": [
+    {
+      "iso": "EGY",
+      "name": "Egypt",
+      "category": "agri",
+      "commodities": [
+        "rice",
+        "wheat"
+      ],
+      "why": "쌀·밀 수출 제한 이력이 있고 농산물 수출 상위 30에는 없다"
+    },
+    {
+      "iso": "MMR",
+      "name": "Myanmar",
+      "category": "agri",
+      "commodities": [
+        "rice"
+      ],
+      "why": "쌀 수출 허가 이력이 있다. 광물 30개국에는 이미 있다"
+    },
+    {
+      "iso": "GHA",
+      "name": "Ghana",
+      "category": "agri",
+      "commodities": [
+        "cocoa"
+      ],
+      "why": "코코아 원두 주요 수출국. 귀금속 30개국(금)에는 이미 있다"
+    }
+  ],
+  "categories": {
+    "agri": {
+      "label_ko": "농산물",
+      "countries": [
+        {
+          "iso": "USA",
+          "name": "United States",
+          "commodities": [
+            "wheat",
+            "corn",
+            "soybeans",
+            "cotton",
+            "beef"
+          ]
+        },
+        {
+          "iso": "BRA",
+          "name": "Brazil",
+          "commodities": [
+            "soybeans",
+            "corn",
+            "sugar",
+            "coffee",
+            "beef",
+            "cotton"
+          ]
+        },
+        {
+          "iso": "ARG",
+          "name": "Argentina",
+          "commodities": [
+            "soybeans",
+            "corn",
+            "wheat",
+            "beef"
+          ]
+        },
+        {
+          "iso": "CHN",
+          "name": "China",
+          "commodities": [
+            "rice",
+            "fertilizer",
+            "urea",
+            "phosphate"
+          ]
+        },
+        {
+          "iso": "IND",
+          "name": "India",
+          "commodities": [
+            "rice",
+            "wheat",
+            "sugar",
+            "cotton"
+          ]
+        },
+        {
+          "iso": "IDN",
+          "name": "Indonesia",
+          "commodities": [
+            "palm_oil",
+            "coffee",
+            "cocoa",
+            "rubber"
+          ]
+        },
+        {
+          "iso": "CAN",
+          "name": "Canada",
+          "commodities": [
+            "wheat",
+            "rapeseed",
+            "pork"
+          ]
+        },
+        {
+          "iso": "AUS",
+          "name": "Australia",
+          "commodities": [
+            "wheat",
+            "barley",
+            "beef",
+            "rapeseed",
+            "cotton"
+          ]
+        },
+        {
+          "iso": "FRA",
+          "name": "France",
+          "commodities": [
+            "wheat",
+            "barley",
+            "corn"
+          ]
+        },
+        {
+          "iso": "DEU",
+          "name": "Germany",
+          "commodities": [
+            "wheat",
+            "barley",
+            "pork",
+            "dairy"
+          ]
+        },
+        {
+          "iso": "RUS",
+          "name": "Russia",
+          "commodities": [
+            "wheat",
+            "barley",
+            "corn",
+            "sunflower_oil",
+            "sunflower_seed"
+          ]
+        },
+        {
+          "iso": "UKR",
+          "name": "Ukraine",
+          "commodities": [
+            "wheat",
+            "corn",
+            "sunflower_oil",
+            "rapeseed",
+            "soybeans"
+          ]
+        },
+        {
+          "iso": "THA",
+          "name": "Thailand",
+          "commodities": [
+            "rice",
+            "rubber",
+            "sugar"
+          ]
+        },
+        {
+          "iso": "MYS",
+          "name": "Malaysia",
+          "commodities": [
+            "palm_oil",
+            "rubber"
+          ]
+        },
+        {
+          "iso": "VNM",
+          "name": "Vietnam",
+          "commodities": [
+            "rice",
+            "coffee",
+            "rubber"
+          ]
+        },
+        {
+          "iso": "ESP",
+          "name": "Spain",
+          "commodities": [
+            "olive_oil",
+            "pork"
+          ]
+        },
+        {
+          "iso": "MEX",
+          "name": "Mexico",
+          "commodities": [
+            "beef",
+            "sugar",
+            "corn"
+          ]
+        },
+        {
+          "iso": "TUR",
+          "name": "Turkey",
+          "commodities": [
+            "wheat",
+            "barley"
+          ]
+        },
+        {
+          "iso": "NZL",
+          "name": "New Zealand",
+          "commodities": [
+            "dairy",
+            "beef"
+          ]
+        },
+        {
+          "iso": "PAK",
+          "name": "Pakistan",
+          "commodities": [
+            "rice"
+          ]
+        },
+        {
+          "iso": "KAZ",
+          "name": "Kazakhstan",
+          "commodities": [
+            "wheat"
+          ]
+        },
+        {
+          "iso": "ZAF",
+          "name": "South Africa",
+          "commodities": [
+            "corn",
+            "sugar"
+          ]
+        },
+        {
+          "iso": "POL",
+          "name": "Poland",
+          "commodities": [
+            "wheat",
+            "poultry",
+            "dairy"
+          ]
+        },
+        {
+          "iso": "ITA",
+          "name": "Italy",
+          "commodities": [
+            "dairy",
+            "olive_oil"
+          ]
+        },
+        {
+          "iso": "PRY",
+          "name": "Paraguay",
+          "commodities": [
+            "soybeans",
+            "corn",
+            "beef"
+          ]
+        },
+        {
+          "iso": "COL",
+          "name": "Colombia",
+          "commodities": [
+            "coffee",
+            "bananas"
+          ]
+        },
+        {
+          "iso": "CIV",
+          "name": "Cote d'Ivoire",
+          "commodities": [
+            "cocoa"
+          ]
+        },
+        {
+          "iso": "CHL",
+          "name": "Chile",
+          "commodities": [
+            "fruit"
+          ]
+        },
+        {
+          "iso": "PER",
+          "name": "Peru",
+          "commodities": [
+            "coffee"
+          ]
+        },
+        {
+          "iso": "ECU",
+          "name": "Ecuador",
+          "commodities": [
+            "bananas",
+            "cocoa",
+            "shrimp"
+          ]
+        }
+      ]
+    },
+    "minerals": {
+      "label_ko": "귀금속·광물",
+      "countries": [
+        {
+          "iso": "CHN",
+          "name": "China",
+          "commodities": [
+            "rare_earths",
+            "graphite",
+            "gallium",
+            "germanium",
+            "aluminum",
+            "tin",
+            "gold"
+          ]
+        },
+        {
+          "iso": "AUS",
+          "name": "Australia",
+          "commodities": [
+            "iron_ore",
+            "bauxite",
+            "gold",
+            "lithium",
+            "copper"
+          ]
+        },
+        {
+          "iso": "CHL",
+          "name": "Chile",
+          "commodities": [
+            "copper",
+            "lithium"
+          ]
+        },
+        {
+          "iso": "PER",
+          "name": "Peru",
+          "commodities": [
+            "copper",
+            "gold",
+            "zinc",
+            "silver"
+          ]
+        },
+        {
+          "iso": "RUS",
+          "name": "Russia",
+          "commodities": [
+            "nickel",
+            "gold",
+            "palladium",
+            "platinum",
+            "aluminum"
+          ]
+        },
+        {
+          "iso": "USA",
+          "name": "United States",
+          "commodities": [
+            "copper",
+            "gold"
+          ]
+        },
+        {
+          "iso": "BRA",
+          "name": "Brazil",
+          "commodities": [
+            "iron_ore",
+            "bauxite",
+            "gold"
+          ]
+        },
+        {
+          "iso": "ZAF",
+          "name": "South Africa",
+          "commodities": [
+            "platinum",
+            "palladium",
+            "gold",
+            "manganese",
+            "chromium",
+            "iron_ore"
+          ]
+        },
+        {
+          "iso": "CAN",
+          "name": "Canada",
+          "commodities": [
+            "gold",
+            "nickel",
+            "copper"
+          ]
+        },
+        {
+          "iso": "IDN",
+          "name": "Indonesia",
+          "commodities": [
+            "nickel",
+            "bauxite",
+            "copper",
+            "tin",
+            "gold",
+            "ferroalloys"
+          ]
+        },
+        {
+          "iso": "COD",
+          "name": "DR Congo",
+          "commodities": [
+            "cobalt",
+            "copper"
+          ]
+        },
+        {
+          "iso": "ZMB",
+          "name": "Zambia",
+          "commodities": [
+            "copper"
+          ]
+        },
+        {
+          "iso": "MEX",
+          "name": "Mexico",
+          "commodities": [
+            "silver",
+            "gold",
+            "copper"
+          ]
+        },
+        {
+          "iso": "IND",
+          "name": "India",
+          "commodities": [
+            "iron_ore",
+            "aluminum",
+            "zinc"
+          ]
+        },
+        {
+          "iso": "KAZ",
+          "name": "Kazakhstan",
+          "commodities": [
+            "copper",
+            "chromium"
+          ]
+        },
+        {
+          "iso": "PHL",
+          "name": "Philippines",
+          "commodities": [
+            "nickel"
+          ]
+        },
+        {
+          "iso": "GIN",
+          "name": "Guinea",
+          "commodities": [
+            "bauxite"
+          ]
+        },
+        {
+          "iso": "GHA",
+          "name": "Ghana",
+          "commodities": [
+            "gold"
+          ]
+        },
+        {
+          "iso": "MNG",
+          "name": "Mongolia",
+          "commodities": [
+            "copper",
+            "gold"
+          ]
+        },
+        {
+          "iso": "SWE",
+          "name": "Sweden",
+          "commodities": [
+            "iron_ore"
+          ]
+        },
+        {
+          "iso": "PNG",
+          "name": "Papua New Guinea",
+          "commodities": [
+            "gold",
+            "copper"
+          ]
+        },
+        {
+          "iso": "BWA",
+          "name": "Botswana",
+          "commodities": [
+            "diamonds"
+          ]
+        },
+        {
+          "iso": "NCL",
+          "name": "New Caledonia",
+          "commodities": [
+            "nickel"
+          ]
+        },
+        {
+          "iso": "ARG",
+          "name": "Argentina",
+          "commodities": [
+            "lithium"
+          ]
+        },
+        {
+          "iso": "MMR",
+          "name": "Myanmar",
+          "commodities": [
+            "rare_earths",
+            "tin"
+          ]
+        },
+        {
+          "iso": "BOL",
+          "name": "Bolivia",
+          "commodities": [
+            "lithium",
+            "tin",
+            "silver"
+          ]
+        },
+        {
+          "iso": "NAM",
+          "name": "Namibia",
+          "commodities": [
+            "diamonds",
+            "uranium"
+          ]
+        },
+        {
+          "iso": "ZWE",
+          "name": "Zimbabwe",
+          "commodities": [
+            "platinum",
+            "lithium"
+          ]
+        },
+        {
+          "iso": "UKR",
+          "name": "Ukraine",
+          "commodities": [
+            "iron_ore"
+          ]
+        },
+        {
+          "iso": "IRN",
+          "name": "Iran",
+          "commodities": [
+            "iron_ore",
+            "copper"
+          ]
+        }
+      ]
+    },
+    "energy": {
+      "label_ko": "에너지",
+      "countries": [
+        {
+          "iso": "SAU",
+          "name": "Saudi Arabia",
+          "commodities": [
+            "oil",
+            "petroleum_products"
+          ]
+        },
+        {
+          "iso": "RUS",
+          "name": "Russia",
+          "commodities": [
+            "oil",
+            "gas",
+            "petroleum_products",
+            "coal"
+          ]
+        },
+        {
+          "iso": "USA",
+          "name": "United States",
+          "commodities": [
+            "oil",
+            "gas",
+            "lng",
+            "petroleum_products",
+            "coal"
+          ]
+        },
+        {
+          "iso": "CAN",
+          "name": "Canada",
+          "commodities": [
+            "oil",
+            "gas",
+            "uranium"
+          ]
+        },
+        {
+          "iso": "AUS",
+          "name": "Australia",
+          "commodities": [
+            "lng",
+            "thermal_coal",
+            "met_coal"
+          ]
+        },
+        {
+          "iso": "IRQ",
+          "name": "Iraq",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "IRN",
+          "name": "Iran",
+          "commodities": [
+            "oil",
+            "petroleum_products"
+          ]
+        },
+        {
+          "iso": "ARE",
+          "name": "United Arab Emirates",
+          "commodities": [
+            "oil",
+            "lng"
+          ]
+        },
+        {
+          "iso": "QAT",
+          "name": "Qatar",
+          "commodities": [
+            "lng",
+            "oil"
+          ]
+        },
+        {
+          "iso": "NOR",
+          "name": "Norway",
+          "commodities": [
+            "oil",
+            "gas"
+          ]
+        },
+        {
+          "iso": "KWT",
+          "name": "Kuwait",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "KAZ",
+          "name": "Kazakhstan",
+          "commodities": [
+            "oil",
+            "uranium"
+          ]
+        },
+        {
+          "iso": "NGA",
+          "name": "Nigeria",
+          "commodities": [
+            "oil",
+            "lng"
+          ]
+        },
+        {
+          "iso": "BRA",
+          "name": "Brazil",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "IDN",
+          "name": "Indonesia",
+          "commodities": [
+            "thermal_coal",
+            "lng"
+          ]
+        },
+        {
+          "iso": "MYS",
+          "name": "Malaysia",
+          "commodities": [
+            "lng"
+          ]
+        },
+        {
+          "iso": "DZA",
+          "name": "Algeria",
+          "commodities": [
+            "gas",
+            "lng"
+          ]
+        },
+        {
+          "iso": "AGO",
+          "name": "Angola",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "LBY",
+          "name": "Libya",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "OMN",
+          "name": "Oman",
+          "commodities": [
+            "oil",
+            "lng"
+          ]
+        },
+        {
+          "iso": "MEX",
+          "name": "Mexico",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "COL",
+          "name": "Colombia",
+          "commodities": [
+            "oil",
+            "thermal_coal"
+          ]
+        },
+        {
+          "iso": "ZAF",
+          "name": "South Africa",
+          "commodities": [
+            "thermal_coal"
+          ]
+        },
+        {
+          "iso": "AZE",
+          "name": "Azerbaijan",
+          "commodities": [
+            "oil",
+            "gas"
+          ]
+        },
+        {
+          "iso": "CHN",
+          "name": "China",
+          "commodities": [
+            "thermal_coal",
+            "petroleum_products"
+          ]
+        },
+        {
+          "iso": "IND",
+          "name": "India",
+          "commodities": [
+            "petroleum_products"
+          ]
+        },
+        {
+          "iso": "MNG",
+          "name": "Mongolia",
+          "commodities": [
+            "thermal_coal"
+          ]
+        },
+        {
+          "iso": "VEN",
+          "name": "Venezuela",
+          "commodities": [
+            "oil"
+          ]
+        },
+        {
+          "iso": "TKM",
+          "name": "Turkmenistan",
+          "commodities": [
+            "gas"
+          ]
+        },
+        {
+          "iso": "BRN",
+          "name": "Brunei",
+          "commodities": [
+            "oil",
+            "lng"
+          ]
+        }
+      ]
+    }
+  }
+}

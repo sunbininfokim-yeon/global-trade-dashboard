@@ -1,0 +1,62 @@
+# Claude installs this as .github/workflows/export_controls_weekly.yml.
+# A cursor/ branch cannot add that file (ownership guard). Do not copy it
+# into .github from this branch.
+#
+# Monday 02:00 UTC. Validates the catalogue and writes that ISO week's
+# survey record. Opens or updates one PR. Never pushes to main, never edits
+# app.js. A failed validation fails the job so a broken file is not recorded
+# as a clean week.
+
+name: Export controls weekly survey
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: export-controls-weekly
+  cancel-in-progress: false
+
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and record the week
+        working-directory: New for anti/scripts
+        run: python3 -m export_controls.survey
+      - name: Open or update the survey PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet -- "New for anti/scripts/export_controls/surveys/weeks.json"; then
+            echo "this ISO week is already recorded"
+            exit 0
+          fi
+          branch="cursor/export-controls-weekly-survey"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add "New for anti/scripts/export_controls/surveys/weeks.json"
+          git commit -m "chore(controls): record the weekly export-control survey"
+          git push --force-with-lease -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "chore(controls): weekly export-control survey" \
+            --body "$(cat <<'EOF'
+          ## Summary
+          - Weekly validation of `export_controls_v1.json`.
+          - One ISO-week record. Unchecked country-commodity pairs are gaps, not a clearance.
+          - The catalogue itself changes only in a separate, sourced edit.
+
+          ## Test plan
+          - [ ] `python3 "New for anti/scripts/export_controls/validate.py"`
+          - [ ] Open questions in the week record still match what a person has to read
+
+          EOF
+          )" || gh pr comment "$branch" --body "Weekly survey record updated on this branch."
