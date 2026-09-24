@@ -146,6 +146,11 @@
                 // (Thailand 1,936,186,680 바트) read better in millions.
                 value = p.value / 1e6;
                 unit = UNIT_TO_MILLIONS[p.unit];
+            } else if (p.unit === 'KTONS' && Number.isFinite(p.value)) {
+                // JODI's thousand tonnes: same key as the kg / tonne series so
+                // two sources of one volume land on one comparable unit.
+                value = p.value;
+                unit = 'kt';
             } else if (p.unit === 'metric_tons' && Number.isFinite(p.value)) {
                 // Exact, and puts GASTAT and ERS on the same 천 톤 scale JODI uses.
                 value = p.value / 1e3;
@@ -233,6 +238,48 @@
      * Everything the monthly view shows for one commodity x country, or null
      * when there is nothing -- the only signal the toggle keys off.
      */
+    /**
+     * Two sources for the same flow answer different questions or the same
+     * one: a value series (M USD) and a volume series (천 톤) cannot be set
+     * against each other at all, while two volume series can be checked on
+     * the months they share. Saudi crude is the case: JODI and GASTAT agree
+     * within about 1% on 2025-06..09, and their headline numbers differ only
+     * because JODI runs to 2026-05 and GASTAT stops at 2025-09.
+     */
+    const compareSources = (series) => {
+        const out = [];
+        for (const flow of ['X', 'M']) {
+            const same = series.filter((s) => s.flow === flow);
+            for (let i = 0; i < same.length; i++) {
+                for (let j = i + 1; j < same.length; j++) {
+                    const a = same[i];
+                    const b = same[j];
+                    if (a.source === b.source) continue;
+                    if (a.unit !== b.unit) {
+                        // One note per source pair is enough.
+                        if (!out.some((o) => o.kind === 'units' && o.flow === flow
+                            && o.a.source === a.source && o.b.source === b.source)) {
+                            out.push({ flow, a, b, kind: 'units' });
+                        }
+                        continue;
+                    }
+                    const bm = new Map(b.points.map((p) => [p.month, p.value]));
+                    const both = a.points.filter((p) => bm.has(p.month) && (p.value > 0 || bm.get(p.month) > 0));
+                    if (both.length < 2) {
+                        out.push({ flow, a, b, kind: 'no_overlap' });
+                        continue;
+                    }
+                    const gap = both.reduce((sum, p) => {
+                        const q = bm.get(p.month);
+                        return sum + Math.abs(p.value - q) / ((p.value + q) / 2);
+                    }, 0) / both.length;
+                    out.push({ flow, a, b, kind: 'overlap', months: both.map((p) => p.month), gap });
+                }
+            }
+        }
+        return out;
+    };
+
     const buildView = (docs, commodityKey, iso3) => {
         const cid = MONTHLY_ID[commodityKey];
         if (!cid || !iso3) return null;
@@ -259,7 +306,8 @@
         const months = series.map((s) => s.latest).filter(Boolean);
         if (bilateral) months.push(monthKey(bilateral.period));
         months.sort();
-        return { cid, iso3, series, bilateral, saudi, dormant: dormant.length, latest: months[months.length - 1] || null };
+        return { cid, iso3, series, bilateral, saudi, dormant: dormant.length,
+            comparisons: compareSources(series), latest: months[months.length - 1] || null };
     };
 
     // ---- data loading ------------------------------------------------------
@@ -398,9 +446,28 @@
             <p class="tm-note">UN Comtrade 보고국 기준 · 비중은 그 달 세계 합계 대비 · 표에 없는 상대국은 0이 아니라 미보고입니다.</p>`;
     };
 
+    const MEASURE = (s) => (/usd|thb|aud|sar/i.test(s.unit) ? '금액' : '물량');
+    const comparisonHtml = (list) => {
+        const lines = list.slice(0, 3).map(({ flow, a, b, kind, months, gap }) => {
+            const who = `${FLOW_LABEL[flow]} · ${esc(a.sourceLabel)} vs ${esc(b.sourceLabel)}`;
+            if (kind === 'units') {
+                return `${who}: ${MEASURE(a)}(${esc(a.unitLabel)})과 ${MEASURE(b)}(${esc(b.unitLabel)})은 다른 지표라 숫자를 직접 비교하지 않습니다. 둘 다 맞을 수 있습니다.`;
+            }
+            if (kind === 'no_overlap') {
+                return `${who}: 겹치는 달이 없어 서로 검증할 수 없습니다 (${monthLabel(a.latest)} / ${monthLabel(b.latest)} 기준).`;
+            }
+            const pct = (gap * 100).toFixed(gap < 0.1 ? 1 : 0);
+            const verdict = gap < 0.05 ? '서로 일치' : gap < 0.2 ? '대체로 비슷' : '크게 다름 — 정의나 집계 범위가 다를 수 있음';
+            const lag = a.latest !== b.latest ? ` 최신 값이 다른 건 기준 월이 달라서입니다 (${monthLabel(a.latest)} / ${monthLabel(b.latest)}).` : '';
+            return `${who}: 겹치는 ${months.length}개월(${monthLabel(months[0])}~${monthLabel(months[months.length - 1])}) 평균 차이 ${pct}% · ${verdict}.${lag}`;
+        });
+        return lines.length ? `<div class="tm-compare"><b>출처 비교</b>${lines.map((l) => `<p>${l}</p>`).join('')}</div>` : '';
+    };
+
     const monthlyHtml = (view) => {
         const cards = view.series.slice(0, 6).map((s) => seriesCardHtml(s, view.latest)).join('');
         return `<p class="trade-focus-sub">월별 · 최근 12개월 · 출처마다 따로 표시하며 합산하지 않습니다 · 지도의 노선은 연간 데이터입니다</p>
+            ${comparisonHtml(view.comparisons || [])}
             ${view.saudi ? saudiCardHtml(view.saudi) : ''}
             ${cards}
             ${view.series.length > 6 ? `<p class="tm-note">최근 갱신 순 6개만 표시 · 나머지 ${view.series.length - 6}개 계열 생략</p>` : ''}
@@ -471,6 +538,6 @@
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
+        _internal: { compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
     };
 })();
