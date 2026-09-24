@@ -261,3 +261,20 @@ test('a rate-limited chunk is retried; one that stays failed is cached briefly a
         globalThis.fetch = real;
     }
 });
+
+test('an old entry with far fewer reporters than its year is refetched', async () => {
+    const { env, cron } = await setup({ [floor]: 12, [floor + 1]: 12, [floor + 2]: 12 });
+    const log = console.log;
+    console.log = () => {};
+    try {
+        for (let i = 0; i < 10; i++) await cron();
+        // Plant a stale partial entry (no partial flag, 3 reporters) for 7502.
+        const key = [...env.API_CACHE.store.keys()].find((k) => k.includes(`:7502:${floor + 1}:`)) ||
+            [...env.API_CACHE.store.keys()].find((k) => k.includes(':7502:'));
+        env.API_CACHE.store.set(key, { value: '{"data":[]}', metadata: { reporters: 3 } });
+        await cron();
+        assert.ok(env.API_CACHE.store.get(key).metadata.reporters > 3);
+    } finally {
+        console.log = log;
+    }
+});

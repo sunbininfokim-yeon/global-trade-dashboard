@@ -70,6 +70,11 @@
             id: "palm_oil",
             name_ko: "팜유",
             aliases: ["palm_oil", "palm oil", "팜유", "cpo", "1511"]
+        },
+        "rubber": {
+            id: "rubber",
+            name_ko: "천연고무",
+            aliases: ["rubber", "natural rubber", "천연고무", "고무", "tsr", "rss", "4001"]
         }
     };
 
@@ -487,6 +492,14 @@
         palm_oil: {
             hsCode: "1511",
             colorScheme: { source: [202, 138, 4], target: [250, 204, 21] }
+        },
+        // Natural rubber is a plantation crop (latex tapped from Hevea trees),
+        // so it sits with agriculture, as FAO and USDA file it. 4001 covers
+        // latex, smoked sheets (RSS) and technically specified rubber (TSR).
+        // Synthetic rubber (4002) is a petrochemical and is left out.
+        rubber: {
+            hsCode: "4001",
+            colorScheme: { source: [101, 163, 13], target: [163, 230, 53] }
         },
 
         // Battery and strategic minerals. These are the commodities the export
@@ -1062,6 +1075,14 @@
             topExporter: "브라질",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 1201)
             news: defaultNews("Soybeans")
+        },
+        rubber: {
+            title: "글로벌 농산물: 천연고무 (Natural Rubber)",
+            desc: "타이어 원료인 천연고무(HS 4001), 태국·인도네시아·베트남·코트디부아르발 수출입 무역 흐름",
+            totalVolume: "생산 ~14.5 Million Tonnes",
+            topExporter: "태국",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 4001)
+            news: defaultNews("Rubber")
         },
         palm_oil: {
             title: "글로벌 농산물: 팜유 (Palm Oil)",

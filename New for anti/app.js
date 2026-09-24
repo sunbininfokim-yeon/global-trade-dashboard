@@ -883,7 +883,7 @@ const countryCode = (name) => {
  * score. That weighting needs World Bank WGI data this page does not carry, so
  * the card reports what it can actually measure and says which half that is.
  */
-const concentrationHtml = (arcs, partnerOf, dirKo) => {
+const concentrationHtml = (arcs, partnerOf, dirKo, basisKo = '') => {
     const byPartner = new Map();
     for (const a of arcs) {
         if (!(a.volume > 0)) continue;
@@ -914,6 +914,7 @@ const concentrationHtml = (arcs, partnerOf, dirKo) => {
                 <strong>${dirKo} 집중도</strong>
                 <span class="dep-band dep-${band.cls}">${band.ko}</span>
             </div>
+            ${basisKo ? `<p class="dep-note">${basisKo}</p>` : ''}
             <div class="dep-metrics">
                 <div class="dep-m"><span class="dep-k">CR3</span>
                     <span class="dep-v">${(cr3 * 100).toFixed(1)}%</span></div>
@@ -921,7 +922,7 @@ const concentrationHtml = (arcs, partnerOf, dirKo) => {
                     <span class="dep-v">${hhi.toFixed(3)}</span></div>
             </div>
             <p class="dep-top">${top3}</p>
-            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 공급국의 정치적 신뢰도는
+            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 상대국의 정치적 신뢰도는
                 반영하지 않은 순수 집중도다.</p>
         </div>`;
 };
@@ -5007,6 +5008,7 @@ const CONTROL_ALIASES = {
     sugar: ['sugar'],
     coffee: ['coffee'],
     palm_oil: ['palm_oil', 'palm'],
+    rubber: ['rubber'],
 };
 
 /** Controls affecting `commodity`, keyed by resolved country. */

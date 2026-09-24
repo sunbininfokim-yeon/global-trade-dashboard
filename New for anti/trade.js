@@ -154,12 +154,15 @@ const focusTradeCountry = (countryName) => {
                 <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
         </div>`;
 
-    // Which side carries the dependency. A buyer's exposure is its suppliers;
-    // a country that only sells has no supply risk here, but it does have
-    // customer risk, and that is the concentration worth showing instead.
-    const depHtml = importVol > 0
-        ? concentrationHtml(imports, (a) => a.sourceName, '공급')
-        : concentrationHtml(exports, (a) => a.targetName, '판로');
+    // Which side carries the dependency follows the country's net position.
+    // A net exporter's exposure is who it sells to (판로: US soybeans hang on
+    // China); a net importer's is who it buys from (공급). This used to show
+    // suppliers whenever there was any import at all, so a large exporter with
+    // a sliver of imports got a supplier-concentration card about its sliver.
+    const netExporter = exportVol >= importVol && exports.length > 0;
+    const depHtml = netExporter
+        ? concentrationHtml(exports, (a) => a.targetName, '수출 판로', '순수출국 · 수출 대상국 기준')
+        : concentrationHtml(imports, (a) => a.sourceName, '수입 공급', '순수입국 · 수입 공급국 기준');
 
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
