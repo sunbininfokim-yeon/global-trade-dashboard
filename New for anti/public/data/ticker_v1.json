@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-24T04:40:59.778221+00:00",
+  "generated_at": "2026-09-24T09:57:12.907107+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,20 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 33,
-    "sources_failed": 5,
-    "raw_items": 772,
-    "scored_items": 92,
+    "sources_ok": 34,
+    "sources_failed": 4,
+    "raw_items": 797,
+    "scored_items": 89,
     "selected_items": 24,
     "region_histogram": {
-      "india": 3,
-      "commodity_specialist": 6,
-      "china": 3,
-      "russia": 3,
-      "west": 1,
+      "commodity_specialist": 8,
       "mena": 4,
       "turkey": 2,
-      "japan": 2
+      "russia": 2,
+      "west": 1,
+      "japan": 2,
+      "india": 2,
+      "taiwan": 2,
+      "china": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 163,
+      "elapsed_ms": 100,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 371,
+      "elapsed_ms": 765,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 76,
+      "elapsed_ms": 126,
       "error": null,
       "mode": "live"
     },
@@ -119,23 +120,23 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1075,
+      "elapsed_ms": 1324,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 20,
-      "elapsed_ms": 219,
+      "count": 0,
+      "elapsed_ms": 115,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "aa_world",
       "ok": true,
-      "count": 10,
-      "elapsed_ms": 2164,
+      "count": 15,
+      "elapsed_ms": 2175,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 688,
+      "elapsed_ms": 775,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 256,
+      "elapsed_ms": 420,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 53,
+      "elapsed_ms": 362,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 98,
+      "elapsed_ms": 113,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 604,
+      "elapsed_ms": 500,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 110,
+      "elapsed_ms": 180,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 137,
+      "elapsed_ms": 213,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1014,
+      "elapsed_ms": 803,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 569,
+      "elapsed_ms": 725,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 720,
+      "elapsed_ms": 404,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 606,
+      "elapsed_ms": 603,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 508,
+      "elapsed_ms": 411,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 58,
+      "elapsed_ms": 52,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 658,
+      "elapsed_ms": 537,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 98,
+      "elapsed_ms": 105,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 98,
+      "elapsed_ms": 147,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 66,
+      "elapsed_ms": 153,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 118,
+      "elapsed_ms": 296,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 80,
+      "elapsed_ms": 367,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 882,
+      "elapsed_ms": 1410,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 934,
+      "elapsed_ms": 1302,
       "error": null,
       "mode": "live"
     },
@@ -311,23 +312,23 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 888,
+      "elapsed_ms": 1777,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "rt_ru",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 10033,
-      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 2207,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 285,
+      "elapsed_ms": 362,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 368,
+      "elapsed_ms": 629,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 114,
+      "elapsed_ms": 113,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 117,
+      "elapsed_ms": 113,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 117,
+      "elapsed_ms": 165,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 513,
+      "elapsed_ms": 958,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 50,
+      "elapsed_ms": 55,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 356,
+      "elapsed_ms": 506,
       "error": null,
       "mode": "live"
     },
@@ -391,54 +392,140 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 297,
+      "elapsed_ms": 849,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
     {
-      "id": "5d5f0472ad9e1517",
-      "published_at": "2026-09-24T02:52:41+00:00",
+      "id": "519c11550727b299",
+      "published_at": "2026-09-24T05:08:03+00:00",
       "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://www.business-standard.com/markets/commodities/oil-prices-edge-lower-as-iran-signals-openness-to-diplomacy-to-end-us-war-126092400107_1.html",
-      "category": "commodity",
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Brent-Holds-Above-102-as-Iran-Talks-Stall-Over-Hormuz-Conditions.html",
+      "category": "commodity_diplomacy",
       "commodities": [
         "oil",
         "shipping"
       ],
       "title": {
-        "original": "Oil prices edge lower as Iran signals openness to diplomacy to end US war",
+        "original": "Brent Holds Above $102 as Iran Talks Stall Over Hormuz Conditions",
         "original_lang": "en",
-        "ko": "이란이 미국의 전쟁을 종식시키기 위한 외교에 개방적이라는 신호를 보임에 따라 유가 우위 하락"
+        "ko": "Brent는 이란이 Hormuz 조건에 대해 말하면서 $ 102 이상을 유지합니다."
       },
-      "summary": "Brent crude fell 0.9% to $102.13 a barrel after a 4% rise a day earlier as Tehran reviews Washington's response to proposals on the Strait of Hormuz",
+      "summary": "Crude oil prices took a dip today amid reports that there was willingness for peace in the Middle East on both sides of the conflict. The dip partially offset gains made earlier in the week, keeping oil benchmarks elevated. At the time of writing, Brent crude was trading at $102.",
       "scores": {
         "commodity": 4.0,
-        "diplomacy": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.951,
-        "importance": 6.088,
-        "final": 6.91
+        "region_weight": 1.35,
+        "freshness": 0.875,
+        "importance": 4.12,
+        "final": 4.769
       },
       "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g1",
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
         "commodity:oil:3",
         "commodity:shipping:1",
-        "diplomacy:2"
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "3512d3e4816cf5b9",
+      "published_at": "2026-09-24T07:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Southeast-Asia-Keeps-Building-Gas-Plants-Despite-Hormuz-LNG-Shock.html",
+      "category": "commodity",
+      "commodities": [
+        "gas",
+        "shipping"
+      ],
+      "title": {
+        "original": "Southeast Asia Keeps Building Gas Plants Despite Hormuz LNG Shock",
+        "original_lang": "en",
+        "ko": "동남아시아, 호르무즈 LNG 충격에도 불구하고 가스 플랜트 건설 유지"
+      },
+      "summary": "Countries in Southeast Asia are still building natural gas-fired power plants despite the price inflation in gas caused by the Middle East war. Asian countries are also building more LNG import capacity, Global Energy Monitor reported. The net-zero think tank said there was some ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.921,
+        "importance": 3.824,
+        "final": 4.426
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:gas:2",
+        "commodity:shipping:1",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "8a7ecb244f1880b9",
+      "published_at": "2026-09-24T07:06:53+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/energy/oil-prices-fall-as-iran-says-it-is-open-to-diplomacy-to-end-the-war-3002896",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Oil prices fall as Iran says it is open to diplomacy to end the war",
+        "original_lang": "en",
+        "ko": "이란이 전쟁을 끝내기 위해 외교에 개방적이라고 말하면서 유가는 하락한다."
+      },
+      "summary": "SINGAPORE: Oil prices retreated on Thursday after ‌climbing 4 percent in the previous session as Iran said it remained open to diplomacy to end the US-Iran war, though the two countries remain far apart on ways to do so. Brent crude futures fell 92 cents, or 0.9 percent, to $102.",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.924,
+        "importance": 3.597,
+        "final": 4.245
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "tier:B*0.72/g1",
+        "commodity:oil:3",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
     },
     {
       "id": "f190f7ca1cb28105",
@@ -466,9 +553,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.764,
-        "importance": 3.428,
-        "final": 3.968
+        "freshness": 0.66,
+        "importance": 2.961,
+        "final": 3.428
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -510,9 +597,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.786,
-        "importance": 3.195,
-        "final": 3.698
+        "freshness": 0.679,
+        "importance": 2.76,
+        "final": 3.194
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -554,9 +641,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.808,
-        "importance": 3.071,
-        "final": 3.555
+        "freshness": 0.698,
+        "importance": 2.653,
+        "final": 3.071
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -572,88 +659,85 @@
       "country_hint": "KOR"
     },
     {
-      "id": "b4fbb5eec7ca19a2",
-      "published_at": "2026-09-23T19:20:43+00:00",
+      "id": "7f345f042837c48a",
+      "published_at": "2026-09-24T09:53:26+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "aa_world",
+        "name": "Anadolu Agency",
+        "region": "turkey",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/world/middle-east/article/3368562/indian-sailor-killed-attack-vessel-hormuz-india-and-oman-authorities-say?utm_source=rss_feed",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Indian sailor killed in attack on vessel in Hormuz, India and Oman authorities say",
-        "original_lang": "en",
-        "ko": "인도 호르무즈 선박 공격으로 사망한 인도 선원 및 오만 당국은"
-      },
-      "summary": "An attack on a cargo ship in the Strait of Hormuz on Wednesday killed an Indian sailor, Omani and Indian authorities said, with the latter condemning the ongoing attacks in the vital shipping lane. Since the start of the Middle East war, Iran has sought to impose its control over",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.772,
-        "importance": 3.15,
-        "final": 3.505
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g1",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "IND"
-    },
-    {
-      "id": "7370b0674d7e0df1",
-      "published_at": "2026-09-23T21:50:26+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/china/politics/article/3368569/us-restricts-visas-birth-tourism-ahead-xi-jinpings-summit-trump?utm_source=rss_feed",
+      "url": "https://www.aa.com.tr/en/americas/iran-misreading-us-political-system-by-waiting-for-midterms-rubio/4067578",
       "category": "cabinet_reshuffle",
       "commodities": [],
       "title": {
-        "original": "US restricts visas for birth tourism ahead of Xi Jinping’s summit with Trump",
+        "original": "Iran misreading US political system by waiting for midterms: Rubio",
         "original_lang": "en",
-        "ko": "미국, 트럼프와의 시진핑 정상회담 앞두고 출산 관광 비자 제한"
+        "ko": "중간고사를 기다리며 미국 정치 체제를 오독하는 이란: 루비오"
       },
-      "summary": "Hours before Chinese President Xi Jinping arrived in the US for a high-stakes summit, US Secretary of State Marco Rubio moved to restrict visas for those who “engage in or facilitate” birth tourism, a practice the Trump administration has increasingly accused China of. “By restri",
+      "summary": "November outcome would not prevent Trump from imposing sanctions or using military force against Tehran, says US secretary of state",
       "scores": {
         "commodity": 0,
         "diplomacy": 1.0,
         "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.827,
-        "importance": 3.091,
-        "final": 3.439
+        "region_weight": 1.3,
+        "freshness": 0.998,
+        "importance": 2.687,
+        "final": 3.05
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:turkey*1.30",
         "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
+        "tier:B*0.72/g1",
         "diplomacy:1",
         "election:cabinet_reshuffle:1.2",
         "cabinet_reshuffle"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "1",
-      "country_hint": "USA",
+      "country_hint": "TUR",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "581e4c8de8794884",
+      "published_at": "2026-09-24T06:48:30+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/world/us-drafted-a-memo-condemning-uk-over-west-bank-sanctions-it-was-never-released-3002891",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US drafted a memo condemning UK over West Bank sanctions. It was never released",
+        "original_lang": "en",
+        "ko": "미국은 웨스트뱅크 제재에 대해 영국을 비난하는 메모를 작성했다. 그것은 결코 풀어 놓이지 않았다"
+      },
+      "summary": "A draft memo was prepared by US officials condemning UK sanctions on West Bank imports but was never released. The document was influenced by David Milstein and attributed to Secretary of State Marco Rubio.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.917,
+        "importance": 2.467,
+        "final": 2.911
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:B*0.72/g1",
+        "diplomacy:1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU",
       "election_type": "cabinet_reshuffle"
     },
     {
@@ -679,9 +763,9 @@
         "diplomacy": 1.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.798,
-        "importance": 2.983,
-        "final": 3.319
+        "freshness": 0.689,
+        "importance": 2.577,
+        "final": 2.867
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -698,45 +782,46 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "bd24db7d6cb342f9",
-      "published_at": "2026-09-23T16:48:31+00:00",
+      "id": "60c48597a4e22fa0",
+      "published_at": "2026-09-24T09:00:00+00:00",
       "source": {
-        "id": "tass_en",
-        "name": "TASS",
-        "region": "russia",
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://tass.com/world/2191817",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Morgan-Stanley-Says-Diesel-Export-Ban-Would-Push-US-Gas-Prices-Higher.html",
+      "category": "diplomacy",
+      "commodities": [
+        "oil"
+      ],
       "title": {
-        "original": "Russia-US new Summit Talks initiative not on agenda — US Secretary of State Rubio",
+        "original": "Morgan Stanley: Diesel Export Ban Would Push U.S. Gas Prices Higher",
         "original_lang": "en",
-        "ko": "러시아-미국 새 정상 회담 이니셔티브 의제가 아님 — 루비오 미국 국무장관"
+        "ko": "모건 스탠리 (Morgan Stanley): 디젤 수출 금지로 미국 가스 가격 상승"
       },
-      "summary": "According to the US State Secretary, a lot of work has to be done before such a meeting could take place and yield a result",
+      "summary": "U.S. gasoline prices will spike further if the Trump Administration bans diesel exports, Morgan Stanley analysts say, as restrictions remain a debate amid record-high diesel prices in America. “A diesel export ban could have the counterintuitive effect of an increase in gasoline ",
       "scores": {
-        "commodity": 0,
+        "commodity": 0.8,
         "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.719,
-        "importance": 2.688,
-        "final": 2.991
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.974,
+        "importance": 2.455,
+        "final": 2.841
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:cabinet_reshuffle",
+        "region:commodity_specialist*1.35",
+        "category:diplomacy",
         "tier:A*1.00/g1",
+        "commodity:oil:0.8",
         "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
+      "country_hint": "USA"
     },
     {
       "id": "9db5dc4655a38a4a",
@@ -764,9 +849,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.872,
-        "importance": 3.56,
-        "final": 2.839
+        "freshness": 0.753,
+        "importance": 3.076,
+        "final": 2.453
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -781,130 +866,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
-    },
-    {
-      "id": "31613b5c19392ac6",
-      "published_at": "2026-09-24T04:34:49+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/capital-market-news/inr-slides-as-oil-prices-resurge-on-us-iran-tensions-126092400268_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "INR slides as oil prices resurge on US -Iran tensions",
-        "original_lang": "en",
-        "ko": "미국 -이란 긴장에 대한 유가 상승으로 INR 슬라이드"
-      },
-      "summary": "The Indian rupee fell sharply on Thursday morning in Asia as oil prices surged back following tensions between the US and Iran at the United Nations General Assembly (UNGA) after Trump stated that Iran faces a choice of diplomacy or total destruction. Iranian President Masoud Pez",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.997,
-        "importance": 2.394,
-        "final": 2.717
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "6c70177154d6bc21",
-      "published_at": "2026-09-23T21:00:31+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/russia-considering-us-invitation-for-vladimir-putin-to-attend-g20-meeting-12089228#publisher=newsstand",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Russia Considering US Invitation For Putin To Attend G20 Meeting",
-        "original_lang": "en",
-        "ko": "러시아, G20 회의 참석을 위한 미국 초청 고려 중"
-      },
-      "summary": "Russia said it would consider the invitation extended by US Secretary of State Marco Rubio.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.3,
-        "freshness": 0.808,
-        "importance": 2.257,
-        "final": 2.562
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "a0d886fd514150da",
-      "published_at": "2026-09-23T20:23:31+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/9/23/trump-administration-invites-putin-to-attend-g20-summit-in-miami?traffic_source=rss",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Trump administration invites Putin to attend G20 summit in Miami",
-        "original_lang": "en",
-        "ko": "트럼프 행정부가 푸틴 대통령을 마이애미에서 열리는 G20 정상회의에 초청하다"
-      },
-      "summary": "US Secretary of State Marco Rubio says summit would be opportunity for Russian president to engage with global leaders.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.4,
-        "freshness": 0.794,
-        "importance": 2.138,
-        "final": 2.523
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
-      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "7b53810a4de0711e",
@@ -929,9 +890,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.3,
-        "freshness": 0.751,
-        "importance": 2.096,
-        "final": 2.38
+        "freshness": 0.648,
+        "importance": 1.811,
+        "final": 2.056
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -944,86 +905,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "7940f3f45571e9ad",
-      "published_at": "2026-09-23T17:43:46+00:00",
-      "source": {
-        "id": "tass_en",
-        "name": "TASS",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.com/world/2191857",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "No breakthrough in US-Iran contacts yet, but exchange of ideas continues — Rubio",
-        "original_lang": "en",
-        "ko": "미국과 이란의 접촉은 아직 돌파구가 없지만 아이디어 교환은 계속됩니다. — 루비오"
-      },
-      "summary": "According to the US Secretary of State, the United States always remains open to talking to almost anyone in the world about a conflict, or a crisis, or some disagreement",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.738,
-        "importance": 2.061,
-        "final": 2.292
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "d62f0988dd403168",
-      "published_at": "2026-09-23T17:14:07+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/us/politics/article/3368559/marco-rubio-defends-xi-jinpings-us-visit-essential-despite-deep-disagreements?utm_source=rss_feed",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Marco Rubio defends Xi Jinping’s US visit as essential despite deep disagreements",
-        "original_lang": "en",
-        "ko": "마르코 루비오 (Marco Rubio) 는 깊은 의견 차이에도 불구하고 시진핑 (Xi Jinping) 의 미국 방문을 필수적인 것으로 옹호한다."
-      },
-      "summary": "US Secretary of State Marco Rubio defended the welcome planned for Chinese President Xi Jinping on Wednesday, saying it would be “irresponsible” for the world’s two largest economies to avoid talks at the highest level despite their disagreements. Speaking to reporters at the Uni",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.728,
-        "importance": 2.033,
-        "final": 2.261
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
       "election_type": "cabinet_reshuffle"
     },
     {
@@ -1051,9 +932,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.831,
-        "importance": 1.803,
-        "final": 2.087
+        "freshness": 0.718,
+        "importance": 1.557,
+        "final": 1.803
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -1067,6 +948,47 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "83b7ec57e374e9a7",
+      "published_at": "2026-09-24T09:39:58+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/hormuz-turmoil-pushes-eu-to-seek-new-alliances-routes-through-gulf-commissioner-tells-arab-news-3002917",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Hormuz turmoil pushes EU to seek new alliances, routes through Gulf, commissioner tells Arab News",
+        "original_lang": "en",
+        "ko": "커미셔너는 호르무즈 혼란으로 EU가 새로운 동맹, 걸프만을 통과하는 경로를 모색하도록 밀어붙인다고 아랍 뉴스에 말했다."
+      },
+      "summary": "Turmoil in the Strait of Hormuz and Houthi attacks on Saudi Arabia are pushing Europe to rebuild its energy and trade lifelines through the Gulf, said the EU’s commissioner for the Mediterranean, as Brussels prepares to open strategic partnership talks with Riyadh. In a wide-rang",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.992,
+        "importance": 1.406,
+        "final": 1.659
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:2",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "5bf770a2a6cb29bd",
@@ -1094,9 +1016,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.808,
-        "importance": 1.61,
-        "final": 1.864
+        "freshness": 0.698,
+        "importance": 1.391,
+        "final": 1.61
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -1112,46 +1034,44 @@
       "country_hint": "USA"
     },
     {
-      "id": "35534d688c72b5de",
-      "published_at": "2026-09-23T21:00:58+00:00",
+      "id": "920b4a92fbdd7c5d",
+      "published_at": "2026-09-24T09:47:51+00:00",
       "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.hellenicshippingnews.com/bimco-supply-pressure-is-mounting-in-the-container-shipping-market/",
-      "category": "commodity_diplomacy",
+      "url": "https://tass.ru/ekonomika/28146123",
+      "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "BIMCO: Supply Pressure Is Mounting In The Container Shipping Market",
-        "original_lang": "en",
-        "ko": "BIMCO: 컨테이너 배송 시장에 공급 압력이 가해지고 있습니다."
+        "original": "Цены на топливо в Европе зависят от снижения предложения нефтепродуктов из РФ",
+        "original_lang": "ru",
+        "ko": "유럽의 연료 가격은 러시아 연방의 석유 제품 공급 감소에 달려 있습니다."
       },
-      "summary": "“Disruptions and strong growth in head-haul trades continue to support the container shipping market in 2026, but accelerating fleet growth could weaken the supply/demand balance in 2027,” says Niels Rasmussen, Chief Shipping Analyst at BIMCO. BIMCO continues to forecast two scen",
+      "summary": "Цена на нефть не влияет непосредственно на ценообразование на топливо, отметил президент Unem Джанни Мурано",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
+        "commodity": 2.0,
+        "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.808,
-        "importance": 1.562,
-        "final": 1.808
+        "region_weight": 1.25,
+        "freshness": 0.996,
+        "importance": 1.099,
+        "final": 1.223
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1194,36 +1114,36 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "a966841601578d6a",
-      "published_at": "2026-09-23T22:14:00+00:00",
+      "id": "4cc40e3d8233744c",
+      "published_at": "2026-09-24T06:03:14+00:00",
       "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.japantimes.co.jp/news/2026/09/24/world/zelenskyy-winter-russia-energy-talks/",
+      "url": "https://www.ndtv.com/world-news/s-jaishankar-reiterates-indias-concerns-to-marco-rubio-over-russia-sanction-bill-trump-12090207#publisher=newsstand",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Zelenskyy warns of painful winter for Russia if energy truce talks fail",
+        "original": "S Jaishankar 'Reiterates India's Concerns' To Rubio Over Russia Sanction Bill",
         "original_lang": "en",
-        "ko": "Zelenskyy는 에너지 정전 협상이 실패할 경우 러시아의 고통스러운 겨울을 경고합니다"
+        "ko": "러시아 제재 법안에 대한 루비오에게 '인도의 우려를 되풀이하는' S Jaishankar"
       },
-      "summary": "Ukraine has developed and used thousands of long-range drones to strike back at Russian warehouses, port infrastructure and oil refineries.",
+      "summary": "After Russia invaded Ukraine, India sharply increased purchases of discounted Russian crude.",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.836,
-        "importance": 0.823,
-        "final": 0.915
+        "region_weight": 1.3,
+        "freshness": 0.898,
+        "importance": 0.883,
+        "final": 1.002
       },
       "rank_reasons": [
-        "region:japan*1.25",
+        "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:oil:1",
@@ -1232,171 +1152,248 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
+      "country_hint": "IND"
     },
     {
-      "id": "2dd876902c256703",
-      "published_at": "2026-09-23T21:59:19+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/rubio-says-us-will-live-defence-agreement-commitments-saudi-arabia",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Rubio says US will live up to defence commitments with Saudi Arabia",
-        "original_lang": "en",
-        "ko": "루비오는 미국이 사우디아라비아와 방위 약속을 지킬 것이라고 말했습니다."
-      },
-      "summary": "Rubio says US will live up to defence commitments with Saudi Arabia Responding to a question on the Houthi military campaign, US Secretary of State Marco Rubio said on Wednesday that the US will honour its commitments in its defence pact with Saudi Arabia. “We have a very strong ",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.83,
-        "importance": 0.732,
-        "final": 0.864
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "0ae6a8aef85d963f",
-      "published_at": "2026-09-24T00:30:11+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/eus-costa-urges-iran-restore-navigation-hormuz-strait-resume-cooperation",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "EU's Costa urges Iran to restore navigation in Hormuz Strait, resume cooperation with IAEA",
-        "original_lang": "en",
-        "ko": "EU의 코스타는 이란이 호르무즈 해협의 항행을 복원하고, IAEA와의 협력을 재개할 것을 촉구합니다."
-      },
-      "summary": "EU's Costa urges Iran to restore navigation in Hormuz Strait, resume cooperation with IAEA European Council President Antonio Costa said he had a \"frank and substantial discussion\" with Iranian president Masoud Pezeshkian. \"I stressed that dialogue is the only way to resolve conf",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.891,
-        "importance": 0.631,
-        "final": 0.744
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "6b8fcb33ffd9cd6c",
-      "published_at": "2026-09-23T20:29:38+00:00",
+      "id": "37ad69058abfaa00",
+      "published_at": "2026-09-24T08:21:24+00:00",
       "source": {
         "id": "arab_news",
         "name": "Arab News",
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.arabnews.com/middle-east/is-irans-hormuz-offer-a-sign-of-economic-strain-or-a-bid-to-buy-time-3002776",
+      "url": "https://www.arabnews.com/middle-east/airbus-confident-that-gulf-aviation-can-bounce-back-from-the-iran-war-3002805",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "Is Iran’s Hormuz offer a sign of economic strain or a bid to buy time?",
+        "original": "Airbus confident that Gulf aviation can bounce back from the Iran war",
         "original_lang": "en",
-        "ko": "이란의 호르무즈는 경제적 부담의 징후인가 아니면 시간을 벌기 위한 입찰인가?"
+        "ko": "에어버스는 걸프 항공이 이란 전쟁에서 벗어날 수 있다고 확신합니다."
       },
-      "summary": "After months of using the Strait of Hormuz to exert pressure on global trade, Iran is facing mounting economic costs of its own — raising questions about whether its reported offer to reopen the waterway reflects a growing need for relief or an effort to buy time. A senior Irania",
+      "summary": "DUBAI: The Gulf’s aviation boom was built on a powerful combination of geography, accessible airspace, relatively cheap fuel and millions of passengers connecting between Asia, Europe and Africa. The Iran war has put all of those advantages under pressure at once, spiking oil pri",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.797,
-        "importance": 0.564,
-        "final": 0.666
+        "freshness": 0.957,
+        "importance": 0.792,
+        "final": 0.935
       },
       "rank_reasons": [
         "region:mena*1.40",
         "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "tier:B*0.72/g1",
+        "commodity:oil:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
-      "info_grade": "3",
+      "info_grade": "1",
       "country_hint": "SAU"
     },
     {
-      "id": "aad1cf9b80b91a9f",
-      "published_at": "2026-09-23T11:09:00+00:00",
+      "id": "32c71aa5e570beec",
+      "published_at": "2026-09-24T06:20:30+00:00",
       "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.dailysabah.com/opinion/op-ed/why-have-houthis-started-targeting-saudi-arabia",
+      "url": "https://www.business-standard.com/markets/capital-market-news/indian-economy-has-done-exceptionally-well-despite-multiple-shocks-says-rbi-deputy-governor-126092400397_1.html",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "Why have Houthis started targeting Saudi Arabia?",
+        "original": "Indian economy has done exceptionally well despite multiple shocks, says RBI Deputy Governor",
         "original_lang": "en",
-        "ko": "Houthis가 사우디 아라비아를 겨냥하기 시작한 이유는 무엇입니까?"
+        "ko": "RBI 부총재는 인도 경제가 여러 번의 충격에도 불구하고 예외적으로 잘 해냈다고 말합니다."
       },
-      "summary": "The Iran-backed Houthis are seeking to take control of Yemen's entire Red Sea coastline in a move aimed at further consolidating their influence over the Bab al-Mandeb Strait, one...",
+      "summary": "Poonam Gupta, Deputy Governor, Reserve Bank of India has stated that India has perhaps been among the most challenged emerging market economies over past year and a half. Whereas most other countries were subject to only a subset of these shocks, India has been subjected to each ",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.615,
-        "importance": 0.435,
-        "final": 0.494
+        "freshness": 0.905,
+        "importance": 0.651,
+        "final": 0.739
       },
       "rank_reasons": [
-        "region:turkey*1.30",
+        "region:india*1.30",
         "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
-      "country_tier": "B",
+      "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "TUR"
+      "country_hint": "IND"
+    },
+    {
+      "id": "79941d28bfdc3c72",
+      "published_at": "2026-09-24T09:40:00+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://ent.ltn.com.tw/news/breakingnews/5585212",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "木村KAELA奶奶驚傳離世！電影片尾藏洋蔥：像被她撐傘保護",
+        "original_lang": "zh-TW",
+        "ko": "기무라 카엘라 할머니가 돌아가셨습니다! 영화 말미의 양파: 그녀의 우산으로 보호"
+      },
+      "summary": "日本人氣IP「角落小夥伴」第四部大銀幕作品《角落小夥伴電影版：從天而降的雲之冒險》，除了延續療癒可愛的視覺魅力，更邀請日本潮流歌姬的木村KAELA親自獻唱並填詞主題曲《你...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.992,
+        "importance": 0.548,
+        "final": 0.609
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "JPN"
+    },
+    {
+      "id": "6d935dc80f464fb3",
+      "published_at": "2026-09-24T09:38:39+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/life/breakingnews/5585211",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "日本進入「白銀週」連假！ 南投日月潭入住日客增",
+        "original_lang": "zh-TW",
+        "ko": "일본은 가짜 요일로 \"실버 위크\" 에 입장합니다! 난터우 썬 문 레이크 스테이 일일 게스트 증가"
+      },
+      "summary": "日本近日適逢「白銀週」的5天連假，不少日人湧入台灣旅遊，像是南投的日月潭，就有民宿發現入住日客增加，就連九族文化村也有零星日客前往遊玩，南投旅宿業者說，南投旅遊資源豐富，若能加...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.992,
+        "importance": 0.547,
+        "final": 0.609
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "JPN"
+    },
+    {
+      "id": "e86ae37b9b6271ad",
+      "published_at": "2026-09-24T09:09:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/asian-games/2026/09/24/ohashi-200m-world-record/",
+      "category": "commodity",
+      "commodities": [
+        "gold"
+      ],
+      "title": {
+        "original": "Ohashi smashes 200m breaststroke world record for Asian Games gold",
+        "original_lang": "en",
+        "ko": "오하시, 아시안 게임 금메달로 200m 평영 세계 기록 경신"
+      },
+      "summary": "Ohashi's time of 2:04.83 eclipsed the previous mark (2:05.48) set by China's Qin Haiyang in 2023.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.978,
+        "importance": 0.54,
+        "final": 0.601
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gold:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "508925d2be83049a",
+      "published_at": "2026-09-24T02:45:21+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/people-culture/trending-china/article/3368584/chinese-archaeologists-find-2200-year-old-ancestor-dragon-boat-festival-treat?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "rice"
+      ],
+      "title": {
+        "original": "Chinese archaeologists find 2,200-year-old ancestor of Dragon Boat Festival treat",
+        "original_lang": "en",
+        "ko": "중국 고고학자들이 2,200년 된 드래곤 보트 페스티벌의 조상을 찾다"
+      },
+      "summary": "When the weather turns warm around June, people all across China gather for the annual Dragon Boat Festival, and one of the most famous dishes from the celebration is the zongzi. Zongzi is a rice dumpling with a delicious filling, wrapped in bamboo leaves before being cooked. The",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.819,
+        "importance": 0.452,
+        "final": 0.503
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:rice:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
     }
   ]
 }
