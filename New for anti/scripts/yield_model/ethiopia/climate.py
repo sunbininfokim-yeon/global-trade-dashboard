@@ -8,6 +8,8 @@ from pathlib import Path
 import ee
 import pandas as pd
 
+import gee_live
+
 from .regions import POINTS
 
 PROJECT = "climate-project-504313"
@@ -16,7 +18,7 @@ CACHE = HERE / "cache"
 
 
 def initialize_ee() -> None:
-    ee.Initialize(project=PROJECT)
+    gee_live.initialize(ee, PROJECT)
 
 
 def latest_source_dates() -> dict:
@@ -82,21 +84,21 @@ def _season_feature(year: int, zones: ee.FeatureCollection) -> dict:
 def collect_seasonal(start_year: int = 1993, end_year: int = None, refresh: bool = False) -> pd.DataFrame:
     end_year = end_year or date.today().year
     CACHE.mkdir(parents=True, exist_ok=True)
-    target = CACHE / f"gee_ethiopia_coffee_v1_{start_year}_{end_year}.csv"
+    # Dated so a same-day rerun is free but the next run re-reads the current
+    # season (the old undated name returned August's partial season forever).
+    target = CACHE / f"gee_ethiopia_coffee_v1_{start_year}_{end_year}_{date.today().isoformat()}.csv"
     if target.exists() and not refresh:
         return pd.read_csv(target)
-    initialize_ee(); zones = _zones()
-    checkpoint = CACHE / f"gee_ethiopia_coffee_v1_{start_year}_{end_year}.partial.csv"
-    records = [] if refresh or not checkpoint.exists() else pd.read_csv(checkpoint).to_dict("records")
-    completed = {int(record["year"]) for record in records}
-    for year in range(start_year, end_year + 1):
-        if year not in completed:
-            records.append(_season_feature(year, zones))
-            pd.DataFrame(records).sort_values("year").to_csv(checkpoint, index=False)
-        if (year - start_year + 1) % 5 == 0 or year == end_year:
-            print(f"[climate] Earth Engine seasons through {year}", flush=True)
-    frame = pd.DataFrame(records).sort_values("year").reset_index(drop=True)
-    frame.to_csv(target, index=False); checkpoint.unlink(missing_ok=True)
+    initialize_ee()
+    zones = _zones()
+    frame = gee_live.collect_incremental(
+        lambda year: _season_feature(year, zones),
+        start_year,
+        end_year,
+        HERE / "training" / "national_arabica_belt.csv",
+        refresh=refresh,
+    )
+    frame.to_csv(target, index=False)
     return frame
 
 
