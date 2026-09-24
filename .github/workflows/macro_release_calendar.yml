@@ -1,9 +1,9 @@
-name: Stamp macro next-release windows
+name: Refresh public macro prints
 
-# Writes next_release_* onto every indicator in macro_monitor_v1.json.
-# It does not fetch values. Daily so "next business day" and passed
-# monthly windows roll forward. Official monthly dates are windows, not
-# a single invented day.
+# Fetches keyless public CPI, policy rates, yields, FX, and equity prints,
+# drops cards that exist only on a paid terminal, then stamps next-release
+# windows. A failed fetch leaves the previous value. Official monthly dates
+# are windows, not a single invented day.
 
 on:
   schedule:
@@ -23,14 +23,18 @@ jobs:
           python-version: '3.12'
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m unittest tests.test_release_calendar -v
-      - name: Stamp calendar
+        run: python -m unittest tests.test_keyless_prints tests.test_peer_macro tests.test_paid_only tests.test_release_calendar -v
+      - name: Graft public prints
         working-directory: New for anti/scripts/macro_monitor
-        run: python refresh_release_calendar_in_pack.py
+        run: |
+          python refresh_keyless_prints_in_pack.py
+          python refresh_peer_macro_in_pack.py
+          python strip_paid_indicators_in_pack.py
+          python refresh_release_calendar_in_pack.py
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/macro_monitor_v1.json"
-          git commit -m "chore: stamp macro next-release windows" || exit 0
+          git commit -m "chore: refresh public macro prints" || exit 0
           git push
