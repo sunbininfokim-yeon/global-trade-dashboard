@@ -233,3 +233,34 @@ test('Comtrade monthly card: range, YoY, and missing months are stated', () => {
     assert.match(html, /최근 36개월 보고 없음/); // imports
     assert.match(html, /data-range="36"/);
 });
+
+test('fetchComtradeArcs: a blended year keeps one year per route and marks older routes', async () => {
+    let payload = null;
+    const fetchStub = async (url) => {
+        if (!String(url).startsWith('/api/comtrade')) return new Response('{}', { status: 404 });
+        return new Response(JSON.stringify(payload.body), { status: 200, headers: payload.headers });
+    };
+    const document = new Proxy({}, { get: () => () => null });
+    const win = { fetch: fetchStub, document, addEventListener() {} };
+    win.window = win;
+    const ctx = vm.createContext({ ...win, console: { log() {}, warn() {}, error() {} }, URLSearchParams, Response, setTimeout, clearTimeout });
+    vm.runInContext(fs.readFileSync(path.join(repo, 'New for anti/data.js'), 'utf8'), ctx);
+    payload = {
+        headers: { 'X-Comtrade-Period': '2025', 'X-Comtrade-Blend': '2024' },
+        body: { data: [
+            { reporterCode: 76, partnerCode: 156, flowCode: 'X', primaryValue: 33e9, netWgt: 1, period: '2025' },
+            // Stray older row of the same route must not be added.
+            { reporterCode: 156, partnerCode: 76, flowCode: 'M', primaryValue: 31e9, netWgt: 1, period: '2024' },
+            { reporterCode: 682, partnerCode: 156, flowCode: 'X', primaryValue: 40e9, netWgt: 1, period: '2024' },
+        ] },
+    };
+    const arcs = host((await ctx.window.fetchComtradeArcs('oil')).map((a) =>
+        ({ s: a.sourceName, v: a.volume, y: a.dataYear, b: a.blendFrom, p: a.period })));
+    const bra = arcs.find((a) => a.s === 'Brazil');
+    assert.equal(bra.v, 33000);
+    assert.equal(bra.y, '2025');
+    const sau = arcs.find((a) => a.v === 40000);
+    assert.equal(sau.y, '2024');
+    assert.equal(sau.b, '2024');
+    assert.equal(sau.p, '2025');
+});

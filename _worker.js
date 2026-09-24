@@ -334,6 +334,10 @@ async function handleComtradeStatus(env) {
         partial: { [published]: partial(published) },
         reporters: { [published]: reporters(published) },
         next: next ? String(next) : null,
+        // What the default map request shows: the next year per country,
+        // the published year only where neither end of a route has filed.
+        display: next && count(next) === hsList.length
+            ? `${next} (미신고국 ${published})` : String(published),
         next_rule: next ? (next > bounds.mature
             ? `all cached and reporters >= ${FRESH_YEAR_MIN_COVERAGE * 100}% of ${published}`
             : 'all cached (complete year)') : null,
@@ -1146,6 +1150,80 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     return { ok: true, body };
 }
 
+// Newest year per country, for the default map (asked for 2026-09-24).
+//
+// The next year is held back from promotion until 90% of last year's
+// reporters have filed (advanceComtradePeriod); in the meantime the map shows
+// the next year wherever it exists and the published year only where it does
+// not. The unit is the country, not the row: a route whose exporter OR
+// importer filed the next year is taken from the next year only, and falls
+// back to the older year only when neither end has filed yet. Mixing rows
+// instead would double-count -- the same shipment appears once in the
+// exporter's return (X) and once in the importer's (M), and taking one side
+// from 2025 and the other from 2024 would add two different years together.
+function blendComtradeYears(newer, older) {
+    const filed = new Set();
+    for (const r of newer.data || []) {
+        if (r.primaryValue > 0) filed.add(String(r.reporterCode));
+    }
+    const data = [];
+    const routes = { latest: new Set(), fallback: new Set() };
+    const routeOf = (r) => (r.flowCode === 'M'
+        ? [String(r.partnerCode), String(r.reporterCode)]
+        : [String(r.reporterCode), String(r.partnerCode)]);
+    for (const r of newer.data || []) {
+        data.push(r);
+        routes.latest.add(routeOf(r).join('>'));
+    }
+    for (const r of older.data || []) {
+        const [exp, imp] = routeOf(r);
+        if (filed.has(exp) || filed.has(imp)) continue;
+        data.push(r);
+        routes.fallback.add(`${exp}>${imp}`);
+    }
+    return {
+        data,
+        reporters_latest: filed.size,
+        routes_latest: routes.latest.size,
+        routes_fallback: routes.fallback.size,
+    };
+}
+
+// Blended bodies are rebuilt at most daily, so a refetched year shows up soon.
+const COMTRADE_BLEND_TTL = 86400;
+
+async function blendedComtrade(env, hs, published, next) {
+    const kv = env.API_CACHE;
+    if (!kv || !kv.getWithMetadata) return null;
+    const blendKey = `comtrade:blend:${hs}:${next}+${published}:default${DEFAULT_SCOPE_VERSION}`;
+    const hit = await kv.get(blendKey).catch(() => null);
+    if (hit) return { body: hit, cache: 'HIT' };
+
+    const keyFor = (year) => comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+    const [n, o] = await Promise.all([
+        kv.getWithMetadata(keyFor(next)).catch(() => null),
+        kv.getWithMetadata(keyFor(published)).catch(() => null),
+    ]);
+    // Only blend two complete, cached years; otherwise the caller serves the
+    // published year as before and the cron keeps filling.
+    if (!n?.value || !o?.value || n.metadata?.partial || o.metadata?.partial) return null;
+    let nb, ob;
+    try {
+        nb = JSON.parse(n.value);
+        ob = JSON.parse(o.value);
+    } catch {
+        return null;
+    }
+    const b = blendComtradeYears(nb, ob);
+    const body = JSON.stringify({
+        count: b.data.length, period: String(next), freq: 'A', blend_from: String(published),
+        blend: { reporters_latest: b.reporters_latest, routes_latest: b.routes_latest, routes_fallback: b.routes_fallback },
+        data: b.data,
+    });
+    await kv.put(blendKey, body, { expirationTtl: Math.min(COMTRADE_TTL[hs] || 604800, COMTRADE_BLEND_TTL) }).catch(() => {});
+    return { body, cache: 'MISS' };
+}
+
 const NUMERIC_LIST = /^\d+(,\d+)*$/;
 const PERIOD_SHAPE = { A: /^\d{4}(,\d{4})*$/, M: /^\d{6}(,\d{6})*$/ };
 
@@ -1169,6 +1247,7 @@ async function handleComtrade(request, env, ctx) {
     }
 
     let period;
+    let next = null;
     if (periodParam && periodParam !== 'latest') {
         if (!PERIOD_SHAPE[freq].test(periodParam)) {
             return bad(`period does not match freq=${freq}`,
@@ -1176,7 +1255,9 @@ async function handleComtrade(request, env, ctx) {
         }
         period = periodParam;
     } else if (freq === 'A') {
-        period = String(publishedComtradeYear(await readComtradePeriodRecord(env)));
+        const published = publishedComtradeYear(await readComtradePeriodRecord(env));
+        period = String(published);
+        if (published < comtradeYearBounds().fresh) next = published + 1;
     } else {
         // Monthly used to fall back to a fixed "202403", which served data two
         // and a half years stale without saying so. There is no latest-month
@@ -1189,6 +1270,23 @@ async function handleComtrade(request, env, ctx) {
 
     const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
 
+    const defaultScope = reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES;
+    if (next && defaultScope) {
+        const blended = await blendedComtrade(env, hs, Number(period), next);
+        if (blended) {
+            return new Response(blended.body, {
+                headers: {
+                    ...JSON_HEADERS,
+                    'X-Cache': blended.cache,
+                    'X-Comtrade-Period': String(next),
+                    'X-Comtrade-Blend': period,
+                    'X-Comtrade-Freq': 'A',
+                    'Access-Control-Expose-Headers': 'X-Comtrade-Period, X-Comtrade-Blend, X-Comtrade-Freq, X-Cache',
+                },
+            });
+        }
+    }
+
     const res = await kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
         () => fetchComtrade(env, hs, reporters, partners, period, freq), comtradeMeta);
 
@@ -1197,7 +1295,7 @@ async function handleComtrade(request, env, ctx) {
     const headers = new Headers(res.headers);
     headers.set('X-Comtrade-Period', period);
     headers.set('X-Comtrade-Freq', freq);
-    headers.set('Access-Control-Expose-Headers', 'X-Comtrade-Period, X-Comtrade-Freq, X-Cache');
+    headers.set('Access-Control-Expose-Headers', 'X-Comtrade-Period, X-Comtrade-Blend, X-Comtrade-Freq, X-Cache');
     return new Response(res.body, { status: res.status, headers });
 }
 

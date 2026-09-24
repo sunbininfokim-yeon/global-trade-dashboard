@@ -595,6 +595,9 @@
                 return [];
             }
             const period = res.headers.get('X-Comtrade-Period') || json.period || opts.period || null;
+            // Set when the Worker served the newest year per country, with the
+            // previous year only where neither end of a route has filed yet.
+            const blendFrom = res.headers.get('X-Comtrade-Blend') || json.blend_from || null;
 
             // Two passes. Within one period, a route appears up to twice --
             // the exporter's report (X) and the importer's mirror (M) -- and
@@ -637,9 +640,22 @@
                 const periodKey = `${row.period ?? ''}|${sourceName}|${targetName}`;
                 const seen = perPeriod[periodKey];
                 if (!seen || seen.usdValue < tradeValue) {
-                    perPeriod[periodKey] = { sourceName, targetName, usdValue: tradeValue, netWeight };
+                    perPeriod[periodKey] = { sourceName, targetName, usdValue: tradeValue, netWeight, year: String(row.period ?? '') };
                 }
             });
+
+            // A blended response carries one year per route, but check anyway:
+            // two years of one route must never be added together.
+            if (blendFrom) {
+                const newest = {};
+                for (const r of Object.values(perPeriod)) {
+                    const k = `${r.sourceName}|${r.targetName}`;
+                    if (!newest[k] || r.year > newest[k]) newest[k] = r.year;
+                }
+                for (const [k, r] of Object.entries(perPeriod)) {
+                    if (r.year !== newest[`${r.sourceName}|${r.targetName}`]) delete perPeriod[k];
+                }
+            }
 
             const arcMap = {};
             for (const r of Object.values(perPeriod)) {
@@ -660,6 +676,8 @@
                         netWeightKg: 0,
                         period,
                         freq,
+                        blendFrom,
+                        dataYear: r.year || period,
                         dataSource: "UN Comtrade (comtradeapi.un.org)"
                     };
                 }

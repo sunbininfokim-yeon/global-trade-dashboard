@@ -37,6 +37,10 @@ function makeKV() {
             const type = typeof opts === 'string' ? opts : opts?.type;
             return type === 'json' ? JSON.parse(e.value) : e.value;
         },
+        async getWithMetadata(k) {
+            const e = store.get(k);
+            return e ? { value: e.value, metadata: e.metadata } : { value: null, metadata: null };
+        },
         async put(k, value, opts = {}) { store.set(k, { value, metadata: opts.metadata ?? null }); },
         async list({ prefix }) {
             const keys = [...store.entries()].filter(([k]) => k.startsWith(prefix))
@@ -277,4 +281,41 @@ test('an old entry with far fewer reporters than its year is refetched', async (
     } finally {
         console.log = log;
     }
+});
+
+test('default map blends years per country without adding two years of one route', async () => {
+    const { env, call } = await setup();
+    const worker = await loadWorker();
+    const keyOf = (year) => `comtrade:A:2709:${year}:default2`;
+    const put = (year, rows, meta = { reporters: 3 }) =>
+        env.API_CACHE.store.set(keyOf(year), { value: JSON.stringify({ period: String(year), data: rows }), metadata: meta });
+    const row = (rep, par, flow, v, year) => ({ reporterCode: rep, partnerCode: par, flowCode: flow, primaryValue: v, period: String(year) });
+    // Published year = floor. Saudi (682) and China (156) filed floor only;
+    // Brazil (76) filed both years.
+    put(floor, [
+        row(682, 156, 'X', 40e9, floor),   // SAU->CHN, neither end filed floor+1: kept from floor
+        row(156, 682, 'M', 42e9, floor),   // same route, importer side
+        row(76, 156, 'X', 30e9, floor),    // BRA->CHN: Brazil filed floor+1 -> floor value dropped
+        row(156, 76, 'M', 31e9, floor),
+    ]);
+    put(floor + 1, [row(76, 156, 'X', 33e9, floor + 1)]);
+    const r = await call('hs=2709');
+    assert.equal(r.headers.get('X-Comtrade-Period'), String(floor + 1));
+    assert.equal(r.headers.get('X-Comtrade-Blend'), String(floor));
+    const body = await r.json();
+    assert.equal(body.blend.routes_latest, 1);
+    assert.equal(body.blend.routes_fallback, 1);
+    const bra = body.data.filter((x) => x.reporterCode === 76 || x.partnerCode === 76);
+    assert.deepEqual(bra.map((x) => x.period), [String(floor + 1)]);
+    const sau = body.data.filter((x) => x.reporterCode === 682 || x.partnerCode === 682);
+    assert.equal(sau.length, 2);
+
+    // A partial next year is never blended.
+    env.API_CACHE.store.clear();
+    put(floor, [row(682, 156, 'X', 40e9, floor)]);
+    put(floor + 1, [row(76, 156, 'X', 33e9, floor + 1)], { reporters: 1, partial: true });
+    const r2 = await call('hs=2709');
+    assert.equal(r2.headers.get('X-Comtrade-Blend'), null);
+    assert.equal(r2.headers.get('X-Comtrade-Period'), String(floor));
+    void worker;
 });
