@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-24T04:57:50.626595+00:00",
+  "generated_at": "2026-09-24T13:35:21.702032+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 166,
     "scored": 166,
     "selected": 40,
-    "indicators": 17
+    "indicators": 18
   },
   "feed_status": [
     {
@@ -314,6 +314,20 @@
       "title": "Collateral Accepted by the Bank of Japan (End of Aug.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2608.xlsx",
       "published_at": "2026-09-02T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (August 31)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
+      "published_at": "2026-09-02T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     },
@@ -1592,6 +1606,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "e1ecf306c0645d83",
+      "published_at": "2026-09-02T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 31)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 31)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "3d1bc211e40172c2",
       "published_at": null,
       "source": {
@@ -1694,47 +1743,23 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "8a09ece6795e239e",
-      "published_at": "2026-09-23T16:30:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Philip R. Lane: The Outlook for the Euro Area Economy",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Philip R. Lane: The Outlook for the Euro Area Economy"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.064,
-        "final": 2.064
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     }
   ],
   "pending_review": [
     {
-      "title": "Philip R. Lane: Outlook for the euro area economy",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf",
+      "title": "Philip R. Lane: The outlook for the euro area economy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf",
+      "country": "EUR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 2.064,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Philip R. Lane: The Outlook for the Euro Area Economy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf",
       "country": "EUR",
       "domains": [
         "economy",
@@ -1878,16 +1903,6 @@
     {
       "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
       "country": "USA",
       "domains": [
         "finance"
@@ -3155,6 +3170,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "e1ecf306c0645d83",
+      "published_at": "2026-09-02T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 31)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 31)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "3d1bc211e40172c2",
       "published_at": null,
       "source": {
@@ -3253,41 +3303,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "8a09ece6795e239e",
-      "published_at": "2026-09-23T16:30:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Philip R. Lane: The Outlook for the Euro Area Economy",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Philip R. Lane: The Outlook for the Euro Area Economy"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.064,
-        "final": 2.064
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
