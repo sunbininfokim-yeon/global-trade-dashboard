@@ -237,6 +237,28 @@ async function warmComtradeCache(env) {
     const keyFor = (hs, year) =>
         comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
 
+    // Entries cached before partial results were marked can still be partial:
+    // cobalt, lithium and manganese 2024 sat in KV with 12 reporters while
+    // every other commodity that year had 49-60. Anything under
+    // SUSPECT_REPORTER_SHARE of its year's median is treated as not cached,
+    // refetched, and kept out of promotion.
+    for (const year of [published, next].filter(Boolean)) {
+        const counts = Object.keys(COMTRADE_TTL)
+            .map((hs) => warm.get(keyFor(hs, year))?.reporters)
+            .filter(Number.isFinite)
+            .sort((a, b) => a - b);
+        if (counts.length < 5) continue;
+        const median = counts[counts.length >> 1];
+        for (const hs of Object.keys(COMTRADE_TTL)) {
+            const key = keyFor(hs, year);
+            const m = warm.get(key);
+            if (Number.isFinite(m?.reporters) && m.reporters < median * SUSPECT_REPORTER_SHARE) {
+                console.log(`[warm] ${hs}/${year} has ${m.reporters} reporters vs median ${median}: refetching`);
+                warm.delete(key);
+            }
+        }
+    }
+
     // What visitors are looking at comes first; the next year only gets
     // whatever budget is left over.
     const work = [];
@@ -729,6 +751,7 @@ const COMTRADE_TTL = {
     "1201": 1209600, // Soybeans: 14 days
     "1701": 1209600, // Sugar: 14 days
     "1511": 1209600, // Palm oil: 14 days
+    "4001": 1209600, // Natural rubber: 14 days
     "0901": 1209600, // Coffee: 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
@@ -804,6 +827,7 @@ function comtradeMeta(body) {
 
 // How long a result with missing reporter chunks is kept (see fetchComtrade).
 const COMTRADE_PARTIAL_TTL = 3600;
+const SUSPECT_REPORTER_SHARE = 0.4;
 
 // USDA FAS Export Sales Report: weekly US export sales by destination country.
 // This is US-only -- it answers "who bought from the US this week", not who
@@ -1016,7 +1040,9 @@ function comtradeCacheKey(hs, reporters, partners, period, freq) {
 // the limit far away as the country list grows.
 // "period" is carried so monthly rows stay distinguishable (e.g. 202403);
 // on annual queries it is just the year and costs almost nothing.
-const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period"];
+// "cmdCode" keeps multi-HS commodities (cobalt = 8105,2822,283329) apart in
+// a monthly country series, where the three codes are summed per month.
+const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period", "cmdCode"];
 
 function slimComtradeBody(body) {
     const rows = Array.isArray(body?.data) ? body.data : [];
@@ -2698,6 +2724,7 @@ const FUTURES_UNPRICED = {
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
+    rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
 };
 
 async function handleFutures(request, env) {

@@ -187,3 +187,49 @@ test('national units in single currency units are shown in millions, FOB and CIF
     assert.equal(fob.unitLabel, '백만 바트 (FOB)');
     assert.equal(Math.round(fob.points[0].value), 1936);
 });
+
+test('Comtrade monthly: breakdown rows collapse to the total, HS codes sum, months sort', () => {
+    const rows = [
+        // Same month/flow/HS: total plus a mode-of-transport breakdown row.
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 100e6, netWgt: 10e6 },
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 60e6, netWgt: 6e6 },
+        // Second HS code of the same commodity, same month: summed.
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '8105', primaryValue: 20e6, netWgt: null },
+        { period: '202604', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 90e6, netWgt: 9e6 },
+        { period: '202605', flowCode: 'M', partnerCode: 0, cmdCode: '2822', primaryValue: 5e6, netWgt: 1e6 },
+        // Re-exports and non-World partners are not part of the series.
+        { period: '202605', flowCode: 'RX', partnerCode: 0, cmdCode: '2822', primaryValue: 7e6 },
+        { period: '202605', flowCode: 'X', partnerCode: 156, cmdCode: '2822', primaryValue: 50e6 },
+    ];
+    const s = host(T.aggregateComtradeMonthly(rows));
+    assert.deepEqual(s.X.map((p) => p.month), ['2026-04', '2026-05']);
+    assert.equal(s.X[1].usd, 120e6);
+    assert.equal(s.X[1].kgKnown, false);    // one HS code had no weight
+    assert.equal(s.M[0].usd, 5e6);
+});
+
+test('Comtrade monthly: 36 complete months in three blocks of 12', () => {
+    const blocks = host(T.monthBlocks(new Date(Date.UTC(2026, 8, 24))));
+    assert.equal(blocks.length, 3);
+    assert.deepEqual(blocks.map((b) => b.length), [12, 12, 12]);
+    assert.equal(blocks[0][0], '202309');
+    assert.equal(blocks[2][11], '202608');
+});
+
+test('Comtrade monthly: reporter codes use Comtrade\'s own where they differ', () => {
+    assert.equal(T.reporterCodeFor('USA'), 842);
+    assert.equal(T.reporterCodeFor('IND'), 699);
+    assert.equal(T.reporterCodeFor(null), null);
+});
+
+test('Comtrade monthly card: range, YoY, and missing months are stated', () => {
+    const X = Array.from({ length: 36 }, (_, i) => {
+        const d = new Date(Date.UTC(2023, 8 + i, 1));
+        return { month: `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`, usd: (100 + i) * 1e6, kg: 1e9, kgKnown: true };
+    }).filter((_, i) => i !== 30);   // one unreported month
+    const html = T.liveCardHtml({ X, M: [], hs: '2709', failures: 0 }, 12, 'Saudi Arabia');
+    assert.match(html, /12개월 중 11개월 보고/);
+    assert.match(html, /전년 동월 \+9\.8%/);   // 2026-08 135 vs 2025-08 123
+    assert.match(html, /최근 36개월 보고 없음/); // imports
+    assert.match(html, /data-range="36"/);
+});
