@@ -237,3 +237,32 @@ def build_quarter_history(events: List[Dict[str, Any]], *, limit: int = 16) -> L
             }
         )
     return pts[-limit:]
+
+
+def split_summary_ko(compare: Dict[str, Any], bill: Optional[str] = None, coupon: Optional[str] = None) -> Optional[str]:
+    """One-line note for an announcement that covers this quarter and the next.
+
+    Built from the compare block and the stances parsed out of that same
+    release -- never a fixed string: the refresh script used to hardcode
+    "T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias" from the August 2026
+    release, which would have been stamped onto every later announcement.
+    """
+    by_id = {s.get("id"): s for s in compare.get("series") or []}
+    cur, nxt = by_id.get("current"), by_id.get("next_estimate")
+    if not cur or not nxt:
+        return None
+
+    def money(series: Dict[str, Any]) -> str:
+        text = f"순발행 {series['value']:.0f}B"
+        if series.get("end_cash_bn") is not None:
+            text += f", 기말현금 {float(series['end_cash_bn']):.0f}B"
+        return text
+
+    parts = [
+        f"{cur.get('announcement_date') or '최근'} 발표. 당기 {cur.get('period')} {money(cur)}.",
+        f"다음 분기 {nxt.get('period')} 예상 {money(nxt)}.",
+    ]
+    stances = [f"{label}={value}" for label, value in (("T-bill 스탠스", bill), ("쿠폰 스탠스", coupon)) if value]
+    if stances:
+        parts.append(" · ".join(stances))
+    return " ".join(parts)

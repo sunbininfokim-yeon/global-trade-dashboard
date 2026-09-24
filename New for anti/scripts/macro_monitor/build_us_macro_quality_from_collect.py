@@ -39,11 +39,14 @@ from macro_monitor.us_quality.fed import (  # noqa: E402
     fetch_text,
     parse_fomc_members,
 )
+from macro_monitor.fomc_collect.decision import parse_decision  # noqa: E402
 from macro_monitor.us_quality.fomc import compare_fomc_meetings  # noqa: E402
 
 MEETINGS_IN = ROOT / "config" / "fomc_meetings_v1.json"
 BEIGE_IN = ROOT / "config" / "beige_book_v1.json"
 CALENDAR_IN = ROOT / "config" / "fomc_calendar_v1.json"
+STATEMENT_TEXT_IN = ROOT / "config" / "fomc_statement_text_v1.json"
+SEP_IN = ROOT / "config" / "fomc_sep_v1.json"
 OUT = ROOT.parent.parent / "public" / "data" / "us_macro_quality_v1.json"
 
 # Every 2026 Beige Book edition landed exactly 14 days before its paired
@@ -52,6 +55,22 @@ OUT = ROOT.parent.parent / "public" / "data" / "us_macro_quality_v1.json"
 # calendar the way it does for FOMC meetings, so this is a pattern-based
 # projection, not an official date, and is labeled that way downstream.
 BEIGE_BOOK_LEAD_DAYS = 14
+
+
+def _decisions(text_doc: dict) -> list[dict]:
+    """One row per collected statement whose decision sentence parses."""
+    rows = []
+    for row in text_doc.get("statements", []):
+        decision = parse_decision(row.get("operative_text") or "")
+        if decision is None:
+            continue
+        rows.append({"meeting_date": row["meeting_date"], "source_url": row["source_url"], **decision})
+    return sorted(rows, key=lambda r: r["meeting_date"])
+
+
+def _latest_sep(sep_doc: dict) -> dict | None:
+    projections = sorted(sep_doc.get("projections", []), key=lambda r: r["meeting_date"])
+    return projections[-1] if projections else None
 
 
 def _next_meeting_schedule(calendar_doc: dict, *, today: date) -> dict | None:
@@ -129,6 +148,8 @@ def main() -> int:
     beige_doc = json.loads(BEIGE_IN.read_text(encoding="utf-8"))
     calendar_doc = json.loads(CALENDAR_IN.read_text(encoding="utf-8"))
     schedule = _next_meeting_schedule(calendar_doc, today=date.today())
+    decisions = _decisions(json.loads(STATEMENT_TEXT_IN.read_text(encoding="utf-8"))) if STATEMENT_TEXT_IN.exists() else []
+    latest_sep = _latest_sep(json.loads(SEP_IN.read_text(encoding="utf-8"))) if SEP_IN.exists() else None
 
     clean = [m for m in meetings_doc["meetings"] if m.get("parsed_ok")]
     clean.sort(key=lambda m: m["meeting_date"])
@@ -195,6 +216,16 @@ def main() -> int:
         ),
         "policy_committee": {
             "comparison": comparison,
+            # Only the decision belonging to the meeting the panel calls
+            # "current": a newer statement without a parseable decision
+            # sentence must not leave the panel showing the previous
+            # meeting's action under the new meeting's date.
+            "decision": next((d for d in reversed(decisions) if d["meeting_date"] == current_row["meeting_date"]), None),
+            "decision_history": [
+                {k: d[k] for k in ("meeting_date", "action", "change_bp", "range_low", "range_high")}
+                for d in decisions
+            ],
+            "sep": latest_sep,
             "current_votes": _current_vote_roster(current_row, roster_members),
             "meeting_count": len(clean),
             "current_roster": {
