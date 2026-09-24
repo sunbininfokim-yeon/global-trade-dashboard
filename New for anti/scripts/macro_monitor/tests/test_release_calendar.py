@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from macro_monitor.release_calendar import apply_release_calendar, next_business_day  # noqa: E402
+from macro_monitor.release_calendar import apply_release_calendar, next_business_day, schedule_for  # noqa: E402
 
 
 def _pack() -> dict:
@@ -74,6 +74,14 @@ class TestReleaseCalendar(unittest.TestCase):
         apply_release_calendar(doc, today=date(2026, 9, 24))
         by = {i["id"]: i for i in doc["countries"][0]["indicators"]}
         self.assertEqual(by["bond_10y"]["next_release_on"], "2026-09-25")
+        monthly = {
+            "id": "bond_10y", "quality": "live_latest", "source": "fred:IRLTLT01KRM156N",
+            "asof": "2026-08-01", "refresh_tier": "market_daily", "category": "rates",
+        }
+        stamped = schedule_for(monthly, iso3="KOR", today=date(2026, 9, 24))
+        self.assertEqual(stamped["next_release_basis"], "typical_window")
+        self.assertEqual(stamped["next_release_window"], {"start": "2026-10-01", "end": "2026-10-20"})
+        self.assertIsNone(stamped["next_release_on"])
         self.assertEqual(by["fed_total_assets"]["next_release_on"], "2026-09-24")
         self.assertEqual(by["sovereign_cds_5y"]["next_release_basis"], "not_automated")
         self.assertIsNone(by["sovereign_cds_5y"]["next_release_on"])

@@ -50,6 +50,7 @@ POLICY_IDS = {
     "selic_rate", "rbi_repo", "boi_rate", "cbr_key_rate", "hk_base_rate",
     "cbc_discount", "nbk_base_rate", "deposit_facility", "mro_rate", "mlf_rate",
     "sbv_refinancing", "sbv_discount", "bok_base_rate", "effr",
+    "boc_overnight",
 }
 
 WEEKLY_THURSDAY = {
@@ -174,6 +175,21 @@ def schedule_for(indicator: dict[str, Any], *, iso3: str, today: date) -> dict[s
             start, end = _upcoming_window(today, start_day, end_day)
             note = "카드가 아직 합성값이라 관측월을 쓰지 않았다. " + note
         return _pack(basis=BASIS_WINDOW, start=start, end=end, note_ko=note)
+
+    src = str(indicator.get("source") or "")
+    if iid in {"bond_10y", "sagb_10y", "bund_10y", "btp_10y"} and "IRLTLT" in src and reference:
+        start, end = _window_after_reference(today, reference, 1, 20)
+        return _pack(
+            basis=BASIS_WINDOW, start=start, end=end,
+            note_ko="OECD 장기금리. 월간 공표이고, 다음 달 1–20일이 보통이며 정확한 날은 여기 없다.",
+        )
+
+    if iid == "unemployment" and reference and ("UNRATE" in src or "LRHUTTTT" in src):
+        start, end = _window_after_reference(today, reference, 1, 25)
+        return _pack(
+            basis=BASIS_WINDOW, start=start, end=end,
+            note_ko="실업률. 월간 공표이고, 다음 달에 나오는 것이 보통이며 정확한 날은 여기 없다.",
+        )
 
     if iid in WEEKLY_THURSDAY:
         nxt = next_weekday(today, 3)  # Thursday
