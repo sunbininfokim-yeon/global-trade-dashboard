@@ -151,15 +151,35 @@ def build_net_borrowing_compare(
                 "value": float(current_q["net_borrowing_bn"]),
                 "end_cash_bn": current_q.get("end_cash_balance_bn"),
                 "vs_prior_bn": current_q.get("vs_prior_bn"),
+                "announcement_date": _latest_announcement(event, current_q.get("period") or ""),
                 "kind": "estimate",
             }
         )
+    if current_q and len(estimates) >= 2:
+        next_q = estimates[1]
+        next_period = next_q.get("period") or ""
+        if (
+            next_q.get("net_borrowing_bn") is not None
+            and _period_key(next_period) != _period_key(current_q.get("period") or "")
+        ):
+            series.append(
+                {
+                    "id": "next_estimate",
+                    "label_ko": "다음 분기 예상",
+                    "period": next_period,
+                    "value": float(next_q["net_borrowing_bn"]),
+                    "end_cash_bn": next_q.get("end_cash_balance_bn"),
+                    "vs_prior_bn": next_q.get("vs_prior_bn"),
+                    "announcement_date": _latest_announcement(event, next_period),
+                    "kind": "estimate",
+                }
+            )
 
     return {
         "metric": "privately_held_net_marketable_bn",
         "unit": "bn_usd",
         "chart_type": "bar",
-        "title_ko": "순발행 비교 (전분실적 · 직전예측 · 당기공시)",
+        "title_ko": "순발행 비교 (전분실적 · 직전예측 · 당기공시 · 다음분기)",
         "series": series,
         "table": [
             {
@@ -172,10 +192,22 @@ def build_net_borrowing_compare(
             for s in series
         ],
         "note_ko": (
-            "클릭 시 기본 뷰. 만기별 바는 components / TBAC. "
-            "세 막대 모두 있으면 표+그룹 바; 일부만 있으면 있는 것만 표시."
+            "같은 발표에서 당기 공시와 다음 분기 예상을 나눴다. "
+            "직전 공시 예측은 그 전 발표가 같은 분기에 적어 둔 값이다."
         ),
     }
+
+
+def _latest_announcement(event: Dict[str, Any], period: str) -> Optional[str]:
+    """Latest Sources & Uses date for this quarter. Same announcement can cover two quarters."""
+    key = _period_key(period)
+    dated = [
+        r for r in _su_estimates(event)
+        if _period_key(r.get("period") or "") == key and r.get("announcement_date")
+    ]
+    if not dated:
+        return None
+    return max(dated, key=lambda r: _parse_announce(r.get("announcement_date"))).get("announcement_date")
 
 
 def _period_key(period: str) -> str:

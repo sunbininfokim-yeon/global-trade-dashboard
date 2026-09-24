@@ -202,6 +202,74 @@ class TestQraParse(unittest.TestCase):
         self.assertEqual(by["prior_forecast"], 823.0)
         self.assertEqual(by["current"], 815.0)
         self.assertEqual(len(cmp["table"]), 3)
+        self.assertEqual(cmp["series"][2]["announcement_date"], "February 3, 2025")
+
+    def test_august_announcement_splits_current_and_next_quarter(self):
+        from macro_monitor.qra.compare import build_net_borrowing_compare
+
+        event = {
+            "estimates": {
+                "quarters": [
+                    {
+                        "period": "July–September 2026",
+                        "kind": "estimate",
+                        "net_borrowing_bn": 739.0,
+                        "end_cash_balance_bn": 950.0,
+                        "vs_prior_bn": 68.0,
+                    },
+                    {
+                        "period": "October–December 2026",
+                        "kind": "estimate",
+                        "net_borrowing_bn": 628.0,
+                        "end_cash_balance_bn": 850.0,
+                        "vs_prior_bn": 87.0,
+                    },
+                    {
+                        "period": "April–June 2026",
+                        "kind": "actual",
+                        "net_borrowing_bn": 190.0,
+                        "end_cash_balance_bn": 919.0,
+                    },
+                ]
+            },
+            "sources_uses": {
+                "rows": [
+                    {
+                        "period": "Jul - Sep 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "May 4, 2026",
+                        "marketable_borrowing_bn": 671.0,
+                        "end_cash_balance_bn": 950.0,
+                    },
+                    {
+                        "period": "Jul - Sep 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "August 3, 2026",
+                        "marketable_borrowing_bn": 739.0,
+                        "end_cash_balance_bn": 950.0,
+                    },
+                    {
+                        "period": "Oct - Dec 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "August 3, 2026",
+                        "marketable_borrowing_bn": 628.0,
+                        "end_cash_balance_bn": 850.0,
+                    },
+                ]
+            },
+        }
+        cmp = build_net_borrowing_compare(event)
+        by = {s["id"]: s for s in cmp["series"]}
+        self.assertEqual(by["current"]["value"], 739.0)
+        self.assertEqual(by["current"]["announcement_date"], "August 3, 2026")
+        self.assertEqual(by["current"]["end_cash_bn"], 950.0)
+        self.assertEqual(by["next_estimate"]["label_ko"], "다음 분기 예상")
+        self.assertEqual(by["next_estimate"]["period"], "October–December 2026")
+        self.assertEqual(by["next_estimate"]["value"], 628.0)
+        self.assertEqual(by["next_estimate"]["end_cash_bn"], 850.0)
+        self.assertEqual(by["next_estimate"]["announcement_date"], "August 3, 2026")
+        self.assertEqual(by["prior_forecast"]["value"], 671.0)
+        self.assertEqual(by["prior_forecast"]["announcement_date"], "May 4, 2026")
 
 
 if __name__ == "__main__":
