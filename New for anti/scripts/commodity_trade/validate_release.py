@@ -2,12 +2,30 @@
 import argparse
 import json
 import math
+from copy import deepcopy
 from pathlib import Path
 
 from build_monthly import PUBLIC, _validate_monthly_contract
 from validate_bilateral_public import validate as validate_bilateral
 from monthly_coverage import coverage_report
 from world_link import to_kg
+from preview_quality import annotate_preview_series
+
+
+def validate_preview_publication(payload):
+    held = 0
+    for reporter in payload.get('reporters', {}).values():
+        for flow in reporter.get('flows', {}).values():
+            for series in flow.get('commodities', {}).values():
+                expected = deepcopy(series)
+                annotate_preview_series(expected)
+                if (series.get('publication_summary') != expected['publication_summary']
+                        or series.get('series_quality', {}).get('flags') != expected['series_quality']['flags']
+                        or any(p.get('publication') != q.get('publication')
+                               for p, q in zip(series.get('points', []), expected.get('points', [])))):
+                    raise ValueError('Preview publication metadata missing or stale; run --annotate-only')
+                held += len(expected['publication_summary']['held_months'])
+    return held
 
 
 def validate_bulletin(data):
@@ -62,6 +80,7 @@ def validate(data_dir):
     validate_bulletin(bulletin)
     national = read('commodity_trade_national_priority_v1.json')
     comtrade = read('commodity_trade_comtrade_priority_v1.json')
+    preview_held = validate_preview_publication(comtrade)
     index = read('commodity_trade_bilateral_v1/index.json')
     bilateral = validate_bilateral(data_dir/'commodity_trade_bilateral_v1')
     coverage = coverage_report([comtrade,national], index)
@@ -71,6 +90,7 @@ def validate(data_dir):
     crude = national['reporters']['SAU']['flows']['exports']['commodities']['crude_oil']
     return {'status':'pass', 'monthly_invalid_conversion_factors':factors, 'monthly_bad_mass_normalization':bad_mass,
             'priority_coverage':coverage['counts'], 'bilateral':bilateral,
+            'preview_held_months':preview_held,
             'saudi': {'bulletin_oil_value_latest':bulletin['latest_available_month'],
                       'hs2709_world_latest':crude['latest_available_month'],
                       'hs2709_bilateral_available':any(e.get('reporter_iso3')=='SAU' and e.get('hs')=='2709' and e.get('partners') for e in index['entries'])}}

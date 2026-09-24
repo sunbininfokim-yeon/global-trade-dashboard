@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -103,6 +104,7 @@ def fetch_preview_month(
     cache_dir: Path,
     allow_fetch: bool = True,
     timeout: int = 90,
+    cache_ttl_seconds: float = 86400,
 ) -> dict[str, Any]:
     """Fetch one reporter/flow/month from the no-key Preview endpoint.
 
@@ -126,7 +128,9 @@ def fetch_preview_month(
         flow=flow,
         hs_codes=normalized_codes,
     )
-    from_cache = cache_path.exists()
+    cache_exists = cache_path.exists()
+    cache_stale = cache_exists and time.time() - cache_path.stat().st_mtime >= cache_ttl_seconds
+    from_cache = cache_exists and (not cache_stale or not allow_fetch)
     if from_cache:
         try:
             body = json.loads(cache_path.read_text(encoding="utf-8"))
@@ -161,7 +165,15 @@ def fetch_preview_month(
             }
         except (URLError, TimeoutError, json.JSONDecodeError) as exc:
             return {"available": False, "reason": str(exc), "series_by_hs": {}}
-        cache_path.write_text(json.dumps(body, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # Do not overwrite a known-good cache with a provider error or malformed body.
+    if (not isinstance(body, dict) or body.get("error") or not isinstance(body.get("data"), list)
+            or any(not isinstance(row, dict) for row in body["data"])):
+        return {"available": False, "reason": "invalid Preview response", "series_by_hs": {}}
+    if not from_cache:
+        temporary = cache_path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(body, ensure_ascii=False) + "\n", encoding="utf-8")
+        temporary.replace(cache_path)
 
     series_by_hs: dict[str, list[dict[str, Any]]] = {code: [] for code in normalized_codes}
     for row in body.get("data") or []:
@@ -205,7 +217,7 @@ def fetch_preview_month(
         "flow": flow,
         "series_by_hs": series_by_hs,
         "response_count": len(body.get("data") or []),
-        "cache": {"path": str(cache_path), "hit": from_cache},
+        "cache": {"path": str(cache_path), "hit": from_cache, "stale": bool(from_cache and cache_stale)},
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
         "error": body.get("error") or None,
     }

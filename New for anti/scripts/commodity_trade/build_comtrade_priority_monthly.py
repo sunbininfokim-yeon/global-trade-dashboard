@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "sources"))
 
 from priority_universe import FLOW_LABELS, PRIORITY_COMMODITIES, PRIORITY_REPORTERS  # noqa: E402
 from series_quality import annotate_country_series  # noqa: E402
+from preview_quality import annotate_preview_series  # noqa: E402
 from sources import comtrade  # noqa: E402
 
 
@@ -138,6 +139,7 @@ def _annotate_reporter(payload: dict[str, Any], reference_month: str) -> None:
                 country = {"points": series.get("points") or []}
                 annotate_country_series(country, reference_month)
                 series["series_quality"] = country["series_quality"]
+                annotate_preview_series(series)
                 points = series.get("points") or []
                 source_quality = [point.get("quality") or {} for point in points]
                 series["comtrade_quality"] = {
@@ -191,6 +193,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--replace-output", action="store_true")
     parser.add_argument("--no-fetch", action="store_true", help="only inspect the current output")
+    parser.add_argument("--annotate-only", action="store_true", help="refresh publication metadata offline; preserve raw observations")
     parser.add_argument("--print-stats", action="store_true")
     args = parser.parse_args()
 
@@ -208,6 +211,12 @@ def main() -> int:
         parser.error(str(exc))
 
     existing = {} if args.replace_output else _load_output(args.out)
+    if args.annotate_only:
+        if args.replace_output or args.no_fetch or not existing:
+            parser.error("--annotate-only requires existing output and cannot use --replace-output/--no-fetch")
+        _annotate_reporter(existing, existing.get("reference_month") or args.end_month)
+        _atomic_write_json(args.out, existing)
+        return 0
     if args.no_fetch:
         if not existing:
             parser.error(f"--no-fetch requires an existing output: {args.out}")

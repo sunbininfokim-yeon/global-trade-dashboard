@@ -101,9 +101,25 @@ UI 연결은 별도 사용자 승인 후 기존 디자인 안에서 “석유류
 
 ## 5. 검증 명령과 현재 기대 결과
 
-모든 명령은 위 레포 루트에서 실행한다. 별도 라이브러리 설치 없이 Python 표준 라이브러리를 사용한다.
+2026-09-24 리뷰 반영: 의존성 명시·템플릿 설치 단계·README 배포 경로를 수정했다.
+Preview `points[].publication.eligible_for_display=false`는 대표값·차트·비율·순위에서 보류하고,
+`publication_summary.latest_eligible_month`를 사용한다. 이전 `latest_available_month`는 원본 최신 월이다.
+서로 다른 단위를 한 차트 계열로 합치지 않는다. 상세 규격은 README의 Preview 게시 품질 계약을 따른다.
+UI 변경은 이 PR에 없으므로 #351 담당자가 새 필드 연결 후 임시 휴리스틱을 제거해야 한다.
+기존 Preview JSON은 오프라인으로 메타데이터만 갱신했으며 새로운 무역자료 수집은 하지 않았다.
+24시간 캐시 TTL은 수집기가 해당 월을 다시 요청할 때만 작동하며, 스케줄 전체를 활성화하지 않는다.
+
+리뷰 수정 검증: 별도 가상환경에 requirements만 설치 후 Python 110개 통과,
+JavaScript 10개 통과, `build_monthly.py --no-fetch` 및 release gate 통과.
+Preview 원본 관측 489개·기존 수집 시각·실행 이력은 변경 전과 동일하다.
+보류 11개 계열-월: 브라질 2026-06 10건, 아르헨티나 밀 수입 2026-03 1건.
+보류는 휴리스틱 경고이며 원천의 부분 집계가 확정되었다는 뜻이 아니다.
+
+모든 명령은 위 레포 루트에서 실행한다. Python 3.12 가상환경을 권장한다.
+ABS·USDA ERS 어댑터는 `openpyxl`이 필요하다. 사우디 bulletin 파서만 표준 라이브러리로 동작한다.
 
 ```bash
+python3 -m pip install -r 'New for anti/scripts/commodity_trade/requirements.txt'
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s 'New for anti/scripts/commodity_trade/tests' -q
 node --test 'New for anti/scripts/commodity_trade/gateway/handler.test.mjs' 'New for anti/scripts/commodity_trade/client/bilateral-loader.test.mjs'
 PYTHONDONTWRITEBYTECODE=1 python3 'New for anti/scripts/commodity_trade/build_monthly.py' --no-fetch --print-stats

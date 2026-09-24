@@ -66,20 +66,35 @@ Comtrade가 요청되지 않았거나 키가 없으면 무료 소스 결과를 �
 
 ## GitHub Actions 자동 갱신·배포
 
-`.github/workflows/commodity_trade_monthly.yml`은 매월 16–24일 UTC 03:20에 실행된다. 16일에는 JODI/Brazil 전역 월별 산출과 자동 가능한 국가 공식 원천을 갱신한다. 같은 기간 Comtrade Preview 우선국 27개는 하루 3개국씩 9개 배치로 나누어 무료 엔드포인트의 요청 집중을 피한다.
+이 PR은 수집 자동화를 활성화하지 않는다. `deployment/monthly.yml.example`은 검토 후
+`.github/workflows/commodity_trade_bilateral.yml`로 설치할 비활성 템플릿이다.
+설치 시 매월 16–28일 UTC 03:20에 bilateral·사우디 bulletin을 갱신하고 데이터 PR을 만든다.
+기존 월별 총량·국가 통계 전체를 갱신하는 스케줄은 이 템플릿에 포함되지 않는다.
 
-- 공개 국가 원천: IND, NOR, THA, MEX, SAU. 한 원천의 일시 오류는 기존 관측치를 보존하고 다음 국가를 계속 실행한다.
-- 레지스트리에서 `ready`로 선언한 국가 어댑터는 자동 포함된다. `ready_with_env_key` 어댑터는 `required_env`에 선언된 GitHub Actions secret이 있을 때만 포함된다. 현재 한국은 `KOREA_CUSTOMS_SERVICE_KEY`가 있으면 실행되며, 없으면 KOR만 건너뛰고 전체 작업·배포는 멈추지 않는다.
-- Comtrade Preview는 인증키 없이 제한적으로 수집한다. 구독 키가 필요한 Comtrade 전체 API 호출은 이 정기 작업에 넣지 않는다.
-- 변경된 JSON만 `github-actions[bot]`이 main에 커밋한다. 그 직후 같은 작업이 Cloudflare 배포를 실행한다.
+- 테스트 전에 `python3 -m pip install -r 'New for anti/scripts/commodity_trade/requirements.txt'`를 실행한다.
+- 변경은 데이터 PR → 검토·병합 → 기존 `.github/workflows/deploy.yml` 경로로 배포한다. main 직접 push나 수집기 직접 배포는 하지 않는다.
+- 현행 배포 워크플로의 시크릿 이름은 `CLOUDFLARE_API_TOKEN`이다. 수집 API 키와 별개다.
+- 수집 설정은 템플릿의 `TRADE_ACQUISITION_MODE`, `TRADE_GATEWAY_URL`, `TRADE_PIPELINE_TOKEN`, `COMTRADE_API_KEY`, `KOREA_CUSTOMS_SERVICE_KEY`를 따른다.
+- `GITHUB_TOKEN`으로 만든 PR의 후속 CI 트리거 제약은 설치 담당자가 검증해야 한다. 무인 자동 배포 완료를 뜻하지 않는다.
 
-Cloudflare 배포에는 GitHub repository Actions secrets `CF_API_TOKEN`과 `CF_ACCOUNT_ID`가 모두 필요하다. 누락 시 데이터 커밋은 유지하고 배포만 건너뛴다. `deploy_dashboard.yml`은 PR 병합 등 사람이 만든 main 변경을 자동 배포하며, 두 시크릿을 추가한 뒤에는 Actions UI에서 수동 재실행할 수 있다. Worker secret과 GitHub secret의 값은 파일·로그·JSON에 저장하지 않는다.
+키·토큰은 파일·로그·공개 JSON에 저장하지 않는다.
 
 ## 핵심국 Comtrade 월별 패널
 
 `build_comtrade_priority_monthly.py`는 미국·브라질·아르헨티나·중국·한국·일본·호주·남아공·사우디·UAE 등을 대상으로, 수출과 수입의 World 상대 월별 시리즈를 별도 파일에 축적한다. 이는 세계 전체가 아니라 국가 클릭 2단계용 우선 보고국 패널이다.
 
-무료 Preview는 한 요청에 한 월만 허용하므로, 23개 핵심 HS를 한 국가·흐름·월 요청으로 묶고 `/tmp/commodity_trade_cache`에 캐시한다. 기본값은 최신 완료월부터 3개월·최대 24개 네트워크 요청이다. 재실행하면 캐시된 요청은 재사용하고 다음 국가로 이어진다.
+무료 Preview는 한 요청에 한 월만 허용하므로, 23개 핵심 HS를 한 국가·흐름·월 요청으로 묶고 `/tmp/commodity_trade_cache`에 캐시한다. 기본값은 최신 완료월부터 3개월·최대 24개 네트워크 요청이다. 24시간 이내 캐시는 재사용하고, 만료된 캐시는 기존 요청 예산 안에서 재조회한다. 요청 실패·오류 응답은 기존 캐시를 덮어쓰지 않는다. 새 응답에 없는 월의 기존 공개 관측값은 보존한다. 과거 월 수정은 그 월을 요청 범위에 포함했을 때 반영된다.
+
+### Preview 게시 품질 계약 (2026-09-24)
+
+- 각 `points[].publication`: `status=eligible|hold`, `eligible_for_display`, `flags`, `evidence`.
+- `suspected_partial_month`: 이전 최대 12개 정상 후보 월의 중앙값 대비 1% 미만. 최신 월뿐 아니라 과거 의심 월도 계속 표시한다. 부분 집계 확정이나 실제 무역 중단을 뜻하지 않는다.
+- USD 금액끼리 우선 비교하고, 불가능하면 정확히 같은 원본 단위끼리만 비교한다. 한 달만 기준인 경우도 `baseline_count=1`로 증거의 한계를 노출한다. 부족한 표본·계절성으로 오탐 가능성이 있다.
+- `publication_summary.latest_eligible_month`는 대표값 후보 최신 월, `held_months`는 보류 월이다. 기존 `latest_available_month`는 원본 관측 최신 월로 유지한다. `eligible`은 검증된 완전 통계라는 뜻이 아니다.
+- UI는 Preview의 `eligible_for_display=false`를 차트·대표값·비율·순위에서 제외하고 보류 배지를 표시한다. 다른 단위는 한 선으로 연결하거나 직접 비교하지 않는다. 원본 값/0은 삭제·변조하지 않는다. JODI·국가 통계는 이 휴리스틱을 적용하지 않는다.
+- UI 미수정: 기존 UI 휴리스틱은 소비자가 이 계약을 연결한 뒤 제거한다. 메타데이터 추가만으로 화면 수정이 완료되지는 않는다.
+- 기존 파일의 오프라인 메타데이터 갱신: `python3 'New for anti/scripts/commodity_trade/build_comtrade_priority_monthly.py' --annotate-only`. 수집 시각·원본 관측은 그대로 둔다. `--no-fetch`는 여전히 읽기 전용이다.
+- `validate_release.py`는 게시 메타데이터를 재계산하여 누락·변조를 차단한다. 보류 표시가 올바르게 있는 데이터는 통과시킨다.
 
 ```bash
 # 우선 4개국의 최근 3개월 수출·수입 패널을 수집

@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install data adapter dependencies
+        run: python3 -m pip install -r 'New for anti/scripts/commodity_trade/requirements.txt'
       - name: Verify data and gateway contracts
         run: |
           python3 -m unittest discover -s 'New for anti/scripts/commodity_trade/tests' -v
