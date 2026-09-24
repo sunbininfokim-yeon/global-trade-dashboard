@@ -16,7 +16,7 @@
 | 가격대별 누가 샀나 | 일별 순매수 → 종가/고저 빈 귀속 | Naver `trend?pageSize=` + FDR OHLC | **estimated** (틱 단위 아님) |
 | Shorts | 공매도 잔고·비중 | KRX OpenAPI 공매도 엔드포인트 / pykrx | **missing** (data.krx LOGOUT since 2026-02; needs `KRX_API` 이용신청 or login) |
 | 미수·강제청산 (Paper C) | 신용융자·미수·반대매매 | 네이버 증시자금 **신용잔고·예탁금** (FreeSIS 재배포) | observed (미수·반대는 미포함) |
-| 코스피 시장 수급 | 투자자별 순매수 | KRX 12008 (`krx-month-paste` `krx_12008_kospi_investor`, 유가증권 전체·ETF 포함) · 체크아웃이 없을 때만 Naver `investorDealTrendDay`(주식만, 2026-09-17부터 빈 표) | observed |
+| 코스피 시장 수급 | 투자자별 순매수 (**유가증권 주식만**, ETF·ETN 제외) | Naver `investorDealTrendDay` (2026-09-17부터 빈 표) → KRX 12008 주식 한정 export (`krx-month-paste` `krx_12008_kospi_stock_investor`, Cursor · `CURSOR_HANDOFF_KOSPI_STOCK_FLOW.md`). 둘 다 없으면 발행된 과거 날짜 유지 | observed |
 | 레버 ETF 유형 분해 | 지수/섹터/해외/단일종목 TV | FDR ETF Name classify | observed |
 | 홍콩 단일종목 레버 | HK LETF AUM·거래 | HKEX / 리서치 PDF | observed (국내와 **분리**) |
 | US SOXL / KORU | 미국 레버 ETF | Yahoo 등 | observed |

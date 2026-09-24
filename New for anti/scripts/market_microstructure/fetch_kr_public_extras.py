@@ -181,12 +181,13 @@ def fetch_letf_category_share() -> dict[str, Any]:
 
 
 def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any]:
-    """KOSPI aggregate investor net flows in 억원: Naver, else KRX 12008.
+    """KOSPI stock-market investor net flows in 억원: Naver, else stock-scoped KRX 12008.
 
     The Naver page has returned an empty table since 2026-09-17. When it
-    does, and a krx-month-paste checkout is named in $KRX_MONTH_PASTE_DIR,
-    the latest KRX 12008 days are used instead -- labelled as such, since
-    12008 counts ETF/ETN trades that the stock-only Naver page does not.
+    does, and a krx-month-paste checkout named in $KRX_MONTH_PASTE_DIR holds
+    the stock-scoped 12008 export, those days are used instead. The
+    ETF-inclusive 12008 hive is never used here (different quantity); with
+    neither, the caller keeps the previous observation (carried_forward).
     """
     try:
         naver = _fetch_naver_kospi_investor_flows(lookback_days=lookback_days)
@@ -197,8 +198,8 @@ def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any
     root = os.environ.get("KRX_MONTH_PASTE_DIR")
     if root:
         from market_microstructure.investor_price_levels import (
-            KRX_12008_SCOPE_KO,
-            KRX_12008_SOURCE,
+            KOSPI_STOCK_SCOPE_KO,
+            KRX_12008_STOCK_SOURCE,
             load_krx_12008_kospi_flows,
         )
 
@@ -214,13 +215,13 @@ def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any
                     **{k.replace("_eok", "_krw"): (None if v is None else v * 1e8) for k, v in vals.items()},
                 })
             return {
-                "scope": "kospi_all_securities",
+                "scope": "kospi_cash",
                 "unit_native": "억원",
                 "latest": history[0],
                 "history": history,
                 "quality": "observed",
-                "source": KRX_12008_SOURCE,
-                "note_ko": KRX_12008_SCOPE_KO,
+                "source": KRX_12008_STOCK_SOURCE,
+                "note_ko": KOSPI_STOCK_SCOPE_KO,
             }
     if naver is not None:
         return naver

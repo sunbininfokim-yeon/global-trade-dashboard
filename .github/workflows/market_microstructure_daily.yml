@@ -36,10 +36,13 @@ jobs:
       - name: Install deps
         run: pip install -r requirements-ci.txt
 
-      # Checked out before the snapshot steps: the KOSPI market investor flow
-      # (가격대별 누적 수급's index view and public_extras) reads KRX 12008 from
-      # this checkout via $KRX_MONTH_PASTE_DIR, since the Naver page it used
-      # has returned empty tables since 2026-09-17.
+      # Checked out before the snapshot steps: the KOSPI stock-market investor
+      # flow (가격대별 누적 수급's index view and public_extras) reads the
+      # stock-scoped KRX 12008 export from this checkout via
+      # $KRX_MONTH_PASTE_DIR once Cursor publishes it
+      # (CURSOR_HANDOFF_KOSPI_STOCK_FLOW.md). The Naver page it used has
+      # returned empty tables since 2026-09-17; until then the published
+      # stock-only days are carried forward.
       #
       # Cursor crawls KRX 15007 CALL/PUT buy/sell exports into its own repo
       # (private) at data/raw/krx_15007/<date>/{options_call,options_put,
@@ -62,7 +65,7 @@ jobs:
           sparse-checkout: |
             data/raw/krx_15007
             data/normalized/krx_15007_k200_investor
-            data/normalized/krx_12008_kospi_investor
+            data/normalized/krx_12008_kospi_stock_investor
             data/normalized/kospi200_futures_oi
             data/normalized/kospi200_option_oi
             data/normalized/kospi_program

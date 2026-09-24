@@ -195,1336 +195,1149 @@
     "schema": "kospi-index-investor-levels-v1",
     "quality": "observed",
     "bin_attribution": "daily_close_step",
-    "data_policy_ko": "실측만(KRX 12008 시장수급·FDR KS11). demo 금지.",
+    "data_policy_ko": "실측만(네이버 시장수급·FDR KS11). demo 금지.",
     "unit": "억원 (시장 전체 순매수)",
     "step": 250.0,
     "method_ko": "실측 코스피 종가(KS11) 레벨(심리적 step)에 실측 시장 개인·외인·기관 순매수(억원)를 귀속.",
-    "flow_source": "krx_12008",
-    "flow_date_end": "2026-09-21",
-    "scope_ko": "유가증권시장 전체(ETF·ETN 포함) 투자자별 순매수입니다. 주식만 집계하는 네이버·언론 수치와 개인·기관 값이 그날 ETF 거래만큼 다를 수 있고, 외국인은 거의 같습니다.",
+    "flow_source": "naver",
+    "flow_date_end": "2026-09-16",
+    "carried_forward_days": 157,
+    "fetch_note_ko": "오늘 수집 소스에서 코스피 시장 수급을 받지 못함",
+    "scope_ko": "유가증권시장 주식 투자자별 순매수 (ETF·ETN 제외).",
     "source": [
-      "KRX 12008 투자자별 거래실적 (유가증권 전체·거래대금) · krx-month-paste",
+      "https://finance.naver.com/sise/investorDealTrendDay.naver",
       "FinanceDataReader KS11 (live)",
       "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169"
     ],
-    "n_days": 178,
-    "date_start": "2025-12-26",
-    "date_end": "2026-09-17",
+    "n_days": 157,
+    "date_start": "2026-01-27",
+    "date_end": "2026-09-16",
     "latest": {
-      "date": "2026-09-17",
-      "close": 6724.34,
-      "retail_net_eok": 8332.66,
-      "foreign_net_eok": -26669.1,
-      "institution_net_eok": 1112.77
+      "date": "2026-09-16",
+      "close": 6717.97,
+      "retail_net_eok": -12061.0,
+      "foreign_net_eok": -16726.0,
+      "institution_net_eok": 12251.0
     },
-    "headline_ko": "코스피 7,500–7,750에서 개인 순매수 +285,870억원 (실측)",
+    "headline_ko": "코스피 7,500–7,750에서 개인 순매수 +231,327억원 (실측)",
     "days": [
-      {
-        "date": "2025-12-26",
-        "close": 4129.68,
-        "retail_net_eok": -18731.6,
-        "foreign_net_eok": 18013.21,
-        "institution_net_eok": -73.13
-      },
-      {
-        "date": "2025-12-29",
-        "close": 4220.56,
-        "retail_net_eok": 1706.33,
-        "foreign_net_eok": 2754.51,
-        "institution_net_eok": -3687.18
-      },
-      {
-        "date": "2025-12-30",
-        "close": 4214.17,
-        "retail_net_eok": 11264.4,
-        "foreign_net_eok": -5173.58,
-        "institution_net_eok": -6887.34
-      },
-      {
-        "date": "2026-01-02",
-        "close": 4309.63,
-        "retail_net_eok": 1847.97,
-        "foreign_net_eok": 6182.0,
-        "institution_net_eok": -8754.1
-      },
-      {
-        "date": "2026-01-05",
-        "close": 4457.52,
-        "retail_net_eok": -10606.08,
-        "foreign_net_eok": 21404.12,
-        "institution_net_eok": -11623.13
-      },
-      {
-        "date": "2026-01-06",
-        "close": 4525.48,
-        "retail_net_eok": 9399.41,
-        "foreign_net_eok": -6406.98,
-        "institution_net_eok": -3905.4
-      },
-      {
-        "date": "2026-01-07",
-        "close": 4551.06,
-        "retail_net_eok": 1772.74,
-        "foreign_net_eok": 12491.08,
-        "institution_net_eok": -14578.91
-      },
-      {
-        "date": "2026-01-08",
-        "close": 4552.37,
-        "retail_net_eok": 15247.35,
-        "foreign_net_eok": -1019.4,
-        "institution_net_eok": -16895.77
-      },
-      {
-        "date": "2026-01-09",
-        "close": 4586.32,
-        "retail_net_eok": 3364.15,
-        "foreign_net_eok": -15090.11,
-        "institution_net_eok": 8998.19
-      },
-      {
-        "date": "2026-01-12",
-        "close": 4624.79,
-        "retail_net_eok": 1482.61,
-        "foreign_net_eok": -3779.36,
-        "institution_net_eok": -386.85
-      },
-      {
-        "date": "2026-01-13",
-        "close": 4692.64,
-        "retail_net_eok": -5960.38,
-        "foreign_net_eok": -2304.82,
-        "institution_net_eok": 6155.05
-      },
-      {
-        "date": "2026-01-14",
-        "close": 4723.1,
-        "retail_net_eok": 34.15,
-        "foreign_net_eok": -3639.91,
-        "institution_net_eok": 1252.37
-      },
-      {
-        "date": "2026-01-15",
-        "close": 4797.55,
-        "retail_net_eok": -12855.47,
-        "foreign_net_eok": 3884.12,
-        "institution_net_eok": 6734.89
-      },
-      {
-        "date": "2026-01-16",
-        "close": 4840.74,
-        "retail_net_eok": -3142.59,
-        "foreign_net_eok": 4385.07,
-        "institution_net_eok": -3531.69
-      },
-      {
-        "date": "2026-01-19",
-        "close": 4904.66,
-        "retail_net_eok": -2396.71,
-        "foreign_net_eok": 4978.16,
-        "institution_net_eok": -4975.15
-      },
-      {
-        "date": "2026-01-20",
-        "close": 4885.75,
-        "retail_net_eok": 8723.82,
-        "foreign_net_eok": 1241.36,
-        "institution_net_eok": -12005.45
-      },
-      {
-        "date": "2026-01-21",
-        "close": 4909.93,
-        "retail_net_eok": -3677.66,
-        "foreign_net_eok": 5192.52,
-        "institution_net_eok": -3815.52
-      },
-      {
-        "date": "2026-01-22",
-        "close": 4952.53,
-        "retail_net_eok": 3470.12,
-        "foreign_net_eok": -2365.26,
-        "institution_net_eok": -3739.99
-      },
-      {
-        "date": "2026-01-23",
-        "close": 4990.07,
-        "retail_net_eok": -2170.22,
-        "foreign_net_eok": 1713.63,
-        "institution_net_eok": -812.04
-      },
-      {
-        "date": "2026-01-26",
-        "close": 4949.59,
-        "retail_net_eok": 35545.02,
-        "foreign_net_eok": -1760.65,
-        "institution_net_eok": -34148.81
-      },
       {
         "date": "2026-01-27",
         "close": 5084.85,
-        "retail_net_eok": -231.48,
-        "foreign_net_eok": 9263.43,
-        "institution_net_eok": -8999.18
+        "retail_net_eok": -10197.0,
+        "foreign_net_eok": 8448.0,
+        "institution_net_eok": 2474.0
       },
       {
         "date": "2026-01-28",
         "close": 5170.81,
-        "retail_net_eok": 32622.19,
-        "foreign_net_eok": 3511.6,
-        "institution_net_eok": -34894.68
+        "retail_net_eok": 12131.0,
+        "foreign_net_eok": 4008.0,
+        "institution_net_eok": -14021.0
       },
       {
         "date": "2026-01-29",
         "close": 5221.25,
-        "retail_net_eok": 33715.92,
-        "foreign_net_eok": -15120.47,
-        "institution_net_eok": -19937.5
+        "retail_net_eok": 16173.0,
+        "foreign_net_eok": -14897.0,
+        "institution_net_eok": -1673.0
       },
       {
         "date": "2026-01-30",
         "close": 5224.36,
-        "retail_net_eok": 40835.88,
-        "foreign_net_eok": -19622.59,
-        "institution_net_eok": -23280.54
+        "retail_net_eok": 22979.0,
+        "foreign_net_eok": -19729.0,
+        "institution_net_eok": -4241.0
       },
       {
         "date": "2026-02-02",
         "close": 4949.67,
-        "retail_net_eok": 52689.07,
-        "foreign_net_eok": -25057.65,
-        "institution_net_eok": -28899.41
+        "retail_net_eok": 45874.0,
+        "foreign_net_eok": -25168.0,
+        "institution_net_eok": -22125.0
       },
       {
         "date": "2026-02-03",
         "close": 5288.08,
-        "retail_net_eok": -28851.78,
-        "foreign_net_eok": 7568.89,
-        "institution_net_eok": 20704.61
+        "retail_net_eok": -29423.0,
+        "foreign_net_eok": 7038.0,
+        "institution_net_eok": 21708.0
       },
       {
         "date": "2026-02-04",
         "close": 5371.1,
-        "retail_net_eok": -3515.78,
-        "foreign_net_eok": -9956.42,
-        "institution_net_eok": 11701.7
+        "retail_net_eok": -10119.0,
+        "foreign_net_eok": -9413.0,
+        "institution_net_eok": 17836.0
       },
       {
         "date": "2026-02-05",
         "close": 5163.57,
-        "retail_net_eok": 81548.5,
-        "foreign_net_eok": -51049.44,
-        "institution_net_eok": -34255.71
+        "retail_net_eok": 67791.0,
+        "foreign_net_eok": -50108.0,
+        "institution_net_eok": -20693.0
       },
       {
         "date": "2026-02-06",
         "close": 5089.14,
-        "retail_net_eok": 24407.97,
-        "foreign_net_eok": -31651.35,
-        "institution_net_eok": 5090.45
+        "retail_net_eok": 21736.0,
+        "foreign_net_eok": -33233.0,
+        "institution_net_eok": 9414.0
       },
       {
         "date": "2026-02-09",
         "close": 5298.04,
-        "retail_net_eok": -36891.98,
-        "foreign_net_eok": 5087.49,
-        "institution_net_eok": 30273.32
+        "retail_net_eok": -32947.0,
+        "foreign_net_eok": 4320.0,
+        "institution_net_eok": 27123.0
       },
       {
         "date": "2026-02-10",
         "close": 5301.69,
-        "retail_net_eok": -4673.77,
-        "foreign_net_eok": 1591.12,
-        "institution_net_eok": 1197.11
+        "retail_net_eok": -8780.0,
+        "foreign_net_eok": 1474.0,
+        "institution_net_eok": 5643.0
       },
       {
         "date": "2026-02-11",
         "close": 5354.49,
-        "retail_net_eok": -14723.6,
-        "foreign_net_eok": 9125.48,
-        "institution_net_eok": 3899.12
+        "retail_net_eok": -17149.0,
+        "foreign_net_eok": 8461.0,
+        "institution_net_eok": 6927.0
       },
       {
         "date": "2026-02-12",
         "close": 5522.27,
-        "retail_net_eok": -43039.87,
-        "foreign_net_eok": 31713.89,
-        "institution_net_eok": 10441.22
+        "retail_net_eok": -44547.0,
+        "foreign_net_eok": 29954.0,
+        "institution_net_eok": 13800.0
       },
       {
         "date": "2026-02-13",
         "close": 5507.01,
-        "retail_net_eok": 17929.94,
-        "foreign_net_eok": -9490.53,
-        "institution_net_eok": -9983.68
+        "retail_net_eok": 7141.0,
+        "foreign_net_eok": -9220.0,
+        "institution_net_eok": 831.0
       },
       {
         "date": "2026-02-19",
         "close": 5677.25,
-        "retail_net_eok": -6837.41,
-        "foreign_net_eok": -8691.78,
-        "institution_net_eok": 13948.75
+        "retail_net_eok": -8609.0,
+        "foreign_net_eok": -9396.0,
+        "institution_net_eok": 16542.0
       },
       {
         "date": "2026-02-20",
         "close": 5808.53,
-        "retail_net_eok": -3451.27,
-        "foreign_net_eok": -7188.57,
-        "institution_net_eok": 9033.41
+        "retail_net_eok": -9872.0,
+        "foreign_net_eok": -7420.0,
+        "institution_net_eok": 16149.0
       },
       {
         "date": "2026-02-23",
         "close": 5846.09,
-        "retail_net_eok": 23682.75,
-        "foreign_net_eok": -11807.87,
-        "institution_net_eok": -13655.89
+        "retail_net_eok": 10815.0,
+        "foreign_net_eok": -11132.0,
+        "institution_net_eok": -1271.0
       },
       {
         "date": "2026-02-24",
         "close": 5969.64,
-        "retail_net_eok": -23462.45,
-        "foreign_net_eok": -612.54,
-        "institution_net_eok": 22908.1
+        "retail_net_eok": -22861.0,
+        "foreign_net_eok": -2013.0,
+        "institution_net_eok": 23773.0
       },
       {
         "date": "2026-02-25",
         "close": 6083.86,
-        "retail_net_eok": 14721.5,
-        "foreign_net_eok": -13443.97,
-        "institution_net_eok": 1846.19
+        "retail_net_eok": 2307.0,
+        "foreign_net_eok": -13082.0,
+        "institution_net_eok": 14701.0
       },
       {
         "date": "2026-02-26",
         "close": 6307.27,
-        "retail_net_eok": 13661.38,
-        "foreign_net_eok": -19596.68,
-        "institution_net_eok": 3373.37
+        "retail_net_eok": 6498.0,
+        "foreign_net_eok": -21135.0,
+        "institution_net_eok": 12569.0
       },
       {
         "date": "2026-02-27",
         "close": 6244.13,
-        "retail_net_eok": 75430.31,
-        "foreign_net_eok": -70651.74,
-        "institution_net_eok": -7736.48
+        "retail_net_eok": 62496.0,
+        "foreign_net_eok": -70528.0,
+        "institution_net_eok": 5666.0
       },
       {
         "date": "2026-03-03",
         "close": 5791.91,
-        "retail_net_eok": 68762.03,
-        "foreign_net_eok": -50353.42,
-        "institution_net_eok": -22381.11
+        "retail_net_eok": 57974.0,
+        "foreign_net_eok": -51487.0,
+        "institution_net_eok": -8859.0
       },
       {
         "date": "2026-03-04",
         "close": 5093.54,
-        "retail_net_eok": -7357.53,
-        "foreign_net_eok": 3624.09,
-        "institution_net_eok": 1216.25
+        "retail_net_eok": 796.0,
+        "foreign_net_eok": 2303.0,
+        "institution_net_eok": -5978.0
       },
       {
         "date": "2026-03-05",
         "close": 5583.9,
-        "retail_net_eok": 19949.41,
-        "foreign_net_eok": -949.4,
-        "institution_net_eok": -19576.19
+        "retail_net_eok": 18228.0,
+        "foreign_net_eok": -1446.0,
+        "institution_net_eok": -17186.0
       },
       {
         "date": "2026-03-06",
         "close": 5584.87,
-        "retail_net_eok": 33165.92,
-        "foreign_net_eok": -19477.16,
-        "institution_net_eok": -14972.34
+        "retail_net_eok": 29488.0,
+        "foreign_net_eok": -19418.0,
+        "institution_net_eok": -11142.0
       },
       {
         "date": "2026-03-09",
         "close": 5251.87,
-        "retail_net_eok": 53369.99,
-        "foreign_net_eok": -32068.27,
-        "institution_net_eok": -22960.25
+        "retail_net_eok": 46242.0,
+        "foreign_net_eok": -31735.0,
+        "institution_net_eok": -15441.0
       },
       {
         "date": "2026-03-10",
         "close": 5532.59,
-        "retail_net_eok": -17808.67,
-        "foreign_net_eok": 11043.42,
-        "institution_net_eok": 7760.82
+        "retail_net_eok": -18340.0,
+        "foreign_net_eok": 10283.0,
+        "institution_net_eok": 9164.0
       },
       {
         "date": "2026-03-11",
         "close": 5609.95,
-        "retail_net_eok": -1219.46,
-        "foreign_net_eok": -2221.4,
-        "institution_net_eok": 3399.32
+        "retail_net_eok": -5086.0,
+        "foreign_net_eok": -2563.0,
+        "institution_net_eok": 7821.0
       },
       {
         "date": "2026-03-12",
         "close": 5583.25,
-        "retail_net_eok": 27533.85,
-        "foreign_net_eok": -23583.11,
-        "institution_net_eok": -4993.7
+        "retail_net_eok": 22291.0,
+        "foreign_net_eok": -23831.0,
+        "institution_net_eok": 775.0
       },
       {
         "date": "2026-03-13",
         "close": 5487.24,
-        "retail_net_eok": 28278.18,
-        "foreign_net_eok": -14121.09,
-        "institution_net_eok": -15000.26
+        "retail_net_eok": 24512.0,
+        "foreign_net_eok": -14502.0,
+        "institution_net_eok": -10434.0
       },
       {
         "date": "2026-03-16",
         "close": 5549.85,
-        "retail_net_eok": 8350.91,
-        "foreign_net_eok": -8490.42,
-        "institution_net_eok": -384.05
+        "retail_net_eok": 7164.0,
+        "foreign_net_eok": -8485.0,
+        "institution_net_eok": 911.0
       },
       {
         "date": "2026-03-17",
         "close": 5640.48,
-        "retail_net_eok": -4466.35,
-        "foreign_net_eok": -724.32,
-        "institution_net_eok": 4685.12
+        "retail_net_eok": -5752.0,
+        "foreign_net_eok": -1740.0,
+        "institution_net_eok": 7341.0
       },
       {
         "date": "2026-03-18",
         "close": 5925.03,
-        "retail_net_eok": -42418.48,
-        "foreign_net_eok": 9558.21,
-        "institution_net_eok": 34152.55
+        "retail_net_eok": -38717.0,
+        "foreign_net_eok": 8802.0,
+        "institution_net_eok": 31093.0
       },
       {
         "date": "2026-03-19",
         "close": 5763.22,
-        "retail_net_eok": 34918.69,
-        "foreign_net_eok": -18943.93,
-        "institution_net_eok": -17616.69
+        "retail_net_eok": 24116.0,
+        "foreign_net_eok": -18760.0,
+        "institution_net_eok": -6649.0
       },
       {
         "date": "2026-03-20",
         "close": 5781.2,
-        "retail_net_eok": 25734.11,
-        "foreign_net_eok": -12848.22,
-        "institution_net_eok": -13356.77
+        "retail_net_eok": 22338.0,
+        "foreign_net_eok": -12402.0,
+        "institution_net_eok": -10260.0
       },
       {
         "date": "2026-03-23",
         "close": 5405.75,
-        "retail_net_eok": 88156.44,
-        "foreign_net_eok": -37562.75,
-        "institution_net_eok": -55672.73
+        "retail_net_eok": 70029.0,
+        "foreign_net_eok": -36751.0,
+        "institution_net_eok": -38173.0
       },
       {
         "date": "2026-03-24",
         "close": 5553.92,
-        "retail_net_eok": 5139.64,
-        "foreign_net_eok": -19381.08,
-        "institution_net_eok": 11845.77
+        "retail_net_eok": 7270.0,
+        "foreign_net_eok": -19863.0,
+        "institution_net_eok": 9683.0
       },
       {
         "date": "2026-03-25",
         "close": 5642.21,
-        "retail_net_eok": -17447.98,
-        "foreign_net_eok": -13004.14,
-        "institution_net_eok": 27187.33
+        "retail_net_eok": -13402.0,
+        "foreign_net_eok": -12895.0,
+        "institution_net_eok": 23230.0
       },
       {
         "date": "2026-03-26",
         "close": 5460.46,
-        "retail_net_eok": 38270.71,
-        "foreign_net_eok": -28939.84,
-        "institution_net_eok": -10875.4
+        "retail_net_eok": 30598.0,
+        "foreign_net_eok": -29370.0,
+        "institution_net_eok": -2999.0
       },
       {
         "date": "2026-03-27",
         "close": 5438.87,
-        "retail_net_eok": 29719.71,
-        "foreign_net_eok": -34126.45,
-        "institution_net_eok": -137.37
+        "retail_net_eok": 22596.0,
+        "foreign_net_eok": -34286.0,
+        "institution_net_eok": 7785.0
       },
       {
         "date": "2026-03-30",
         "close": 5277.3,
-        "retail_net_eok": 15609.45,
-        "foreign_net_eok": -20841.05,
-        "institution_net_eok": 1367.33
+        "retail_net_eok": 8945.0,
+        "foreign_net_eok": -20945.0,
+        "institution_net_eok": 8450.0
       },
       {
         "date": "2026-03-31",
         "close": 5052.46,
-        "retail_net_eok": 32479.42,
-        "foreign_net_eok": -38175.48,
-        "institution_net_eok": 1564.55
+        "retail_net_eok": 24400.0,
+        "foreign_net_eok": -38386.0,
+        "institution_net_eok": 10251.0
       },
       {
         "date": "2026-04-01",
         "close": 5478.7,
-        "retail_net_eok": -41462.44,
-        "foreign_net_eok": -6832.96,
-        "institution_net_eok": 44136.67
+        "retail_net_eok": -37628.0,
+        "foreign_net_eok": -6411.0,
+        "institution_net_eok": 40419.0
       },
       {
         "date": "2026-04-02",
         "close": 5234.05,
-        "retail_net_eok": 19845.06,
-        "foreign_net_eok": -736.9,
-        "institution_net_eok": -23302.04
+        "retail_net_eok": 12097.0,
+        "foreign_net_eok": -1368.0,
+        "institution_net_eok": -14517.0
       },
       {
         "date": "2026-04-03",
         "close": 5377.3,
-        "retail_net_eok": -22685.27,
-        "foreign_net_eok": 7544.42,
-        "institution_net_eok": 9764.98
+        "retail_net_eok": -20952.0,
+        "foreign_net_eok": 8035.0,
+        "institution_net_eok": 7390.0
       },
       {
         "date": "2026-04-06",
         "close": 5450.33,
-        "retail_net_eok": -8789.14,
-        "foreign_net_eok": -1582.68,
-        "institution_net_eok": 6798.0
+        "retail_net_eok": -10502.0,
+        "foreign_net_eok": -1596.0,
+        "institution_net_eok": 8371.0
       },
       {
         "date": "2026-04-07",
         "close": 5494.78,
-        "retail_net_eok": -3346.36,
-        "foreign_net_eok": 4060.51,
-        "institution_net_eok": -4007.97
+        "retail_net_eok": -3429.0,
+        "foreign_net_eok": 3704.0,
+        "institution_net_eok": -4001.0
       },
       {
         "date": "2026-04-08",
         "close": 5872.34,
-        "retail_net_eok": -66191.07,
-        "foreign_net_eok": 21400.56,
-        "institution_net_eok": 37220.29
+        "retail_net_eok": -54161.0,
+        "foreign_net_eok": 19089.0,
+        "institution_net_eok": 27268.0
       },
       {
         "date": "2026-04-09",
         "close": 5778.01,
-        "retail_net_eok": 3776.88,
-        "foreign_net_eok": 17816.13,
-        "institution_net_eok": -26201.46
+        "retail_net_eok": 2950.0,
+        "foreign_net_eok": 18476.0,
+        "institution_net_eok": -25125.0
       },
       {
         "date": "2026-04-10",
         "close": 5858.87,
-        "retail_net_eok": -14619.94,
-        "foreign_net_eok": 10855.56,
-        "institution_net_eok": 132.1
+        "retail_net_eok": -12280.0,
+        "foreign_net_eok": 10641.0,
+        "institution_net_eok": -2031.0
       },
       {
         "date": "2026-04-13",
         "close": 5808.62,
-        "retail_net_eok": 9617.97,
-        "foreign_net_eok": -4848.72,
-        "institution_net_eok": -8850.05
+        "retail_net_eok": 7173.0,
+        "foreign_net_eok": -4579.0,
+        "institution_net_eok": -6698.0
       },
       {
         "date": "2026-04-14",
         "close": 5967.75,
-        "retail_net_eok": -27627.03,
-        "foreign_net_eok": 8960.57,
-        "institution_net_eok": 15843.77
+        "retail_net_eok": -23919.0,
+        "foreign_net_eok": 8276.0,
+        "institution_net_eok": 12545.0
       },
       {
         "date": "2026-04-15",
         "close": 6091.39,
-        "retail_net_eok": -9179.58,
-        "foreign_net_eok": 5934.45,
-        "institution_net_eok": -929.91
+        "retail_net_eok": -9400.0,
+        "foreign_net_eok": 4973.0,
+        "institution_net_eok": 368.0
       },
       {
         "date": "2026-04-16",
         "close": 6226.05,
-        "retail_net_eok": -16493.39,
-        "foreign_net_eok": 5569.47,
-        "institution_net_eok": 8208.99
+        "retail_net_eok": -18050.0,
+        "foreign_net_eok": 4814.0,
+        "institution_net_eok": 10783.0
       },
       {
         "date": "2026-04-17",
         "close": 6191.92,
-        "retail_net_eok": 17721.29,
-        "foreign_net_eok": -20364.66,
-        "institution_net_eok": -1489.05
+        "retail_net_eok": 14464.0,
+        "foreign_net_eok": -19974.0,
+        "institution_net_eok": 1501.0
       },
       {
         "date": "2026-04-20",
         "close": 6219.09,
-        "retail_net_eok": -2623.3,
-        "foreign_net_eok": -2678.36,
-        "institution_net_eok": 2542.59
+        "retail_net_eok": -3158.0,
+        "foreign_net_eok": -2338.0,
+        "institution_net_eok": 2938.0
       },
       {
         "date": "2026-04-21",
         "close": 6388.47,
-        "retail_net_eok": -17130.35,
-        "foreign_net_eok": 12610.14,
-        "institution_net_eok": 5956.23
+        "retail_net_eok": -19204.0,
+        "foreign_net_eok": 11565.0,
+        "institution_net_eok": 9181.0
       },
       {
         "date": "2026-04-22",
         "close": 6417.93,
-        "retail_net_eok": 16806.55,
-        "foreign_net_eok": -2190.25,
-        "institution_net_eok": -13428.41
+        "retail_net_eok": 11984.0,
+        "foreign_net_eok": -6762.0,
+        "institution_net_eok": -4046.0
       },
       {
         "date": "2026-04-23",
         "close": 6475.81,
-        "retail_net_eok": 13400.71,
-        "foreign_net_eok": -1032.31,
-        "institution_net_eok": -11618.42
+        "retail_net_eok": 4514.0,
+        "foreign_net_eok": -820.0,
+        "institution_net_eok": -2965.0
       },
       {
         "date": "2026-04-24",
         "close": 6475.63,
-        "retail_net_eok": 13993.18,
-        "foreign_net_eok": -18977.0,
-        "institution_net_eok": 5212.46
+        "retail_net_eok": 11832.0,
+        "foreign_net_eok": -19496.0,
+        "institution_net_eok": 8053.0
       },
       {
         "date": "2026-04-27",
         "close": 6615.03,
-        "retail_net_eok": -12150.8,
-        "foreign_net_eok": 8887.02,
-        "institution_net_eok": 2995.17
+        "retail_net_eok": -19758.0,
+        "foreign_net_eok": 8563.0,
+        "institution_net_eok": 11349.0
       },
       {
         "date": "2026-04-28",
         "close": 6641.02,
-        "retail_net_eok": 6724.67,
-        "foreign_net_eok": -2410.82,
-        "institution_net_eok": -4515.54
+        "retail_net_eok": -1306.0,
+        "foreign_net_eok": -1843.0,
+        "institution_net_eok": 3532.0
       },
       {
         "date": "2026-04-29",
         "close": 6690.9,
-        "retail_net_eok": 4216.93,
-        "foreign_net_eok": -5750.63,
-        "institution_net_eok": 2251.5
+        "retail_net_eok": 1681.0,
+        "foreign_net_eok": -6071.0,
+        "institution_net_eok": 4771.0
       },
       {
         "date": "2026-04-30",
         "close": 6598.87,
-        "retail_net_eok": 19005.37,
-        "foreign_net_eok": -12822.23,
-        "institution_net_eok": -6337.97
+        "retail_net_eok": 11824.0,
+        "foreign_net_eok": -14559.0,
+        "institution_net_eok": 2838.0
       },
       {
         "date": "2026-05-04",
         "close": 6936.99,
-        "retail_net_eok": -51011.69,
-        "foreign_net_eok": 29957.08,
-        "institution_net_eok": 22269.06
+        "retail_net_eok": -47936.0,
+        "foreign_net_eok": 29308.0,
+        "institution_net_eok": 20098.0
       },
       {
         "date": "2026-05-06",
         "close": 7384.56,
-        "retail_net_eok": 3622.75,
-        "foreign_net_eok": 28755.29,
-        "institution_net_eok": -29889.61
+        "retail_net_eok": -5715.0,
+        "foreign_net_eok": 31085.0,
+        "institution_net_eok": -22894.0
       },
       {
         "date": "2026-05-07",
         "close": 7490.05,
-        "retail_net_eok": 67413.01,
-        "foreign_net_eok": -67279.52,
-        "institution_net_eok": 1259.33
+        "retail_net_eok": 59925.0,
+        "foreign_net_eok": -66987.0,
+        "institution_net_eok": 8917.0
       },
       {
         "date": "2026-05-08",
         "close": 7498.0,
-        "retail_net_eok": 46754.36,
-        "foreign_net_eok": -51519.83,
-        "institution_net_eok": 3923.17
+        "retail_net_eok": 39707.0,
+        "foreign_net_eok": -52967.0,
+        "institution_net_eok": 12542.0
       },
       {
         "date": "2026-05-11",
         "close": 7822.24,
-        "retail_net_eok": 35469.83,
-        "foreign_net_eok": -29110.8,
-        "institution_net_eok": -6603.54
+        "retail_net_eok": 28669.0,
+        "foreign_net_eok": -28147.0,
+        "institution_net_eok": -458.0
       },
       {
         "date": "2026-05-12",
         "close": 7643.15,
-        "retail_net_eok": 76745.74,
-        "foreign_net_eok": -55195.83,
-        "institution_net_eok": -23910.58
+        "retail_net_eok": 66818.0,
+        "foreign_net_eok": -56090.0,
+        "institution_net_eok": -12138.0
       },
       {
         "date": "2026-05-13",
         "close": 7844.01,
-        "retail_net_eok": 20708.35,
-        "foreign_net_eok": -37950.77,
-        "institution_net_eok": 15873.13
+        "retail_net_eok": 18868.0,
+        "foreign_net_eok": -37227.0,
+        "institution_net_eok": 16876.0
       },
       {
         "date": "2026-05-14",
         "close": 7981.41,
-        "retail_net_eok": 22566.62,
-        "foreign_net_eok": -21013.48,
-        "institution_net_eok": -2777.89
+        "retail_net_eok": 18499.0,
+        "foreign_net_eok": -21450.0,
+        "institution_net_eok": 1927.0
       },
       {
         "date": "2026-05-15",
         "close": 7493.18,
-        "retail_net_eok": 89678.51,
-        "foreign_net_eok": -56663.37,
-        "institution_net_eok": -35079.35
+        "retail_net_eok": 72308.0,
+        "foreign_net_eok": -56040.0,
+        "institution_net_eok": -17347.0
       },
       {
         "date": "2026-05-18",
         "close": 7516.04,
-        "retail_net_eok": 21078.41,
-        "foreign_net_eok": -35844.51,
-        "institution_net_eok": 14164.65
+        "retail_net_eok": 22094.0,
+        "foreign_net_eok": -36492.0,
+        "institution_net_eok": 13904.0
       },
       {
         "date": "2026-05-19",
         "close": 7271.66,
-        "retail_net_eok": 61662.24,
-        "foreign_net_eok": -56949.61,
-        "institution_net_eok": -4044.35
+        "retail_net_eok": 56289.0,
+        "foreign_net_eok": -57242.0,
+        "institution_net_eok": 1575.0
       },
       {
         "date": "2026-05-20",
         "close": 7208.95,
-        "retail_net_eok": 17292.47,
-        "foreign_net_eok": -29091.72,
-        "institution_net_eok": 10067.85
+        "retail_net_eok": 17104.0,
+        "foreign_net_eok": -29310.0,
+        "institution_net_eok": 11070.0
       },
       {
         "date": "2026-05-21",
         "close": 7815.59,
-        "retail_net_eok": -28922.61,
-        "foreign_net_eok": -2760.43,
-        "institution_net_eok": 31864.51
+        "retail_net_eok": -26754.0,
+        "foreign_net_eok": -2212.0,
+        "institution_net_eok": 29008.0
       },
       {
         "date": "2026-05-22",
         "close": 7847.71,
-        "retail_net_eok": 12241.01,
-        "foreign_net_eok": -18419.76,
-        "institution_net_eok": 4889.34
+        "retail_net_eok": 10655.0,
+        "foreign_net_eok": -19221.0,
+        "institution_net_eok": 7583.0
       },
       {
         "date": "2026-05-26",
         "close": 8047.51,
-        "retail_net_eok": 4271.8,
-        "foreign_net_eok": -722.09,
-        "institution_net_eok": -2980.22
+        "retail_net_eok": -5745.0,
+        "foreign_net_eok": -1321.0,
+        "institution_net_eok": 8168.0
       },
       {
         "date": "2026-05-27",
         "close": 8228.7,
-        "retail_net_eok": 23406.61,
-        "foreign_net_eok": 203.89,
-        "institution_net_eok": -22802.45
+        "retail_net_eok": 4064.0,
+        "foreign_net_eok": -2493.0,
+        "institution_net_eok": -126.0
       },
       {
         "date": "2026-05-28",
         "close": 8185.29,
-        "retail_net_eok": 49470.39,
-        "foreign_net_eok": -27472.42,
-        "institution_net_eok": -23081.75
+        "retail_net_eok": 36146.0,
+        "foreign_net_eok": -27414.0,
+        "institution_net_eok": -10422.0
       },
       {
         "date": "2026-05-29",
         "close": 8476.15,
-        "retail_net_eok": -13751.42,
-        "foreign_net_eok": -9386.28,
-        "institution_net_eok": 22383.75
+        "retail_net_eok": -14054.0,
+        "foreign_net_eok": -10421.0,
+        "institution_net_eok": 23688.0
       },
       {
         "date": "2026-06-01",
         "close": 8788.38,
-        "retail_net_eok": 18115.32,
-        "foreign_net_eok": -28480.42,
-        "institution_net_eok": 10154.64
+        "retail_net_eok": 3862.0,
+        "foreign_net_eok": -28219.0,
+        "institution_net_eok": 24427.0
       },
       {
         "date": "2026-06-02",
         "close": 8801.49,
-        "retail_net_eok": 80270.78,
-        "foreign_net_eok": -63288.51,
-        "institution_net_eok": -19032.16
+        "retail_net_eok": 63537.0,
+        "foreign_net_eok": -63035.0,
+        "institution_net_eok": -546.0
       },
       {
         "date": "2026-06-04",
         "close": 8639.41,
-        "retail_net_eok": 60707.44,
-        "foreign_net_eok": -66933.59,
-        "institution_net_eok": 4369.11
+        "retail_net_eok": 50135.0,
+        "foreign_net_eok": -66663.0,
+        "institution_net_eok": 15255.0
       },
       {
         "date": "2026-06-05",
         "close": 8160.59,
-        "retail_net_eok": 64660.87,
-        "foreign_net_eok": -28021.28,
-        "institution_net_eok": -36823.72
+        "retail_net_eok": 42240.0,
+        "foreign_net_eok": -27638.0,
+        "institution_net_eok": -13809.0
       },
       {
         "date": "2026-06-08",
         "close": 7484.41,
-        "retail_net_eok": 30611.01,
-        "foreign_net_eok": -866.51,
-        "institution_net_eok": -32466.44
+        "retail_net_eok": 17628.0,
+        "foreign_net_eok": -2644.0,
+        "institution_net_eok": -17164.0
       },
       {
         "date": "2026-06-09",
         "close": 8096.93,
-        "retail_net_eok": -6268.4,
-        "foreign_net_eok": -20282.82,
-        "institution_net_eok": 25648.71
+        "retail_net_eok": -6167.0,
+        "foreign_net_eok": -20064.0,
+        "institution_net_eok": 25048.0
       },
       {
         "date": "2026-06-10",
         "close": 7730.82,
-        "retail_net_eok": 59767.61,
-        "foreign_net_eok": -27332.23,
-        "institution_net_eok": -35007.42
+        "retail_net_eok": 48643.0,
+        "foreign_net_eok": -27754.0,
+        "institution_net_eok": -22665.0
       },
       {
         "date": "2026-06-11",
         "close": 7763.95,
-        "retail_net_eok": 24379.88,
-        "foreign_net_eok": -12571.46,
-        "institution_net_eok": -12279.21
+        "retail_net_eok": 20803.0,
+        "foreign_net_eok": -14640.0,
+        "institution_net_eok": -7561.0
       },
       {
         "date": "2026-06-12",
         "close": 8123.62,
-        "retail_net_eok": -58826.16,
-        "foreign_net_eok": 22961.59,
-        "institution_net_eok": 37711.41
+        "retail_net_eok": -43174.0,
+        "foreign_net_eok": 22041.0,
+        "institution_net_eok": 22870.0
       },
       {
         "date": "2026-06-15",
         "close": 8545.98,
-        "retail_net_eok": -11719.53,
-        "foreign_net_eok": 12985.89,
-        "institution_net_eok": -963.42
+        "retail_net_eok": -15124.0,
+        "foreign_net_eok": 10774.0,
+        "institution_net_eok": 4462.0
       },
       {
         "date": "2026-06-16",
         "close": 8726.6,
-        "retail_net_eok": -25380.29,
-        "foreign_net_eok": 14538.06,
-        "institution_net_eok": 11365.52
+        "retail_net_eok": -21841.0,
+        "foreign_net_eok": 15353.0,
+        "institution_net_eok": 7076.0
       },
       {
         "date": "2026-06-17",
         "close": 8864.24,
-        "retail_net_eok": 6142.65,
-        "foreign_net_eok": -8978.63,
-        "institution_net_eok": 4054.79
+        "retail_net_eok": 5254.0,
+        "foreign_net_eok": -9952.0,
+        "institution_net_eok": 5957.0
       },
       {
         "date": "2026-06-18",
         "close": 9063.84,
-        "retail_net_eok": -6454.79,
-        "foreign_net_eok": 14258.15,
-        "institution_net_eok": -6729.92
+        "retail_net_eok": -4156.0,
+        "foreign_net_eok": 12776.0,
+        "institution_net_eok": -7682.0
       },
       {
         "date": "2026-06-19",
         "close": 9052.42,
-        "retail_net_eok": 21229.22,
-        "foreign_net_eok": -2157.68,
-        "institution_net_eok": -18439.5
+        "retail_net_eok": 16478.0,
+        "foreign_net_eok": -3555.0,
+        "institution_net_eok": -12244.0
       },
       {
         "date": "2026-06-22",
         "close": 9114.55,
-        "retail_net_eok": 23124.67,
-        "foreign_net_eok": -19719.34,
-        "institution_net_eok": -3924.25
+        "retail_net_eok": 21506.0,
+        "foreign_net_eok": -25466.0,
+        "institution_net_eok": 3034.0
       },
       {
         "date": "2026-06-23",
         "close": 8203.84,
-        "retail_net_eok": 114133.9,
-        "foreign_net_eok": -40052.68,
-        "institution_net_eok": -76140.25
+        "retail_net_eok": 85910.0,
+        "foreign_net_eok": -42047.0,
+        "institution_net_eok": -44760.0
       },
       {
         "date": "2026-06-24",
         "close": 8471.02,
-        "retail_net_eok": 35815.34,
-        "foreign_net_eok": -43664.15,
-        "institution_net_eok": 6811.16
+        "retail_net_eok": 26312.0,
+        "foreign_net_eok": -46546.0,
+        "institution_net_eok": 19095.0
       },
       {
         "date": "2026-06-25",
         "close": 8930.3,
-        "retail_net_eok": -38509.94,
-        "foreign_net_eok": 1170.25,
-        "institution_net_eok": 37923.02
+        "retail_net_eok": -24136.0,
+        "foreign_net_eok": -8754.0,
+        "institution_net_eok": 33244.0
       },
       {
         "date": "2026-06-26",
         "close": 8411.21,
-        "retail_net_eok": 111901.5,
-        "foreign_net_eok": -42641.8,
-        "institution_net_eok": -72042.8
+        "retail_net_eok": 81919.0,
+        "foreign_net_eok": -42906.0,
+        "institution_net_eok": -41224.0
       },
       {
         "date": "2026-06-29",
         "close": 8394.65,
-        "retail_net_eok": 53108.69,
-        "foreign_net_eok": -74855.04,
-        "institution_net_eok": 20088.31
+        "retail_net_eok": 45975.0,
+        "foreign_net_eok": -77332.0,
+        "institution_net_eok": 29327.0
       },
       {
         "date": "2026-06-30",
         "close": 8476.48,
-        "retail_net_eok": 8521.52,
-        "foreign_net_eok": -36734.39,
-        "institution_net_eok": 27279.92
+        "retail_net_eok": 8401.0,
+        "foreign_net_eok": -37992.0,
+        "institution_net_eok": 29332.0
       },
       {
         "date": "2026-07-01",
         "close": 8303.41,
-        "retail_net_eok": 25879.35,
-        "foreign_net_eok": -18475.05,
-        "institution_net_eok": -9246.67
+        "retail_net_eok": 17370.0,
+        "foreign_net_eok": -17028.0,
+        "institution_net_eok": -700.0
       },
       {
         "date": "2026-07-02",
         "close": 7648.09,
-        "retail_net_eok": 85984.13,
-        "foreign_net_eok": -42442.52,
-        "institution_net_eok": -46683.33
+        "retail_net_eok": 62413.0,
+        "foreign_net_eok": -43706.0,
+        "institution_net_eok": -20825.0
       },
       {
         "date": "2026-07-03",
         "close": 8088.34,
-        "retail_net_eok": -24028.91,
-        "foreign_net_eok": -21430.65,
-        "institution_net_eok": 44944.04
+        "retail_net_eok": -22942.0,
+        "foreign_net_eok": -21750.0,
+        "institution_net_eok": 44079.0
       },
       {
         "date": "2026-07-06",
         "close": 8051.33,
-        "retail_net_eok": 32122.92,
-        "foreign_net_eok": -16311.23,
-        "institution_net_eok": -17478.1
+        "retail_net_eok": 26829.0,
+        "foreign_net_eok": -13144.0,
+        "institution_net_eok": -14618.0
       },
       {
         "date": "2026-07-07",
         "close": 7656.31,
-        "retail_net_eok": 42294.5,
-        "foreign_net_eok": -28194.06,
-        "institution_net_eok": -15382.33
+        "retail_net_eok": 31359.0,
+        "foreign_net_eok": -29172.0,
+        "institution_net_eok": -3108.0
       },
       {
         "date": "2026-07-08",
         "close": 7246.79,
-        "retail_net_eok": 3066.83,
-        "foreign_net_eok": 4047.77,
-        "institution_net_eok": -7147.09
+        "retail_net_eok": -358.0,
+        "foreign_net_eok": 3437.0,
+        "institution_net_eok": -3552.0
       },
       {
         "date": "2026-07-09",
         "close": 7291.91,
-        "retail_net_eok": -13808.73,
-        "foreign_net_eok": 2478.77,
-        "institution_net_eok": 12578.85
+        "retail_net_eok": -13278.0,
+        "foreign_net_eok": 1343.0,
+        "institution_net_eok": 12884.0
       },
       {
         "date": "2026-07-10",
         "close": 7475.94,
-        "retail_net_eok": -7755.11,
-        "foreign_net_eok": -3118.75,
-        "institution_net_eok": 10559.73
+        "retail_net_eok": -7805.0,
+        "foreign_net_eok": -3228.0,
+        "institution_net_eok": 11314.0
       },
       {
         "date": "2026-07-13",
         "close": 6806.93,
-        "retail_net_eok": 52160.08,
-        "foreign_net_eok": -16910.96,
-        "institution_net_eok": -36327.2
+        "retail_net_eok": 38869.0,
+        "foreign_net_eok": -16705.0,
+        "institution_net_eok": -22338.0
       },
       {
         "date": "2026-07-14",
         "close": 6856.83,
-        "retail_net_eok": -45651.87,
-        "foreign_net_eok": 11871.02,
-        "institution_net_eok": 34289.6
+        "retail_net_eok": -41411.0,
+        "foreign_net_eok": 9565.0,
+        "institution_net_eok": 32117.0
       },
       {
         "date": "2026-07-15",
         "close": 7284.41,
-        "retail_net_eok": -33093.36,
-        "foreign_net_eok": 25846.39,
-        "institution_net_eok": 7300.59
+        "retail_net_eok": -24666.0,
+        "foreign_net_eok": 23031.0,
+        "institution_net_eok": 1992.0
       },
       {
         "date": "2026-07-16",
         "close": 6820.6,
-        "retail_net_eok": 47092.72,
-        "foreign_net_eok": -13411.14,
-        "institution_net_eok": -34861.31
+        "retail_net_eok": 36647.0,
+        "foreign_net_eok": -13665.0,
+        "institution_net_eok": -23831.0
       },
       {
         "date": "2026-07-20",
         "close": 6516.27,
-        "retail_net_eok": 9492.33,
-        "foreign_net_eok": 8140.02,
-        "institution_net_eok": -18414.97
+        "retail_net_eok": 3490.0,
+        "foreign_net_eok": 5198.0,
+        "institution_net_eok": -9235.0
       },
       {
         "date": "2026-07-21",
         "close": 6747.95,
-        "retail_net_eok": -16346.01,
-        "foreign_net_eok": 5439.95,
-        "institution_net_eok": 11677.13
+        "retail_net_eok": -16421.0,
+        "foreign_net_eok": 2952.0,
+        "institution_net_eok": 13744.0
       },
       {
         "date": "2026-07-22",
         "close": 6797.7,
-        "retail_net_eok": -13714.5,
-        "foreign_net_eok": 25911.36,
-        "institution_net_eok": -12403.62
+        "retail_net_eok": -12176.0,
+        "foreign_net_eok": 26211.0,
+        "institution_net_eok": -13963.0
       },
       {
         "date": "2026-07-23",
         "close": 7096.89,
-        "retail_net_eok": -22718.31,
-        "foreign_net_eok": 22479.01,
-        "institution_net_eok": 136.1
+        "retail_net_eok": -22077.0,
+        "foreign_net_eok": 21359.0,
+        "institution_net_eok": 976.0
       },
       {
         "date": "2026-07-24",
         "close": 6690.62,
-        "retail_net_eok": 63385.93,
-        "foreign_net_eok": -33469.07,
-        "institution_net_eok": -30450.11
+        "retail_net_eok": 51782.0,
+        "foreign_net_eok": -32683.0,
+        "institution_net_eok": -19514.0
       },
       {
         "date": "2026-07-27",
         "close": 6755.75,
-        "retail_net_eok": 22728.89,
-        "foreign_net_eok": -27520.56,
-        "institution_net_eok": 4473.61
+        "retail_net_eok": 19788.0,
+        "foreign_net_eok": -28811.0,
+        "institution_net_eok": 8595.0
       },
       {
         "date": "2026-07-28",
         "close": 6023.66,
-        "retail_net_eok": 59293.05,
-        "foreign_net_eok": -46092.78,
-        "institution_net_eok": -14575.48
+        "retail_net_eok": 43152.0,
+        "foreign_net_eok": -45009.0,
+        "institution_net_eok": 1830.0
       },
       {
         "date": "2026-07-29",
         "close": 5663.24,
-        "retail_net_eok": -24294.63,
-        "foreign_net_eok": -9378.15,
-        "institution_net_eok": 33257.83
+        "retail_net_eok": -19701.0,
+        "foreign_net_eok": -12502.0,
+        "institution_net_eok": 31769.0
       },
       {
         "date": "2026-07-30",
         "close": 5593.56,
-        "retail_net_eok": -15428.45,
-        "foreign_net_eok": 15784.65,
-        "institution_net_eok": -617.12
+        "retail_net_eok": -14309.0,
+        "foreign_net_eok": 13280.0,
+        "institution_net_eok": 805.0
       },
       {
         "date": "2026-07-31",
         "close": 6595.45,
-        "retail_net_eok": -87554.77,
-        "foreign_net_eok": 74505.64,
-        "institution_net_eok": 14487.97
+        "retail_net_eok": -82840.0,
+        "foreign_net_eok": 72410.0,
+        "institution_net_eok": 11503.0
       },
       {
         "date": "2026-08-03",
         "close": 6257.45,
-        "retail_net_eok": 46828.13,
-        "foreign_net_eok": -30480.1,
-        "institution_net_eok": -17847.6
+        "retail_net_eok": 46523.0,
+        "foreign_net_eok": -28220.0,
+        "institution_net_eok": -19516.0
       },
       {
         "date": "2026-08-04",
         "close": 6358.95,
-        "retail_net_eok": 5595.5,
-        "foreign_net_eok": -6485.2,
-        "institution_net_eok": 55.82
+        "retail_net_eok": 8187.0,
+        "foreign_net_eok": -3716.0,
+        "institution_net_eok": -5385.0
       },
       {
         "date": "2026-08-05",
         "close": 6598.26,
-        "retail_net_eok": -7902.4,
-        "foreign_net_eok": 11541.43,
-        "institution_net_eok": -3938.3
+        "retail_net_eok": -11844.0,
+        "foreign_net_eok": 14464.0,
+        "institution_net_eok": -2838.0
       },
       {
         "date": "2026-08-06",
         "close": 6296.38,
-        "retail_net_eok": 34229.51,
-        "foreign_net_eok": -35592.3,
-        "institution_net_eok": 400.47
+        "retail_net_eok": 33367.0,
+        "foreign_net_eok": -32893.0,
+        "institution_net_eok": -1214.0
       },
       {
         "date": "2026-08-07",
         "close": 6258.77,
-        "retail_net_eok": 6071.83,
-        "foreign_net_eok": -11218.79,
-        "institution_net_eok": 4814.56
+        "retail_net_eok": 2675.0,
+        "foreign_net_eok": -8651.0,
+        "institution_net_eok": 5854.0
       },
       {
         "date": "2026-08-10",
         "close": 6299.66,
-        "retail_net_eok": 2273.62,
-        "foreign_net_eok": -13909.32,
-        "institution_net_eok": 11358.48
+        "retail_net_eok": 9003.0,
+        "foreign_net_eok": -14909.0,
+        "institution_net_eok": 5692.0
       },
       {
         "date": "2026-08-11",
         "close": 6345.53,
-        "retail_net_eok": 3641.67,
-        "foreign_net_eok": -3036.27,
-        "institution_net_eok": -739.6
+        "retail_net_eok": -708.0,
+        "foreign_net_eok": 535.0,
+        "institution_net_eok": 212.0
       },
       {
         "date": "2026-08-12",
         "close": 6579.04,
-        "retail_net_eok": -28782.97,
-        "foreign_net_eok": 26818.37,
-        "institution_net_eok": 3820.04
+        "retail_net_eok": -31911.0,
+        "foreign_net_eok": 28354.0,
+        "institution_net_eok": 5279.0
       },
       {
         "date": "2026-08-13",
         "close": 6813.34,
-        "retail_net_eok": -24845.57,
-        "foreign_net_eok": 19867.56,
-        "institution_net_eok": 5702.39
+        "retail_net_eok": -27410.0,
+        "foreign_net_eok": 21102.0,
+        "institution_net_eok": 6834.0
       },
       {
         "date": "2026-08-14",
         "close": 6977.94,
-        "retail_net_eok": -16674.91,
-        "foreign_net_eok": 29812.77,
-        "institution_net_eok": -12822.73
+        "retail_net_eok": -19820.0,
+        "foreign_net_eok": 30387.0,
+        "institution_net_eok": -10298.0
       },
       {
         "date": "2026-08-18",
         "close": 6869.83,
-        "retail_net_eok": 11324.65,
-        "foreign_net_eok": 1228.34,
-        "institution_net_eok": -12127.1
+        "retail_net_eok": 7420.0,
+        "foreign_net_eok": 914.0,
+        "institution_net_eok": -7951.0
       },
       {
         "date": "2026-08-19",
         "close": 6471.17,
-        "retail_net_eok": 45692.03,
-        "foreign_net_eok": -34725.32,
-        "institution_net_eok": -12890.04
+        "retail_net_eok": 46357.0,
+        "foreign_net_eok": -34726.0,
+        "institution_net_eok": -13390.0
       },
       {
         "date": "2026-08-20",
         "close": 6852.58,
-        "retail_net_eok": -22697.34,
-        "foreign_net_eok": 15886.73,
-        "institution_net_eok": -3701.39
+        "retail_net_eok": -22712.0,
+        "foreign_net_eok": 17068.0,
+        "institution_net_eok": -4895.0
       },
       {
         "date": "2026-08-21",
         "close": 6912.95,
-        "retail_net_eok": -5417.63,
-        "foreign_net_eok": -4588.54,
-        "institution_net_eok": -979.84
+        "retail_net_eok": -11652.0,
+        "foreign_net_eok": -1760.0,
+        "institution_net_eok": 2481.0
       },
       {
         "date": "2026-08-24",
         "close": 6696.96,
-        "retail_net_eok": 30609.51,
-        "foreign_net_eok": -34390.58,
-        "institution_net_eok": -12648.78
+        "retail_net_eok": 33217.0,
+        "foreign_net_eok": -36691.0,
+        "institution_net_eok": -12901.0
       },
       {
         "date": "2026-08-25",
         "close": 6742.74,
-        "retail_net_eok": 9133.94,
-        "foreign_net_eok": -36864.1,
-        "institution_net_eok": 11867.15
+        "retail_net_eok": 10509.0,
+        "foreign_net_eok": -38140.0,
+        "institution_net_eok": 11711.0
       },
       {
         "date": "2026-08-26",
         "close": 6808.21,
-        "retail_net_eok": -20530.38,
-        "foreign_net_eok": -1950.4,
-        "institution_net_eok": 6561.26
+        "retail_net_eok": -22461.0,
+        "foreign_net_eok": -1148.0,
+        "institution_net_eok": 7615.0
       },
       {
         "date": "2026-08-27",
         "close": 6912.37,
-        "retail_net_eok": -20868.47,
-        "foreign_net_eok": 4397.57,
-        "institution_net_eok": 644.27
+        "retail_net_eok": -19116.0,
+        "foreign_net_eok": 1333.0,
+        "institution_net_eok": 1835.0
       },
       {
         "date": "2026-08-28",
         "close": 6788.88,
-        "retail_net_eok": 5171.73,
-        "foreign_net_eok": -9481.52,
-        "institution_net_eok": -11904.58
+        "retail_net_eok": 4194.0,
+        "foreign_net_eok": -8525.0,
+        "institution_net_eok": -11876.0
       },
       {
         "date": "2026-08-31",
         "close": 6820.02,
-        "retail_net_eok": 1065.68,
-        "foreign_net_eok": -6999.27,
-        "institution_net_eok": -9895.63
+        "retail_net_eok": -1464.0,
+        "foreign_net_eok": -6434.0,
+        "institution_net_eok": -7891.0
       },
       {
         "date": "2026-09-01",
         "close": 6835.8,
-        "retail_net_eok": -4422.79,
-        "foreign_net_eok": -3785.4,
-        "institution_net_eok": -8450.41
+        "retail_net_eok": -5402.0,
+        "foreign_net_eok": -4968.0,
+        "institution_net_eok": -6286.0
       },
       {
         "date": "2026-09-02",
         "close": 6562.72,
-        "retail_net_eok": 29148.7,
-        "foreign_net_eok": -18875.59,
-        "institution_net_eok": -27014.22
+        "retail_net_eok": 23029.0,
+        "foreign_net_eok": -19173.0,
+        "institution_net_eok": -20361.0
       },
       {
         "date": "2026-09-03",
         "close": 6579.48,
-        "retail_net_eok": -9378.09,
-        "foreign_net_eok": 1638.2,
-        "institution_net_eok": 7870.68
+        "retail_net_eok": -9552.0,
+        "foreign_net_eok": 414.0,
+        "institution_net_eok": 9143.0
       },
       {
         "date": "2026-09-04",
         "close": 6687.21,
-        "retail_net_eok": -40504.75,
-        "foreign_net_eok": 6171.18,
-        "institution_net_eok": 18759.75
+        "retail_net_eok": -37229.0,
+        "foreign_net_eok": 4796.0,
+        "institution_net_eok": 16694.0
       },
       {
         "date": "2026-09-07",
         "close": 6995.39,
-        "retail_net_eok": -73431.95,
-        "foreign_net_eok": 25992.99,
-        "institution_net_eok": 31820.59
+        "retail_net_eok": -68374.0,
+        "foreign_net_eok": 25532.0,
+        "institution_net_eok": 26491.0
       },
       {
         "date": "2026-09-08",
         "close": 6954.52,
-        "retail_net_eok": -33264.88,
-        "foreign_net_eok": 6765.49,
-        "institution_net_eok": 9320.15
+        "retail_net_eok": -30329.0,
+        "foreign_net_eok": 6316.0,
+        "institution_net_eok": 6427.0
       },
       {
         "date": "2026-09-09",
         "close": 7051.64,
-        "retail_net_eok": -23723.83,
-        "foreign_net_eok": -3386.12,
-        "institution_net_eok": 9613.25
+        "retail_net_eok": -22879.0,
+        "foreign_net_eok": -4348.0,
+        "institution_net_eok": 9422.0
       },
       {
         "date": "2026-09-10",
         "close": 7033.92,
-        "retail_net_eok": 5017.09,
-        "foreign_net_eok": -25619.29,
-        "institution_net_eok": 3636.63
+        "retail_net_eok": 3802.0,
+        "foreign_net_eok": -26217.0,
+        "institution_net_eok": 5744.0
       },
       {
         "date": "2026-09-11",
         "close": 6909.91,
-        "retail_net_eok": 23636.34,
-        "foreign_net_eok": -21263.78,
-        "institution_net_eok": -19204.26
+        "retail_net_eok": 18675.0,
+        "foreign_net_eok": -22984.0,
+        "institution_net_eok": -12184.0
       },
       {
         "date": "2026-09-14",
         "close": 6684.37,
-        "retail_net_eok": 34956.7,
-        "foreign_net_eok": -33998.2,
-        "institution_net_eok": -16176.49
+        "retail_net_eok": 30351.0,
+        "foreign_net_eok": -33363.0,
+        "institution_net_eok": -11869.0
       },
       {
         "date": "2026-09-15",
         "close": 6627.26,
-        "retail_net_eok": 10633.18,
-        "foreign_net_eok": -13867.87,
-        "institution_net_eok": -13127.69
+        "retail_net_eok": 8596.0,
+        "foreign_net_eok": -15458.0,
+        "institution_net_eok": -9585.0
       },
       {
         "date": "2026-09-16",
         "close": 6717.97,
-        "retail_net_eok": -12829.25,
-        "foreign_net_eok": -15367.86,
-        "institution_net_eok": 11630.76
-      },
-      {
-        "date": "2026-09-17",
-        "close": 6724.34,
-        "retail_net_eok": 8332.66,
-        "foreign_net_eok": -26669.1,
-        "institution_net_eok": 1112.77
+        "retail_net_eok": -12061.0,
+        "foreign_net_eok": -16726.0,
+        "institution_net_eok": 12251.0
       }
     ],
     "bins_by_close": [
       {
         "bin": 0,
-        "price_lo": 4000.0,
-        "price_hi": 4250.0,
-        "price_mid": 4125.0,
-        "n_days": 3,
+        "price_lo": 4750.0,
+        "price_hi": 5000.0,
+        "price_mid": 4875.0,
+        "n_days": 1,
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": -5762,
-        "foreign_net_krw": 15594,
-        "institution_net_krw": -10647,
+        "retail_net_krw": 45874,
+        "foreign_net_krw": -25168,
+        "institution_net_krw": -22125,
         "value_unit": "eok"
       },
       {
         "bin": 1,
-        "price_lo": 4250.0,
-        "price_hi": 4500.0,
-        "price_mid": 4375.0,
-        "n_days": 2,
-        "retail_net_shares": 0,
-        "foreign_net_shares": 0,
-        "institution_net_shares": 0,
-        "retail_net_krw": -8758,
-        "foreign_net_krw": 27586,
-        "institution_net_krw": -20377,
-        "value_unit": "eok"
-      },
-      {
-        "bin": 2,
-        "price_lo": 4500.0,
-        "price_hi": 4750.0,
-        "price_mid": 4625.0,
-        "n_days": 7,
-        "retail_net_shares": 0,
-        "foreign_net_shares": 0,
-        "institution_net_shares": 0,
-        "retail_net_krw": 25340,
-        "foreign_net_krw": -19749,
-        "institution_net_krw": -19362,
-        "value_unit": "eok"
-      },
-      {
-        "bin": 3,
-        "price_lo": 4750.0,
-        "price_hi": 5000.0,
-        "price_mid": 4875.0,
-        "n_days": 9,
-        "retail_net_shares": 0,
-        "foreign_net_shares": 0,
-        "institution_net_shares": 0,
-        "retail_net_krw": 76185,
-        "foreign_net_krw": -7789,
-        "institution_net_krw": -85193,
-        "value_unit": "eok"
-      },
-      {
-        "bin": 4,
         "price_lo": 5000.0,
         "price_hi": 5250.0,
         "price_mid": 5125.0,
@@ -1532,13 +1345,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 257865,
-        "foreign_net_krw": -139956,
-        "institution_net_krw": -136800,
+        "retail_net_krw": 167906,
+        "foreign_net_krw": -142962,
+        "institution_net_krw": -38984,
         "value_unit": "eok"
       },
       {
-        "bin": 5,
+        "bin": 2,
         "price_lo": 5250.0,
         "price_hi": 5500.0,
         "price_mid": 5375.0,
@@ -1546,13 +1359,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 88464,
-        "foreign_net_krw": -151054,
-        "institution_net_krw": 21190,
+        "retail_net_krw": 31993,
+        "foreign_net_krw": -151977,
+        "institution_net_krw": 80604,
         "value_unit": "eok"
       },
       {
-        "bin": 6,
+        "bin": 3,
         "price_lo": 5500.0,
         "price_hi": 5750.0,
         "price_mid": 5625.0,
@@ -1560,13 +1373,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": -18472,
-        "foreign_net_krw": -56848,
-        "institution_net_krw": 61999,
+        "retail_net_krw": -38164,
+        "foreign_net_krw": -67842,
+        "institution_net_krw": 94344,
         "value_unit": "eok"
       },
       {
-        "bin": 7,
+        "bin": 4,
         "price_lo": 5750.0,
         "price_hi": 6000.0,
         "price_mid": 5875.0,
@@ -1574,13 +1387,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": -11276,
-        "foreign_net_krw": -38012,
-        "institution_net_krw": 17228,
+        "retail_net_krw": -36444,
+        "foreign_net_krw": -42509,
+        "institution_net_krw": 49935,
         "value_unit": "eok"
       },
       {
-        "bin": 8,
+        "bin": 5,
         "price_lo": 6000.0,
         "price_hi": 6250.0,
         "price_mid": 6125.0,
@@ -1588,13 +1401,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 138870,
-        "foreign_net_krw": -141729,
-        "institution_net_krw": -12132,
+        "retail_net_krw": 91811,
+        "foreign_net_krw": -141144,
+        "institution_net_krw": 37787,
         "value_unit": "eok"
       },
       {
-        "bin": 9,
+        "bin": 6,
         "price_lo": 6250.0,
         "price_hi": 6500.0,
         "price_mid": 6375.0,
@@ -1602,27 +1415,27 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 185066,
-        "foreign_net_krw": -164632,
-        "institution_net_krw": -25354,
+        "retail_net_krw": 161028,
+        "foreign_net_krw": -159228,
+        "institution_net_krw": -4955,
         "value_unit": "eok"
       },
       {
-        "bin": 10,
+        "bin": 7,
         "price_lo": 6500.0,
         "price_hi": 6750.0,
         "price_mid": 6625.0,
-        "n_days": 19,
+        "n_days": 18,
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 10192,
-        "foreign_net_krw": -91346,
-        "institution_net_krw": -46150,
+        "retail_net_krw": -48443,
+        "foreign_net_krw": -77556,
+        "institution_net_krw": 16512,
         "value_unit": "eok"
       },
       {
-        "bin": 11,
+        "bin": 8,
         "price_lo": 6750.0,
         "price_hi": 7000.0,
         "price_mid": 6875.0,
@@ -1630,13 +1443,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": -169351,
-        "foreign_net_krw": 65779,
-        "institution_net_krw": -47597,
+        "retail_net_krw": -204670,
+        "foreign_net_krw": 62736,
+        "institution_net_krw": -9020,
         "value_unit": "eok"
       },
       {
-        "bin": 12,
+        "bin": 9,
         "price_lo": 7000.0,
         "price_hi": 7250.0,
         "price_mid": 7125.0,
@@ -1644,13 +1457,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": -21066,
-        "foreign_net_krw": -31570,
-        "institution_net_krw": 16307,
+        "retail_net_krw": -24408,
+        "foreign_net_krw": -35079,
+        "institution_net_krw": 23660,
         "value_unit": "eok"
       },
       {
-        "bin": 13,
+        "bin": 10,
         "price_lo": 7250.0,
         "price_hi": 7500.0,
         "price_mid": 7375.0,
@@ -1658,13 +1471,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 245085,
-        "foreign_net_krw": -179319,
-        "institution_net_krw": -65857,
+        "retail_net_krw": 194393,
+        "foreign_net_krw": -183649,
+        "institution_net_krw": -8181,
         "value_unit": "eok"
       },
       {
-        "bin": 14,
+        "bin": 11,
         "price_lo": 7500.0,
         "price_hi": 7750.0,
         "price_mid": 7625.0,
@@ -1672,13 +1485,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 285870,
-        "foreign_net_krw": -189010,
-        "institution_net_krw": -106818,
+        "retail_net_krw": 231327,
+        "foreign_net_krw": -193214,
+        "institution_net_krw": -44832,
         "value_unit": "eok"
       },
       {
-        "bin": 15,
+        "bin": 12,
         "price_lo": 7750.0,
         "price_hi": 8000.0,
         "price_mid": 7875.0,
@@ -1686,13 +1499,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 86443,
-        "foreign_net_krw": -121826,
-        "institution_net_krw": 30966,
+        "retail_net_krw": 70740,
+        "foreign_net_krw": -122897,
+        "institution_net_krw": 47375,
         "value_unit": "eok"
       },
       {
-        "bin": 16,
+        "bin": 13,
         "price_lo": 8000.0,
         "price_hi": 8250.0,
         "price_mid": 8125.0,
@@ -1700,13 +1513,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 198944,
-        "foreign_net_krw": -131127,
-        "institution_net_krw": -71002,
+        "retail_net_krw": 117161,
+        "foreign_net_krw": -133830,
+        "institution_net_krw": 16430,
         "value_unit": "eok"
       },
       {
-        "bin": 17,
+        "bin": 14,
         "price_lo": 8250.0,
         "price_hi": 8500.0,
         "price_mid": 8375.0,
@@ -1714,13 +1527,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 221476,
-        "foreign_net_krw": -225756,
-        "institution_net_krw": -4727,
+        "retail_net_krw": 165923,
+        "foreign_net_krw": -232225,
+        "institution_net_krw": 59518,
         "value_unit": "eok"
       },
       {
-        "bin": 18,
+        "bin": 15,
         "price_lo": 8500.0,
         "price_hi": 8750.0,
         "price_mid": 8625.0,
@@ -1728,13 +1541,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 23607,
-        "foreign_net_krw": -39410,
-        "institution_net_krw": 14772,
+        "retail_net_krw": 13170,
+        "foreign_net_krw": -40536,
+        "institution_net_krw": 26793,
         "value_unit": "eok"
       },
       {
-        "bin": 19,
+        "bin": 16,
         "price_lo": 8750.0,
         "price_hi": 9000.0,
         "price_mid": 8875.0,
@@ -1742,13 +1555,13 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 66019,
-        "foreign_net_krw": -99578,
-        "institution_net_krw": 33101,
+        "retail_net_krw": 48517,
+        "foreign_net_krw": -109960,
+        "institution_net_krw": 63082,
         "value_unit": "eok"
       },
       {
-        "bin": 20,
+        "bin": 17,
         "price_lo": 9000.0,
         "price_hi": 9250.0,
         "price_mid": 9125.0,
@@ -1756,9 +1569,9 @@
         "retail_net_shares": 0,
         "foreign_net_shares": 0,
         "institution_net_shares": 0,
-        "retail_net_krw": 37899,
-        "foreign_net_krw": -7619,
-        "institution_net_krw": -29094,
+        "retail_net_krw": 33828,
+        "foreign_net_krw": -16245,
+        "institution_net_krw": -16892,
         "value_unit": "eok"
       }
     ],
@@ -1768,21 +1581,21 @@
           "actor": "retail",
           "actor_ko": "개인",
           "side": "buy",
-          "net_eok": 285870,
+          "net_eok": 231327,
           "price_lo": 7500.0,
           "price_hi": 7750.0,
           "n_days": 5,
-          "label_ko": "코스피 7,500–7,750에서 개인 순매수 +285,870억원"
+          "label_ko": "코스피 7,500–7,750에서 개인 순매수 +231,327억원"
         },
         "sell": {
           "actor": "retail",
           "actor_ko": "개인",
           "side": "sell",
-          "net_eok": -169351,
+          "net_eok": -204670,
           "price_lo": 6750.0,
           "price_hi": 7000.0,
           "n_days": 19,
-          "label_ko": "코스피 6,750–7,000에서 개인 순매도 -169,351억원"
+          "label_ko": "코스피 6,750–7,000에서 개인 순매도 -204,670억원"
         }
       },
       "foreign": {
@@ -1790,21 +1603,21 @@
           "actor": "foreign",
           "actor_ko": "외국인",
           "side": "buy",
-          "net_eok": 65779,
+          "net_eok": 62736,
           "price_lo": 6750.0,
           "price_hi": 7000.0,
           "n_days": 19,
-          "label_ko": "코스피 6,750–7,000에서 외국인 순매수 +65,779억원"
+          "label_ko": "코스피 6,750–7,000에서 외국인 순매수 +62,736억원"
         },
         "sell": {
           "actor": "foreign",
           "actor_ko": "외국인",
           "side": "sell",
-          "net_eok": -225756,
+          "net_eok": -232225,
           "price_lo": 8250.0,
           "price_hi": 8500.0,
           "n_days": 6,
-          "label_ko": "코스피 8,250–8,500에서 외국인 순매도 -225,756억원"
+          "label_ko": "코스피 8,250–8,500에서 외국인 순매도 -232,225억원"
         }
       },
       "institution": {
@@ -1812,21 +1625,21 @@
           "actor": "institution",
           "actor_ko": "기관",
           "side": "buy",
-          "net_eok": 61999,
+          "net_eok": 94344,
           "price_lo": 5500.0,
           "price_hi": 5750.0,
           "n_days": 14,
-          "label_ko": "코스피 5,500–5,750에서 기관 순매수 +61,999억원"
+          "label_ko": "코스피 5,500–5,750에서 기관 순매수 +94,344억원"
         },
         "sell": {
           "actor": "institution",
           "actor_ko": "기관",
           "side": "sell",
-          "net_eok": -136800,
-          "price_lo": 5000.0,
-          "price_hi": 5250.0,
-          "n_days": 9,
-          "label_ko": "코스피 5,000–5,250에서 기관 순매도 -136,800억원"
+          "net_eok": -44832,
+          "price_lo": 7500.0,
+          "price_hi": 7750.0,
+          "n_days": 5,
+          "label_ko": "코스피 7,500–7,750에서 기관 순매도 -44,832억원"
         }
       }
     }

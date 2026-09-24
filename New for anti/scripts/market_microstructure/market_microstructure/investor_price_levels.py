@@ -487,31 +487,35 @@ def _parse_naver_flow_date(raw: str) -> pd.Timestamp | None:
     return m
 
 
-# KRX 12008 (투자자별 거래실적, 유가증권, 거래대금) as collected into the
-# krx-month-paste hive. It counts every listed security on the KOSPI board --
-# ETF/ETN included -- so 개인 and 기관(금융투자, the ETF LP) differ from the
-# stock-only Naver page by the day's ETF flow, while 외국인 is nearly equal.
-# Checked on 157 overlapping days (2026-01-27..09-16): 12008's market total
-# exceeds KOSPI stock turnover by 5-17조 a day, the size of ETF trading.
-KRX_12008_SOURCE = "KRX 12008 투자자별 거래실적 (유가증권 전체·거래대금) · krx-month-paste"
-KRX_12008_SCOPE_KO = (
-    "유가증권시장 전체(ETF·ETN 포함) 투자자별 순매수입니다. 주식만 집계하는 네이버·언론 수치와 "
-    "개인·기관 값이 그날 ETF 거래만큼 다를 수 있고, 외국인은 거의 같습니다."
-)
+# The contract for this block is the KOSPI *stock* market (scope kospi_cash,
+# the Naver investorDealTrendDay definition documented in DATA_SOURCES.md).
+# KRX 12008 as first collected into krx-month-paste (krx_12008_kospi_investor)
+# counts every listed security, ETF/ETN included, so 개인·기관 differ from the
+# stock figure by the day's ETF flow -- a different quantity, not a stand-in.
+# Only a 12008 export restricted to 주식 is accepted: the dataset below, with
+# every row marked security_scope == "stock" (CURSOR_HANDOFF_KOSPI_STOCK_FLOW.md).
+KRX_12008_STOCK_DATASET = "krx_12008_kospi_stock_investor"
+KRX_12008_STOCK_SOURCE = "KRX 12008 투자자별 거래실적 (유가증권·주식·거래대금) · krx-month-paste"
+KOSPI_STOCK_SCOPE_KO = "유가증권시장 주식 투자자별 순매수 (ETF·ETN 제외)."
+# Sources whose days are the same stock-only quantity and may be carried
+# forward together; anything else in a previous file is not reused.
+STOCK_FLOW_SOURCES = {None, "naver", "krx_12008_stock"}
 
 
 def load_krx_12008_kospi_flows(root: Any) -> pd.DataFrame:
-    """KRX 12008 KOSPI investor nets in 억원 from a krx-month-paste checkout.
+    """KRX 12008 KOSPI *stock* investor nets in 억원 from krx-month-paste.
 
-    Re-collected days appear more than once in the hive; the latest collection
-    wins. An actor whose buy - sell does not reproduce its own net (beyond
-    KRX's 1 백만원 rounding) is left empty rather than trusted.
+    Reads only the stock-scoped dataset and only rows that say so
+    (security_scope == "stock"); the ETF-inclusive 12008 hive is ignored.
+    Re-collected days appear more than once; the latest collection wins. An
+    actor whose buy - sell does not reproduce its own net (beyond KRX's
+    1 백만원 rounding) is left empty rather than trusted.
     """
     import gzip
     import json
     from pathlib import Path
 
-    base = Path(root) / "data" / "normalized" / "krx_12008_kospi_investor"
+    base = Path(root) / "data" / "normalized" / KRX_12008_STOCK_DATASET
     latest: dict[str, dict[str, Any]] = {}
     for part in sorted(base.glob("year=*/month=*/part.jsonl.gz")):
         with gzip.open(part, "rt", encoding="utf-8") as fh:
@@ -521,7 +525,7 @@ def load_krx_12008_kospi_flows(root: Any) -> pd.DataFrame:
                 except json.JSONDecodeError:
                     continue
                 day = row.get("date")
-                if not day:
+                if not day or row.get("security_scope") != "stock":
                     continue
                 prev = latest.get(day)
                 if prev is None or str(row.get("collected_at") or "") >= str(prev.get("collected_at") or ""):
@@ -543,17 +547,16 @@ def load_krx_12008_kospi_flows(root: Any) -> pd.DataFrame:
 
 
 def fetch_kospi_market_investor_history(*, max_days: int = 60, krx_root: Any = None) -> pd.DataFrame:
-    """KOSPI cash market 개인/외국인/기관계 순매수 (억원).
+    """KOSPI cash (stock) market 개인/외국인/기관계 순매수 (억원).
 
-    KRX 12008 from the krx-month-paste checkout when one is given; the Naver
-    page is the fallback. One source per build -- the two differ in scope
-    (ETF included vs stock only), so a window never mixes them.
+    The stock-scoped KRX 12008 export in krx-month-paste when present; the
+    Naver page otherwise. Both are the same stock-only quantity.
     """
     if krx_root:
         krx = load_krx_12008_kospi_flows(krx_root)
         if not krx.empty:
             out = krx.tail(max_days).copy()
-            out.attrs["source_key"] = "krx_12008"
+            out.attrs["source_key"] = "krx_12008_stock"
             return out
     out = _fetch_naver_kospi_market_investor_history(max_days=max_days)
     out.attrs["source_key"] = "naver"
@@ -629,26 +632,74 @@ def _fetch_naver_kospi_market_investor_history(*, max_days: int = 60) -> pd.Data
     return out.tail(max_days)
 
 
-def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0, krx_root: Any = None) -> dict[str, Any]:
-    """Infomax-style: KOSPI close level × market investor nets (억원)."""
-    import FinanceDataReader as fdr
+_NET_COLS = ("retail_net_eok", "foreign_net_eok", "institution_net_eok")
 
+
+def _frame_from_previous(previous: dict[str, Any] | None) -> pd.DataFrame | None:
+    """The previously published stock-only days, reusable as observations."""
+    if not isinstance(previous, dict) or previous.get("quality") != "observed":
+        return None
+    if previous.get("flow_source") not in STOCK_FLOW_SOURCES:
+        return None
+    recs = []
+    for d in previous.get("days") or []:
+        try:
+            dt = pd.Timestamp(d["date"])
+            close_v = float(d["close"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        recs.append({"date": dt, "close": close_v, **{c: d.get(c) for c in _NET_COLS},
+                     "_src": previous.get("flow_source") or "naver"})
+    if not recs:
+        return None
+    return pd.DataFrame(recs).set_index("date").sort_index()
+
+
+def build_kospi_index_levels(
+    *, max_days: int = 60, step: float = 250.0, krx_root: Any = None,
+    previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Infomax-style: KOSPI close level × market investor nets (억원).
+
+    When today's source returns nothing (the Naver page has been empty since
+    2026-09-17), the previously published stock-only days are kept and the
+    block says how far they run, instead of blanking to "missing".
+    """
     flows = fetch_kospi_market_investor_history(max_days=max_days, krx_root=krx_root)
     source_key = flows.attrs.get("source_key", "naver")
+    frames: list[pd.DataFrame] = []
+    fetch_note = None
     if flows.empty:
-        return {"quality": "missing", "note_ko": "코스피 시장 수급 히스토리 없음",
-                "flow_source": source_key}
-    flow_date_end = flows.index.max().strftime("%Y-%m-%d")
+        fetch_note = "오늘 수집 소스에서 코스피 시장 수급을 받지 못함"
+    else:
+        try:
+            import FinanceDataReader as fdr
 
-    start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
-    idx = fdr.DataReader("KS11", start)
-    if idx is None or idx.empty:
-        return {"quality": "missing", "note_ko": "KS11 지수 없음"}
-    close = idx.rename(columns={"Close": "close", "High": "high", "Low": "low", "Open": "open"})
-    close.index = pd.to_datetime(close.index).normalize()
-    joined = flows.join(close[["open", "high", "low", "close"]], how="inner")
-    if joined.empty:
-        return {"quality": "missing", "note_ko": "지수·수급 조인 실패"}
+            start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
+            idx = fdr.DataReader("KS11", start)
+        except Exception as exc:  # noqa: BLE001
+            idx, fetch_note = None, f"KS11 지수 조회 실패: {type(exc).__name__}"
+        if idx is not None and not idx.empty:
+            close = idx.rename(columns={"Close": "close"})
+            close.index = pd.to_datetime(close.index).normalize()
+            joined = flows.join(close[["close"]], how="inner")
+            if not joined.empty:
+                frames.append(joined[["close", *_NET_COLS]].assign(_src=source_key))
+        elif fetch_note is None:
+            fetch_note = "KS11 지수 없음"
+    prev = _frame_from_previous(previous)
+    fresh_dates = set(frames[0].index) if frames else set()
+    if prev is not None:
+        # Fresh observations win on the same date; frames[0] goes last.
+        frames.insert(0, prev)
+    if not frames:
+        return {"quality": "missing", "note_ko": fetch_note or "코스피 시장 수급 히스토리 없음",
+                "flow_source": source_key}
+    joined = pd.concat(frames)
+    joined = joined[~joined.index.duplicated(keep="last")].sort_index().tail(max_days)
+    carried_days = int(sum(1 for d in joined.index if d not in fresh_dates))
+    source_key = str(joined["_src"].iloc[-1])
+    flow_date_end = joined.index.max().strftime("%Y-%m-%d")
 
     # Psychological step bins (e.g. 250pt): floor to step
     lo = float(np.floor(joined["close"].min() / step) * step)
@@ -751,7 +802,7 @@ def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0, krx_roo
     elif retail_buy:
         headline = retail_buy["label_ko"] + " (실측)"
 
-    is_krx = source_key == "krx_12008"
+    is_krx = source_key == "krx_12008_stock"
     return {
         "schema": "kospi-index-investor-levels-v1",
         "quality": "observed",
@@ -767,9 +818,11 @@ def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0, krx_roo
         ),
         "flow_source": source_key,
         "flow_date_end": flow_date_end,
-        "scope_ko": KRX_12008_SCOPE_KO if is_krx else "유가증권시장 주식 투자자별 순매수 (네이버 집계).",
+        "carried_forward_days": carried_days,
+        "fetch_note_ko": fetch_note,
+        "scope_ko": KOSPI_STOCK_SCOPE_KO,
         "source": [
-            KRX_12008_SOURCE if is_krx else "https://finance.naver.com/sise/investorDealTrendDay.naver (live)",
+            KRX_12008_STOCK_SOURCE if is_krx else "https://finance.naver.com/sise/investorDealTrendDay.naver",
             "FinanceDataReader KS11 (live)",
             "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
         ],
@@ -818,6 +871,7 @@ def build_investor_price_levels_report(
     universe_mode: str = "both",
     high_vol_pool: int = 100,
     krx_root: Any = None,
+    previous_index_levels: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """universe_mode: both | high_vol | marcap | custom(tickers). Real data only."""
     universe_meta: dict[str, Any] = {}
@@ -886,7 +940,8 @@ def build_investor_price_levels_report(
             }
 
     try:
-        index_levels = build_kospi_index_levels(max_days=max(page_size, 40), krx_root=krx_root)
+        index_levels = build_kospi_index_levels(max_days=max(page_size, 40), krx_root=krx_root,
+                                                previous=previous_index_levels)
     except Exception as e:  # noqa: BLE001
         index_levels = {"quality": "missing", "error": f"{type(e).__name__}: {e}"}
         errors.append(f"KS11: {type(e).__name__}: {e}")
