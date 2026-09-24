@@ -14,10 +14,6 @@ on:
     # in the free slot between sst_refresh (18:18/18:40) and update_data (19:24).
     - cron: '2 19 * * 5'
   workflow_dispatch:
-  # TEMP: run once on the PR branch to verify; remove before merge.
-  push:
-    branches: ['claude/project-thread-v1m0jy']
-    paths: ['.github/workflows/yield_forecast_more_countries.yml']
 
 concurrency:
   group: yield-forecast-more-countries
