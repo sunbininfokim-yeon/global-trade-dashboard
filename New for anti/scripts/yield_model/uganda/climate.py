@@ -9,6 +9,7 @@ import ee
 import pandas as pd
 
 import gee_live
+import seasonal_history
 
 from .regions import POINTS
 
@@ -118,11 +119,12 @@ def collect_seasonal(
         return pd.read_csv(target)
     initialize_ee()
     zones = _zones()
-    frame = gee_live.collect_incremental(
+    frame = seasonal_history.collect_incremental(
         lambda year: _season_feature(year, zones),
         start_year,
         end_year,
         HERE / "training" / "national_coffee_belt.csv",
+        source="gee",
         refresh=refresh,
     )
     frame.to_csv(target, index=False)
