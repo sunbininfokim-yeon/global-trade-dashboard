@@ -1,0 +1,36 @@
+name: Stamp macro next-release windows
+
+# Writes next_release_* onto every indicator in macro_monitor_v1.json.
+# It does not fetch values. Daily so "next business day" and passed
+# monthly windows roll forward. Official monthly dates are windows, not
+# a single invented day.
+
+on:
+  schedule:
+    # 00:05 Asia/Seoul.
+    - cron: '5 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m unittest tests.test_release_calendar -v
+      - name: Stamp calendar
+        working-directory: New for anti/scripts/macro_monitor
+        run: python refresh_release_calendar_in_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: stamp macro next-release windows" || exit 0
+          git push
