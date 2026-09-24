@@ -40,6 +40,7 @@
         corn: 'corn',
         soybeans: 'soybeans',
         sugar: 'sugar',
+        palm_oil: 'palm_oil',
     };
 
     const SOURCE_LABEL = {
@@ -68,11 +69,17 @@
         THB_FOB: '바트 (FOB)',
         THB_CIF: '바트 (CIF)',
         USD_FOB: 'USD (FOB)',
+        usd_m_fob: 'M USD (FOB)',
+        thb_m_fob: '백만 바트 (FOB)',
+        thb_m_cif: '백만 바트 (CIF)',
         M3: '백만 ㎥',
         SAR_million: 'M SAR',
     };
 
     const FLOW_LABEL = { X: '수출', M: '수입' };
+
+    // Exact rescaling to millions; the unit key keeps FOB and CIF apart.
+    const UNIT_TO_MILLIONS = { USD_FOB: 'usd_m_fob', THB_FOB: 'thb_m_fob', THB_CIF: 'thb_m_cif' };
 
     // ---- small pure helpers (exported for tests) ---------------------------
 
@@ -134,6 +141,11 @@
             } else if (p.unit === 'kg' && Number.isFinite(p.value)) {
                 value = p.value / 1e6;
                 unit = 'kt';
+            } else if (UNIT_TO_MILLIONS[p.unit] && Number.isFinite(p.value)) {
+                // National offices that report in single currency units
+                // (Thailand 1,936,186,680 바트) read better in millions.
+                value = p.value / 1e6;
+                unit = UNIT_TO_MILLIONS[p.unit];
             } else if (p.unit === 'metric_tons' && Number.isFinite(p.value)) {
                 // Exact, and puts GASTAT and ERS on the same 천 톤 scale JODI uses.
                 value = p.value / 1e3;
@@ -307,6 +319,8 @@
                 <span class="tm-when${stale ? ' is-stale' : ''}">${monthLabel(last.month)}${stale ? ' · 최신 아님' : ''}</span>
             </div>
             ${chart || `<p class="tm-note">관측 ${s.points.length}개월 — 추이를 그리기엔 부족합니다</p>`}
+            ${s.source === 'comtrade_preview' && s.points.length + (s.held?.length || 0) < 2
+                ? '<p class="tm-note is-warn">비교할 이전 달이 없어 부분 집계인지 확인되지 않은 값입니다.</p>' : ''}
             ${s.held?.length ? `<p class="tm-note is-warn">보류: ${s.held.map((p) =>
                 `${monthLabel(p.month)} ${fmtValue(p.value)} ${esc(s.unitLabel)}${p.ratio != null
                     ? ` (직전 중앙값의 ${p.ratio < 0.001 ? '0.1% 미만' : `${(p.ratio * 100).toFixed(1)}%`})` : ''}`).join(', ')}

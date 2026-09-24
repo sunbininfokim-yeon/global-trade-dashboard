@@ -5006,6 +5006,7 @@ const CONTROL_ALIASES = {
     soybeans: ['soybeans', 'soy'],
     sugar: ['sugar'],
     coffee: ['coffee'],
+    palm_oil: ['palm_oil', 'palm'],
 };
 
 /** Controls affecting `commodity`, keyed by resolved country. */

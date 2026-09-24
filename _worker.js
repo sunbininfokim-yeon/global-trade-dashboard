@@ -671,6 +671,7 @@ const COMTRADE_TTL = {
     "1005": 1209600, // Corn: 14 days
     "1201": 1209600, // Soybeans: 14 days
     "1701": 1209600, // Sugar: 14 days
+    "1511": 1209600, // Palm oil: 14 days
     "0901": 1209600, // Coffee: 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
@@ -2601,6 +2602,7 @@ const FUTURES_UNPRICED = {
     chromium: "거래되는 선물 계약이 없습니다",
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
 };
 
 async function handleFutures(request, env) {

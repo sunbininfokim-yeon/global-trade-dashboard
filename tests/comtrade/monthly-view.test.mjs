@@ -164,3 +164,26 @@ test('trailing window is the latest month back 12, inclusive', () => {
     assert.equal(w.length, 12);
     assert.equal(w[w.length - 1].month, ym(1));
 });
+
+test('palm oil: country card reads the pipeline commodity palm_oil (HS 1511)', () => {
+    assert.equal(T.MONTHLY_ID.palm_oil, 'palm_oil');
+    const d = { comtrade: { reporters: { MYS: { flows: { exports: { commodities: { palm_oil: { hs: '1511', points: [
+        { month: ym(3), value: 1, unit: 'kg', source: 'comtrade_preview', primary_value_usd: 17.3e6 },
+    ] } } } } } } } };
+    const v = T.buildView(d, 'palm_oil', 'MYS');
+    assert.equal(v.series[0].hs, '1511');
+    // One Comtrade preview month has nothing to be compared against.
+    assert.match(T.seriesCardHtml(v.series[0], v.latest), /부분 집계인지 확인되지 않은/);
+});
+
+test('national units in single currency units are shown in millions, FOB and CIF apart', () => {
+    const pts = [
+        { month: ym(4), value: 1936186680, unit: 'THB_FOB', source: 'thailand_customs_statistics_report' },
+        { month: ym(4), value: 3542423, unit: 'THB_CIF', source: 'thailand_customs_statistics_report' },
+    ];
+    const series = T.seriesFromPoints(pts, { flow: 'X', hs: '1511' });
+    assert.equal(series.length, 2);
+    const fob = series.find((s) => s.unit === 'thb_m_fob');
+    assert.equal(fob.unitLabel, '백만 바트 (FOB)');
+    assert.equal(Math.round(fob.points[0].value), 1936);
+});
