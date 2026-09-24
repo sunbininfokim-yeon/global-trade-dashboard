@@ -3852,30 +3852,37 @@ const agriControlsCardHtml = () => {
     const byIso = agriControlsByIso();
     if (!byIso.size) return '';
     const rank = (c) => exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
+    const cropsOf = (c) => c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
+        .filter((v, i, a) => a.indexOf(v) === i).join('·');
+    // One line per country (strongest measure first); the full measure,
+    // dates and source open on click, so the weather above stays in view.
     const rows = [...byIso.entries()]
         .sort(([, a], [, b]) => Math.max(...b.map(rank)) - Math.max(...a.map(rank)))
         .map(([iso, list]) => {
+            const sorted = [...list].sort((a, b) => rank(b) - rank(a));
             const name = resolveCountry(list[0].country)?.label || list[0].country;
-            const items = [...list].sort((a, b) => rank(b) - rank(a)).map((c) => {
+            const chips = sorted.map((c) => `<span class="ac-chip ctl-${c.level}">${cropsOf(c)} · ${LEVEL_SHORT_KO[c.level] || c.level}</span>`).join('');
+            const items = sorted.map((c) => {
                 const lv = [LEVEL_SHORT_KO[c.level] || c.level, MEASURE_TYPE_KO[c.measure_type]]
                     .filter(Boolean).join(' · ');
-                const crops = c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
-                    .filter((v, i, a) => a.indexOf(v) === i).join('·');
                 const when = c.level === 'lifted'
                     ? `${c.since || ''}~${c.lifted_at || ''} 해제`
                     : `${c.since || ''}~${c.until ? ` ${c.until}` : ''}`;
                 return `<li class="ac-item ac-${c.level}">
-                    <div class="ac-top"><b>${crops}</b><span class="ac-lv ctl-${c.level}">${lv}</span></div>
+                    <div class="ac-top"><b>${cropsOf(c)}</b><span class="ac-lv ctl-${c.level}">${lv}</span></div>
                     <div class="ac-measure">${c.measure_ko}</div>
                     <div class="ac-src">${when} · ${c.source || ''}${c.url ? ` <a href="${c.url}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}
                         ${c.verified_at ? ` · 확인 ${c.verified_at}` : ''}</div>
                 </li>`;
             }).join('');
-            return `<div class="ac-country"><div class="ac-name">${name} <span class="ac-iso">${iso}</span></div><ul>${items}</ul></div>`;
+            return `<details class="ac-country">
+                <summary><span class="ac-name">${name}<span class="ac-iso">${iso}</span></span><span class="ac-chips">${chips}</span></summary>
+                <ul>${items}</ul>
+            </details>`;
         }).join('');
     return `<div class="climate-card ag-controls">
         <h3>주요 농산물 수출국 · 수출통제 <span class="src-tag">${exportControlsDoc?.as_of || ''} 수기 정리</span></h3>
-        <div class="climate-sub" style="margin-bottom:8px;">금지·쿼터·수출세·국영 단일창구 등 현재 조치와 최근 해제 조치. 정책은 자주 바뀌므로 원문 링크로 최신 여부를 확인하세요.</div>
+        <div class="climate-sub" style="margin-bottom:6px;">국가를 누르면 상세 규제(조치·기간·원문)가 펼쳐집니다.</div>
         ${rows}
     </div>`;
 };
@@ -3901,7 +3908,6 @@ const renderClimateWorldLeft = async () => {
     await loadExportControls();
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
-            ${agriControlsCardHtml()}
             <div class="climate-card">
                 <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
@@ -3985,6 +3991,7 @@ const renderClimateWorldLeft = async () => {
                 · 산지 기상 갱신: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 자동 갱신)
                 ${g?.note ? `<br/>${g.note}` : ''}
             </p>
+            ${agriControlsCardHtml()}
         </div>`;
 };
 
