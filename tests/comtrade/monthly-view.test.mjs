@@ -33,8 +33,13 @@ const ym = (back) => {
 };
 const compact = (m) => m.replace('-', '');
 
-const comtradePt = (month, usd, flow = 'X') => ({
+// `hold` mirrors what scripts/commodity_trade/preview_quality.py writes.
+const comtradePt = (month, usd, flow = 'X', hold = null) => ({
     month, value: usd / 3, unit: 'kg', source: 'comtrade_preview', hs: '1201', flow, primary_value_usd: usd,
+    publication: hold
+        ? { policy: 'comtrade-preview-publication-v1', status: 'hold', eligible_for_display: false,
+            flags: ['suspected_partial_month'], evidence: { ratio: hold } }
+        : { policy: 'comtrade-preview-publication-v1', status: 'eligible', eligible_for_display: true, flags: [] },
 });
 
 function docs() {
@@ -42,7 +47,7 @@ function docs() {
         comtrade: { reporters: {
             BRA: { flows: {
                 // May is real, the newest month is a partial count ($2,312).
-                exports: { commodities: { soybeans: { hs: '1201', points: [comtradePt(ym(4), 6.29e9), comtradePt(ym(3), 2312)] } } },
+                exports: { commodities: { soybeans: { hs: '1201', points: [comtradePt(ym(4), 6.29e9), comtradePt(ym(3), 2312, 'X', 3.7e-7)] } } },
                 imports: { commodities: { soybeans: { hs: '1201', points: [comtradePt(ym(4), 34.9e6, 'M'), comtradePt(ym(3), 23.8e6, 'M')] } } },
             } },
         } },
@@ -96,27 +101,37 @@ test('no toggle where there is no monthly data', () => {
     assert.equal(T.buildView({}, 'oil', 'SAU'), null);       // monthly files not deployed yet
 });
 
-test('a partial Comtrade month is cut from the headline but kept on record', () => {
+test('a month the pipeline held is cut from the headline but kept on record', () => {
     const v = T.buildView(docs(), 'soybeans', 'BRA');
     const x = v.series.find((s) => s.flow === 'X');
     assert.equal(v.series[0].flow, 'X');                     // exports first
     assert.equal(x.unit, 'usd_m');
     assert.deepEqual(host(x.points.map((p) => p.month)), [ym(4)]);
     assert.equal(x.latest, ym(4));
-    assert.equal(x.partial.length, 1);
-    assert.equal(x.partial[0].month, ym(3));
+    assert.equal(x.held.length, 1);
+    assert.equal(x.held[0].month, ym(3));
     const html = T.seriesCardHtml(x, v.latest);
-    assert.match(html, /0\.0023 M USD/);                     // never rounded to "0"
-    assert.match(html, /부분 집계/);
-    // Imports are not partial: both months stay.
+    assert.match(html, /보류/);
+    assert.match(html, /0\.0023 M USD/);                    // never rounded to "0"
+    assert.match(html, /직전 중앙값의 0\.1% 미만/);           // the pipeline's own ratio
+    // Imports carry no hold: both months stay.
     assert.equal(v.series.find((s) => s.flow === 'M').points.length, 2);
+});
+
+test('the UI never holds a month on its own', () => {
+    // Same collapse, but the pipeline marked it eligible: shown as published.
+    const d = docs();
+    d.comtrade.reporters.BRA.flows.exports.commodities.soybeans.points[1] = comtradePt(ym(3), 2312);
+    const x = T.buildView(d, 'soybeans', 'BRA').series.find((s) => s.flow === 'X');
+    assert.equal(x.held.length, 0);
+    assert.equal(x.latest, ym(3));
 });
 
 test('zeros from JODI are data, not partial counts', () => {
     const v = T.buildView(docs(), 'oil', 'THA');
     const s = v.series[0];
     assert.deepEqual(host(s.points.map((p) => p.value)), [37, 0, 56]);
-    assert.equal(s.partial.length, 0);
+    assert.equal(s.held.length, 0);
     assert.equal(s.unitLabel, '천 톤');
 });
 
