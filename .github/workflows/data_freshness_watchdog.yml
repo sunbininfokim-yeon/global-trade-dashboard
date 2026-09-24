@@ -45,6 +45,10 @@ jobs:
               # shipping_capacity_update.yml: '37 18 * * *' (every day)
               ("New for anti/public/data/shipping_capacity_v1.json",
                18, 37, tuple(range(7))),
+              # sst_refresh.yml: '18 18 * * 5' (Fri UTC). The region series
+              # sat untouched for weeks once because nothing ran it.
+              ("New for anti/public/data/sst_regions_v1.json",
+               18, 18, (4,)),
           ]
 
           def last_expected_fire(hour, minute, weekdays):
