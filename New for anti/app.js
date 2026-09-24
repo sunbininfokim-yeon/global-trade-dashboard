@@ -832,13 +832,17 @@ function comtradePeriodLabel(arcs) {
     if (!first || !first.period) return '';
     const parts = String(first.period).split(',').sort();
     const fmt = (v) => (v.length === 6 ? `${v.slice(0, 4)}년 ${Number(v.slice(4))}월` : `${v}년`);
+    if (first.blendFrom) return `${fmt(parts[0])} 연간 · 미신고국 ${first.blendFrom}년`;
     if (parts.length === 1) return first.freq === 'M' ? fmt(parts[0]) : `${fmt(parts[0])} 연간`;
     return `${fmt(parts[0])}~${fmt(parts[parts.length - 1])}`;
 }
 
 function comtradeSourceText(arcs) {
     const when = comtradePeriodLabel(arcs);
-    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트)`;
+    const blendFrom = arcs?.[0]?.blendFrom;
+    const older = blendFrom ? arcs.filter((a) => a.dataYear === blendFrom).length : 0;
+    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트${older
+        ? `, 그중 ${older}개는 양쪽 모두 ${arcs[0].period}년 미신고라 ${blendFrom}년 값` : ''})`;
 }
 
 // Static ISO3 fallback for the reporter/partner names Comtrade uses most.

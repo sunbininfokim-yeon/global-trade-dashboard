@@ -126,9 +126,12 @@ const focusTradeCountry = (countryName) => {
         // huge one" -- tonnage is what answers that, so put it one click away
         // instead of burying it in the title-attribute tooltip only.
         const mt = Number.isFinite(a.netWeightMt) && a.netWeightMt > 0 ? a.netWeightMt : null;
-        const volLabel = mt != null
+        // In a blended year, routes neither end has filed for yet carry the
+        // previous year's value; say so on the row.
+        const olderYear = a.blendFrom && a.dataYear && a.dataYear !== a.period ? ` · ${a.dataYear}년 값` : '';
+        const volLabel = (mt != null
             ? `${a.volume.toLocaleString()} ${unit} · ${mt.toLocaleString(undefined, { maximumFractionDigits: 2 })} Mt`
-            : `${a.volume.toLocaleString()} ${unit}`;
+            : `${a.volume.toLocaleString()} ${unit}`) + olderYear;
         return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}"
                      role="button" tabindex="0" data-partner="${partner}"
                      title="${isIn ? '수입' : '수출'} · ${partner} · ${volLabel}">
