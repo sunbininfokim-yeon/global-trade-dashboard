@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-24T15:01:21.539114+00:00",
+  "generated_at": "2026-09-24T19:07:52.378870+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,18 +75,19 @@
   "stats": {
     "sources_ok": 34,
     "sources_failed": 4,
-    "raw_items": 796,
-    "scored_items": 89,
+    "raw_items": 810,
+    "scored_items": 108,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 10,
-      "china": 1,
-      "turkey": 2,
+      "commodity_specialist": 9,
       "mena": 4,
-      "west": 1,
-      "india": 2,
       "russia": 2,
-      "japan": 2
+      "china": 1,
+      "west": 1,
+      "japan": 2,
+      "india": 2,
+      "turkey": 1,
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 89,
+      "elapsed_ms": 187,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 403,
+      "elapsed_ms": 598,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 83,
+      "elapsed_ms": 199,
       "error": null,
       "mode": "live"
     },
@@ -119,23 +120,23 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1346,
+      "elapsed_ms": 1211,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 49,
+      "count": 20,
+      "elapsed_ms": 316,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "aa_world",
       "ok": true,
-      "count": 14,
-      "elapsed_ms": 3120,
+      "count": 8,
+      "elapsed_ms": 2839,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 813,
+      "elapsed_ms": 867,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 292,
+      "elapsed_ms": 380,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 86,
+      "elapsed_ms": 173,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 37,
+      "elapsed_ms": 138,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 518,
+      "elapsed_ms": 638,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 75,
+      "elapsed_ms": 342,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 230,
+      "elapsed_ms": 243,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 859,
+      "elapsed_ms": 1254,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 619,
+      "elapsed_ms": 1022,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 627,
+      "elapsed_ms": 251,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 617,
+      "elapsed_ms": 901,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 333,
+      "elapsed_ms": 826,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 52,
+      "elapsed_ms": 262,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 176,
+      "elapsed_ms": 1208,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 105,
+      "elapsed_ms": 161,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 189,
+      "elapsed_ms": 154,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 111,
+      "elapsed_ms": 938,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 717,
+      "elapsed_ms": 196,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 259,
+      "elapsed_ms": 341,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1174,
+      "elapsed_ms": 1356,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1094,
+      "elapsed_ms": 1376,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1987,
+      "elapsed_ms": 1819,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 3854,
+      "elapsed_ms": 1884,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 366,
+      "elapsed_ms": 2005,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 622,
+      "elapsed_ms": 530,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 52,
+      "elapsed_ms": 121,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 62,
+      "elapsed_ms": 166,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 148,
+      "elapsed_ms": 218,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 553,
+      "elapsed_ms": 832,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 89,
+      "elapsed_ms": 161,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 385,
+      "elapsed_ms": 755,
       "error": null,
       "mode": "live"
     },
@@ -391,12 +392,56 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 344,
+      "elapsed_ms": 431,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
+    {
+      "id": "5239cb976f033f04",
+      "published_at": "2026-09-24T18:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Saudi-Oil-Export-Costs-Surge-as-Red-Sea-Risks-Mount.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "shipping",
+        "oil"
+      ],
+      "title": {
+        "original": "Saudi Oil Export Costs Surge as Red Sea Risks Mount",
+        "original_lang": "en",
+        "ko": "사우디 석유 수출 비용, 홍해 위험으로 급증"
+      },
+      "summary": "Saudi Arabia’s workaround for the Strait of Hormuz now carries a war-risk insurance bill nearly as expensive as sending tankers through Hormuz itself. Quoted premiums for Saudi-linked tankers calling at the Red Sea port of Yanbu have tripled to around 3% of a vessel’s value from ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.983,
+        "importance": 5.708,
+        "final": 6.607
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:shipping:2",
+        "diplomacy:1",
+        "bridge:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
     {
       "id": "aa420a07ab1a61b6",
       "published_at": "2026-09-24T13:00:00+00:00",
@@ -423,9 +468,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.946,
-        "importance": 5.328,
-        "final": 6.168
+        "freshness": 0.844,
+        "importance": 4.754,
+        "final": 5.502
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -439,6 +484,88 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "8d1c01ebc3933793",
+      "published_at": "2026-09-24T16:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Geopolitics/International/US-Invites-Putin-To-G20-Summit-In-Miami.html",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "U.S. Invites Putin To G20 Summit In Miami",
+        "original_lang": "en",
+        "ko": "미국, 마이애미에서 열리는 G20 정상회의에 푸틴 대통령 초청"
+      },
+      "summary": "The United States has invited Russian President Vladimir Putin to attend the Group of 20 summit in Miami in December, Secretary of State Marco Rubio said on September 23, as the Trump administration is seeking steps to reduce fighting in Ukraine. “We've invited President Putin to",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 2.0,
+        "election": 1.2,
+        "region_weight": 1.35,
+        "freshness": 0.917,
+        "importance": 4.294,
+        "final": 4.97
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "diplomacy:2",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "d958b3ad729601ad",
+      "published_at": "2026-09-24T17:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/Iran-Warns-US-Strikes-Could-Push-War-Into-Indian-Ocean.html",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran Warns U.S. Strikes Could Push War Into Indian Ocean",
+        "original_lang": "en",
+        "ko": "이란, 미국의 파업이 인도양에 전쟁을 밀어붙일 수 있다고 경고"
+      },
+      "summary": "It was just this month that saw the Iran conflict spill over into a renewed fight between the Saudi coalition and Yemen's Houthi rebels. Now Iran is threatening to expand the fight further, even into the Indian Ocean. Yahya Rahim Safavi, an adviser to Iran’s Supreme Leader Mojtab",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.943,
+        "importance": 4.101,
+        "final": 4.747
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:3",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
       "country_hint": "USA"
     },
     {
@@ -467,9 +594,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.92,
-        "importance": 4.001,
-        "final": 4.631
+        "freshness": 0.82,
+        "importance": 3.569,
+        "final": 4.131
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -478,135 +605,6 @@
         "commodity:gas:2",
         "commodity:shipping:1",
         "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "b71ddfa551eaca94",
-      "published_at": "2026-09-24T10:00:37+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/oil-extends-gains-amid-u-s-iran-diplomacy-doubts/",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Oil extends gains amid U.S.-Iran diplomacy doubts",
-        "original_lang": "en",
-        "ko": "석유, 미국-이란 외교 의구심 속 이익 확대"
-      },
-      "summary": "Oil prices ticked higher on Thursday, extending sharp gains from the previous session, as hopes faded that diplomatic efforts will yield an imminent end to the Iran conflict. By 04:01 ET (08:01 GMT), Brent crude futures had gained 1.1% to $104.19 a barrel, while U.S. West Texas I",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.87,
-        "importance": 3.923,
-        "final": 4.541
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:3",
-        "diplomacy:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "519c11550727b299",
-      "published_at": "2026-09-24T05:08:03+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Brent-Holds-Above-102-as-Iran-Talks-Stall-Over-Hormuz-Conditions.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Brent Holds Above $102 as Iran Talks Stall Over Hormuz Conditions",
-        "original_lang": "en",
-        "ko": "Brent는 이란이 Hormuz 조건에 대해 말하면서 $ 102 이상을 유지합니다."
-      },
-      "summary": "Crude oil prices took a dip today amid reports that there was willingness for peace in the Middle East on both sides of the conflict. The dip partially offset gains made earlier in the week, keeping oil benchmarks elevated. At the time of writing, Brent crude was trading at $102.",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.76,
-        "importance": 3.579,
-        "final": 4.143
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:3",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "3512d3e4816cf5b9",
-      "published_at": "2026-09-24T07:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Southeast-Asia-Keeps-Building-Gas-Plants-Despite-Hormuz-LNG-Shock.html",
-      "category": "commodity",
-      "commodities": [
-        "gas",
-        "shipping"
-      ],
-      "title": {
-        "original": "Southeast Asia Keeps Building Gas Plants Despite Hormuz LNG Shock",
-        "original_lang": "en",
-        "ko": "동남아시아, 호르무즈 LNG 충격에도 불구하고 가스 플랜트 건설 유지"
-      },
-      "summary": "Countries in Southeast Asia are still building natural gas-fired power plants despite the price inflation in gas caused by the Middle East war. Asian countries are also building more LNG import capacity, Global Energy Monitor reported. The net-zero think tank said there was some ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.8,
-        "importance": 3.322,
-        "final": 3.845
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:gas:2",
-        "commodity:shipping:1",
-        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -639,9 +637,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 1.0,
-        "importance": 3.199,
-        "final": 3.703
+        "freshness": 0.892,
+        "importance": 2.854,
+        "final": 3.303
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -655,6 +653,175 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "CHN"
+    },
+    {
+      "id": "68ea32f4a54b3858",
+      "published_at": "2026-09-24T14:34:22+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/news/russia-ties-black-sea-grain-deal-ukraine-halt-oil-refinery-strikes",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "wheat"
+      ],
+      "title": {
+        "original": "Russia ties Black Sea grain deal with Ukraine to halt in oil refinery strikes",
+        "original_lang": "en",
+        "ko": "러시아, 우크라이나와 흑해 곡물 거래로 정유소 파업 중단"
+      },
+      "summary": "Russia ties Black Sea grain deal with Ukraine to halt in oil refinery strikes Submitted by Ragip Soylu on Thu, 09/24/2026 - 14:28 Turkey seeks a Black Sea shipping deal, but Ukrainian officials say Russia 'always asks for more' The rusting hull of the cargo ship Turgut S (also kn",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.881,
+        "importance": 2.767,
+        "final": 3.265
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:1",
+        "commodity:wheat:1",
+        "diplomacy:1",
+        "bridge:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "8448f5832ebd9b50",
+      "published_at": "2026-09-24T16:32:56+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/news/2026/9/24/trump-invites-putin-to-miami-g20-why-that-matters?traffic_source=rss",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Trump invites Putin to Miami G20: Why that matters",
+        "original_lang": "en",
+        "ko": "트럼프, 푸틴 대통령을 마이애미 G20에 초청하다: 그것이 중요한 이유"
+      },
+      "summary": "US Secretary of State Rubio said the summit would be an 'opportunity' for Putin to engage with other world leaders.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.931,
+        "importance": 2.506,
+        "final": 2.957
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:B*0.72/g1",
+        "diplomacy:1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "e26f1824029393d8",
+      "published_at": "2026-09-24T18:58:00+00:00",
+      "source": {
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://www.interfax.ru/world/1118326",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Венгрия хочет получить еще на год исключение из санкций для закупок энергоресурсов у РФ",
+        "original_lang": "ru",
+        "ko": "헝가리는 앞으로 1년 동안 러시아 연방으로부터 에너지 자원 구매에 대한 제재를 면제받기를 원합니다."
+      },
+      "summary": "Правительство Венгрии желает, чтобы США сделали для него исключение из санкционного режима еще на год с целью продолжить импорт нефти и газа из России, сообщают в четверг западные СМИ со ссылкой на главу венгерского МИД Аниту Орбан.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.996,
+        "importance": 2.645,
+        "final": 2.942
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:gas:1",
+        "diplomacy:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "276b58373446de34",
+      "published_at": "2026-09-24T17:00:39+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/europe-gas-off-multi-week-lows-as-middle-east-peace-talks-hit-impasse/",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Europe gas off multi-week lows as Middle East peace talks hit impasse",
+        "original_lang": "en",
+        "ko": "중동 평화 회담이 교착상태에 빠지면서 유럽은 다주 최저치를 기록했다."
+      },
+      "summary": "European and British wholesale natural gas futures rebounded on Thursday, rising 1.6% each as fading hopes for a swift diplomatic resolution to the U.S.-Iran conflict re-ignited risk premia across global energy bourses. The benchmark Dutch front-month TTF contract rose to trade a",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.943,
+        "importance": 2.505,
+        "final": 2.9
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:gas:1",
+        "diplomacy:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "USA"
     },
     {
       "id": "71d7122a308df22b",
@@ -682,9 +849,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.911,
-        "importance": 2.917,
-        "final": 3.245
+        "freshness": 0.813,
+        "importance": 2.602,
+        "final": 2.895
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -700,160 +867,33 @@
       "country_hint": "CHN"
     },
     {
-      "id": "39675140a5028f54",
-      "published_at": "2026-09-24T10:00:29+00:00",
+      "id": "bc69035028d1cfb9",
+      "published_at": "2026-09-24T17:00:41+00:00",
       "source": {
         "id": "hellenic_shipping",
         "name": "Hellenic Shipping News",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://www.hellenicshippingnews.com/china-lng-sales-key-part-of-trade-with-us/",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "gas"
-      ],
-      "title": {
-        "original": "China: LNG sales key part of trade with US",
-        "original_lang": "en",
-        "ko": "중국: 미국과의 무역에서 LNG 판매의 핵심 부분"
-      },
-      "summary": "Bilateral trade in liquefied natural gas between China and the United States holds vast potential for pragmatic cooperation, offering mutually reinforcing benefits that can contribute to global energy stability as international LNG markets undergo profound structural adjustments.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.87,
-        "importance": 2.487,
-        "final": 2.878
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:gas:2",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "6b36bf21d8dcd454",
-      "published_at": "2026-09-23T20:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Crude-Oil/Hormuz-Workarounds-Keep-Gulf-Oil-Flowingat-a-Steep-Cost.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Hormuz Workarounds Keep Gulf Oil Flowing—at a Steep Cost",
-        "original_lang": "en",
-        "ko": "Hormuz 해결 방법 - 걸프유의 흐름을 가파른 비용으로 유지"
-      },
-      "summary": "Ship-to-ship transfers and pipelines bypassing the Strait of Hormuz, where available, have become the primary export route for most Middle Eastern oil. Oil producers in the region have demonstrated what some see as remarkable adaptability to the new circumstances. In fact, it is ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.59,
-        "importance": 2.397,
-        "final": 2.775
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "7f345f042837c48a",
-      "published_at": "2026-09-24T09:53:26+00:00",
-      "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.aa.com.tr/en/americas/iran-misreading-us-political-system-by-waiting-for-midterms-rubio/4067578",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Iran misreading US political system by waiting for midterms: Rubio",
-        "original_lang": "en",
-        "ko": "중간고사를 기다리며 미국 정치 체제를 오독하는 이란: 루비오"
-      },
-      "summary": "November outcome would not prevent Trump from imposing sanctions or using military force against Tehran, says US secretary of state",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.3,
-        "freshness": 0.867,
-        "importance": 2.334,
-        "final": 2.649
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "TUR",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "60c48597a4e22fa0",
-      "published_at": "2026-09-24T09:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Morgan-Stanley-Says-Diesel-Export-Ban-Would-Push-US-Gas-Prices-Higher.html",
+      "url": "https://www.hellenicshippingnews.com/eu-voices-concern-over-reported-us-diesel-export-ban-plans/",
       "category": "diplomacy",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Morgan Stanley: Diesel Export Ban Would Push U.S. Gas Prices Higher",
+        "original": "EU voices concern over reported US diesel export ban plans",
         "original_lang": "en",
-        "ko": "모건 스탠리 (Morgan Stanley): 디젤 수출 금지로 미국 가스 가격 상승"
+        "ko": "EU, 보고된 미국 디젤 수출 금지 계획에 우려 목소리"
       },
-      "summary": "U.S. gasoline prices will spike further if the Trump Administration bans diesel exports, Morgan Stanley analysts say, as restrictions remain a debate amid record-high diesel prices in America. “A diesel export ban could have the counterintuitive effect of an increase in gasoline ",
+      "summary": "The European Union expressed concern Thursday about reported United States plans to ban diesel exports, warning that such action could negatively affect both parties. Olof Gill, a European Commission spokesperson, told reporters that high-level discussions between the EU and US a",
       "scores": {
         "commodity": 0.8,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.846,
-        "importance": 2.132,
-        "final": 2.468
+        "freshness": 0.943,
+        "importance": 2.046,
+        "final": 2.369
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -861,7 +901,7 @@
         "tier:A*1.00/g1",
         "commodity:oil:0.8",
         "diplomacy:1",
-        "bridge:2"
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -869,44 +909,90 @@
       "country_hint": "USA"
     },
     {
-      "id": "0ac4e1720177f6e5",
-      "published_at": "2026-09-24T10:00:53+00:00",
+      "id": "193498cf8bf350f5",
+      "published_at": "2026-09-24T17:30:00+00:00",
       "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
+        "id": "oilprice",
+        "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://www.hellenicshippingnews.com/volatility-invoiced-why-every-disruption-now-comes-with-a-surcharge/",
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Vitol-Scoops-Up-25-Million-Barrels-of-Discounted-Iraqi-Crude.html",
       "category": "commodity",
       "commodities": [
+        "oil",
         "shipping"
       ],
       "title": {
-        "original": "Volatility, Invoiced: Why Every Disruption Now Comes with a Surcharge",
+        "original": "Vitol Scoops Up 25 Million Barrels of Discounted Iraqi Crude",
         "original_lang": "en",
-        "ko": "변동성, 청구서 발행: 모든 중단에 추가 요금이 부과되는 이유"
+        "ko": "비톨, 이라크 원유 2,500만 배럴 할인"
       },
-      "summary": "Emergency fuel surcharges within weeks of the Hormuz disruption. Peak season surcharges in a well-supplied market. Surcharges have become the freight industry’s default response to volatility, and the debate over them is getting louder. Here is what the data says, and what shippe",
+      "summary": "Vitol has bought at least 25 million barrels of Iraqi crude for September loading, making the world’s largest independent oil trader Iraq’s second-biggest buyer behind ADNOC as Baghdad pays steep discounts to keep barrels moving through the Strait of Hormuz. Iraq’s SOMO offered S",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
+        "commodity": 3.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.87,
-        "importance": 2.002,
-        "final": 2.317
+        "freshness": 0.956,
+        "importance": 1.996,
+        "final": 2.31
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:2"
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
+      "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "b557d9c329e17fb1",
+      "published_at": "2026-09-24T16:11:00+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/economy/2192379",
+      "category": "commodity",
+      "commodities": [
+        "gas",
+        "shipping"
+      ],
+      "title": {
+        "original": "Global gas prices continue to rise in 2026, but set to fall 40% by 2029 — ministry",
+        "original_lang": "en",
+        "ko": "글로벌 가스 가격은 2026년에도 계속 상승하지만 2029년에는 40% 하락할 것으로 예상됩니다. — Ministry"
+      },
+      "summary": "In 2026, natural gas prices continue to rise amid a global drought, the closure of the Strait of Hormuz, and damage to key LNG infrastructure in the Middle East",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.922,
+        "importance": 1.924,
+        "final": 2.141
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gas:2",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "87c9a8850b44b7f9",
@@ -931,9 +1017,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.4,
-        "freshness": 0.974,
-        "importance": 1.959,
-        "final": 2.312
+        "freshness": 0.869,
+        "importance": 1.748,
+        "final": 2.063
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -974,9 +1060,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.654,
-        "importance": 2.672,
-        "final": 2.131
+        "freshness": 0.584,
+        "importance": 2.383,
+        "final": 1.901
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -993,163 +1079,44 @@
       "country_hint": "USA"
     },
     {
-      "id": "8f266dacabf06550",
-      "published_at": "2026-09-24T13:51:19+00:00",
+      "id": "6f743077770fc6bb",
+      "published_at": "2026-09-24T18:57:01+00:00",
       "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.business-standard.com/markets/news/nifty-hits-over-five-month-low-as-banks-nbfcs-slide-amid-high-oil-prices-126092401078_1.html",
+      "url": "https://www.arabnews.com/middle-east/fuel-and-food-costs-put-syrias-beloved-makdous-tradition-out-of-reach-3002991",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Nifty hits over five-month low as banks, NBFCs slide amid high oil prices",
+        "original": "Fuel and food costs put Syria’s beloved makdous tradition out of reach",
         "original_lang": "en",
-        "ko": "5개월 넘게 낮은 은행 수치를 기록한 NBFC는 높은 유가 속에서 미끄러진다."
+        "ko": "연료 및 식비로 인해 시리아에서 사랑받는 막달라 전통의 손이 닿지 않는 곳에 위치"
       },
-      "summary": "Nifty suffers its steepest single-day fall since July 8 as Brent crude nears $105 a barrel and selling in banks and NBFCs intensifies",
+      "summary": "LONDON: Every fall, Syrian households would spend days preparing makdous, a preserve meant to carry the season’s abundance into winter. But after more than a decade of war and economic collapse, the pantry staple has become a delicacy. Families traditionally gather in September a",
       "scores": {
-        "commodity": 3.0,
+        "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.968,
-        "importance": 1.604,
-        "final": 1.82
+        "region_weight": 1.4,
+        "freshness": 0.995,
+        "importance": 1.144,
+        "final": 1.35
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3"
+        "tier:A*1.00/g1",
+        "commodity:oil:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "83b7ec57e374e9a7",
-      "published_at": "2026-09-24T09:39:58+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/middle-east/hormuz-turmoil-pushes-eu-to-seek-new-alliances-routes-through-gulf-commissioner-tells-arab-news-3002917",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Hormuz turmoil pushes EU to seek new alliances, routes through Gulf, commissioner tells Arab News",
-        "original_lang": "en",
-        "ko": "커미셔너는 호르무즈 혼란으로 EU가 새로운 동맹, 걸프만을 통과하는 경로를 모색하도록 밀어붙인다고 아랍 뉴스에 말했다."
-      },
-      "summary": "Turmoil in the Strait of Hormuz and Houthi attacks on Saudi Arabia are pushing Europe to rebuild its energy and trade lifelines through the Gulf, said the EU’s commissioner for the Mediterranean, as Brussels prepares to open strategic partnership talks with Riyadh. In a wide-rang",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.862,
-        "importance": 1.221,
-        "final": 1.441
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:2",
-        "diplomacy:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "d1741c9a182cbc8f",
-      "published_at": "2026-09-24T13:33:45+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/world/serbia-taps-diesel-reserves-as-war-squeezes-supply-3002947",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Serbia taps diesel reserves as war squeezes supply",
-        "original_lang": "en",
-        "ko": "세르비아는 전쟁이 공급을 압박함에 따라 디젤 매장량을 활용합니다."
-      },
-      "summary": "Serbia is releasing 5,000 tonnes of diesel from its state reserves to counter shortages caused by the war in the Middle East, low Danube water levels hampering imports, and potential sanctions against its Russian-owned refinery.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.96,
-        "importance": 1.106,
-        "final": 1.306
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:diplomacy",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
       "info_grade": "1",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "ad16ae252731dae8",
-      "published_at": "2026-09-24T13:19:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/russia/1118260",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Петр Толстой выдвинут кандидатом в председатели комитета Думы по международным делам",
-        "original_lang": "ru",
-        "ko": "표트르 톨스토이, 두마 국제문제위원회 위원장 후보로 지명"
-      },
-      "summary": "Бывший вице-спикер Госдумы восьмого созыва Петр Толстой выдвинут \"Единой Россией\" на должность главы комитета Госдумы по международным делам, сообщил председатель партии Дмитрий Медведев.\"На должности председателей комитетов предлагаются (...): Петр Олегович Толстой - комитет по ",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 2.0,
-        "region_weight": 1.25,
-        "freshness": 0.954,
-        "importance": 1.01,
-        "final": 1.123
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g3",
-        "election:local:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS",
-      "election_type": "local"
+      "country_hint": "GBR"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1192,83 +1159,39 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "aa3a307f52fdb462",
-      "published_at": "2026-09-24T11:17:48+00:00",
+      "id": "89d36a4de85ea739",
+      "published_at": "2026-09-24T13:51:50+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/video/counting-the-cost/2026/9/24/could-the-oil-shock-push-fuel-prices-even-higher?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Could the oil shock push fuel prices even higher?",
-        "original_lang": "en",
-        "ko": "오일 쇼크가 연료 가격을 더욱 높일 수 있을까요?"
-      },
-      "summary": "From Hormuz to the Black Sea, pressure on main supply routes is testing the resilience of the global energy market.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.902,
-        "importance": 0.826,
-        "final": 0.975
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "4cc40e3d8233744c",
-      "published_at": "2026-09-24T06:03:14+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
         "region": "india",
         "slant": null
       },
-      "url": "https://www.ndtv.com/world-news/s-jaishankar-reiterates-indias-concerns-to-marco-rubio-over-russia-sanction-bill-trump-12090207#publisher=newsstand",
+      "url": "https://www.business-standard.com/markets/news/nifty-hits-over-five-month-low-as-banks-nbfcs-slide-amid-high-oil-prices-126092401078_1.html",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "S Jaishankar 'Reiterates India's Concerns' To Rubio Over Russia Sanction Bill",
+        "original": "Nifty plunges 1.6% to five-month low; Sensex ends 1,248 points lower",
         "original_lang": "en",
-        "ko": "러시아 제재 법안에 대한 루비오에게 '인도의 우려를 되풀이하는' S Jaishankar"
+        "ko": "NIFTY는 1.6% 에서 5개월 최저치로 급락합니다. Sensex는 1,248포인트 더 낮게 종료됩니다."
       },
-      "summary": "After Russia invaded Ukraine, India sharply increased purchases of discounted Russian crude.",
+      "summary": "Nifty suffers its steepest single-day fall since July 8 as Brent crude nears $105 a barrel and selling in banks and NBFCs intensifies",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
+        "commodity": 2.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.78,
-        "importance": 0.767,
-        "final": 0.871
+        "freshness": 0.864,
+        "importance": 0.954,
+        "final": 1.083
       },
       "rank_reasons": [
         "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "diplomacy:1"
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1276,43 +1199,45 @@
       "country_hint": "IND"
     },
     {
-      "id": "1018968bfd03d5aa",
-      "published_at": "2026-09-24T14:37:24+00:00",
+      "id": "1e5c871966fbb67e",
+      "published_at": "2026-09-24T16:59:45+00:00",
       "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
+        "id": "the_hindu",
+        "name": "The Hindu",
+        "region": "india",
         "slant": null
       },
-      "url": "https://tass.ru/politika/28147865",
-      "category": "election",
-      "commodities": [],
+      "url": "https://www.thehindu.com/business/Industry/ahead-of-festivals-centre-cuts-import-duty-on-edible-oils/article71504736.ece",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
       "title": {
-        "original": "Вице-спикер Херсонской облдумы сложила полномочия после победы на выборах в ГД",
-        "original_lang": "ru",
-        "ko": "헤르손 지역 두마 부의장은 주 두마 선거에서 승리한 후 사임했습니다."
+        "original": "Ahead of festivals, Centre cuts import duty on edible oils",
+        "original_lang": "en",
+        "ko": "축제를 앞두고 Centre는 식용유에 대한 수입 관세를 삭감합니다."
       },
-      "summary": "Депутаты облдумы единогласно проголосовали за досрочное сложение полномочий Елены Дмитрук",
+      "summary": "The Centre expects that the reduction in BCD on crude edible oils will lower their landed cost and facilitate transmission of the benefit through the domestic supply chain",
       "scores": {
-        "commodity": 0,
+        "commodity": 1.0,
         "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.989,
-        "importance": 0.763,
-        "final": 0.849
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.943,
+        "importance": 0.837,
+        "final": 0.95
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "info_grade": "3",
+      "country_hint": "IND"
     },
     {
       "id": "04748a8f60fa1fa0",
@@ -1337,9 +1262,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.883,
-        "importance": 0.556,
-        "final": 0.631
+        "freshness": 0.788,
+        "importance": 0.496,
+        "final": 0.563
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1378,9 +1303,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.85,
-        "importance": 0.469,
-        "final": 0.522
+        "freshness": 0.758,
+        "importance": 0.418,
+        "final": 0.465
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -1392,6 +1317,86 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "CHN"
+    },
+    {
+      "id": "311f79ca3e40bcfc",
+      "published_at": "2026-09-24T15:26:10+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/life/breakingnews/5585527",
+      "category": "commodity",
+      "commodities": [
+        "copper"
+      ],
+      "title": {
+        "original": "基隆城隍廟夜巡「 抓鬼」！雙馬護駕 180公斤鹹光餅車大放送",
+        "original_lang": "zh-TW",
+        "ko": "지룽 시 사원 야간 순찰 \"유령 잡기\"! 180kg 짜리 가벼운 비스킷 트럭을 운전하는 말 한 쌍"
+      },
+      "summary": "中秋節前夕基隆「抓鬼行動」登場，基隆護國城隍爺、松山霞海城隍爺聯合夜巡，巡境淨煞、驅邪祈安，還有猛男騎乘駿馬護駕隨行，其中，上週才獲得總統盃角力比賽獲銅牌的林昶任，騎馬護駕還願...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.903,
+        "importance": 0.359,
+        "final": 0.399
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:copper:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
+      "id": "2d8e807beb1f3a95",
+      "published_at": "2026-09-24T15:17:44+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/society/breakingnews/5585495",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "警察阻詐「蛋蛋的哀傷」！無業男飆罵+踢下體 下場曝光",
+        "original_lang": "zh-TW",
+        "ko": "경찰은 \"슬픔의 불알\" 을 막아라! 실업자는 혼을 내고 신체 노출을 걷어차 버립니다."
+      },
+      "summary": "警察阻詐辛苦了！南投郭姓男子帶失智母親到銀行要解定存，提領現場，行員通知警方，警方發現老婦無溝通能力，要求郭男出示監護宣告證明有權代處理，郭男拿不出來，不斷飆罵髒話，1名警員壓...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.899,
+        "importance": 0.357,
+        "final": 0.398
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }
