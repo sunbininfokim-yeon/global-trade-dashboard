@@ -40,6 +40,7 @@
         corn: 'corn',
         soybeans: 'soybeans',
         sugar: 'sugar',
+        palm_oil: 'palm_oil',
     };
 
     const SOURCE_LABEL = {
@@ -68,11 +69,17 @@
         THB_FOB: '바트 (FOB)',
         THB_CIF: '바트 (CIF)',
         USD_FOB: 'USD (FOB)',
+        usd_m_fob: 'M USD (FOB)',
+        thb_m_fob: '백만 바트 (FOB)',
+        thb_m_cif: '백만 바트 (CIF)',
         M3: '백만 ㎥',
         SAR_million: 'M SAR',
     };
 
     const FLOW_LABEL = { X: '수출', M: '수입' };
+
+    // Exact rescaling to millions; the unit key keeps FOB and CIF apart.
+    const UNIT_TO_MILLIONS = { USD_FOB: 'usd_m_fob', THB_FOB: 'thb_m_fob', THB_CIF: 'thb_m_cif' };
 
     // ---- small pure helpers (exported for tests) ---------------------------
 
@@ -88,33 +95,16 @@
     const monthsBetween = (a, b) =>
         (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5)) - Number(a.slice(5));
 
-    // A month far below the rest of its own series is almost always a
-    // partial count, not a real collapse: Comtrade's monthly preview had
-    // Brazil's June 2026 soybean exports at $2,312 against $6.29B in May, and
-    // iron ore at $6,901. Shown as the headline, that reads as "Brazil stopped
-    // exporting soybeans". Such months are kept out of the chart and the
-    // headline but listed on the card, so nothing is silently dropped.
-    //
-    // Comtrade preview only. JODI and the national offices publish a zero
-    // when there was nothing to ship (Egypt's LNG exports did stop in 2025),
-    // and hiding those would hide the story.
-    const PARTIAL_RATIO = 0.01;
-    const PARTIAL_PRONE = new Set(['comtrade_preview']);
-    const median = (xs) => {
-        const v = [...xs].sort((a, b) => a - b);
-        const m = v.length >> 1;
-        return v.length % 2 ? v[m] : (v[m - 1] + v[m]) / 2;
-    };
-    const splitPartial = (points) => {
-        if (points.length < 2) return { kept: points, partial: [] };
-        const kept = [];
-        const partial = [];
-        points.forEach((p, i) => {
-            const others = points.filter((_, j) => j !== i).map((q) => q.value);
-            (p.value < median(others) * PARTIAL_RATIO ? partial : kept).push(p);
-        });
-        return { kept, partial };
-    };
+    // Publication hold, set by the pipeline (scripts/commodity_trade/
+    // preview_quality.py, policy comtrade-preview-publication-v1): a Comtrade
+    // preview month that collapsed below 1% of its own recent median is marked
+    // points[].publication.eligible_for_display = false. Brazil's June 2026
+    // soybean exports ($2,312 against $6.29B in May) are the case that
+    // prompted it. Held months stay out of the headline, the chart and the
+    // ranking, but are listed on the card: the raw value is kept, and a hold is
+    // a suspicion of a partial count, not a finding. Only the pipeline decides
+    // what is held -- JODI and national-office zeros are real and never are.
+    const isHeld = (p) => p?.publication?.eligible_for_display === false;
 
     const MAX_SERIES_AGE_MONTHS = 24;
 
@@ -127,8 +117,8 @@
 
     const fmtValue = (v) => {
         const a = Math.abs(v);
-        // Excluded partial months are tiny ($2,312 = 0.0023 M USD); rounding
-        // them to "0" would restate exactly the misreading they were cut for.
+        // Held months are tiny ($2,312 = 0.0023 M USD); rounding them to "0"
+        // would restate exactly the misreading they are held for.
         if (a > 0 && a < 0.01) return v.toPrecision(2);
         const digits = a >= 100 ? 0 : a >= 10 ? 1 : 2;
         return v.toLocaleString(undefined, { maximumFractionDigits: digits });
@@ -151,6 +141,11 @@
             } else if (p.unit === 'kg' && Number.isFinite(p.value)) {
                 value = p.value / 1e6;
                 unit = 'kt';
+            } else if (UNIT_TO_MILLIONS[p.unit] && Number.isFinite(p.value)) {
+                // National offices that report in single currency units
+                // (Thailand 1,936,186,680 바트) read better in millions.
+                value = p.value / 1e6;
+                unit = UNIT_TO_MILLIONS[p.unit];
             } else if (p.unit === 'metric_tons' && Number.isFinite(p.value)) {
                 // Exact, and puts GASTAT and ERS on the same 천 톤 scale JODI uses.
                 value = p.value / 1e3;
@@ -164,18 +159,17 @@
             const source = p.source || '';
             const key = `${source}|${unit}`;
             if (!byKey.has(key)) byKey.set(key, { flow, hs, source, unit, byMonth: new Map() });
-            byKey.get(key).byMonth.set(month, value);
+            const ratio = p.publication?.evidence?.ratio;
+            byKey.get(key).byMonth.set(month, {
+                month, value, held: isHeld(p), ratio: Number.isFinite(ratio) ? ratio : null,
+            });
         }
         return [...byKey.values()].map((s) => {
-            const window12 = trailing12([...s.byMonth.entries()]
-                .sort(([a], [b]) => (a < b ? -1 : 1))
-                .map(([month, value]) => ({ month, value })));
-            const { kept, partial } = PARTIAL_PRONE.has(s.source)
-                ? splitPartial(window12)
-                : { kept: window12, partial: [] };
-            const points = kept;
+            const window12 = trailing12([...s.byMonth.values()]
+                .sort((a, b) => (a.month < b.month ? -1 : 1)));
+            const points = window12.filter((p) => !p.held).map(({ month, value }) => ({ month, value }));
             return {
-                partial,
+                held: window12.filter((p) => p.held),
                 flow: s.flow,
                 hs: s.hs,
                 source: s.source,
@@ -325,8 +319,12 @@
                 <span class="tm-when${stale ? ' is-stale' : ''}">${monthLabel(last.month)}${stale ? ' · 최신 아님' : ''}</span>
             </div>
             ${chart || `<p class="tm-note">관측 ${s.points.length}개월 — 추이를 그리기엔 부족합니다</p>`}
-            ${s.partial?.length ? `<p class="tm-note is-warn">제외: ${s.partial.map((p) =>
-                `${monthLabel(p.month)} ${fmtValue(p.value)} ${esc(s.unitLabel)}`).join(', ')} — 같은 계열의 1% 미만이라 부분 집계로 보고 추이에서 뺐습니다.</p>` : ''}
+            ${s.source === 'comtrade_preview' && s.points.length + (s.held?.length || 0) < 2
+                ? '<p class="tm-note is-warn">비교할 이전 달이 없어 부분 집계인지 확인되지 않은 값입니다.</p>' : ''}
+            ${s.held?.length ? `<p class="tm-note is-warn">보류: ${s.held.map((p) =>
+                `${monthLabel(p.month)} ${fmtValue(p.value)} ${esc(s.unitLabel)}${p.ratio != null
+                    ? ` (직전 중앙값의 ${p.ratio < 0.001 ? '0.1% 미만' : `${(p.ratio * 100).toFixed(1)}%`})` : ''}`).join(', ')}
+                — 부분 집계로 의심되어 대표값·추이에서 뺐습니다. 확정된 값은 아닙니다.</p>` : ''}
         </div>`;
     };
 
@@ -473,6 +471,6 @@
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { MONTHLY_ID, buildView, seriesFromPoints, trailing12, splitPartial, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
+        _internal: { MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
     };
 })();

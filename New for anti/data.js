@@ -65,6 +65,11 @@
             id: "coffee",
             name_ko: "커피",
             aliases: ["coffee", "커피", "원두", "0901"]
+        },
+        "palm_oil": {
+            id: "palm_oil",
+            name_ko: "팜유",
+            aliases: ["palm_oil", "palm oil", "팜유", "cpo", "1511"]
         }
     };
 
@@ -475,6 +480,13 @@
         coffee: {
             hsCode: "0901",
             colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        // 1511 = palm oil and its fractions, crude and refined. Palm kernel
+        // oil (1513) is a separate, much smaller market and is left out, the
+        // same line the monthly pipeline draws (commodity_id palm_oil = 1511).
+        palm_oil: {
+            hsCode: "1511",
+            colorScheme: { source: [202, 138, 4], target: [250, 204, 21] }
         },
 
         // Battery and strategic minerals. These are the commodities the export
@@ -1047,6 +1059,14 @@
             topExporter: "브라질",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 1201)
             news: defaultNews("Soybeans")
+        },
+        palm_oil: {
+            title: "글로벌 농산물: 팜유 (Palm Oil)",
+            desc: "세계 최대 식물성 기름, 인도네시아·말레이시아발 팜유 수출입 무역 흐름",
+            totalVolume: "~45 Million Tonnes",
+            topExporter: "인도네시아",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1511)
+            news: defaultNews("Palm Oil")
         },
         sugar: {
             title: "글로벌 농산물: 설탕 (Sugar)",
