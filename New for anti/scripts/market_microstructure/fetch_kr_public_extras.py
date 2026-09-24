@@ -13,6 +13,7 @@ number, because these values feed the turnover-history charts.
 
 from __future__ import annotations
 
+import os
 from datetime import datetime, timedelta
 from io import StringIO
 from typing import Any
@@ -180,6 +181,53 @@ def fetch_letf_category_share() -> dict[str, Any]:
 
 
 def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any]:
+    """KOSPI aggregate investor net flows in 억원: Naver, else KRX 12008.
+
+    The Naver page has returned an empty table since 2026-09-17. When it
+    does, and a krx-month-paste checkout is named in $KRX_MONTH_PASTE_DIR,
+    the latest KRX 12008 days are used instead -- labelled as such, since
+    12008 counts ETF/ETN trades that the stock-only Naver page does not.
+    """
+    try:
+        naver = _fetch_naver_kospi_investor_flows(lookback_days=lookback_days)
+    except Exception:  # noqa: BLE001
+        naver = None
+    if naver and naver.get("history"):
+        return naver
+    root = os.environ.get("KRX_MONTH_PASTE_DIR")
+    if root:
+        from market_microstructure.investor_price_levels import (
+            KRX_12008_SCOPE_KO,
+            KRX_12008_SOURCE,
+            load_krx_12008_kospi_flows,
+        )
+
+        frame = load_krx_12008_kospi_flows(root)
+        if not frame.empty:
+            history = []
+            for day, row in frame.tail(10).iloc[::-1].iterrows():
+                vals = {k: (None if pd.isna(row[k]) else float(row[k]))
+                        for k in ("retail_net_eok", "foreign_net_eok", "institution_net_eok")}
+                history.append({
+                    "date_raw": day.strftime("%y.%m.%d"),
+                    **vals,
+                    **{k.replace("_eok", "_krw"): (None if v is None else v * 1e8) for k, v in vals.items()},
+                })
+            return {
+                "scope": "kospi_all_securities",
+                "unit_native": "억원",
+                "latest": history[0],
+                "history": history,
+                "quality": "observed",
+                "source": KRX_12008_SOURCE,
+                "note_ko": KRX_12008_SCOPE_KO,
+            }
+    if naver is not None:
+        return naver
+    raise RuntimeError("KOSPI investor flows: Naver empty and no KRX 12008 checkout")
+
+
+def _fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any]:
     """Best-effort KOSPI aggregate investor net flows, reported in 억원."""
     history: list[dict[str, Any]] = []
     for offset in range(lookback_days):

@@ -36,6 +36,40 @@ jobs:
       - name: Install deps
         run: pip install -r requirements-ci.txt
 
+      # Checked out before the snapshot steps: the KOSPI market investor flow
+      # (가격대별 누적 수급's index view and public_extras) reads KRX 12008 from
+      # this checkout via $KRX_MONTH_PASTE_DIR, since the Naver page it used
+      # has returned empty tables since 2026-09-17.
+      #
+      # Cursor crawls KRX 15007 CALL/PUT buy/sell exports into its own repo
+      # (private) at data/raw/krx_15007/<date>/{options_call,options_put,
+      # futures}_{buy,sell}.csv -- the exact raw shape build_derivatives_board
+      # already parses (Codex's --15007-* flags). Cursor's crawl can lag a
+      # trading day or two behind, so this never assumes today's folder
+      # exists; it walks backward for the newest one that has all four
+      # required call/put files. continue-on-error means a private-repo auth
+      # failure here degrades detailed_15007 to its prior value instead of
+      # failing the whole day's board (see build_detailed_15007's
+      # previous_detailed_15007 carry-forward).
+      - name: Checkout krx-month-paste (Cursor KRX 15007 raw exports)
+        id: krx15007_checkout
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: sunbininfokim-yeon/krx-month-paste
+          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          path: krx-month-paste
+          sparse-checkout: |
+            data/raw/krx_15007
+            data/normalized/krx_15007_k200_investor
+            data/normalized/krx_12008_kospi_investor
+            data/normalized/kospi200_futures_oi
+            data/normalized/kospi200_option_oi
+            data/normalized/kospi_program
+            data/manifests/krx_15007_k200_investor.json
+            data/manifests/kospi_program.json
+          sparse-checkout-cone-mode: false
+
       # These four steps all call FinanceDataReader, which reads through KRX
       # Data Marketplace (data.krx.co.kr). That site rate-limits by IP and, on
       # 2026-09-10, returned an explicit 7-day block ("자동화 수단을 통한
@@ -64,38 +98,11 @@ jobs:
         continue-on-error: true
         env:
           KRX_API: ${{ secrets.KRX_API }}
+          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
         run: python build_market_microstructure.py --live --source auto --print-stats
 
       - name: Append external ETF snapshot history
         run: python append_external_history.py --print-stats
-
-      # Cursor crawls KRX 15007 CALL/PUT buy/sell exports into its own repo
-      # (private) at data/raw/krx_15007/<date>/{options_call,options_put,
-      # futures}_{buy,sell}.csv -- the exact raw shape build_derivatives_board
-      # already parses (Codex's --15007-* flags). Cursor's crawl can lag a
-      # trading day or two behind, so this never assumes today's folder
-      # exists; it walks backward for the newest one that has all four
-      # required call/put files. continue-on-error means a private-repo auth
-      # failure here degrades detailed_15007 to its prior value instead of
-      # failing the whole day's board (see build_detailed_15007's
-      # previous_detailed_15007 carry-forward).
-      - name: Checkout krx-month-paste (Cursor KRX 15007 raw exports)
-        id: krx15007_checkout
-        continue-on-error: true
-        uses: actions/checkout@v4
-        with:
-          repository: sunbininfokim-yeon/krx-month-paste
-          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
-          path: krx-month-paste
-          sparse-checkout: |
-            data/raw/krx_15007
-            data/normalized/krx_15007_k200_investor
-            data/normalized/kospi200_futures_oi
-            data/normalized/kospi200_option_oi
-            data/normalized/kospi_program
-            data/manifests/krx_15007_k200_investor.json
-            data/manifests/kospi_program.json
-          sparse-checkout-cone-mode: false
 
       - name: Resolve latest complete KRX 15007 raw date
         id: krx15007
@@ -154,6 +161,8 @@ jobs:
 
       - name: Investor × price levels (real data; marcap + high-vol in top100)
         continue-on-error: true
+        env:
+          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Deposit · credit overlay

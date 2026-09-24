@@ -487,8 +487,81 @@ def _parse_naver_flow_date(raw: str) -> pd.Timestamp | None:
     return m
 
 
-def fetch_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
-    """KOSPI cash market 개인/외국인/기관계 순매수 (억원)."""
+# KRX 12008 (투자자별 거래실적, 유가증권, 거래대금) as collected into the
+# krx-month-paste hive. It counts every listed security on the KOSPI board --
+# ETF/ETN included -- so 개인 and 기관(금융투자, the ETF LP) differ from the
+# stock-only Naver page by the day's ETF flow, while 외국인 is nearly equal.
+# Checked on 157 overlapping days (2026-01-27..09-16): 12008's market total
+# exceeds KOSPI stock turnover by 5-17조 a day, the size of ETF trading.
+KRX_12008_SOURCE = "KRX 12008 투자자별 거래실적 (유가증권 전체·거래대금) · krx-month-paste"
+KRX_12008_SCOPE_KO = (
+    "유가증권시장 전체(ETF·ETN 포함) 투자자별 순매수입니다. 주식만 집계하는 네이버·언론 수치와 "
+    "개인·기관 값이 그날 ETF 거래만큼 다를 수 있고, 외국인은 거의 같습니다."
+)
+
+
+def load_krx_12008_kospi_flows(root: Any) -> pd.DataFrame:
+    """KRX 12008 KOSPI investor nets in 억원 from a krx-month-paste checkout.
+
+    Re-collected days appear more than once in the hive; the latest collection
+    wins. An actor whose buy - sell does not reproduce its own net (beyond
+    KRX's 1 백만원 rounding) is left empty rather than trusted.
+    """
+    import gzip
+    import json
+    from pathlib import Path
+
+    base = Path(root) / "data" / "normalized" / "krx_12008_kospi_investor"
+    latest: dict[str, dict[str, Any]] = {}
+    for part in sorted(base.glob("year=*/month=*/part.jsonl.gz")):
+        with gzip.open(part, "rt", encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                day = row.get("date")
+                if not day:
+                    continue
+                prev = latest.get(day)
+                if prev is None or str(row.get("collected_at") or "") >= str(prev.get("collected_at") or ""):
+                    latest[day] = row
+    recs: list[dict[str, Any]] = []
+    for day, row in latest.items():
+        vals: dict[str, Any] = {}
+        for actor in ACTORS:
+            b, s_, n = (row.get(f"{actor}_{side}_krw") for side in ("buy", "sell", "net"))
+            ok = all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in (b, s_, n)) \
+                and abs((b - s_) - n) <= 1_000_000
+            vals[f"{actor}_net_eok"] = round(float(n) / 1e8, 2) if ok else None
+        if vals["retail_net_eok"] is None and vals["foreign_net_eok"] is None:
+            continue
+        recs.append({"date": pd.Timestamp(day), **vals})
+    if not recs:
+        return pd.DataFrame()
+    return pd.DataFrame(recs).set_index("date").sort_index()
+
+
+def fetch_kospi_market_investor_history(*, max_days: int = 60, krx_root: Any = None) -> pd.DataFrame:
+    """KOSPI cash market 개인/외국인/기관계 순매수 (억원).
+
+    KRX 12008 from the krx-month-paste checkout when one is given; the Naver
+    page is the fallback. One source per build -- the two differ in scope
+    (ETF included vs stock only), so a window never mixes them.
+    """
+    if krx_root:
+        krx = load_krx_12008_kospi_flows(krx_root)
+        if not krx.empty:
+            out = krx.tail(max_days).copy()
+            out.attrs["source_key"] = "krx_12008"
+            return out
+    out = _fetch_naver_kospi_market_investor_history(max_days=max_days)
+    out.attrs["source_key"] = "naver"
+    return out
+
+
+def _fetch_naver_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
+    """Naver investorDealTrendDay (stock-only). Empty since 2026-09-17."""
     import requests
     from datetime import timedelta
     from io import StringIO
@@ -556,13 +629,16 @@ def fetch_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
     return out.tail(max_days)
 
 
-def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0) -> dict[str, Any]:
+def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0, krx_root: Any = None) -> dict[str, Any]:
     """Infomax-style: KOSPI close level × market investor nets (억원)."""
     import FinanceDataReader as fdr
 
-    flows = fetch_kospi_market_investor_history(max_days=max_days)
+    flows = fetch_kospi_market_investor_history(max_days=max_days, krx_root=krx_root)
+    source_key = flows.attrs.get("source_key", "naver")
     if flows.empty:
-        return {"quality": "missing", "note_ko": "코스피 시장 수급 히스토리 없음"}
+        return {"quality": "missing", "note_ko": "코스피 시장 수급 히스토리 없음",
+                "flow_source": source_key}
+    flow_date_end = flows.index.max().strftime("%Y-%m-%d")
 
     start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
     idx = fdr.DataReader("KS11", start)
@@ -675,18 +751,25 @@ def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0) -> dict
     elif retail_buy:
         headline = retail_buy["label_ko"] + " (실측)"
 
+    is_krx = source_key == "krx_12008"
     return {
         "schema": "kospi-index-investor-levels-v1",
         "quality": "observed",
         "bin_attribution": "daily_close_step",
-        "data_policy_ko": "실측만(네이버 시장수급·FDR KS11). demo 금지.",
+        "data_policy_ko": (
+            "실측만(KRX 12008 시장수급·FDR KS11). demo 금지." if is_krx
+            else "실측만(네이버 시장수급·FDR KS11). demo 금지."
+        ),
         "unit": "억원 (시장 전체 순매수)",
         "step": step,
         "method_ko": (
             "실측 코스피 종가(KS11) 레벨(심리적 step)에 실측 시장 개인·외인·기관 순매수(억원)를 귀속."
         ),
+        "flow_source": source_key,
+        "flow_date_end": flow_date_end,
+        "scope_ko": KRX_12008_SCOPE_KO if is_krx else "유가증권시장 주식 투자자별 순매수 (네이버 집계).",
         "source": [
-            "https://finance.naver.com/sise/investorDealTrendDay.naver (live)",
+            KRX_12008_SOURCE if is_krx else "https://finance.naver.com/sise/investorDealTrendDay.naver (live)",
             "FinanceDataReader KS11 (live)",
             "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
         ],
@@ -734,6 +817,7 @@ def build_investor_price_levels_report(
     kospi_top_n: int | None = 10,
     universe_mode: str = "both",
     high_vol_pool: int = 100,
+    krx_root: Any = None,
 ) -> dict[str, Any]:
     """universe_mode: both | high_vol | marcap | custom(tickers). Real data only."""
     universe_meta: dict[str, Any] = {}
@@ -802,7 +886,7 @@ def build_investor_price_levels_report(
             }
 
     try:
-        index_levels = build_kospi_index_levels(max_days=max(page_size, 40))
+        index_levels = build_kospi_index_levels(max_days=max(page_size, 40), krx_root=krx_root)
     except Exception as e:  # noqa: BLE001
         index_levels = {"quality": "missing", "error": f"{type(e).__name__}: {e}"}
         errors.append(f"KS11: {type(e).__name__}: {e}")

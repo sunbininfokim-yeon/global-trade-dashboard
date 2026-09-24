@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -47,6 +48,12 @@ def main() -> int:
         default=None,
         help="Optional override code:label,... (skips universe)",
     )
+    p.add_argument(
+        "--krx-month-paste",
+        default=os.environ.get("KRX_MONTH_PASTE_DIR") or None,
+        help="krx-month-paste checkout; KOSPI market flow then comes from KRX 12008 "
+        "(default: $KRX_MONTH_PASTE_DIR, else the Naver page)",
+    )
     p.add_argument("--print-stats", action="store_true")
     args = p.parse_args()
 
@@ -74,6 +81,7 @@ def main() -> int:
         kospi_top_n=args.top,
         universe_mode=args.universe if not pairs else "custom",
         high_vol_pool=args.pool,
+        krx_root=args.krx_month_paste,
     )
     # Refuse to ship if everything missing
     ok_n = sum(1 for t in (rep.get("tickers") or {}).values() if t.get("quality") == "observed")
