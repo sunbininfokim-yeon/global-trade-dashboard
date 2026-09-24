@@ -4528,13 +4528,15 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
  * visible unless both are stated.
  *
  * Cadences are the GitHub Actions schedules in .github/workflows, so this
- * matches what actually runs rather than an intention.
+ * matches what actually runs rather than an intention. Days are KST: the
+ * Friday-evening UTC crons (yield_forecast, climate_global_refresh,
+ * sst_refresh) all land early Saturday in Korea.
  */
 const REFRESH_CADENCE = {
-    forecast: { ko: '주 1회 (월요일)', detail: '국가별 yield_forecast 워크플로' },
+    forecast: { ko: '주 1회 (토요일)', detail: '국가별 yield_forecast 워크플로' },
     climate: { ko: '주 1회', detail: 'NASA POWER 일별 관측을 매 실행 시 재수집' },
-    indices: { ko: '주 1회 (월요일)', detail: 'NOAA CPC ONI · NOAA PSL DMI' },
-    sst: { ko: '주 1회 (화요일)', detail: 'NOAA OISST v2.1 격자' },
+    indices: { ko: '주 1회 (토요일)', detail: 'NOAA CPC ONI · NOAA PSL DMI' },
+    sst: { ko: '주 1회 (토요일)', detail: 'NOAA OISST v2.1 격자 · 해역별 월별 추이' },
 };
 
 const fmtAge = (iso) => {
