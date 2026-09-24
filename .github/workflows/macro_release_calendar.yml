@@ -1,0 +1,47 @@
+name: Refresh public macro prints
+
+# Fetches keyless public CPI, policy rates, yields, FX, and equity prints,
+# drops cards that exist only on a paid terminal, then stamps next-release
+# windows. A failed fetch leaves the previous value. Official monthly dates
+# are windows, not a single invented day.
+
+on:
+  schedule:
+    # 00:05 Asia/Seoul.
+    - cron: '5 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        # pytest, like the other macro refresh workflows: `unittest tests.x`
+        # needs `tests` to resolve as a package, and there is no
+        # tests/__init__.py -- it broke exactly this way on a machine that had
+        # an unrelated `tests` package on sys.path.
+        run: python -m pytest tests/test_keyless_prints.py tests/test_peer_macro.py tests/test_paid_only.py tests/test_release_calendar.py -v
+      - name: Graft public prints
+        working-directory: New for anti/scripts/macro_monitor
+        run: |
+          python refresh_keyless_prints_in_pack.py
+          python refresh_peer_macro_in_pack.py
+          python strip_paid_indicators_in_pack.py
+          python refresh_release_calendar_in_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh public macro prints" || exit 0
+          git push
