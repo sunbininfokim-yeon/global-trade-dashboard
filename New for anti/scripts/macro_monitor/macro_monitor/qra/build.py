@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import unquote, urlparse
 
 from .causal import auctions_to_issuance_components, build_causal_pack
-from .compare import build_net_borrowing_compare, build_quarter_history
+from .compare import build_net_borrowing_compare, build_quarter_history, split_summary_ko
 from .fetch import (
     ArchiveDoc,
     discover_archives,
@@ -251,6 +251,9 @@ def build_qra_engine(
             },
         }
         draft["compare"] = build_net_borrowing_compare(draft, prior_event=prior_ev)
+        split_note = split_summary_ko(draft["compare"], causal.get("bill_stance"), causal.get("coupon_stance"))
+        if split_note:
+            causal["summary_ko"] = split_note
         events_asc.append(draft)
 
     events = list(reversed(events_asc))
@@ -351,6 +354,21 @@ def build_qra_engine(
 
     out_path = out_path or default_out_path()
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    # Never regress a good file. Treasury re-minified its archive pages once and
+    # every regex-based discovery/link parser silently returned nothing -- the
+    # build still "succeeded" with 0 events and would have overwritten 27
+    # quarters of history with an empty file. A rebuild that comes back with
+    # fewer events than what's already published is a broken scrape, not news.
+    if out_path.exists():
+        try:
+            previous = len(json.loads(out_path.read_text()).get("events") or [])
+        except (ValueError, OSError):
+            previous = 0
+        if len(events) < previous:
+            raise RuntimeError(
+                f"refusing to overwrite {out_path.name}: rebuilt {len(events)} events, "
+                f"already published {previous} (archive discovery likely broke)"
+            )
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
     print(
         f"wrote {out_path} events={len(events)} "

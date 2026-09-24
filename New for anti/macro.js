@@ -1458,7 +1458,7 @@ const mmChartDrawer = () => {
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
-    else if (view === 'components') body = mmComponentsView(ind, ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.');
+    else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;
         const hist = (src.history || {})[MM_CHART.window] || {};
@@ -1722,6 +1722,74 @@ const mmStatementDiffHtml = (diffDoc) => {
     </div>`;
 };
 
+// The rate decision itself (what the Committee did to the target range) and
+// the SEP medians. Both come straight from the Fed's own statement/projection
+// pages (build_fomc_collect.py / build_fomc_sep.py) -- nothing here is
+// derived by the UI. The SEP "federal funds rate" row is the median of
+// participants' individual projections (the dot plot's middle dot), not a
+// Committee commitment and not a market-implied path, and is captioned so.
+const mmFmtRange = (lo, hi) => `${Number(lo).toFixed(2)}–${Number(hi).toFixed(2)}%`;
+
+const mmFomcDecisionHtml = (policy) => {
+    const dec = policy.decision;
+    const sep = policy.sep;
+    if (!dec && !sep) return '';
+    const actionKo = { raise: '인상', lower: '인하', maintain: '동결' };
+    let head = '';
+    if (dec) {
+        const bp = Number(dec.change_bp || 0);
+        const move = dec.action === 'maintain' ? '동결' : `${actionKo[dec.action] || dec.action} ${bp > 0 ? '+' : ''}${bp}bp`;
+        const prior = dec.action === 'maintain'
+            ? '직전 회의와 같은 범위'
+            : `직전 범위 ${mmFmtRange(dec.prior_range_low, dec.prior_range_high)}`;
+        const history = (policy.decision_history || []).slice(-6).map((row) => {
+            const tag = row.action === 'maintain' ? '동결' : `${actionKo[row.action] || row.action} ${row.change_bp > 0 ? '+' : ''}${row.change_bp}bp`;
+            return `<span>${finEsc(String(row.meeting_date).slice(2))} · ${finEsc(tag)}</span>`;
+        }).join('');
+        head = `
+        <strong class="mm-fomc-move mm-fomc-${finEsc(dec.action)}">${finEsc(dec.meeting_date)} · ${finEsc(move)} → ${finEsc(mmFmtRange(dec.range_low, dec.range_high))}</strong>
+        <p>${finEsc(prior)}${dec.source_url ? ` · <a class="mm-quality-link" href="${finEsc(dec.source_url)}" target="_blank" rel="noopener noreferrer">결정문 ↗</a>` : ''}</p>
+        ${history ? `<div class="mm-quality-names">${history}</div>` : ''}`;
+    } else {
+        head = '<p class="mm-quality-muted">최근 회의 결정문에서 금리 결정 문장을 찾지 못했습니다.</p>';
+    }
+
+    let table = '';
+    if (sep && Array.isArray(sep.variables) && sep.variables.length) {
+        const years = sep.years || [];
+        const yearLabel = (y) => (y === 'Longer run' ? '장기' : y);
+        const monthKo = { March: '3월', June: '6월', September: '9월', December: '12월' };
+        const cell = (variable, y) => {
+            const now = (variable.median || {})[y];
+            if (now === null || now === undefined) return '<td class="mm-sep-na">—</td>';
+            const before = variable.prior_median ? variable.prior_median[y] : null;
+            const tip = `중심경향 ${(variable.central_tendency || {})[y] || '—'} · 범위 ${(variable.range || {})[y] || '—'}`;
+            let sub = '';
+            if (before !== null && before !== undefined) {
+                const diff = Math.round((now - before) * 10) / 10;
+                const mark = diff > 0 ? `<b class="mm-sep-up">▲${diff.toFixed(1)}</b>` : (diff < 0 ? `<b class="mm-sep-down">▼${Math.abs(diff).toFixed(1)}</b>` : '<b>—</b>');
+                sub = `<small>${finEsc(monthKo[variable.prior_period] || variable.prior_period || '직전')} ${Number(before).toFixed(1)} ${mark}</small>`;
+            }
+            return `<td title="${finEsc(tip)}">${Number(now).toFixed(1)}${sub}</td>`;
+        };
+        table = `
+        <details class="mm-quality-details">
+            <summary>경제전망(SEP) 중앙값 · ${finEsc(sep.meeting_date)} 회의</summary>
+            <div class="mm-sep-scroll"><table class="mm-sep-table">
+                <thead><tr><th></th>${years.map((y) => `<th>${finEsc(yearLabel(y))}</th>`).join('')}</tr></thead>
+                <tbody>${sep.variables.map((v) => `<tr><th>${finEsc(v.label_ko)}</th>${years.map((y) => cell(v, y)).join('')}</tr>`).join('')}</tbody>
+            </table></div>
+            <p class="mm-quality-muted">참가자 개별 전망의 중앙값(%)입니다. 정책금리 행은 점도표의 중앙값이며 위원회의 약속도, 시장이 반영한 경로도 아닙니다. 칸에 마우스를 올리면 중심경향·범위가 보입니다.</p>
+        </details>`;
+    }
+    return `
+    <div class="mm-quality-card mm-quality-wide mm-fomc-decision">
+        <span class="mm-quality-label">금리 결정 · 경제전망</span>
+        ${head}
+        ${table}
+    </div>`;
+};
+
 const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
@@ -1756,6 +1824,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
             <span class="mm-quality-status">예측·성향 점수 아님</span>
         </div>
         <div class="mm-quality-grid">
+            ${mmFomcDecisionHtml(policy)}
             <div class="mm-quality-card">
                 <span class="mm-quality-label">FOMC 공개 표결</span>
                 <strong>${finEsc(cmp.previous_meeting || '—')} → ${finEsc(cmp.current_meeting || '—')}</strong>
