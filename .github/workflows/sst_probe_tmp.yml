@@ -7,14 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          q='anom%5B(last)%5D%5B(0.0)%5D%5B(0):6:(3)%5D%5B(0.125):6:(3)%5D'
-          for host in coastwatch.pfeg.noaa.gov upwell.pfeg.noaa.gov; do
-            for ua in "global-trade-dashboard" "Mozilla/5.0" "Python-urllib/3.12"; do
-              for ipv in -4 -6; do
-                code=$(curl $ipv -s -o /tmp/b -w '%{http_code}' -A "$ua" --max-time 60 "https://$host/erddap/griddap/ncdcOisst21Agg.csv?$q" || echo ERR)
-                echo "$host | $ua | $ipv -> $code  $(head -c 200 /tmp/b 2>/dev/null | tr '\n' ' ')"
-              done
-            done
+          for base in https://coastwatch.noaa.gov/erddap https://www.ncei.noaa.gov/erddap https://apdrc.soest.hawaii.edu/erddap https://pae-paha.pacioos.hawaii.edu/erddap https://erddap.aoml.noaa.gov/hdb/erddap https://polarwatch.noaa.gov/erddap https://oceanwatch.pifsc.noaa.gov/erddap; do
+            echo "=== $base"
+            curl -s --max-time 60 -A global-trade-dashboard "$base/search/advanced.csv?searchFor=oisst&protocol=griddap&page=1&itemsPerPage=30" | cut -d, -f1-16 | grep -i -E 'oisst|Dataset ID' | awk -F, '{print $NF" | "$0}' | cut -c1-260 | head -15
           done
-          curl -s -o /dev/null -w 'coastwatch.noaa.gov erddap index: %{http_code}\n' --max-time 60 https://coastwatch.noaa.gov/erddap/index.html
-          curl -s --max-time 60 "https://coastwatch.noaa.gov/erddap/search/index.csv?searchFor=OISST" | head -20
+          echo "=== PSL THREDDS"
+          curl -s -o /dev/null -w '%{http_code}\n' --max-time 60 "https://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2.highres/sst.day.anom.2026.nc.dds"
+          curl -s --max-time 60 "https://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2.highres/sst.day.anom.2026.nc.dds" | head -12
