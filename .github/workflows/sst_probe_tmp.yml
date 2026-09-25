@@ -1,0 +1,20 @@
+name: SST ERDDAP probe (temporary)
+on:
+  push:
+    branches: [claude/project-thread-0ekrkm]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          q='anom%5B(last)%5D%5B(0.0)%5D%5B(0):6:(3)%5D%5B(0.125):6:(3)%5D'
+          for host in coastwatch.pfeg.noaa.gov upwell.pfeg.noaa.gov; do
+            for ua in "global-trade-dashboard" "Mozilla/5.0" "Python-urllib/3.12"; do
+              for ipv in -4 -6; do
+                code=$(curl $ipv -s -o /tmp/b -w '%{http_code}' -A "$ua" --max-time 60 "https://$host/erddap/griddap/ncdcOisst21Agg.csv?$q" || echo ERR)
+                echo "$host | $ua | $ipv -> $code  $(head -c 200 /tmp/b 2>/dev/null | tr '\n' ' ')"
+              done
+            done
+          done
+          curl -s -o /dev/null -w 'coastwatch.noaa.gov erddap index: %{http_code}\n' --max-time 60 https://coastwatch.noaa.gov/erddap/index.html
+          curl -s --max-time 60 "https://coastwatch.noaa.gov/erddap/search/index.csv?searchFor=OISST" | head -20
