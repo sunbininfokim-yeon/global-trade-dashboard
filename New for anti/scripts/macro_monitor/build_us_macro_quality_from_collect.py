@@ -47,6 +47,7 @@ BEIGE_IN = ROOT / "config" / "beige_book_v1.json"
 CALENDAR_IN = ROOT / "config" / "fomc_calendar_v1.json"
 STATEMENT_TEXT_IN = ROOT / "config" / "fomc_statement_text_v1.json"
 SEP_IN = ROOT / "config" / "fomc_sep_v1.json"
+MINUTES_IN = ROOT / "config" / "fomc_minutes_v1.json"
 OUT = ROOT.parent.parent / "public" / "data" / "us_macro_quality_v1.json"
 
 # Every 2026 Beige Book edition landed exactly 14 days before its paired
@@ -111,32 +112,84 @@ def _to_fomc_meeting(row: dict) -> dict:
     }
 
 
-def _current_vote_roster(row: dict, roster_members: list[dict]) -> list[dict]:
+def _surname(name: str) -> str:
+    return name.replace(",", " ").split()[-1].lower() if name.strip() else ""
+
+
+def _current_vote_roster(row: dict, roster_members: list[dict], minutes_row: dict | None = None) -> list[dict]:
     """Full for/against list for the most recent meeting, for display.
 
     Distinct from _to_fomc_meeting()'s output (used for the previous-vs-
     current transition diff, left untouched here): that one only tracks
     named voters, which is fine for a diff but shows an against-only list
     on a Format B meeting since the statement never names the "for" side.
-    Here, when the statement didn't name them, the "for" side is filled in
-    as the live committee roster minus the named dissenters -- only when
-    that count matches the statement's own "N - N" tally exactly, so a
-    roster that's drifted from who actually sat on this specific past vote
-    is never silently papered over.
+
+    Preference order for who voted for: (1) the statement's own "Voting for"
+    list, (2) the minutes' named list, once published three weeks later --
+    used only when its counts and dissenters match the statement's own tally,
+    so a parse drift can't replace a correct roster with a wrong one, (3) the
+    live committee roster minus the named dissenters, again only when that
+    count matches the tally, so a roster that's drifted from who actually sat
+    on this specific past vote is never silently papered over.
     """
     dissenters = row["dissenters"]
     dissenter_names = {d["name"] for d in dissenters}
-    voters_for = row.get("voters_for") or []
+    statement_for = row.get("voters_for") or []
+    voters_for = list(statement_for)
+    source = "statement" if statement_for else None
+
+    if not voters_for and minutes_row:
+        named_for = minutes_row.get("voting_for") or []
+        named_against = minutes_row.get("voting_against") or []
+        tally_for, tally_against = row.get("vote_for"), row.get("vote_against")
+        if (
+            named_for
+            and (tally_for is None or len(named_for) == tally_for)
+            and (tally_against is None or len(named_against) == tally_against)
+            and {_surname(n["name"]) for n in named_against} == {_surname(n) for n in dissenter_names}
+        ):
+            voters_for = list(named_for)
+            source = "minutes"
+
     if not voters_for and roster_members:
         derived_for = [m["name"] for m in roster_members if m["name"] not in dissenter_names]
         if row.get("vote_for") is not None and len(derived_for) == row["vote_for"]:
             voters_for = derived_for
+            source = "roster_inferred"
+
     entries = []
     for name in voters_for:
-        entries.append({"name": name, "vote": "for", "dissent_direction": None, "inferred": name not in (row.get("voters_for") or [])})
+        entries.append({"name": name, "vote": "for", "dissent_direction": None,
+                        "inferred": source == "roster_inferred", "source": source})
     for d in dissenters:
-        entries.append({"name": d["name"], "vote": "against", "dissent_direction": d["dissent_direction"], "inferred": False})
+        entries.append({"name": d["name"], "vote": "against", "dissent_direction": d["dissent_direction"],
+                        "inferred": False, "source": "statement"})
     return entries
+
+
+def _minutes_block(minutes_doc: dict, calendar_doc: dict, *, today: date) -> dict | None:
+    """Latest published minutes, and the one still pending.
+
+    Pending = the most recent past meeting with no minutes collected yet. Its
+    date is decision + 21 days only as an expectation (the Fed prints the
+    real "Released" date on its calendar once out, and it isn't always 21 days
+    -- 2025-12-10 came out 12-30), so it is labeled as such.
+    """
+    rows = sorted(minutes_doc.get("minutes", []), key=lambda r: r["meeting_date"])
+    have = {r["meeting_date"] for r in rows}
+    latest = rows[-1] if rows else None
+    past = sorted(m["decision_date"] for m in calendar_doc.get("meetings", []) if date.fromisoformat(m["decision_date"]) <= today)
+    pending_meeting = next((d for d in reversed(past) if d not in have), None)
+    if latest is not None and pending_meeting is not None and pending_meeting < latest["meeting_date"]:
+        pending_meeting = None  # an older gap (a skipped meeting), not what's coming next
+    pending = None
+    if pending_meeting:
+        expected = (date.fromisoformat(pending_meeting) + timedelta(days=21)).isoformat()
+        pending = {"meeting_date": pending_meeting, "expected_release": expected,
+                   "basis": "decision_plus_21_days_expected"}
+    if latest is None and pending is None:
+        return None
+    return {"latest": latest, "pending": pending}
 
 
 def main() -> int:
@@ -150,6 +203,9 @@ def main() -> int:
     schedule = _next_meeting_schedule(calendar_doc, today=date.today())
     decisions = _decisions(json.loads(STATEMENT_TEXT_IN.read_text(encoding="utf-8"))) if STATEMENT_TEXT_IN.exists() else []
     latest_sep = _latest_sep(json.loads(SEP_IN.read_text(encoding="utf-8"))) if SEP_IN.exists() else None
+    minutes_doc = json.loads(MINUTES_IN.read_text(encoding="utf-8")) if MINUTES_IN.exists() else {}
+    minutes_block = _minutes_block(minutes_doc, calendar_doc, today=date.today()) if minutes_doc else None
+    minutes_by_meeting = {r["meeting_date"]: r for r in minutes_doc.get("minutes", [])}
 
     clean = [m for m in meetings_doc["meetings"] if m.get("parsed_ok")]
     clean.sort(key=lambda m: m["meeting_date"])
@@ -226,7 +282,8 @@ def main() -> int:
                 for d in decisions
             ],
             "sep": latest_sep,
-            "current_votes": _current_vote_roster(current_row, roster_members),
+            "minutes": minutes_block,
+            "current_votes": _current_vote_roster(current_row, roster_members, minutes_by_meeting.get(current_row["meeting_date"])),
             "meeting_count": len(clean),
             "current_roster": {
                 "roster_year": int(roster_asof[:4]),

@@ -1790,6 +1790,68 @@ const mmFomcDecisionHtml = (policy) => {
     </div>`;
 };
 
+// FOMC minutes: when they came out, what's next, and the discussion sentences
+// the Fed itself qualifies by how many participants held the view ("Many",
+// "Some", "A few" ...). The sentences are shown verbatim, grouped by that
+// wording only -- no topic tagging, no scoring, no hawk/dove reading -- and the
+// wording is the Fed's, not ours (build_fomc_minutes.py).
+const mmFomcMinutesHtml = (policy) => {
+    const block = policy.minutes;
+    if (!block || (!block.latest && !block.pending)) return '';
+    const latest = block.latest;
+    const pending = block.pending;
+
+    const groups = [
+        ['all', '전원 · 거의 전원 (All / Almost all)'],
+        ['most', '대부분 (Most / A majority)'],
+        ['many', '다수 (Many)'],
+        ['several', '여럿 (Several / Various)'],
+        ['some', '일부 (Some)'],
+        ['few', '소수 (A few / A couple / 인원 표기)'],
+        ['unqualified', '수량 표현 없음 (Participants / Members ...)'],
+    ];
+    const sectionKo = { policy_actions: '결정 논의', participants_views: '경제 전망 논의' };
+
+    let head = '';
+    if (latest) {
+        head = `
+        <strong>${finEsc(latest.meeting_date)} 회의 의사록${latest.released_on ? ` · ${finEsc(latest.released_on)} 공개` : ''}</strong>
+        <p>${latest.source_url ? `<a class="mm-quality-link" href="${finEsc(latest.source_url)}" target="_blank" rel="noopener noreferrer">의사록 원문 ↗</a>` : ''}</p>`;
+    }
+    const next = pending
+        ? `<p class="mm-quality-muted">${finEsc(pending.meeting_date)} 회의 의사록: ${finEsc(pending.expected_release)} 공개 예상 (결정일 +3주 기준의 예상일이며, 실제 공개일은 연준 캘린더에 공개 후 표시됩니다)</p>`
+        : '';
+
+    let body = '';
+    const statements = latest && Array.isArray(latest.statements) ? latest.statements : [];
+    if (statements.length) {
+        const sections = groups.map(([key, label]) => {
+            const rows = statements.filter((row) => row.group === key);
+            if (!rows.length) return '';
+            return `
+            <details class="mm-minutes-group">
+                <summary>${finEsc(label)} · ${rows.length}문장</summary>
+                <ul class="mm-minutes-list">${rows.map((row) => `
+                    <li><span class="mm-minutes-tag">${finEsc(sectionKo[row.section] || row.section)}</span>${finEsc(row.text)}</li>`).join('')}
+                </ul>
+            </details>`;
+        }).join('');
+        body = `
+        <details class="mm-quality-details">
+            <summary>참가자 수 표현별 문장 보기 · ${statements.length}문장</summary>
+            ${sections}
+            <p class="mm-quality-muted">의사록 원문 문장을 그대로 옮겼고, 분류는 문장 첫머리의 수량 표현(연준이 쓴 단어)만 따릅니다. 주제 분류·점수·성향 판단이 아니며, 전문은 원문 링크에서 확인하세요.</p>
+        </details>`;
+    }
+    return `
+    <div class="mm-quality-card mm-quality-wide mm-fomc-minutes">
+        <span class="mm-quality-label">FOMC 의사록</span>
+        ${head}
+        ${next}
+        ${body}
+    </div>`;
+};
+
 const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
@@ -1825,6 +1887,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
         </div>
         <div class="mm-quality-grid">
             ${mmFomcDecisionHtml(policy)}
+            ${mmFomcMinutesHtml(policy)}
             <div class="mm-quality-card">
                 <span class="mm-quality-label">FOMC 공개 표결</span>
                 <strong>${finEsc(cmp.previous_meeting || '—')} → ${finEsc(cmp.current_meeting || '—')}</strong>
