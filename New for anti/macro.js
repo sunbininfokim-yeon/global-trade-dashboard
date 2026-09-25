@@ -25,6 +25,7 @@ let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
 let MM_STATEMENT_DIFF_PROMISE = null;  // FOMC statement wording diffs; loaded only for USA
+let MM_CB_PROMISE = null;       // KOR/JPN policy-board panel (cb_policy_v1.json)
 let MM_FOMC_OPEN = false;       // U.S. policy panel: is the meeting-detail fold under the rate decision open
 
 const mmFetch = async (iso3) => {
@@ -62,6 +63,19 @@ const mmStatementDiffFetch = async () => {
             });
     }
     return MM_STATEMENT_DIFF_PROMISE;
+};
+
+// cb_policy_v1.json: the Bank of Korea and Bank of Japan policy-board panels
+// (build_cb_policy.py) -- one file for both, fetched once, read for KOR / JPN only.
+const mmCbPolicyFetch = async () => {
+    if (!MM_CB_PROMISE) {
+        MM_CB_PROMISE = fetch('/public/data/cb_policy_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`정책위원회 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            });
+    }
+    return MM_CB_PROMISE;
 };
 
 const mmDelta = (v) => {
@@ -1721,18 +1735,19 @@ const mmExcerpt = (value, max = 210) => {
 // dropped, highlighted text for what it added in the same spot. Segments
 // come pre-split from build_fomc_statement_diff.py's difflib pass, so this
 // only has to map each op to markup -- no diffing logic lives in the UI.
+const mmRedline = (segments) => segments.map((seg) => {
+    if (seg.op === 'equal') return finEsc(seg.text);
+    if (seg.op === 'replace') return `<del>${finEsc(seg.before)}</del><ins>${finEsc(seg.after)}</ins>`;
+    if (seg.op === 'delete') return `<del>${finEsc(seg.before)}</del>`;
+    if (seg.op === 'insert') return `<ins>${finEsc(seg.after)}</ins>`;
+    return '';
+}).join('');
+
 const mmStatementDiffHtml = (diffDoc) => {
     const diffs = (diffDoc && Array.isArray(diffDoc.diffs)) ? diffDoc.diffs : [];
     if (!diffs.length) return '';
     const latest = diffs[diffs.length - 1];
-    const segments = latest.segments || [];
-    const body = segments.map((seg) => {
-        if (seg.op === 'equal') return finEsc(seg.text);
-        if (seg.op === 'replace') return `<del>${finEsc(seg.before)}</del><ins>${finEsc(seg.after)}</ins>`;
-        if (seg.op === 'delete') return `<del>${finEsc(seg.before)}</del>`;
-        if (seg.op === 'insert') return `<ins>${finEsc(seg.after)}</ins>`;
-        return '';
-    }).join('');
+    const body = mmRedline(latest.segments || []);
     return `
     <div class="mm-quality-card mm-quality-wide">
         <span class="mm-quality-label">성명서 문구 변화</span>
@@ -1892,6 +1907,212 @@ const mmFomcMinutesHtml = (policy) => {
     </div>`;
 };
 
+
+// === 한국은행 금통위 · 일본은행 정책위원회 ================================
+//
+// Same shape as the FOMC panel: the rate decision is the head, and the meeting's
+// detail (named vote, redline, forecasts, calendar, members) opens under it.
+// Everything comes from the bank's own release (build_cb_policy.py); the redline
+// is a comparison of wording, not a hawk/dove score. The two banks differ in what
+// they publish, and the panel says so instead of filling the gap: the BOJ names
+// who voted for and against, the BOK names only the dissenters.
+const MM_CB_ACTION_KO = { raise: '인상', lower: '인하', maintain: '동결' };
+const MM_CB_DIR_KO = { higher: '인상 선호', lower: '인하 선호', hold: '동결 선호' };
+const MM_CB_FOR_SOURCE_KO = {
+    statement: '성명서에 명시',
+    unanimous_all_present: '만장일치 — 출석 위원 전원',
+    minutes_attendance: '의사록 출석자에서 반대 위원을 뺀 명단 (결정문은 반대 위원만 실명)',
+    roster_inferred: '현재 위원 명단에서 반대 위원을 뺀 추정 (의사록 공개 전)',
+};
+const mmCbPct = (v) => (Number.isFinite(v) ? `${Number(v).toFixed(2)}%` : '—');
+const mmCbMove = (d) => {
+    if (!d.action) return `${mmCbPct(d.rate_pct)} 유지 여부 미확인`;
+    return d.action === 'maintain'
+        ? `동결 → ${mmCbPct(d.rate_pct)}`
+        : `${MM_CB_ACTION_KO[d.action]} ${d.change_bp > 0 ? '+' : ''}${d.change_bp}bp → ${mmCbPct(d.rate_pct)}`;
+};
+
+const mmCbVotesHtml = (cb) => {
+    const v = cb.votes;
+    if (!v) {
+        return `<div class="mm-quality-card"><span class="mm-quality-label">공개 표결</span>
+            <p class="mm-quality-muted">이 회의의 결정문에는 표결 문장이 없습니다.</p></div>`;
+    }
+    const forNames = Array.isArray(v.for) ? v.for.map((x) => x.name) : null;
+    const forCount = forNames ? forNames.length : v.for_count;
+    const against = v.against || [];
+    const dissentLine = against.map((a) => {
+        const alt = Number.isFinite(a.alt_rate_pct) ? ` · ${mmCbPct(a.alt_rate_pct)} 제안` : '';
+        const dir = a.direction ? ` (${MM_CB_DIR_KO[a.direction] || a.direction})` : '';
+        return `<span>${finEsc(a.name)}${finEsc(dir)}${finEsc(alt)}</span>`;
+    }).join('');
+    const reasons = against.filter((a) => a.reason);
+    const assess = (v.assessment_dissents || []);
+    const hist = (cb.vote_history || []).slice(-6).map((row) => {
+        const tally = row.unanimous ? '만장일치' : `${row.for_count}-${row.against_count}`;
+        const who = row.dissenters.length ? ` · ${row.dissenters.join(', ')}` : '';
+        return `<span>${finEsc(String(row.meeting_date).slice(2))} · ${finEsc(tally + who)}</span>`;
+    }).join('');
+    return `
+    <div class="mm-quality-card">
+        <span class="mm-quality-label">공개 표결 · ${finEsc(v.meeting_date)}</span>
+        <strong>${against.length ? `반대 ${against.length}명` : '반대 없음'}${forCount != null ? ` · 찬성 ${forCount}명` : ''}</strong>
+        ${against.length ? `<div class="mm-quality-names">${dissentLine}</div>` : ''}
+        ${reasons.length ? `<details class="mm-quality-details"><summary>반대 사유 (원문)</summary>
+            ${reasons.map((a) => `<p>${finEsc(a.reason)}</p>`).join('')}</details>` : ''}
+        ${assess.length ? `<details class="mm-quality-details"><summary>전망 문구에 반대한 위원 (원문)</summary>
+            ${assess.map((a) => `<p>${finEsc(a.text)}</p>`).join('')}</details>` : ''}
+        ${forNames ? `<details class="mm-quality-details"><summary>찬성 위원 명단</summary>
+            <p>${forNames.map(finEsc).join(' · ')}</p>
+            <p class="mm-quality-muted">${finEsc(MM_CB_FOR_SOURCE_KO[v.for_source] || v.for_source || '')}</p></details>`
+            : '<p class="mm-quality-muted">찬성 위원 명단은 확인되지 않았습니다.</p>'}
+        ${(v.absent || []).length ? `<p class="mm-quality-muted">결석 ${v.absent.map(finEsc).join(', ')}</p>` : ''}
+        ${hist ? `<div class="mm-quality-names">${hist}</div>` : ''}
+        ${cb.vote_history_note_ko ? `<p class="mm-quality-muted">${finEsc(cb.vote_history_note_ko)}</p>` : ''}
+    </div>`;
+};
+
+const mmCbScheduleHtml = (cb) => {
+    const sc = cb.schedule || {};
+    const statusKo = { released: '공개됨', scheduled: '공개 예정', expected: '공개 예상' };
+    const basisKo = (r) => (r.basis === 'boj_calendar' ? '일본은행 공식 일정'
+        : (r.basis === 'bok_board' ? '한국은행 게시일'
+            : (String(r.basis).startsWith('recent_lag') ? '최근 공개 간격 기준 예상일이며 실제 게시 후 확정됩니다' : '성명서 기재')));
+    const rows = (cb.releases || []).map((r) => `
+        <li><b>${finEsc(String(r.meeting_date).slice(2))}</b> 회의 ${finEsc(r.kind_ko)} · ${finEsc(r.date)}
+            <span class="mm-cb-badge mm-cb-${finEsc(r.status)}">${finEsc(statusKo[r.status] || r.status)}</span>
+            <small>${finEsc(basisKo(r))}</small>${r.source_url ? ` <a class="mm-quality-link" href="${finEsc(r.source_url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}</li>`).join('');
+    return `
+    <div class="mm-quality-card">
+        <span class="mm-quality-label">일정 · 공개</span>
+        <strong>${sc.next_meeting_date ? `다음 회의 ${finEsc(sc.next_meeting_date)}` : '다음 회의 일정 미공개'}</strong>
+        ${sc.next_meeting_days && sc.next_meeting_days.length > 1 ? `<p class="mm-quality-muted">${sc.next_meeting_days.map(finEsc).join(' ~ ')}</p>` : ''}
+        ${sc.next_outlook_release ? `<p class="mm-quality-muted">전망보고서 ${finEsc(sc.next_outlook_release)} 공개 예정</p>` : ''}
+        ${rows ? `<ul class="mm-cb-list">${rows}</ul>` : ''}
+    </div>`;
+};
+
+const mmCbRosterHtml = (cb) => {
+    const r = cb.roster || {};
+    if (!Array.isArray(r.members) || !r.members.length) return '';
+    return `
+    <div class="mm-quality-card">
+        <span class="mm-quality-label">위원 명단</span>
+        <strong>${r.members.length}명</strong>
+        <details class="mm-quality-details"><summary>보기</summary>
+            <p>${r.members.map((m) => finEsc(m.role ? `${m.name} (${m.role})` : m.name)).join(' · ')}</p>
+            <p class="mm-quality-muted">${finEsc(r.source || '')}${r.asof ? ` · ${finEsc(r.asof)} 기준` : ''}</p></details>
+    </div>`;
+};
+
+const mmCbOutlookHtml = (cb) => {
+    const o = cb.outlook;
+    if (!o) return '';
+    if (o.kind === 'forecast_table') {
+        const vars = [['real_gdp', '실질 GDP'], ['cpi', '소비자물가(신선식품 제외)'], ['core_cpi', '참고: 근원(식품·에너지 제외)']];
+        const cell = (c, prior) => {
+            if (!c) return '<td class="mm-sep-na">—</td>';
+            const range = c.single ? '확정·단일값' : `범위 ${Number(c.range_low).toFixed(1)}~${Number(c.range_high).toFixed(1)}`;
+            let sub = `<small>${finEsc(range)}`;
+            if (prior && Number.isFinite(prior.median)) {
+                const diff = Math.round((c.median - prior.median) * 10) / 10;
+                const mark = diff > 0 ? `<b class="mm-sep-up">▲${diff.toFixed(1)}</b>` : (diff < 0 ? `<b class="mm-sep-down">▼${Math.abs(diff).toFixed(1)}</b>` : '<b>—</b>');
+                sub += ` · 직전 ${Number(prior.median).toFixed(1)} ${mark}`;
+            }
+            return `<td>${Number(c.median).toFixed(1)}${sub}</small></td>`;
+        };
+        return `
+        <div class="mm-quality-card mm-quality-wide">
+            <span class="mm-quality-label">경제·물가 전망 · ${finEsc(o.meeting_date)} 전망보고서</span>
+            <details class="mm-quality-details" open><summary>정책위원 다수 전망 (중앙값 · 범위)</summary>
+                <div class="mm-sep-scroll"><table class="mm-sep-table">
+                    <thead><tr><th>회계연도</th>${vars.map(([, l]) => `<th>${finEsc(l)}</th>`).join('')}</tr></thead>
+                    <tbody>${(o.years || []).map((y) => `<tr><th>FY${finEsc(y.fiscal_year)}</th>${vars.map(([k]) => cell(y[k], y.prior && y.prior[k])).join('')}</tr>`).join('')}</tbody>
+                </table></div>
+                <p class="mm-quality-muted">전년 대비 %. 중앙값 아래 작은 글씨는 위원 다수 전망 범위(최고·최저 제외)와 직전 전망${o.prior_made_in ? `(${finEsc(o.prior_made_in)})` : ''} 대비 변화입니다. 보고서에 실린 수치를 그대로 옮겼습니다.</p>
+            </details>
+        </div>`;
+    }
+    if (o.kind === 'sentences' && Array.isArray(o.sentences) && o.sentences.length) {
+        return `
+        <div class="mm-quality-card mm-quality-wide">
+            <span class="mm-quality-label">성장·물가 전망 문장 · ${finEsc(o.meeting_date)}${o.forecast_round ? ' (정기 경제전망 회의)' : ''}</span>
+            <details class="mm-quality-details" open><summary>이번 결정문의 전망 서술 ${o.sentences.length}문장</summary>
+                <ul class="mm-minutes-list">${o.sentences.map((t) => `<li>${finEsc(t)}</li>`).join('')}</ul>
+                <p class="mm-quality-muted">결정문 문장을 그대로 옮겼습니다. 숫자가 어느 항목의 것인지 표로 옮기면 잘못 짝지을 수 있어 표로 만들지 않았습니다.</p>
+            </details>
+        </div>`;
+    }
+    return '';
+};
+
+const mmCbDiffsHtml = (cb) => (cb.statement_diffs || []).map((d) => `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">문구 변화 · ${finEsc(d.kind_ko)}</span>
+        <strong>${finEsc(d.previous_meeting)} → ${finEsc(d.current_meeting)} · ${Number(d.changed_word_count || 0)}단어 변경</strong>
+        <details class="mm-quality-details"><summary>문구 비교 보기</summary>
+            <p class="mm-quality-redline">${mmRedline(d.segments || [])}</p></details>
+        <p class="mm-quality-muted">${finEsc(d.kind === 'bank_view' ? '전망보고서 요약끼리 비교합니다.' : '직전 같은 형식의 문서와 비교합니다(회의마다 성명서 구성이 달라 형식이 같은 회의끼리만 비교).')} 원문: <a class="mm-quality-link" href="${finEsc(d.current_source_url)}" target="_blank" rel="noopener noreferrer">최근 ↗</a> · <a class="mm-quality-link" href="${finEsc(d.previous_source_url)}" target="_blank" rel="noopener noreferrer">직전 ↗</a></p>
+    </div>`).join('');
+
+const mmCbPolicyPanel = (cb) => {
+    if (!cb || !cb.decision) return '';
+    const d = cb.decision;
+    const open = MM_FOMC_OPEN;
+    const history = (cb.decision_history || []).slice(-6).map((row) => {
+        const tag = row.action === 'maintain' ? '동결' : `${MM_CB_ACTION_KO[row.action] || row.action} ${row.change_bp > 0 ? '+' : ''}${row.change_bp}bp`;
+        return `<span>${finEsc(String(row.meeting_date).slice(2))} · ${finEsc(tag)}</span>`;
+    }).join('');
+    const v = cb.votes;
+    const against = v ? (v.against || []) : [];
+    const releaseNote = (cb.releases || []).filter((r) => r.status !== 'released').slice(0, 2)
+        .map((r) => `${String(r.meeting_date).slice(2)}회의 ${r.kind_ko} ${r.date} ${r.status === 'expected' ? '공개 예상' : '공개 예정'}`);
+    const summary = [
+        v ? (against.length ? `반대 ${against.length}명 (${against.map((a) => a.name).join(', ')})` : '반대 없음') : null,
+        d.majority ? `표결 ${d.majority}` : null,
+        ...releaseNote,
+        cb.schedule && cb.schedule.next_meeting_date ? `다음 회의 ${cb.schedule.next_meeting_date}` : null,
+    ].filter(Boolean).join(' · ');
+    const prior = Number.isFinite(d.prior_rate_pct)
+        ? (d.action === 'maintain' ? '직전 회의와 같은 수준' : `직전 ${mmCbPct(d.prior_rate_pct)}`) : '직전 수준 미확인';
+    return `
+    <section class="mm-quality" aria-label="${finEsc(cb.bank_ko)} 정책 결정">
+        <div class="mm-quality-head">
+            <div>
+                <p class="mm-quality-kicker">공식 문서 · 공개 표결</p>
+                <h3>${finEsc(cb.bank_ko)}</h3>
+            </div>
+            <span class="mm-quality-status">성향 점수 아님</span>
+        </div>
+        <div class="mm-quality-grid">
+            <div class="mm-quality-card mm-quality-wide mm-fomc-decision mm-fomc-fold${open ? ' is-open' : ''}">
+                <button type="button" class="mm-fomc-toggle" data-mm-fomc-toggle="1" aria-expanded="${open}" aria-controls="mm-cb-detail">
+                    <span class="mm-fomc-toggle-main">
+                        <span class="mm-quality-label">${finEsc(cb.rate_label_ko)} 결정</span>
+                        <strong class="mm-fomc-move mm-fomc-${finEsc(d.action || 'maintain')}">${finEsc(d.meeting_date)} · ${finEsc(mmCbMove(d))}</strong>
+                    </span>
+                    <span class="mm-fomc-more"><span class="mm-fomc-more-off">표결 · 문구 · 전망 보기 ▾</span><span class="mm-fomc-more-on">접기 ▴</span></span>
+                </button>
+                <p>${finEsc(prior)}${d.source_url ? ` · <a class="mm-quality-link" href="${finEsc(d.source_url)}" target="_blank" rel="noopener noreferrer">결정문 ↗</a>` : ''}</p>
+                ${history ? `<div class="mm-quality-names">${history}</div>` : ''}
+                ${summary ? `<p class="mm-quality-muted mm-fomc-summary">${finEsc(summary)}</p>` : ''}
+                <div class="mm-fomc-detail" id="mm-cb-detail"${open ? '' : ' hidden'}>
+                    <div class="mm-fomc-detail-grid">
+                        ${mmCbVotesHtml(cb)}
+                        ${mmCbScheduleHtml(cb)}
+                        ${mmCbOutlookHtml(cb)}
+                        ${mmCbDiffsHtml(cb)}
+                        ${mmCbRosterHtml(cb)}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="mm-quality-foot">${finEsc(cb.iso3 === 'KOR'
+            ? '한국은행 결정문은 반대 위원만 실명으로 밝힙니다. 찬성 명단은 의사록 출석자에서 반대 위원을 뺀 것입니다.'
+            : '일본은행 성명서는 찬성·반대 위원 실명과 반대 사유를 그대로 싣습니다. 원문은 영어입니다.')} 문구 비교와 전망 수치는 공식 문서를 옮긴 것이며 다음 결정을 예측하지 않습니다.</p>
+    </section>`;
+};
+
 const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
@@ -2023,6 +2244,7 @@ const mmOverlay = () => {
         </div>` : ''}
 
         ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality, MM_COUNTRY.statementDiff) : ''}
+        ${(c.iso3 === 'KOR' || c.iso3 === 'JPN') ? mmCbPolicyPanel(MM_COUNTRY.cbPolicy) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
@@ -2150,14 +2372,17 @@ const mmOpenCountry = async (iso3) => {
         // the country pack -- fetched alongside it, not blocking it, since a
         // slow or missing document snapshot should never delay the ordinary
         // indicator overlay every other country also needs.
-        const [countryPayload, quality, statementDiff] = await Promise.all([
+        const isCb = iso3 === 'KOR' || iso3 === 'JPN';
+        const [countryPayload, quality, statementDiff, cbDoc] = await Promise.all([
             mmFetch(iso3),
             iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
             iso3 === 'USA' ? mmStatementDiffFetch().catch(() => null) : Promise.resolve(null),
+            isCb ? mmCbPolicyFetch().catch(() => null) : Promise.resolve(null),
         ]);
         MM_COUNTRY = countryPayload;
         if (quality) MM_COUNTRY.quality = quality;
         if (statementDiff) MM_COUNTRY.statementDiff = statementDiff;
+        if (cbDoc && cbDoc[iso3]) MM_COUNTRY.cbPolicy = cbDoc[iso3];
         MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
         MM_CHART = null;
     } catch (err) {
