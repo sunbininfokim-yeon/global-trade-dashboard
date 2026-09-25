@@ -1967,6 +1967,7 @@ const mmCbVotesHtml = (cb) => {
             <p class="mm-quality-muted">${finEsc(MM_CB_FOR_SOURCE_KO[v.for_source] || v.for_source || '')}</p></details>`
             : '<p class="mm-quality-muted">찬성 위원 명단은 확인되지 않았습니다.</p>'}
         ${(v.absent || []).length ? `<p class="mm-quality-muted">결석 ${v.absent.map(finEsc).join(', ')}</p>` : ''}
+        ${v.source === 'minutes' ? '<p class="mm-quality-muted">결정문에 표결 문장이 없는 회의라 의사록 심의결과의 기재로 채웠습니다.</p>' : ''}
         ${hist ? `<div class="mm-quality-names">${hist}</div>` : ''}
         ${cb.vote_history_note_ko ? `<p class="mm-quality-muted">${finEsc(cb.vote_history_note_ko)}</p>` : ''}
     </div>`;
@@ -2046,6 +2047,92 @@ const mmCbOutlookHtml = (cb) => {
     return '';
 };
 
+
+const MM_CB_GROUPS = [
+    ['all', '전원 · 거의 전원'], ['most', '대부분'], ['many', '다수'], ['some', '일부 · 여럿'],
+    ['few', '소수 · 한 명'], ['unqualified', '수량 표현 없음'],
+];
+const MM_CB_STANCE_KO = { raise: '인상 의견', hold: '동결 · 유지 의견', lower: '인하 의견' };
+
+// One discussion block: the sentence that opens with a member-count phrase, plus what
+// followed it (a staff reply, the member's own statement). Verbatim; the phrase is the
+// Committee's wording, not a label of ours.
+const mmCbBlock = (b) => {
+    const rest = Array.isArray(b.followups) ? b.followups : (Array.isArray(b.statement) ? b.statement : []);
+    return `<li><span class="mm-minutes-tag">${finEsc(b.quantifier)}</span>${finEsc(b.text || b.heading || '')}
+        ${rest.length ? `<details class="mm-cb-more"><summary>이어지는 내용 ${rest.length}단락</summary>${rest.map((t) => `<p>${finEsc(t)}</p>`).join('')}</details>` : ''}</li>`;
+};
+
+const mmCbGroupedBlocks = (blocks) => MM_CB_GROUPS.map(([key, label]) => {
+    const rows = blocks.filter((b) => b.group === key);
+    if (!rows.length) return '';
+    return `<details class="mm-minutes-group"><summary>${finEsc(label)} · ${rows.length}건</summary>
+        <ul class="mm-minutes-list">${rows.map(mmCbBlock).join('')}</ul></details>`;
+}).join('');
+
+const mmCbMinutesHtml = (cb) => {
+    const mi = cb.minutes;
+    if (!mi) return '';
+    const link = (mi.page_url || mi.source_url)
+        ? ` · <a class="mm-quality-link" href="${finEsc(mi.page_url || mi.source_url)}" target="_blank" rel="noopener noreferrer">의사록 원문 ↗</a>` : '';
+    const head = `<strong>${finEsc(mi.meeting_date)} 회의 의사록${mi.released_on ? ` · ${finEsc(mi.released_on)} 공개` : ''}</strong>
+        <p class="mm-quality-muted">위원 이름은 밝히지 않고 "일부 위원" 같은 수 표현으로만 옮깁니다. 아래는 원문 그대로이며 요약·평가가 아닙니다${link}</p>`;
+    let body = '';
+    if (cb.iso3 === 'KOR') {
+        const op = mi.opinions || {};
+        const members = op.members || [];
+        const stanceRows = ['raise', 'hold', 'lower'].map((k) => {
+            const rows = members.filter((m) => m.stance === k);
+            if (!rows.length) return '';
+            return `<details class="mm-minutes-group"><summary>${MM_CB_STANCE_KO[k]} · ${rows.length}명</summary>
+                <ul class="mm-minutes-list">${rows.map(mmCbBlock).join('')}</ul></details>`;
+        }).join('');
+        const subs = ((mi.discussion || {}).subsections || []).filter((x) => (x.blocks || []).length).map((sub) => `
+            <details class="mm-minutes-group"><summary>${finEsc(sub.title)} · ${sub.blocks.length}건</summary>
+                <ul class="mm-minutes-list">${sub.blocks.map(mmCbBlock).join('')}</ul></details>`).join('');
+        body = `
+            ${op.distribution ? `<p class="mm-cb-dist">${finEsc(op.distribution)}</p>` : ''}
+            <details class="mm-quality-details"><summary>위원별 의견 개진 · ${members.length}명 (발언 원문)</summary>${stanceRows}
+                ${op.conclusion ? `<p class="mm-quality-muted">${finEsc(op.conclusion)}</p>` : ''}</details>
+            <details class="mm-quality-details"><summary>토의 내용 (동향보고회의)</summary>${subs}</details>`;
+    } else {
+        const decisionLabel = { majority: '다수결', unanimous: '만장일치' };
+        const votes = (mi.votes || []).map((v) => `
+            <li><b>${finEsc(v.item)}. ${finEsc(v.title)}</b>${v.decision ? ` · ${finEsc(decisionLabel[v.decision] || v.decision)}` : ''}
+                ${(v.ballots || []).map((bl) => `<small>${bl.label ? `${finEsc(bl.label.slice(0, 120))}<br>` : ''}찬성 ${bl.for.length}명${bl.against.length ? ` · 반대 ${bl.against.map(finEsc).join(', ')}` : ''}${bl.absent.length ? ` · 결석 ${bl.absent.map(finEsc).join(', ')}` : ''}</small>`).join('')}
+                ${(v.notes || []).map((n) => `<small>${finEsc(n)}</small>`).join('')}</li>`).join('');
+        body = `
+            <details class="mm-quality-details"><summary>통화정책 논의 · ${(mi.policy || []).length}건 (수 표현별)</summary>${mmCbGroupedBlocks(mi.policy || [])}</details>
+            <details class="mm-quality-details"><summary>경제·물가 논의 · ${(mi.economy || []).length}건 (수 표현별)</summary>${mmCbGroupedBlocks(mi.economy || [])}</details>
+            <details class="mm-quality-details"><summary>이 회의의 표결 전부 · ${(mi.votes || []).length}건 (정책금리 외 결정 포함)</summary>
+                <ul class="mm-cb-list">${votes}</ul></details>`;
+    }
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">의사록</span>
+        ${head}
+        ${body}
+    </div>`;
+};
+
+const mmCbOpinionsHtml = (cb) => {
+    const op = cb.opinions;
+    if (!op || !Array.isArray(op.sections) || !op.sections.length) return '';
+    const total = op.sections.reduce((n, sec) => n + sec.subsections.reduce((m, x) => m + x.bullets.length, 0), 0);
+    const sections = op.sections.map((sec) => `
+        <details class="mm-minutes-group"><summary>${finEsc(sec.heading)} · ${sec.subsections.reduce((m, x) => m + x.bullets.length, 0)}건</summary>
+            ${sec.subsections.map((sub) => `${sub.heading ? `<p class="mm-quality-muted"><b>${finEsc(sub.heading)}</b></p>` : ''}
+                <ul class="mm-minutes-list">${sub.bullets.map((t) => `<li>${finEsc(t)}</li>`).join('')}</ul>`).join('')}
+        </details>`).join('');
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">주요 의견 요약 (Summary of Opinions)</span>
+        <strong>${finEsc(op.meeting_date)} 회의 · ${finEsc(op.released_on)} 공개</strong>
+        <p class="mm-quality-muted">위원과 정부 대표가 회의에서 낸 의견을 각자 요약해 총재가 편집한 글입니다. 발언자는 밝히지 않으며 원문(영어)을 그대로 옮겼습니다 · <a class="mm-quality-link" href="${finEsc(op.source_url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a></p>
+        <details class="mm-quality-details"><summary>의견 ${total}건 보기</summary>${sections}</details>
+    </div>`;
+};
+
 const mmCbDiffsHtml = (cb) => (cb.statement_diffs || []).map((d) => `
     <div class="mm-quality-card mm-quality-wide">
         <span class="mm-quality-label">문구 변화 · ${finEsc(d.kind_ko)}</span>
@@ -2100,6 +2187,8 @@ const mmCbPolicyPanel = (cb) => {
                     <div class="mm-fomc-detail-grid">
                         ${mmCbVotesHtml(cb)}
                         ${mmCbScheduleHtml(cb)}
+                        ${mmCbMinutesHtml(cb)}
+                        ${mmCbOpinionsHtml(cb)}
                         ${mmCbOutlookHtml(cb)}
                         ${mmCbDiffsHtml(cb)}
                         ${mmCbRosterHtml(cb)}

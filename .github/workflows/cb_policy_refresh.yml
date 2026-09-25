@@ -1,7 +1,7 @@
 name: Refresh KR/JP policy boards
 
 # 한국은행 금융통화위원회(통화정책방향 결정문·의사록·일정·위원)와 일본은행 정책위원회
-# (성명서·전망보고서·일정)를 각 은행 사이트에서 받아 public/data/cb_policy_v1.json 을
+# (성명서·전망보고서·주요 의견 요약·의사록·일정)를 각 은행 사이트에서 받아 public/data/cb_policy_v1.json 을
 # 다시 만든다. 키가 필요 없는 공개 페이지만 쓴다. FOMC 수집(fomc_collect_refresh.yml)과
 # 같은 방식으로 멱등이다 -- 이미 받은 회의는 다시 받지 않고, 의사록이 아직 없는 회의만
 # 매번 다시 찾는다. 그래서 회의 당일과 의사록 공개일을 빼면 하루치 실행은 거의 변화가 없다.
@@ -29,10 +29,11 @@ jobs:
         working-directory: New for anti/scripts/macro_monitor
         # pdfminer.six: 두 은행 모두 PDF 문서가 있고, pypdf 는 BOJ 에서 단어를 잘못 끊고
         # BOK 의사록에서 띄어쓰기를 모두 지운다. pypdf 는 BOJ 전망 표를 행 단위로 읽는 데만 쓴다.
-        run: pip install pytest beautifulsoup4 pypdf pdfminer.six
+        # olefile: BOK 의사록은 HWP 로 읽는다(PDF 는 줄바꿈마다 띄어쓰기가 사라짐, HWP 는 문단·띄어쓰기가 그대로).
+        run: pip install pytest beautifulsoup4 pypdf pdfminer.six olefile
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_boj_mpm.py tests/test_bok_mpc.py tests/test_cb_policy.py -v
+        run: python -m pytest tests/test_boj_mpm.py tests/test_bok_mpc.py tests/test_cb_minutes.py tests/test_cb_policy.py -v
       - name: Collect BOJ statements
         working-directory: New for anti/scripts/macro_monitor
         # 읽지 못한 회의가 있으면 exit 1 이지만 이미 받은 회의는 그대로 남는다.

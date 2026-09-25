@@ -73,7 +73,8 @@ def main() -> int:
         rec["minutes"] = (meetings.get(d) or {}).get("minutes")
         meetings[d] = rec
 
-    # minutes: look up only the meetings that do not have them yet
+    # minutes: found by search for meetings that have none yet; a stored meeting whose minutes
+    # predate the discussion/vote fields is upgraded from the page it already points at
     pending = [d for d, m in meetings.items() if not m.get("minutes")]
     if pending:
         try:
@@ -83,14 +84,19 @@ def main() -> int:
             found = {}
         for d in pending:
             row = found.get(d)
-            if not row:
-                continue
-            try:
-                att = bok.fetch_minutes_attendance(row["ntt_id"])
-            except Exception as exc:  # noqa: BLE001
-                errors.append(f"{d} minutes: {exc}")
-                continue
-            meetings[d]["minutes"] = {"released_on": row["registered_on"], "session_no": row["session_no"], **att}
+            if row:
+                meetings[d]["minutes"] = {"released_on": row["registered_on"], "session_no": row["session_no"],
+                                          "page_url": bok.detail_url(bok.MINUTES_BOARD, row["ntt_id"], bok.MINUTES_MENU)}
+    for d, m in sorted(meetings.items()):
+        mi = m.get("minutes")
+        if not mi or ("discussion" in mi and not args.force):
+            continue
+        try:
+            got = bok.fetch_minutes(page_url=mi["page_url"], prior_rate=m["prior_rate_pct"], rate=m["rate_pct"])
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{d} minutes: {exc}")
+            continue
+        m["minutes"] = {**mi, **got}
 
     calendar = dict(existing.get("calendar", {}))
     for year in (datetime.now(timezone.utc).year, datetime.now(timezone.utc).year + 1):

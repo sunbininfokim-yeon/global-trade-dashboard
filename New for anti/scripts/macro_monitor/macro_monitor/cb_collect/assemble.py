@@ -145,6 +145,13 @@ def assemble_boj(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
                                  "status": "released" if when <= today.isoformat() else "scheduled",
                                  "basis": "boj_calendar" if row else "statement"})
 
+    opinions = minutes = None
+    for m in reversed(meetings):
+        if opinions is None and m.get("opinions"):
+            opinions = {"meeting_date": m["meeting_date"], **m["opinions"]}
+        if minutes is None and m.get("minutes"):
+            minutes = {"meeting_date": m["meeting_date"], **m["minutes"]}
+
     present = last.get("members_present", [])
     return {
         "iso3": "JPN",
@@ -156,6 +163,8 @@ def assemble_boj(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "vote_history": [vote_row(m) for m in meetings[-HISTORY_LEN:]],
         "statement_diffs": diffs,
         "outlook": outlook,
+        "opinions": opinions,
+        "minutes": minutes,
         "schedule": {
             "next_meeting_date": upcoming["decision_date"] if upcoming else None,
             "next_meeting_days": upcoming["meeting_days"] if upcoming else None,
@@ -175,13 +184,23 @@ def _term_covers(member: dict[str, Any], on: str) -> bool:
     return member["term_start"] <= on <= member["term_end"]
 
 
+def effective_vote(meeting: dict[str, Any]) -> dict[str, Any] | None:
+    """The vote sentence of the press release when it has one (2026-02 onward), otherwise the
+    vote the minutes record in their deliberation-result paragraph. Either way it says where
+    it came from."""
+    if meeting.get("vote"):
+        return {**meeting["vote"], "source": "press_release"}
+    mv = (meeting.get("minutes") or {}).get("vote")
+    return dict(mv) if mv else None
+
+
 def voters_for(meeting: dict[str, Any], roster: list[dict[str, Any]]) -> tuple[list[str] | None, str | None]:
     """Who voted for. The release names only the dissenters, so this is attendance minus
     dissenters: from the minutes' attendee list when the minutes are out, otherwise (the
     newest meeting) from the current roster -- but only when every member's term covers the
     meeting date and the counts match the stated tally, the same test the FOMC panel uses
     for its inferred roster."""
-    vote = meeting.get("vote")
+    vote = effective_vote(meeting)
     if not vote:
         return None, None
     dissenters = [a["name"] for a in vote["against"]]
@@ -215,8 +234,9 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
     last = meetings[-1]
 
     majority = None
-    if last.get("vote"):
-        v = last["vote"]
+    last_vote = effective_vote(last)
+    if last_vote:
+        v = last_vote
         majority = "만장일치" if v["unanimous"] else f"{v['favor_count']}-{len(v['against'])}"
     decision = {
         "meeting_date": last["meeting_date"],
@@ -225,7 +245,7 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "prior_rate_pct": last["prior_rate_pct"],
         "rate_pct": last["rate_pct"],
         "majority": majority,
-        "unanimous": last["vote"]["unanimous"] if last.get("vote") else None,
+        "unanimous": last_vote["unanimous"] if last_vote else None,
         "source_url": last["source_url"],
     }
     history = [{"meeting_date": m["meeting_date"], "action": m["action"], "change_bp": m["change_bp"],
@@ -233,26 +253,28 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
 
     for_names, for_source = voters_for(last, roster)
     votes = None
-    if last.get("vote"):
+    if last_vote:
         votes = {
             "meeting_date": last["meeting_date"],
             "for": [{"name": n} for n in for_names] if for_names is not None else None,
             "for_source": for_source,
-            "for_count": last["vote"]["favor_count"],
+            "for_count": last_vote["favor_count"],
             "against": [
                 {"name": a["name"], "reason": None, "alt_rate_pct": a["preferred_rate_pct"], "direction": a["direction"]}
-                for a in last["vote"]["against"]
+                for a in last_vote["against"]
             ],
             "absent": (last.get("minutes") or {}).get("absent", []),
-            "text": last["vote"]["text"],
+            "text": last_vote["text"],
+            "source": last_vote["source"],
         }
     vote_history = []
     for m in meetings:
-        if m.get("vote"):
+        v = effective_vote(m)
+        if v:
             vote_history.append({
-                "meeting_date": m["meeting_date"], "for_count": m["vote"]["favor_count"],
-                "against_count": len(m["vote"]["against"]), "unanimous": m["vote"]["unanimous"],
-                "dissenters": [a["name"] for a in m["vote"]["against"]],
+                "meeting_date": m["meeting_date"], "for_count": v["favor_count"],
+                "against_count": len(v["against"]), "unanimous": v["unanimous"],
+                "dissenters": [a["name"] for a in v["against"]], "source": v["source"],
             })
 
     texts = [{"meeting_date": m["meeting_date"], "text": " ".join(m["paragraphs"]), "source_url": m["source_url"]} for m in meetings]
@@ -264,6 +286,17 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         outlook = {"kind": "sentences", "meeting_date": last["meeting_date"], "source_url": last["source_url"],
                    "forecast_round": int(last["meeting_date"][5:7]) in (2, 5, 8, 11),
                    "sentences": last["outlook_sentences"]}
+
+    minutes = None
+    for m in reversed(meetings):
+        mi = m.get("minutes")
+        if mi and mi.get("discussion"):
+            minutes = {
+                "meeting_date": m["meeting_date"], "released_on": mi.get("released_on"), "page_url": mi.get("page_url"),
+                "present": mi.get("present", []), "absent": mi.get("absent", []),
+                "opinions": mi.get("opinions"), "discussion": mi["discussion"],
+            }
+            break
 
     calendar = sorted(d for ds in doc.get("calendar", {}).values() for d in ds)
     upcoming = next((d for d in calendar if d > today.isoformat()), None)
@@ -289,9 +322,12 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "decision_history": history,
         "votes": votes,
         "vote_history": vote_history[-HISTORY_LEN:],
-        "vote_history_note_ko": "결정문에 표결 문장이 실린 2026-02 회의부터입니다." if vote_history else None,
+        "vote_history_note_ko": ("2026-02 이전 회의의 표결은 결정문에 표결 문장이 없어 의사록 '심의결과'의 기재(반대 위원 실명)로 채웠습니다."
+                                 if any(v["source"] == "minutes" for v in vote_history) else None),
         "statement_diffs": diffs,
         "outlook": outlook,
+        "minutes": minutes,
+        "opinions": None,
         "schedule": {"next_meeting_date": upcoming, "next_meeting_days": [upcoming] if upcoming else None, "next_outlook_release": None},
         "releases": releases,
         "roster": {"asof": (doc.get("retrieved_at") or "")[:10], "source": "한국은행 금융통화위원회 위원 명단",
