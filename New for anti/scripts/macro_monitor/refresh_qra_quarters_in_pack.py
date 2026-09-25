@@ -26,8 +26,10 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor.engine import _apply_qra_engine_file  # noqa: E402
+from macro_monitor.qra import tbill  # noqa: E402
 
 ENGINE = ROOT.parent.parent / "public" / "data" / "qra_engine_v1.json"
+TBILL = ROOT.parent.parent / "public" / "data" / "tbill_issuance_v1.json"
 PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 
 
@@ -40,6 +42,21 @@ def _iso_date(text):
         except ValueError:
             continue
     return None
+
+
+def _regraft_tbill(by_id, quarter_label) -> None:
+    """_apply_qra_engine_file resets components to the coupon rows; put the stored
+    bill rows back (no network). Skipped when the stored file is for a different
+    TBAC quarter -- refresh_tbill_in_pack.py rebuilds it for the new one."""
+    if not TBILL.exists():
+        return
+    block = json.loads(TBILL.read_text(encoding="utf-8"))
+    if quarter_label and block.get("quarter_label") != quarter_label:
+        print(f"tbill_issuance_v1.json is for {block.get('quarter_label')!r}, not {quarter_label!r}; "
+              "bill rows dropped until refresh_tbill_in_pack.py runs", file=sys.stderr)
+        by_id["qra_issuance"].pop("tbill", None)
+        return
+    tbill.graft(by_id, block)
 
 
 def main() -> int:
@@ -77,6 +94,7 @@ def main() -> int:
         )
     else:
         ind.pop("components_note_ko", None)
+    _regraft_tbill(by_id, tbac.get("quarter_label"))
     ind["data_status"] = "live"
     ind["asof"] = _iso_date(announced) or ind.get("asof")
     ind["qra_quarters"] = {

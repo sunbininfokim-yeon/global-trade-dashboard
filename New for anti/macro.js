@@ -1399,12 +1399,31 @@ const mmMixView = (ind) => {
         <p class="fin-note">발전량 기준 비중입니다. 설비용량이 아니라 실제로 만들어낸 전력의 몫입니다.</p>`;
 };
 
-const mmComponentsView = (ind, title) => mmBars(
-    (ind.components || []).map((c) => ({
+// T-bill rows (kind 'bill') sit on their own scale: a quarter's gross bill
+// auctions are ~4x the whole coupon table, so on one axis every coupon bar
+// would shrink to a sliver. They get their own block with their own note.
+const mmComponentsView = (ind, title) => {
+    const rows = ind.components || [];
+    const toBar = (c) => ({
         label: c.label_ko || c.id,
         value: c.value,
         display: c.display ?? (mmFmt(c.value, 0) + (c.unit === 'pct' ? '%' : '')),
-    })), {}) + (title ? `<p class="fin-note">${finEsc(title)}</p>` : '');
+        sub: Number.isFinite(c.n_auctions) ? `${c.n_auctions}회` : undefined,
+    });
+    const bills = rows.filter((c) => c.kind === 'bill');
+    const main = mmBars(rows.filter((c) => c.kind !== 'bill').map(toBar), {})
+        + (title ? `<p class="fin-note">${finEsc(title)}</p>` : '');
+    const tb = ind.tbill;
+    if (!bills.length || !tb) return main;
+    const md = (iso) => { const [, m, d] = String(iso).split('-'); return `${Number(m)}/${Number(d)}`; };
+    const span = tb.complete
+        ? `분기 전체 ${md(tb.window.start)}~${md(tb.window.end)}`
+        : `${md(tb.window.start)}~${md(tb.through_auction_date)} 공시분 · 분기 미완`;
+    return `${main}
+        <p class="mm-view-title mm-tbill-title">T-bill 경매 · ${finEsc(span)}</p>
+        ${mmBars(bills.map(toBar), {})}
+        <p class="fin-note">${finEsc(tb.note_ko || '')}${tb.source_url ? ` <a class="mm-quality-link" href="${finEsc(tb.source_url)}" target="_blank" rel="noopener noreferrer">Fiscal Data ↗</a>` : ''}</p>`;
+};
 
 const mmOutcomesView = (ind) => {
     const rows = (ind.outcomes || []).map((o) => ({
