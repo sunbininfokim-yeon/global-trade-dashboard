@@ -53,6 +53,58 @@ def pdf_text(data: bytes) -> str:
     return extract_text(io.BytesIO(data), laparams=LAParams(word_margin=0.15, char_margin=2.0, line_margin=0.4))
 
 
+def pdf_body_text(data: bytes, *, mark_headings: bool = False) -> str:
+    """Body text only: lines set in a clearly smaller size than the document's own
+    (footnotes, page furniture) are dropped so they do not land in the middle of a
+    sentence. Text blocks are separated by a blank line, lines within one by a newline.
+
+    With `mark_headings`, lines set in a bold face are emitted as "§ <heading>" (a
+    heading that wraps onto a second bold line is merged; a new roman/letter marker
+    starts a new heading). Headings otherwise run straight into the first sentence of
+    the text below them once whitespace is collapsed.
+    """
+    import re
+    from collections import Counter
+
+    from pdfminer.high_level import extract_pages
+    from pdfminer.layout import LAParams, LTChar, LTTextContainer, LTTextLine
+
+    lines: list[tuple[str, float, bool]] = []          # (text, size, bold) in reading order, "" = block break
+    for page in extract_pages(io.BytesIO(data), laparams=LAParams(word_margin=0.15, char_margin=2.0, line_margin=0.4)):
+        for element in page:
+            if not isinstance(element, LTTextContainer):
+                continue
+            for line in element:
+                if isinstance(line, LTTextLine):
+                    chars = [c for c in line if isinstance(c, LTChar)]
+                    if chars:
+                        bold = sum(1 for c in chars if "bold" in c.fontname.lower()) > len(chars) / 2
+                        lines.append((line.get_text().strip(), sum(c.size for c in chars) / len(chars), bold))
+            lines.append(("", 0.0, False))
+    dominant = Counter(round(size) for t, size, _ in lines if t).most_common(1)
+    cutoff = 0.9 * dominant[0][0] if dominant else 0
+    out: list[str] = []
+    heading: list[str] | None = None
+    for text, size, bold in lines:
+        if text and size < cutoff:
+            continue
+        if mark_headings and text and bold:
+            if heading is not None and not re.match(r"^(?:[IVX]+|[A-F])\.\s", text):
+                heading.append(text)
+            else:
+                if heading is not None:
+                    out.append("§ " + " ".join(heading))
+                heading = [text]
+            continue
+        if heading is not None:
+            out.append("§ " + " ".join(heading))
+            heading = None
+        out.append(text)
+    if heading is not None:
+        out.append("§ " + " ".join(heading))
+    return "\n".join(out)
+
+
 def pdf_text_by_row(data: bytes) -> str:
     """pypdf's reading order, which keeps a table's cells on their row label.
     pdfminer reads the BOJ forecast table column by column; pypdf reads it row by

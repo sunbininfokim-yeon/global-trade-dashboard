@@ -19,6 +19,7 @@ menuNo or they answer 404.
 from __future__ import annotations
 
 import re
+import unicodedata
 import urllib.parse
 from datetime import date
 from typing import Any
@@ -26,6 +27,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 
 from .common import collapse, fetch_bytes, fetch_text, pdf_text
+from .hwp import hwp_paragraphs
 
 BASE = "https://www.bok.or.kr"
 LIST_URL = f"{BASE}/portal/singl/newsData/listCont.do"
@@ -260,5 +262,209 @@ def fetch_minutes_attendance(ntt_id: str) -> dict[str, Any]:
     pdf_url = minutes_pdf_url(fetch_text(page_url, min_size=100000))
     if not pdf_url:
         raise ValueError(f"no pdf attached to {page_url}")
+    return {"page_url": page_url, "pdf_url": pdf_url,
+            **parse_minutes_attendance(pdf_text(fetch_bytes(pdf_url, min_size=20000)))}
+
+
+# --------------------------------------------------------------------------
+# Minutes (HWP): who attended, what members said, how the vote went
+# --------------------------------------------------------------------------
+#
+# The minutes report members only as "some members" ("일부 위원"), never by name --
+# except for dissent, which the deliberation-result paragraph names ("(다만, 황건일 위원은
+# ... 반대의사를 표시하고 ...)"). That is the only place the earlier meetings' votes are
+# recorded (the press release carries a vote sentence only since 2026-02), so the vote is
+# read from here as well.
+
+_Q_START = re.compile(
+    r"^(?:(?:이와\s*관련하여|이와\s*함께|한편|또한|아울러|이어서|특히|다만|반면)\s+)?"
+    r"(?P<q>(?:또\s*다른\s+|다른\s+)?(?P<base>일부|다수의?|대부분의?|모든|몇몇|소수의?|한)\s*위원들?)(?:은|는|이|도)(?=\s|$)")
+_QUANT_GROUP = {"모든": "all", "대부분": "most", "다수": "many", "일부": "some", "몇몇": "some", "소수": "few", "한": "few"}
+_HEAD_AGENDA = re.compile(r"^[〈<]\s*의안\s*제\s*\d+\s*호\s*[―\-–—]+\s*통화정책방향")
+_JUNK = re.compile(r"[\u0100-\u02ff\u0900-\u0dff]+")     # stray bytes some records leave at a paragraph's end
+
+
+def clean_paragraphs(paragraphs: list[str]) -> list[str]:
+    out = []
+    for p in paragraphs:
+        p = unicodedata.normalize("NFKC", p)
+        p = _JUNK.sub("", p)
+        p = collapse(p)
+        out.append(p)
+    return out
+
+
+def quantifier_of(paragraph: str) -> tuple[str, str] | None:
+    """('다른 일부 위원', 'some') when a paragraph opens with a member-count expression."""
+    m = _Q_START.match(paragraph)
+    if not m:
+        return None
+    return collapse(m.group("q")), _QUANT_GROUP[m.group("base").rstrip("의")]
+
+
+def _stance(paragraph: str, prior: float | None) -> tuple[str | None, float | None]:
+    """'raise' / 'hold' / 'lower' and the target rate a member's opening sentence names."""
+    nums = [float(x) for x in re.findall(r"(\d+\.\d+)\s*%", paragraph)]
+    if "동결" in paragraph or "유지" in paragraph:
+        return "hold", (nums[0] if nums else prior)
+    if "인상" in paragraph:
+        return "raise", (nums[-1] if nums else None)
+    if "인하" in paragraph:
+        return "lower", (nums[-1] if nums else None)
+    return None, None
+
+
+def _sections(paras: list[str]) -> dict[str, tuple[int, int]]:
+    """Index ranges of the monetary-policy agenda item and its numbered parts."""
+    start = next((i for i, p in enumerate(paras) if _HEAD_AGENDA.match(p)), None)
+    if start is None:
+        raise ValueError("no 통화정책방향 agenda item in the minutes")
+    end = next((i for i in range(start + 1, len(paras)) if re.match(r"^[〈<]\s*의안|^\(별첨\)", paras[i])), len(paras))
+    marks: dict[str, int] = {}
+    for i in range(start, end):
+        m = re.match(r"^\(\s*(\d)\s*\)\s*(위원 토의내용|한국은행 기준금리 결정에 관한 위원별 의견|토의결론|심의결과)", paras[i])
+        if m:
+            marks[m.group(2)] = i
+    keys = {"위원 토의내용": "discussion", "한국은행 기준금리 결정에 관한 위원별 의견": "opinions", "토의결론": "conclusion", "심의결과": "result"}
+    order = sorted((i, keys[k]) for k, i in marks.items())
+    out = {}
+    for n, (i, key) in enumerate(order):
+        out[key] = (i + 1, order[n + 1][0] if n + 1 < len(order) else end)
+    if "opinions" not in out or "result" not in out:
+        raise ValueError("minutes lack the opinion or deliberation-result part")
+    return out
+
+
+def _blocks(paras: list[str], lo: int, hi: int, stop_at_heading: bool = True) -> list[dict[str, Any]]:
+    """Paragraphs that open with a member-count phrase, each with the paragraphs that follow
+    it (a staff reply, the member's own statement) up to the next such phrase or heading."""
+    blocks: list[dict[str, Any]] = []
+    for i in range(lo, hi):
+        p = paras[i]
+        q = quantifier_of(p)
+        if q:
+            blocks.append({"quantifier": q[0], "group": q[1], "text": p, "followups": []})
+        elif blocks and p and not (stop_at_heading and re.match(r"^\(\s*[가-힣]\s*\)\s", p)):
+            blocks[-1]["followups"].append(p)
+    return blocks
+
+
+def parse_minutes_hwp(paragraphs: list[str], *, prior_rate: float | None, rate: float | None) -> dict[str, Any]:
+    paras = clean_paragraphs(paragraphs)
+    parts = _sections(paras)
+
+    # attendance (header): "장 용 성  위 원", "권 민 수  위 원 (부총재)"
+    head_end = next((i for i, p in enumerate(paras) if p.startswith("6.")), len(paras))
+    attend: dict[str, list[str]] = {"present": [], "absent": []}
+    bucket = None
+    for p in paras[:head_end]:
+        compact = re.sub(r"\s+", "", p)
+        if re.match(r"^3\.출석위원", compact):
+            bucket = "present"
+            continue
+        if re.match(r"^4\.결석위원", compact):
+            bucket = "absent"
+            continue
+        if re.match(r"^5\.참여자", compact):
+            bucket = None
+        if bucket:
+            m = re.match(r"^([가-힣]{2,4})(?:의장|위원)", compact)
+            if m:
+                attend[bucket].append(m.group(1))
+
+    lo, hi = parts["discussion"] if "discussion" in parts else (0, 0)
+    subsections = []
+    cur = None
+    for i in range(lo, hi):
+        p = paras[i]
+        if re.match(r"^\(\s*[가-힣]\s*\)\s", p):
+            cur = {"title": p, "start": i + 1}
+            subsections.append(cur)
+    for n, sub in enumerate(subsections):
+        sub_hi = subsections[n + 1]["start"] - 1 if n + 1 < len(subsections) else hi
+        sub["blocks"] = _blocks(paras, sub["start"], sub_hi)
+        del sub["start"]
+    if not subsections and hi > lo:
+        subsections = [{"title": "위원 토의내용", "blocks": _blocks(paras, lo, hi)}]
+
+    olo, ohi = parts["opinions"]
+    opinion_blocks = _blocks(paras, olo, ohi)
+    distribution = None
+    members = []
+    for b in opinion_blocks:
+        if distribution is None and "견해를 나타" in b["text"] and "국내외 금융" in b["text"]:
+            distribution = b["text"]
+            continue
+        stance, target = _stance(b["text"], prior_rate)
+        members.append({"quantifier": b["quantifier"], "group": b["group"], "stance": stance, "target_rate_pct": target,
+                        "heading": b["text"], "statement": b["followups"]})
+
+    rlo, rhi = parts["result"]
+    result_paras = paras[rlo:rhi]
+    conclusion = " ".join(paras[slice(*parts["conclusion"])]) if "conclusion" in parts else None
+    vote = parse_minutes_vote(result_paras, present=attend["present"], prior_rate=prior_rate, rate=rate)
+
+    return {
+        **attend,
+        "discussion": {"subsections": subsections},
+        "opinions": {"distribution": distribution, "members": members, "conclusion": conclusion},
+        "vote": vote,
+    }
+
+
+_DISSENT_NOTE = re.compile(r"^\(?다만,?\s*(?P<who>.+?)\s*(?:은|는)\s*한국은행\s*기준금리를\s*(?P<what>.+?)\s*(?:명백히\s*)?반대의사")
+_ALT = re.compile(r"(?:(?P<bp>\d+(?:\.\d+)?)\s*%\s*(?:p|포인트)\s*(?P<dir>인상|인하)|(?P<hold>동결|유지))(?:하|할|하는|하여)?")
+
+
+def parse_minutes_vote(result_paras: list[str], *, present: list[str], prior_rate: float | None, rate: float | None) -> dict[str, Any] | None:
+    """The vote as the deliberation-result paragraph records it: unanimous ('위원 전원 찬성으로
+    가결') or the members named in '(다만, X 위원은 ... 반대의사를 표시하고 ... 주장하였음.)'."""
+    text = " ".join(result_paras)
+    against: list[dict[str, Any]] = []
+    note = next((p for p in result_paras if p.startswith("(다만") or "반대의사" in p), None)
+    if note:
+        m = re.match(r"^\(?다만,?\s*(?P<who>.+?)(?:은|는)\s*한국은행\s*기준금리", note)
+        names = re.findall(r"([가-힣]{2,4})\s*위원", m.group("who") if m else note)
+        alt = None
+        after = note.split("기준금리", 1)[-1] if "기준금리" in note else note
+        for am in _ALT.finditer(after):
+            alt = am
+        direction, alt_rate = None, None
+        if alt and alt.group("hold"):
+            # "현 수준에서 동결할 것을 주장" -- the member wanted the rate left where it was
+            direction = "hold"
+            alt_rate = prior_rate
+        elif alt and alt.group("dir") and prior_rate is not None:
+            direction = "higher" if alt.group("dir") == "인상" else "lower"
+            alt_rate = round(prior_rate + (1 if direction == "higher" else -1) * float(alt.group("bp")), 2)
+        against = [{"name": n, "preferred_rate_pct": alt_rate, "direction": direction} for n in names]
+    elif "전원 찬성" not in text:
+        return None
+    favor = len(present) - len(against) if present else None
+    return {"favor_count": favor, "against": against, "unanimous": not against,
+            "text": (note or "위원 전원 찬성으로 가결하였음.").strip("()"), "source": "minutes"}
+
+
+def hwp_url(html: str) -> str | None:
+    soup = BeautifulSoup(html, "html.parser")
+    for a in soup.find_all("a", href=True):
+        if a["href"].startswith("/fileSrc/") and a["href"].endswith(".hwp"):
+            return BASE + a["href"]
+    return None
+
+
+def fetch_minutes(ntt_id: str | None = None, *, page_url: str | None = None,
+                  prior_rate: float | None = None, rate: float | None = None) -> dict[str, Any]:
+    """Attendance, discussion, member opinions and the vote from a meeting's minutes (HWP).
+    Falls back to the PDF's attendee list when no HWP is attached."""
+    page_url = page_url or detail_url(MINUTES_BOARD, ntt_id or "", MINUTES_MENU)
+    html = fetch_text(page_url, min_size=100000)
+    hurl = hwp_url(html)
+    pdf_url = minutes_pdf_url(html)
+    if hurl:
+        parsed = parse_minutes_hwp(hwp_paragraphs(fetch_bytes(hurl, min_size=20000)), prior_rate=prior_rate, rate=rate)
+        return {"page_url": page_url, "pdf_url": pdf_url, "hwp_url": hurl, **parsed}
+    if not pdf_url:
+        raise ValueError(f"no minutes file attached to {page_url}")
     return {"page_url": page_url, "pdf_url": pdf_url,
             **parse_minutes_attendance(pdf_text(fetch_bytes(pdf_url, min_size=20000)))}

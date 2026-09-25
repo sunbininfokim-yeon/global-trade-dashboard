@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from macro_monitor.cb_collect.assemble import assemble_boj, assemble_bok, voters_for  # noqa: E402
+from macro_monitor.cb_collect.assemble import assemble_boj, assemble_bok, effective_vote, voters_for  # noqa: E402
 
 TODAY = date(2026, 9, 25)
 
@@ -62,6 +62,28 @@ class VotersFor(unittest.TestCase):
         self.assertEqual(voters_for(bok_meeting("2025-01-16", 3.0, 3.0), ROSTER), (None, None))
 
 
+class EffectiveVote(unittest.TestCase):
+    MIN_VOTE = {"favor_count": 6, "unanimous": False, "text": "minutes text", "source": "minutes",
+                "against": [{"name": "신성환", "preferred_rate_pct": 2.75, "direction": "lower"}]}
+
+    def test_press_release_vote_wins_and_says_so(self):
+        m = bok_meeting("2026-08-27", 2.75, 3.0, vote=DISSENT, minutes={"vote": self.MIN_VOTE})
+        self.assertEqual(effective_vote(m)["source"], "press_release")
+
+    def test_minutes_vote_fills_the_meetings_before_the_press_release_carried_one(self):
+        present = ALL7[:6] + ["신성환"]            # the dissenter sat on the board then
+        m = bok_meeting("2025-01-16", 3.0, 3.0, minutes={"vote": self.MIN_VOTE, "present": present, "absent": []})
+        v = effective_vote(m)
+        self.assertEqual(v["source"], "minutes")
+        names, src = voters_for(m, ROSTER)
+        self.assertEqual(src, "minutes_attendance")
+        self.assertNotIn("신성환", names)
+        self.assertEqual(len(names), 6)
+
+    def test_neither_is_none(self):
+        self.assertIsNone(effective_vote(bok_meeting("2025-01-16", 3.0, 3.0)))
+
+
 class Bok(unittest.TestCase):
     def doc(self):
         minutes = {"present": ALL7, "absent": [], "released_on": "2026-09-15", "page_url": "p"}
@@ -111,6 +133,29 @@ class Bok(unittest.TestCase):
 
     def test_no_data_is_none(self):
         self.assertIsNone(assemble_bok({"meetings": []}, today=TODAY))
+
+    def test_vote_history_reaches_back_through_the_minutes(self):
+        doc = self.doc()
+        early = bok_meeting("2025-01-16", 3.0, 3.0, minutes={
+            "present": ALL7[:6] + ["신성환"], "absent": [], "released_on": "2025-02-04",
+            "vote": {"favor_count": 6, "unanimous": False, "text": "t", "source": "minutes",
+                     "against": [{"name": "신성환", "preferred_rate_pct": 2.75, "direction": "lower"}]}})
+        doc["meetings"].insert(0, early)
+        b = assemble_bok(doc, today=TODAY)
+        first = b["vote_history"][0]
+        self.assertEqual((first["meeting_date"], first["dissenters"], first["source"]), ("2025-01-16", ["신성환"], "minutes"))
+        self.assertIn("의사록", b["vote_history_note_ko"])
+
+    def test_latest_minutes_block_carries_the_members_own_views(self):
+        doc = self.doc()
+        doc["meetings"][-1]["minutes"]["discussion"] = {"subsections": [{"title": "(가)", "blocks": []}]}
+        doc["meetings"][-1]["minutes"]["opinions"] = {"distribution": "다수의 위원들은", "members": [], "conclusion": "c"}
+        m = assemble_bok(doc, today=TODAY)["minutes"]
+        self.assertEqual((m["meeting_date"], m["released_on"]), ("2026-08-27", "2026-09-15"))
+        self.assertEqual(m["opinions"]["distribution"], "다수의 위원들은")
+
+    def test_meetings_whose_minutes_lack_the_discussion_give_no_minutes_block(self):
+        self.assertIsNone(assemble_bok(self.doc(), today=TODAY)["minutes"])
 
 
 def boj_meeting(day, rate, *, against=(), unanimous=False, narrative=None, bank_view=None, present=("Ueda Kazuo", "Himino Ryozo", "Takata Hajime")):
@@ -173,6 +218,17 @@ class Boj(unittest.TestCase):
         s = assemble_boj(self.doc(), today=TODAY)["schedule"]
         self.assertEqual((s["next_meeting_date"], s["next_outlook_release"]), ("2026-10-30", "2026-10-30"))
         self.assertEqual(s["next_meeting_days"], ["2026-10-29", "2026-10-30"])
+
+    def test_opinions_and_minutes_are_the_latest_published(self):
+        doc = self.doc()
+        doc["meetings"][1]["minutes"] = {"released_on": "2026-08-05", "source_url": "m", "economy": [], "policy": [{"text": "x"}], "votes": []}
+        doc["meetings"][2]["opinions"] = {"released_on": "2026-08-10", "source_url": "o", "sections": [{"heading": "h", "subsections": []}]}
+        b = assemble_boj(doc, today=TODAY)
+        self.assertEqual((b["minutes"]["meeting_date"], b["minutes"]["released_on"]), ("2026-06-16", "2026-08-05"))
+        self.assertEqual((b["opinions"]["meeting_date"], b["opinions"]["released_on"]), ("2026-07-31", "2026-08-10"))
+
+    def test_no_opinions_yet_is_none(self):
+        self.assertIsNone(assemble_boj(self.doc(), today=TODAY)["opinions"])
 
     def test_outlook_table_from_the_latest_report(self):
         self.assertEqual(assemble_boj(self.doc(), today=TODAY)["outlook"]["meeting_date"], "2026-07-31")

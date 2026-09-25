@@ -455,3 +455,282 @@ def parse_schedule(html: str) -> list[dict[str, Any]]:
                 "minutes_release": _cell_date(tds[3], year),
             })
     return sorted(out, key=lambda r: r["decision_date"])
+
+
+# --------------------------------------------------------------------------
+# Summary of Opinions and Minutes
+# --------------------------------------------------------------------------
+#
+# Both name no member: the Summary of Opinions is a list of anonymous bullets, and the
+# Minutes report views as "One member", "Some members", "Most members". What they add
+# to the statement is the spread of views -- and, in the Minutes' "Votes" part, every
+# vote the meeting took (the guideline, the deposit-facility rate, the JGB purchase
+# plan ...), by name, not only the policy rate.
+
+def documents_index_url(kind: str, year: int) -> str:
+    folder = {"opinions": "opinion", "minutes": "minu"}[kind]
+    return f"{BASE}/en/mopo/mpmsche_minu/{folder}_{year}/index.htm"
+
+
+def parse_documents_index(html: str) -> list[dict[str, str]]:
+    """Summaries / minutes on a year's index: decision date (from the file name), release date, url."""
+    soup = BeautifulSoup(html, "html.parser")
+    out = []
+    for tr in soup.find_all("tr"):
+        a = tr.find("a", href=True)
+        m = re.search(r"/(?:opi|g)(\d{2})(\d{2})(\d{2})\.(pdf|htm)$", a["href"]) if a else None
+        cells = [collapse(td.get_text(" ")) for td in tr.find_all(["td", "th"])]
+        if not m or not cells:
+            continue
+        rel = re.match(r"([A-Za-z]{3})[A-Za-z]*\.?\s+(\d{1,2}),\s*(\d{4})", cells[0])
+        if not rel or rel.group(1) not in _MON3:
+            continue
+        out.append({
+            "meeting_date": f"20{m.group(1)}-{m.group(2)}-{m.group(3)}",
+            "released_on": date(int(rel.group(3)), _MON3[rel.group(1)], int(rel.group(2))).isoformat(),
+            "url": a["href"] if a["href"].startswith("http") else BASE + a["href"],
+            "format": m.group(4),
+        })
+    return out
+
+
+def html_document_text(html: str) -> str:
+    """An html Summary/Minutes as the marked text pdf_body_text produces: headings as
+    '§ <text>' lines, list items as bullets, paragraphs as lines. Footnote markers
+    (<sup>) are dropped, and the numeral in 'II 2 . Summary ...' is put back together."""
+    soup = BeautifulSoup(html, "html.parser")
+    body = soup.find(id="contents") or soup
+    for sup in body.find_all("sup"):
+        sup.decompose()
+    out: list[str] = []
+    for el in body.find_all(["h2", "h3", "h4", "p", "li"]):
+        text = collapse(el.get_text(" "))
+        if not text:
+            continue
+        if el.name in ("h2", "h3", "h4"):
+            text = re.sub(r"^([IVX]+)\s+\d*\s*\.", r"\1.", re.sub(r"\s+\.", ".", text))
+            out.append("§ " + text)
+        elif el.name == "li":
+            out.append("\u26ab " + text)
+        else:
+            out.append(text)
+    return "\n".join(out)
+
+
+def fetch_document_text(url: str) -> str:
+    """Body text of a summary/minutes file, headings marked (pdf: by bold face, footnotes dropped by size)."""
+    from .common import pdf_body_text
+
+    if url.endswith(".pdf"):
+        return pdf_body_text(fetch_bytes(url, min_size=5000), mark_headings=True)
+    return html_document_text(fetch_text(url, min_size=3000))
+
+
+_BULLET = "⚫"
+_ROMAN = re.compile(r"^(?P<num>[IVX]+)\.\s+(?P<title>.+)$")
+
+
+def parse_opinions(text: str) -> list[dict[str, Any]]:
+    """The Summary of Opinions as sections -> sub-headings -> bullets, verbatim.
+
+    Sections are the roman-numbered parts; a sub-heading is a short line without
+    a full stop that sits right before a bullet (Economic Developments, Prices,
+    Ministry of Finance ...). A bullet runs until the next bullet or heading.
+    """
+    lines = [re.sub(r"^§\s*", "", ln.strip()) for ln in re.sub(r"\n\s*\n", "\n", text.replace("\r", "")).split("\n")]
+    sections: list[dict[str, Any]] = []
+    section: dict[str, Any] | None = None
+    sub: dict[str, Any] | None = None
+    bullet: list[str] | None = None
+
+    def close_bullet() -> None:
+        nonlocal bullet
+        if bullet is not None and sub is not None:
+            body = collapse(" ".join(bullet))
+            if body:
+                sub["bullets"].append(body)
+        bullet = None
+
+    def ensure_sub(title: str = "") -> dict[str, Any]:
+        nonlocal sub
+        if sub is None and section is not None:
+            sub = {"heading": title, "bullets": []}
+            section["subsections"].append(sub)
+        return sub  # type: ignore[return-value]
+
+    for idx, ln in enumerate(lines):
+        if not ln or re.fullmatch(r"\d{1,2}", ln):
+            continue
+        m = _ROMAN.match(ln)
+        if m and len(ln) < 110:
+            close_bullet()
+            section = {"heading": collapse(m.group("title")), "subsections": []}
+            sections.append(section)
+            sub = None
+            continue
+        if section is None:
+            continue
+        if ln.startswith(_BULLET):
+            close_bullet()
+            ensure_sub()
+            bullet = [ln.lstrip(_BULLET).strip()]
+            continue
+        nxt = next((x for x in lines[idx + 1:idx + 4] if x), "")
+        if bullet is None or (len(ln) < 45 and not ln.endswith((".", ",", ";")) and nxt.startswith(_BULLET)):
+            if len(ln) < 60 and not ln.endswith((".", ",", ";")) and nxt.startswith(_BULLET):
+                close_bullet()
+                sub = {"heading": ln, "bullets": []}
+                section["subsections"].append(sub)
+                continue
+        if bullet is not None:
+            bullet.append(ln)
+    close_bullet()
+    for s in sections:
+        s["subsections"] = [x for x in s["subsections"] if x["bullets"]]
+    return [s for s in sections if s["subsections"]]
+
+
+_QUANT = re.compile(
+    r"^(?P<lead>(?:[A-Z][^,.;]{0,70},\s+)?)(?P<q>(?P<base>Most|Many|Some|Several|A few|One|Two|Three|Four|Another|Other|Almost all|All|A majority of|A number of|The other)"
+    r"\s+(?:of the\s+)?(?:Policy Board\s+)?members?\b|Members\b)", re.I)
+_BASE_GROUP = {"most": "most", "a majority of": "most", "almost all": "all", "all": "all", "many": "many",
+               "some": "some", "several": "some", "a number of": "some", "a few": "few", "one": "few", "two": "few",
+               "three": "few", "four": "few", "another": "few", "other": "few", "the other": "few"}
+
+
+def boj_quantifier(sentence: str) -> tuple[str, str] | None:
+    m = _QUANT.match(sentence.strip())
+    if not m:
+        return None
+    if m.group("base") is None:
+        return "Members", "unqualified"
+    return collapse(m.group("q")), _BASE_GROUP[m.group("base").lower()]
+
+
+def _split_sentences(text: str) -> list[str]:
+    return [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-Z\"(])", text) if s.strip()]
+
+
+_HEADING_LINE = re.compile(r"^(?:[IVX]+|[A-F])\.\s+\S")
+
+
+def _chunks(text: str) -> list[tuple[str, str]]:
+    """The document as ('h', heading) and ('b', body text) pieces. Headings are the
+    '§ ' lines pdf_body_text marks; on text without markers a short line that opens
+    with a roman/letter numeral and has no full stop counts as one."""
+    out: list[tuple[str, str]] = []
+    body: list[str] = []
+
+    def flush() -> None:
+        if body:
+            joined = flatten("\n".join(body)).replace("\u26ab ", "")
+            if joined:
+                out.append(("b", joined))
+            body.clear()
+
+    marked = "§ " in text
+    for ln in text.replace("\r", "").split("\n"):
+        line = ln.strip()
+        if marked and line.startswith("§ "):
+            flush()
+            out.append(("h", collapse(line[2:])))
+        elif not marked and _HEADING_LINE.match(line) and len(line) < 115 and not line.endswith((".", ",", ";")):
+            flush()
+            out.append(("h", collapse(line)))
+        else:
+            body.append(line)
+    flush()
+    return out
+
+
+def _part_key(title: str) -> str:
+    """Which part of the minutes a roman-numbered heading opens. Numbers shift from one
+    meeting to the next (a JGB-purchase plan adds a 'Staff Reports' part and pushes the
+    rest down), so parts are identified by title."""
+    t = title.lower()
+    if "discussions by the policy board on economic" in t:
+        return "economy"
+    if "discussions on monetary policy" in t:
+        return "policy"
+    if re.match(r"^[ivx]+\.\s+votes\b", t):
+        return "votes"
+    return "other"
+
+
+def _parts(chunks: list[tuple[str, str]]) -> dict[str, list[str]]:
+    """Body chunks of each part of the minutes (sub-headings only split a part's chunks)."""
+    out: dict[str, list[str]] = {}
+    cur: str | None = None
+    for kind, text in chunks:
+        if kind == "h":
+            if re.match(r"^[IVX]+\.\s", text):
+                cur = _part_key(text)
+                out.setdefault(cur, [])
+            elif cur is not None:
+                out[cur].append("§ " + text)       # a lettered sub-heading: a boundary for blocks, an item title for votes
+            continue
+        if cur is not None:
+            out[cur].append(text)
+    return out
+
+
+def _blocks_from_chunks(chunks: list[str]) -> list[dict[str, Any]]:
+    blocks: list[dict[str, Any]] = []
+    for chunk in chunks:
+        if chunk.startswith("§ "):
+            continue
+        current: dict[str, Any] | None = None
+        for sentence in _split_sentences(chunk):
+            q = boj_quantifier(sentence)
+            if q:
+                current = {"quantifier": q[0], "group": q[1], "sentences": [sentence]}
+                blocks.append(current)
+            elif current is not None:
+                current["sentences"].append(sentence)
+    return [{"quantifier": b["quantifier"], "group": b["group"], "text": " ".join(b["sentences"])} for b in blocks]
+
+
+def _ballot(segment: str) -> dict[str, Any]:
+    def names_after(label: str) -> list[str]:
+        m = re.search(rf"{label}:\s*(.*?)\.\s", segment + " ")
+        return parse_names(m.group(1)) if m else []
+
+    return {"for": names_after("Votes for the proposal"), "against": names_after("Votes against the proposal"),
+            "absent": names_after("Absent")}
+
+
+def parse_minutes_votes(votes_text: str) -> list[dict[str, Any]]:
+    """Every vote the meeting took, from the Minutes' 'Votes' part."""
+    flat = collapse(votes_text)
+    heads = list(re.finditer(r"(?<![A-Za-z])([A-F])\.\s+((?:Vote|Discussion)\s.+?)(?=\s+(?:Based on the above|To reflect|On the basis|The Policy Board))", flat))
+    items = []
+    for i, h in enumerate(heads):
+        seg = flat[h.end(): heads[i + 1].start() if i + 1 < len(heads) else len(flat)]
+        ballots = []
+        for bm in re.finditer(r"Votes for the proposal:", seg):
+            start = bm.start()
+            nxt = seg.find("Votes for the proposal:", start + 10)
+            chunk = seg[start: nxt if nxt > 0 else len(seg)]
+            before = seg[:start]
+            label = _split_sentences(before)[-1] if _split_sentences(before) else ""
+            ballots.append({"label": label, **_ballot(chunk)})
+        decided = re.search(r"decided\s+(?:the\s+proposal\s+)?by\s+(?:a\s+|an\s+)?(majority|unanimous)\s+vote", seg)
+        notes = re.findall(r"[A-Z][a-z]+ [A-Z][a-z]+ (?:dissented|opposed|expressed opposition)[^.]*\.", seg)
+        items.append({"item": h.group(1), "title": collapse(h.group(2)), "decision": decided.group(1) if decided else None,
+                      "ballots": ballots, "notes": [collapse(n) for n in notes]})
+    return items
+
+
+def parse_minutes(text: str) -> dict[str, Any]:
+    parts = _parts(_chunks(text))
+    if "policy" not in parts or "votes" not in parts:
+        raise ValueError("minutes lack the monetary-policy discussion or votes part")
+    out = {
+        "economy": _blocks_from_chunks(parts.get("economy", [])),
+        "policy": _blocks_from_chunks(parts["policy"]),
+        "votes": parse_minutes_votes(" ".join(c.removeprefix("§ ") for c in parts["votes"])),
+    }
+    # A part that is found but reads as empty means the layout changed, not that nobody spoke.
+    if not out["policy"] or not out["votes"]:
+        raise ValueError("minutes parsed to an empty discussion or vote list")
+    return out

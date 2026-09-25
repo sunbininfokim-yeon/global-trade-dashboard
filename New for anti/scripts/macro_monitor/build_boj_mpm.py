@@ -4,7 +4,8 @@
 One record per meeting since --from (default 2024-07): the guideline rate, who
 voted for and against (with the dissenters' reasons and the rate they proposed),
 the assessment text, and -- at Outlook-Report meetings -- the Policy Board's
-forecast table and the Bank's View summary. Plus the Bank's own meeting calendar
+forecast table and the Bank's View summary. Then, once the Bank has published them, the Summary of Opinions (anonymous bullets by
+section) and the Minutes (views by member-count phrase, and every vote taken). Plus the Bank's own meeting calendar
 (planned release dates of the Summary of Opinions and the Minutes).
 
 Idempotent: meetings already in the file are not fetched again, so a scheduled
@@ -80,6 +81,33 @@ def main() -> int:
             except Exception as exc:  # noqa: BLE001
                 errors.append(f"{d} outlook: {exc}")
         meetings[d] = rec
+
+    # Summary of Opinions and Minutes: each is stored once it is on the Bank's index (it is
+    # published on a date the calendar announces in advance, so a meeting simply lacks the
+    # field until then)
+    for kind, key in (("opinions", "opinions"), ("minutes", "minutes")):
+        index: dict[str, dict] = {}
+        for year in range(int(args.start[:4]), datetime.now(timezone.utc).year + 1):
+            try:
+                for row in boj.parse_documents_index(fetch_text(boj.documents_index_url(kind, year), min_size=3000)):
+                    index[row["meeting_date"]] = row
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"{kind} index {year}: {exc}")
+        for d, rec in sorted(meetings.items()):
+            row = index.get(d)
+            if not row or (rec.get(key) and not args.force):
+                continue
+            try:
+                if kind == "opinions":
+                    sections = boj.parse_opinions(boj.fetch_document_text(row["url"]))
+                    if not sections:
+                        raise ValueError("no opinion bullets found")
+                    rec[key] = {"released_on": row["released_on"], "source_url": row["url"], "sections": sections}
+                else:
+                    rec[key] = {"released_on": row["released_on"], "source_url": row["url"],
+                                **boj.parse_minutes(boj.fetch_document_text(row["url"]))}
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"{d} {kind}: {exc}")
 
     calendar = existing.get("calendar", [])
     try:
