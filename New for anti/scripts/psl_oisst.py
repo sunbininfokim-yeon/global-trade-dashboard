@@ -141,5 +141,12 @@ def fetch_var(url, var, t, i, j):
 
     if not rows or "time" not in axes:
         raise RuntimeError(f"OPeNDAP 응답 해석 실패: {url}\n{text[:300]}")
-    dates = [_EPOCH + _dt.timedelta(days=d) for d in axes["time"]]
+    # The ltm file's time axis is a climatological placeholder (far outside
+    # the 1800 epoch's range); its dates are never used, so they come back None.
+    def _date(d):
+        try:
+            return _EPOCH + _dt.timedelta(days=d)
+        except OverflowError:
+            return None
+    dates = [_date(d) for d in axes["time"]]
     return dates, axes.get("lat", []), axes.get("lon", []), rows
