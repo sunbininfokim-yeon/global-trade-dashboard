@@ -98,6 +98,25 @@ def main() -> int:
             continue
         m["minutes"] = {**mi, **got}
 
+    # the forecast tables of the quarterly 경제전망 (Feb/May/Aug/Nov), published as a press release
+    # the same day as the decision; only meetings that carry one are looked up
+    due = [d for d, m in meetings.items() if int(d[5:7]) in (2, 5, 8, 11) and not m.get("outlook_table")]
+    if due:
+        try:
+            releases = {r["meeting_date"]: r for r in bok.outlook_release_rows(
+                [row for page in (1, 2) for row in bok.parse_search(fetch_text(bok.search_url("경제전망(", page), min_size=3000))])}
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"outlook list: {exc}")
+            releases = {}
+        for d in sorted(due):
+            row = releases.get(d)
+            if not row:
+                continue
+            try:
+                meetings[d]["outlook_table"] = bok.fetch_outlook_table(row["ntt_id"])
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"{d} outlook table: {exc}")
+
     calendar = dict(existing.get("calendar", {}))
     for year in (datetime.now(timezone.utc).year, datetime.now(timezone.utc).year + 1):
         try:

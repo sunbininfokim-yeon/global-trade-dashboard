@@ -282,10 +282,11 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
     diffs = [_diff_block("statement", "통화정책방향 본문", *pair)] if pair else []
 
     outlook = None
-    if last.get("outlook_sentences"):
+    table = next(({"meeting_date": m["meeting_date"], **m["outlook_table"]} for m in reversed(meetings) if m.get("outlook_table")), None)
+    if last.get("outlook_sentences") or table:
         outlook = {"kind": "sentences", "meeting_date": last["meeting_date"], "source_url": last["source_url"],
                    "forecast_round": int(last["meeting_date"][5:7]) in (2, 5, 8, 11),
-                   "sentences": last["outlook_sentences"]}
+                   "sentences": last.get("outlook_sentences") or [], "table": table}
 
     minutes = None
     for m in reversed(meetings):

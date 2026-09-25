@@ -154,6 +154,14 @@ class Bok(unittest.TestCase):
         self.assertEqual((m["meeting_date"], m["released_on"]), ("2026-08-27", "2026-09-15"))
         self.assertEqual(m["opinions"]["distribution"], "다수의 위원들은")
 
+    def test_outlook_carries_the_latest_forecast_table_even_from_an_earlier_meeting(self):
+        doc = self.doc()
+        doc["meetings"][0]["outlook_table"] = {"prior_made_in": "26.2", "years": [2025, 2026], "rows": [{"id": "gdp"}], "source_url": "u"}
+        doc["meetings"][-1]["outlook_sentences"] = []
+        o = assemble_bok(doc, today=TODAY)["outlook"]
+        self.assertEqual((o["table"]["meeting_date"], o["table"]["prior_made_in"]), ("2026-05-28", "26.2"))
+        self.assertEqual(o["sentences"], [])
+
     def test_meetings_whose_minutes_lack_the_discussion_give_no_minutes_block(self):
         self.assertIsNone(assemble_bok(self.doc(), today=TODAY)["minutes"])
 

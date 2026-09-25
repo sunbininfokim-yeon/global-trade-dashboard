@@ -652,6 +652,10 @@ def _part_key(title: str) -> str:
         return "economy"
     if "discussions on monetary policy" in t:
         return "policy"
+    if "summary of staff reports on economic and financial" in t:
+        return "staff"
+    if "remarks by government representatives" in t:
+        return "government"
     if re.match(r"^[ivx]+\.\s+votes\b", t):
         return "votes"
     return "other"
@@ -671,6 +675,23 @@ def _parts(chunks: list[tuple[str, str]]) -> dict[str, list[str]]:
             continue
         if cur is not None:
             out[cur].append(text)
+    return out
+
+
+def _sections_from_chunks(chunks: list[str]) -> list[dict[str, str]]:
+    """A part read as headed text: each heading with the text under it, verbatim. Used for the
+    staff-report summary and the government representatives' remarks, which carry no member-count
+    phrases to group by."""
+    out: list[dict[str, str]] = []
+    heading = ""
+    for chunk in chunks:
+        if chunk.startswith("§ "):
+            heading = chunk[2:]
+            continue
+        if out and out[-1]["heading"] == heading:
+            out[-1]["text"] += " " + chunk
+        else:
+            out.append({"heading": heading, "text": chunk})
     return out
 
 
@@ -729,6 +750,8 @@ def parse_minutes(text: str) -> dict[str, Any]:
         "economy": _blocks_from_chunks(parts.get("economy", [])),
         "policy": _blocks_from_chunks(parts["policy"]),
         "votes": parse_minutes_votes(" ".join(c.removeprefix("§ ") for c in parts["votes"])),
+        "staff": _sections_from_chunks(parts.get("staff", [])),
+        "government": _sections_from_chunks(parts.get("government", [])),
     }
     # A part that is found but reads as empty means the layout changed, not that nobody spoke.
     if not out["policy"] or not out["votes"]:
