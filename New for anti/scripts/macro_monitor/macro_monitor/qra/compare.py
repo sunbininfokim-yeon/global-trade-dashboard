@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import calendar
+import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -237,6 +239,57 @@ def build_quarter_history(events: List[Dict[str, Any]], *, limit: int = 16) -> L
             }
         )
     return pts[-limit:]
+
+
+_PERIOD_END = re.compile(r"[\u2013\u2014-]\s*([A-Za-z]+)\s+(\d{4})\s*$")
+
+
+def _period_end_date(period: Optional[str]) -> Optional[str]:
+    """'October\u2013December 2022' -> '2022-12-31' (None when the period does not read that way)."""
+    m = _PERIOD_END.search((period or "").strip())
+    if not m:
+        return None
+    try:
+        month = datetime.strptime(m.group(1)[:3], "%b").month
+    except ValueError:
+        return None
+    year = int(m.group(2))
+    return f"{year:04d}-{month:02d}-{calendar.monthrange(year, month)[1]:02d}"
+
+
+def apply_real_history(ind: Dict[str, Any], rows: Optional[List[Dict[str, Any]]]) -> bool:
+    """Give the QRA indicator's trend tab the real quarterly series.
+
+    The pack builder seeds every indicator with a synthetic monthly walk around
+    its base value; for qra_issuance that base was the sum of the fixture
+    maturity bars (~1,410), so the trend tab drew 60 identical bars under a
+    "live" badge while the headline said 739. The real series is the net
+    borrowing Treasury announced for each quarter (history_net_borrowing),
+    which is an announced estimate made at each refunding, not an outturn.
+
+    Rows without a readable period end or a number are skipped, never filled.
+    With no usable rows the trend is emptied rather than left synthetic.
+    Returns True when a real series was written.
+    """
+    pts = []
+    for r in rows or []:
+        end = _period_end_date(r.get("period"))
+        val = r.get("net_borrowing_bn")
+        if end is None or not isinstance(val, (int, float)):
+            continue
+        pts.append((end, round(float(val), 1)))
+    pts.sort()
+    if not pts:
+        ind["history"] = {}
+        ind.pop("history_note_ko", None)
+        return False
+    series = {"dates": [d for d, _ in pts], "values": [v for _, v in pts]}
+    ind["history"] = {"5y": series, "10y": series}  # the record starts in 2022; both windows hold all of it
+    ind["history_note_ko"] = (
+        f"분기별 순발행입니다 ({pts[0][0][:7]}~{pts[-1][0][:7]}, {len(pts)}개 분기, 분기말 날짜에 표시). "
+        "각 분기 값은 재무부가 그 분기 재융자 발표 때 낸 예상치이고 실제 집행액이 아닙니다."
+    )
+    return True
 
 
 def split_summary_ko(compare: Dict[str, Any], bill: Optional[str] = None, coupon: Optional[str] = None) -> Optional[str]:

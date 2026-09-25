@@ -314,6 +314,7 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
     try:
         print("  qra-engine", flush=True)
         from .qra.build import load_latest_issuance  # noqa: WPS433
+        from .qra.compare import apply_real_history  # noqa: WPS433
 
         hit = load_latest_issuance()
         usa = by_country.get("USA")
@@ -337,6 +338,7 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
                     }
                 if hit.get("history_net_borrowing"):
                     ind["history_net_borrowing"] = hit["history_net_borrowing"]
+                apply_real_history(ind, hit.get("history_net_borrowing"))
                 if hit.get("flags"):
                     ind["flags"] = hit["flags"]
                 if hit.get("tga_vs_qra"):
