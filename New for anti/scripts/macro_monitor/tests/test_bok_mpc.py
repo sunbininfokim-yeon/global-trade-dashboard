@@ -155,5 +155,75 @@ class Roster(unittest.TestCase):
         self.assertEqual(got[2]["term_start"], "2026-08-21")
 
 
+# --- 경제전망 tables (text as pypdf reads the summary PDFs) ---------------------------------------
+
+AUG_2026 = (
+    "<국내 성장률 전망1)> <국내 GDP 전망경로> (%) 2025 2026e) 2027e) GDP 1.1 3.3 [2.6] 2.9 [2.1] •민간소비 1.5 2.1 [2.0] 2.3 [2.1] "
+    "•재화수출 3.3 9.7 [4.9] 4.6 [3.3] •건설투자 -9.7 0.2 [0.6] 1.9 [1.5] •설비투자 1.5 6.8 [4.4] 4.7 [2.7] "
+    "주: 1) [ ]는 26.5월 전망치 자료: 조사국 "
+    "<물가·경상수지·고용 전망1)> 2025 2026e) 2027e) 소비자물가 상승률(%) 2.1 2.7 [2.7] 2.3 [2.3] • 근원물가 상승률(%) 1.9 2.5 [2.4] 2.5 [2.3] "
+    "경상수지(억달러) 1,231 4,500 [2,500] 4,300 [1,900] 취업자수 증감(만명) 19 14 [18] 20 [17] 고용률(%) 62.9 62.9 63.0 주: 1) [ ]는 26.5월 전망치"
+)
+MAY_2026 = (   # the previous round's figures come together after the new ones
+    "<국내 성장률 전망1)> <국내 GDP 전망경로> (%) 2025 2026e) 2027e) GDP 1.0 2.6 2.1 [2.0] [1.8] • 민간소비 1.3 2.0 2.1 [1.8] [1.8] "
+    "주: 1) [ ]내는 26.2월 전망치 자료: 조사국 "
+    "<물가·경상수지·고용 전망1)> <소비자물가 전망경로> 2025 2026e) 2027e) 소비자물가 2.1 2.7 2.3 [2.2] [2.0] • 근원물가 1.9 2.4 2.3 [2.1] [2.0] "
+    "경상수지 1,231 2,500 1,900 (억달러) [1,700] [1,400] 취업자수 증감 (만명) 19 18 17 [17] [15] 자료: 조사국"
+)
+NOV_2025 = (   # four columns, the newest year has no previous figure
+    "<국내 성장률 전망1)> (%) 2024 2025e) 2026e) 2027e) GDP 2.0 1.0 1.8 1.9 [0.9] [1.6] • 민간소비 1.1 1.3 1.7 1.7 [1.4] [1.6] 주: 1) [ ]내는 25.8월 전망치"
+)
+
+
+def _row(table, key):
+    return next(r for r in table["rows"] if r["id"] == key)
+
+
+def _pairs(row):
+    return [(v["year"], v["value"], v["prior"], v["forecast"]) for v in row["values"]]
+
+
+class OutlookTable(unittest.TestCase):
+    def test_previous_figure_after_each_value(self):
+        t = bok.parse_outlook_table(AUG_2026)
+        self.assertEqual(t["prior_made_in"], "26.5")
+        self.assertEqual(t["years"], [2025, 2026, 2027])
+        self.assertEqual(_pairs(_row(t, "gdp")), [(2025, 1.1, None, False), (2026, 3.3, 2.6, True), (2027, 2.9, 2.1, True)])
+
+    def test_previous_figures_grouped_at_the_end(self):
+        t = bok.parse_outlook_table(MAY_2026)
+        self.assertEqual(_pairs(_row(t, "gdp"))[1:], [(2026, 2.6, 2.0, True), (2027, 2.1, 1.8, True)])
+        ca = _row(t, "current_account")                               # the unit sits between the label and the figures
+        self.assertEqual((ca["values"][1]["value"], ca["values"][1]["prior"]), (2500.0, 1700.0))
+
+    def test_a_new_year_has_no_previous_figure(self):
+        t = bok.parse_outlook_table(NOV_2025)
+        self.assertEqual(_pairs(_row(t, "gdp")), [(2024, 2.0, None, False), (2025, 1.0, 0.9, True), (2026, 1.8, 1.6, True), (2027, 1.9, None, True)])
+
+    def test_thousands_and_units(self):
+        t = bok.parse_outlook_table(AUG_2026)
+        ca = _row(t, "current_account")
+        self.assertEqual((ca["unit"], ca["values"][0]["value"], ca["values"][2]["value"]), ("억달러", 1231.0, 4300.0))
+        self.assertEqual(_row(t, "employment_change")["values"][1]["prior"], 18.0)
+
+    def test_a_row_whose_counts_do_not_fit_is_dropped_not_guessed(self):
+        broken = AUG_2026.replace("GDP 1.1 3.3 [2.6] 2.9 [2.1]", "GDP 1.1 3.3 [2.6]")
+        t = bok.parse_outlook_table(broken)
+        self.assertNotIn("gdp", [r["id"] for r in t["rows"]])
+        self.assertIn("consumption", [r["id"] for r in t["rows"]])
+
+    def test_chart_titles_are_not_rows(self):
+        t = bok.parse_outlook_table(AUG_2026)
+        self.assertEqual([r["id"] for r in t["rows"]].count("gdp"), 1)
+
+    def test_no_table_is_none(self):
+        self.assertIsNone(bok.parse_outlook_table("경제전망 요약 본문"))
+
+    def test_release_rows(self):
+        rows = [{"title": "경제전망(2026년 8월)", "registered_on": "2026-08-27", "board": "B0000502", "ntt_id": "1"},
+                {"title": "경제전망보고서(2026년 8월)", "registered_on": "2026-08-27", "board": "P0002359", "ntt_id": "2"}]
+        self.assertEqual([r["ntt_id"] for r in bok.outlook_release_rows(rows)], ["1"])
+
+
 if __name__ == "__main__":
     unittest.main()

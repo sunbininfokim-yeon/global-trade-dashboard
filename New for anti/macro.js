@@ -2034,14 +2034,46 @@ const mmCbOutlookHtml = (cb) => {
             </details>
         </div>`;
     }
-    if (o.kind === 'sentences' && Array.isArray(o.sentences) && o.sentences.length) {
+    if (o.kind === 'sentences') {
+        const tb = o.table;
+        const fmtVal = (v, unit) => (unit === '억달러' || unit === '만명' ? Number(v).toLocaleString('en-US') : Number(v).toFixed(1));
+        let tableHtml = '';
+        if (tb && Array.isArray(tb.rows) && tb.rows.length) {
+            const years = tb.years || [];
+            const cell = (row, i) => {
+                const v = (row.values || [])[i];
+                if (!v) return '<td class="mm-sep-na">—</td>';
+                let sub = '';
+                if (Number.isFinite(v.prior)) {
+                    const diff = Math.round((v.value - v.prior) * 10) / 10;
+                    const mark = diff > 0 ? `<b class="mm-sep-up">▲${Math.abs(diff).toLocaleString('en-US')}</b>` : (diff < 0 ? `<b class="mm-sep-down">▼${Math.abs(diff).toLocaleString('en-US')}</b>` : '<b>—</b>');
+                    sub = `<small>직전 ${fmtVal(v.prior, row.unit)} ${mark}</small>`;
+                }
+                return `<td>${fmtVal(v.value, row.unit)}${sub}</td>`;
+            };
+            const heads = years.map((y, i) => {
+                const fc = ((tb.rows[0] || {}).values || [])[i];
+                return `<th>${finEsc(y)}${fc && fc.forecast ? '<small>전망</small>' : ''}</th>`;
+            }).join('');
+            tableHtml = `
+            <details class="mm-quality-details" open><summary>한국은행 경제전망 · ${finEsc(tb.meeting_date)} 발표</summary>
+                <div class="mm-sep-scroll"><table class="mm-sep-table">
+                    <thead><tr><th></th>${heads}</tr></thead>
+                    <tbody>${tb.rows.map((row) => `<tr><th>${finEsc(row.label_ko)}<small>${finEsc(row.unit)}</small></th>${years.map((y, i) => cell(row, i)).join('')}</tr>`).join('')}</tbody>
+                </table></div>
+                <p class="mm-quality-muted">전년 대비 %(경상수지 억 달러, 취업자수 증감 만 명). 작은 글씨는 직전 전망${tb.prior_made_in ? `(${finEsc(tb.prior_made_in)}월)` : ''} 값과 그 대비 변화입니다. 발표 자료의 표를 열·괄호 개수로 짝지어 읽었고, 개수가 맞지 않는 행은 싣지 않았습니다 · <a class="mm-quality-link" href="${finEsc(tb.source_url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a></p>
+            </details>`;
+        }
+        const hasSentences = Array.isArray(o.sentences) && o.sentences.length;
+        if (!tableHtml && !hasSentences) return '';
         return `
         <div class="mm-quality-card mm-quality-wide">
-            <span class="mm-quality-label">성장·물가 전망 문장 · ${finEsc(o.meeting_date)}${o.forecast_round ? ' (정기 경제전망 회의)' : ''}</span>
-            <details class="mm-quality-details" open><summary>이번 결정문의 전망 서술 ${o.sentences.length}문장</summary>
+            <span class="mm-quality-label">성장·물가 전망 · ${finEsc(o.meeting_date)}${o.forecast_round ? ' (정기 경제전망 회의)' : ''}</span>
+            ${tableHtml}
+            ${hasSentences ? `<details class="mm-quality-details" ${tableHtml ? '' : 'open'}><summary>이번 결정문의 전망 서술 ${o.sentences.length}문장</summary>
                 <ul class="mm-minutes-list">${o.sentences.map((t) => `<li>${finEsc(t)}</li>`).join('')}</ul>
-                <p class="mm-quality-muted">결정문 문장을 그대로 옮겼습니다. 숫자가 어느 항목의 것인지 표로 옮기면 잘못 짝지을 수 있어 표로 만들지 않았습니다.</p>
-            </details>
+                <p class="mm-quality-muted">결정문 문장을 그대로 옮겼습니다.</p>
+            </details>` : ''}
         </div>`;
     }
     return '';
@@ -2105,7 +2137,11 @@ const mmCbMinutesHtml = (cb) => {
             <details class="mm-quality-details"><summary>통화정책 논의 · ${(mi.policy || []).length}건 (수 표현별)</summary>${mmCbGroupedBlocks(mi.policy || [])}</details>
             <details class="mm-quality-details"><summary>경제·물가 논의 · ${(mi.economy || []).length}건 (수 표현별)</summary>${mmCbGroupedBlocks(mi.economy || [])}</details>
             <details class="mm-quality-details"><summary>이 회의의 표결 전부 · ${(mi.votes || []).length}건 (정책금리 외 결정 포함)</summary>
-                <ul class="mm-cb-list">${votes}</ul></details>`;
+                <ul class="mm-cb-list">${votes}</ul></details>
+            ${(mi.staff || []).length ? `<details class="mm-quality-details"><summary>사무국 보고 요약 · ${mi.staff.length}절</summary>
+                ${mi.staff.map((x) => `${x.heading ? `<p class="mm-quality-muted"><b>${finEsc(x.heading)}</b></p>` : ''}<p class="mm-cb-para">${finEsc(x.text)}</p>`).join('')}</details>` : ''}
+            ${(mi.government || []).length ? `<details class="mm-quality-details"><summary>정부 대표 발언</summary>
+                ${mi.government.map((x) => `<p class="mm-cb-para">${finEsc(x.text)}</p>`).join('')}</details>` : ''}`;
     }
     return `
     <div class="mm-quality-card mm-quality-wide">

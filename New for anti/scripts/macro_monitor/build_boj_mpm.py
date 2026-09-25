@@ -95,7 +95,9 @@ def main() -> int:
                 errors.append(f"{kind} index {year}: {exc}")
         for d, rec in sorted(meetings.items()):
             row = index.get(d)
-            if not row or (rec.get(key) and not args.force):
+            # a stored minutes record from before the staff/government parts were read is upgraded
+            done = rec.get(key) and (kind != "minutes" or "staff" in rec[key])
+            if not row or (done and not args.force):
                 continue
             try:
                 if kind == "opinions":

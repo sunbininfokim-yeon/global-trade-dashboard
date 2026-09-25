@@ -468,3 +468,122 @@ def fetch_minutes(ntt_id: str | None = None, *, page_url: str | None = None,
         raise ValueError(f"no minutes file attached to {page_url}")
     return {"page_url": page_url, "pdf_url": pdf_url,
             **parse_minutes_attendance(pdf_text(fetch_bytes(pdf_url, min_size=20000)))}
+
+
+# --------------------------------------------------------------------------
+# 경제전망 (the quarterly Economic Outlook) -- the numeric table
+# --------------------------------------------------------------------------
+#
+# The 통화정책방향 text describes the new forecast in prose whose sentences vary too much to
+# read numbers out of ("... 지난 5월 전망치(각각 2.6%, 2.1%)를 큰 폭 상회하는 3.3% 및 2.9%를 ...").
+# The same day the Bank publishes the 경제전망 summary as a press release whose PDF carries the
+# forecast tables, with the previous round's figure in brackets under each new one. Read from
+# there: the label, the year and the bracket decide which number is which.
+
+_OUTLOOK_TITLE = re.compile(r"^경제전망\((\d{4})년 (\d{1,2})월\)$")
+# (id, label, unit, pattern). A pattern must be followed by a number, so the words in a chart title
+# ("<국내 GDP 전망경로>") are not taken for a row.
+_GROWTH_ROWS = [("gdp", "GDP 성장률", "%", r"GDP(?=\s+-?\d)"), ("consumption", "민간소비", "%", r"민간소비(?=\s+-?\d)"),
+                ("goods_exports", "재화수출", "%", r"재화수출(?=\s+-?\d)"), ("construction", "건설투자", "%", r"건설투자(?=\s+-?\d)"),
+                ("equipment", "설비투자", "%", r"설비투자(?=\s+-?\d)")]
+_PRICE_ROWS = [("cpi", "소비자물가 상승률", "%", r"소비자물가(?:\s*상승률)?\s*(?:\(%\)\d?\)?)?(?=\s+-?\d)"),
+               ("core_cpi", "근원물가 상승률", "%", r"근원물가(?:\s*상승률)?\s*(?:\(%\)\d?\)?)?(?=\s+-?\d)"),
+               ("current_account", "경상수지", "억달러", r"경상수지(?:\s*\(억달러\))?(?=\s+-?\d)"),
+               ("employment_change", "취업자수 증감", "만명", r"취업자수\s*증감(?:\s*\(만명\)\d?\)?)?(?=\s+-?\d)"),
+               ("employment_rate", "고용률", "%", r"고용률(?:\s*\(%\)\d?\)?)?(?=\s+-?\d)")]
+_PLAIN = re.compile(r"(?<![\w.\[])(-?\d[\d,]*(?:\.\d+)?)(?![\d.,]*\s*[\])])(?!\))")
+_BRACKET = re.compile(r"\[\s*(-?\d[\d,]*(?:\.\d+)?)\s*\]")
+
+
+def outlook_release_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Search rows that are the 경제전망 summary press release, with the meeting date they came out with."""
+    out = []
+    for r in rows:
+        if _OUTLOOK_TITLE.match(r["title"]) and r["registered_on"]:
+            out.append({**r, "meeting_date": r["registered_on"]})
+    return out
+
+
+def _num(text: str) -> float:
+    return float(text.replace(",", ""))
+
+
+def _table_rows(segment: str, spec: list[tuple[str, str, str, str]], years: list[int], forecast: list[bool]) -> list[dict[str, Any]]:
+    """Rows of one summary table.
+
+    The layout varies from round to round: the previous round's figure comes in brackets,
+    either right after each new value ("3.3 [2.6] 2.9 [2.1]") or all together at the end
+    ("2.0 1.0 1.8 1.9 [0.9] [1.6]"). What is constant is the count -- one plain number per
+    column and a bracketed figure for the first forecast columns that existed last time, in
+    column order -- so a row is read by counting, and dropped (not guessed) when the counts
+    do not fit.
+    """
+    marks = []
+    for key, label, unit, pattern in spec:
+        m = re.search(pattern, segment)
+        if m:
+            marks.append((m.start(), m.end(), key, label, unit))
+    marks.sort()
+    out = []
+    for n, (start, end, key, label, unit) in enumerate(marks):
+        stop = marks[n + 1][0] if n + 1 < len(marks) else len(segment)
+        body = segment[end:stop]
+        plain = [_num(x) for x in _PLAIN.findall(_BRACKET.sub(" ", body))]
+        priors = [_num(x) for x in _BRACKET.findall(body)]
+        if len(plain) != len(years) or len(priors) > len(years) - 1:
+            continue
+        vals = []
+        for i, y in enumerate(years):
+            prior = priors[i - 1] if 1 <= i <= len(priors) else None
+            vals.append({"year": y, "value": plain[i], "prior": prior, "forecast": forecast[i]})
+        out.append({"id": key, "label_ko": label, "unit": unit, "values": vals})
+    return out
+
+
+def parse_outlook_table(text: str) -> dict[str, Any] | None:
+    """The two forecast tables of a 경제전망 summary (PDF text in row order, pypdf's reading order)."""
+    flat = collapse(text)
+    prior = re.search(r"\[\s*\]\s*(?:내)?는\s*(\d{2}\.\d{1,2})월\s*전망", flat)
+    rows: list[dict[str, Any]] = []
+    years: list[int] = []
+    for title, spec in (("국내 성장률 전망", _GROWTH_ROWS), ("물가·경상수지·고용 전망", _PRICE_ROWS)):
+        i = flat.find(title)
+        if i < 0:
+            continue
+        seg = flat[i: i + 1400]
+        for stop in ("주:", "자료:"):
+            k = seg.find(stop)
+            if k > 0:
+                seg = seg[:k]
+        hm = re.search(r"((?:\d{4}e?\)?\s+){2,4})", seg)
+        if not hm:
+            continue
+        heads = re.findall(r"(\d{4})(e?)", hm.group(1))
+        ys = [int(y) for y, _ in heads]
+        fc = [bool(e) for _, e in heads]
+        years = years or ys
+        rows += _table_rows(seg[hm.end():], spec, ys, fc)
+    if not rows:
+        return None
+    return {"prior_made_in": prior.group(1) if prior else None, "years": years, "rows": rows}
+
+
+def outlook_pdf_url(html: str) -> str | None:
+    soup = BeautifulSoup(html, "html.parser")
+    for a in soup.find_all("a", href=True):
+        if a["href"].startswith("/fileSrc/") and a["href"].endswith(".pdf"):
+            return BASE + a["href"]
+    return None
+
+
+def fetch_outlook_table(ntt_id: str) -> dict[str, Any]:
+    from .common import pdf_text_by_row
+
+    page_url = detail_url("B0000502", ntt_id, PRESS_MENU)
+    pdf_url = outlook_pdf_url(fetch_text(page_url, min_size=100000))
+    if not pdf_url:
+        raise ValueError(f"no pdf attached to {page_url}")
+    table = parse_outlook_table(pdf_text_by_row(fetch_bytes(pdf_url, min_size=5000)))
+    if not table:
+        raise ValueError(f"no forecast table found in {pdf_url}")
+    return {"source_url": page_url, "pdf_url": pdf_url, **table}

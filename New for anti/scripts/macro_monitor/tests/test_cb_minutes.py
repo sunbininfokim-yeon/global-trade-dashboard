@@ -200,6 +200,23 @@ class BojMinutes(unittest.TestCase):
         self.assertEqual(d["ballots"][0]["for"], ["Tamura Naoki"])
         self.assertEqual(d["ballots"][1]["against"], ["Tamura Naoki"])
 
+    def test_staff_summary_and_government_remarks_are_read_as_headed_text(self):
+        text = MINUTES.replace("I. Summary of Staff Reports on Economic and Financial Developments\n",
+                               "I. Summary of Staff Reports on Economic and Financial Developments\nA. Market Operations\n")
+        m = boj.parse_minutes(text)
+        self.assertEqual([x["heading"] for x in m["staff"]], ["A. Market Operations"])
+        self.assertIn("The staff explained that the economy had recovered.", m["staff"][0]["text"])
+        self.assertEqual(m["government"], [{"heading": "", "text": "The government representatives said things."}])
+
+    def test_parts_are_found_by_title_when_the_numbering_shifts(self):
+        shifted = (MINUTES.replace("III. Staff Reports on a Plan\nThe staff first explained the plan.\n", "")
+                   .replace("IV. Summary of Discussions on Monetary Policy", "III. Summary of Discussions on Monetary Policy")
+                   .replace("V. Remarks by Government Representatives", "IV. Remarks by Government Representatives")
+                   .replace("VI. Votes", "V. Votes"))
+        m = boj.parse_minutes(shifted)
+        self.assertEqual(len(m["policy"]), 4)
+        self.assertEqual([v["item"] for v in m["votes"]], ["A", "D"])
+
     def test_missing_parts_are_an_error(self):
         with self.assertRaises(ValueError):
             boj.parse_minutes("I. Summary of Staff Reports\nSomething.")
