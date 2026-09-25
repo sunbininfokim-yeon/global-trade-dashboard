@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-25T05:02:31.851792+00:00",
+  "generated_at": "2026-09-25T13:52:51.407526+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 166,
-    "scored": 166,
+    "raw_items": 167,
+    "scored": 167,
     "selected": 40,
-    "indicators": 18
+    "indicators": 17
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 18,
+      "count": 19,
       "error": null,
       "mode": "live"
     },
@@ -228,6 +228,20 @@
         "economy",
         "finance"
       ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "published_at": "2026-09-25T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
       "title": "Bank of Japan Accounts (September 20)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260920.htm",
       "published_at": "2026-09-25T01:00:00+00:00",
@@ -317,35 +331,6 @@
       "published_at": "2026-09-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Market Operations by the Bank of Japan (Aug.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "US_TREASURY_SANCTIONS",
-      "label_ko": "재무부 제재",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "title": "Congressional Bill H.R. 5334 Signed into Law",
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/congressional-bill-h-r-5334-signed-into-law/",
-      "published_at": "2026-09-18T21:43:23+00:00",
-      "site_slot": "ticker",
-      "significance": 2.18
     }
   ],
   "ticker_items": [
@@ -726,6 +711,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "636abf84bad4f1c6",
+      "published_at": "2026-09-25T06:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
+      },
+      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "32e5a1657b55368d",
@@ -1397,6 +1417,41 @@
       "site_slot": null
     },
     {
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "660658ed2fd605ac",
       "published_at": "2026-09-25T01:00:00+00:00",
       "source": {
@@ -1642,41 +1697,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "8131aa2b41a19c8a",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Market Operations by the Bank of Japan (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3d1bc211e40172c2",
       "published_at": null,
       "source": {
@@ -1709,42 +1729,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "de666fd18d7af01d",
-      "published_at": "2026-09-18T21:43:23+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/congressional-bill-h-r-5334-signed-into-law/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": "US_TREASURY_SANCTIONS",
-      "title": {
-        "original": "Congressional Bill H.R. 5334 Signed into Law",
-        "original_lang": "en",
-        "ko": "[USA·경제] Congressional Bill H.R. 5334 Signed into Law"
-      },
-      "summary": "On Friday, September 18, 2026, the President signed into law: H.R. 5334, the “Lindsey O. Graham Sanctioning Russia and Iran Act of 2026,” which authorizes and expands statutory sanctions, tariffs, and prohibitions on Russia and extends existing sanctions on Iran. The post Congres",
-      "scores": {
-        "significance": 2.18,
-        "final": 2.18
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "series:US_TREASURY_SANCTIONS"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "ticker"
     }
   ],
   "pending_review": [
@@ -1894,17 +1878,6 @@
     {
       "title": "Minutes of the Money Market Committee meeting – June 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/june/money-markets-committee-minutes-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the UK Money Markets Code Sub-Committee – June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/uk-money-markets-committee-minutes-june-2026",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2294,6 +2267,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "636abf84bad4f1c6",
+      "published_at": "2026-09-25T06:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
+      },
+      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "32e5a1657b55368d",
       "published_at": "2026-09-17T13:30:00+00:00",
       "source": {
@@ -2963,6 +2971,41 @@
       "site_slot": null
     },
     {
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "660658ed2fd605ac",
       "published_at": "2026-09-25T01:00:00+00:00",
       "source": {
@@ -3208,41 +3251,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "8131aa2b41a19c8a",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Market Operations by the Bank of Japan (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3d1bc211e40172c2",
       "published_at": null,
       "source": {
@@ -3275,42 +3283,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "de666fd18d7af01d",
-      "published_at": "2026-09-18T21:43:23+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/congressional-bill-h-r-5334-signed-into-law/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": "US_TREASURY_SANCTIONS",
-      "title": {
-        "original": "Congressional Bill H.R. 5334 Signed into Law",
-        "original_lang": "en",
-        "ko": "[USA·경제] Congressional Bill H.R. 5334 Signed into Law"
-      },
-      "summary": "On Friday, September 18, 2026, the President signed into law: H.R. 5334, the “Lindsey O. Graham Sanctioning Russia and Iran Act of 2026,” which authorizes and expands statutory sanctions, tariffs, and prohibitions on Russia and extends existing sanctions on Iran. The post Congres",
-      "scores": {
-        "significance": 2.18,
-        "final": 2.18
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "series:US_TREASURY_SANCTIONS"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "ticker"
     }
   ]
 }
