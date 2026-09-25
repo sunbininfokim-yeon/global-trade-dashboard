@@ -28,32 +28,43 @@ def main() -> int:
 
     existing = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
     rows = {r["wednesday"]: r for r in existing.get("weeks", [])}
+    unavailable = set(existing.get("unavailable", []))       # Thursdays with no release anywhere near them (holiday weeks)
     have_releases = {r["release"] for r in rows.values()}
 
     today = date.today()
     start = date(today.year - args.years, today.month, min(today.day, 28))
-    wanted = [d for d in h41_fima.thursdays(start, today) if d not in have_releases]
+    wanted = [d for d in h41_fima.thursdays(start, today) if d not in have_releases and d not in unavailable]
     # a release moved off Thursday is stored under its real date, so skip a Thursday whose week is already held
     wanted = [d for d in wanted if not any(abs((date.fromisoformat(w) - date.fromisoformat(d)).days) <= 2 for w in rows)]
     print(f"{len(rows)} weeks held, {len(wanted)} to fetch", flush=True)
 
-    def save(new_rows: list[dict]) -> None:
+    def save(new_rows: list[dict], gone: set[str] | None = None) -> None:
         merged = dict(rows)
         for r in new_rows:
             merged[r["wednesday"]] = r
+        missing = sorted(unavailable | (gone or set()))
         if not merged:
             return
+        weeks = [merged[k] for k in sorted(merged)]
+        if OUT.exists() and existing.get("weeks") == weeks and existing.get("unavailable", []) == missing:
+            return                                              # nothing new: keep the file (and retrieved_at) as it is
         doc = {
             "schema_version": "fima-repo-v1",
             "source": "Federal Reserve H.4.1, Table 1: Repurchase agreements -> Foreign official (Wednesday level, $ millions)",
             "source_url": h41_fima.BASE + "/",
             "retrieved_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-            "weeks": [merged[k] for k in sorted(merged)],
+            "weeks": weeks,
+            "unavailable": missing,
         }
         OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1, allow_nan=False) + "\n", encoding="utf-8")
-        print(f"  saved {len(doc['weeks'])} weeks", flush=True)
+        print(f"  saved {len(weeks)} weeks", flush=True)
 
     new, problems = h41_fima.collect(wanted, on_chunk=save)
+    # a Thursday for which no release exists under any nearby date is a holiday gap, not a failure to retry every day
+    gone = {p.split(":")[0] for p in problems if p.endswith("no release found")}
+    problems = [p for p in problems if p.split(":")[0] not in gone]
+    if gone:
+        save(new, gone)
     if not OUT.exists():
         print("nothing collected; nothing written", file=sys.stderr)
         return 1
