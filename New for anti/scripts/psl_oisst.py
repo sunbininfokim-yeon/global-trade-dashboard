@@ -84,17 +84,34 @@ def latest_year():
         return y - 1, time_length(y - 1)
 
 
+MONTHLY_MEAN = f"{BASE}/sst.mon.mean.nc"
+MONTHLY_LTM = f"{BASE}/sst.mon.ltm.1991-2020.nc"
+
+
+def time_length_of(url):
+    dds = _get(url + ".dds", timeout=60)
+    m = re.search(r"time\[time = (\d+)\]", dds)
+    if not m:
+        raise RuntimeError(f"{url}: time 축을 DDS에서 찾지 못함")
+    return int(m.group(1))
+
+
 def fetch(year, t, i, j):
-    """anom over index slices t, i, j given as (start, stride, stop), inclusive.
+    """anom from that year's daily file; see fetch_var."""
+    return fetch_var(year_url(year), "anom", t, i, j)
+
+
+def fetch_var(url, var, t, i, j):
+    """var over index slices t, i, j given as (start, stride, stop), inclusive.
 
     Returns (dates, lats, lons, rows) where rows[(ti, ii)] is a list over lon;
     missing cells (land, ice) come back as None.
     """
     sl = lambda s: f"[{s[0]}:{s[1]}:{s[2]}]"
-    url = f"{year_url(year)}.ascii?anom{sl(t)}{sl(i)}{sl(j)}"
+    url = f"{url}.ascii?{var}{sl(t)}{sl(i)}{sl(j)}"
     text = _get(url)
 
-    # Layout (Grid): "anom.anom[T][Y][X]", then one line per [t][y] with X
+    # Layout (Grid): "<var>.<var>[T][Y][X]", then one line per [t][y] with X
     # comma-separated values, then "anom.time[T]" / "anom.lat[Y]" / "anom.lon[X]"
     # each followed by a line of values.
     rows = {}
@@ -112,10 +129,11 @@ def fetch(year, t, i, j):
                     f = float(v)
                 except ValueError:
                     f = None
+                # abs > 100 catches the -9.96921e36 fill; real SST tops ~35 °C.
                 vals.append(None if f is None or f != f or abs(f) > 100 else f)
             rows[(int(m.group(1)), int(m.group(2)))] = vals
         else:
-            a = re.match(r"^anom\.(time|lat|lon)\[\d+\]$", line)
+            a = re.match(rf"^{var}\.(time|lat|lon)\[\d+\]$", line)
             if a and k + 1 < len(lines):
                 axes[a.group(1)] = [float(x) for x in lines[k + 1].split(",") if x.strip()]
                 k += 1

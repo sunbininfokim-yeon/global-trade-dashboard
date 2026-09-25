@@ -31,8 +31,7 @@ import psl_oisst
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sst_regions_v1.json"))
-DAY_STRIDE = 5
-LATEST = None        # (year, days in that year's file), set once in main()
+N_MONTHS = None      # length of the monthly file's time axis, set in main()
 
 START = "1982-01-01"
 
@@ -110,25 +109,31 @@ REGIONS = [
 
 
 def fetch_series(region):
-    """Monthly means for one box, stitched from PSL's one-file-per-year grid."""
+    """Monthly anomaly for one box: PSL monthly mean minus its 1991-2020 ltm.
+
+    Two small requests per region. (Stitching the daily files year by year was
+    tried first: ~40s per yearly request, 30 min per region -- a timeout.)
+    """
     lat, lon = region["lat"], region["lon"]
     i = (psl_oisst.lat_index(lat[0]), 8, psl_oisst.lat_index(lat[1]))
     j = (psl_oisst.lon_index(lon[0]), 8, psl_oisst.lon_index(lon[1]))
-    last_year, last_n = LATEST
-    by_month = {}
-    for year in range(int(START[:4]), last_year + 1):
-        n = last_n if year == last_year else 365
-        # Every DAY_STRIDE-th day rather than all of them: a monthly mean from
-        # ~6 days is what the chart can show, for a sixth of the transfer. 5
-        # (not the old 30) so no month -- February especially -- goes unsampled.
-        dates, _, _, rows = psl_oisst.fetch(year, (0, DAY_STRIDE, n - 1), i, j)
-        for (ti, _), vals in rows.items():
-            month = dates[ti].strftime("%Y-%m")
-            by_month.setdefault(month, []).extend(v for v in vals if v is not None)
-        time.sleep(0.3)
+    n = N_MONTHS
+    dates, _, _, mean = psl_oisst.fetch_var(psl_oisst.MONTHLY_MEAN, "sst", (0, 1, n - 1), i, j)
+    _, _, _, ltm = psl_oisst.fetch_var(psl_oisst.MONTHLY_LTM, "sst", (0, 1, 11), i, j)
 
-    return [[m, round(statistics.fmean(v), 2)]
-            for m, v in sorted(by_month.items()) if v]
+    out = []
+    for ti, d in enumerate(dates):
+        if d.isoformat() < START:
+            continue
+        vals = []
+        for (t, ii), row in mean.items():
+            if t != ti:
+                continue
+            clim = ltm.get((d.month - 1, ii)) or []
+            vals += [v - c for v, c in zip(row, clim) if v is not None and c is not None]
+        if vals:
+            out.append([d.strftime("%Y-%m"), round(statistics.fmean(vals), 2)])
+    return out
 
 
 def linear_trend(series):
@@ -146,9 +151,9 @@ def linear_trend(series):
 
 
 def main():
-    global LATEST
+    global N_MONTHS
     check = "--check" in sys.argv
-    LATEST = psl_oisst.latest_year()
+    N_MONTHS = psl_oisst.time_length_of(psl_oisst.MONTHLY_MEAN)
     regions = REGIONS[:1] if check else REGIONS
     out = []
 
@@ -184,7 +189,7 @@ def main():
         "schema_version": "sst-regions-v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": psl_oisst.SOURCE,
-        "source_url": psl_oisst.BASE,
+        "source_url": psl_oisst.MONTHLY_MEAN,
         "baseline": psl_oisst.BASELINE,
         "start": START,
         "note_ko": "해역 평균 월별 편차입니다. 격자가 아니라 박스 평균이므로 "
