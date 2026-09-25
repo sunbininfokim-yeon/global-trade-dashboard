@@ -42,7 +42,7 @@ jobs:
           restore-keys: qra-docs-
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_qra_engine.py tests/test_tbill.py -v
+        run: python -m pytest tests/test_qra_engine.py tests/test_qra_history.py tests/test_tbill.py -v
       - name: Build QRA engine
         working-directory: New for anti/scripts/macro_monitor
         # Fails (and commits nothing) if the rebuild has fewer events than

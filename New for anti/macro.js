@@ -25,6 +25,7 @@ let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
 let MM_STATEMENT_DIFF_PROMISE = null;  // FOMC statement wording diffs; loaded only for USA
+let MM_FOMC_OPEN = false;       // U.S. policy panel: is the meeting-detail fold under the rate decision open
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
@@ -1508,6 +1509,9 @@ const mmChartDrawer = () => {
                 ? ind.thresholds.filter((t) => t.kind === 'threshold')
                 : ((ind.reference || {}).kind === 'threshold' ? [ind.reference] : []),
         });
+        // A series that is not a plain observed print says so under the chart
+        // (QRA: announced quarterly estimates, not outturns).
+        if (ind.history_note_ko) body += `<p class="fin-note">${finEsc(ind.history_note_ko)}</p>`;
     }
 
     // With a mode selected the header has to follow it. The label carries the
@@ -1749,11 +1753,12 @@ const mmStatementDiffHtml = (diffDoc) => {
 // Committee commitment and not a market-implied path, and is captioned so.
 const mmFmtRange = (lo, hi) => `${Number(lo).toFixed(2)}–${Number(hi).toFixed(2)}%`;
 
-const mmFomcDecisionHtml = (policy) => {
+const mmFomcDecisionHtml = (policy, extra = {}) => {
     const dec = policy.decision;
     const sep = policy.sep;
     if (!dec && !sep) return '';
     const actionKo = { raise: '인상', lower: '인하', maintain: '동결' };
+    let moveHtml = '';
     let head = '';
     if (dec) {
         const bp = Number(dec.change_bp || 0);
@@ -1765,12 +1770,12 @@ const mmFomcDecisionHtml = (policy) => {
             const tag = row.action === 'maintain' ? '동결' : `${actionKo[row.action] || row.action} ${row.change_bp > 0 ? '+' : ''}${row.change_bp}bp`;
             return `<span>${finEsc(String(row.meeting_date).slice(2))} · ${finEsc(tag)}</span>`;
         }).join('');
+        moveHtml = `<strong class="mm-fomc-move mm-fomc-${finEsc(dec.action)}">${finEsc(dec.meeting_date)} · ${finEsc(move)} → ${finEsc(mmFmtRange(dec.range_low, dec.range_high))}</strong>`;
         head = `
-        <strong class="mm-fomc-move mm-fomc-${finEsc(dec.action)}">${finEsc(dec.meeting_date)} · ${finEsc(move)} → ${finEsc(mmFmtRange(dec.range_low, dec.range_high))}</strong>
         <p>${finEsc(prior)}${dec.source_url ? ` · <a class="mm-quality-link" href="${finEsc(dec.source_url)}" target="_blank" rel="noopener noreferrer">결정문 ↗</a>` : ''}</p>
         ${history ? `<div class="mm-quality-names">${history}</div>` : ''}`;
     } else {
-        head = '<p class="mm-quality-muted">최근 회의 결정문에서 금리 결정 문장을 찾지 못했습니다.</p>';
+        moveHtml = '<span class="mm-quality-muted">최근 회의 결정문에서 금리 결정 문장을 찾지 못했습니다.</span>';
     }
 
     let table = '';
@@ -1801,11 +1806,27 @@ const mmFomcDecisionHtml = (policy) => {
             <p class="mm-quality-muted">참가자 개별 전망의 중앙값(%)입니다. 정책금리 행은 점도표의 중앙값이며 위원회의 약속도, 시장이 반영한 경로도 아닙니다. 칸에 마우스를 올리면 중심경향·범위가 보입니다.</p>
         </details>`;
     }
+    // The rate decision is the headline; everything else about the meeting
+    // (SEP, minutes, the named vote, roster, statement redline) sits in a fold
+    // under it. The panel used to show all of it at once and ran several
+    // screens long. The open state lives in MM_FOMC_OPEN so a repaint (opening
+    // a chart, switching tabs) does not snap it shut.
+    const open = MM_FOMC_OPEN;
     return `
-    <div class="mm-quality-card mm-quality-wide mm-fomc-decision">
-        <span class="mm-quality-label">금리 결정 · 경제전망</span>
+    <div class="mm-quality-card mm-quality-wide mm-fomc-decision mm-fomc-fold${open ? ' is-open' : ''}">
+        <button type="button" class="mm-fomc-toggle" data-mm-fomc-toggle="1" aria-expanded="${open}" aria-controls="mm-fomc-detail">
+            <span class="mm-fomc-toggle-main">
+                <span class="mm-quality-label">금리 결정 · 경제전망</span>
+                ${moveHtml}
+            </span>
+            <span class="mm-fomc-more"><span class="mm-fomc-more-off">의사록 · 표결 · 전망 보기 ▾</span><span class="mm-fomc-more-on">접기 ▴</span></span>
+        </button>
         ${head}
-        ${table}
+        ${extra.summary ? `<p class="mm-quality-muted mm-fomc-summary">${finEsc(extra.summary)}</p>` : ''}
+        <div class="mm-fomc-detail" id="mm-fomc-detail"${open ? '' : ' hidden'}>
+            ${table}
+            ${extra.detail || ''}
+        </div>
     </div>`;
 };
 
@@ -1894,19 +1915,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
     const districts = evidence.districts || [];
     const sourceDate = beige ? String(beige.reference_period || '').slice(0, 10) : '';
 
-    if (!cmp.current_meeting && !beige && !roster.members) return '';
-    return `
-    <section class="mm-quality" aria-label="미국 정책 및 현장 진단">
-        <div class="mm-quality-head">
-            <div>
-                <p class="mm-quality-kicker">공식 문서 · 공개 표결</p>
-                <h3>정책·현장 진단</h3>
-            </div>
-            <span class="mm-quality-status">예측·성향 점수 아님</span>
-        </div>
-        <div class="mm-quality-grid">
-            ${mmFomcDecisionHtml(policy)}
-            ${mmFomcMinutesHtml(policy)}
+    const votesRosterHtml = `
             <div class="mm-quality-card">
                 <span class="mm-quality-label">FOMC 공개 표결</span>
                 <strong>${finEsc(cmp.previous_meeting || '—')} → ${finEsc(cmp.current_meeting || '—')}</strong>
@@ -1933,6 +1942,36 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
                     <p>${roster.members.map((member) => `${member.name} (${member.role})`).join(' · ')}</p>
                 </details>` : ''}
             </div>
+`;
+    const mins = policy.minutes || {};
+    const summary = [
+        cmp.current_meeting ? `반대 ${Number(dissent.count || 0)}명 (${direction})` : null,
+        mins.latest ? `의사록 ${mins.latest.meeting_date}분${mins.latest.released_on ? ` ${mins.latest.released_on} 공개` : ''}` : null,
+        mins.pending ? `다음 의사록 ${mins.pending.expected_release} 공개 예상` : null,
+        schedule.next_meeting_date ? `다음 FOMC ${schedule.next_meeting_date}` : null,
+    ].filter(Boolean).join(' · ');
+    const detail = `
+        <div class="mm-fomc-detail-grid">
+            ${mmFomcMinutesHtml(policy)}
+            ${votesRosterHtml}
+            ${mmStatementDiffHtml(statementDiff)}
+        </div>`;
+    // No decision/SEP block (statement not parsed): show the detail plainly
+    // rather than hiding the minutes and the vote behind a fold with no head.
+    const fomcFold = mmFomcDecisionHtml(policy, { summary, detail }) || detail;
+
+    if (!cmp.current_meeting && !beige && !roster.members) return '';
+    return `
+    <section class="mm-quality" aria-label="미국 정책 및 현장 진단">
+        <div class="mm-quality-head">
+            <div>
+                <p class="mm-quality-kicker">공식 문서 · 공개 표결</p>
+                <h3>정책·현장 진단</h3>
+            </div>
+            <span class="mm-quality-status">예측·성향 점수 아님</span>
+        </div>
+        <div class="mm-quality-grid">
+            ${fomcFold}
             <div class="mm-quality-card mm-quality-beige">
                 <span class="mm-quality-label">Beige Book ${finEsc(sourceDate)}</span>
                 <strong>${districts.length ? `12개 District 현장 의견` : '공식 현장 보고서'}</strong>
@@ -1943,7 +1982,6 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
                 ${schedule.next_beige_book_estimate ? `<p class="mm-quality-muted" title="${finEsc(schedule.beige_book_note_ko || '')}">다음 예상 ${finEsc(schedule.next_beige_book_estimate)} (추정)</p>` : ''}
                 ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
             </div>
-            ${mmStatementDiffHtml(statementDiff)}
         </div>
         <p class="mm-quality-foot">공개 표결은 회의 당시의 행동 기록이고, Beige Book은 접촉자 의견입니다. 둘 다 다음 회의나 시장의 방향을 자동 예측하지 않습니다.</p>
     </section>`;
@@ -2502,6 +2540,18 @@ const renderMacroMonitor = async () => {
             if (!t) return;
             if (t.closest('[data-mm-close]')) { MM_COUNTRY = null; MM_CHART = null; mmPaint(); return; }
             if (t.closest('[data-mm-chart-close]')) { MM_CHART = null; mmPaint(); return; }
+            const fold = t.closest('[data-mm-fomc-toggle]');
+            if (fold) {
+                MM_FOMC_OPEN = !MM_FOMC_OPEN;
+                fold.setAttribute('aria-expanded', String(MM_FOMC_OPEN));
+                const card = fold.closest('.mm-fomc-fold');
+                if (card) {
+                    card.classList.toggle('is-open', MM_FOMC_OPEN);
+                    const detailEl = card.querySelector('.mm-fomc-detail');
+                    if (detailEl) detailEl.hidden = !MM_FOMC_OPEN;
+                }
+                return;
+            }
             const tab = t.closest('[data-mm-tab]');
             if (tab) { MM_TAB = tab.getAttribute('data-mm-tab'); MM_CHART = null; mmPaint(); return; }
             const chip = t.closest('[data-mm-chip]');
