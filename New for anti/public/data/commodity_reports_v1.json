@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-25T05:18:57.539710+00:00",
+  "generated_at": "2026-09-25T14:07:55.290265+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 3,
-    "raw_items": 151,
-    "scored": 63,
-    "published": 37,
+    "sources_ok": 10,
+    "sources_failed": 2,
+    "raw_items": 164,
+    "scored": 66,
+    "published": 39,
     "commodities": 9,
-    "buckets": 11
+    "buckets": 15
   },
   "feed_status": [
     {
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 18,
+      "count": 19,
       "error": null,
       "mode": "live"
     },
@@ -105,9 +105,9 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 12,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -476,12 +476,38 @@
         "39ac9e91f73a0776"
       ]
     },
-    "thermal_coal": {
+    "rice": {
+      "PHL": [
+        "71739cda84d2ebd6"
+      ],
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
       "USA": [
-        "f8aa4f64781b6480"
+        "2c8f727be89c0de5",
+        "e4530ccde436c92d",
+        "eb08bb539c63def3"
+      ]
+    },
+    "wheat": {
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "USA": [
+        "54cc3c274cf90c25",
+        "44ef3d9e9fba437f",
+        "06cf84727ec466c3",
+        "82a9272720c2cdfb",
+        "d9459a6be37e5e91",
+        "389d4a4328f23545",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d"
       ]
     },
     "corn": {
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
       "USA": [
         "9a2e4f0c6cc38378",
         "9d9ab72fff81736d",
@@ -491,6 +517,11 @@
         "205bcf62b2894e8b",
         "e54c2f7c294df06b",
         "9dd7845c2d4fc51e"
+      ]
+    },
+    "thermal_coal": {
+      "USA": [
+        "f8aa4f64781b6480"
       ]
     },
     "soybeans": {
@@ -505,31 +536,12 @@
         "9dd7845c2d4fc51e"
       ]
     },
-    "wheat": {
-      "USA": [
-        "54cc3c274cf90c25",
-        "44ef3d9e9fba437f",
-        "06cf84727ec466c3",
-        "82a9272720c2cdfb",
-        "d9459a6be37e5e91",
-        "389d4a4328f23545",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d"
-      ]
-    },
     "cotton": {
       "USA": [
         "094f2c679d643322",
         "d2560303da2802d2",
         "e4530ccde436c92d",
         "82ad0c3c992ec514"
-      ]
-    },
-    "rice": {
-      "USA": [
-        "2c8f727be89c0de5",
-        "e4530ccde436c92d",
-        "eb08bb539c63def3"
       ]
     },
     "gas": {
@@ -571,7 +583,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.102,
+      "importance": 4.076,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -602,7 +614,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.403,
+      "importance": 2.388,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -632,11 +644,69 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.277,
+      "importance": 2.275,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "71739cda84d2ebd6",
+      "title": {
+        "original": "Philippines: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Manila lowers its milled rice production forecast and maintains its consumption forecast for Marketing Year 2026/27, as a moderate to strong El Niño and elevated fertilizer costs weigh on production even as demand holds steady despite elevated...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/philippines-grain-and-feed-update",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "PHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.158,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e08bde069abdfd83",
+      "title": {
+        "original": "Mexico: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Mexico’s corn, rice, and sorghum production are forecast to decline in marketing year 2026/27, pressured by weak profitability, elevated input costs, and erratic weather. Corn, wheat, and rice imports are expected to rise as domestic output falls...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/mexico-grain-and-feed-update",
+      "published_at": "2026-09-23T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.158,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -663,7 +733,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.138,
+      "importance": 2.122,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -690,7 +760,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.922,
+      "importance": 1.91,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -946,35 +1016,6 @@
       ]
     },
     {
-      "id": "c67666c03e916f6f",
-      "title": {
-        "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its July Short-Term Energy Outlook (STEO), increasing its expectations for global oil production.",
-      "url": "https://www.eia.gov/pressroom/releases/press590.php",
-      "published_at": "2026-07-07T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.471,
-      "reasons": [
-        "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
       "id": "54cc3c274cf90c25",
       "title": {
         "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
@@ -1035,6 +1076,35 @@
       ]
     },
     {
+      "id": "c67666c03e916f6f",
+      "title": {
+        "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration published its July Short-Term Energy Outlook (STEO), increasing its expectations for global oil production.",
+      "url": "https://www.eia.gov/pressroom/releases/press590.php",
+      "published_at": "2026-07-07T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 1.469,
+      "reasons": [
+        "series:EIA_STEO",
+        "country_in_text"
+      ]
+    },
+    {
       "id": "5a1967d788350658",
       "title": {
         "original": "Wholesale Electricity Market Data",
@@ -1057,7 +1127,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.464,
+      "importance": 1.454,
       "reasons": [
         "country_in_text"
       ]
@@ -1117,7 +1187,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.364,
+      "importance": 1.359,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1350,7 +1420,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.111,
+      "importance": 1.105,
       "reasons": [
         "country_in_text"
       ]
@@ -1464,7 +1534,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.889,
+      "importance": 0.884,
       "reasons": []
     },
     {
@@ -1488,7 +1558,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.889,
+      "importance": 0.884,
       "reasons": []
     },
     {
