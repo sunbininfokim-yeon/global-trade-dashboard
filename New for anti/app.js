@@ -1699,7 +1699,7 @@ const sstColor = (anomaly) => {
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        // Kept low. Against a 1971-2000 baseline most of the ocean now reads
+        // Kept low. Against the 1991-2020 baseline much of the ocean still reads
         // warm, so a bold ramp turns the whole map orange and buries the land
         // and trade-status fills the screen is actually for. This is a wash
         // under the coastlines; the tooltip carries the number.
@@ -3799,7 +3799,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else if (mode === 'reference') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.classList.add('world-mini');
@@ -3816,7 +3816,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';

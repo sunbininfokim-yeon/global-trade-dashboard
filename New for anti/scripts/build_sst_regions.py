@@ -13,7 +13,7 @@ Only region means are stored, not grids. Ten regions x ~530 months is about
 100KB; the equivalent gridded history would be tens of megabytes and says
 nothing extra at this zoom.
 
-Source: NOAA OISST v2.1 via NOAA CoastWatch ERDDAP (open access).
+Source: NOAA OISST v2.1 via NOAA PSL THREDDS (open access; see psl_oisst.py).
 
 Usage:
     python3 build_sst_regions.py            # write public/data/sst_regions_v1.json
@@ -25,18 +25,19 @@ import os
 import statistics
 import sys
 import time
-import urllib.parse
-import urllib.request
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
+
+import psl_oisst
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sst_regions_v1.json"))
-ERDDAP = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/ncdcOisst21Agg.csv"
+DAY_STRIDE = 5
+LATEST = None        # (year, days in that year's file), set once in main()
 
 START = "1982-01-01"
 
 # lat/lon box per region, plus why a crop-and-trade dashboard cares.
-# Longitudes are 0-360 to match the ERDDAP axis.
+# Longitudes are 0-360 to match the file axis.
 REGIONS = [
     {
         "id": "subpolar_atlantic", "label_ko": "북대서양 아북극 (블루 블롭)",
@@ -109,29 +110,22 @@ REGIONS = [
 
 
 def fetch_series(region):
-    """Monthly means for one box. ERDDAP averages nothing, so we do it here."""
+    """Monthly means for one box, stitched from PSL's one-file-per-year grid."""
     lat, lon = region["lat"], region["lon"]
-    # OISST is daily. Sampling every 30th day gives a monthly series for a
-    # thirtieth of the transfer -- pulling every day would be ~200MB per region
-    # to compute a monthly mean. And the end is (last), not today: the product
-    # runs about two weeks behind and a date past the axis maximum is a 404.
-    q = (f"anom[({START}):30:(last)][(0.0)]"
-         f"[({lat[0]}):8:({lat[1]})][({lon[0]}):8:({lon[1]})]")
-    url = f"{ERDDAP}?{urllib.parse.quote(q, safe='()[]:,.-')}"
-    req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
-    with urllib.request.urlopen(req, timeout=600) as r:
-        text = r.read().decode("utf-8", "replace")
-
+    i = (psl_oisst.lat_index(lat[0]), 8, psl_oisst.lat_index(lat[1]))
+    j = (psl_oisst.lon_index(lon[0]), 8, psl_oisst.lon_index(lon[1]))
+    last_year, last_n = LATEST
     by_month = {}
-    for line in text.splitlines()[2:]:
-        parts = line.split(",")
-        if len(parts) < 5 or not parts[4].strip() or parts[4].strip() == "NaN":
-            continue
-        month = parts[0][:7]
-        try:
-            by_month.setdefault(month, []).append(float(parts[4]))
-        except ValueError:
-            continue
+    for year in range(int(START[:4]), last_year + 1):
+        n = last_n if year == last_year else 365
+        # Every DAY_STRIDE-th day rather than all of them: a monthly mean from
+        # ~6 days is what the chart can show, for a sixth of the transfer. 5
+        # (not the old 30) so no month -- February especially -- goes unsampled.
+        dates, _, _, rows = psl_oisst.fetch(year, (0, DAY_STRIDE, n - 1), i, j)
+        for (ti, _), vals in rows.items():
+            month = dates[ti].strftime("%Y-%m")
+            by_month.setdefault(month, []).extend(v for v in vals if v is not None)
+        time.sleep(0.3)
 
     return [[m, round(statistics.fmean(v), 2)]
             for m, v in sorted(by_month.items()) if v]
@@ -152,7 +146,9 @@ def linear_trend(series):
 
 
 def main():
+    global LATEST
     check = "--check" in sys.argv
+    LATEST = psl_oisst.latest_year()
     regions = REGIONS[:1] if check else REGIONS
     out = []
 
@@ -187,9 +183,9 @@ def main():
     doc = {
         "schema_version": "sst-regions-v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "NOAA OISST v2.1 (NOAA CoastWatch ERDDAP)",
-        "source_url": ERDDAP,
-        "baseline": "1971-2000 climatology (OISST v2.1)",
+        "source": psl_oisst.SOURCE,
+        "source_url": psl_oisst.BASE,
+        "baseline": psl_oisst.BASELINE,
         "start": START,
         "note_ko": "해역 평균 월별 편차입니다. 격자가 아니라 박스 평균이므로 "
                    "해역 내부의 세부 구조는 표현하지 않습니다.",
