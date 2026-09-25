@@ -42,7 +42,7 @@ jobs:
           restore-keys: qra-docs-
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_qra_engine.py -v
+        run: python -m pytest tests/test_qra_engine.py tests/test_tbill.py -v
       - name: Build QRA engine
         working-directory: New for anti/scripts/macro_monitor
         # Fails (and commits nothing) if the rebuild has fewer events than
@@ -51,11 +51,18 @@ jobs:
       - name: Graft into macro_monitor_v1.json
         working-directory: New for anti/scripts/macro_monitor
         run: python refresh_qra_quarters_in_pack.py
+      - name: Refresh T-bill rows for the (possibly new) quarter
+        working-directory: New for anti/scripts/macro_monitor
+        # A new refunding quarter makes the stored bill file stale (the graft
+        # above drops it rather than mix quarters). Best effort: if Fiscal Data
+        # is down the weekly tbill_issuance_refresh.yml fills it in.
+        run: python refresh_tbill_in_pack.py || true
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/qra_engine_v1.json" \
+                  "New for anti/public/data/tbill_issuance_v1.json" \
                   "New for anti/public/data/macro_monitor_v1.json"
           git commit -m "chore: refresh Treasury QRA" || exit 0
           git push
