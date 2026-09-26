@@ -129,3 +129,26 @@ test('usBillList filters bills by every JEC source id, not just the requested on
   const response = await w.fetch(new Request('https://test/api/us/congress/bills?committee_id=119-joint-jsec00'), env, {});
   assert.equal(response.status, 200);
 });
+
+test('hybrid search returns historical law citation and official link with an RRF score', async () => {
+  const w = worker(async (url, options) => {
+    const u = new URL(url);
+    if (u.hostname === 'embedding.test') return Response.json({ values: [1, ...Array(1535).fill(0)] });
+    if (u.pathname === '/rest/v1/rpc/search_policy_hybrid') {
+      assert.equal(JSON.parse(options.body).p_query, 'export controls');
+      return Response.json([{ source_type: 'public_law', source_id: '115-public-232', title: 'Authorization Act', similarity_score: 0.032 }]);
+    }
+    if (u.pathname === '/rest/v1/public_laws') return Response.json([{ public_law_id: '115-public-232', congress_number: 115, law_number: 232, govinfo_url: 'https://www.govinfo.gov/app/details/PLAW-115publ232' }]);
+    throw Error('Unexpected path: ' + u.pathname);
+  });
+  const response = await w.fetch(new Request('https://test/api/us/search?q=export%20controls'), { ...env, POLICY_EMBEDDING_PROXY_URL: 'https://embedding.test', POLICY_EMBEDDING_PROXY_TOKEN: 'test' }, {});
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.search_mode, 'hybrid');
+  assert.equal(body.items[0].type, 'public_law');
+  assert.equal(body.items[0].current_stage, 'enacted');
+  assert.equal(body.items[0].law_number, 232);
+  assert.equal(body.items[0].score_type, 'rrf');
+  assert.equal(body.items[0].similarity_score, undefined);
+  assert.equal(body.items[0].source_url, 'https://www.govinfo.gov/app/details/PLAW-115publ232');
+});

@@ -229,7 +229,7 @@
   ];
   const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
 
-  const searchGroupKey = (item) => (item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
+  const searchGroupKey = (item) => (item.type === 'public_law' ? 'enacted' : item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
 
   // Groups in a fixed order, and drops any group with no hits for this query
   // -- three blocks most of the time, a fourth only when a regulation result
@@ -250,6 +250,7 @@
   // its public/private law number, a pending one its own bill number and
   // current stage. EO/regulation rows stay title-only, same as before.
   const searchResultMeta = (item) => {
+    if (item.type === 'public_law') return `공법 ${item.congress_number}-${item.law_number} · 제정법`;
     if (item.type !== 'bill') return '';
     const cite = billNumberLabel({ ...item, bill_id: item.id });
     if (item.law_number) {
@@ -273,7 +274,7 @@
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
-    if (item.type === 'regulation') {
+    if (item.type === 'regulation' || item.type === 'public_law') {
       return item.source_url
         ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
         : `<div class="policy-search-result is-inert">${body}</div>`;

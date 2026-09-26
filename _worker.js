@@ -2839,7 +2839,7 @@ async function handleUsPolicy(request, env) {
             const filter = usSearchFilter(q);
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
             if (!filter.billRef && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v3:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v4:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -2993,7 +2993,7 @@ function usSearchFilter(q) {
     return { query, limit, billRef, cacheKey: `${query}|${limit}` };
 }
 
-// search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
+// search_policy_hybrid는 법안·과거 공법·행정명령·규정을 함께 검색한다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
     if (f.billRef) {
@@ -3011,7 +3011,8 @@ async function usSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
-        rows = await usRpc(env, 'search_policy_corpus', {
+        rows = await usRpc(env, 'search_policy_hybrid', {
+            p_query: f.query,
             p_query_embedding: vector,
             p_embedding_model: GEMINI_EMBEDDING_MODEL,
             p_result_limit: f.limit,
@@ -3033,8 +3034,8 @@ async function usSearch(env, f) {
             `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
     }
-    // search_policy_corpus (Supabase RPC, owned separately -- see
-    // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
+    // search_policy_hybrid (Supabase RPC; see
+    // supabase/migrations/20260924150000_public_law_hybrid_search.sql) only
     // returns source_type/source_id/title/similarity_score: a 'bill' hit
     // carries no signal for whether it's already a law or still moving
     // through Congress. The policy UI groups results into enacted/pending
@@ -3051,14 +3052,22 @@ async function usSearch(env, f) {
             + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const b of billRows) billMeta.set(b.bill_id, b);
     }
+    const lawIds = (rows || []).filter(r => r.source_type === 'public_law').map(r => r.source_id);
+    const lawMeta = new Map();
+    if (lawIds.length) {
+        const laws = await usFetch(env, 'public_laws', `select=public_law_id,congress_number,law_number,govinfo_url,official_pdf_url&public_law_id=in.(${lawIds.map(encodeURIComponent).join(',')})`);
+        for (const l of laws) lawMeta.set(l.public_law_id,l);
+    }
     const items = (rows || []).map((r) => {
         const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
         return {
             type: r.source_type,
             id: r.source_id,
             title: r.title,
-            similarity_score: r.similarity_score,
-            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            relevance_score: r.similarity_score,
+            score_type: 'rrf',
+            source_url: r.source_type === 'public_law' ? (lawMeta.get(r.source_id)?.govinfo_url || lawMeta.get(r.source_id)?.official_pdf_url || null) : r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            ...(r.source_type === 'public_law' ? { current_stage: 'enacted', congress_number: lawMeta.get(r.source_id)?.congress_number, law_number: lawMeta.get(r.source_id)?.law_number } : {}),
             ...(bill ? {
                 congress_number: bill.congress_number,
                 bill_type: bill.bill_type,
@@ -3071,7 +3080,7 @@ async function usSearch(env, f) {
             } : {}),
         };
     });
-    return { ok: true, body: { query: f.query, items } };
+    return { ok: true, body: { query: f.query, search_mode: 'hybrid', items } };
 }
 
 // The obvious way to write this is a PostgREST group-by aggregate

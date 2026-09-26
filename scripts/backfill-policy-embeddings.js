@@ -8,11 +8,16 @@ const {
 } = require('./lib/sync-utils');
 
 const RESOURCE = 'policy:embedding-backfill';
-const SOURCE_ORDER = ['executive_orders', 'regulations', 'bills'];
+const SOURCE_ORDER = ['public_laws', 'executive_orders', 'regulations', 'bills'];
 const DEFAULT_LIMIT = 100;
 const MAX_BATCH_SIZE = 50;
 
 const SOURCES = {
+  public_laws: {
+    table: 'public_laws', key: 'public_law_id',
+    select: 'public_law_id,law_title,congress_number,law_number',
+    text: row => `${row.law_title}\nPublic Law ${row.congress_number}-${row.law_number}`,
+  },
   bills: {
     table: 'bills',
     key: 'bill_id',
@@ -73,17 +78,17 @@ async function loadUnembedded(source, limit) {
 
 async function countUnembedded(source) {
   const config = SOURCES[source];
-  // PostgREST performs this aggregate in the database, so dry-run can report
-  // the true remaining total without downloading every candidate row.
-  const rows = await supabaseGet(config.table, {
-    select: 'count()',
-    embedding: 'is.null',
-  });
-  const count = Number(rows?.[0]?.count);
-  if (!Number.isInteger(count) || count < 0) {
-    throw new Error(`Could not read the unembedded-row count for ${source}.`);
+  // This project disables PostgREST aggregates. Page only primary keys so
+  // dry-run works without count() or downloading vectors/document bodies.
+  let total = 0;
+  for (;;) {
+    const rows = await supabaseGet(config.table, {
+      select: config.key, embedding: 'is.null',
+      order: `${config.key}.asc`, offset: String(total), limit: '1000',
+    });
+    total += rows.length;
+    if (rows.length < 1000) return total;
   }
-  return count;
 }
 
 async function refreshBillRelations(row, vector, model) {
@@ -109,7 +114,7 @@ async function embedBatch(source, rows, apiKey, model, dryRun) {
   let relations = 0;
   for (let index = 0; index < rows.length; index += 1) {
     const row = rows[index];
-    await supabasePatch(config.table, keyFilter(config.key, row[config.key]), {
+    await supabasePatch(config.table, `${keyFilter(config.key, row[config.key])}&embedding=is.null`, {
       embedding: vectors[index], embedding_model: model, embedded_at: new Date().toISOString(),
     });
     if (source === 'bills') relations += await refreshBillRelations(row, vectors[index], model);

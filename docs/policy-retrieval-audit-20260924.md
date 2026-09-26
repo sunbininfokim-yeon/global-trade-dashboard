@@ -62,3 +62,14 @@ node --test scripts/policy-retrieval/prepare.test.cjs
 6. 캐시는 query만으로 고정하지 않고 corpus version/model/filter를 포함. 의미 캐시는 검증 이후 단계로 둔다.
 
 검증: 원문 전체 coverage/Unicode, 결정적 ID/버전 분리, invalid 입력 거절, 정확 ID 우선/RRF 중복 방지, Top-K recall 계산 총 4개 테스트 통과. 운영 재임베딩·검색 배포·메일 발송 없음.
+
+
+## 2026-09-26 적용 결과
+
+- 운영 DB의 `public_laws` 5,948/5,948건, `bills` 18,989/18,989건에 임베딩 존재를 HEAD count로 확인했다. 과거 공법은 공식 제목+공법 번호를 입력한 메타데이터 임베딩이다. 조문 전문 임베딩 또는 현행법 전체 확보를 의미하지 않는다.
+- `20260924150000_public_law_hybrid_search.sql`을 9월 25일 SQL Editor에서 적용했다. SQL Editor에는 `설정 · 과거 제정법 임베딩·통합 검색`으로 저장했다. 변경 전 공법 메타데이터 5,948건은 로컬 비공개 백업 `policy-downloads/retrieval-20260924/public-laws-before.json`에 보존했다.
+- 9월 26일 실제 DB에서 `Congressional Accountability`와 해당 문서 벡터로 기존 의미검색과 새 하이브리드 RPC를 호출했다. 두 함수 모두 HTTP 200이며 1995년 공법 `104-public-1`을 첫 결과로 반환했다. 새 RPC는 service_role 전용이며 법안 번호 직접 조회는 기존 경로를 유지한다.
+- Worker/UI 연결은 사용자가 이번 작업에 한해 Codex 수정을 명시 승인했다. RRF 점수는 코사인 유사도로 오인하지 않도록 `relevance_score`, `score_type: rrf`로 반환한다. 코드 커밋은 사이트 배포 완료를 의미하지 않는다.
+- EIA 기사 URL의 `?id=`를 지우던 중복 제거를 수정했다. 마케팅 추적 매개변수만 제거하며 서로 다른 기사 번호는 보존한다. 공식 EIA 주간 석유 보고서 아카이브 날짜를 수집한다. 일반 EIA 피드에 일괄 원유 태그를 붙이던 기본값도 제거했다.
+- 9월 25일 로컬 RSS 재생성 결과 46건이다. USDA NASS의 날짜 없는 항목이나 403을 데이터 미발행으로 간주하지 않는다. 메일 발송과 발송 활성화는 수행하지 않았다.
+- 전문 청크 준비/중첩/출처 해시와 RRF recall 도구는 오프라인 준비 단계다. 전문 청크를 운영 DB에 저장·임베딩하는 단계는 아직 적용하지 않았다.

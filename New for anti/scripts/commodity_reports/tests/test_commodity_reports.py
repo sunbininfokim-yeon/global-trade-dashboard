@@ -333,3 +333,19 @@ class BuildTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class RegressionSeptember2026(unittest.TestCase):
+    def test_eia_article_query_ids_survive_dedup(self):
+        from types import SimpleNamespace
+        from commodity_reports.build import _dedupe
+        rows = [SimpleNamespace(url='https://www.eia.gov/todayinenergy/detail.php?id=1',importance=2),
+                SimpleNamespace(url='https://www.eia.gov/todayinenergy/detail.php?id=2',importance=1),
+                SimpleNamespace(url='https://www.eia.gov/todayinenergy/detail.php?id=1&utm_source=rss',importance=1)]
+        self.assertEqual(len(_dedupe(rows)),2)
+    def test_weekly_archive_preserves_actual_publication_date(self):
+        from commodity_reports.feeds import parse_eia_wpsr_archive
+        source={'id':'us_eia_wpsr','agency':'EIA','url':'https://www.eia.gov/petroleum/supply/weekly/'}
+        body='<a href="/petroleum/supply/weekly/archive/2026/2026_09_23/wpsr_2026_09_23.php">September 23, 2026</a>'
+        rows=parse_eia_wpsr_archive(body,source)
+        self.assertEqual(len(rows),1)
+        self.assertTrue(rows[0].published_at.startswith('2026-09-23'))

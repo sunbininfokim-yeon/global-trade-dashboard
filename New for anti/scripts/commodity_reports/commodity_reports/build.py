@@ -7,6 +7,7 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
@@ -88,7 +89,11 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     """
     best: "OrderedDict[str, ScoredReport]" = OrderedDict()
     for item in sorted(scored, key=lambda x: -x.importance):
-        key = item.url.split("?", 1)[0].rstrip("/").lower()
+        parts = urlsplit(item.url)
+        # EIA uses detail.php?id=...: removing every query merges different articles.
+        params = [(k,v) for k,v in parse_qsl(parts.query, keep_blank_values=True)
+                  if not k.lower().startswith('utm_') and k.lower() not in {'fbclid','gclid'}]
+        key = urlunsplit((parts.scheme.lower(),parts.netloc.lower(),parts.path.rstrip('/'),urlencode(sorted(params)),''))
         if key not in best:
             best[key] = item
     return list(best.values())

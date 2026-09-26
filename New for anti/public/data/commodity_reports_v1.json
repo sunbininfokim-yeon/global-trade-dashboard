@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-23T23:06:44.929030+00:00",
+  "generated_at": "2026-09-24T22:01:36.435672+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
+    "sources_ok": 10,
     "sources_failed": 3,
-    "raw_items": 150,
-    "scored": 63,
-    "published": 37,
-    "commodities": 8,
-    "buckets": 10
+    "raw_items": 159,
+    "scored": 59,
+    "published": 46,
+    "commodities": 9,
+    "buckets": 16
   },
   "feed_status": [
     {
@@ -36,7 +36,7 @@
     {
       "source_id": "us_nass_todays_reports",
       "ok": true,
-      "count": 1,
+      "count": 2,
       "error": null,
       "mode": "live"
     },
@@ -108,6 +108,13 @@
       "ok": false,
       "count": 0,
       "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live"
+    },
+    {
+      "source_id": "us_eia_wpsr",
+      "ok": true,
+      "count": 8,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -459,21 +466,59 @@
   "index": {
     "oil": {
       "USA": [
+        "200a5eacff258243",
+        "358eed02ac7dc062",
+        "e42fe64fc4924a09",
         "cfe32235018b6add",
-        "5d3e84a676f4ec8b",
-        "636939b535053039",
-        "c67666c03e916f6f",
-        "57e4eb5bfc9ebc1e",
-        "0a708bd4ffd29cfc",
-        "fd94e1c0559f75cc",
-        "cecfc55a16f54d74"
+        "a2dac33f2c203645",
+        "f6cdaa185e15d4c6",
+        "df29542a1a451423",
+        "57e4eb5bfc9ebc1e"
       ],
       "_global": [
+        "0da65c84cf5a610a",
         "7376f1ff6d49470e",
+        "dee0a19b37578602",
         "0260f9aa0131b0b8",
         "735b13587e14b5a5",
-        "af0be633a6c11395",
+        "f2065ae613a3f426",
         "39ac9e91f73a0776"
+      ],
+      "NGA": [
+        "b0c1575f9c73c896"
+      ],
+      "MEX": [
+        "033cee9d25651809"
+      ]
+    },
+    "gas": {
+      "USA": [
+        "358eed02ac7dc062",
+        "5a1967d788350658",
+        "e06baf76105c3c62",
+        "1e8ec708335785c8",
+        "da3f6761ea6f1421",
+        "98e21d7d35e07991",
+        "181e4ee82214496a",
+        "8140ada36a326578"
+      ],
+      "GBR": [
+        "1e8ec708335785c8"
+      ],
+      "CAN": [
+        "1e8ec708335785c8",
+        "8140ada36a326578"
+      ],
+      "MEX": [
+        "033cee9d25651809"
+      ],
+      "_global": [
+        "d09ef02fa55cc52b"
+      ]
+    },
+    "thermal_coal": {
+      "USA": [
+        "f8aa4f64781b6480"
       ]
     },
     "corn": {
@@ -527,16 +572,6 @@
         "eb08bb539c63def3"
       ]
     },
-    "gas": {
-      "USA": [
-        "5a1967d788350658",
-        "de49cf7992871dbf",
-        "181e4ee82214496a"
-      ],
-      "_global": [
-        "d09ef02fa55cc52b"
-      ]
-    },
     "sugar": {
       "USA": [
         "21e8e31c7b207b51"
@@ -567,7 +602,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.195,
+      "importance": 4.124,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -576,18 +611,49 @@
       ]
     },
     {
-      "id": "5d3e84a676f4ec8b",
+      "id": "da3f6761ea6f1421",
       "title": {
-        "original": "EIA expects record electricity generation in 2026 and 2027",
+        "original": "U.S. LNG exports rose 23% in the first half of 2026 because of higher capacity",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "The U.S. Energy Information Administration (EIA) expects U.S. electricity generation will grow 2.2% to a record 4,368 billion kilowatthours (BkWh) this year. EIA expects an additional 1.7% growth in electricity generation next year.",
-      "url": "https://www.eia.gov/pressroom/releases/press592.php",
-      "published_at": "2026-09-09T17:00:00+00:00",
+      "summary": "U.S. liquefied natural gas (LNG) exports averaged 17.4 billion cubic feet per day (Bcf/d) in the first six months of the year, 23% more than the same period in 2025, according to our Natural Gas Monthly. In our latest Short-Term Energy Outlook, we estimate U.S. LNG exports will average 17.3 Bcf/d in the second half of 2026 (2H26) before rising to 18.7 Bcf/d in 1H27.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68064",
+      "published_at": "2026-09-01T14:00:00+00:00",
       "agency": "EIA",
       "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 3.556,
+      "reasons": [
+        "series:EIA_STEO",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "200a5eacff258243",
+      "title": {
+        "original": "Weekly Petroleum Status Report — 2026-09-23",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Official weekly U.S. crude oil and petroleum supply, production and stocks report.",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2026/2026_09_23/wpsr_2026_09_23.php",
+      "published_at": "2026-09-23T00:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_wpsr",
       "commodities": [
         "oil"
       ],
@@ -596,12 +662,100 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.457,
+      "series_id": "EIA_WPSR",
+      "series_label_ko": "EIA 주간 석유 재고",
+      "importance": 3.24,
       "reasons": [
+        "series:EIA_WPSR",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e42fe64fc4924a09",
+      "title": {
+        "original": "Weekly Petroleum Status Report — 2026-09-16",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Official weekly U.S. crude oil and petroleum supply, production and stocks report.",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2026/2026_09_16/wpsr_2026_09_16.php",
+      "published_at": "2026-09-16T00:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_wpsr",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_WPSR",
+      "series_label_ko": "EIA 주간 석유 재고",
+      "importance": 2.816,
+      "reasons": [
+        "series:EIA_WPSR",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "98e21d7d35e07991",
+      "title": {
+        "original": "United States on track for record natural gas production in 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "We forecast U.S. marketed natural gas production will average 122.5 billion cubic feet per day (Bcf/d) in 2026, surpassing the previous record of 118.5 Bcf/d set in 2025, in our August 2026 Short-Term Energy Outlook (STEO).",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67944",
+      "published_at": "2026-08-12T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 2.761,
+      "reasons": [
+        "series:EIA_STEO",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "a2dac33f2c203645",
+      "title": {
+        "original": "Weekly Petroleum Status Report — 2026-09-10",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Official weekly U.S. crude oil and petroleum supply, production and stocks report.",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2026/2026_09_10/wpsr_2026_09_10.php",
+      "published_at": "2026-09-10T00:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_wpsr",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_WPSR",
+      "series_label_ko": "EIA 주간 석유 재고",
+      "importance": 2.522,
+      "reasons": [
+        "series:EIA_WPSR",
         "country_in_text"
       ]
     },
@@ -628,11 +782,128 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.282,
+      "importance": 2.278,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "f6cdaa185e15d4c6",
+      "title": {
+        "original": "Weekly Petroleum Status Report — 2026-09-02",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Official weekly U.S. crude oil and petroleum supply, production and stocks report.",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2026/2026_09_02/wpsr_2026_09_02.php",
+      "published_at": "2026-09-02T00:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_wpsr",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_WPSR",
+      "series_label_ko": "EIA 주간 석유 재고",
+      "importance": 2.211,
+      "reasons": [
+        "series:EIA_WPSR",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-09-24T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.152,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "358eed02ac7dc062",
+      "title": {
+        "original": "Public companies produce most U.S. crude oil and natural gas",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Publicly traded companies represent a tiny share of the total number of companies producing crude oil and natural gas in the United States, but they make up a large share of U.S. production. In 2025, publicly traded companies accounted for just 2% of about 12,000 oil and natural gas producers but produced 68% of the crude oil and natural gas in the Lower 48 states.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68184",
+      "published_at": "2026-09-22T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "oil",
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.08,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "df29542a1a451423",
+      "title": {
+        "original": "Weekly Petroleum Status Report — 2026-08-26",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Official weekly U.S. crude oil and petroleum supply, production and stocks report.",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2026/2026_08_26/wpsr_2026_08_26.php",
+      "published_at": "2026-08-26T00:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_wpsr",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_WPSR",
+      "series_label_ko": "EIA 주간 석유 재고",
+      "importance": 1.998,
+      "reasons": [
+        "series:EIA_WPSR",
         "country_in_text"
       ]
     },
@@ -657,7 +928,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.965,
+      "importance": 1.932,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -913,6 +1184,63 @@
       ]
     },
     {
+      "id": "1e8ec708335785c8",
+      "title": {
+        "original": "New England natural gas prices have been trading near record discounts to Henry Hub",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Low-cost Appalachian and Canadian natural gas supplies coupled with lower-than-usual regional consumption have pushed down natural gas prices at a major New England pricing hub in recent months to trade at a discount to the widely cited U.S. benchmark, Henry Hub.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68124",
+      "published_at": "2026-09-09T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "GBR",
+        "CAN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.621,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0da65c84cf5a610a",
+      "title": {
+        "original": "What goes into diesel prices?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The price of distillate fuel oil, often sold as diesel, is driven by the price of crude oil, retail margins, distribution costs, taxes, and crack spreads, the indicator we use for refining margins. Tight global supplies of distillate fuel oil and elevated crude oil prices have driven prices higher in recent months.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68164",
+      "published_at": "2026-09-18T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.614,
+      "reasons": [
+        "revision_language"
+      ]
+    },
+    {
       "id": "5a1967d788350658",
       "title": {
         "original": "Wholesale Electricity Market Data",
@@ -935,37 +1263,8 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.501,
+      "importance": 1.473,
       "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "c67666c03e916f6f",
-      "title": {
-        "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its July Short-Term Energy Outlook (STEO), increasing its expectations for global oil production.",
-      "url": "https://www.eia.gov/pressroom/releases/press590.php",
-      "published_at": "2026-07-07T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.479,
-      "reasons": [
-        "series:EIA_STEO",
         "country_in_text"
       ]
     },
@@ -1030,6 +1329,34 @@
       ]
     },
     {
+      "id": "e06baf76105c3c62",
+      "title": {
+        "original": "Corpus Christi LNG expansion makes facility the second-largest in the United States",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On August 28, 2026, Cheniere Energy, Inc., completed its Corpus Christi Liquefaction Stage 3 Project (CCL Stage 3) in Texas, taking custody and control of the seventh and last liquefied natural gas (LNG) train in the project.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68144",
+      "published_at": "2026-09-15T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.428,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "06cf84727ec466c3",
       "title": {
         "original": "US corn ending stocks up 29% from last year, soybean ending stocks up 29%",
@@ -1084,9 +1411,40 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.381,
+      "importance": 1.368,
       "reasons": [
         "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "8140ada36a326578",
+      "title": {
+        "original": "The U.S.-Canada natural gas and electricity trade value rose in 2025",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Although the total value of energy trade between the United States and Canada fell by 11% in 2025 to an estimated $137 billion, according to data from the U.S. Census Bureau, the trade value of natural gas and electricity between the two countries increased slightly primarily because of increased natural gas prices and trade volume.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=",
+      "published_at": "2026-08-05T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.361,
+      "reasons": [
+        "has_figure",
+        "revision_language",
         "country_in_text"
       ]
     },
@@ -1207,64 +1565,6 @@
       ]
     },
     {
-      "id": "0a708bd4ffd29cfc",
-      "title": {
-        "original": "EIA updates forecast amid continued Mideast disruption; will publish new energy security datasets",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its May Short-Term Energy Outlook, reflecting a continued disruption to Middle Eastern oil flows.",
-      "url": "https://www.eia.gov/pressroom/releases/press588.php",
-      "published_at": "2026-05-12T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.325,
-      "reasons": [
-        "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "cecfc55a16f54d74",
-      "title": {
-        "original": "EIA forecasts strongest four-year growth in U.S. electricity demand since 2000, fueled by data centers",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration (EIA) published its first energy-sector forecasts through 2027 in the January Short-Term Energy Outlook (STEO).",
-      "url": "https://www.eia.gov/pressroom/releases/press582.php",
-      "published_at": "2026-01-13T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.297,
-      "reasons": [
-        "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
       "id": "44ef3d9e9fba437f",
       "title": {
         "original": "NASS Delays Weekly Slaughter Release",
@@ -1295,59 +1595,29 @@
       ]
     },
     {
-      "id": "636939b535053039",
+      "id": "dee0a19b37578602",
       "title": {
-        "original": "Petroleum Marketing Monthly",
+        "original": "Elevated crack spreads and crude oil prices contribute to higher prices at the pump",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "(Tue, 01 Sep 2026) The September 2026 <em>Petroleum Marketing Monthly</em>, with data through June 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
-      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
-      "published_at": "2026-09-01T05:00:00+00:00",
+      "summary": "What are crack spreads and why are they elevated? Crack spreads are indicators of the profitability of refining crude oil into petroleum products such as gasoline and diesel. One common crack spread is calculated by subtracting the spot market price of a gallon of crude oil from the wholesale price of a gallon of refined product. Since May, the gasoline crack spread in New York Harbor has averaged about $1 per gallon (gal) higher than in 2025, when the crack spread peaked around 60 cents/gal. Gasoline crack spreads are elevated primarily because of tight gasoline supplies globally.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68104",
+      "published_at": "2026-09-04T14:00:00+00:00",
       "agency": "EIA",
       "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
+      "source_id": "us_eia_today_in_energy",
       "commodities": [
         "oil"
       ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.133,
+      "importance": 1.255,
       "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "de49cf7992871dbf",
-      "title": {
-        "original": "Natural Gas Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-08-31T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.116,
-      "reasons": [
-        "country_in_text"
+        "revision_language"
       ]
     },
     {
@@ -1439,6 +1709,63 @@
       ]
     },
     {
+      "id": "b0c1575f9c73c896",
+      "title": {
+        "original": "Dangote refinery drives increase in petroleum shipments from Nigeria",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Seaborne petroleum product exports from Nigeria have grown seven-fold since 2023, playing an increasing role in the international market for petroleum products at a time when supplies from other areas have been constrained.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68004",
+      "published_at": "2026-08-24T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "NGA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.002,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "033cee9d25651809",
+      "title": {
+        "original": "Longer wells boost Permian crude oil and natural gas production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Well operators in the Permian region of western Texas and eastern New Mexico are getting more oil and gas out of the ground by drilling longer, horizontal wells and increasingly incorporating so-called super-lateral wells that exceed 15,000 feet.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67984",
+      "published_at": "2026-08-19T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "oil",
+        "gas"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.942,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "0260f9aa0131b0b8",
       "title": {
         "original": "Petroleum Supply Monthly",
@@ -1459,7 +1786,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.906,
+      "importance": 0.893,
       "reasons": []
     },
     {
@@ -1483,7 +1810,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.906,
+      "importance": 0.893,
       "reasons": []
     },
     {
@@ -1515,6 +1842,30 @@
       ]
     },
     {
+      "id": "f2065ae613a3f426",
+      "title": {
+        "original": "Eight petroleum liquids pipeline projects have been completed since the start of 2025",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "In the 2026 release of our Liquids Pipeline Projects Database, we tracked the completion of 8 liquid fuels pipeline projects since the start of 2025, and an additional 14 new projects have been announced.",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68024",
+      "published_at": "2026-08-26T14:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_today_in_energy",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.824,
+      "reasons": []
+    },
+    {
       "id": "d09ef02fa55cc52b",
       "title": {
         "original": "EIA raises natural gas price forecast following increased heating demand amid severe winter weather",
@@ -1541,34 +1892,6 @@
       ]
     },
     {
-      "id": "fd94e1c0559f75cc",
-      "title": {
-        "original": "EIA releases the Annual Energy Outlook 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The Annual Energy Outlook 2026 (AEO2026) explores medium- and long-term alternative futures in the United States through 2050. AEO2026 enables the public to explore a suite of alternative pathways for our energy future depending on assumptions made about markets, technological breakthroughs, and policy. It includes a narrative report, as well as the full set of data tables and visualizations, assumptions and methodologies, and detailed descriptions of the 11 cases we ran to explore these alternative futures.",
-      "url": "https://www.eia.gov/pressroom/releases/press587.php",
-      "published_at": "2026-04-08T20:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.687,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
       "id": "094f2c679d643322",
       "title": {
         "original": "NASS discontinues select 2024 data collection programs and reports",
@@ -1592,30 +1915,6 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.672,
-      "reasons": []
-    },
-    {
-      "id": "af0be633a6c11395",
-      "title": {
-        "original": "EIA launches pilot survey on energy use at data centers",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "EIA is launching three voluntary pilot field studies to evaluate energy consumption in data centers, with web-based pilot surveys in Texas and Washington state as well as in-person interviews in Northern Virginia and Washington, DC.",
-      "url": "https://www.eia.gov/pressroom/releases/press585.php",
-      "published_at": "2026-03-25T16:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.548,
       "reasons": []
     }
   ]

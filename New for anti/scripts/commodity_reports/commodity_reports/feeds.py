@@ -308,6 +308,8 @@ def fetch_source(
             return {"source_id": sid, "ok": False, "items": [], "count": 0,
                     "error": "not_a_feed_payload"}
         items = parse_feed(body, source, max_items=max_items)
+    elif kind == "eia_wpsr_archive":
+        items = parse_eia_wpsr_archive(body, source)
     elif kind == "html_list":
         items = parse_html_list(body, source)
     elif kind == "fas_gain_cards":
@@ -320,3 +322,17 @@ def fetch_source(
 
 def report_id(raw: RawReport) -> str:
     return hashlib.sha1(f"{raw.source_id}|{raw.url}".encode()).hexdigest()[:16]
+
+
+def parse_eia_wpsr_archive(body, source):
+    """Use explicit archive dates; never assign today's date to a landing page."""
+    pattern = re.compile(r'href=["\'](/petroleum/supply/weekly/archive/(\d{4})/(\d{4})_(\d{2})_(\d{2})/wpsr_\d{4}_\d{2}_\d{2}\.php)["\']', re.I)
+    out, seen = [], set()
+    for path, year, y, m, d in pattern.findall(body):
+        if year != y or path in seen: continue
+        try: published = datetime(int(y),int(m),int(d),tzinfo=timezone.utc).isoformat()
+        except ValueError: continue
+        seen.add(path)
+        out.append(_raw_from(source, title=f"Weekly Petroleum Status Report — {y}-{m}-{d}",
+          url=urljoin(source['url'],path),summary="Official weekly U.S. crude oil and petroleum supply, production and stocks report.",published_at=published))
+    return out
