@@ -488,6 +488,32 @@ class SourcePriorNeedsAMarketStoryTests(unittest.TestCase):
         self.assertEqual(tin.commodities, ["tin"])
 
 
+class EventHeadlineTests(unittest.TestCase):
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def score(self, title, summary=""):
+        raw = RawReport(source_id="int_anrpc", agency="ANRPC", agency_ko="ANRPC", url="https://x/1",
+                        title=title, summary=summary, published_at=None, commodity_hint=["rubber"])
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=["rubber"])
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        return self.scorer.score(raw, t, now=NOW)
+
+    def test_forum_and_meeting_headlines_are_dropped(self):
+        self.assertIsNone(self.score("Sustainable natural rubber forum: aligning priorities for resilient supply chain"))
+        self.assertIsNone(self.score("PEFC International and ANRPC convene to advance sustainability standards in the global natural rubber sector"))
+        self.assertIsNone(self.score("VRA mời tham gia hội nghị và họp mặt doanh nhân cao su Việt Nam năm 2026"))
+        # Slug-derived headline, diacritics gone.
+        self.assertIsNone(self.score("Vra moi tham gia hoi nghi va hop mat doanh nhan cao su viet nam nam 2026"))
+
+    def test_reports_and_figures_survive(self):
+        self.assertIsNotNone(self.score("ANRPC releases Monthly NR Statistical Report July 2026"))
+        self.assertIsNotNone(self.score("Natural rubber exports at the forum's host country fell 12%"))
+
+
 class FirstSeenTests(unittest.TestCase):
     def test_first_seen_is_set_then_kept_across_builds(self):
         import json as _json
