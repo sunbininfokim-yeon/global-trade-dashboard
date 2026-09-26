@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T13:59:00.985887+00:00",
+  "generated_at": "2026-09-26T14:05:46.856063+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -20,8 +20,8 @@
     "sources_ok": 30,
     "sources_failed": 3,
     "raw_items": 483,
-    "scored": 111,
-    "published": 94,
+    "scored": 106,
+    "published": 91,
     "commodities": 24,
     "buckets": 67
   },
@@ -130,7 +130,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 43 reports linked, 17 read, 19 already known"
+      "note": "45 list pages, 43 reports linked, 14 read, 22 already known"
     },
     {
       "source_id": "my_mpob",
@@ -679,17 +679,14 @@
       ]
     },
     "oil": {
-      "BRA": [
-        "937f667ad21463f2"
-      ],
       "USA": [
-        "03c9a1ae40332dfd",
         "cfe32235018b6add",
         "636939b535053039",
         "c67666c03e916f6f",
         "57e4eb5bfc9ebc1e",
         "0a708bd4ffd29cfc",
         "fd94e1c0559f75cc",
+        "ce7212e9d767222d",
         "cecfc55a16f54d74"
       ],
       "_global": [
@@ -702,15 +699,28 @@
         "f8544c356fd2f6b6"
       ]
     },
-    "palm_oil": {
-      "MYS": [
-        "97be7c6c6195937a",
-        "9935e13cee618834",
-        "0ac19de06b45b2cf"
+    "soybeans": {
+      "TUR": [
+        "b6c8cf9b7c06332d"
       ],
-      "IDN": [
-        "2469120340370df4",
-        "3038b0ed9276919c"
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
+        "6ab9fd7ecd2c98de",
+        "dbef185c58693fb1",
+        "9d9ab72fff81736d",
+        "06cf84727ec466c3",
+        "727409c1a45dfec3",
+        "855ed5d7f1503c83"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "rice": {
@@ -750,7 +760,7 @@
         "9a2e4f0c6cc38378",
         "bdf029665651e8aa",
         "6ab9fd7ecd2c98de",
-        "416d527f7174e442",
+        "dbef185c58693fb1",
         "9d9ab72fff81736d",
         "06cf84727ec466c3",
         "727409c1a45dfec3",
@@ -762,27 +772,6 @@
       "BRA": [
         "6a2f69a13bf9ae19",
         "a0f50331005b9402"
-      ]
-    },
-    "soybeans": {
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "6ab9fd7ecd2c98de",
-        "416d527f7174e442",
-        "9d9ab72fff81736d",
-        "06cf84727ec466c3",
-        "727409c1a45dfec3",
-        "855ed5d7f1503c83"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
       ]
     },
     "wheat": {
@@ -797,7 +786,6 @@
       ],
       "USA": [
         "54cc3c274cf90c25",
-        "416d527f7174e442",
         "06cf84727ec466c3"
       ]
     },
@@ -821,6 +809,15 @@
       "USA": [
         "f8aa4f64781b6480",
         "fd94e1c0559f75cc"
+      ]
+    },
+    "palm_oil": {
+      "IDN": [
+        "2469120340370df4",
+        "3038b0ed9276919c"
+      ],
+      "MYS": [
+        "0ac19de06b45b2cf"
       ]
     },
     "rubber": {
@@ -906,8 +903,7 @@
     "aluminum": {
       "_global": [
         "c4debe37366d175b",
-        "cbae598c13644bf7",
-        "09ca834485d1ec42"
+        "cbae598c13644bf7"
       ],
       "IRN": [
         "795f411fda44aae8"
@@ -967,7 +963,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.447,
+      "importance": 5.446,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -999,7 +995,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.896,
+      "importance": 4.895,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1104,38 +1100,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "937f667ad21463f2",
-      "title": {
-        "original": "Brazil: Biofuels Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Brazil has raised its mandatory anhydrous ethanol blend in gasoline to 32%, a temporary measure designed to reduce gasoline imports and absorb the country's...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-biofuels-annual",
-      "published_at": "2026-09-02T10:49:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "BRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.341,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
-    },
-    {
       "id": "0eb0404d29d2bbc2",
       "title": {
         "original": "Senegal: Cotton and Products Update",
@@ -1186,7 +1150,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.006,
+      "importance": 4.005,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1196,64 +1160,34 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "97be7c6c6195937a",
+      "id": "b6c8cf9b7c06332d",
       "title": {
-        "original": "Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026",
-        "original_lang": "ms",
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
         "ko": null
       },
-      "summary": "Assalamualaikum Warahmatullahi Wabarakatuh, Salam Sejahtera dan Salam Malaysia MADANI. Alhamdulillah, kita panjatkan kesyukuran ke hadrat Allah SWT kerana pada hari ini kita dapat berkumpul di Kota Kinabalu sempena Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026 Bagi pihak Lembaga Minyak Sawit Malaysia (MPOB), saya merakamkan setinggi-tinggi penghargaan kepada Yang Berhormat Datuk Seri Dr. Noraini Ahmad, Menteri Perladangan dan Komoditi, atas kesudian hadir dan menyempurnakan Majlis Perasmian Persidangan Kebangsaan Pekebun Kecil Sawit. Saya juga merakamkan penghargaan kepada para…",
-      "url": "https://mpob.gov.my/2026/09/persidangan-kebangsaan-pekebun-kecil-sawit-pkpks-2026-2/",
-      "published_at": "2026-09-25T03:13:12+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
       "commodities": [
-        "palm_oil"
+        "soybeans"
       ],
       "countries": [
-        "MYS"
+        "TUR"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "MPOB_SUPPLY_DEMAND",
-      "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.869,
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.805,
       "reasons": [
-        "series:MPOB_SUPPLY_DEMAND",
+        "series:USDA_GAIN",
         "country_in_text"
       ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "9935e13cee618834",
-      "title": {
-        "original": "MPOB Lancar Sistem e-CoPN, perkukuh jaminan bekalan bahan tanaman sawit berkualiti.",
-        "original_lang": "ms",
-        "ko": null
-      },
-      "summary": "SIARAN MEDIA Untuk Siaran Segera MPOB Lancar Sistem e-CoPN, perkukuh jaminan bekalan bahan tanaman sawit berkualiti. KOTA KINABALU, 24 SEPTEMBER 2026 – Lembaga Minyak Sawit Malaysia (MPOB) hari ini melancarkan Sistem Kod Amalan Baik Tapak Semaian untuk Tapak Semaian Sawit (e-CoPN), satu inisiatif digital yang menyediakan rujukan kepada pekebun kecil bagi mendapatkan bahan tanaman berkualiti daripada tapak semaian yang mengamalkan kod amalan baik. Pelancaran e-CoPN disempurnakan oleh Menteri Perladangan dan Komoditi, Yang Berhormat Datuk Seri Dr. Noraini Ahmad, sempena Persidangan Kebangsaan…",
-      "url": "https://mpob.gov.my/2026/09/mpob-lancar-sistem-e-copn-perkukuh-jaminan-bekalan-bahan-tanaman-sawit-berkualiti/",
-      "published_at": "2026-09-25T02:46:45+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "MPOB_SUPPLY_DEMAND",
-      "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.867,
-      "reasons": [
-        "series:MPOB_SUPPLY_DEMAND",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+      "first_seen_at": "2026-09-26T14:05:46.856063+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1496,7 +1430,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.356,
+      "importance": 3.355,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1705,7 +1639,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.459,
+      "importance": 2.458,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2142,35 +2076,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "03c9a1ae40332dfd",
-      "title": {
-        "original": "U.S. Biofuels Plant Production Capacity Report",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 24 Sep 2026) The <em>U.S. Biofuels Plant Production Capacity Report</em> with data for all operating U.S. fuel ethanol, biodiesel, and renewable diesel fuel and other biofuels production plants as of January 1, 2026. Starting September 2026, this report consolidates the three individual reports on U.S. biodiesel, fuel ethanol, and renewable diesel fuel and other biofuels plant production capacity.",
-      "url": "http://www.eia.gov/biofuels/capacity/",
-      "published_at": "2026-09-24T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.64,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
-    },
-    {
       "id": "3cac3e995aa9e757",
       "title": {
         "original": "Tin to be traded on Indonesia’s new commodity exchange",
@@ -2435,7 +2340,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.468,
+      "importance": 1.467,
       "reasons": [
         "country_in_text"
       ],
@@ -2495,7 +2400,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.463,
+      "importance": 1.462,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2525,7 +2430,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.427,
+      "importance": 1.426,
       "reasons": [
         "country_in_text"
       ],
@@ -2874,7 +2779,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.247,
+      "importance": 1.246,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3192,7 +3097,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.068,
+      "importance": 1.067,
       "reasons": [
         "country_in_text"
       ],
@@ -3562,6 +3467,35 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "ce7212e9d767222d",
+      "title": {
+        "original": "Hormuz closure and related production outages are key drivers in EIA's latest forecast",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration published its April Short Term Energy Outlook this week, examining the implications of the closure of the Strait of Hormuz.",
+      "url": "https://www.eia.gov/pressroom/releases/press586.php",
+      "published_at": "2026-04-07T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.687,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T14:05:46.856063+00:00"
+    },
+    {
       "id": "2469120340370df4",
       "title": {
         "original": "Lidi Sawit Tembus Pasar Tiongkok, Kolaborasi BPDP dan Petani Sawit Jadi Kunci Penguatan Ekspor Produk UMKM Perkebunan",
@@ -3589,20 +3523,19 @@
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
-      "id": "416d527f7174e442",
+      "id": "dbef185c58693fb1",
       "title": {
-        "original": "NASS Reinstates Select Data Collection Programs and Reports",
+        "original": "Corn production down, soybean production up in 2024",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "The USDA’s National Agricultural Statistics Service (NASS) is reinstating the July Cattle report, as well as County Estimates for Crops and Livestock. The county estimate reinstatement is effective for the 2024 crop season for the row crops (corn, cotton, peanuts, rice, sorghum, soybeans) and for the 2025 crop season for the small grain crops (barley, oats, wheat).",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2025/03-19-2025.php",
-      "published_at": "2025-03-19T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": "Corn production declined, while soybean production increased from last year, according to the 2024 Crop Production Annual Summary released today by the U.S. Department of Agriculture’s National Agricultural Statistics Service.",
+      "url": "https://www.nass.usda.gov/Newsroom/2025/1-10-2025.php",
+      "published_at": "2025-01-10T17:00:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
       "commodities": [
-        "wheat",
         "corn",
         "soybeans"
       ],
@@ -3610,12 +3543,15 @@
         "USA"
       ],
       "scope": "country",
-      "country_source": "source_default",
+      "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.672,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
+      "importance": 0.665,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T14:05:46.856063+00:00"
     },
     {
       "id": "89c825ce4cf18fd2",
@@ -3699,31 +3635,6 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.507,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "09ca834485d1ec42",
-      "title": {
-        "original": "IAI has new a Secretary General",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The International Aluminium Institute (IAI) has appointed Jonathan Grant as its new Secretary General, succeeding Miles Prosser. Grant has now assumed the role and will lead the Institute at a time when aluminium is playing an increasingly important part in the global energy transition and the shift to a more resource efficient economy. With a career spanning industry, sustainability and international collaboration, Grant brings experience from organisations including IPIECA, the World Business Council for Sustainable Development, the International Council on Mining and Metals and the…",
-      "url": "https://international-aluminium.org/iai-has-new-secretary-general/",
-      "published_at": "2026-02-27T22:46:40+00:00",
-      "agency": "International Aluminium Institute",
-      "agency_ko": "국제알루미늄협회(IAI)",
-      "source_id": "int_iai",
-      "commodities": [
-        "aluminum"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.505,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     }
