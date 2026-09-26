@@ -15,7 +15,15 @@ from commodity_reports.build import (  # noqa: E402
     apply_series_commodity_fallback,
     build_commodity_reports,
 )
-from commodity_reports.feeds import RawReport, parse_fas_gain_cards, parse_feed, parse_html_list  # noqa: E402
+from commodity_reports.feeds import (  # noqa: E402
+    RawReport,
+    fetch_fas_gain_pages,
+    gain_links,
+    parse_fas_gain_cards,
+    parse_fas_gain_page,
+    parse_feed,
+    parse_html_list,
+)
 from commodity_reports.score import ReportScorer, append_label, load_learned_multipliers  # noqa: E402
 from commodity_reports.tag import CommodityTagger, CountryTagger, tag_report  # noqa: E402
 
@@ -40,6 +48,19 @@ class CommodityTagTests(unittest.TestCase):
         hits = self.tagger.tag("Malaysia palm oil exports rise in July")
         self.assertIn("palm_oil", hits)
         self.assertNotIn("oil", hits)
+
+    def test_natural_rubber_has_its_own_window(self):
+        self.assertIn("rubber", self.tagger.tag("Thailand natural rubber exports fell 6 percent in August"))
+        self.assertIn("rubber", self.tagger.tag("ANRPC: global NR production forecast at 14.9 million tonnes; rubber demand"))
+        self.assertIn("rubber", self.tagger.tag("Harga karet alam naik, ekspor meningkat"))
+
+    def test_rss_the_feed_is_not_rss_the_rubber_grade(self):
+        # Every feed calls itself RSS; only the numbered grade means rubber.
+        self.assertNotIn("rubber", self.tagger.tag("Subscribe to our RSS feed for market prices"))
+        self.assertIn("rubber", self.tagger.tag("RSS3 prices at the Bangkok market rose"))
+
+    def test_rubber_stamp_is_not_rubber(self):
+        self.assertNotIn("rubber", self.tagger.tag("Parliament gives rubber-stamp approval to the budget"))
 
     def test_lead_the_verb_is_not_lead_the_metal(self):
         self.assertNotIn("lead", self.tagger.tag("Ministers lead the grain corridor talks"))
@@ -257,6 +278,66 @@ class FeedParseTests(unittest.TestCase):
         urls = [i.url for i in items]
         self.assertEqual(len(urls), len(set(u.split("?", 1)[0] for u in urls)))
         self.assertEqual(sum(1 for u in urls if "saudi-arabia" in u), 1)
+
+
+class FasGainPagesTests(unittest.TestCase):
+    """GAIN via FAS commodity/country pages, since /data/search is blocked."""
+
+    def setUp(self):
+        import json as _json
+
+        self.store = _json.loads((FIXTURES / "us_fas_gain_reports.pages.json").read_text(encoding="utf-8"))
+        self.source = {
+            "id": "us_fas_gain_reports", "agency": "USDA FAS GAIN", "kind": "fas_gain_pages",
+            "scope_hint": "global",
+            "html": {
+                "base": "https://www.fas.usda.gov",
+                "list_urls": ["/data/commodities/coffee", "/regions/brazil", "/regions/nowhere"],
+                "max_age_days": 150,
+                "exclude_slug_re": "(exporter-guide|fairs-)",
+                "slug_commodities": {"grain-and-feed": ["wheat", "corn", "rice"]},
+            },
+        }
+
+    def fetch(self, url):
+        if url not in self.store:
+            raise FileNotFoundError(url)
+        return self.store[url]
+
+    def test_links_carry_year_and_month_and_drop_query_strings(self):
+        links = gain_links(self.store["https://www.fas.usda.gov/data/commodities/coffee"])
+        self.assertIn(("/data/gain/2026/08/vietnam-coffee-annual", 2026, 8), links)
+        self.assertIn(("/data/gain/2026/08/brazil-oilseeds-and-products-update", 2026, 8), links)
+
+    def test_reads_reports_skips_marketing_and_old_and_survives_a_dead_list_page(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        res = fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)
+        self.assertTrue(res["ok"])
+        urls = [i.url for i in res["items"]]
+        # Same report linked from two list pages is read once.
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertEqual(len(urls), 3)
+        self.assertFalse(any("exporter-guide" in u for u in urls))
+        self.assertFalse(any("2025/01" in u for u in urls))
+
+    def test_page_date_used_when_inside_the_url_month_else_month_precision(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        items = {i.title: i for i in fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)["items"]}
+        brazil = items["Brazil: Oilseeds and Products Update"]
+        self.assertEqual(brazil.published_at, "2026-08-31T15:00:00+00:00")
+        self.assertEqual(brazil.date_precision, "day")
+        self.assertIn("soybean production", brazil.summary)
+        grain = items["Brazil: Grain and Feed Update"]
+        self.assertEqual(grain.published_at, "2026-08-01T00:00:00+00:00")
+        self.assertEqual(grain.date_precision, "month")
+        # "Grain and Feed Update" names no crop; the slug prior supplies them.
+        self.assertEqual(grain.commodity_hint, ["wheat", "corn", "rice"])
+
+    def test_a_time_outside_the_url_month_is_not_trusted(self):
+        body = '<meta property="og:title" content="X: Y" /><time datetime="2019-01-02T00:00:00Z">'
+        item = parse_fas_gain_page(body, "https://x/data/gain/2026/08/x-y", 2026, 8, self.source)
+        self.assertEqual(item.date_precision, "month")
+        self.assertTrue(item.published_at.startswith("2026-08-01"))
 
 
 class BuildTests(unittest.TestCase):

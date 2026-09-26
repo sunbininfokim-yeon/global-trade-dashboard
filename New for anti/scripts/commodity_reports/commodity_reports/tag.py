@@ -25,7 +25,13 @@ CONTEXT_TERMS = [
     "estimate", "estimates", "outlook", "balance sheet", "consumption",
     "생산", "수확", "수출", "수입", "재고", "가격", "전망", "출하",
     "produção", "safra", "colheita", "exportação", "produccion", "producción",
-    "cosecha", "exportaciones", "добыч", "урожа", "экспорт",
+    "cosecha", "exportaciones", "exportación", "precio", "precios", "preço", "mercado",
+    "добыч", "урожа", "экспорт",
+    # Producer-country languages of the rubber and palm-oil windows, whose
+    # boards publish in them (ANRPC members, MPOB, GAPKI, RAOT, VRA).
+    "ekspor", "impor", "eksport", "produksi", "pengeluaran", "harga", "stok",
+    "ส่งออก", "ราคา", "ผลผลิต", "xuất khẩu", "sản lượng", "giá cả",
+    "出口", "进口", "产量", "价格", "库存",
 ]
 
 

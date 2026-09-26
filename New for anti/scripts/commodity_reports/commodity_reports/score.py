@@ -62,6 +62,7 @@ class ScoredReport:
     importance: float
     reasons: List[str] = field(default_factory=list)
     title_ko: Optional[str] = None
+    date_precision: str = "day"
 
     def to_item(self) -> Dict[str, Any]:
         return {
@@ -70,6 +71,7 @@ class ScoredReport:
             "summary": self.summary or None,
             "url": self.url,
             "published_at": self.published_at,
+            **({"published_precision": self.date_precision} if self.date_precision != "day" else {}),
             "agency": self.agency,
             "agency_ko": self.agency_ko,
             "source_id": self.source_id,
@@ -190,6 +192,7 @@ class ReportScorer:
             series_label_ko=series.get("label_ko") if series else None,
             importance=importance,
             reasons=reasons,
+            date_precision=getattr(raw, "date_precision", "day"),
         )
 
 

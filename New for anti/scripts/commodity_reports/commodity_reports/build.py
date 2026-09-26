@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .feeds import RawReport, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
 
@@ -44,12 +44,29 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def _collect_fixtures(sources: List[Dict[str, Any]], fixture_dir: Path, max_per: int):
+def _collect_fixtures(
+    sources: List[Dict[str, Any]], fixture_dir: Path, max_per: int, now: Optional[datetime] = None
+):
     raw: List[RawReport] = []
     status: List[Dict[str, Any]] = []
     for s in sources:
         xml = fixture_dir / f"{s['id']}.xml"
         html = fixture_dir / f"{s['id']}.html"
+        pages = fixture_dir / f"{s['id']}.pages.json"
+        if s.get("kind") == "fas_gain_pages" and pages.exists():
+            # {"<url>": "<html>"} for every list page and report page it reads.
+            store = json.loads(pages.read_text(encoding="utf-8"))
+
+            def fetch(url: str, store=store) -> str:
+                if url not in store:
+                    raise FileNotFoundError(url)
+                return store[url]
+
+            res = fetch_fas_gain_pages(s, fetch=fetch, max_items=max_per, now=now)
+            raw.extend(res["items"])
+            status.append({"source_id": s["id"], "ok": res["ok"], "count": len(res["items"]),
+                           "error": res["error"], "mode": "fixture"})
+            continue
         if xml.exists():
             items = parse_feed(xml.read_text(encoding="utf-8", errors="replace"), s, max_per)
         elif html.exists():
@@ -74,8 +91,11 @@ def _collect_live(sources: List[Dict[str, Any]], *, ua: str, timeout: float, max
     for s in sources:
         res = fetch_source(s, user_agent=ua, timeout=timeout, max_items=max_per)
         raw.extend(res["items"])
-        status.append({"source_id": res["source_id"], "ok": res["ok"], "count": res["count"],
-                       "error": res["error"], "mode": "live"})
+        row = {"source_id": res["source_id"], "ok": res["ok"], "count": res["count"],
+               "error": res["error"], "mode": "live"}
+        if res.get("note"):
+            row["note"] = res["note"]
+        status.append(row)
     return raw, status
 
 
@@ -163,7 +183,7 @@ def build_commodity_reports(
     sources = [s for s in sources_cfg.get("sources", []) if s.get("enabled", True)]
 
     if fixture_dir:
-        raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per)
+        raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per, now)
     elif fetch_live:
         raw, feed_status = _collect_live(sources, ua=ua, timeout=timeout, max_per=max_per)
     else:

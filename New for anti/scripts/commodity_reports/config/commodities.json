@@ -28,7 +28,8 @@
       "aliases": [
         "thermal coal", "steam coal", "power coal", "coal", "anthracite",
         "newcastle coal", "api2",
-        "연료탄", "발전용 석탄", "石炭", "动力煤", "уголь"
+        "연료탄", "발전용 석탄", "石炭", "动力煤", "уголь",
+        "batu bara", "batubara", "carbón térmico"
       ],
       "require_context": true
     },
@@ -41,7 +42,7 @@
     },
     "gold": {
       "label_ko": "금",
-      "aliases": ["gold", "bullion", "금", "금괴", "ذهب", "黄金", "золото", "oro"],
+      "aliases": ["gold", "bullion", "금", "금괴", "ذهب", "黄金", "золото", "oro", "emas", "ouro"],
       "require_context": true,
       "notes": "'gold standard', 'golden' and medal tables are why this needs a market term."
     },
@@ -61,14 +62,16 @@
       "label_ko": "구리",
       "aliases": [
         "copper", "copper cathode", "copper concentrate",
-        "구리", "동광", "نحاس", "铜", "медь", "cobre"
+        "구리", "동광", "نحاس", "铜", "медь", "cobre",
+        "tembaga", "cátodos de cobre"
       ]
     },
     "aluminum": {
       "label_ko": "알루미늄",
       "aliases": [
         "aluminium", "aluminum", "alumina", "bauxite",
-        "알루미늄", "보크사이트", "알루미나", "ألمنيوم", "铝", "алюмини"
+        "알루미늄", "보크사이트", "알루미나", "ألمنيوم", "铝", "алюмини",
+        "bauksit", "aluminio", "alumínio"
       ]
     },
     "zinc": {
@@ -77,7 +80,7 @@
     },
     "tin": {
       "label_ko": "주석",
-      "aliases": ["tin", "주석", "锡", "олово"],
+      "aliases": ["tin", "주석", "锡", "олово", "timah"],
       "require_context": true
     },
     "lead": {
@@ -91,7 +94,7 @@
     },
     "nickel": {
       "label_ko": "니켈",
-      "aliases": ["nickel", "ferronickel", "nickel pig iron", "니켈", "镍", "никель"]
+      "aliases": ["nickel", "ferronickel", "nickel pig iron", "니켈", "镍", "никель", "nikel", "níquel", "feronikel"]
     },
     "cobalt": {
       "label_ko": "코발트",
@@ -101,7 +104,8 @@
       "label_ko": "리튬",
       "aliases": [
         "lithium", "spodumene", "lithium carbonate", "lithium hydroxide",
-        "리튬", "탄산리튬", "锂", "碳酸锂", "литий"
+        "리튬", "탄산리튬", "锂", "碳酸锂", "литий",
+        "litio", "carbonato de litio", "hidróxido de litio"
       ]
     },
     "graphite": {
@@ -120,7 +124,8 @@
       "label_ko": "철광석",
       "aliases": [
         "iron ore", "iron-ore", "pellet feed", "fines 62%",
-        "철광석", "铁矿石", "железн", "minério de ferro", "minerio de ferro"
+        "철광석", "铁矿石", "железн", "minério de ferro", "minerio de ferro",
+        "bijih besi", "mineral de hierro"
       ]
     },
     "manganese": {
@@ -170,13 +175,14 @@
       "label_ko": "커피",
       "aliases": [
         "coffee", "arabica", "robusta", "커피", "아라비카", "로부스타",
-        "قهوة", "咖啡", "кофе", "café", "cafe"
+        "قهوة", "咖啡", "кофе", "café", "cafe",
+        "kopi", "cà phê"
       ],
       "require_context": true
     },
     "cocoa": {
       "label_ko": "코코아",
-      "aliases": ["cocoa", "cacao", "코코아", "카카오", "可可", "какао"]
+      "aliases": ["cocoa", "cacao", "코코아", "카카오", "可可", "какао", "kakao", "cacau"]
     },
     "cotton": {
       "label_ko": "면화",
@@ -184,7 +190,18 @@
     },
     "palm_oil": {
       "label_ko": "팜유",
-      "aliases": ["palm oil", "cpo", "crude palm oil", "palm kernel", "팜유", "棕榈油", "пальмово"]
+      "aliases": ["palm oil", "cpo", "crude palm oil", "palm kernel", "팜유", "棕榈油", "пальмово", "minyak sawit", "kelapa sawit", "minyak kelapa sawit", "sawit", "น้ำมันปาล์ม", "dầu cọ", "aceite de palma", "óleo de palma"]
+    },
+    "rubber": {
+      "label_ko": "천연고무",
+      "aliases": [
+        "natural rubber", "rubber", "field latex", "rubber latex", "concentrated latex",
+        "technically specified rubber", "ribbed smoked sheet", "tsr20", "tsr 20", "rss3", "rss no.3",
+        "천연고무", "천연 고무", "天然橡胶", "橡胶", "天然ゴム", "karet alam", "karet", "getah asli",
+        "ยางพารา", "cao su", "натуральный каучук", "каучук", "borracha natural", "caucho natural"
+      ],
+      "require_context": true,
+      "notes": "HS 4001. Bare 'rubber' is a common word (rubber stamp, rubber bullets), hence require_context. Bare 'RSS' is left out on purpose: it is the grade name of smoked sheet but also every feed's name, so only the numbered grade (RSS3) is an alias."
     }
   }
 }

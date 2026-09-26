@@ -63,6 +63,7 @@
           "summary": {"type": ["string", "null"], "description": "Quoted feed body, <= 600 chars. Null for list-page sources that publish no body."},
           "url": {"type": "string", "format": "uri", "description": "The publisher's own page. The card headline links here."},
           "published_at": {"type": ["string", "null"], "format": "date-time"},
+          "published_precision": {"enum": ["month"], "description": "Present only when the publisher gives the month, not the day (GAIN pages without a dated element). published_at is then the 1st of that month and the card shows YYYY.MM."},
           "agency": {"type": "string"},
           "agency_ko": {"type": "string"},
           "source_id": {"type": "string"},
