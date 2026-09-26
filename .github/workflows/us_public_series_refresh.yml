@@ -5,8 +5,10 @@ name: Refresh public series (USA/JPN)
 # 워크플로 하나가 끝날 때마다 배포가 한 번 뜨기 때문이다.
 # 일본: 일본은행 시계열 API(총자산·ETF·J-REIT·콜금리·M2·기업물가·경상수지), 재무성 국채 수익률,
 # 통계국 CPI CSV, FRED(GDP·외환보유액), CFTC(엔 선물 포지션). 모두 키 없음.
-# 실질임금·유효구인배율은 후생노동성 엑셀을 e-Stat 데이터 카탈로그로 찾아 받는다 — 카탈로그 조회에만
-# 시크릿 ESTAT_APP_ID 가 필요하다(없으면 이 두 카드만 건너뛴다).
+# 실질임금·유효구인배율은 후생노동성 엑셀인데, 최신 파일을 찾는 e-Stat 카탈로그 조회에 appId 가 필요하다.
+# 그 키는 로컬에만 두고(이 워크플로에는 넣지 않는다), 로컬에서 wire_jp_public_series.py 를 돌리면
+# 읽은 값이 config/jp_estat_series_v1.json 에 남는다. 여기서는 그 캐시를 읽는다 — 그래서 이 두 카드는
+# 로컬에서 갱신하는 만큼만 새 달로 넘어간다(월 1회 정도).
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -34,13 +36,11 @@ jobs:
           python-version: '3.12'
       - name: Install deps
         working-directory: New for anti/scripts/macro_monitor
-        run: pip install pytest beautifulsoup4 openpyxl xlrd
+        run: pip install pytest beautifulsoup4 openpyxl
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
         run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
-        env:
-          ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -50,6 +50,7 @@ jobs:
           for attempt in 1 2 3; do
             refresh
             git add "New for anti/scripts/macro_monitor/config/fima_repo_v1.json" \
+                    "New for anti/scripts/macro_monitor/config/jp_estat_series_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
             git commit -m "chore: refresh USA/JPN public series" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi

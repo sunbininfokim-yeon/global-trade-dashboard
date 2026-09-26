@@ -26,7 +26,9 @@ def main() -> int:
     pack = json.loads(PACK.read_text(encoding="utf-8"))
     jpn = next(c for c in pack["countries"] if c["iso3"] == "JPN")
     retrieved = ups.now_iso()
-    src = jps.Sources()
+    cache = jps.load_estat_cache()
+    estat_updates: dict = {}
+    src = jps.Sources(estat=jps.estat_reader(cache, estat_updates))
 
     patches, failures, skipped = {}, [], []
     for spec_id in jps.SPECS:
@@ -37,10 +39,12 @@ def main() -> int:
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{spec_id}: {exc}")
 
+    cache_written = jps.save_estat_cache(cache, estat_updates, retrieved) if estat_updates else False
     result = jps.apply_all(jpn, patches, retrieved_at=retrieved)
     if result["changed"] or result["summary_changed"]:
         PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-    print(f"JPN public series: {len(patches)} fetched, changed {result['changed'] or 'none'}")
+    print(f"JPN public series: {len(patches)} fetched, changed {result['changed'] or 'none'}"
+          f"{', e-Stat cache updated' if cache_written else ''}")
     for sid, p in patches.items():
         print(f"  {sid:18s} {p['display']:>10s}  {p['reference_period']}  (as of {p['asof']})")
     for sk in skipped:

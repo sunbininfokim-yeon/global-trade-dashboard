@@ -33,6 +33,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
 from typing import Any, Callable
 
 from . import us_public_series as ups
@@ -326,7 +327,8 @@ def parse_real_wage_sheet(sh) -> Points:
     return sorted(out)
 
 
-def fetch_estat_series(kind: str, today=None) -> Points:
+def fetch_estat_file(kind: str, today=None) -> tuple[Points, dict[str, str]]:
+    """(series, where it came from) -- needs ESTAT_APP_ID for the catalog lookup only."""
     import os
     from datetime import datetime, timezone
 
@@ -335,12 +337,55 @@ def fetch_estat_series(kind: str, today=None) -> Points:
         raise MissingKey("ESTAT_APP_ID is not set")
     months = recent_months(today or datetime.now(timezone.utc).date(), 5)
     if kind == "job_ratio":
-        url, _ = estat_find_file(app_id, search_word="一般職業紹介状況", title_has="_3_有効求人倍率", months=months)
-        return parse_job_ratio_xlsx(_get(url, timeout=120))
+        url, ym = estat_find_file(app_id, search_word="一般職業紹介状況", title_has="_3_有効求人倍率", months=months)
+        return parse_job_ratio_xlsx(_get(url, timeout=120)), {"file": url.replace(app_id, "***"), "catalog_month": ym}
     if kind == "real_wage":
-        url, _ = estat_find_file(app_id, search_word="長期時系列表", title_has="25-1_実質賃金（現金給与総額）", months=months, stats_code="00450071")
-        return parse_real_wage_xls(_get(url, timeout=120))
+        url, ym = estat_find_file(app_id, search_word="長期時系列表", title_has="25-1_実質賃金（現金給与総額）", months=months, stats_code="00450071")
+        return parse_real_wage_xls(_get(url, timeout=120)), {"file": url.replace(app_id, "***"), "catalog_month": ym}
     raise KeyError(kind)
+
+
+def fetch_estat_series(kind: str, today=None) -> Points:
+    return fetch_estat_file(kind, today)[0]
+
+
+# The appId stays on the machine that has it. What that machine reads is written to a small cache file
+# in the repo, so the scheduled run (which has no key) keeps the cards and refreshes them from the
+# cache; only a run with the key moves the two series forward.
+ESTAT_CACHE = Path(__file__).resolve().parent.parent / "config" / "jp_estat_series_v1.json"
+ESTAT_CACHE_FROM = "2010-01-01"
+
+
+def load_estat_cache(path: Path = ESTAT_CACHE) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"schema_version": "jp-estat-series-v1", "series": {}}
+
+
+def save_estat_cache(cache: dict[str, Any], updates: dict[str, tuple[Points, dict[str, str]]], now_iso: str, path: Path = ESTAT_CACHE) -> bool:
+    """Merge fresh reads into the cache. The file is rewritten (and `retrieved_at` moved) only when a
+    series actually changed. Returns True when it was written."""
+    series = dict(cache.get("series") or {})
+    for kind, (points, info) in updates.items():
+        series[kind] = {**info, "points": [[d, round(v, 4)] for d, v in points if d >= ESTAT_CACHE_FROM]}
+    if series == (cache.get("series") or {}):
+        return False
+    path.write_text(json.dumps({"schema_version": "jp-estat-series-v1", "retrieved_at": now_iso, "series": series},
+                               ensure_ascii=False, indent=1, allow_nan=False) + "\n", encoding="utf-8")
+    return True
+
+
+def estat_reader(cache: dict[str, Any], updates: dict[str, tuple[Points, dict[str, str]]]) -> Callable[[str], Points]:
+    """Live read when the key is set (and remembered in `updates`), the cached series when it is not."""
+    def read(kind: str) -> Points:
+        try:
+            points, info = fetch_estat_file(kind)
+        except MissingKey:
+            cached = (cache.get("series") or {}).get(kind)
+            if not cached:
+                raise
+            return [(d, float(v)) for d, v in cached["points"]]
+        updates[kind] = (points, info)
+        return points
+    return read
 
 
 # --------------------------------------------------------------------------

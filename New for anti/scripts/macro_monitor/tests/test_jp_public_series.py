@@ -149,6 +149,29 @@ class MhlwFiles(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             jps.estat_find_file("k", search_word="x", title_has="nothing like this", months=["202608"], get=get)
 
+    def test_the_cache_serves_the_key_less_run_and_is_rewritten_only_on_change(self):
+        import os
+        import tempfile
+
+        old = os.environ.pop("ESTAT_APP_ID", None)
+        try:
+            with tempfile.TemporaryDirectory() as td:
+                path = Path(td) / "c.json"
+                cache = jps.load_estat_cache(path)
+                self.assertEqual(cache["series"], {})
+                with self.assertRaises(jps.MissingKey):                              # no key and nothing cached yet
+                    jps.estat_reader(cache, {})("real_wage")
+                updates = {"real_wage": ([("2009-12-01", -1.0), ("2026-06-01", 2.2)], {"file": "f", "catalog_month": "202606"})}
+                self.assertTrue(jps.save_estat_cache(cache, updates, "t1", path))
+                cache = jps.load_estat_cache(path)
+                self.assertEqual(cache["series"]["real_wage"]["points"], [["2026-06-01", 2.2]])           # trimmed to 2010 onward
+                self.assertEqual(jps.estat_reader(cache, {})("real_wage"), [("2026-06-01", 2.2)])         # served without a key
+                self.assertFalse(jps.save_estat_cache(cache, updates, "t2", path))                        # unchanged: not rewritten
+                self.assertEqual(jps.load_estat_cache(path)["retrieved_at"], "t1")
+        finally:
+            if old is not None:
+                os.environ["ESTAT_APP_ID"] = old
+
     def test_months_go_back_across_a_year_boundary(self):
         from datetime import date
 
