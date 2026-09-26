@@ -1,6 +1,7 @@
 """Japan public series (macro_monitor.jp_public_series). Fixtures are excerpts of the real answers."""
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -92,6 +93,79 @@ class StatBureauCpi(unittest.TestCase):
         self.assertEqual([d for d, _ in out], ["2026-06-01"])
 
 
+class FakeSheet:
+    """The few xlrd sheet methods the real-wage parser uses."""
+
+    def __init__(self, rows):
+        self.rows = rows
+        self.nrows = len(rows)
+        self.ncols = max(len(r) for r in rows)
+
+    def cell_value(self, r, c):
+        return self.rows[r][c] if c < len(self.rows[r]) else ""
+
+
+class MhlwFiles(unittest.TestCase):
+    def test_job_ratio_takes_the_seasonally_adjusted_block(self):
+        import io
+
+        import openpyxl
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        months = [f"{m}月" for m in "１２３４５６７８９"] + ["10月", "11月", "12月"]
+        ws.append(["有効求人倍率（パートタイムを含む一般）"])
+        ws.append([])
+        ws.append([None, None] + ["実数"] * 12 + ["実数"] * 6 + ["季節調整値"] * 12)
+        ws.append(["西暦", "和暦"] + months + ["1～3月平均"] * 6 + months)
+        ws.append([None, None] + ["倍"] * 30)
+        ws.append(["2026年", "令和８年", 1.27, 1.26, 1.22, 1.12, 1.08, 1.11, 1.15] + [None] * 5 + [1.25, 1.1, None, None, 1.18, 1.18]
+                  + [1.18, 1.19, 1.18, 1.18, 1.17, 1.18, 1.18] + [None] * 5)
+        buf = io.BytesIO()
+        wb.save(buf)
+        out = jps.parse_job_ratio_xlsx(buf.getvalue())
+        self.assertEqual(out[0], ("2026-01-01", 1.18))
+        self.assertEqual(out[-1], ("2026-07-01", 1.18))           # July: the adjusted 1.18, not the actual 1.15
+        self.assertEqual(len(out), 7)
+
+    def test_real_wage_reads_the_year_on_year_section_not_the_index_levels(self):
+        head = ["年", "1-12", "1-6", "7-12", "1-3", "4-6", "7-9", "10-12"] + [float(m) for m in range(1, 13)] + ["4-3"]
+        level = [2025.0, "-", "-", "-", "-", "-", "-", "-"] + [100.0 + m for m in range(12)] + [""]
+        yoy = [2026.0, "", 1.8, "", 1.3, 1.8, "", ""] + [0.7, 2.0, 1.4, 2.0, 1.6, 2.2] + [""] * 6 + [""]
+        sh = FakeSheet([["実質賃金指数"], [""], head, level, ["前年比(Year-on-year growth rate)"], head, yoy])
+        self.assertEqual(jps.parse_real_wage_sheet(sh), [("2026-01-01", 0.7), ("2026-02-01", 2.0), ("2026-03-01", 1.4),
+                                                        ("2026-04-01", 2.0), ("2026-05-01", 1.6), ("2026-06-01", 2.2)])
+        with self.assertRaises(ValueError):
+            jps.parse_real_wage_sheet(FakeSheet([["実質賃金指数"], head, level]))
+
+    def test_catalog_lookup_skips_months_without_an_entry_and_needs_the_right_title(self):
+        def get(url):
+            if "surveyYears=202609" in url:
+                return json.dumps({"GET_DATA_CATALOG": {"RESULT": {"STATUS": 1}}}).encode()
+            res = [{"TITLE": {"NAME": "長期時系列表_2_新規求人倍率"}, "URL": "u2"}, {"TITLE": {"NAME": "長期時系列表_3_有効求人倍率（実数、季節調整値）"}, "URL": "u3"}]
+            return json.dumps({"GET_DATA_CATALOG": {"RESULT": {"STATUS": 0}, "DATA_CATALOG_LIST_INF": {"DATA_CATALOG_INF": {"RESOURCES": {"RESOURCE": res}}}}}).encode()
+
+        self.assertEqual(jps.estat_find_file("k", search_word="x", title_has="_3_有効求人倍率", months=["202609", "202608"], get=get), ("u3", "202608"))
+        with self.assertRaises(RuntimeError):
+            jps.estat_find_file("k", search_word="x", title_has="nothing like this", months=["202608"], get=get)
+
+    def test_months_go_back_across_a_year_boundary(self):
+        from datetime import date
+
+        self.assertEqual(jps.recent_months(date(2026, 2, 10), 4), ["202602", "202601", "202512", "202511"])
+
+    def test_without_the_key_the_two_cards_are_skipped_not_failed(self):
+        import os
+
+        old = os.environ.pop("ESTAT_APP_ID", None)
+        try:
+            with self.assertRaises(jps.MissingKey):
+                jps.fetch_estat_series("job_ratio")
+        finally:
+            if old is not None:
+                os.environ["ESTAT_APP_ID"] = old
+
+
 class Transforms(unittest.TestCase):
     def test_ratio_uses_the_months_quarter_and_the_latest_quarter_after_it(self):
         monthly = [("2026-03-01", 600.0), ("2026-04-01", 640.0), ("2026-07-01", 650.0), ("2026-08-01", 660.0)]
@@ -140,7 +214,8 @@ class Series(unittest.TestCase):
         for spec_id in jps.SPECS:
             self.assertIn(spec_id, {"boj_total_assets", "boj_assets_yoy", "boj_assets_gdp", "boj_etf", "boj_jreit", "call_rate", "m2_vs_2019",
                                     "cgpi", "current_account", "gdp_yoy", "gdp_qoq", "fx_reserves", "bond_2y", "bond_10y", "bond_30y",
-                                    "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi"})
+                                    "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi",
+                                    "job_applicant_ratio", "real_wage_yoy"})
 
 
 class Apply(unittest.TestCase):

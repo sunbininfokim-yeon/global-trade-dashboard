@@ -5,6 +5,8 @@ name: Refresh public series (USA/JPN)
 # 워크플로 하나가 끝날 때마다 배포가 한 번 뜨기 때문이다.
 # 일본: 일본은행 시계열 API(총자산·ETF·J-REIT·콜금리·M2·기업물가·경상수지), 재무성 국채 수익률,
 # 통계국 CPI CSV, FRED(GDP·외환보유액), CFTC(엔 선물 포지션). 모두 키 없음.
+# 실질임금·유효구인배율은 후생노동성 엑셀을 e-Stat 데이터 카탈로그로 찾아 받는다 — 카탈로그 조회에만
+# 시크릿 ESTAT_APP_ID 가 필요하다(없으면 이 두 카드만 건너뛴다).
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -32,11 +34,13 @@ jobs:
           python-version: '3.12'
       - name: Install deps
         working-directory: New for anti/scripts/macro_monitor
-        run: pip install pytest beautifulsoup4
+        run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
         run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
+        env:
+          ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

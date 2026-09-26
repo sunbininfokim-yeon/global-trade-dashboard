@@ -28,10 +28,12 @@ def main() -> int:
     retrieved = ups.now_iso()
     src = jps.Sources()
 
-    patches, failures = {}, []
+    patches, failures, skipped = {}, [], []
     for spec_id in jps.SPECS:
         try:
             patches[spec_id] = jps.build_patch(spec_id, jps.series_for(spec_id, src), retrieved_at=retrieved)
+        except jps.MissingKey as exc:
+            skipped.append(f"{spec_id}: {exc}")           # not a failure: the secret may simply not be set yet
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{spec_id}: {exc}")
 
@@ -41,6 +43,8 @@ def main() -> int:
     print(f"JPN public series: {len(patches)} fetched, changed {result['changed'] or 'none'}")
     for sid, p in patches.items():
         print(f"  {sid:18s} {p['display']:>10s}  {p['reference_period']}  (as of {p['asof']})")
+    for sk in skipped:
+        print(f"  skipped {sk}")
     for f in failures:
         print(f"  FAILED {f}", file=sys.stderr)
     return 1 if failures else 0

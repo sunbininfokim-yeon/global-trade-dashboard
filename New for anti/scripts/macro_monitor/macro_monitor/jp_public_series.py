@@ -1,6 +1,9 @@
 """Observed public series for the Japan indicators that were still fixture_synth.
 
-Sources, all keyless:
+Sources (keyless unless noted):
+  - MHLW spreadsheets found through the e-Stat data catalog (needs ESTAT_APP_ID; the files themselves
+    download without a key): the seasonally adjusted job-openings-to-applicants ratio and the real
+    wage growth (nominal cash earnings deflated by CPI excl. imputed rent, 5+ employees);
   - Statistics Bureau of Japan: the monthly CPI files (national and Tokyo ku-area) published as CSV
     on stat.go.jp -- no e-Stat API key needed;
   - Bank of Japan Time-Series Data Search API (stat-search.boj.or.jp): the BOJ's own accounts, the
@@ -12,9 +15,11 @@ Sources, all keyless:
 Same contract as us_public_series.py: every value is a published observation or arithmetic on one,
 a series that cannot be read leaves the previous card, nothing is estimated.
 
-What is deliberately not here, and why: PMIs and CDS are licensed data; wages and the job-openings
-ratio need the e-Stat API (a free appId, not set up) or a spreadsheet parser;
-TOPIX, Nikkei VI and foreign equity flows have no free feed that was found; the MOF publishes the
+What is deliberately not here, and why: PMIs and CDS are licensed data; TOPIX has no free feed (Yahoo has
+no index symbol; a TOPIX ETF is a different quantity); the Nikkei VI history is downloadable but
+carries Nikkei's "do not copy or circulate" notice; stooq answers with a bot-check page; the JPX
+investor-type spreadsheets have no terms page that could be found to confirm reuse; the Rengo
+shunto tally page could not be located; the MOF publishes the
 intervention detail quarterly, so a month it has not covered yet cannot be told apart from a month
 with no intervention.
 """
@@ -37,6 +42,8 @@ BOJ_API = "https://www.stat-search.boj.or.jp/api/v1/getDataCode"
 MOF_JGB = "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/historical/jgbcme_all.csv"
 MOF_JGB_MONTH = "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv"     # the current month, daily
 CFTC_YEN = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
+ESTAT_CATALOG = "https://api.e-stat.go.jp/rest/3.0/app/json/getDataCatalog"
+ESTAT_CREDIT = "이 서비스는 정부통계 종합창구(e-Stat)의 API 기능을 사용하고 있지만, 서비스의 내용은 국가가 보증한 것이 아닙니다."
 STAT_CPI = "https://www.stat.go.jp/data/cpi/{base}/csv/{kind}{base}aa.csv"     # kind: zmi = national, tmi = Tokyo ku-area
 UA = "macro-monitor/1.0 (+https://github.com/sunbininfokim-yeon/global-trade-dashboard)"
 
@@ -49,6 +56,7 @@ ups._FORMATS.update({
     "bn0u": lambda v: f"{v:,.0f}B",
     "bp0": lambda v: f"{v:+.0f}bp" if v else "0bp",
     "k0s": lambda v: f"{v:+,.0f}K",
+    "ratio2": lambda v: f"{v:.2f}",
 })
 
 
@@ -218,6 +226,124 @@ def chained_yoy(old_base: Points, new_base: Points, *, switch: str) -> Points:
 
 
 # --------------------------------------------------------------------------
+# MHLW spreadsheets through the e-Stat data catalog
+# --------------------------------------------------------------------------
+
+class MissingKey(RuntimeError):
+    """ESTAT_APP_ID is not set: the two e-Stat backed cards are skipped, not failed."""
+
+
+def recent_months(today, n: int = 5) -> list[str]:
+    """YYYYMM for this month and the n-1 before it (a release month whose file is not out yet has no catalog entry)."""
+    out, y, m = [], today.year, today.month
+    for _ in range(n):
+        out.append(f"{y:04d}{m:02d}")
+        y, m = (y - 1, 12) if m == 1 else (y, m - 1)
+    return out
+
+
+def estat_find_file(app_id: str, *, search_word: str, title_has: str, months: list[str], stats_code: str | None = None,
+                    get: Callable[[str], bytes] | None = None) -> tuple[str, str]:
+    """(file url, YYYYMM) of the newest catalog resource whose title contains `title_has`."""
+    get = get or (lambda u: _get(u, timeout=120))
+    for ym in months:
+        params = {"appId": app_id, "searchWord": search_word, "surveyYears": ym, "limit": 20}
+        if stats_code:
+            params["statsCode"] = stats_code
+        d = json.loads(get(f"{ESTAT_CATALOG}?{urllib.parse.urlencode(params)}").decode("utf-8"))["GET_DATA_CATALOG"]
+        if str(d["RESULT"]["STATUS"]) not in ("0", "1"):                      # 1 = answered fine, nothing for that month
+            raise RuntimeError(f"e-Stat catalog: {d['RESULT'].get('ERROR_MSG')}")
+        entries = (d.get("DATA_CATALOG_LIST_INF") or {}).get("DATA_CATALOG_INF") or []
+        for entry in ([entries] if isinstance(entries, dict) else entries):
+            res = entry["RESOURCES"]["RESOURCE"]
+            for r in ([res] if isinstance(res, dict) else res):
+                t = r.get("TITLE")
+                name = t.get("NAME") if isinstance(t, dict) else t
+                if name and title_has in name:
+                    return r["URL"], ym
+    raise RuntimeError(f"no e-Stat file titled {title_has!r} in {months[-1]}..{months[0]}")
+
+
+def parse_job_ratio_xlsx(data: bytes) -> Points:
+    """MHLW long time-series table 3: one row per year, 12 monthly columns for the actual figures then 12
+    for the seasonally adjusted ones (the headline ratio is the adjusted one, all workers incl. part-time)."""
+    import unicodedata
+
+    import openpyxl
+
+    ws = openpyxl.load_workbook(io.BytesIO(data), data_only=True)[openpyxl.load_workbook(io.BytesIO(data), read_only=True).sheetnames[0]]
+    rows = list(ws.iter_rows(values_only=True))
+    hdr = next((i for i, r in enumerate(rows) if r and r[0] == "西暦"), None)
+    if hdr is None:
+        raise ValueError("no '西暦' header row in the job-ratio table")
+    blocks, cols = rows[hdr - 1], {}
+    for j, label in enumerate(rows[hdr]):
+        m = unicodedata.normalize("NFKC", str(label or "")).strip()
+        if blocks[j] == "季節調整値" and m.endswith("月") and m[:-1].isdigit() and "～" not in m:
+            cols[int(m[:-1])] = j
+    if sorted(cols) != list(range(1, 13)):
+        raise ValueError(f"seasonally adjusted month columns not found: {sorted(cols)}")
+    out: Points = []
+    for r in rows[hdr + 1:]:
+        y = unicodedata.normalize("NFKC", str(r[0] or ""))
+        if y.endswith("年") and y[:-1].isdigit():
+            for mo, j in cols.items():
+                if isinstance(r[j], (int, float)):
+                    out.append((f"{int(y[:-1])}-{mo:02d}-01", float(r[j])))
+    if not out:
+        raise ValueError("job-ratio table has no observations")
+    return sorted(out)
+
+
+def parse_real_wage_xls(data: bytes) -> Points:
+    """MHLW long time-series table 25-1 (real cash earnings, all industries, 5+ employees): a level section
+    then a 'year-on-year' section (前年比), one row per year, months in columns 8-19."""
+    import xlrd
+
+    return parse_real_wage_sheet(xlrd.open_workbook(file_contents=data).sheet_by_name("TL"))
+
+
+def parse_real_wage_sheet(sh) -> Points:
+    start = next((r for r in range(sh.nrows) if str(sh.cell_value(r, 0)).strip().startswith("前年比")), None)
+    if start is None:
+        raise ValueError("no year-on-year section in the real-wage table")
+    head = next(r for r in range(start, sh.nrows) if str(sh.cell_value(r, 0)).strip() == "年")
+    months = {int(float(sh.cell_value(head, c))): c for c in range(sh.ncols)
+              if isinstance(sh.cell_value(head, c), float) and 1 <= sh.cell_value(head, c) <= 12}
+    if sorted(months) != list(range(1, 13)):
+        raise ValueError(f"month columns not found in the year-on-year section: {sorted(months)}")
+    out: Points = []
+    for r in range(head + 1, sh.nrows):
+        y = sh.cell_value(r, 0)
+        if not isinstance(y, float):
+            continue
+        for mo, c in months.items():
+            v = sh.cell_value(r, c)
+            if isinstance(v, float):
+                out.append((f"{int(y)}-{mo:02d}-01", v))
+    if not out:
+        raise ValueError("real-wage table has no observations")
+    return sorted(out)
+
+
+def fetch_estat_series(kind: str, today=None) -> Points:
+    import os
+    from datetime import datetime, timezone
+
+    app_id = os.environ.get("ESTAT_APP_ID", "").strip()
+    if not app_id:
+        raise MissingKey("ESTAT_APP_ID is not set")
+    months = recent_months(today or datetime.now(timezone.utc).date(), 5)
+    if kind == "job_ratio":
+        url, _ = estat_find_file(app_id, search_word="一般職業紹介状況", title_has="_3_有効求人倍率", months=months)
+        return parse_job_ratio_xlsx(_get(url, timeout=120))
+    if kind == "real_wage":
+        url, _ = estat_find_file(app_id, search_word="長期時系列表", title_has="25-1_実質賃金（現金給与総額）", months=months, stats_code="00450071")
+        return parse_real_wage_xls(_get(url, timeout=120))
+    raise KeyError(kind)
+
+
+# --------------------------------------------------------------------------
 # Transforms
 # --------------------------------------------------------------------------
 
@@ -307,6 +433,10 @@ SPECS: dict[str, Spec] = {s.id: s for s in [
          "stat.go.jp:cpi", _urls("https://www.stat.go.jp/data/cpi/index.html"), "monthly"),
     Spec("tokyo_cpi", "monthly", "%", "pct1", "도쿄 23구 '생선식품 제외 종합'의 전년 같은 달 대비 상승률입니다(월간 확정치; 월말에 먼저 나오는 중순 속보가 아닙니다). 통계국이 2025년 기준 파일만 공개해서 2026년 1월부터의 값만 있습니다.",
          "stat.go.jp:cpi", _urls("https://www.stat.go.jp/data/cpi/index.html"), "monthly", label_ko="도쿄 근원 CPI(생선식품 제외) YoY"),
+    Spec("job_applicant_ratio", "monthly", "ratio", "ratio2", "유효구인배율(계절조정, 파트 포함 일반)입니다. 후생노동성 일반직업소개상황 장기시계열표 3. " + ESTAT_CREDIT,
+         "mhlw+e-stat", _urls("https://www.e-stat.go.jp/"), "monthly"),
+    Spec("real_wage_yoy", "monthly", "%", "pct1", "실질임금 전년 동월 대비(현금급여총액, 조사산업계, 5인 이상, 소비자물가 '자가귀속임대료 제외 종합'으로 디플레이트)입니다. 후생노동성 매월근로통계 장기시계열표 25-1. 속보치는 나중에 개정됩니다. " + ESTAT_CREDIT,
+         "mhlw+e-stat", _urls("https://www.e-stat.go.jp/"), "monthly", label_ko="실질임금 YoY(현금급여총액)"),
     Spec("yen_imm_net", "weekly", "k_contracts", "k0s", "CME 엔 선물의 비상업(투기) 순포지션 = 롱 − 숏(천 계약). CFTC 주간 보고서(화요일 기준, 금요일 공표).",
          "cftc:097741", _urls("https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"), "weekly"),
 ]}
@@ -319,8 +449,9 @@ CPI_REBASE = "2026-01-01"          # the 2025-base index gives the year-on-year 
 class Sources:
     """Lazy, cached fetchers so one run reads each upstream series once."""
 
-    def __init__(self, *, boj=fetch_boj, fred=ups.fetch_fred, mof=fetch_mof_jgb, cftc=fetch_cftc_yen, stat_cpi=fetch_stat_cpi):
-        self._boj, self._fred, self._mof, self._cftc, self._stat_cpi = boj, fred, mof, cftc, stat_cpi
+    def __init__(self, *, boj=fetch_boj, fred=ups.fetch_fred, mof=fetch_mof_jgb, cftc=fetch_cftc_yen, stat_cpi=fetch_stat_cpi,
+                 estat=fetch_estat_series):
+        self._boj, self._fred, self._mof, self._cftc, self._stat_cpi, self._estat = boj, fred, mof, cftc, stat_cpi, estat
         self._cache: dict[Any, Any] = {}
 
     def _memo(self, key, fn: Callable[[], Any]):
@@ -339,6 +470,9 @@ class Sources:
 
     def yen(self) -> Points:
         return self._memo("cftc", self._cftc)
+
+    def estat(self, kind: str) -> Points:
+        return self._memo(("estat", kind), lambda: self._estat(kind))
 
     def cpi(self, kind: str, base: int) -> dict[str, Points]:
         return self._memo(("cpi", kind, base), lambda: self._stat_cpi(kind, base, CPI_ITEMS))
@@ -379,6 +513,10 @@ def series_for(spec_id: str, s: Sources) -> Points:
         return spread_bp(month_last(s.jgb()["30Y"]), month_last(s.jgb()["10Y"]))
     if spec_id == "yen_imm_net":
         return ups.scale(s.yen(), 1e-3)
+    if spec_id == "job_applicant_ratio":
+        return s.estat("job_ratio")
+    if spec_id == "real_wage_yoy":
+        return s.estat("real_wage")
     if spec_id in ("core_cpi_jp", "core_core_cpi"):
         item = CPI_ITEMS[0] if spec_id == "core_cpi_jp" else CPI_ITEMS[1]
         return chained_yoy(s.cpi("zmi", 2020)[item], s.cpi("zmi", 2025)[item], switch=CPI_REBASE)
