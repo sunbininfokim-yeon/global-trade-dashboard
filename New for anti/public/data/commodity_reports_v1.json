@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T19:20:53.650175+00:00",
+  "generated_at": "2026-09-26T23:07:37.389544+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -20,10 +20,10 @@
     "sources_ok": 30,
     "sources_failed": 3,
     "raw_items": 483,
-    "scored": 106,
-    "published": 91,
+    "scored": 105,
+    "published": 90,
     "commodities": 24,
-    "buckets": 68
+    "buckets": 67
   },
   "feed_status": [
     {
@@ -130,7 +130,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 43 reports linked, 15 read, 21 already known"
+      "note": "45 list pages, 43 reports linked, 14 read, 22 already known"
     },
     {
       "source_id": "my_mpob",
@@ -213,7 +213,7 @@
       "source_id": "cn_mofcom_en",
       "ok": false,
       "count": 0,
-      "error": "TimeoutError: The read operation timed out",
+      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>",
       "mode": "live"
     },
     {
@@ -699,30 +699,6 @@
         "f8544c356fd2f6b6"
       ]
     },
-    "soybeans": {
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "6ab9fd7ecd2c98de",
-        "dbef185c58693fb1",
-        "9d9ab72fff81736d",
-        "06cf84727ec466c3",
-        "727409c1a45dfec3",
-        "855ed5d7f1503c83"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
-      ]
-    },
     "rice": {
       "PHL": [
         "71739cda84d2ebd6"
@@ -772,6 +748,27 @@
       "BRA": [
         "6a2f69a13bf9ae19",
         "a0f50331005b9402"
+      ]
+    },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
+        "6ab9fd7ecd2c98de",
+        "dbef185c58693fb1",
+        "9d9ab72fff81736d",
+        "06cf84727ec466c3",
+        "727409c1a45dfec3",
+        "855ed5d7f1503c83"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "wheat": {
@@ -971,7 +968,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.422,
+      "importance": 5.404,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1003,7 +1000,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.873,
+      "importance": 4.857,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1034,7 +1031,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.428,
+      "importance": 4.416,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1066,7 +1063,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.404,
+      "importance": 4.393,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1098,7 +1095,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.338,
+      "importance": 4.327,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1128,7 +1125,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.034,
+      "importance": 4.022,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1158,7 +1155,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.99,
+      "importance": 3.98,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1166,36 +1163,6 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.788,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T19:20:53.650175+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1220,7 +1187,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.788,
+      "importance": 3.775,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1251,7 +1218,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.788,
+      "importance": 3.775,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1281,7 +1248,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.757,
+      "importance": 3.748,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1312,7 +1279,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.757,
+      "importance": 3.748,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1343,7 +1310,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.65,
+      "importance": 3.644,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1375,7 +1342,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.644,
+      "importance": 3.635,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1407,7 +1374,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.625,
+      "importance": 3.616,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1438,7 +1405,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.346,
+      "importance": 3.338,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1468,7 +1435,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 3.008,
+      "importance": 2.999,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1498,7 +1465,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.721,
+      "importance": 2.713,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1529,7 +1496,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.643,
+      "importance": 2.64,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1561,7 +1528,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.642,
+      "importance": 2.636,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1647,7 +1614,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.448,
+      "importance": 2.44,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1677,7 +1644,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.436,
+      "importance": 2.429,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1708,7 +1675,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.391,
+      "importance": 2.388,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1739,7 +1706,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.271,
+      "importance": 2.27,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1771,7 +1738,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.876,
+      "importance": 1.872,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1801,7 +1768,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.871,
+      "importance": 1.866,
       "reasons": [
         "series:EIA_STEO"
       ],
@@ -1830,7 +1797,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.839,
+      "importance": 1.835,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1860,7 +1827,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.791,
+      "importance": 1.785,
       "reasons": [
         "country_in_text"
       ],
@@ -1888,7 +1855,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.789,
+      "importance": 1.785,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2018,7 +1985,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.694,
+      "importance": 1.691,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2049,7 +2016,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.681,
+      "importance": 1.676,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -2079,7 +2046,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.639,
+      "importance": 1.634,
       "reasons": [
         "country_in_text"
       ],
@@ -2108,7 +2075,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.614,
+      "importance": 1.61,
       "reasons": [
         "country_in_text"
       ],
@@ -2137,7 +2104,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.566,
+      "importance": 1.565,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2382,7 +2349,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.462,
+      "importance": 1.458,
       "reasons": [
         "country_in_text"
       ],
@@ -2412,7 +2379,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.459,
+      "importance": 1.456,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2442,7 +2409,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.421,
+      "importance": 1.416,
       "reasons": [
         "country_in_text"
       ],
@@ -2471,7 +2438,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.4,
+      "importance": 1.397,
       "reasons": [
         "country_in_text"
       ],
@@ -2531,7 +2498,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.38,
+      "importance": 1.377,
       "reasons": [
         "has_figure"
       ],
@@ -2560,7 +2527,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.368,
+      "importance": 1.365,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2589,7 +2556,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.345,
+      "importance": 1.344,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2619,7 +2586,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.343,
+      "importance": 1.341,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2681,36 +2648,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.309,
+      "importance": 1.307,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "c4debe37366d175b",
-      "title": {
-        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
-      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
-      "published_at": "2026-09-21T20:26:55+00:00",
-      "agency": "International Aluminium Institute",
-      "agency_ko": "국제알루미늄협회(IAI)",
-      "source_id": "int_iai",
-      "commodities": [
-        "aluminum"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2746,6 +2688,31 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "c4debe37366d175b",
+      "title": {
+        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
+      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
+      "published_at": "2026-09-21T20:26:55+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.295,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "755265be684d892e",
       "title": {
         "original": "Cochilco publica una versión renovada de su Anuario de Estadísticas del Cobre y Otros Minerales",
@@ -2768,7 +2735,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.25,
+      "importance": 1.247,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2793,7 +2760,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.241,
+      "importance": 1.238,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2972,33 +2939,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "62f11e17ce23601c",
-      "title": {
-        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
-      "published_at": "2026-09-07T15:45:14+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.168,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "fd94e1c0559f75cc",
       "title": {
         "original": "EIA releases the Annual Energy Outlook 2026",
@@ -3031,6 +2971,33 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "62f11e17ce23601c",
+      "title": {
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.165,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "62ac4be598c099c2",
       "title": {
         "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
@@ -3053,7 +3020,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.136,
+      "importance": 1.134,
       "reasons": [
         "country_in_text"
       ],
@@ -3082,7 +3049,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.085,
+      "importance": 1.083,
       "reasons": [
         "country_in_text"
       ],
@@ -3111,7 +3078,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.065,
+      "importance": 1.063,
       "reasons": [
         "country_in_text"
       ],
@@ -3142,7 +3109,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.063,
+      "importance": 1.061,
       "reasons": [
         "country_in_text"
       ],
@@ -3370,7 +3337,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.868,
+      "importance": 0.866,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3395,7 +3362,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.868,
+      "importance": 0.866,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3422,7 +3389,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.842,
+      "importance": 0.841,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
@@ -3532,7 +3499,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.678,
+      "importance": 0.677,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
@@ -3620,7 +3587,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.555,
+      "importance": 0.554,
       "reasons": [
         "country_in_text"
       ],
