@@ -241,7 +241,7 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
             # decoded (ANRPC's "report%2C june 2026") and its first letter
             # capitalized.
             slug = unquote(full.rstrip("/").rsplit("/", 1)[-1])
-            slug = re.sub(r"\.(?:html?|php|aspx?)$|\.\d+\.html?$", "", slug, flags=re.I)
+            slug = re.sub(r"\.(?:html?|php|aspx?|pdf)$|\.\d+\.html?$", "", slug, flags=re.I)
             title = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", slug)).strip(" .")
             title = title[:1].upper() + title[1:]
         if len(title) < 12:
@@ -253,6 +253,55 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         if len(items) >= max_items:
             break
     return items
+
+
+def fetch_bytes(url: str, *, user_agent: str, timeout: float = 30.0, limit: int = 12_000_000) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": user_agent, "Accept": "application/pdf,*/*"})
+    with urllib.request.urlopen(req, timeout=timeout, context=ssl.create_default_context()) as resp:
+        return resp.read(limit)
+
+
+def pdf_text(data: bytes, max_pages: int = 2) -> str:
+    """Text of a PDF's first pages, or "" when pypdf is missing or the file
+    will not parse. The pipeline must build without it; the workflow installs it."""
+    try:
+        import io
+
+        from pypdf import PdfReader  # type: ignore
+    except Exception:  # noqa: BLE001 -- ImportError, or a broken crypto backend
+        return ""
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        return " ".join((page.extract_text() or "") for page in reader.pages[:max_pages])
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def add_pdf_summaries(
+    items: List[RawReport], *, fetch_pdf, extract=pdf_text, max_pdfs: int = 3, skip_urls=()
+) -> int:
+    """Quote the opening of each newest PDF item as its summary.
+
+    Study-group press releases (ILZSG) are PDFs with the month's balance in
+    the first paragraph; the list page only gives a file name. Only the
+    newest few are fetched per run, and reports already summarized in the
+    previous build (skip_urls) are not fetched again.
+    """
+    done = 0
+    for item in items:
+        if done >= max_pdfs:
+            break
+        if item.summary or not item.url.lower().split("?", 1)[0].endswith(".pdf") or item.url in skip_urls:
+            continue
+        try:
+            text = extract(fetch_pdf(item.url))
+        except Exception:  # noqa: BLE001
+            continue
+        done += 1
+        text = _WS_RE.sub(" ", text).strip()
+        if text:
+            item.summary = clip(text)
+    return done
 
 
 _GAIN_CARD_SPLIT_RE = re.compile(r"(?=<time\s+datetime=[\"'])", re.I)
@@ -490,6 +539,16 @@ def fetch_source(
         items = parse_feed(body, source, max_items=max_items)
     elif kind == "html_list":
         items = parse_html_list(body, source)
+        if (source.get("html") or {}).get("pdf_summary"):
+            known_by_url = {r.url: r for r in (known or []) if r.summary}
+            for it in items:
+                if it.url in known_by_url:
+                    it.summary = known_by_url[it.url].summary
+            add_pdf_summaries(
+                items,
+                fetch_pdf=lambda u: fetch_bytes(u, user_agent=user_agent, timeout=timeout + 10),
+                skip_urls=set(known_by_url),
+            )
     elif kind == "fas_gain_cards":
         items = parse_fas_gain_cards(body, source, max_items=max_items)
 

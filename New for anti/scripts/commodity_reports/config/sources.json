@@ -450,6 +450,60 @@
       "commodity_hint": ["gold"],
       "html": {"base": "https://www.gold.org", "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}", "max_items": 12},
       "notes": "Added 2026-09-26 in place of int_wgc (its rss.xml is a page index). WGC press releases: Gold Demand Trends, central bank statistics, industry standards. Headline-only list, no date."
+    },
+    {
+      "id": "int_ilzsg",
+      "agency": "International Lead and Zinc Study Group",
+      "agency_ko": "국제납아연연구그룹(ILZSG)",
+      "kind": "html_list",
+      "url": "https://www.ilzsg.org/press-releases/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.5,
+      "scope_hint": "global",
+      "commodity_hint": ["zinc", "lead"],
+      "html": {"base": "https://www.ilzsg.org", "item_href_re": "(?:https://www\\.ilzsg\\.org)?/wp-content/uploads/[^\"']*[Pp]ress[^\"']*\\.pdf", "max_items": 6, "pdf_summary": true},
+      "notes": "Added 2026-09-26. Intergovernmental study group; its monthly press release (world refined lead and zinc balance) is a PDF linked from this page (tools/ops/feed_probe.py on Actions: 'ILZSG Press Release August 2026.pdf'). The WordPress RSS is empty. pdf_summary quotes the release's opening text (pypdf, installed by the workflow). Some runners get a JS challenge from this host; the build carries the last reports over."
+    },
+    {
+      "id": "int_cobalt_institute",
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "kind": "html_list",
+      "url": "https://www.cobaltinstitute.org/news/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.1,
+      "scope_hint": "global",
+      "commodity_hint": ["cobalt"],
+      "html": {"base": "https://www.cobaltinstitute.org", "item_href_re": "(?:https://www\\.cobaltinstitute\\.org)?/news/(?!page/)[a-z0-9-]{12,}/?", "max_items": 10},
+      "notes": "Added 2026-09-26. Industry body behind the annual Cobalt Market Report; news list read by feed_probe on Actions (the WordPress RSS is empty). Sucuri blocks some runners; carried over when it does."
+    },
+    {
+      "id": "id_esdm",
+      "agency": "Ministry of Energy and Mineral Resources of Indonesia",
+      "agency_ko": "인도네시아 에너지광물자원부(ESDM)",
+      "default_country": "IDN",
+      "kind": "html_list",
+      "url": "https://www.esdm.go.id/id/media-center/siaran-pers",
+      "lang": "id",
+      "enabled": true,
+      "weight": 1.2,
+      "html": {"base": "https://www.esdm.go.id", "item_href_re": "(?:https://www\\.esdm\\.go\\.id)?/id/media-center/arsip-berita/[a-z0-9-]{12,}", "max_items": 15},
+      "notes": "Added 2026-09-26. Indonesia sets coal (HBA benchmark, DMO), nickel ore, bauxite and copper concentrate export policy here. Headline-only list; items that name no tracked commodity (geothermal, volcano alerts) are dropped."
+    },
+    {
+      "id": "ar_bcr",
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "default_country": "ARG",
+      "kind": "html_list",
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal",
+      "lang": "es",
+      "enabled": true,
+      "weight": 1.2,
+      "html": {"base": "https://www.bcr.com.ar", "item_href_re": "(?:https?://www\\.bcr\\.com\\.ar)?/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/[a-z0-9-]+", "max_items": 15},
+      "notes": "Added 2026-09-26. Weekly research bulletin of Argentina's main grain exchange -- soybean, corn and wheat crop, crush and export analysis. An exchange, not a ministry: Argentina's agriculture secretariat has no feed, and BCR's crop estimates are the ones the market quotes."
     }
   ]
 }

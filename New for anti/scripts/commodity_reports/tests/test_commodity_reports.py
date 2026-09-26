@@ -17,6 +17,7 @@ from commodity_reports.build import (  # noqa: E402
 )
 from commodity_reports.feeds import (  # noqa: E402
     RawReport,
+    add_pdf_summaries,
     fetch_fas_gain_pages,
     gain_links,
     parse_fas_gain_cards,
@@ -308,6 +309,28 @@ class HtmlListTitleTests(unittest.TestCase):
         body = '<a href="/newsla/anrpc-releases-monthly-nr-statistical-report%2C-june-2026"><img/></a>'
         items = parse_html_list(body, source)
         self.assertEqual(items[0].title, "Anrpc releases monthly nr statistical report, june 2026")
+
+
+class PdfSummaryTests(unittest.TestCase):
+    def test_pdf_items_get_their_opening_text_and_known_ones_are_skipped(self):
+        source = {"id": "int_ilzsg", "html": {"base": "https://www.ilzsg.org",
+                                                "item_href_re": "[^\"']+\\.pdf"}}
+        body = ('<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20August%202026.pdf">x</a>'
+                '<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20July%202026.pdf">x</a>')
+        items = parse_html_list(body, source)
+        self.assertEqual(items[0].title, "ILZSG Press Release August 2026")
+        fetched = []
+
+        def fetch(url):
+            fetched.append(url)
+            return b"%PDF"
+
+        n = add_pdf_summaries(items, fetch_pdf=fetch, extract=lambda b: "World  refined zinc\nsurplus of 45kt",
+                              skip_urls={items[1].url})
+        self.assertEqual(n, 1)
+        self.assertEqual(items[0].summary, "World refined zinc surplus of 45kt")
+        self.assertEqual(items[1].summary, "")
+        self.assertEqual(len(fetched), 1)
 
 
 class FasGainPagesTests(unittest.TestCase):

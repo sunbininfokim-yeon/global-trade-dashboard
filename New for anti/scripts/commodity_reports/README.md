@@ -163,6 +163,16 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 `fas_gain_pages` 가 그 링크를 모아 각 페이지의 og:title·요약을 읽는다. 페이지에 그 달
 안의 날짜가 없으면 URL의 연·월만 쓰고 `published_precision: "month"` 로 표시한다.
 
+**2차 추가 (같은 날):** 주석 — 국제주석협회 RSS · 납/아연 — ILZSG 월간 보도자료 PDF
+(`pdf_summary`: pypdf로 첫머리를 요약으로 인용) · 코발트 — Cobalt Institute 뉴스 ·
+금 — WGC 보도자료 목록 · 인도네시아 ESDM(석탄·니켈 정책) · 아르헨티나 BCR 주간 보고.
+**OPEC MOMR은 불가:** opec.org는 홈페이지만 열리고 MOMR 페이지·PDF·보도자료가
+러너 IP에서 Cloudflare 방화벽 403 (실제 Chrome 포함). PDF 처리 기능은 이미 있으니
+경로만 열리면 html_list + `pdf_summary`로 붙는다.
+
+**메일(주간 즐겨찾기 다이제스트):** 항목마다 `first_seen_at`(처음 확인 시각)을 남긴다.
+발행일 없는 목록형 출처는 이 시각으로 "이번 주 새 보고서"를 판단한다.
+
 **간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
 (1회차 통과, 2회차 전부 403). 그래서 실패한 출처는 직전 결과 파일에서 그 출처의 보고서
 (45일 이내)를 다시 태깅해 이어 붙이고, `feed_status`에 `carried_over`로 표시한다.

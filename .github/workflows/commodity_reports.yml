@@ -17,6 +17,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      # pypdf quotes the opening of PDF-only press releases (ILZSG); the
+      # build still runs without it, just with those summaries empty.
+      - run: pip install --quiet pypdf
       - name: Tests
         working-directory: New for anti/scripts/commodity_reports
         run: python -m unittest discover -s tests -v
