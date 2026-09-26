@@ -33,10 +33,28 @@ REJECT_TERMS = [
     "call for proposal", "laporan keuangan", "hoaks", "penggajian",
 ]
 
+# Events, not reports: a forum, a keynote, a seminar is news about the
+# publisher, not about the market. Only the headline is checked (a market
+# report may mention a conference in passing), and a headline that also
+# names a series or carries a figure is kept -- "OPEC Seminar: output cut
+# of 2 mb/d" is still a market story.
+EVENT_TERMS = [
+    "forum", "conference", "seminar", "workshop", "webinar", "symposium", "summit",
+    "convene", "convenes", "concludes", "keynote", "speaker", "invited to speak",
+    "high level dialogue", "courtesy visit", "networking", "gala", "exhibition", "expo",
+    "anniversary", "award", "awards", "ceremony", "signing ceremony",
+    "hội nghị", "họp mặt", "hội thảo", "tọa đàm", "hoi nghi", "hop mat", "hoi thao",
+    "persidangan", "majlis", "kunjungan",
+    "seminário", "congreso", "foro",
+]
+
 # A release that carries a number is a release that moved a balance sheet.
 NUMBER_RE = re.compile(
-    r"\b\d{1,3}(?:[.,]\d+)?\s*(?:%|percent|million|billion|mmt|mt|tonnes?|tons?|"
-    r"bushels?|barrels?|bpd|bu/ac|kg/ha|t/ha)\b",
+    # "%" is not a word character, so a trailing \b after it never matched:
+    # "fell 12%" scored as a figure-less headline. The boundary is only for
+    # the word units.
+    r"\b\d{1,3}(?:[.,]\d+)?\s*(?:%|(?:percent|million|billion|mmt|mt|tonnes?|tons?|"
+    r"bushels?|barrels?|bpd|bu/ac|kg/ha|t/ha)\b)",
     re.I,
 )
 REVISION_TERMS = [
@@ -113,6 +131,7 @@ class ReportScorer:
     ) -> None:
         self.series = series_cfg.get("series", [])
         self.reject_pats = compile_terms(REJECT_TERMS)
+        self.event_pats = compile_terms(EVENT_TERMS)
         self.revision_pats = compile_terms(REVISION_TERMS)
         self.half_life_days = half_life_days
         self.learned: Dict[str, float] = {}
@@ -143,6 +162,12 @@ class ReportScorer:
 
         low = text.lower()
         series = self.match_series(low)
+        if (
+            not series
+            and any(p.search(raw.title) for p in self.event_pats)
+            and not NUMBER_RE.search(raw.title)
+        ):
+            return None
         series_weight = float(series.get("base_weight", 1.0)) if series else 1.0
         series_id = series.get("series_id") if series else None
 

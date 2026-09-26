@@ -173,6 +173,14 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 **메일(주간 즐겨찾기 다이제스트):** 항목마다 `first_seen_at`(처음 확인 시각)을 남긴다.
 발행일 없는 목록형 출처는 이 시각으로 "이번 주 새 보고서"를 판단한다.
 
+**출처 사전분류(commodity_hint)는 시장 기사에만 (2026-09-26):** ANRPC·ITA·MPOB·BPDP·
+WGC·Silver Institute처럼 "이 출처 글은 기본적으로 X"라는 사전분류는 본문에 시장 용어
+(생산·수출·가격·재고·통계·관세·거래…)가 있을 때만 적용한다. 사무총장 강연, 워크숍,
+회원사 소식, 오피니언, 번역판 뉴스레터가 품목 보고서로 붙던 문제. 시장 용어가 없는
+주요 보고서("Monthly NR Statistical Report")는 series_catalog로 그대로 붙는다.
+기관 이름에 품목명이 든 경우(Association of Natural Rubber Producing Countries)는
+`not_when`으로 품목 판단에서 뺀다.
+
 **간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
 (1회차 통과, 2회차 전부 403). 그래서 실패한 출처는 직전 결과 파일에서 그 출처의 보고서
 (45일 이내)를 다시 태깅해 이어 붙이고, `feed_status`에 `carried_over`로 표시한다.

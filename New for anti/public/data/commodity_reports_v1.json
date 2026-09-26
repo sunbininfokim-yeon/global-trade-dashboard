@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T13:21:12.121881+00:00",
+  "generated_at": "2026-09-26T13:50:42.390233+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -20,10 +20,10 @@
     "sources_ok": 30,
     "sources_failed": 3,
     "raw_items": 483,
-    "scored": 206,
-    "published": 159,
+    "scored": 159,
+    "published": 133,
     "commodities": 25,
-    "buckets": 78
+    "buckets": 75
   },
   "feed_status": [
     {
@@ -642,6 +642,25 @@
         "21e8e31c7b207b51"
       ]
     },
+    "copper": {
+      "CHN": [
+        "9307f930910dd12d"
+      ],
+      "USA": [
+        "9307f930910dd12d",
+        "0cc889de9eed1bf0"
+      ],
+      "CHL": [
+        "755265be684d892e",
+        "333bf7304a6961c5",
+        "62f11e17ce23601c",
+        "b7997f3d390d6fb8",
+        "b8e0e19f0f00a266"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
     "cotton": {
       "CHN": [
         "b7b8e9c3c1038c73"
@@ -671,12 +690,12 @@
     "oil": {
       "USA": [
         "cfe32235018b6add",
-        "5d3e84a676f4ec8b",
         "636939b535053039",
         "c67666c03e916f6f",
         "57e4eb5bfc9ebc1e",
         "0a708bd4ffd29cfc",
         "fd94e1c0559f75cc",
+        "ce7212e9d767222d",
         "cecfc55a16f54d74"
       ],
       "_global": [
@@ -694,22 +713,21 @@
       "MYS": [
         "97be7c6c6195937a",
         "9935e13cee618834",
-        "294d988a0c7a4c17",
-        "ade02dfd01340322",
         "a26131708db86470",
         "bbffeaa2f5411708",
         "99ca28dd19b9f061",
+        "9d25a50f412cccf2",
         "0ac19de06b45b2cf"
       ],
       "IDN": [
-        "3547f9608d850c98",
         "7695372844e9b313",
-        "a78219d1002ebe81",
-        "671ae2ca9456c281",
-        "f8bf20af564959e9",
-        "7e2d9eaa2d937e0e",
-        "9b3aacef7418cd57",
-        "3038b0ed9276919c"
+        "2469120340370df4",
+        "18b4a5b7314471da",
+        "f7c0801dfc822c16",
+        "4e43259f3f0f4b15",
+        "9c681271c42fffff",
+        "3038b0ed9276919c",
+        "e52ca2045e268435"
       ]
     },
     "soybeans": {
@@ -819,26 +837,6 @@
         "e4530ccde436c92d"
       ]
     },
-    "copper": {
-      "CHN": [
-        "9307f930910dd12d"
-      ],
-      "USA": [
-        "9307f930910dd12d",
-        "0cc889de9eed1bf0"
-      ],
-      "CHL": [
-        "755265be684d892e",
-        "333bf7304a6961c5",
-        "62f11e17ce23601c",
-        "b7997f3d390d6fb8",
-        "b8e0e19f0f00a266",
-        "b87baa2603ba1ba3"
-      ],
-      "CAN": [
-        "929e1ee5c8475871"
-      ]
-    },
     "iron_ore": {
       "_global": [
         "5576156cceda0a41",
@@ -855,25 +853,45 @@
         "af3268d8f8f62548"
       ]
     },
+    "thermal_coal": {
+      "USA": [
+        "f8aa4f64781b6480"
+      ]
+    },
     "rubber": {
       "_global": [
         "58c936b97029a384",
-        "30a98869d9f0a4f3",
-        "12a040f17a066c45",
-        "4b770dbdba953c09",
-        "42259283a50d073b",
-        "48cc04a9052a8716",
-        "e49a08bd637153cb",
-        "259a0a3487393346"
+        "30a98869d9f0a4f3"
+      ]
+    },
+    "tin": {
+      "CHN": [
+        "1b171ff4ac638164"
       ],
       "MYS": [
-        "9dea9d96f6e39a19"
+        "9fc6c0f2f5e3568a"
+      ],
+      "USA": [
+        "9fc6c0f2f5e3568a"
       ],
       "IDN": [
-        "f0c7e78a15b3b9db"
+        "3cac3e995aa9e757",
+        "16f99349c6e2ef80"
       ],
-      "VNM": [
-        "7ccb8874c01bc513"
+      "AUS": [
+        "91c5d4fabdf7e01f"
+      ],
+      "GBR": [
+        "91c5d4fabdf7e01f"
+      ],
+      "_global": [
+        "b8100702b4d10bff",
+        "022ee0b6016f3dd5"
+      ]
+    },
+    "lithium": {
+      "USA": [
+        "44e05f03eab98000"
       ]
     },
     "aluminum": {
@@ -897,44 +915,6 @@
       "BRA": [
         "ab3a2a994bfc6642",
         "e31766e85e2bb8fa"
-      ]
-    },
-    "thermal_coal": {
-      "USA": [
-        "f8aa4f64781b6480"
-      ]
-    },
-    "tin": {
-      "CHN": [
-        "1b171ff4ac638164"
-      ],
-      "MYS": [
-        "9fc6c0f2f5e3568a"
-      ],
-      "USA": [
-        "9fc6c0f2f5e3568a",
-        "9ae7ee5c11ee0e19"
-      ],
-      "IDN": [
-        "3cac3e995aa9e757",
-        "16f99349c6e2ef80"
-      ],
-      "AUS": [
-        "91c5d4fabdf7e01f"
-      ],
-      "GBR": [
-        "91c5d4fabdf7e01f"
-      ],
-      "_global": [
-        "8e83d3fd71d29ae4",
-        "b8100702b4d10bff",
-        "ea1cbcc559672646",
-        "022ee0b6016f3dd5"
-      ]
-    },
-    "lithium": {
-      "USA": [
-        "44e05f03eab98000"
       ]
     },
     "gas": {
@@ -988,11 +968,7 @@
       ],
       "_global": [
         "f5072178b1b60a30",
-        "c65c41fe90f08c31",
-        "d76aeebdc2170869",
-        "f704c390aa0eddb8",
-        "7aa1d9ea8f7acd29",
-        "824924c1c6c98021"
+        "7aa1d9ea8f7acd29"
       ]
     },
     "cobalt": {
@@ -1000,26 +976,7 @@
         "3663a7d940e42f4f",
         "2c0cbe98bbeb2884",
         "7b230de5cc0a6a36",
-        "7671b1c780a2ff75",
-        "d19590662333853e"
-      ]
-    },
-    "silver": {
-      "_global": [
-        "96c93bcca16a1043",
-        "12501fa570ad4d21",
-        "aa17b478e6561bc9",
-        "1e42080f0e1e0d89",
-        "c73f66d2b69815ff",
-        "f5072178b1b60a30",
-        "592d3e5125237169",
-        "89f241fbe1c68b24"
-      ],
-      "CHN": [
-        "69939df0db75be9f"
-      ],
-      "ECU": [
-        "69939df0db75be9f"
+        "7671b1c780a2ff75"
       ]
     },
     "cocoa": {
@@ -1027,6 +984,17 @@
         "b2bc51accbde2d64",
         "c45ef08bed6185fe",
         "25fb768ac2e254c6"
+      ]
+    },
+    "silver": {
+      "CHN": [
+        "69939df0db75be9f"
+      ],
+      "ECU": [
+        "69939df0db75be9f"
+      ],
+      "_global": [
+        "f5072178b1b60a30"
       ]
     }
   },
@@ -1054,10 +1022,74 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.45,
+      "importance": 5.448,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9307f930910dd12d",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El cobre cerró en US$ 6,68 por libra, con un alza semanal de 1,45%. El promedio anual alcanzó US$ 6,09 por libra, 40,57% sobre igual período de 2025. La menor disponibilidad inmediata de metal en China y Londres sostuvo el precio, pese a la presión del dólar y las expectativas de nuevas alzas de tasas[...] La entrada Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-21-al-25-de-septiembre-de-2026/",
+      "published_at": "2026-09-25T14:46:33+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 4.897,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0cc889de9eed1bf0",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El precio del cobre cerró hoy en US$ 6,53 la libra, con una leve alza de 0,07% respecto del cierre de la semana anterior. Con este resultado, el promedio anual alcanzó US$ 6,07 por libra, lo que representa un aumento de 40,32% respecto de la misma fecha de 2025. Más que el precio, esta semana se[...] La entrada Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-01-al-05-de-junio-de-2026/",
+      "published_at": "2026-09-11T15:36:26+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 4.445,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "has_figure",
+        "revision_language",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -1085,7 +1117,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.421,
+      "importance": 4.419,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1117,7 +1149,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.354,
+      "importance": 4.353,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1147,7 +1179,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.053,
+      "importance": 4.052,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1177,7 +1209,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.008,
+      "importance": 4.006,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1209,7 +1241,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.871,
+      "importance": 3.869,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
@@ -1239,7 +1271,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.87,
+      "importance": 3.868,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
@@ -1269,12 +1301,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.807,
+      "importance": 3.806,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
-      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+      "first_seen_at": "2026-09-26T13:50:42.390233+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1299,7 +1331,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.807,
+      "importance": 3.806,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1330,7 +1362,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.807,
+      "importance": 3.806,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1360,7 +1392,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.772,
+      "importance": 3.77,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1391,7 +1423,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.772,
+      "importance": 3.77,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1422,7 +1454,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.661,
+      "importance": 3.66,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1454,7 +1486,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.657,
+      "importance": 3.656,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1486,71 +1518,9 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.64,
+      "importance": 3.639,
       "reasons": [
         "series:USDA_GAIN",
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "9307f930910dd12d",
-      "title": {
-        "original": "Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El cobre cerró en US$ 6,68 por libra, con un alza semanal de 1,45%. El promedio anual alcanzó US$ 6,09 por libra, 40,57% sobre igual período de 2025. La menor disponibilidad inmediata de metal en China y Londres sostuvo el precio, pese a la presión del dólar y las expectativas de nuevas alzas de tasas[...] La entrada Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-21-al-25-de-septiembre-de-2026/",
-      "published_at": "2026-09-25T14:46:33+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "COCHILCO_COPPER_MARKET",
-      "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.499,
-      "reasons": [
-        "series:COCHILCO_COPPER_MARKET",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "0cc889de9eed1bf0",
-      "title": {
-        "original": "Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El precio del cobre cerró hoy en US$ 6,53 la libra, con una leve alza de 0,07% respecto del cierre de la semana anterior. Con este resultado, el promedio anual alcanzó US$ 6,07 por libra, lo que representa un aumento de 40,32% respecto de la misma fecha de 2025. Más que el precio, esta semana se[...] La entrada Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-01-al-05-de-junio-de-2026/",
-      "published_at": "2026-09-11T15:36:26+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "COCHILCO_COPPER_MARKET",
-      "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.38,
-      "reasons": [
-        "series:COCHILCO_COPPER_MARKET",
         "revision_language",
         "country_in_text"
       ],
@@ -1579,7 +1549,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.357,
+      "importance": 3.356,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1609,10 +1579,41 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 3.024,
+      "importance": 3.023,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-09-24T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.734,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -1701,7 +1702,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 2.478,
+      "importance": 2.477,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
@@ -1765,6 +1766,66 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "1b171ff4ac638164",
+      "title": {
+        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
+      "published_at": "2026-09-21T13:18:43+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.459,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "44e05f03eab98000",
+      "title": {
+        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
+      "published_at": "2026-09-17T12:58:25+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.447,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "4f1e6b1fecad4872",
       "title": {
         "original": "Aluminium cans lead global beverage recycling, new international dataset shows",
@@ -1785,7 +1846,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.425,
+      "importance": 2.424,
       "reasons": [
         "has_figure",
         "revision_language"
@@ -1823,37 +1884,6 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
-      "id": "5d3e84a676f4ec8b",
-      "title": {
-        "original": "EIA expects record electricity generation in 2026 and 2027",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration (EIA) expects U.S. electricity generation will grow 2.2% to a record 4,368 billion kilowatthours (BkWh) this year. EIA expects an additional 1.7% growth in electricity generation next year.",
-      "url": "https://www.eia.gov/pressroom/releases/press592.php",
-      "published_at": "2026-09-09T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.349,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "57e4eb5bfc9ebc1e",
@@ -1910,39 +1940,9 @@
       "country_source": "source_default",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 2.211,
+      "importance": 2.21,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "f8aa4f64781b6480",
-      "title": {
-        "original": "Electric Power Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
-      "url": "http://www.eia.gov/electricity/monthly/",
-      "published_at": "2026-09-24T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.079,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -1969,7 +1969,7 @@
       "country_source": "source_default",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 1.981,
+      "importance": 1.98,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND"
       ],
@@ -2026,66 +2026,38 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.879,
+      "importance": 1.878,
       "reasons": [
         "series:EIA_STEO"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "294d988a0c7a4c17",
+      "id": "b8e0e19f0f00a266",
       "title": {
-        "original": "Majlis Perasmian POMREQ 2026",
-        "original_lang": "ms",
+        "original": "¡Crece la participación de la mujer en la minería del cobre!",
+        "original_lang": "es",
         "ko": null
       },
-      "summary": "11 August 2026 Pullman Kuching, Sarawak",
-      "url": "https://mpob.gov.my/2026/09/majlis-perasmian-pomreq-2026/",
-      "published_at": "2026-09-20T16:35:45+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
+      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
+      "published_at": "2026-08-31T19:35:57+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
       "commodities": [
-        "palm_oil"
+        "copper"
       ],
       "countries": [
-        "MYS"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.86,
+      "importance": 1.846,
       "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "ade02dfd01340322",
-      "title": {
-        "original": "Kunjungan Hormat ke atas Ketua Pengarah Bomba Malaysia",
-        "original_lang": "ms",
-        "ko": null
-      },
-      "summary": "8 September 2026 Ibu Pejabat Bomba Malaysia",
-      "url": "https://mpob.gov.my/2026/09/kunjungan-hormat-ke-atas-ketua-pengarah-bomba-malaysia/",
-      "published_at": "2026-09-20T16:28:28+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.86,
-      "reasons": [
+        "has_figure",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -2113,7 +2085,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.799,
+      "importance": 1.798,
       "reasons": [
         "country_in_text"
       ],
@@ -2145,35 +2117,6 @@
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "1b171ff4ac638164",
-      "title": {
-        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
-      "published_at": "2026-09-21T13:18:43+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.757,
-      "reasons": [
-        "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2277,35 +2220,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "44e05f03eab98000",
-      "title": {
-        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
-      "published_at": "2026-09-17T12:58:25+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.749,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "9fc6c0f2f5e3568a",
       "title": {
         "original": "Higher tin prices and output lift MSC Q2 revenue",
@@ -2329,7 +2243,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.699,
+      "importance": 1.698,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2364,66 +2278,6 @@
       "reasons": [
         "revision_language",
         "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "9dea9d96f6e39a19",
-      "title": {
-        "original": "Anrpc engages in high level dialogue in malaysia",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/anrpc-engages-in-high-level-dialogue-in-malaysia%C2%A0",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.689,
-      "reasons": [
-        "country_in_text",
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "f0c7e78a15b3b9db",
-      "title": {
-        "original": "Anrpc participated in irrdb socio economic seminar, bali indonesia",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/anrpc-participated-in-irrdb-socio-economic-seminar%2C-bali-indonesia--",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.689,
-      "reasons": [
-        "country_in_text",
-        "no_date"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2609,7 +2463,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.646,
+      "importance": 1.645,
       "reasons": [
         "country_in_text"
       ],
@@ -2673,6 +2527,34 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "39ac9e91f73a0776",
+      "title": {
+        "original": "EIA releases latest Short-Term Energy Outlook amid Middle East conflict",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Crude oil price movements. The Brent crude oil spot price has risen sharply following the onset of military action in the Middle East. Brent settled at $94 per barrel (b) on March 9, up about 50% from the beginning of the year and the highest since September 2023. Crude oil prices have risen as petroleum shipments through the Strait of Hormuz have fallen, and some Middle East oil production has been shut in.",
+      "url": "https://www.eia.gov/pressroom/releases/press584.php",
+      "published_at": "2026-03-10T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 1.56,
+      "reasons": [
+        "series:EIA_STEO",
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -2855,31 +2737,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "8e83d3fd71d29ae4",
-      "title": {
-        "original": "Tin could help solar cells hold onto lost energy",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Researchers have uncovered why tin-based perovskites can retain energy from sunlight for unusually long periods — a property that could make them promising materials for a future generation of high-efficiency solar cells. Conventional solar cells cannot capture all the energy carried by sunlight. When light excites charge carriers within a solar material, they initially contain excess energy, but much of this is rapidly lost as heat as the carriers cool. Hot-carrier solar cells are an emerging concept designed to capture these carriers before that excess energy is lost. In theory, this could…",
-      "url": "https://www.internationaltin.org/tin-could-help-solar-cells-hold-onto-lost-energy/?utm_source=rss&utm_medium=rss&utm_campaign=tin-could-help-solar-cells-hold-onto-lost-energy",
-      "published_at": "2026-09-22T08:02:39+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.428,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "5a1967d788350658",
       "title": {
         "original": "Wholesale Electricity Market Data",
@@ -2938,35 +2795,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "b7997f3d390d6fb8",
-      "title": {
-        "original": "Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El convenio permitirá impulsar el intercambio de datos, el desarrollo de herramientas metodológicas y la difusión de conocimiento para contribuir a una minería chilena responsable y sostenible. La Comisión Chilena del Cobre (Cochilco) y la Pontificia Universidad Católica de Chile suscribieron un Convenio Marco de Colaboración orientado a fortalecer la generación de evidencia técnica, el[...] La entrada Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/cochilco-y-la-universidad-catolica-suscriben-acuerdo-de-colaboracion-para-fortalecer-la-evidencia-y-las-politicas-publicas-en-mineria/",
-      "published_at": "2026-09-04T14:49:50+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.397,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "06cf84727ec466c3",
       "title": {
         "original": "US corn ending stocks up 29% from last year, soybean ending stocks up 29%",
@@ -3000,15 +2828,44 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "ea1cbcc559672646",
+      "id": "b7997f3d390d6fb8",
       "title": {
-        "original": "New ore sorting technology sees inside cassiterite",
+        "original": "Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El convenio permitirá impulsar el intercambio de datos, el desarrollo de herramientas metodológicas y la difusión de conocimiento para contribuir a una minería chilena responsable y sostenible. La Comisión Chilena del Cobre (Cochilco) y la Pontificia Universidad Católica de Chile suscribieron un Convenio Marco de Colaboración orientado a fortalecer la generación de evidencia técnica, el[...] La entrada Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-y-la-universidad-catolica-suscriben-acuerdo-de-colaboracion-para-fortalecer-la-evidencia-y-las-politicas-publicas-en-mineria/",
+      "published_at": "2026-09-04T14:49:50+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.396,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "022ee0b6016f3dd5",
+      "title": {
+        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Gem Recovery Systems (GRS) and the Fraunhofer Institute for Integrated Circuits IIS are exploring the application of dual-energy X-ray technology to see inside cassiterite-bearing ores. Laboratory testing has shown that cassiterite can be detected using the system, providing a basis for further work on its potential role in the pre-concentration of tin ores. Fraunhofer’s high throughput, industrial capacity XRT sorting system at the Furth base. Sensor-based ore sorting can separate mineral-bearing rock from lower-value or barren material before it enters later stages of processing. For tin…",
-      "url": "https://www.internationaltin.org/new-ore-sorting-technology-sees-inside-cassiterite/?utm_source=rss&utm_medium=rss&utm_campaign=new-ore-sorting-technology-sees-inside-cassiterite",
-      "published_at": "2026-09-04T11:35:20+00:00",
+      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
+      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
+      "published_at": "2026-08-27T14:20:42+00:00",
       "agency": "International Tin Association",
       "agency_ko": "국제주석협회(ITA)",
       "source_id": "int_ita_tin",
@@ -3020,9 +2877,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.38,
+      "importance": 1.384,
       "reasons": [
-        "revision_language"
+        "has_figure"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3049,7 +2906,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.373,
+      "importance": 1.372,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3266,35 +3123,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "b8e0e19f0f00a266",
-      "title": {
-        "original": "¡Crece la participación de la mujer en la minería del cobre!",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
-      "published_at": "2026-08-31T19:35:57+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.319,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "1a5e5c6b232458f1",
       "title": {
         "original": "Canada invests in renewable natural gas production in Ontario",
@@ -3347,168 +3175,6 @@
       "series_label_ko": null,
       "importance": 1.305,
       "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "12a040f17a066c45",
-      "title": {
-        "original": "Dr. suttipong angthong secretary general of the association of natural rubber producing countries anrpc took center stage as a distinguished speaker at the prestigious world elastomer technology and engineering forum wetef held in shanghai from september 13 to 16 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/dr.-suttipong-angthong-secretary-general-of-the-association-of-natural-rubber-producing-countries-anrpc-took-center-stage-as-a-distinguished-speaker-at-the-prestigious-world-elastomer-technology-and-engineering-forum-wetef-held-in-shanghai-from-september-13-to-16-2026.",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "4b770dbdba953c09",
-      "title": {
-        "original": "Anrpc strengthens global engagement at irgce 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/anrpc-strengthens-global-engagement-at-irgce-2026",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "42259283a50d073b",
-      "title": {
-        "original": "Anrpc secretary general dr. suttipong angthong invited to speak at \"sustainability in tires 2026\" in bangkok",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/anrpc-secretary-general-dr.-suttipong-angthong-invited-to-speak-at-%22sustainability-in-tires-2026%22-in-bangkok",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "48cc04a9052a8716",
-      "title": {
-        "original": "Anrpc sustainable natural rubber forum 2026 concludes with bold vision for resilient, climate positive supply chains",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/anrpc-sustainable-natural-rubber-forum-2026-concludes-with-bold-vision-for-resilient%2C-climate-positive-supply-chains",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "e49a08bd637153cb",
-      "title": {
-        "original": "Sustainable natural rubber forum: aligning priorities for resilient supply chain",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/-sustainable-natural-rubber-forum%3A-aligning-priorities-for-resilient-supply-chain",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "259a0a3487393346",
-      "title": {
-        "original": "Sustainable natural rubber forum, aligning priorities for a resilient supply chain",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.anrpc.org/newsla/sustainable-natural-rubber-forum%2C-aligning-priorities-for-a-resilient-supply-chain-",
-      "published_at": null,
-      "agency": "Association of Natural Rubber Producing Countries",
-      "agency_ko": "천연고무생산국협회(ANRPC)",
-      "source_id": "int_anrpc",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.299,
-      "reasons": [
-        "no_date"
-      ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3620,7 +3286,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.274,
+      "importance": 1.273,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3674,36 +3340,6 @@
       "series_label_ko": null,
       "importance": 1.247,
       "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "7ccb8874c01bc513",
-      "title": {
-        "original": "Vra moi tham gia hoi nghi va hop mat doanh nhan cao su viet nam nam 2026",
-        "original_lang": "vi",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://vra.com.vn/tin-tuc/tin-trong-nuoc/vra-moi-tham-gia-hoi-nghi-va-hop-mat-doanh-nhan-cao-su-viet-nam-nam-2026.17389.html",
-      "published_at": null,
-      "agency": "Vietnam Rubber Association",
-      "agency_ko": "베트남고무협회(VRA)",
-      "source_id": "vn_vra_domestic",
-      "commodities": [
-        "rubber"
-      ],
-      "countries": [
-        "VNM"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.238,
-      "reasons": [
-        "country_in_text",
-        "no_date"
-      ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3997,33 +3633,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "3547f9608d850c98",
-      "title": {
-        "original": "Customs x BPDP Goes to School and Campus Hadir di Manado, Kenalkan Peran Strategis Perkebunan kepada Generasi Muda",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/customs-x-bpdp-goes-to-school-and-campus-hadir-di-manado-kenalkan-peran-strategis-perkebunan-kepada-generasi-muda",
-      "published_at": "2026-09-25T12:16:01+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.174,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "62f11e17ce23601c",
       "title": {
         "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
@@ -4080,33 +3689,31 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "671ae2ca9456c281",
+      "id": "9d25a50f412cccf2",
       "title": {
-        "original": "Opini Publik: Lebah di Bawah Janur Mapan sebagai Simfoni Hijau Masa Depan Perkelapaan Indonesia",
-        "original_lang": "id",
+        "original": "Larian Sawit Hari Merdeka 2026",
+        "original_lang": "ms",
         "ko": null
       },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/opini-publik-lebah-di-bawah-janur-mapan-sebagai-simfoni-hijau-masa-depan-perkelapaan-indonesia",
-      "published_at": "2026-09-09T06:55:51+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
+      "summary": "30 August 2026 Dewan Serbaguna Kampung Parit Warijo",
+      "url": "https://mpob.gov.my/2026/09/larian-sawit-hari-merdeka-2026/",
+      "published_at": "2026-09-04T08:18:58+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
       "commodities": [
         "palm_oil"
       ],
       "countries": [
-        "IDN"
+        "MYS"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.119,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+      "importance": 1.112,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
       "id": "636939b535053039",
@@ -4230,29 +3837,33 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "39ac9e91f73a0776",
+      "id": "66eae8938783b965",
       "title": {
-        "original": "EIA releases latest Short-Term Energy Outlook amid Middle East conflict",
+        "original": "At COP30: Can-to-Can Recycling Delivers 18% Higher Efficiency and Major Climate Benefits for Aluminium Beverage Cans",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Crude oil price movements. The Brent crude oil spot price has risen sharply following the onset of military action in the Middle East. Brent settled at $94 per barrel (b) on March 9, up about 50% from the beginning of the year and the highest since September 2023. Crude oil prices have risen as petroleum shipments through the Strait of Hormuz have fallen, and some Middle East oil production has been shut in.",
-      "url": "https://www.eia.gov/pressroom/releases/press584.php",
-      "published_at": "2026-03-10T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
+      "summary": "As global leaders gather at COP30 to accelerate climate action, a new study by Innoval Technology , a UK-based aluminium consultancy, highlights how can-to-can recycling of aluminium beverage cans delivers major environmental gains and advances circular economy goals. The study finds that recycling used beverage cans back into new cans through dedicated remelt operations could increase melt recovery rates by 18% and cut energy use and greenhouse gas emissions by 15% compared to mixed-alloy recycling. Today, 23% of the aluminium beverage cans are leaked and recycled into cast aluminum…",
+      "url": "https://international-aluminium.org/at-cop30-can-to-can-recycling-delivers-18-higher-efficiency-and-major-climate-benefits-for-aluminium-beverage-cans/",
+      "published_at": "2025-11-13T18:02:40+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
       "commodities": [
-        "oil"
+        "aluminum"
       ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.04,
+      "countries": [
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.05,
       "reasons": [
-        "series:EIA_STEO"
+        "has_figure",
+        "revision_language",
+        "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -4438,35 +4049,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "9ae7ee5c11ee0e19",
-      "title": {
-        "original": "Tin shows thermal stability advantage in sodium-ion batteries",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "New research has found that tin anodes may offer a thermal stability advantage over hard carbon in sodium-ion batteries. The study also shows that electrolyte choice significantly influences how tin behaves as temperatures rise, providing new information for the development of high-energy tin-based batteries. Professor Lin Ma from the University of North Carolina. Researchers from the University of North Carolina, University of California San Diego, Argonne National Laboratory and Northwestern University, together with US sodium-ion battery company Peak Energy, compared the behaviour of tin…",
-      "url": "https://www.internationaltin.org/tin-shows-thermal-stability-advantage-in-sodium-ion-batteries/?utm_source=rss&utm_medium=rss&utm_campaign=tin-shows-thermal-stability-advantage-in-sodium-ion-batteries",
-      "published_at": "2026-08-14T10:15:26+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.988,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "7695372844e9b313",
       "title": {
         "original": "BPDP Ajak Aktivis Mahasiswa Kembangkan Wirausaha Berbasis Sawit",
@@ -4494,87 +4076,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "c65c41fe90f08c31",
-      "title": {
-        "original": "World gold council launches gold dealer assurance standard",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-launches-gold-dealer-assurance-standard",
-      "published_at": null,
-      "agency": "World Gold Council",
-      "agency_ko": "세계금위원회(WGC)",
-      "source_id": "int_wgc_press",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.952,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
-      "id": "d76aeebdc2170869",
-      "title": {
-        "original": "World gold council and artisanal gold council announce strategic",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-artisanal-gold-council-announce-strategic",
-      "published_at": null,
-      "agency": "World Gold Council",
-      "agency_ko": "세계금위원회(WGC)",
-      "source_id": "int_wgc_press",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.952,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
-      "id": "f704c390aa0eddb8",
-      "title": {
-        "original": "World gold council and dynacor group enter strategic partnership",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-dynacor-group-enter-strategic-partnership",
-      "published_at": null,
-      "agency": "World Gold Council",
-      "agency_ko": "세계금위원회(WGC)",
-      "source_id": "int_wgc_press",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.952,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
       "id": "7aa1d9ea8f7acd29",
       "title": {
         "original": "World gold council and ocim metals and mining sa partner",
@@ -4583,33 +4084,6 @@
       },
       "summary": null,
       "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-ocim-metals-and-mining-sa-partner",
-      "published_at": null,
-      "agency": "World Gold Council",
-      "agency_ko": "세계금위원회(WGC)",
-      "source_id": "int_wgc_press",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.952,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
-      "id": "824924c1c6c98021",
-      "title": {
-        "original": "World Gold Council launches Swarnim Udaan 2047: Unlocking the Full Potential of Gold Towards Viksit Bharat 2047 4 August, 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-launches-swarnim-udaan-2047",
       "published_at": null,
       "agency": "World Gold Council",
       "agency_ko": "세계금위원회(WGC)",
@@ -4737,82 +4211,31 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "d19590662333853e",
+      "id": "ab3a2a994bfc6642",
       "title": {
-        "original": "Strengthening esg for a competitive cobalt future cobalt institute hosts workshop in kinshasa",
+        "original": "Global Aluminium Can Recycling Reaches 75%, Marking Major Step Toward Circular Economy",
         "original_lang": "en",
         "ko": null
       },
-      "summary": null,
-      "url": "https://www.cobaltinstitute.org/news/strengthening-esg-for-a-competitive-cobalt-future-cobalt-institute-hosts-workshop-in-kinshasa/",
-      "published_at": null,
-      "agency": "Cobalt Institute",
-      "agency_ko": "코발트협회(Cobalt Institute)",
-      "source_id": "int_cobalt_institute",
+      "summary": "Global study reveals aluminium cans achieve highest collection-for-recycling and recycling rates among beverage containers Belém, Brazil, 11 th November 2025 At COP30 today, the International Aluminium Institute (IAI) announced that aluminium beverage cans achieved a global recycling rate of 75% in 2023, a major milestone in the industry’s drive toward full circularity. The achievement brings the sector more than halfway toward the Global Beverage Can Circularity Alliance (GBCCA)’s goal of 80% recycling by 2030, first established at COP28. The milestone is highlighted in a new global study…",
+      "url": "https://international-aluminium.org/global-aluminium-can-recycling-reaches-75-marking-major-step-toward-circular-economy/",
+      "published_at": "2025-11-11T10:48:16+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
       "commodities": [
-        "cobalt"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.952,
-      "reasons": [
-        "no_date"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "022ee0b6016f3dd5",
-      "title": {
-        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
-      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
-      "published_at": "2026-08-27T14:20:42+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.923,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "9b3aacef7418cd57",
-      "title": {
-        "original": "Opini Publik: Kelapa di Ujung Krisis: Hilirisasi Sebagai Jalan Menyelamatkan Ekonomi Dan Petani Indonesia",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/opini-publik-kelapa-di-ujung-krisis-hilirisasi-sebagai-jalan-menyelamatkan-ekonomi-dan-petani-indonesia",
-      "published_at": "2026-08-26T06:32:05+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
+        "aluminum"
       ],
       "countries": [
-        "IDN"
+        "BRA"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.907,
+      "importance": 0.882,
       "reasons": [
+        "has_figure",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -4838,7 +4261,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.872,
+      "importance": 0.871,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -4863,61 +4286,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.872,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "a78219d1002ebe81",
-      "title": {
-        "original": "BPDP Perkuat Literasi Perkebunan melalui Komik dan Kolaborasi Perpustakaan",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/bpdp-perkuat-literasi-perkebunan-melalui-komik-dan-kolaborasi-perpustakaan",
-      "published_at": "2026-09-09T11:18:21+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.864,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b87baa2603ba1ba3",
-      "title": {
-        "original": "Informe Salud Mental en la Industria Minera Nacional",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
-      "published_at": "2026-08-13T15:07:49+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.844,
+      "importance": 0.871,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -4951,90 +4320,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "f8bf20af564959e9",
-      "title": {
-        "original": "BPDP Dorong Kolaborasi dan Pemanfaatan Biofuel dalam Percepatan Transisi Energi melalui EBTKE ConEx 2026",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/bpdp-dorong-kolaborasi-dan-pemanfaatan-biofuel-dalam-percepatan-transisi-energi-melalui-ebtke-conex-2026",
-      "published_at": "2026-09-07T04:27:31+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.832,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "66eae8938783b965",
-      "title": {
-        "original": "At COP30: Can-to-Can Recycling Delivers 18% Higher Efficiency and Major Climate Benefits for Aluminium Beverage Cans",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "As global leaders gather at COP30 to accelerate climate action, a new study by Innoval Technology , a UK-based aluminium consultancy, highlights how can-to-can recycling of aluminium beverage cans delivers major environmental gains and advances circular economy goals. The study finds that recycling used beverage cans back into new cans through dedicated remelt operations could increase melt recovery rates by 18% and cut energy use and greenhouse gas emissions by 15% compared to mixed-alloy recycling. Today, 23% of the aluminium beverage cans are leaked and recycled into cast aluminum…",
-      "url": "https://international-aluminium.org/at-cop30-can-to-can-recycling-delivers-18-higher-efficiency-and-major-climate-benefits-for-aluminium-beverage-cans/",
-      "published_at": "2025-11-13T18:02:40+00:00",
-      "agency": "International Aluminium Institute",
-      "agency_ko": "국제알루미늄협회(IAI)",
-      "source_id": "int_iai",
-      "commodities": [
-        "aluminum"
-      ],
-      "countries": [
-        "GBR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.798,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "7e2d9eaa2d937e0e",
-      "title": {
-        "original": "BPDP dan Kemenkeu Satu Perkuat UMKM Perkebunan melalui Sinara Fest 2026 di Semarang",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/bpdp-dan-kemenkeu-satu-perkuat-umkm-perkebunan-melalui-sinara-fest-2026-di-semarang",
-      "published_at": "2026-09-04T02:55:30+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.792,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "cbae598c13644bf7",
       "title": {
         "original": "GULF ALUMINIUM OUTPUT COLLAPSES BY 40% OF PRE-WAR LEVELS AS GLOBAL SUPPLY CRISIS DEEPENS",
@@ -5062,129 +4347,33 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "96c93bcca16a1043",
+      "id": "4e43259f3f0f4b15",
       "title": {
-        "original": "银世界新闻 2026年8月",
-        "original_lang": "en",
+        "original": "Opini Publik: Pluralitas & Sawit: Harmoni Sosial dan Ekonomi Keberlanjutan Kalimantan Barat",
+        "original_lang": "id",
         "ko": null
       },
-      "summary": "点击此处看全文",
-      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b48%e6%9c%88/",
-      "published_at": "2026-09-01T20:20:02+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-pluralitas-sawit-harmoni-sosial-dan-ekonomi-keberlanjutan-kalimantan-barat",
+      "published_at": "2026-08-12T06:07:30+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
       "commodities": [
-        "silver"
+        "palm_oil"
       ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.765,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "12501fa570ad4d21",
-      "title": {
-        "original": "Agosto de 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Haga clic aquí para ver el artículo.",
-      "url": "https://silverinstitute.org/agosto-de-2026/",
-      "published_at": "2026-09-01T20:17:47+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
+      "importance": 0.773,
+      "reasons": [
+        "country_in_text"
       ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.765,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "aa17b478e6561bc9",
-      "title": {
-        "original": "银世界新闻 2026年6月",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "点击此处看全文",
-      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b46%e6%9c%88/",
-      "published_at": "2026-09-01T20:16:24+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.765,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "1e42080f0e1e0d89",
-      "title": {
-        "original": "Junio de 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Haga clic aquí para ver el artículo.",
-      "url": "https://silverinstitute.org/junio-de-2026/",
-      "published_at": "2026-09-01T20:14:21+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.765,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "c73f66d2b69815ff",
-      "title": {
-        "original": "Silver News August 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "click here to view the article.",
-      "url": "https://silverinstitute.org/silver-news-august-2026/",
-      "published_at": "2026-08-31T01:49:00+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.745,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
       "id": "d09ef02fa55cc52b",
@@ -5212,6 +4401,35 @@
         "revision_language"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "e52ca2045e268435",
+      "title": {
+        "original": "BPDP Ajak Media Menelusuri Kontribusi Industri Sawit terhadap Perekonomian Nasional melalui Press Tour di Kalimantan Tengah",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-ajak-media-menelusuri-kontribusi-industri-sawit-terhadap-perekonomian-nasional-melalui-press-tour-di-kalimantan-tengah",
+      "published_at": "2026-07-29T15:51:11+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.691,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
       "id": "fd94e1c0559f75cc",
@@ -5243,6 +4461,89 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "ce7212e9d767222d",
+      "title": {
+        "original": "Hormuz closure and related production outages are key drivers in EIA's latest forecast",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration published its April Short Term Energy Outlook this week, examining the implications of the closure of the Strait of Hormuz.",
+      "url": "https://www.eia.gov/pressroom/releases/press586.php",
+      "published_at": "2026-04-07T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.687,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
+      "id": "2469120340370df4",
+      "title": {
+        "original": "Lidi Sawit Tembus Pasar Tiongkok, Kolaborasi BPDP dan Petani Sawit Jadi Kunci Penguatan Ekspor Produk UMKM Perkebunan",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/lidi-sawit-tembus-pasar-tiongkok-kolaborasi-bpdp-dan-petani-sawit-jadi-kunci-penguatan-ekspor-produk-umkm-perkebunan",
+      "published_at": "2026-08-24T07:42:02+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.68,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
+      "id": "18b4a5b7314471da",
+      "title": {
+        "original": "BPDP serahkan Katalog 100 Produk UMKM Sawit Kepada Kementerian Perekonomian",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-serahkan-katalog-100-produk-umkm-sawit-kepada-kementerian-perekonomian",
+      "published_at": "2026-08-24T06:42:41+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.68,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
       "id": "094f2c679d643322",
       "title": {
         "original": "NASS discontinues select 2024 data collection programs and reports",
@@ -5270,6 +4571,33 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "f7c0801dfc822c16",
+      "title": {
+        "original": "BPDP Percepat Peremajaan Sawit Rakyat dan Penguatan SDM Perkebunan",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-percepat-peremajaan-sawit-rakyat-dan-penguatan-sdm-perkebunan",
+      "published_at": "2026-08-20T10:01:06+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.649,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
       "id": "89c825ce4cf18fd2",
       "title": {
         "original": "Canada advances global energy exports by signing second European LNG deal",
@@ -5293,35 +4621,6 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.631,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "ab3a2a994bfc6642",
-      "title": {
-        "original": "Global Aluminium Can Recycling Reaches 75%, Marking Major Step Toward Circular Economy",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Global study reveals aluminium cans achieve highest collection-for-recycling and recycling rates among beverage containers Belém, Brazil, 11 th November 2025 At COP30 today, the International Aluminium Institute (IAI) announced that aluminium beverage cans achieved a global recycling rate of 75% in 2023, a major milestone in the industry’s drive toward full circularity. The achievement brings the sector more than halfway toward the Global Beverage Can Circularity Alliance (GBCCA)’s goal of 80% recycling by 2030, first established at COP28. The milestone is highlighted in a new global study…",
-      "url": "https://international-aluminium.org/global-aluminium-can-recycling-reaches-75-marking-major-step-toward-circular-economy/",
-      "published_at": "2025-11-11T10:48:16+00:00",
-      "agency": "International Aluminium Institute",
-      "agency_ko": "국제알루미늄협회(IAI)",
-      "source_id": "int_iai",
-      "commodities": [
-        "aluminum"
-      ],
-      "countries": [
-        "BRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.63,
       "reasons": [
         "country_in_text"
       ],
@@ -5355,6 +4654,33 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9c681271c42fffff",
+      "title": {
+        "original": "BPDP BLU Kemenkeu Raih Dua Penghargaan SIEXPO 2026 Atas Komitmen Mendukung UMKM Sawit",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-blu-kemenkeu-raih-dua-penghargaan-siexpo-2026-atas-komitmen-mendukung-umkm-sawit",
+      "published_at": "2026-08-10T10:24:27+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.585,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
       "id": "b2bc51accbde2d64",
@@ -5566,56 +4892,6 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.504,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "592d3e5125237169",
-      "title": {
-        "original": "Silver News June 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "click here to view the article.",
-      "url": "https://silverinstitute.org/silver-news-june-2026/",
-      "published_at": "2026-07-01T04:29:43+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.464,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "89f241fbe1c68b24",
-      "title": {
-        "original": "银世界新闻 2026年4月",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "点击此处看全文",
-      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b44%e6%9c%88/",
-      "published_at": "2026-05-11T18:32:26+00:00",
-      "agency": "The Silver Institute",
-      "agency_ko": "실버인스티튜트",
-      "source_id": "int_silver_institute",
-      "commodities": [
-        "silver"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.428,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     }
