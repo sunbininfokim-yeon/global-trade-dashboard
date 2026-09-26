@@ -152,7 +152,7 @@ def feed_summary(text: str) -> Optional[Dict[str, Any]]:
     return {"items": len(entries), "newest": newest.date().isoformat() if newest else None, "titles": titles}
 
 
-def discover(url: str, html: str) -> List[str]:
+def discover(url: str, html: str, limit: int = MAX_DISCOVERED) -> List[str]:
     found: List[str] = []
     for tag in _ALT_RE.findall(html):
         if "alternate" in tag.lower() and _TYPE_RE.search(tag):
@@ -168,10 +168,10 @@ def discover(url: str, html: str) -> List[str]:
     for f in found:
         if f not in out and f.rstrip("/") != url.rstrip("/"):
             out.append(f)
-    return out[:MAX_DISCOVERED]
+    return out[:limit]
 
 
-def describe(res: Dict[str, Any], link_re: Optional[str] = None) -> Dict[str, Any]:
+def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0) -> Dict[str, Any]:
     out: Dict[str, Any] = {"status": res.get("status")}
     if res.get("error"):
         out["error"] = res["error"]
@@ -198,12 +198,56 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None) -> Dict[str, An
                 if re.search(link_re, full) and full not in links:
                     links.append(full)
             out["links"] = len(links)
-            out["link_samples"] = links[:4]
+            out["link_samples"] = links[:samples]
+        if show_body:
+            out["body_head"] = re.sub(r"\s+", " ", text)[:show_body]
     return out
+
+
+_SCRIPT_SRC_RE = re.compile(r"<script[^>]+src=[\"']([^\"']+)[\"']", re.I)
+_API_RE = re.compile(r"[\"'`](https?://[^\"'`\s]*(?:api|Api|API)[^\"'`\s]*|/[A-Za-z0-9_/-]*api/[A-Za-z0-9_/{}.-]+)[\"'`]")
+
+
+def script_endpoints(url: str, html: str) -> List[str]:
+    """For single-page apps: the API paths their bundles call."""
+    found: List[str] = []
+    for src in _SCRIPT_SRC_RE.findall(html)[:8]:
+        full = urljoin(url, unescape(src))
+        res = _get(full, BROWSER_HEADERS)
+        for m in _API_RE.findall(_text(res.get("body") or b"")):
+            if m not in found:
+                found.append(m)
+    return found[:40]
+
+
+def rendered(url: str, link_re: Optional[str]) -> Dict[str, Any]:
+    """Load the page in the runner's installed Chrome (runs the page's JS)."""
+    try:
+        from playwright.sync_api import sync_playwright  # type: ignore
+    except ImportError:
+        return {"status": None, "error": "playwright not installed"}
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(channel="chrome", headless=True)
+            page = browser.new_page()
+            resp = page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            page.wait_for_timeout(8000)
+            html = page.content()
+            status = resp.status if resp else None
+            # A challenge page that resolves reloads itself; take the final state.
+            out = describe({"status": status, "body": html.encode("utf-8"), "final": page.url, "url": url},
+                           link_re, samples=6)
+            browser.close()
+            return out
+    except Exception as exc:  # noqa: BLE001
+        return {"status": None, "error": f"{type(exc).__name__}: {exc}"[:200]}
 
 
 def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     url = target["url"]
+    link_re = target.get("link_re")
+    samples = int(target.get("samples", 4))
+    show_body = int(target.get("show_body", 0))
     raw: Dict[str, Dict[str, Any]] = {"pipeline": _get(url, PIPELINE_HEADERS)}
     blocked = not raw["pipeline"].get("status") or raw["pipeline"]["status"] >= 400
     if target.get("variants") or blocked:
@@ -212,18 +256,25 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     report: Dict[str, Any] = {"id": target["id"], "group": target.get("group", ""), "url": url}
     for key, res in raw.items():
         res["url"] = url
-        report[key] = describe(res, target.get("link_re"))
+        report[key] = describe(res, link_re, samples, show_body)
+    if target.get("render"):
+        report["render"] = rendered(url, link_re)
     # Feed discovery from the first variant that got a readable page.
     for key, res in raw.items():
         d = report[key]
         if d.get("html_bytes") and (d.get("status") or 0) < 400:
+            page_url = res.get("final") or url
+            html = _text(res["body"])
             report["discovered"] = []
-            for f in discover(res.get("final") or url, _text(res["body"])):
+            limit = 40 if target.get("list_feeds") else MAX_DISCOVERED
+            for f in discover(page_url, html, limit):
                 fr = _get(f, PIPELINE_HEADERS)
                 fr["url"] = f
                 fd = describe(fr)
                 fd["url"] = f
                 report["discovered"].append(fd)
+            if target.get("scripts"):
+                report["endpoints"] = script_endpoints(page_url, html)
             break
     return report
 
@@ -243,7 +294,9 @@ def line(r: Dict[str, Any]) -> str:
         elif "html_bytes" in d:
             s += f" html={d['html_bytes']} title={d.get('page_title', '')!r}"
             if "links" in d:
-                s += f" links={d['links']} {d.get('link_samples', [])[:3]}"
+                s += f" links={d['links']} {d.get('link_samples', [])}"
+            if d.get("body_head"):
+                s += f" body={d['body_head']!r}"
             if d.get("block_hint") is not None and (d.get("status") or 0) >= 400:
                 s += f" server={d.get('server', '')!r} hint={d.get('block_hint')!r}"
         if d.get("final"):
@@ -254,6 +307,10 @@ def line(r: Dict[str, Any]) -> str:
     if "browser" in r:
         out.append(f"  browser: {fmt(r['browser'])}")
         out.append(f"  impersonate: {fmt(r['impersonate'])}")
+    if "render" in r:
+        out.append(f"  render: {fmt(r['render'])}")
+    if r.get("endpoints"):
+        out.append(f"  endpoints: {r['endpoints']}")
     for d in r.get("discovered", []):
         out.append(f"  found {d['url']}: {fmt(d)}")
     return "\n".join(out)

@@ -5,581 +5,362 @@
  "targets": [
   {
    "group": "gain",
-   "id": "gain_search_facet",
+   "id": "gain_render_facet",
    "url": "https://www.fas.usda.gov/data/search?reports%5B0%5D=report_type%3A10251",
-   "variants": true,
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "render": true,
+   "link_re": "/data/[a-z0-9-]{12,}",
+   "samples": 6
   },
   {
    "group": "gain",
-   "id": "gain_search_plain",
-   "url": "https://www.fas.usda.gov/data/search",
-   "variants": true,
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "gain_legacy_shell",
+   "url": "https://gain.fas.usda.gov/",
+   "scripts": true,
+   "show_body": 600
   },
   {
    "group": "gain",
-   "id": "gain_search_keyword",
-   "url": "https://www.fas.usda.gov/data/search?keyword=GAIN",
-   "variants": true,
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "gain_legacy_search",
+   "url": "https://gain.fas.usda.gov/#/search",
+   "render": true,
+   "link_re": "(newgainapi|Report|\\.pdf)",
+   "samples": 6
   },
   {
    "group": "gain",
-   "id": "fas_data",
-   "url": "https://www.fas.usda.gov/data",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
-  },
-  {
-   "group": "gain",
-   "id": "fas_newsroom_control",
-   "url": "https://www.fas.usda.gov/newsroom",
-   "link_re": "/newsroom/[a-z0-9-]{10,}"
-  },
-  {
-   "group": "gain",
-   "id": "fas_rss_xml",
-   "url": "https://www.fas.usda.gov/rss.xml"
-  },
-  {
-   "group": "gain",
-   "id": "fas_data_rss",
-   "url": "https://www.fas.usda.gov/data/rss.xml"
-  },
-  {
-   "group": "gain",
-   "id": "fas_region_indonesia",
+   "id": "fas_region_indonesia_links",
    "url": "https://www.fas.usda.gov/regions/indonesia",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "link_re": "(/data/|gain|GAIN|newgainapi|DownloadReport)",
+   "samples": 15
   },
   {
    "group": "gain",
-   "id": "fas_region_malaysia",
-   "url": "https://www.fas.usda.gov/regions/malaysia",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "fas_oilseeds_links",
+   "url": "https://www.fas.usda.gov/data/commodities/oilseeds",
+   "link_re": "(/data/|gain|GAIN|newgainapi|DownloadReport)",
+   "samples": 15
   },
   {
    "group": "gain",
-   "id": "fas_region_thailand",
-   "url": "https://www.fas.usda.gov/regions/thailand",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "fas_coffee_links",
+   "url": "https://www.fas.usda.gov/data/commodities/coffee",
+   "link_re": "/data/",
+   "samples": 15
   },
   {
    "group": "gain",
-   "id": "fas_region_brazil",
-   "url": "https://www.fas.usda.gov/regions/brazil",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "govdelivery_fas",
+   "url": "https://content.govdelivery.com/accounts/USDAFAS/bulletins.rss"
   },
   {
    "group": "gain",
-   "id": "fas_region_vietnam",
-   "url": "https://www.fas.usda.gov/regions/vietnam",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
+   "id": "govdelivery_fas_page",
+   "url": "https://content.govdelivery.com/accounts/USDAFAS/bulletins",
+   "link_re": "/bulletins/",
+   "samples": 6
   },
   {
    "group": "gain",
-   "id": "fas_commodity_coffee",
-   "url": "https://www.fas.usda.gov/commodities/coffee",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
-  },
-  {
-   "group": "gain",
-   "id": "fas_commodity_oilseeds",
-   "url": "https://www.fas.usda.gov/commodities/oilseeds",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
-  },
-  {
-   "group": "gain",
-   "id": "fas_commodity_palm",
-   "url": "https://www.fas.usda.gov/commodities/palm-oil",
-   "link_re": "/data/[a-z0-9][a-z0-9-]{12,}"
-  },
-  {
-   "group": "gain",
-   "id": "fas_report_page",
-   "url": "https://www.fas.usda.gov/data/uganda-coffee-annual-9",
-   "variants": true
-  },
-  {
-   "group": "gain",
-   "id": "fas_wmt_oilseeds",
-   "url": "https://www.fas.usda.gov/data/oilseeds-world-markets-and-trade",
-   "link_re": "\\.pdf"
-  },
-  {
-   "group": "gain",
-   "id": "gain_legacy",
-   "url": "https://gain.fas.usda.gov/"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_root",
-   "url": "https://apps.fas.usda.gov/newgainapi/"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_help",
-   "url": "https://apps.fas.usda.gov/newgainapi/Help"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_swagger",
-   "url": "https://apps.fas.usda.gov/newgainapi/swagger/ui/index"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_reports",
-   "url": "https://apps.fas.usda.gov/newgainapi/api/Report/GetReports"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_search",
-   "url": "https://apps.fas.usda.gov/newgainapi/api/Report/SearchReports?searchText=palm"
-  },
-  {
-   "group": "gain",
-   "id": "newgainapi_latest",
-   "url": "https://apps.fas.usda.gov/newgainapi/api/Report/GetLatestReports"
+   "id": "usda_rss_index",
+   "url": "https://www.usda.gov/about-usda/policies-and-links/digital/rss-feeds",
+   "list_feeds": true
   },
   {
    "group": "rubber",
-   "id": "anrpc",
-   "url": "https://www.anrpc.org/"
+   "id": "lgm_body",
+   "url": "https://www.lgm.gov.my/",
+   "show_body": 500
   },
   {
    "group": "rubber",
-   "id": "anrpc_feed",
-   "url": "https://www.anrpc.org/feed/"
+   "id": "lgm_web",
+   "url": "https://www.lgm.gov.my/webv2/",
+   "link_re": "(news|berita|press|rss|feed)",
+   "samples": 8
   },
   {
    "group": "rubber",
-   "id": "irsg",
-   "url": "https://www.rubberstudy.org/"
+   "id": "kpk_en_links",
+   "url": "https://www.kpk.gov.my/kpk/en/",
+   "link_re": "(news|berita|press|kenyataan|media|rss|feed)",
+   "samples": 10,
+   "list_feeds": true
   },
   {
    "group": "rubber",
-   "id": "irsg_feed",
-   "url": "https://www.rubberstudy.org/feed/"
+   "id": "kpk_joomla_feed",
+   "url": "https://www.kpk.gov.my/kpk/en/?format=feed&type=rss"
   },
   {
    "group": "rubber",
-   "id": "itrc",
-   "url": "https://www.itrco.org/"
+   "id": "vra_links",
+   "url": "https://vra.com.vn/",
+   "link_re": "(tin-tuc|news|thi-truong|market|rss|feed)",
+   "samples": 10
   },
   {
    "group": "rubber",
-   "id": "raot",
-   "url": "https://www.raot.co.th/"
+   "id": "vra_rss2",
+   "url": "https://vra.com.vn/rss.html"
   },
   {
    "group": "rubber",
-   "id": "raot_en",
-   "url": "https://www.raot.co.th/main.php?filename=index_en"
+   "id": "gapkindo_links",
+   "url": "https://gapkindo.org/",
+   "link_re": "(news|berita|artikel|post|rss|feed)",
+   "samples": 10
   },
   {
    "group": "rubber",
-   "id": "mrb_lgm",
-   "url": "https://www.lgm.gov.my/"
+   "id": "irsg_links",
+   "url": "https://www.rubberstudy.org/welcome",
+   "link_re": "(news|press|rss|feed|statistic)",
+   "samples": 10
   },
   {
    "group": "rubber",
-   "id": "rubberboard_in",
-   "url": "https://rubberboard.gov.in/"
+   "id": "anrpc_links",
+   "url": "https://www.anrpc.org/",
+   "link_re": "(post|news|press|statist|report)",
+   "samples": 10
   },
   {
    "group": "rubber",
-   "id": "gapkindo",
-   "url": "https://gapkindo.org/"
+   "id": "mrc",
+   "url": "https://www.myrubbercouncil.com/"
   },
   {
    "group": "rubber",
-   "id": "gapkindo_feed",
-   "url": "https://gapkindo.org/feed/"
+   "id": "mrc_feed",
+   "url": "https://www.myrubbercouncil.com/feed/"
   },
   {
    "group": "rubber",
-   "id": "vra",
-   "url": "https://vra.com.vn/"
+   "id": "dosm",
+   "url": "https://www.dosm.gov.my/",
+   "link_re": "(rubber|getah|release|rss|feed)",
+   "samples": 10,
+   "list_feeds": true
   },
   {
    "group": "rubber",
-   "id": "vra_rss",
-   "url": "https://vra.com.vn/rss"
+   "id": "dosm_open",
+   "url": "https://open.dosm.gov.my/",
+   "show_body": 300
   },
   {
    "group": "rubber",
-   "id": "mpic_kpk",
-   "url": "https://www.kpk.gov.my/"
+   "id": "oae_th",
+   "url": "https://www.oae.go.th/",
+   "list_feeds": true
   },
   {
    "group": "rubber",
-   "id": "mrepc",
-   "url": "https://www.mrepc.com/"
+   "id": "raot_http",
+   "url": "http://www.raot.co.th/"
+  },
+  {
+   "group": "rubber",
+   "id": "jpx_rss",
+   "url": "https://www.jpx.co.jp/english/rss/index.html",
+   "list_feeds": true
   },
   {
    "group": "palm",
-   "id": "mpob",
-   "url": "https://mpob.gov.my/"
+   "id": "bpdp_rss_page",
+   "url": "https://www.bpdp.or.id/rss-feeds",
+   "list_feeds": true
   },
   {
    "group": "palm",
-   "id": "mpob_feed",
-   "url": "https://mpob.gov.my/feed/"
+   "id": "mpob_bepi_links",
+   "url": "https://bepi.mpob.gov.my/",
+   "link_re": "(news|index\\.php|rss|feed|monthly)",
+   "samples": 8
   },
   {
    "group": "palm",
-   "id": "mpob_bepi",
-   "url": "https://bepi.mpob.gov.my/"
-  },
-  {
-   "group": "palm",
-   "id": "mpoc",
-   "url": "https://mpoc.org.my/"
-  },
-  {
-   "group": "palm",
-   "id": "mpoc_feed",
-   "url": "https://mpoc.org.my/feed/"
-  },
-  {
-   "group": "palm",
-   "id": "gapki",
-   "url": "https://gapki.id/en/"
-  },
-  {
-   "group": "palm",
-   "id": "gapki_feed",
-   "url": "https://gapki.id/en/feed/"
-  },
-  {
-   "group": "palm",
-   "id": "gapki_id_feed",
-   "url": "https://gapki.id/feed/"
-  },
-  {
-   "group": "palm",
-   "id": "cpopc",
-   "url": "https://www.cpopc.org/"
-  },
-  {
-   "group": "palm",
-   "id": "cpopc_feed",
-   "url": "https://www.cpopc.org/feed/"
-  },
-  {
-   "group": "palm",
-   "id": "bpdp",
-   "url": "https://www.bpdp.or.id/"
-  },
-  {
-   "group": "palm",
-   "id": "kemendag",
-   "url": "https://www.kemendag.go.id/"
-  },
-  {
-   "group": "palm",
-   "id": "ditjenbun",
-   "url": "https://ditjenbun.pertanian.go.id/"
-  },
-  {
-   "group": "palm",
-   "id": "ditjenbun_feed",
-   "url": "https://ditjenbun.pertanian.go.id/feed/"
+   "id": "cpopc_body",
+   "url": "https://www.cpopc.org/",
+   "show_body": 300
   },
   {
    "group": "agri",
-   "id": "ico",
-   "url": "https://ico.org/"
+   "id": "ico_links",
+   "url": "https://ico.org/news-info/",
+   "link_re": "ico\\.org/(news|resources|[a-z0-9-]{15,})",
+   "samples": 12
   },
   {
    "group": "agri",
-   "id": "ico_feed",
-   "url": "https://ico.org/feed/"
+   "id": "ico_wp_posts",
+   "url": "https://ico.org/wp-json/wp/v2/posts?per_page=5",
+   "show_body": 300
   },
   {
    "group": "agri",
-   "id": "ico_news",
-   "url": "https://ico.org/news/"
+   "id": "conab_links",
+   "url": "https://www.gov.br/conab/pt-br/assuntos/noticias",
+   "link_re": "/conab/pt-br/assuntos/noticias/[a-z0-9-]{15,}",
+   "samples": 6
   },
   {
    "group": "agri",
-   "id": "cecafe",
-   "url": "https://www.cecafe.com.br/"
+   "id": "conab_atom",
+   "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/atom.xml"
   },
   {
    "group": "agri",
-   "id": "cecafe_feed",
-   "url": "https://www.cecafe.com.br/feed/"
+   "id": "conab_rss_lower",
+   "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/rss"
   },
   {
    "group": "agri",
-   "id": "fnc",
-   "url": "https://federaciondecafeteros.org/"
+   "id": "fao_feeds_index",
+   "url": "https://www.fao.org/feeds/",
+   "list_feeds": true
   },
   {
    "group": "agri",
-   "id": "fnc_feed",
-   "url": "https://federaciondecafeteros.org/wp/feed/"
+   "id": "fao_markets",
+   "url": "https://www.fao.org/markets-and-trade/en/",
+   "list_feeds": true
   },
   {
    "group": "agri",
-   "id": "conab_govbr_rss",
-   "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/RSS"
+   "id": "statcan_rss_index",
+   "url": "https://www.statcan.gc.ca/en/sc/rss",
+   "list_feeds": true
   },
   {
    "group": "agri",
-   "id": "conab_govbr",
-   "url": "https://www.gov.br/conab/pt-br/assuntos/noticias"
+   "id": "isosugar_links",
+   "url": "https://www.isosugar.org/",
+   "link_re": "(news|press|publication|rss|feed)",
+   "samples": 8
   },
   {
    "group": "agri",
-   "id": "mapa_govbr_rss",
-   "url": "https://www.gov.br/agricultura/pt-br/assuntos/noticias/RSS"
+   "id": "eu_agri_news",
+   "url": "https://agriculture.ec.europa.eu/news_en",
+   "list_feeds": true
   },
   {
    "group": "agri",
-   "id": "isosugar",
-   "url": "https://www.isosugar.org/"
+   "id": "eu_agri_rss",
+   "url": "https://agriculture.ec.europa.eu/rss.xml"
   },
   {
    "group": "agri",
-   "id": "unica",
-   "url": "https://unica.com.br/"
+   "id": "abares_rss",
+   "url": "https://www.agriculture.gov.au/abares/news/rss.xml"
   },
   {
    "group": "agri",
-   "id": "icac",
-   "url": "https://www.icac.org/"
-  },
-  {
-   "group": "agri",
-   "id": "fao_newsroom",
-   "url": "https://www.fao.org/newsroom/en"
-  },
-  {
-   "group": "agri",
-   "id": "fao_giews_rss",
-   "url": "https://www.fao.org/giews/reports/rss/en"
-  },
-  {
-   "group": "agri",
-   "id": "fao_giews",
-   "url": "https://www.fao.org/giews/en/"
-  },
-  {
-   "group": "agri",
-   "id": "fao_worldfood",
-   "url": "https://www.fao.org/worldfoodsituation/en/"
-  },
-  {
-   "group": "agri",
-   "id": "amis",
-   "url": "https://www.amis-outlook.org/"
-  },
-  {
-   "group": "agri",
-   "id": "ers",
-   "url": "https://www.ers.usda.gov/"
-  },
-  {
-   "group": "agri",
-   "id": "ers_rss",
-   "url": "https://www.ers.usda.gov/rss.xml"
-  },
-  {
-   "group": "agri",
-   "id": "usda_oce_wasde",
-   "url": "https://www.usda.gov/oce/commodity/wasde"
-  },
-  {
-   "group": "agri",
-   "id": "statcan_daily",
-   "url": "https://www150.statcan.gc.ca/n1/dai-quo/index-eng.htm"
-  },
-  {
-   "group": "agri",
-   "id": "eu_agri",
-   "url": "https://agriculture.ec.europa.eu/"
-  },
-  {
-   "group": "agri",
-   "id": "abares",
-   "url": "https://www.agriculture.gov.au/abares"
-  },
-  {
-   "group": "agri",
-   "id": "abares_news",
-   "url": "https://www.agriculture.gov.au/abares/news"
+   "id": "amis_links",
+   "url": "https://www.amis-outlook.org/",
+   "link_re": "(market-monitor|news|rss|feed)",
+   "samples": 6
   },
   {
    "group": "metals",
-   "id": "usgs_minerals_feed",
-   "url": "https://www.usgs.gov/news/minerals/feed"
+   "id": "usgs_nmic_news_links",
+   "url": "https://www.usgs.gov/centers/national-minerals-information-center/news",
+   "link_re": "/news/[a-z-]+/[a-z0-9-]{10,}",
+   "samples": 6
   },
   {
    "group": "metals",
-   "id": "usgs_nmic",
-   "url": "https://www.usgs.gov/centers/national-minerals-information-center"
+   "id": "usgs_mis",
+   "url": "https://www.usgs.gov/centers/national-minerals-information-center/mineral-industry-surveys",
+   "link_re": "(mis|\\.pdf|/media/files)",
+   "samples": 6
   },
   {
    "group": "metals",
-   "id": "usgs_nmic_news",
-   "url": "https://www.usgs.gov/centers/national-minerals-information-center/news"
+   "id": "usgs_science_feed",
+   "url": "https://www.usgs.gov/science-support/mineral-resources-program/news/feed"
   },
   {
    "group": "metals",
-   "id": "usgs_news_feed",
-   "url": "https://www.usgs.gov/news/feed"
+   "id": "wgc_rss",
+   "url": "https://www.gold.org/rss.xml"
   },
   {
    "group": "metals",
-   "id": "icsg",
-   "url": "https://icsg.org/"
+   "id": "wgc_news_links",
+   "url": "https://www.gold.org/news-and-events",
+   "link_re": "/news-and-events/[a-z0-9-]+/[a-z0-9-]{10,}",
+   "samples": 6,
+   "list_feeds": true
   },
   {
    "group": "metals",
-   "id": "icsg_feed",
-   "url": "https://icsg.org/feed/"
+   "id": "wpic_feed",
+   "url": "https://platinuminvestment.com/feed/"
   },
   {
    "group": "metals",
-   "id": "ilzsg",
-   "url": "https://www.ilzsg.org/"
+   "id": "wpic_links",
+   "url": "https://platinuminvestment.com/",
+   "link_re": "(news|press|platinum-quarterly|investment-research)",
+   "samples": 6
   },
   {
    "group": "metals",
-   "id": "ilzsg_feed",
-   "url": "https://www.ilzsg.org/feed/"
+   "id": "imni_links",
+   "url": "https://www.manganese.org/en",
+   "link_re": "(news|press|rss|feed)",
+   "samples": 6,
+   "list_feeds": true
   },
   {
    "group": "metals",
-   "id": "insg",
-   "url": "https://insg.org/"
+   "id": "disr_rss_xml",
+   "url": "https://www.industry.gov.au/rss.xml"
   },
   {
    "group": "metals",
-   "id": "insg_feed",
-   "url": "https://insg.org/feed/"
+   "id": "disr_news_rss",
+   "url": "https://www.industry.gov.au/news/rss"
   },
   {
    "group": "metals",
-   "id": "iea",
-   "url": "https://www.iea.org/"
+   "id": "disr_rss_page_body",
+   "url": "https://www.industry.gov.au/contact-us/rss-feeds",
+   "show_body": 600
   },
   {
    "group": "metals",
-   "id": "iea_news",
-   "url": "https://www.iea.org/news"
+   "id": "nrcan_atom",
+   "url": "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=naturalresourcescanada&type=newsreleases&sort=publishedDate&orderBy=desc&pick=20&format=atom&atomtitle=NRCan"
   },
   {
    "group": "metals",
-   "id": "iea_rss",
-   "url": "https://www.iea.org/rss/news"
+   "id": "mofcom_en_links",
+   "url": "https://english.mofcom.gov.cn/",
+   "variants": true,
+   "link_re": "/(News|news|Policies|policies|article|art)/",
+   "samples": 10
   },
   {
    "group": "metals",
-   "id": "worldbank_cmo",
-   "url": "https://www.worldbank.org/en/research/commodity-markets"
+   "id": "mofcom_en_rss",
+   "url": "http://english.mofcom.gov.cn/rss.shtml",
+   "variants": true,
+   "list_feeds": true
   },
   {
    "group": "metals",
-   "id": "worldbank_blogs",
-   "url": "https://blogs.worldbank.org/en/opendata"
+   "id": "worldbank_cmo_links",
+   "url": "https://www.worldbank.org/en/research/commodity-markets",
+   "link_re": "(pink|cmo|commodity-markets|blogs)",
+   "samples": 6
   },
   {
    "group": "metals",
-   "id": "iai",
-   "url": "https://international-aluminium.org/"
-  },
-  {
-   "group": "metals",
-   "id": "iai_feed",
-   "url": "https://international-aluminium.org/feed/"
-  },
-  {
-   "group": "metals",
-   "id": "silver_inst",
-   "url": "https://www.silverinstitute.org/"
-  },
-  {
-   "group": "metals",
-   "id": "silver_inst_feed",
-   "url": "https://www.silverinstitute.org/feed/"
-  },
-  {
-   "group": "metals",
-   "id": "wgc",
-   "url": "https://www.gold.org/"
-  },
-  {
-   "group": "metals",
-   "id": "wpic",
-   "url": "https://platinuminvestment.com/"
-  },
-  {
-   "group": "metals",
-   "id": "cobalt_inst",
-   "url": "https://www.cobaltinstitute.org/"
-  },
-  {
-   "group": "metals",
-   "id": "cobalt_inst_feed",
-   "url": "https://www.cobaltinstitute.org/feed/"
-  },
-  {
-   "group": "metals",
-   "id": "itsa_tin",
-   "url": "https://www.internationaltin.org/"
-  },
-  {
-   "group": "metals",
-   "id": "itsa_tin_feed",
-   "url": "https://www.internationaltin.org/feed/"
-  },
-  {
-   "group": "metals",
-   "id": "imni",
-   "url": "https://www.manganese.org/"
-  },
-  {
-   "group": "metals",
-   "id": "icda",
-   "url": "https://www.icdacr.com/"
-  },
-  {
-   "group": "metals",
-   "id": "worldsteel",
-   "url": "https://worldsteel.org/"
-  },
-  {
-   "group": "metals",
-   "id": "worldsteel_feed",
-   "url": "https://worldsteel.org/feed/"
-  },
-  {
-   "group": "metals",
-   "id": "au_disr",
-   "url": "https://www.industry.gov.au/"
-  },
-  {
-   "group": "metals",
-   "id": "au_req",
-   "url": "https://www.industry.gov.au/publications/resources-and-energy-quarterly"
-  },
-  {
-   "group": "metals",
-   "id": "cochilco",
-   "url": "https://www.cochilco.cl/"
-  },
-  {
-   "group": "metals",
-   "id": "mofcom_en",
-   "url": "https://english.mofcom.gov.cn/"
-  },
-  {
-   "group": "metals",
-   "id": "eia_rss_index",
-   "url": "https://www.eia.gov/tools/rssfeeds/"
+   "id": "worldbank_blogs_rss",
+   "url": "https://blogs.worldbank.org/en/rss.xml"
   }
  ]
 }

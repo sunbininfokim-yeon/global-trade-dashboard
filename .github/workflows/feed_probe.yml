@@ -32,7 +32,10 @@ jobs:
           python-version: '3.12'
       # curl_cffi reproduces a browser's TLS handshake, which tells a TLS
       # fingerprint block (Akamai Bot Manager) apart from a User-Agent rule.
-      - run: pip install --quiet curl_cffi
+      # playwright drives the runner's preinstalled Chrome (channel=chrome), so
+      # a target marked render=true runs the page's own JavaScript -- the one
+      # client a JS-challenge bot manager expects. No browser download.
+      - run: pip install --quiet curl_cffi playwright
       - run: python tools/ops/feed_probe.py --json-out feed_probe.json
       - uses: actions/upload-artifact@v4
         with:
