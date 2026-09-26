@@ -23,6 +23,10 @@ CONTEXT_TERMS = [
     "bushel", "bushels", "barrel", "barrels", "metric", "mine", "mining",
     "smelter", "refinery", "refined", "concentrate", "reserves", "forecast",
     "estimate", "estimates", "outlook", "balance sheet", "consumption",
+    "statistics", "statistical", "surplus", "deficit", "tariff", "tariffs",
+    "traded", "trading", "commodity exchange", "futures",
+    "levy", "export ban", "export duty", "export tax", "quota", "quotas",
+    "pungutan", "bea keluar", "harga referensi",
     "생산", "수확", "수출", "수입", "재고", "가격", "전망", "출하",
     "produção", "producao", "safra", "colheita", "exportação", "exportacao",
     "estimada", "estimativa", "produccion", "producción",
@@ -94,8 +98,11 @@ class CommodityTagger:
             excl[key] = compile_terms(meta.get("not_when") or [])
         return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl)
 
+    def has_context(self, text: str) -> bool:
+        return any(p.search(text) for p in self.context_pats)
+
     def tag(self, text: str) -> List[str]:
-        has_context = any(p.search(text) for p in self.context_pats)
+        has_context = self.has_context(text)
         hits = []
         for key, pats in self.patterns.items():
             own = text
@@ -203,7 +210,13 @@ def tag_report(
     both = f"{title}\n{summary}"
 
     commodities = commodity_tagger.tag(both)
-    if not commodities:
+    # A source's prior (ANRPC is about rubber, ITA about tin) applies only to
+    # a market story. Without that, every speech, workshop and membership
+    # notice a commodity body posts filed as a report on the commodity -- a
+    # secretary general's forum keynote was sitting on the rubber board.
+    # Named reports that carry no market word ("Monthly NR Statistical
+    # Report") still land through the series catalog (build.py).
+    if not commodities and commodity_tagger.has_context(both):
         commodities = [c for c in commodity_hint if c in commodity_tagger.patterns]
 
     in_title = country_tagger.tag(_strip_false_country_collocations(title))

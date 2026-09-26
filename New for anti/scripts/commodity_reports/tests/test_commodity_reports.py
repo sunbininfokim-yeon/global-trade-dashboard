@@ -461,6 +461,33 @@ class CarryOverTests(unittest.TestCase):
         self.assertFalse(status[0]["ok"])
 
 
+class SourcePriorNeedsAMarketStoryTests(unittest.TestCase):
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def tagged(self, title, summary=""):
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=["rubber"])
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        return t.commodities
+
+    def test_event_news_from_a_rubber_body_is_not_a_rubber_report(self):
+        self.assertEqual(self.tagged(
+            "Dr. suttipong angthong secretary general of the association of natural rubber producing "
+            "countries anrpc took center stage as a distinguished speaker at the prestigious world "
+            "elastomer technology and engineering forum wetef held in shanghai"), [])
+        self.assertEqual(self.tagged("Anrpc strengthens global engagement at irgce 2026"), [])
+
+    def test_market_news_and_named_reports_still_land(self):
+        self.assertEqual(self.tagged("Anrpc releases monthly nr statistical report july 2026"), ["rubber"])
+        self.assertEqual(self.tagged("Thailand to cut exports under new AETS quota"), ["rubber"])
+        tin = tag_report(title="Tin to be traded on Indonesia's new commodity exchange", summary="",
+                         commodity_tagger=self.commodity, country_tagger=self.country, commodity_hint=["tin"])
+        self.assertEqual(tin.commodities, ["tin"])
+
+
 class FirstSeenTests(unittest.TestCase):
     def test_first_seen_is_set_then_kept_across_builds(self):
         import json as _json
