@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T13:02:43.014257+00:00",
+  "generated_at": "2026-09-26T13:05:29.008112+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 22,
-    "sources_failed": 5,
-    "raw_items": 395,
-    "scored": 159,
-    "published": 115,
+    "sources_ok": 24,
+    "sources_failed": 3,
+    "raw_items": 441,
+    "scored": 181,
+    "published": 135,
     "commodities": 22,
-    "buckets": 42
+    "buckets": 65
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -126,10 +126,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
-      "mode": "live"
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live",
+      "note": "45 list pages, 43 reports linked, 36 read, 0 already known"
     },
     {
       "source_id": "my_mpob",
@@ -591,6 +592,40 @@
     }
   },
   "index": {
+    "sugar": {
+      "COL": [
+        "4bd4def13588cc0a"
+      ],
+      "USA": [
+        "21e8e31c7b207b51"
+      ]
+    },
+    "cotton": {
+      "CHN": [
+        "b7b8e9c3c1038c73"
+      ],
+      "PAK": [
+        "ff085c358e1c8514"
+      ],
+      "_global": [
+        "0eb0404d29d2bbc2"
+      ],
+      "TUR": [
+        "c54d5583ad67060c"
+      ],
+      "MEX": [
+        "704821871273f761"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "094f2c679d643322",
+        "d2560303da2802d2",
+        "e4530ccde436c92d",
+        "82ad0c3c992ec514"
+      ]
+    },
     "oil": {
       "USA": [
         "cfe32235018b6add",
@@ -614,12 +649,12 @@
       "MYS": [
         "97be7c6c6195937a",
         "9935e13cee618834",
-        "12ea40a375a50e2e",
         "294d988a0c7a4c17",
         "ade02dfd01340322",
         "a26131708db86470",
         "bbffeaa2f5411708",
-        "99ca28dd19b9f061"
+        "99ca28dd19b9f061",
+        "0ac19de06b45b2cf"
       ],
       "IDN": [
         "3547f9608d850c98",
@@ -629,7 +664,110 @@
         "f8bf20af564959e9",
         "7e2d9eaa2d937e0e",
         "9b3aacef7418cd57",
-        "4e43259f3f0f4b15"
+        "3038b0ed9276919c"
+      ]
+    },
+    "soybeans": {
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ],
+      "_global": [
+        "1e39f84cf71c2d58",
+        "8f3cba277d1d8f7f"
+      ]
+    },
+    "rice": {
+      "PHL": [
+        "71739cda84d2ebd6"
+      ],
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "THA": [
+        "eb8f3491f8c46070"
+      ],
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "USA": [
+        "2c8f727be89c0de5",
+        "e4530ccde436c92d",
+        "eb08bb539c63def3"
+      ],
+      "BRA": [
+        "e26dc58eafa42224",
+        "e65bffd316bf9313",
+        "90caf018877f574b"
+      ]
+    },
+    "corn": {
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "ARG": [
+        "dcc6cf91ba76aab6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "3ff8c2dd8b700c92"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ],
+      "ESP": [
+        "b736550c463bc772"
+      ],
+      "BRA": [
+        "7390cf9f524fb034",
+        "6a2f69a13bf9ae19",
+        "b29e7d11bb4e97c1",
+        "a0f50331005b9402"
+      ]
+    },
+    "wheat": {
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "d6be49771c7e2707"
+      ],
+      "USA": [
+        "54cc3c274cf90c25",
+        "44ef3d9e9fba437f",
+        "06cf84727ec466c3",
+        "82a9272720c2cdfb",
+        "d9459a6be37e5e91",
+        "389d4a4328f23545",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d"
       ]
     },
     "copper": {
@@ -717,40 +855,6 @@
         "f8aa4f64781b6480"
       ]
     },
-    "corn": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ],
-      "BRA": [
-        "7390cf9f524fb034",
-        "6a2f69a13bf9ae19",
-        "b29e7d11bb4e97c1",
-        "a0f50331005b9402"
-      ]
-    },
-    "soybeans": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ],
-      "_global": [
-        "1e39f84cf71c2d58",
-        "8f3cba277d1d8f7f"
-      ]
-    },
     "lithium": {
       "USA": [
         "44e05f03eab98000"
@@ -770,47 +874,19 @@
         "d09ef02fa55cc52b"
       ]
     },
-    "wheat": {
-      "USA": [
-        "54cc3c274cf90c25",
-        "44ef3d9e9fba437f",
-        "06cf84727ec466c3",
-        "82a9272720c2cdfb",
-        "d9459a6be37e5e91",
-        "389d4a4328f23545",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d"
-      ]
-    },
-    "cotton": {
-      "USA": [
-        "094f2c679d643322",
-        "d2560303da2802d2",
-        "e4530ccde436c92d",
-        "82ad0c3c992ec514"
-      ]
-    },
-    "rice": {
-      "USA": [
-        "2c8f727be89c0de5",
-        "e4530ccde436c92d",
-        "eb08bb539c63def3"
+    "coffee": {
+      "CHN": [
+        "8566a0485af28101",
+        "62ac4be598c099c2"
       ],
       "BRA": [
-        "e26dc58eafa42224",
-        "e65bffd316bf9313",
-        "90caf018877f574b"
+        "11ac17f1a9aa9e08",
+        "bcd497516af1f0b1"
       ]
     },
     "nickel": {
       "CAN": [
         "9a22d2cdf0982434"
-      ]
-    },
-    "coffee": {
-      "BRA": [
-        "11ac17f1a9aa9e08",
-        "bcd497516af1f0b1"
       ]
     },
     "gold": {
@@ -824,11 +900,6 @@
     "zinc": {
       "CAN": [
         "929e1ee5c8475871"
-      ]
-    },
-    "sugar": {
-      "USA": [
-        "21e8e31c7b207b51"
       ]
     },
     "silver": {
@@ -858,6 +929,125 @@
     }
   },
   "items": [
+    {
+      "id": "4bd4def13588cc0a",
+      "title": {
+        "original": "Colombia: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Colombia's fuel ethanol production for 2026 is forecast to fall 10 percent to 400 million liters (ML) as sugar mills reallocate a larger share of cane toward...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/colombia-biofuels-annual",
+      "published_at": "2026-09-24T16:36:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "sugar"
+      ],
+      "countries": [
+        "COL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 5.451,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b7b8e9c3c1038c73",
+      "title": {
+        "original": "China: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post slightly lowered its forecast for MY 2026/27 cotton production to 7.12 million metric tons (MMT) or 32.7 million bales, a decrease of 5.6 percent from its...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-cotton-and-products-update",
+      "published_at": "2026-09-03T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.422,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "ff085c358e1c8514",
+      "title": {
+        "original": "Pakistan: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Pakistan’s 2026/27 cotton harvested area estimate is lowered to 1.85 million hectares, primarily due to a decline in Punjab province driven in part by lower...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/pakistan-cotton-and-products-update",
+      "published_at": "2026-09-02T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "PAK"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.355,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0eb0404d29d2bbc2",
+      "title": {
+        "original": "Senegal: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
+      "published_at": "2026-09-17T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.054,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure"
+      ]
+    },
     {
       "id": "cfe32235018b6add",
       "title": {
@@ -941,9 +1131,249 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.871,
+      "importance": 3.87,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "71739cda84d2ebd6",
+      "title": {
+        "original": "Philippines: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Manila lowers its milled rice production forecast and maintains its consumption forecast for Marketing Year 2026/27, as a moderate to strong El Niño and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/philippines-grain-and-feed-update",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "PHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e08bde069abdfd83",
+      "title": {
+        "original": "Mexico: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Mexico’s corn, rice, and sorghum production are forecast to decline in marketing year 2026/27, pressured by weak profitability, elevated input costs, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/mexico-grain-and-feed-update",
+      "published_at": "2026-09-23T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "6e3880b1a989890a",
+      "title": {
+        "original": "China: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.772,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "eb8f3491f8c46070",
+      "title": {
+        "original": "Thailand: Grain and Feed Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Bangkok forecasts MY 2026/27 rice production, down 2 percent from MY 2025/26 to 20.3 million metric tons (MMT), as tighter water supplies and an emerging El...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-grain-and-feed-monthly",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "THA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.772,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "dcc6cf91ba76aab6",
+      "title": {
+        "original": "Argentina: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s fuel ethanol production is forecast to reach a record 1.35 billion liters in 2026, driven by record domestic consumption, additional corn-based...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/argentina-biofuels-annual",
+      "published_at": "2026-08-20T15:59:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.661,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "c54d5583ad67060c",
+      "title": {
+        "original": "Türkiye: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Turkish cotton production in Marketing Year (MY) 2026/27 is projected to decrease to 495,000 metric tons (MT) or 2.27 million bales due to smaller planting area...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-cotton-and-products-update",
+      "published_at": "2026-09-02T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.658,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9a2e551991dc06e6",
+      "title": {
+        "original": "Bangladesh: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "For MY 2026/27, Post forecasts higher rice imports following decreased production of aus and aman season rice. Post lowers its wheat import forecast to 6.6...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/bangladesh-grain-and-feed-update",
+      "published_at": "2026-09-08T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "rice"
+      ],
+      "countries": [
+        "BGD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.641,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
         "country_in_text"
       ]
     },
@@ -1000,10 +1430,40 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.381,
+      "importance": 3.38,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "704821871273f761",
+      "title": {
+        "original": "Mexico: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post forecasts marketing year (MY) 2026/27 cotton production at 0.87 million 480-lb bales, a 32 percent increase. While production remains at historic lows...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/mexico-cotton-and-products-update",
+      "published_at": "2026-08-27T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.357,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
         "country_in_text"
       ]
     },
@@ -1033,6 +1493,66 @@
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
+      ]
+    },
+    {
+      "id": "6269fa1eda293c5a",
+      "title": {
+        "original": "India: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
+      "published_at": "2026-09-03T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.653,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "3038b0ed9276919c",
+      "title": {
+        "original": "Indonesia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Indonesia's transition to the B50 biodiesel mandate, which took effect in July 2026, is projected to raise domestic palm oil consumption by 11 percent to 25.3...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/indonesia-oilseeds-and-products-update",
+      "published_at": "2026-08-05T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.649,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
       ]
     },
     {
@@ -1143,6 +1663,37 @@
       "reasons": [
         "has_figure",
         "revision_language"
+      ]
+    },
+    {
+      "id": "088f09f9aa8eb7c7",
+      "title": {
+        "original": "Ukraine: Grain and Feed Quarterly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "This report contains updated estimates for marketing year (MY) 2025/26 and MY2026/27 for wheat, corn, barley, and rye. Increased MY2026/27 production areas and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/ukraine-grain-and-feed-quarterly",
+      "published_at": "2026-08-05T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn"
+      ],
+      "countries": [
+        "UKR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.396,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
+        "country_in_text"
       ]
     },
     {
@@ -1286,9 +1837,38 @@
       "country_source": "source_default",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 1.982,
+      "importance": 1.981,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND"
+      ]
+    },
+    {
+      "id": "3ff8c2dd8b700c92",
+      "title": {
+        "original": "Kenya: Dry Weather Decimates Kenyan Harvest",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Nairobi is downgrading Kenya’s marketing year 2026/27 corn production forecast by 51 percent to 2.2 million metric tons after a severe mid-year dry period...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/kenya-dry-weather-decimates-kenyan-harvest",
+      "published_at": "2026-08-28T07:27:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.883,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
       ]
     },
     {
@@ -1369,6 +1949,34 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 1.86,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "d6be49771c7e2707",
+      "title": {
+        "original": "Kenya: Barley - The Alternative Lifeline for Kenyan Wheat Farmers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Kenyan wheat farmers are increasingly switching to barley to escape high costs, rigid pricing, and import competition. The transition is seamless because both...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/kenya-barley-alternative-lifeline-kenyan-wheat-farmers",
+      "published_at": "2026-09-15T09:09:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.799,
       "reasons": [
         "country_in_text"
       ]
@@ -1767,6 +2375,63 @@
       ]
     },
     {
+      "id": "b736550c463bc772",
+      "title": {
+        "original": "European Union: EU Corn September Update 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The EU's MY 2026/27 corn crop faces steep downward revisions across Western and Central Europe due to heat and drought. Irrigation in Spain and Portugal, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/european-union-eu-corn-september-update-2026",
+      "published_at": "2026-09-10T09:42:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ESP"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.646,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0ac19de06b45b2cf",
+      "title": {
+        "original": "Malaysia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia's palm oil sector is expected to face a challenging production environment in Marketing Year (MY) 2026/27 as industry stakeholders monitor the...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/malaysia-oilseeds-and-products-update",
+      "published_at": "2026-07-01T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.567,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
       "id": "54cc3c274cf90c25",
       "title": {
         "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
@@ -1912,6 +2577,34 @@
       ]
     },
     {
+      "id": "8566a0485af28101",
+      "title": {
+        "original": "China: Shanghai Fuels China's Growing Coffee Culture",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Shanghai has a reputation as one of the world's leading coffee cities. In 2025, the city surpassed 10,336 coffee shops, with per capita annual consumption...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-shanghai-fuels-chinas-growing-coffee-culture",
+      "published_at": "2026-08-31T10:57:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.406,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "b7997f3d390d6fb8",
       "title": {
         "original": "Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería",
@@ -2022,7 +2715,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.348,
+      "importance": 1.347,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2495,32 +3188,6 @@
       ]
     },
     {
-      "id": "12ea40a375a50e2e",
-      "title": {
-        "original": "PALMS 2030",
-        "original_lang": "ms",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://mpob.gov.my/2026/09/palms-2030/",
-      "published_at": "2026-09-22T08:27:55+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.282,
-      "reasons": []
-    },
-    {
       "id": "44ef3d9e9fba437f",
       "title": {
         "original": "NASS Delays Weekly Slaughter Release",
@@ -2962,6 +3629,34 @@
       "reasons": []
     },
     {
+      "id": "62ac4be598c099c2",
+      "title": {
+        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
+      "published_at": "2026-08-14T07:26:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.139,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "671ae2ca9456c281",
       "title": {
         "original": "Opini Publik: Lebah di Bawah Janur Mapan sebagai Simfoni Hijau Masa Depan Perkelapaan Indonesia",
@@ -3189,7 +3884,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.978,
+      "importance": 0.977,
       "reasons": []
     },
     {
@@ -3453,34 +4148,6 @@
       "importance": 0.776,
       "reasons": [
         "has_figure"
-      ]
-    },
-    {
-      "id": "4e43259f3f0f4b15",
-      "title": {
-        "original": "Opini Publik: Pluralitas & Sawit: Harmoni Sosial dan Ekonomi Keberlanjutan Kalimantan Barat",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/opini-publik-pluralitas-sawit-harmoni-sosial-dan-ekonomi-keberlanjutan-kalimantan-barat",
-      "published_at": "2026-08-12T06:07:30+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.773,
-      "reasons": [
-        "country_in_text"
       ]
     },
     {
