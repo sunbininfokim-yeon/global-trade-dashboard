@@ -56,6 +56,42 @@ class Parsers(unittest.TestCase):
         self.assertEqual(jps.parse_cftc_yen(CFTC_ROWS), [("2026-09-15", 237951 - 117592.0), ("2026-09-22", 192274 - 120292.0)])
 
 
+CPI_CSV = """類・品目,総合,食料,生鮮食品を除く総合,生鮮食品及びエネルギーを除く総合
+Group/Item,All items,Food,"All items, less fresh food","All items, less fresh food and energy"
+類・品目符号(Group/Item code),0001,0002,0161,0165
+ウエイト(Weight),3543757090,975803165,3300000000,2900000000
+202512,100.861,101.5,100.5,100.2
+202601,101.000,101.9,100.9,100.4
+202608,102.179,103.804,102.047,101.9
+"""
+
+
+class StatBureauCpi(unittest.TestCase):
+    def test_columns_are_picked_by_their_english_names(self):
+        d = jps.parse_stat_cpi_csv(CPI_CSV, jps.CPI_ITEMS)
+        self.assertEqual(d["All items, less fresh food"][-1], ("2026-08-01", 102.047))
+        self.assertEqual(d["All items, less fresh food and energy"][0], ("2025-12-01", 100.2))
+
+    def test_a_missing_or_repeated_column_raises(self):
+        with self.assertRaises(ValueError):
+            jps.parse_stat_cpi_csv(CPI_CSV, ("All items, less imputed rent",))
+        twice = CPI_CSV.replace("Food,", "All items,").replace('"All items, less fresh food",', "All items,")
+        with self.assertRaises(ValueError):
+            jps.parse_stat_cpi_csv(twice, ("All items",))
+
+    def test_yoy_uses_the_old_base_before_the_switch_and_the_new_base_after(self):
+        old = [("2024-12-01", 100.0), ("2025-12-01", 102.0), ("2026-01-01", 110.0), ("2025-01-01", 100.0)]
+        new = [("2025-01-01", 50.0), ("2026-01-01", 51.0)]
+        out = dict(jps.chained_yoy(old, new, switch="2026-01-01"))
+        self.assertAlmostEqual(out["2025-12-01"], 2.0)          # old base: 102 / 100
+        self.assertAlmostEqual(out["2026-01-01"], 2.0)          # new base: 51 / 50, not the old base's 10%
+        self.assertNotIn("2025-01-01", out)                     # no prior-year figure on the old base
+
+    def test_without_an_old_base_the_yoy_starts_at_the_switch(self):
+        out = jps.chained_yoy([], [("2025-06-01", 100.0), ("2026-06-01", 101.7)], switch="2026-01-01")
+        self.assertEqual([d for d, _ in out], ["2026-06-01"])
+
+
 class Transforms(unittest.TestCase):
     def test_ratio_uses_the_months_quarter_and_the_latest_quarter_after_it(self):
         monthly = [("2026-03-01", 600.0), ("2026-04-01", 640.0), ("2026-07-01", 650.0), ("2026-08-01", 660.0)]
@@ -104,7 +140,7 @@ class Series(unittest.TestCase):
         for spec_id in jps.SPECS:
             self.assertIn(spec_id, {"boj_total_assets", "boj_assets_yoy", "boj_assets_gdp", "boj_etf", "boj_jreit", "call_rate", "m2_vs_2019",
                                     "cgpi", "current_account", "gdp_yoy", "gdp_qoq", "fx_reserves", "bond_2y", "bond_10y", "bond_30y",
-                                    "spread_10y2y", "spread_30y10y", "yen_imm_net"})
+                                    "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi"})
 
 
 class Apply(unittest.TestCase):

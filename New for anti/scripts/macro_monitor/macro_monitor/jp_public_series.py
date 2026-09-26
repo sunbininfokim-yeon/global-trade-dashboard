@@ -1,6 +1,8 @@
 """Observed public series for the Japan indicators that were still fixture_synth.
 
 Sources, all keyless:
+  - Statistics Bureau of Japan: the monthly CPI files (national and Tokyo ku-area) published as CSV
+    on stat.go.jp -- no e-Stat API key needed;
   - Bank of Japan Time-Series Data Search API (stat-search.boj.or.jp): the BOJ's own accounts, the
     call rate, M2, the producer price index, the balance of payments;
   - Ministry of Finance: the daily JGB yield curve (jgbcme_all.csv);
@@ -10,8 +12,8 @@ Sources, all keyless:
 Same contract as us_public_series.py: every value is a published observation or arithmetic on one,
 a series that cannot be read leaves the previous card, nothing is estimated.
 
-What is deliberately not here, and why: PMIs and CDS are licensed data; consumer prices (national
-core, core-core, Tokyo), wages, the job-openings ratio need the e-Stat API (a free appId, not set up);
+What is deliberately not here, and why: PMIs and CDS are licensed data; wages and the job-openings
+ratio need the e-Stat API (a free appId, not set up) or a spreadsheet parser;
 TOPIX, Nikkei VI and foreign equity flows have no free feed that was found; the MOF publishes the
 intervention detail quarterly, so a month it has not covered yet cannot be told apart from a month
 with no intervention.
@@ -35,6 +37,7 @@ BOJ_API = "https://www.stat-search.boj.or.jp/api/v1/getDataCode"
 MOF_JGB = "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/historical/jgbcme_all.csv"
 MOF_JGB_MONTH = "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv"     # the current month, daily
 CFTC_YEN = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
+STAT_CPI = "https://www.stat.go.jp/data/cpi/{base}/csv/{kind}{base}aa.csv"     # kind: zmi = national, tmi = Tokyo ku-area
 UA = "macro-monitor/1.0 (+https://github.com/sunbininfokim-yeon/global-trade-dashboard)"
 
 # display formats the shared module does not have
@@ -162,6 +165,59 @@ def fetch_cftc_yen(weeks: int = 560) -> Points:
 
 
 # --------------------------------------------------------------------------
+# Statistics Bureau: CPI (index levels by month, one column per item)
+# --------------------------------------------------------------------------
+
+def parse_stat_cpi_csv(text: str, items: tuple[str, ...]) -> dict[str, Points]:
+    """Monthly index levels for the named items (English header row). The file is one row per month
+    (YYYYMM) and one column per item; a name that is missing or appears more than once among the
+    columns raises rather than picking one."""
+    rows = list(csv.reader(io.StringIO(text)))
+    hdr = next((r for r in rows if r and r[0].startswith("Group/Item")), None)
+    if hdr is None:
+        raise ValueError("no 'Group/Item' header row in the CPI file")
+    idx: dict[str, int] = {}
+    for name in items:
+        hits = [i for i, h in enumerate(hdr) if h.strip() == name]
+        if len(hits) != 1:
+            raise ValueError(f"CPI column {name!r} found {len(hits)} times")
+        idx[name] = hits[0]
+    out: dict[str, Points] = {n: [] for n in items}
+    for r in rows:
+        if r and len(r[0]) == 6 and r[0].isdigit():
+            for name, i in idx.items():
+                if i < len(r) and r[i].strip():
+                    out[name].append((f"{r[0][:4]}-{r[0][4:]}-01", float(r[i])))
+    for name, pts in out.items():
+        if not pts:
+            raise ValueError(f"CPI column {name!r} has no rows")
+    return out
+
+
+def fetch_stat_cpi(kind: str, base: int, items: tuple[str, ...]) -> dict[str, Points]:
+    text = _get(STAT_CPI.format(base=base, kind=kind), timeout=90).decode("cp932", errors="replace")
+    return parse_stat_cpi_csv(text, items)
+
+
+def chained_yoy(old_base: Points, new_base: Points, *, switch: str) -> Points:
+    """Year-on-year change (%) of the index. Up to the month before `switch` it is taken on the old
+    base; from `switch` on it is taken on the new base, as the Bureau does after a re-basing. The
+    new-base file starts at `switch`'s previous year, so it can give a YoY from `switch` on."""
+    old = {d: v for d, v in old_base}
+    new = {d: v for d, v in new_base}
+    out: Points = []
+    for d in sorted(old):
+        prev = f"{int(d[:4]) - 1}-{d[5:]}"
+        if d < switch and prev in old:
+            out.append((d, (old[d] / old[prev] - 1) * 100))
+    for d in sorted(new):
+        prev = f"{int(d[:4]) - 1}-{d[5:]}"
+        if d >= switch and prev in new:
+            out.append((d, (new[d] / new[prev] - 1) * 100))
+    return out
+
+
+# --------------------------------------------------------------------------
 # Transforms
 # --------------------------------------------------------------------------
 
@@ -245,18 +301,26 @@ SPECS: dict[str, Spec] = {s.id: s for s in [
          "mof:jgbcme", _urls(_MOF_PAGE), "daily"),
     Spec("spread_30y10y", "monthly", "bp", "bp0", "30년물 − 10년물 수익률(bp). 재무성 공표 수익률에서 같은 날짜끼리 뺐습니다.",
          "mof:jgbcme", _urls(_MOF_PAGE), "daily"),
+    Spec("core_cpi_jp", "monthly", "%", "pct1", "전국 소비자물가 '생선식품 제외 종합'(근원)의 전년 같은 달 대비 상승률입니다. 총무성 통계국 공표 지수에서 계산했습니다. 2025년 12월까지는 2020년 기준, 2026년 1월부터는 2025년 기준 지수를 씁니다(통계국이 기준 개편 후 그렇게 비교합니다).",
+         "stat.go.jp:cpi", _urls("https://www.stat.go.jp/data/cpi/index.html"), "monthly"),
+    Spec("core_core_cpi", "monthly", "%", "pct1", "전국 소비자물가 '생선식품 및 에너지 제외 종합'(근원-근원)의 전년 같은 달 대비 상승률입니다. 기준 이음은 근원 CPI와 같습니다.",
+         "stat.go.jp:cpi", _urls("https://www.stat.go.jp/data/cpi/index.html"), "monthly"),
+    Spec("tokyo_cpi", "monthly", "%", "pct1", "도쿄 23구 '생선식품 제외 종합'의 전년 같은 달 대비 상승률입니다(월간 확정치; 월말에 먼저 나오는 중순 속보가 아닙니다). 통계국이 2025년 기준 파일만 공개해서 2026년 1월부터의 값만 있습니다.",
+         "stat.go.jp:cpi", _urls("https://www.stat.go.jp/data/cpi/index.html"), "monthly", label_ko="도쿄 근원 CPI(생선식품 제외) YoY"),
     Spec("yen_imm_net", "weekly", "k_contracts", "k0s", "CME 엔 선물의 비상업(투기) 순포지션 = 롱 − 숏(천 계약). CFTC 주간 보고서(화요일 기준, 금요일 공표).",
          "cftc:097741", _urls("https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"), "weekly"),
 ]}
 
 FRED_IDS = ("JPNRGDPEXP", "JPNNGDP", "TRESEGJPM052N")
+CPI_ITEMS = ("All items, less fresh food", "All items, less fresh food and energy")
+CPI_REBASE = "2026-01-01"          # the 2025-base index gives the year-on-year from this month
 
 
 class Sources:
     """Lazy, cached fetchers so one run reads each upstream series once."""
 
-    def __init__(self, *, boj=fetch_boj, fred=ups.fetch_fred, mof=fetch_mof_jgb, cftc=fetch_cftc_yen):
-        self._boj, self._fred, self._mof, self._cftc = boj, fred, mof, cftc
+    def __init__(self, *, boj=fetch_boj, fred=ups.fetch_fred, mof=fetch_mof_jgb, cftc=fetch_cftc_yen, stat_cpi=fetch_stat_cpi):
+        self._boj, self._fred, self._mof, self._cftc, self._stat_cpi = boj, fred, mof, cftc, stat_cpi
         self._cache: dict[Any, Any] = {}
 
     def _memo(self, key, fn: Callable[[], Any]):
@@ -275,6 +339,9 @@ class Sources:
 
     def yen(self) -> Points:
         return self._memo("cftc", self._cftc)
+
+    def cpi(self, kind: str, base: int) -> dict[str, Points]:
+        return self._memo(("cpi", kind, base), lambda: self._stat_cpi(kind, base, CPI_ITEMS))
 
 
 def series_for(spec_id: str, s: Sources) -> Points:
@@ -312,6 +379,12 @@ def series_for(spec_id: str, s: Sources) -> Points:
         return spread_bp(month_last(s.jgb()["30Y"]), month_last(s.jgb()["10Y"]))
     if spec_id == "yen_imm_net":
         return ups.scale(s.yen(), 1e-3)
+    if spec_id in ("core_cpi_jp", "core_core_cpi"):
+        item = CPI_ITEMS[0] if spec_id == "core_cpi_jp" else CPI_ITEMS[1]
+        return chained_yoy(s.cpi("zmi", 2020)[item], s.cpi("zmi", 2025)[item], switch=CPI_REBASE)
+    if spec_id == "tokyo_cpi":
+        tokyo = s.cpi("tmi", 2025)[CPI_ITEMS[0]]
+        return chained_yoy([], tokyo, switch=CPI_REBASE)
     raise KeyError(spec_id)
 
 
