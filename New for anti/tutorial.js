@@ -19,8 +19,8 @@
 
   // A screen we have no screenshot of yet: send the reader to the live page
   // instead of showing an empty frame.
-  const noShot = (href, name) => `
-    <a class="tut-noshot" href="${href}" target="_blank" rel="noopener">
+  const noShot = (href, name, cls = '') => `
+    <a class="tut-noshot ${cls}" href="${href}" target="_blank" rel="noopener">
       <span class="tut-noshot-name">${name}</span>
       <span class="tut-noshot-cta">실제 화면에서 보기 ↗</span>
     </a>`;
@@ -28,8 +28,8 @@
   const card = (label, body) => `
     <div class="tut-card"><div class="tut-label">${label}</div>${body}</div>`;
 
-  const steps = (items) => `
-    <ol class="tut-steps">${items.map(([t, d]) => `
+  const steps = (items, cls = '') => `
+    <ol class="tut-steps ${cls}">${items.map(([t, d]) => `
       <li><div><h4>${t}</h4><p>${d}</p></div></li>`).join('')}
     </ol>`;
 
@@ -64,36 +64,40 @@
         <h3>즐겨찾기 → 메일로 받기</h3>
         ${steps([
           ['로그인', '헤더 오른쪽에서 가입·로그인합니다.'],
-          ['리포트에서 ★ 누르기', '아래 무역 흐름의 산지 리포트 카드에서 별을 누르면 담깁니다.'],
-          ['마이페이지에서 확인', '출처별로 모입니다. 항목별로 메일만 따로 끌 수 있습니다.'],
-          ['변경되면 메일 수신', '계정 단위로 전체 일시정지도 가능합니다.'],
-        ])}
+          ['리포트에서 ★', '아래 산지 리포트 카드에서 별을 누르면 담깁니다.'],
+          ['마이페이지에서 확인', '출처별로 모입니다. 항목별로 메일만 끌 수 있습니다.'],
+          ['바뀌면 메일 수신', '계정 단위 전체 일시정지도 됩니다.'],
+        ], 'tut-steps-4')}
       </div>
 
       <div class="tut-rule"></div>
 
-      ${sub('원자재 무역 흐름', '원유·LNG·밀 같은 품목을 고르면 수출국에서 수입국으로 가는 흐름선이 지도 위에 그려집니다. 기준은 UN Comtrade의 <b>최신 연간 통계</b>이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다. 나라를 고르면 월별 데이터가 있는 경우 연간·월별을 바꿔 볼 수 있습니다.')}
+      ${sub('원자재 무역 흐름', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 지도 위에 그려집니다. 기준은 UN Comtrade의 <b>최신 연간 통계</b>이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다. 나라를 고르면 월별 데이터가 있는 경우 연간·월별을 바꿔 볼 수 있습니다.')}
       <div class="tut-block">
-        ${card('TRADE FLOWS · 원유', `${noShot('/oil', '원유 무역 흐름 지도')}
-          <h4>흐름선 읽는 법</h4><p>선의 굵기와 밝기가 물동량(낮음·중간·높음)입니다. 왼쪽에 글로벌 무역량·최대 수출국과 주요 수출국·수입국 순위가 붙고, 주황색 나라는 수출 제한이 걸린 곳입니다. 나라에 마우스를 올리면 교역량이, 누르면 그 나라 노선만 강조되며, 배경을 누르면 처음으로 돌아갑니다.</p>`)}
+        ${card('TRADE FLOWS · 밀', `${noShot('/wheat', '밀 무역 흐름 지도', 'tut-noshot-wide')}
+          <div class="tut-facts">
+            <p><b>굵기·밝기</b> 물동량 (낮음·중간·높음)</p>
+            <p><b>주황색 나라</b> 수출 제한이 걸린 곳</p>
+            <p><b>올리면</b> 교역량 · <b>누르면</b> 그 나라 노선만 · <b>배경</b> 처음으로</p>
+          </div>`)}
       </div>
-      <div class="tut-block tut-three">
-        ${card('ENERGY · 4', chips(['원유', '천연가스', '석탄 (연료탄)', '석탄 (원료탄)'], ['원유', '천연가스']))}
-        ${card('METALS · 16', chips(['금', '은', '백금족', '구리', '알루미늄', '아연', '주석', '납', '니켈', '코발트', '리튬', '흑연', '희토류', '철광석', '망간', '크롬']))}
-        ${card('AGRICULTURE · 5', `${chips(['밀', '옥수수', '대두', '설탕', '커피'])}
-          <p class="tut-fine">농산물 메뉴 맨 위의 '작황 모니터'가 위 두 화면입니다.</p>`)}
+      <div class="tut-block">
+        <div class="tut-strip">
+          <p><b>에너지 4</b> 원유 · 천연가스 · 석탄 2종</p>
+          <p><b>금속 16</b> 금 · 은 · 구리 · 니켈 · 리튬 · 희토류 …</p>
+          <p><b>농산물 5</b> 밀 · 옥수수 · 대두 · 설탕 · 커피</p>
+        </div>
       </div>
 
       <div class="tut-block">
         <h3>나라를 누르면 갈라지는 두 갈래</h3>
-        <div class="tut-split">
-          ${card('RSS REPORTS · 원유 × 미국', `<h4>산지 리포트</h4>
-            <p>그 품목·나라에 연결된 기관 리포트가 있으면 오른쪽 대시보드가 열립니다. 미국 원유라면 에너지정보청(EIA) 단기 에너지 전망 같은 발표가 뜨고, 제목을 누르면 원문으로 갑니다.</p>
-            ${shot('/oil', 'oil-reports.webp', '미국 원유 주요 보고서 카드', 'tut-shot-tall')}`)}
-          <div class="tut-fork" aria-hidden="true">↔</div>
-          ${card('CONCENTRATION', `<h4>병목망 집중도</h4>
-            <p>그 나라가 실제로 기대는 방향(수입이면 공급처, 수출이면 판로)으로 상위 3개국 비중 CR3와 HHI를 계산합니다. 거버넌스 가중치를 넣지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>
-            ${noShot('/oil', '집중도 패널')}`)}
+        <div class="tut-two">
+          ${card('RSS REPORTS · 원유 × 미국', `${shot('/oil', 'oil-reports.webp', '미국 원유 주요 보고서 카드', 'tut-shot-43')}
+            <h4>산지 리포트</h4>
+            <p>그 품목·나라에 연결된 기관 발표가 오른쪽에 열립니다. 미국 원유라면 에너지정보청(EIA) 단기 에너지 전망 같은 글이 뜨고, 제목을 누르면 원문으로 갑니다.</p>`)}
+          ${card('CONCENTRATION · 원유 × 미국', `${noShot('/oil', '공급망 집중도 패널', 'tut-noshot-43')}
+            <h4>병목망 집중도</h4>
+            <p>미국은 원유 순수입국이라 공급처 기준으로 잽니다. 상위 3개국(캐나다 68.0 · 멕시코 6.7 · 사우디 5.3)이 CR3 80.0%, HHI 0.476으로 '높음'. 거버넌스 가중치를 넣지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>`)}
         </div>
       </div>`,
 

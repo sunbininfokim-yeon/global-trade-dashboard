@@ -6459,9 +6459,8 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); background: #11151f;
 }
 .tut-shot-natural img { aspect-ratio: auto; }
-.tut-shot-tall { height: 300px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); }
-.tut-shot-tall img { height: 100%; aspect-ratio: auto; object-position: top; border: 0; }
-.tut-shot-tall .tut-open { top: auto; bottom: 10px; }
+.tut-shot-43 img { aspect-ratio: 4 / 3; object-position: top; }
+.tut-shot-43 .tut-open { top: auto; bottom: 10px; }
 .tut-open {
     position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 999px;
     font-size: 12px; font-weight: 600; color: #ffffff;
@@ -6476,6 +6475,8 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     min-height: 150px; padding: 20px; border-radius: 8px; text-decoration: none; text-align: center;
     background: #11151f; border: 1px dashed color-mix(in srgb, var(--tut-hue) 45%, transparent);
 }
+.tut-noshot-wide { aspect-ratio: 16 / 9; }
+.tut-noshot-43 { aspect-ratio: 4 / 3; }
 .tut-noshot-name { font-size: 14px; color: var(--text-secondary); }
 .tut-noshot-cta {
     font-size: 13px; font-weight: 600; color: var(--tut-hue);
@@ -6488,11 +6489,17 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .tut-media-text { display: flex; flex-direction: column; gap: 12px; }
 .tut-media-text > p:first-child { color: var(--text-secondary); font-size: 14px; }
 
-.tut-split { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 14px; align-items: stretch; }
-.tut-fork { display: grid; place-items: center; color: var(--tut-ink-3); font-size: 20px; }
+.tut-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 24px; }
+.tut-facts p, .tut-strip p { color: var(--text-secondary); font-size: 14px; }
+.tut-strip {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 24px;
+    padding: 14px 18px; border-radius: 12px; background: var(--tut-panel); border: 1px solid var(--border);
+}
+.tut-strip b { color: var(--tut-hue); margin-right: 6px; }
 
 .tut-steps { list-style: none; margin: 0; padding: 0; counter-reset: tut; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
 .tut-two-plain .tut-steps { grid-template-columns: minmax(0, 1fr); }
+.tut-steps-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; }
 .tut-steps > li { counter-increment: tut; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; }
 .tut-steps > li::before {
     content: counter(tut); width: 26px; height: 26px; border-radius: 50%;
@@ -6517,12 +6524,13 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .tut-note { color: var(--text-secondary); font-size: 14px; padding-left: 14px; border-left: 2px solid color-mix(in srgb, var(--tut-hue) 60%, transparent); }
 
 @media (max-width: 760px) {
-    .tut-two, .tut-three, .tut-media, .tut-steps, .tut-row { grid-template-columns: minmax(0, 1fr); }
-    .tut-split { grid-template-columns: minmax(0, 1fr); }
-    .tut-fork { transform: rotate(90deg); }
+    .tut-two, .tut-three, .tut-media, .tut-steps, .tut-row, .tut-facts, .tut-strip { grid-template-columns: minmax(0, 1fr); }
     .tut-wrap { padding: 0 16px 64px; }
     .tut-tabbar { margin: 0 -16px; padding: 10px 16px; }
     .tut-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+}
+@media (min-width: 761px) and (max-width: 1080px) {
+    .tut-steps-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
     .tut-tab, .tut-open, .tut-noshot-cta { transition: none; }
