@@ -163,6 +163,12 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 `fas_gain_pages` 가 그 링크를 모아 각 페이지의 og:title·요약을 읽는다. 페이지에 그 달
 안의 날짜가 없으면 URL의 연·월만 쓰고 `published_precision: "month"` 로 표시한다.
 
+**간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
+(1회차 통과, 2회차 전부 403). 그래서 실패한 출처는 직전 결과 파일에서 그 출처의 보고서
+(45일 이내)를 다시 태깅해 이어 붙이고, `feed_status`에 `carried_over`로 표시한다.
+GAIN은 이미 읽은 보고서 페이지를 다시 받지 않고, 요청 사이에 1초를 쉬며,
+목록 페이지 5개가 연달아 실패하면 그 회차를 멈춘다.
+
 **안 되는 곳 (2026-09-26 확인):** ICSG·ILZSG·INSG·국제주석협회·GAPKI·MPOC·Cecafé
 (JS 챌린지), IEA·말레이시아고무협의회(Cloudflare), Cobalt Institute(Sucuri),
 태국 고무청(RAOT, 러너에서 타임아웃), 인도 고무청(중간 인증서 누락), ICO(RSS 비어 있음),

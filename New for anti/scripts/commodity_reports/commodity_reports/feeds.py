@@ -15,6 +15,7 @@ import email.utils
 import hashlib
 import re
 import ssl
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -372,7 +373,8 @@ def parse_fas_gain_page(body: str, url: str, year: int, month: int, source: Dict
 
 
 def fetch_fas_gain_pages(
-    source: Dict[str, Any], *, fetch, max_items: int, now: Optional[datetime] = None
+    source: Dict[str, Any], *, fetch, max_items: int, now: Optional[datetime] = None,
+    known: Optional[List[RawReport]] = None, pause=None,
 ) -> Dict[str, Any]:
     """GAIN reports gathered from FAS's commodity and country pages.
 
@@ -385,7 +387,13 @@ def fetch_fas_gain_pages(
     themselves are readable, so the list is assembled from those.
 
     `fetch(url) -> str` is injected so fixture builds and tests run offline.
+    `known` are the reports the last build already read; their pages are not
+    fetched again. `pause()` runs between requests (a delay, live only). Five
+    list pages failing in a row stops the run: that is a block, and asking
+    forty more times only makes it last longer.
     """
+    pause = pause or (lambda: None)
+    known_by_url = {r.url: r for r in (known or [])}
     cfg = source.get("html") or {}
     base = cfg.get("base") or "https://www.fas.usda.gov"
     now = now or datetime.now(timezone.utc)
@@ -394,14 +402,20 @@ def fetch_fas_gain_pages(
     exclude = re.compile(cfg["exclude_slug_re"]) if cfg.get("exclude_slug_re") else None
     slug_hints: Dict[str, List[str]] = cfg.get("slug_commodities") or {}
 
-    lists_ok, errors = 0, []
+    lists_ok, errors, failed_in_row = 0, [], 0
     found: Dict[str, tuple] = {}
-    for path in cfg.get("list_urls") or []:
+    for n, path in enumerate(cfg.get("list_urls") or []):
+        if n:
+            pause()
         try:
             html = fetch(urljoin(base, path))
         except Exception as exc:  # noqa: BLE001 -- one dead list page must not sink the rest
             errors.append(f"{path}: {type(exc).__name__}")
+            failed_in_row += 1
+            if failed_in_row >= 5 and not lists_ok:
+                break
             continue
+        failed_in_row = 0
         lists_ok += 1
         for link, year, month in gain_links(html):
             slug = link.rsplit("/", 1)[-1]
@@ -416,8 +430,14 @@ def fetch_fas_gain_pages(
 
     newest_first = sorted(found.items(), key=lambda kv: kv[1], reverse=True)[:max_pages]
     items: List[RawReport] = []
+    reused = 0
     for link, (year, month) in newest_first:
         url = urljoin(base, link)
+        if url in known_by_url:
+            items.append(known_by_url[url])
+            reused += 1
+            continue
+        pause()
         try:
             body = fetch(url)
         except Exception as exc:  # noqa: BLE001
@@ -432,19 +452,23 @@ def fetch_fas_gain_pages(
             item.commodity_hint = list(dict.fromkeys(hints))
         items.append(item)
     return {"ok": True, "items": items, "error": None,
-            "note": f"{lists_ok} list pages, {len(found)} reports linked, {len(items)} read"
+            "note": f"{lists_ok} list pages, {len(found)} reports linked, {len(items) - reused} read, {reused} already known"
             + (f"; {len(errors)} failed" if errors else "")}
 
 
 def fetch_source(
-    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int
+    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int,
+    known: Optional[List[RawReport]] = None,
 ) -> Dict[str, Any]:
     sid = source["id"]
     if source.get("kind") == "fas_gain_pages":
+        delay = float((source.get("html") or {}).get("delay_sec", 1.0))
         res = fetch_fas_gain_pages(
             source,
             fetch=lambda u: fetch_text(u, user_agent=user_agent, timeout=timeout),
             max_items=max_items,
+            known=known,
+            pause=lambda: time.sleep(delay),
         )
         return {"source_id": sid, "ok": res["ok"], "items": res["items"],
                 "count": len(res["items"]), "error": res["error"], "note": res.get("note")}

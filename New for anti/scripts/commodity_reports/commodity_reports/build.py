@@ -85,16 +85,77 @@ def _collect_fixtures(
     return raw, status
 
 
-def _collect_live(sources: List[Dict[str, Any]], *, ua: str, timeout: float, max_per: int):
+# How long a failed source's last good reports stay on the board. Past this
+# they would read as current news from a source that has gone quiet.
+CARRY_OVER_DAYS = 45
+
+
+def previous_raws(
+    previous: Optional[Dict[str, Any]], sources: List[Dict[str, Any]], now: datetime
+) -> Dict[str, List[RawReport]]:
+    """The last build's published reports, back as RawReports per source.
+
+    Rebuilt from the published items (headline, summary, link, date) plus the
+    source's own config, then tagged and scored again like a fresh fetch --
+    so a config or alias fix applies to carried reports too.
+    """
+    out: Dict[str, List[RawReport]] = {}
+    if not previous:
+        return out
+    by_id = {s["id"]: s for s in sources}
+    for item in previous.get("items") or []:
+        src = by_id.get(item.get("source_id"))
+        if not src:
+            continue
+        published = item.get("published_at")
+        if published:
+            try:
+                age = (now - datetime.fromisoformat(published)).days
+            except ValueError:
+                age = 0
+            if age > CARRY_OVER_DAYS:
+                continue
+        r = RawReport(
+            source_id=src["id"],
+            agency=src.get("agency", src["id"]),
+            agency_ko=src.get("agency_ko", src.get("agency", src["id"])),
+            url=item.get("url") or "",
+            title=(item.get("title") or {}).get("original") or "",
+            summary=item.get("summary") or "",
+            published_at=published,
+            lang=src.get("lang", "en"),
+            weight=float(src.get("weight", 1.0)),
+            default_country=src.get("default_country") or None,
+            commodity_hint=list(src.get("commodity_hint") or []),
+            scope_hint=src.get("scope_hint", "country"),
+            date_precision=item.get("published_precision") or "day",
+        )
+        if r.url and r.title:
+            out.setdefault(src["id"], []).append(r)
+    return out
+
+
+def _collect_live(
+    sources: List[Dict[str, Any]], *, ua: str, timeout: float, max_per: int,
+    carried: Optional[Dict[str, List[RawReport]]] = None,
+):
     raw: List[RawReport] = []
     status: List[Dict[str, Any]] = []
+    carried = carried or {}
     for s in sources:
-        res = fetch_source(s, user_agent=ua, timeout=timeout, max_items=max_per)
+        res = fetch_source(s, user_agent=ua, timeout=timeout, max_items=max_per,
+                           known=carried.get(s["id"]))
         raw.extend(res["items"])
         row = {"source_id": res["source_id"], "ok": res["ok"], "count": res["count"],
                "error": res["error"], "mode": "live"}
         if res.get("note"):
             row["note"] = res["note"]
+        # A publisher that blocked this one run (fas.usda.gov answers 403 to
+        # some runners and not others) should not empty its windows until the
+        # next run: keep what it last published.
+        if not res["ok"] and carried.get(s["id"]):
+            raw.extend(carried[s["id"]])
+            row["carried_over"] = len(carried[s["id"]])
         status.append(row)
     return raw, status
 
@@ -166,6 +227,7 @@ def build_commodity_reports(
     translate: bool = False,
     translate_limit: int = 60,
     now: Optional[datetime] = None,
+    previous_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     sources_cfg = load_json(CONFIG / "sources.json")
@@ -185,7 +247,16 @@ def build_commodity_reports(
     if fixture_dir:
         raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per, now)
     elif fetch_live:
-        raw, feed_status = _collect_live(sources, ua=ua, timeout=timeout, max_per=max_per)
+        previous = None
+        if previous_path and Path(previous_path).exists():
+            try:
+                previous = load_json(Path(previous_path))
+            except (OSError, ValueError):
+                previous = None
+        raw, feed_status = _collect_live(
+            sources, ua=ua, timeout=timeout, max_per=max_per,
+            carried=previous_raws(previous, sources, now),
+        )
     else:
         raw, feed_status = [], [{"source_id": "_", "ok": False, "count": 0,
                                  "error": "no_fetch", "mode": "none"}]

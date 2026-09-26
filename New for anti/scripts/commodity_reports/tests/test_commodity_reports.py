@@ -370,6 +370,63 @@ class FasGainPagesTests(unittest.TestCase):
         self.assertTrue(item.published_at.startswith("2026-08-01"))
 
 
+class GainReuseAndBlockTests(FasGainPagesTests):
+    def test_known_pages_are_not_fetched_again(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        first = fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)["items"]
+        fetched = []
+
+        def counting(url):
+            fetched.append(url)
+            return self.fetch(url)
+
+        res = fetch_fas_gain_pages(self.source, fetch=counting, max_items=40, now=now, known=first)
+        self.assertEqual(len(res["items"]), len(first))
+        self.assertFalse(any("/data/gain/" in u for u in fetched))
+
+    def test_a_blocked_site_stops_after_five_list_pages(self):
+        calls = []
+
+        def blocked(url):
+            calls.append(url)
+            raise OSError("403")
+
+        source = dict(self.source, html=dict(self.source["html"], list_urls=[f"/regions/r{i}" for i in range(40)]))
+        res = fetch_fas_gain_pages(source, fetch=blocked, max_items=40)
+        self.assertFalse(res["ok"])
+        self.assertEqual(len(calls), 5)
+
+
+class CarryOverTests(unittest.TestCase):
+    def test_failed_source_keeps_its_last_reports(self):
+        from commodity_reports import build as build_mod
+
+        sources = [{"id": "src_a", "agency": "A", "kind": "rss", "url": "https://a.example/feed"}]
+        previous = {"items": [
+            {"source_id": "src_a", "url": "https://a.example/1", "title": {"original": "Fresh"},
+             "summary": "", "published_at": "2026-09-20T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/2", "title": {"original": "Stale"},
+             "summary": "", "published_at": "2026-06-01T00:00:00+00:00"},
+            {"source_id": "gone", "url": "https://b.example/1", "title": {"original": "Removed source"},
+             "summary": "", "published_at": "2026-09-20T00:00:00+00:00"},
+        ]}
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        carried = build_mod.previous_raws(previous, sources, now)
+        self.assertEqual([r.title for r in carried["src_a"]], ["Fresh"])
+        self.assertNotIn("gone", carried)
+
+        orig = build_mod.fetch_source
+        build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": False, "items": [],
+                                                   "count": 0, "error": "HTTPError: 403"}
+        try:
+            raw, status = build_mod._collect_live(sources, ua="t", timeout=1, max_per=10, carried=carried)
+        finally:
+            build_mod.fetch_source = orig
+        self.assertEqual([r.title for r in raw], ["Fresh"])
+        self.assertEqual(status[0]["carried_over"], 1)
+        self.assertFalse(status[0]["ok"])
+
+
 class BuildTests(unittest.TestCase):
     def setUp(self):
         self.doc = build_commodity_reports(
