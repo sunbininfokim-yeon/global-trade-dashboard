@@ -168,10 +168,16 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     not the title, which the two feeds word differently.
     """
     best: "OrderedDict[str, ScoredReport]" = OrderedDict()
+    titles = set()
     for item in sorted(scored, key=lambda x: -x.importance):
         key = item.url.split("?", 1)[0].rstrip("/").lower()
-        if key not in best:
+        # One publisher sometimes links the same post under two addresses
+        # (ITA's feed: a permalink and a ?p= link); same source, same
+        # headline is one report.
+        title_key = (item.source_id, " ".join(item.title.lower().split()))
+        if key not in best and title_key not in titles:
             best[key] = item
+            titles.add(title_key)
     return list(best.values())
 
 

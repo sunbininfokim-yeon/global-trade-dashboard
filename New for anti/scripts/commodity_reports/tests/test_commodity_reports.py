@@ -311,6 +311,17 @@ class HtmlListTitleTests(unittest.TestCase):
         self.assertEqual(items[0].title, "Anrpc releases monthly nr statistical report, june 2026")
 
 
+class LongAnchorTests(unittest.TestCase):
+    def test_a_card_wrapped_in_its_link_is_still_found(self):
+        source = {"id": "int_wgc_press", "html": {"base": "https://www.gold.org",
+                  "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}"}}
+        teaser = "<div class='card'><img src='x.jpg'/><p>" + ("lorem ipsum " * 60) + "</p></div>"
+        body = f'<a href="/news-and-events/press-releases/world-gold-council-launches-standard">{teaser}</a>'
+        items = parse_html_list(body, source)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].title, "World gold council launches standard")
+
+
 class PdfSummaryTests(unittest.TestCase):
     def test_pdf_items_get_their_opening_text_and_known_ones_are_skipped(self):
         source = {"id": "int_ilzsg", "html": {"base": "https://www.ilzsg.org",

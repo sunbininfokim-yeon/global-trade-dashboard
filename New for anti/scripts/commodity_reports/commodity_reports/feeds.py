@@ -225,16 +225,28 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     base = cfg.get("base") or source.get("url") or ""
     href_re = cfg.get("item_href_re") or r"[^\"']+"
     max_items = int(cfg.get("max_items") or 20)
-    pattern = re.compile(rf"href=[\"']({href_re})[\"'][^>]*>(.{{0,200}}?)</a>", re.I | re.S)
+    pattern = re.compile(rf"href=[\"']({href_re})[\"'][^>]*>", re.I | re.S)
+
+    def anchors():
+        # The anchor's text is whatever sits before its </a>. Card layouts
+        # (WGC, ILZSG) wrap a whole teaser in the link, so the closing tag can
+        # be kilobytes away; a text that long is not a headline and the slug
+        # stands in for it.
+        for m in pattern.finditer(body):
+            end = body.find("</a>", m.end(), m.end() + 4000)
+            inner = body[m.end():end] if end != -1 else ""
+            yield m.group(1), inner
 
     items: List[RawReport] = []
     seen = set()
-    for href, inner in pattern.findall(body):
+    for href, inner in anchors():
         full = urljoin(base, href)
         key = full.split("?", 1)[0].rstrip("/").lower()
         if key in seen:
             continue
         title = strip_html(inner)
+        if len(title) > 200:
+            title = ""
         if len(title) < 12:
             # Icon-only or "read more" links: fall back to the slug, which for
             # these publishers is a readable title -- once its %-escapes are
