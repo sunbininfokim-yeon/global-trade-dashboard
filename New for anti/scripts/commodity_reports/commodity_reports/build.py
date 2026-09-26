@@ -168,10 +168,16 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     not the title, which the two feeds word differently.
     """
     best: "OrderedDict[str, ScoredReport]" = OrderedDict()
+    titles = set()
     for item in sorted(scored, key=lambda x: -x.importance):
         key = item.url.split("?", 1)[0].rstrip("/").lower()
-        if key not in best:
+        # One publisher sometimes links the same post under two addresses
+        # (ITA's feed: a permalink and a ?p= link); same source, same
+        # headline is one report.
+        title_key = (item.source_id, " ".join(item.title.lower().split()))
+        if key not in best and title_key not in titles:
             best[key] = item
+            titles.add(title_key)
     return list(best.values())
 
 
@@ -244,10 +250,10 @@ def build_commodity_reports(
     max_per = int(sources_cfg.get("max_items_per_source", 40))
     sources = [s for s in sources_cfg.get("sources", []) if s.get("enabled", True)]
 
+    previous = None
     if fixture_dir:
         raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per, now)
     elif fetch_live:
-        previous = None
         if previous_path and Path(previous_path).exists():
             try:
                 previous = load_json(Path(previous_path))
@@ -298,6 +304,18 @@ def build_commodity_reports(
     # is weight in a file the browser downloads on the static fallback path.
     referenced = {rid for buckets in index.values() for ids in buckets.values() for rid in ids}
     items = [r.to_item() for r in reports if r.id in referenced]
+    # When this build first saw each report. List-page sources publish no
+    # date, and the weekly favorites digest mails what is new in the last
+    # week -- without this those reports (ANRPC, VRA, CONAB, USGS...) could
+    # never be mailed. Carried from the previous build by id; never shown as
+    # a publication date.
+    first_seen = {
+        it.get("id"): it.get("first_seen_at")
+        for it in (previous or {}).get("items") or []
+        if it.get("first_seen_at")
+    }
+    for it in items:
+        it["first_seen_at"] = first_seen.get(it["id"]) or now.isoformat()
 
     commodity_labels = {
         key: meta.get("label_ko") or key

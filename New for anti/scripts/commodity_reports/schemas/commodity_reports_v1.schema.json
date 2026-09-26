@@ -63,6 +63,7 @@
           "summary": {"type": ["string", "null"], "description": "Quoted feed body, <= 600 chars. Null for list-page sources that publish no body."},
           "url": {"type": "string", "format": "uri", "description": "The publisher's own page. The card headline links here."},
           "published_at": {"type": ["string", "null"], "format": "date-time"},
+          "first_seen_at": {"type": "string", "format": "date-time", "description": "When the pipeline first saw this report, carried across builds by id. Not a publication date: list-page sources have none, and the weekly digest uses this to decide what is new."},
           "published_precision": {"enum": ["month"], "description": "Present only when the publisher gives the month, not the day (GAIN pages without a dated element). published_at is then the 1st of that month and the card shows YYYY.MM."},
           "agency": {"type": "string"},
           "agency_ko": {"type": "string"},

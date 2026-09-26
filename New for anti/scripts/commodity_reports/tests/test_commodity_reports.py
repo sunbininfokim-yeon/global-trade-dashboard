@@ -17,6 +17,7 @@ from commodity_reports.build import (  # noqa: E402
 )
 from commodity_reports.feeds import (  # noqa: E402
     RawReport,
+    add_pdf_summaries,
     fetch_fas_gain_pages,
     gain_links,
     parse_fas_gain_cards,
@@ -310,6 +311,39 @@ class HtmlListTitleTests(unittest.TestCase):
         self.assertEqual(items[0].title, "Anrpc releases monthly nr statistical report, june 2026")
 
 
+class LongAnchorTests(unittest.TestCase):
+    def test_a_card_wrapped_in_its_link_is_still_found(self):
+        source = {"id": "int_wgc_press", "html": {"base": "https://www.gold.org",
+                  "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}"}}
+        teaser = "<div class='card'><img src='x.jpg'/><p>" + ("lorem ipsum " * 60) + "</p></div>"
+        body = f'<a href="/news-and-events/press-releases/world-gold-council-launches-standard">{teaser}</a>'
+        items = parse_html_list(body, source)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].title, "World gold council launches standard")
+
+
+class PdfSummaryTests(unittest.TestCase):
+    def test_pdf_items_get_their_opening_text_and_known_ones_are_skipped(self):
+        source = {"id": "int_ilzsg", "html": {"base": "https://www.ilzsg.org",
+                                                "item_href_re": "[^\"']+\\.pdf"}}
+        body = ('<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20August%202026.pdf">x</a>'
+                '<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20July%202026.pdf">x</a>')
+        items = parse_html_list(body, source)
+        self.assertEqual(items[0].title, "ILZSG Press Release August 2026")
+        fetched = []
+
+        def fetch(url):
+            fetched.append(url)
+            return b"%PDF"
+
+        n = add_pdf_summaries(items, fetch_pdf=fetch, extract=lambda b: "World  refined zinc\nsurplus of 45kt",
+                              skip_urls={items[1].url})
+        self.assertEqual(n, 1)
+        self.assertEqual(items[0].summary, "World refined zinc surplus of 45kt")
+        self.assertEqual(items[1].summary, "")
+        self.assertEqual(len(fetched), 1)
+
+
 class FasGainPagesTests(unittest.TestCase):
     """GAIN via FAS commodity/country pages, since /data/search is blocked."""
 
@@ -425,6 +459,37 @@ class CarryOverTests(unittest.TestCase):
         self.assertEqual([r.title for r in raw], ["Fresh"])
         self.assertEqual(status[0]["carried_over"], 1)
         self.assertFalse(status[0]["ok"])
+
+
+class FirstSeenTests(unittest.TestCase):
+    def test_first_seen_is_set_then_kept_across_builds(self):
+        import json as _json
+        import tempfile
+
+        doc = build_commodity_reports(fetch_live=False, fixture_dir=FIXTURES, per_bucket=8, now=NOW)
+        self.assertTrue(all(i["first_seen_at"] == NOW.isoformat() for i in doc["items"]))
+        # A later live build reads the previous file; with nothing fetched the
+        # items it republishes (none here) would keep their first_seen_at.
+        # Exercise the carry directly through a fixture rebuild that names
+        # the previous file.
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
+            _json.dump(doc, fh)
+        from commodity_reports import build as build_mod
+
+        later = datetime(2026, 8, 20, tzinfo=timezone.utc)
+        orig = build_mod._collect_live
+        raw_fixture, _ = build_mod._collect_fixtures(
+            [s for s in build_mod.load_json(build_mod.CONFIG / "sources.json")["sources"] if s.get("enabled", True)],
+            FIXTURES, 40, NOW)
+        build_mod._collect_live = lambda *a, **k: (raw_fixture, [])
+        try:
+            doc2 = build_commodity_reports(fetch_live=True, per_bucket=8, now=later, previous_path=fh.name)
+        finally:
+            build_mod._collect_live = orig
+        firsts = {i["id"]: i["first_seen_at"] for i in doc2["items"]}
+        shared = set(firsts) & {i["id"] for i in doc["items"]}
+        self.assertTrue(shared)
+        self.assertTrue(all(firsts[i] == NOW.isoformat() for i in shared))
 
 
 class BuildTests(unittest.TestCase):
