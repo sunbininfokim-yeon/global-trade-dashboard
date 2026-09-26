@@ -85,6 +85,12 @@ export default {
             return await handleUsPolicy(request, env);
         }
 
+        // Account deletion (회원 탈퇴): needs the service-role key to call
+        // Supabase Admin API, so it can't run from the anon-key browser client.
+        if (url.pathname === '/api/account/delete') {
+            return await handleAccountDelete(request, env);
+        }
+
         // Official crop/energy/metal reports for one commodity × country window
         if (url.pathname.startsWith('/api/commodity-reports')) {
             return await handleCommodityReports(request, env);
@@ -3079,6 +3085,67 @@ async function handleUsPolicy(request, env) {
 
 function usError(message, status) {
     return new Response(JSON.stringify({ error: message }), { status, headers: JSON_HEADERS });
+}
+
+// --- Account deletion (회원 탈퇴) --------------------------------------------
+//
+// The browser's anon-key client can read/write its own rows under RLS but
+// cannot delete an auth.users row -- that's an Admin API operation, gated to
+// the service role key. The client re-checks the visitor's password itself
+// (client.auth.signInWithPassword) before ever calling this, so by the time a
+// request lands here it only has to confirm the bearer token is a live
+// session and then delete that same user. Every FK this project has added
+// under a per-user row (profiles, user_favorites, commodity_digest_source_prefs,
+// commodity_report_notifications) is `references ... on delete cascade`, so
+// removing the auth.users row cleans all of it up in one step.
+async function handleAccountDelete(request, env) {
+    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+        return missingKey('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
+    }
+    if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: JSON_HEADERS });
+    }
+
+    const authHeader = request.headers.get('Authorization') || '';
+    const token = authHeader.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) {
+        return new Response(JSON.stringify({ error: '로그인이 필요합니다.' }), { status: 401, headers: JSON_HEADERS });
+    }
+
+    const base = env.SUPABASE_URL.replace(/\/+$/, '');
+    const apikey = env.SUPABASE_SERVICE_ROLE_KEY;
+
+    try {
+        // Resolves the *caller's* identity from their own token -- this is
+        // what stops one visitor from ever being able to name another
+        // visitor's user id for deletion; the id used below never comes from
+        // the request body.
+        const whoRes = await fetch(`${base}/auth/v1/user`, {
+            headers: { apikey, Authorization: `Bearer ${token}` },
+        });
+        if (!whoRes.ok) {
+            return new Response(JSON.stringify({ error: '세션이 만료되었습니다. 다시 로그인해주세요.' }), { status: 401, headers: JSON_HEADERS });
+        }
+        const who = await whoRes.json();
+        if (!who || !who.id) {
+            return new Response(JSON.stringify({ error: '세션이 만료되었습니다. 다시 로그인해주세요.' }), { status: 401, headers: JSON_HEADERS });
+        }
+
+        const delRes = await fetch(`${base}/auth/v1/admin/users/${who.id}`, {
+            method: 'DELETE',
+            headers: { apikey, Authorization: `Bearer ${apikey}` },
+        });
+        if (!delRes.ok) {
+            const detail = await delRes.text().catch(() => '');
+            console.log(`[account] delete ${who.id} failed: HTTP ${delRes.status} ${detail.slice(0, 300)}`);
+            return new Response(JSON.stringify({ error: '탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' }), { status: 502, headers: JSON_HEADERS });
+        }
+
+        return new Response(JSON.stringify({ ok: true }), { headers: JSON_HEADERS });
+    } catch (err) {
+        console.log(`[account] delete failed: ${err.message}`);
+        return new Response(JSON.stringify({ error: '탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' }), { status: 502, headers: JSON_HEADERS });
+    }
 }
 
 // kvCachedJson turns every `ok: false` into a 502 "upstream error", which is the
