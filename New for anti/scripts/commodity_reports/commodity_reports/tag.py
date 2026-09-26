@@ -24,7 +24,14 @@ CONTEXT_TERMS = [
     "smelter", "refinery", "refined", "concentrate", "reserves", "forecast",
     "estimate", "estimates", "outlook", "balance sheet", "consumption",
     "statistics", "statistical", "surplus", "deficit", "tariff", "tariffs",
-    "traded", "trading", "commodity exchange", "futures",
+    "traded", "trading", "commodity exchange", "futures", "offtake", "smelting",
+    "estadística", "estadísticas", "mercado", "pasar",
+    # Portuguese (CONAB): public-stock purchases and auctions are market news.
+    "estoques", "estoque", "toneladas", "leilão", "leilões", "leilao", "leiloes",
+    "oferta", "demanda", "exportações", "exportacoes", "importações", "preços", "precos",
+    # Policy moves a market as much as a harvest does.
+    "regulation", "regulations", "regulatory", "rulebook", "policy", "sanctions", "ban",
+    "critical mineral", "critical minerals", "strategic reserve",
     "levy", "export ban", "export duty", "export tax", "quota", "quotas",
     "pungutan", "bea keluar", "harga referensi",
     "생산", "수확", "수출", "수입", "재고", "가격", "전망", "출하",
@@ -95,7 +102,9 @@ class CommodityTagger:
             need[key] = bool(meta.get("require_context"))
             labels[key] = meta.get("label_ko") or key
             ctx[key] = compile_terms(meta.get("context_aliases") or [])
-            excl[key] = compile_terms(meta.get("not_when") or [])
+            # Longest first: "crude palm oil" must go before "palm oil" or
+            # "crude palm", or the leftover "crude"/"oil exports" still matches.
+            excl[key] = compile_terms(sorted(meta.get("not_when") or [], key=len, reverse=True))
         return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl)
 
     def has_context(self, text: str) -> bool:
@@ -196,6 +205,7 @@ def tag_report(
     default_country: Optional[str] = None,
     max_countries: int = 3,
     max_commodities: int = 3,
+    commodity_text: str = "text",
 ) -> Tagged:
     """Tag one report.
 
@@ -209,7 +219,10 @@ def tag_report(
     summary = summary or ""
     both = f"{title}\n{summary}"
 
-    commodities = commodity_tagger.tag(both)
+    # "title": the headline alone names the commodities (EU DG AGRI's egg
+    # supply-chain story mentions soy feed in its body; it is not a soybean
+    # report). Countries still come from both.
+    commodities = commodity_tagger.tag(title if commodity_text == "title" else both)
     # A source's prior (ANRPC is about rubber, ITA about tin) applies only to
     # a market story. Without that, every speech, workshop and membership
     # notice a commodity body posts filed as a report on the commodity -- a

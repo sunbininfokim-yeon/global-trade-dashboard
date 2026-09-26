@@ -448,6 +448,11 @@ class CarryOverTests(unittest.TestCase):
         carried = build_mod.previous_raws(previous, sources, now)
         self.assertEqual([r.title for r in carried["src_a"]], ["Fresh"])
         self.assertNotIn("gone", carried)
+        # A source with its own longer window (GAIN: 150 days) carries its
+        # older reports too.
+        long_src = [{"id": "src_a", "agency": "A", "kind": "fas_gain_pages", "url": "u", "html": {"max_age_days": 150}}]
+        self.assertEqual(sorted(r.title for r in build_mod.previous_raws(previous, long_src, now)["src_a"]),
+                         ["Fresh", "Stale"])
 
         orig = build_mod.fetch_source
         build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": False, "items": [],
@@ -512,6 +517,60 @@ class EventHeadlineTests(unittest.TestCase):
     def test_reports_and_figures_survive(self):
         self.assertIsNotNone(self.score("ANRPC releases Monthly NR Statistical Report July 2026"))
         self.assertIsNotNone(self.score("Natural rubber exports at the forum's host country fell 12%"))
+
+
+class RelevanceByCommodityTests(unittest.TestCase):
+    """EIA, crops, metals: only market stories, only the right window."""
+
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def run_one(self, title, summary="", **raw_kw):
+        raw = RawReport(source_id="s", agency="A", agency_ko="A", url="https://x/" + title[:20],
+                        title=title, summary=summary, published_at=None, **raw_kw)
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=raw.commodity_hint,
+                       commodity_text=raw.commodity_from)
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        item = self.scorer.score(raw, t, now=NOW)
+        return item.commodities if item else None
+
+    def test_eia_electricity_is_not_crude_and_oil_market_news_is(self):
+        self.assertIsNone(self.run_one("EIA forecasts strongest four-year growth in U.S. electricity demand since 2000"))
+        self.assertIn("oil", self.run_one("EIA increases global oil production forecast after the opening of the Strait of Hormuz"))
+        self.assertEqual(self.run_one("EIA releases latest Short-Term Energy Outlook amid Middle East conflict"), ["oil", "gas"])
+        self.assertNotIn("oil", self.commodity.tag("Malaysia palm oil production rose 4% in August"))
+        self.assertNotIn("oil", self.commodity.tag("Brazil: Biofuels Annual -- ethanol blending and renewable diesel capacity"))
+
+    def test_housekeeping_notices_are_dropped(self):
+        for title in ("USDA Crop Progress report delayed until 5pm ET",
+                      "NASS suspends pecan estimates for December and January",
+                      "USDA NASS to Re-Survey Operators with Previously Unharvested Corn and Soybeans",
+                      "Aviso de pauta 2013 3o levantamento da safra de cafe 2026",
+                      "MPOB(T/P)39/26 – Kerja-Kerja Penyelenggaraan Am Ladang Sawit",
+                      "International Aluminium Institute Appoints Jonathan Grant as New Secretary General",
+                      "IAI has new a Secretary General",
+                      "NASS Reinstates Select Data Collection Programs and Reports"):
+            self.assertIsNone(self.run_one(title, market_only=True), title)
+        self.assertEqual(self.run_one("Produção de café é estimada em 67,6 milhões de sacas", market_only=True), ["coffee"])
+
+    def test_a_publisher_name_in_the_body_is_not_its_supply_series(self):
+        # MPOB_SUPPLY_DEMAND used to match on "mpob", so every MPOB post was
+        # a series item and skipped the event filter.
+        self.assertIsNone(self.run_one("Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026",
+                                       "Anjuran MPOB di Kuala Lumpur.", market_only=True))
+
+    def test_market_only_board_keeps_market_news_only(self):
+        self.assertIsNone(self.run_one("Aluminium cans lead global beverage recycling", market_only=True))
+        self.assertEqual(self.run_one("Gulf aluminium output collapses by 40% as global supply crisis deepens",
+                                      market_only=True), ["aluminum"])
+
+    def test_title_only_feed_ignores_crops_mentioned_in_passing(self):
+        self.assertIsNone(self.run_one("Rewiring the Egg Supply Chain in Austria",
+                                       "Feed made from imported soybean meal is a large share of costs.",
+                                       market_only=True, commodity_from="title"))
 
 
 class FirstSeenTests(unittest.TestCase):

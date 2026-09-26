@@ -35,7 +35,7 @@
       "default_country": "USA",
       "kind": "rss",
       "url": "http://www.nass.usda.gov/rss/asb.xml",
-      "lang": "en", "enabled": true, "weight": 1.6,
+      "lang": "en", "enabled": true, "weight": 1.6, "market_only": true,
       "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). ASB is the board that clears NASS's major statistical releases for embargoed publication -- higher weight than the plain reports feed for that reason. Confirmed live 2026-09-02 (first Actions run, 40 items -- this is a rolling notice archive going back to 2023/2024, not just today's, so recency scoring is doing real work here)."
     },
     {
@@ -44,7 +44,7 @@
       "default_country": "USA",
       "kind": "rss",
       "url": "http://www.nass.usda.gov/rss/news.xml",
-      "lang": "en", "enabled": true, "weight": 1.0,
+      "lang": "en", "enabled": true, "weight": 1.0, "market_only": true,
       "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). General NASS news/events, not release announcements -- lower weight, may overlap with us_usda_newsroom. Confirmed live 2026-09-02 (first Actions run, 40 items, same rolling-archive shape as us_nass_asb)."
     },
     {
@@ -81,7 +81,6 @@
       "url": "https://www.eia.gov/rss/todayinenergy.xml",
       "lang": "en", "enabled": true, "weight": 1.15,
       "scope_hint": "global",
-      "commodity_hint": ["oil"],
       "notes": "Known-good feed (already carried by the official_reports pipeline). Confirmed live 2026-09-02 (first Actions run, 11 items)."
     },
     {
@@ -91,7 +90,6 @@
       "url": "https://www.eia.gov/rss/press_rss.xml",
       "lang": "en", "enabled": true, "weight": 1.3,
       "scope_hint": "global",
-      "commodity_hint": ["oil"],
       "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements. Confirmed live 2026-09-02 (first Actions run, 10 items)."
     },
     {
@@ -112,7 +110,7 @@
       "url": "https://www.gov.br/conab/pt-br/assuntos/noticias",
       "lang": "pt",
       "enabled": true,
-      "weight": 1.4,
+      "weight": 1.4, "market_only": true,
       "html": {"base": "https://www.gov.br", "item_href_re": "(?:https://www\\.gov\\.br)?/conab/pt-br/assuntos/noticias/(?!ultimas-noticias)[a-z0-9-]{20,}", "max_items": 25},
       "notes": "Re-enabled 2026-09-26 as a list-page scrape. CONAB moved to the gov.br portal; the old conab.gov.br ?format=feed URL answers HTML and the portal's Plone RSS views (/RSS, /rss, /atom.xml) 404. tools/ops/feed_probe.py on Actions read the news list (20 article links, e.g. 'Produção de café é estimada em 67,6 milhões de sacas'). Headline-only, no date. The old commodity_hint (soybeans, corn) is dropped: the list also carries rice auctions and freight tenders, which would have been filed under soy and corn."
     },
@@ -148,7 +146,7 @@
       "agency": "European Commission DG AGRI", "agency_ko": "EU 집행위 농업총국",
       "kind": "rss",
       "url": "https://agriculture.ec.europa.eu/node/2/rss_en",
-      "lang": "en", "enabled": true, "weight": 1.1,
+      "lang": "en", "enabled": true, "weight": 1.1, "commodity_from": "title", "market_only": true,
       "scope_hint": "global",
       "notes": "Re-enabled 2026-09-26 at the feed DG AGRI's news page advertises (tools/ops/feed_probe.py on Actions: 200, RSS, 30 items, newest 2026-09-25). The old /rss_en 404s. EU short-term outlook and cereal balance sheets land here."
     },
@@ -265,7 +263,7 @@
       "url": "https://mpob.gov.my/feed/",
       "lang": "ms",
       "enabled": true,
-      "weight": 1.4,
+      "weight": 1.4, "market_only": true,
       "commodity_hint": ["palm_oil"],
       "notes": "Checked 2026-09-26 by tools/ops/feed_probe.py on an Actions runner: 200, RSS, 10 items, newest 2026-09-25. Mostly Malay headlines (sawit = oil palm; aliases added). MPOB's monthly supply-and-demand statistics are the market's palm oil balance sheet; the feed carries the board's releases, the numbers themselves stay on bepi.mpob.gov.my."
     },
@@ -278,7 +276,7 @@
       "url": "https://www.kemendag.go.id/rss.xml",
       "lang": "id",
       "enabled": true,
-      "weight": 1.2,
+      "weight": 1.2, "market_only": true,
       "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 20 items, newest 2026-09-26; advertised by the ministry's home page. Where Indonesia's CPO reference price (export levy/duty basis), export bans and DMO rules are announced -- palm oil, coal, nickel, bauxite, rubber, cocoa. General ministry news with no commodity is dropped by the tagger; no commodity_hint on purpose."
     },
     {
@@ -290,7 +288,7 @@
       "url": "https://www.cochilco.cl/web/feed/",
       "lang": "es",
       "enabled": true,
-      "weight": 1.4,
+      "weight": 1.4, "market_only": true,
       "commodity_hint": ["copper"],
       "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 9 items, newest 2026-09-25 -- weekly 'Informe del Mercado Internacional del Cobre', price forecasts, lithium carbonate spot. Chile's state copper commission. commodity_hint copper only fires when the text names no metal; 'litio' routes to lithium on its own."
     },
@@ -302,7 +300,7 @@
       "url": "https://international-aluminium.org/feed/",
       "lang": "en",
       "enabled": true,
-      "weight": 1.2,
+      "weight": 1.2, "market_only": true,
       "scope_hint": "global",
       "commodity_hint": ["aluminum"],
       "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 10 items, newest 2026-09-22. Industry body, not a government -- the one publisher of world primary aluminium production statistics (monthly), which is why it is here; see the top-level notes on statistical industry bodies."
@@ -315,7 +313,7 @@
       "url": "https://silverinstitute.org/feed/",
       "lang": "en",
       "enabled": true,
-      "weight": 1.0,
+      "weight": 1.0, "market_only": true,
       "scope_hint": "global",
       "commodity_hint": ["silver"],
       "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 10 items, newest 2026-09-01. Industry body behind World Silver Survey (supply/demand balance). Some items are translated newsletter editions (Chinese/Spanish) -- low weight so they never outrank a sourced figure."
@@ -341,7 +339,7 @@
       "url": "https://www.bpdp.or.id/rss/latest-posts",
       "lang": "id",
       "enabled": true,
-      "weight": 1.2,
+      "weight": 1.2, "market_only": true,
       "commodity_hint": ["palm_oil"],
       "notes": "Checked 2026-09-26 (tools/ops/feed_probe.py on Actions): 200, RSS, 30 items, newest 2026-09-25; listed on the agency's own /rss-feeds page. BPDP collects Indonesia's palm oil export levy and publishes the levy rules (Peraturan ... Pungutan Atas Ekspor Kelapa Sawit). It also funds cocoa and coconut now, so commodity_hint palm_oil only fires when the text names no commodity."
     },
@@ -354,7 +352,7 @@
       "url": "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=naturalresourcescanada&type=newsreleases&sort=publishedDate&orderBy=desc&pick=30&format=atom&atomtitle=Natural%20Resources%20Canada",
       "lang": "en",
       "enabled": true,
-      "weight": 1.1,
+      "weight": 1.1, "market_only": true,
       "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, Atom, 20 items, newest 2026-09-21. The Government of Canada news API's Atom output for NRCan news releases: critical minerals (lithium, graphite, nickel, cobalt, rare earths), oil, gas, uranium. No commodity_hint: forestry and energy-efficiency releases are dropped."
     },
     {
@@ -392,7 +390,7 @@
       "url": "https://vra.com.vn/tin-tuc/tin-ngoai-nuoc.html",
       "lang": "vi",
       "enabled": true,
-      "weight": 1.1,
+      "weight": 1.1, "market_only": true,
       "scope_hint": "global",
       "html": {"base": "https://vra.com.vn", "item_href_re": "(?:https?://vra\\.com\\.vn)?/?tin-tuc/tin-ngoai-nuoc/[a-z0-9-]+\\.\\d+\\.html", "max_items": 15},
       "notes": "Added 2026-09-26. VRA's world rubber market news (Vietnamese). No RSS (/rss, /rss.html 404); list page read by tools/ops/feed_probe.py on Actions. Country names are Vietnamese and not in countries.json, so most items land in the world bucket -- which is what this list is."
@@ -406,7 +404,7 @@
       "url": "https://vra.com.vn/tin-tuc/tin-trong-nuoc.html",
       "lang": "vi",
       "enabled": true,
-      "weight": 1.1,
+      "weight": 1.1, "market_only": true,
       "html": {"base": "https://vra.com.vn", "item_href_re": "(?:https?://vra\\.com\\.vn)?/?tin-tuc/tin-trong-nuoc/[a-z0-9-]+\\.\\d+\\.html", "max_items": 15},
       "notes": "Added 2026-09-26. VRA's Vietnam news (exports, prices, EUDR compliance) -- the world's third-largest natural rubber producer. Same page structure as vn_vra_world."
     },
@@ -420,7 +418,7 @@
       "url": "https://english.mofcom.gov.cn/News/index.html",
       "lang": "en",
       "enabled": true,
-      "weight": 1.3,
+      "weight": 1.3, "market_only": true,
       "html": {"base": "https://english.mofcom.gov.cn", "item_href_re": "(?:https?://english\\.mofcom\\.gov\\.cn)?(?:\\.\\./|/)?(?:News/)?(?:SignificantNews|SpokesmansRemarks|PressConference|PressRelease)/art/\\d{4}/art_[0-9a-f]+\\.html", "max_items": 20},
       "notes": "Added 2026-09-26. Where China announces export controls on gallium, germanium, graphite, antimony and rare earths, and their suspensions. MOFCOM resets connections from a non-browser User-Agent (probe: 'Connection reset by peer' with ours, 200 with Chrome's), hence headers: browser. Headline-only list; no commodity_hint -- trade-policy news that names no tracked commodity is dropped."
     },
@@ -432,7 +430,7 @@
       "url": "https://www.internationaltin.org/feed/",
       "lang": "en",
       "enabled": true,
-      "weight": 1.3,
+      "weight": 1.3, "market_only": true,
       "scope_hint": "global",
       "commodity_hint": ["tin"],
       "notes": "Checked 2026-09-26 (tools/ops/feed_probe.py on Actions): 200, RSS, 10 items, newest 2026-09-22 -- tin market news and ITA analysis (China smelter moves, Indonesian and Myanmar supply). An earlier probe on another runner got a JS challenge page from the same host; the build carries the last reports over when that happens."
@@ -445,7 +443,7 @@
       "url": "https://www.gold.org/news-and-events/press-releases",
       "lang": "en",
       "enabled": true,
-      "weight": 1.1,
+      "weight": 1.1, "market_only": true,
       "scope_hint": "global",
       "commodity_hint": ["gold"],
       "html": {"base": "https://www.gold.org", "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}", "max_items": 12},
@@ -473,7 +471,7 @@
       "url": "https://www.cobaltinstitute.org/news/",
       "lang": "en",
       "enabled": true,
-      "weight": 1.1,
+      "weight": 1.1, "market_only": true,
       "scope_hint": "global",
       "commodity_hint": ["cobalt"],
       "html": {"base": "https://www.cobaltinstitute.org", "item_href_re": "(?:https://www\\.cobaltinstitute\\.org)?/news/(?!page/)[a-z0-9-]{12,}/?", "max_items": 10},
@@ -488,7 +486,7 @@
       "url": "https://www.esdm.go.id/id/media-center/siaran-pers",
       "lang": "id",
       "enabled": true,
-      "weight": 1.2,
+      "weight": 1.2, "market_only": true,
       "html": {"base": "https://www.esdm.go.id", "item_href_re": "(?:https://www\\.esdm\\.go\\.id)?/id/media-center/arsip-berita/[a-z0-9-]{12,}", "max_items": 15},
       "notes": "Added 2026-09-26. Indonesia sets coal (HBA benchmark, DMO), nickel ore, bauxite and copper concentrate export policy here. Headline-only list; items that name no tracked commodity (geothermal, volcano alerts) are dropped."
     },
