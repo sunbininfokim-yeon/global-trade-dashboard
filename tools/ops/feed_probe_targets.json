@@ -4,237 +4,123 @@
  ],
  "targets": [
   {
-   "group": "prod",
-   "id": "global-trade-dashboard_reports_windows",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports",
-   "show_body": 900
-  },
-  {
-   "group": "prod",
-   "id": "global-trade-dashboard_rubber_world",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=rubber&limit=5",
-   "show_body": 1500
-  },
-  {
-   "group": "prod",
-   "id": "global-trade-dashboard_rubber_vnm",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=rubber&country=VNM&limit=5",
-   "show_body": 900
-  },
-  {
-   "group": "prod",
-   "id": "chokemonitor_reports_windows",
-   "url": "https://chokemonitor.com/api/commodity-reports",
-   "show_body": 900
-  },
-  {
-   "group": "prod",
-   "id": "chokemonitor_rubber_world",
-   "url": "https://chokemonitor.com/api/commodity-reports?commodity=rubber&limit=5",
-   "show_body": 1500
-  },
-  {
-   "group": "prod",
-   "id": "chokemonitor_rubber_vnm",
-   "url": "https://chokemonitor.com/api/commodity-reports?commodity=rubber&country=VNM&limit=5",
-   "show_body": 900
-  },
-  {
-   "group": "prod",
-   "id": "json_static",
-   "url": "https://chokemonitor.com/public/data/commodity_reports_v1.json",
-   "show_body": 300
-  },
-  {
    "group": "opec",
-   "id": "opec_home",
+   "id": "opec_home_links",
    "url": "https://www.opec.org/",
-   "list_feeds": true,
-   "link_re": "(momr|MOMR|monthly-oil-market|\\.pdf|press)",
-   "samples": 12
+   "link_re": "opec\\.org/[a-zA-Z0-9/_.-]{6,}",
+   "samples": 60
   },
   {
    "group": "opec",
-   "id": "opec_momr_page",
-   "url": "https://www.opec.org/opec_web/en/publications/338.htm",
-   "link_re": "(momr|MOMR|\\.pdf)",
-   "samples": 12
+   "id": "opec_pdf_1",
+   "url": "https://www.opec.org/assets/assetdb/momr-september-2026.pdf",
+   "show_body": 200
   },
   {
    "group": "opec",
-   "id": "opec_momr_new",
-   "url": "https://www.opec.org/monthly-oil-market-report.html",
-   "link_re": "(momr|MOMR|\\.pdf)",
-   "samples": 12
+   "id": "opec_pdf_2",
+   "url": "https://www.opec.org/opec_web/static_files_project/media/downloads/publications/MOMR%20September%202026.pdf",
+   "show_body": 200
   },
   {
    "group": "opec",
-   "id": "momr_site",
-   "url": "https://momr.opec.org/",
-   "link_re": "(\\.pdf|pdf-download|report)",
-   "samples": 12,
-   "show_body": 400
+   "id": "opec_pdf_3",
+   "url": "https://momr.opec.org/pdf-download/",
+   "show_body": 200
   },
   {
-   "group": "opec",
-   "id": "opec_press",
-   "url": "https://www.opec.org/opec_web/en/press_room/28.htm",
-   "link_re": "(press_room|press-release|/\\d+\\.htm)",
-   "samples": 10
+   "group": "wp",
+   "id": "icsg_types",
+   "url": "https://icsg.org/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "opec",
-   "id": "opec_press_new",
-   "url": "https://www.opec.org/press-releases.html",
-   "link_re": "(press|pr-)",
-   "samples": 10
+   "group": "wp",
+   "id": "ilzsg_types",
+   "url": "https://www.ilzsg.org/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "opec",
-   "id": "opec_rss",
-   "url": "https://www.opec.org/opec_web/en/rss.htm",
-   "list_feeds": true
+   "group": "wp",
+   "id": "insg_types",
+   "url": "https://insg.org/index.php/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "opec",
-   "id": "opec_render",
-   "url": "https://www.opec.org/opec_web/en/publications/338.htm",
-   "render": true,
-   "link_re": "(momr|MOMR|\\.pdf)",
-   "samples": 12
+   "group": "wp",
+   "id": "cobalt_types",
+   "url": "https://www.cobaltinstitute.org/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "more",
-   "id": "gecf",
-   "url": "https://www.gecf.org/",
-   "list_feeds": true,
-   "link_re": "(news|press|insights|outlook)",
-   "samples": 8
+   "group": "wp",
+   "id": "ico_types",
+   "url": "https://ico.org/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "more",
-   "id": "jodi",
-   "url": "https://www.jodidata.org/",
-   "list_feeds": true,
-   "link_re": "(news|press)",
-   "samples": 8
+   "group": "wp",
+   "id": "ita_types",
+   "url": "https://www.internationaltin.org/wp-json/wp/v2/types",
+   "show_body": 1500
   },
   {
-   "group": "more",
-   "id": "eia_rss_all",
-   "url": "https://www.eia.gov/tools/rssfeeds/",
-   "list_feeds": true
-  },
-  {
-   "group": "more",
-   "id": "esdm",
-   "url": "https://www.esdm.go.id/",
-   "list_feeds": true,
-   "link_re": "(berita|news|siaran-pers)",
-   "samples": 8
-  },
-  {
-   "group": "more",
-   "id": "aafc_atom",
-   "url": "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=agricultureagrifoodcanada&type=newsreleases&sort=publishedDate&orderBy=desc&pick=20&format=atom&atomtitle=AAFC"
-  },
-  {
-   "group": "more",
-   "id": "bcr",
-   "url": "https://www.bcr.com.ar/",
-   "list_feeds": true,
-   "link_re": "(informativo|noticias|mercados)",
-   "samples": 8
-  },
-  {
-   "group": "more",
-   "id": "minagro_ua",
-   "url": "https://minagro.gov.ua/",
-   "list_feeds": true,
-   "link_re": "(news|novini)",
-   "samples": 8
-  },
-  {
-   "group": "more",
-   "id": "ico_press",
-   "url": "https://ico.org/press-releases/",
-   "link_re": "ico\\.org/[a-z0-9-]{15,}/?$",
-   "samples": 12,
-   "list_feeds": true
-  },
-  {
-   "group": "more",
-   "id": "isosugar_news",
-   "url": "https://www.isosugar.org/news",
-   "link_re": "isosugar\\.org/(news|press)[^\\\"' ]*",
-   "samples": 10
-  },
-  {
-   "group": "more",
-   "id": "wgc_press",
-   "url": "https://www.gold.org/news-and-events/press-releases",
-   "link_re": "/news-and-events/press-releases/[a-z0-9-]{10,}",
-   "samples": 8
-  },
-  {
-   "group": "more",
-   "id": "wpic_news",
-   "url": "https://platinuminvestment.com/news",
-   "link_re": "platinuminvestment\\.com/news/[a-z0-9-]+",
-   "samples": 8
-  },
-  {
-   "group": "more",
-   "id": "irsg_news_links",
-   "url": "https://www.rubberstudy.org/news",
-   "link_re": "rubberstudy\\.org/[a-z-]+/[^\\\"' ]{6,}",
-   "samples": 15
-  },
-  {
-   "group": "more",
-   "id": "lgm_api_guess",
-   "url": "https://www.lgm.gov.my/webv2api/api/Berita",
-   "show_body": 300
-  },
-  {
-   "group": "more",
-   "id": "icsg_render",
+   "group": "wp",
+   "id": "icsg_press_pdf",
    "url": "https://icsg.org/press-releases/",
-   "render": true,
-   "link_re": "icsg\\.org/[a-z0-9-]{12,}",
-   "samples": 8
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press-release)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "ilzsg_press",
+   "url": "https://www.ilzsg.org/press-releases/",
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "insg_press",
+   "url": "https://insg.org/index.php/press-releases/",
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "cobalt_news",
+   "url": "https://www.cobaltinstitute.org/news/",
+   "link_re": "cobaltinstitute\\.org/(news|press)[^\\\"' ]*",
+   "samples": 12
   },
   {
    "group": "more",
-   "id": "ilzsg_render",
-   "url": "https://www.ilzsg.org/",
-   "render": true,
-   "link_re": "ilzsg\\.org/[a-z0-9-]{12,}",
-   "samples": 8
+   "id": "esdm_press",
+   "url": "https://www.esdm.go.id/id/media-center/siaran-pers",
+   "link_re": "/id/media-center/(siaran-pers|arsip-berita)/[a-z0-9-]{12,}",
+   "samples": 8,
+   "list_feeds": true
   },
   {
    "group": "more",
-   "id": "insg_render",
-   "url": "https://insg.org/",
-   "render": true,
-   "link_re": "insg\\.org/[a-z0-9-]{12,}",
-   "samples": 8
+   "id": "jodi_news",
+   "url": "https://www.jodidata.org/news-events/jodi-news.aspx",
+   "link_re": "jodidata\\.org/news[^\\\"' ]*",
+   "samples": 10
   },
   {
    "group": "more",
-   "id": "ita_render",
-   "url": "https://www.internationaltin.org/",
-   "render": true,
-   "link_re": "internationaltin\\.org/[a-z0-9-]{12,}",
-   "samples": 8
+   "id": "bcr_links",
+   "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal",
+   "link_re": "/es/mercados/[a-z0-9/-]+/[a-z0-9-]{8,}",
+   "samples": 10,
+   "list_feeds": true
   },
   {
    "group": "more",
-   "id": "cobalt_render",
-   "url": "https://www.cobaltinstitute.org/",
-   "render": true,
-   "link_re": "cobaltinstitute\\.org/[a-z0-9-]{12,}",
-   "samples": 8
+   "id": "irsg_news2",
+   "url": "https://www.rubberstudy.org/news",
+   "link_re": "rubberstudy\\.org/(news|press|nw|article)/[^\\\"' ]+",
+   "samples": 15
   }
  ]
 }
