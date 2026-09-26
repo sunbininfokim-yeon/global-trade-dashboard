@@ -1,0 +1,3766 @@
+{
+  "schema_version": "oil-rig-count-v1",
+  "generated_at": "2026-09-26T04:37:55+00:00",
+  "commodity": "crude_oil",
+  "drill_for": "Oil",
+  "excluded_drill_for": [
+    "Gas",
+    "Miscellaneous"
+  ],
+  "unit": "rigs",
+  "coverage_from": "2026-06",
+  "publisher": "Baker Hughes",
+  "sources": [
+    {
+      "id": "baker_hughes_north_america",
+      "file": "09-25-2026 North_America Rig_Count Report.xlsx",
+      "as_of": "2026-09-25",
+      "sheets": [
+        "NAM Weekly",
+        "NAM Monthly"
+      ],
+      "used_for": [
+        "usa",
+        "canada"
+      ],
+      "sha256": "aff8a451905e0c02f306f9f9de1226f461f73e2840428a73baaf8f4d34204b92"
+    },
+    {
+      "id": "baker_hughes_worldwide",
+      "file": "August-2026  WorldWide Rig Count Report .xlsx",
+      "as_of_month": "2026-08",
+      "sheets": [
+        "WW Monthly"
+      ],
+      "used_for": [
+        "international_excluding_north_america"
+      ],
+      "sha256": "e8d2f215bc4f8e63738b7f18872a25c5f99932f43e24385a0dad9682ca03cd06"
+    }
+  ],
+  "caveats_ko": [
+    "원유(DrillFor=Oil)만 수록했다. 가스·기타 리그는 제외했다.",
+    "2026-06 이전 행은 넣지 않았다.",
+    "미국·캐나다 주간 값은 발표일 스냅샷이고, 월간 값은 그 달에 발표된 주간 값의 평균이다.",
+    "미국·캐나다 9월 평균은 2026-09-04, 09-11, 09-18, 09-25 네 번의 발표 평균이며 NAM Monthly 시트와 일치한다.",
+    "북미 외 국가는 월말 기준 스냅샷이다. 세계 파일은 2026-08까지다. 2026-09 국제 리그 수는 이 원본에 없다.",
+    "세계 파일의 North America 행은 넣지 않았다. 더 늦은 9월 25일 북미 파일이 6–8월을 개정했기 때문이다.",
+    "CHINA OFFSHORE와 UNITED KINGDOM OFFSHORE는 해상만이다. 중국 육상·영국 육상 리그 수로 쓰지 말 것.",
+    "CONGO는 콩고공화국(COG)이다. 콩고민주공화국이 아니다.",
+    "파키스탄·이집트는 베이커휴스 지역 분류상 Middle East다.",
+    "0은 그 달에 원본이 0으로 적은 값이다. 행이 없으면 미발표이며 0으로 채우지 말 것.",
+    "이 수치는 원유 생산량(bpd)이 아니다."
+  ],
+  "latest": {
+    "north_america_weekly": {
+      "date": "2026-09-25",
+      "usa_oil": 455,
+      "canada_oil": 145,
+      "north_america_oil": 600
+    },
+    "international_monthly": {
+      "month": "2026-08",
+      "international_oil": 749,
+      "regions": [
+        {
+          "source_region": "Middle East",
+          "label_ko": "중동",
+          "total": 311
+        },
+        {
+          "source_region": "Latin America",
+          "label_ko": "중남미",
+          "total": 123
+        },
+        {
+          "source_region": "Africa",
+          "label_ko": "아프리카",
+          "total": 104
+        },
+        {
+          "source_region": "Asia-Pacific",
+          "label_ko": "아시아태평양",
+          "total": 144
+        },
+        {
+          "source_region": "Europe",
+          "label_ko": "유럽",
+          "total": 67
+        }
+      ]
+    },
+    "worldwide_oil_monthly_available_through": "2026-08"
+  },
+  "north_america_weekly": [
+    {
+      "date": "2026-06-05",
+      "usa": 431,
+      "canada": 115,
+      "north_america": 546,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 431,
+          "land": 418,
+          "offshore": 10,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 12,
+              "land": 2,
+              "offshore": 7,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 91,
+              "land": 91
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 26,
+              "land": 26
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 42,
+              "land": 42
+            },
+            {
+              "name": "TEXAS",
+              "total": 214,
+              "offshore": 1,
+              "land": 213
+            },
+            {
+              "name": "UTAH",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 115,
+          "land": 113,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 84,
+              "land": 84
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 24,
+              "land": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "usa": 433,
+      "canada": 121,
+      "north_america": 554,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 433,
+          "land": 422,
+          "offshore": 8,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 10,
+              "land": 2,
+              "offshore": 5,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 93,
+              "land": 93
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 26,
+              "land": 26
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 44,
+              "land": 44
+            },
+            {
+              "name": "TEXAS",
+              "total": 214,
+              "offshore": 1,
+              "land": 213
+            },
+            {
+              "name": "UTAH",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 121,
+          "land": 119,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 84,
+              "land": 84
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 29,
+              "land": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-18",
+      "usa": 433,
+      "canada": 129,
+      "north_america": 562,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 433,
+          "land": 422,
+          "offshore": 9,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 10,
+              "land": 2,
+              "offshore": 6,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 92,
+              "land": 92
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 26,
+              "land": 26
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 44,
+              "land": 44
+            },
+            {
+              "name": "TEXAS",
+              "total": 214,
+              "offshore": 1,
+              "land": 213
+            },
+            {
+              "name": "UTAH",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 129,
+          "land": 127,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 91,
+              "land": 91
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 30,
+              "land": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-26",
+      "usa": 440,
+      "canada": 137,
+      "north_america": 577,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 440,
+          "land": 428,
+          "offshore": 10,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 11,
+              "land": 2,
+              "offshore": 7,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 92,
+              "land": 92
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 26,
+              "land": 26
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 46,
+              "land": 46
+            },
+            {
+              "name": "TEXAS",
+              "total": 216,
+              "offshore": 1,
+              "land": 215
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 14,
+              "land": 14
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 137,
+          "land": 134,
+          "offshore": 3,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 97,
+              "land": 97
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 31,
+              "land": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-02",
+      "usa": 445,
+      "canada": 130,
+      "north_america": 575,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 445,
+          "land": 432,
+          "offshore": 11,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 12,
+              "land": 2,
+              "offshore": 8,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 92,
+              "land": 92
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 48,
+              "land": 48
+            },
+            {
+              "name": "TEXAS",
+              "total": 219,
+              "offshore": 1,
+              "land": 218
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 14,
+              "land": 14
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 130,
+          "land": 128,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 93,
+              "land": 93
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 29,
+              "land": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-10",
+      "usa": 445,
+      "canada": 118,
+      "north_america": 563,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 445,
+          "land": 430,
+          "offshore": 13,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 14,
+              "land": 2,
+              "offshore": 10,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 88,
+              "land": 88
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 48,
+              "land": 48
+            },
+            {
+              "name": "TEXAS",
+              "total": 220,
+              "offshore": 1,
+              "land": 219
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 14,
+              "land": 14
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 118,
+          "land": 116,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 87,
+              "land": 87
+            },
+            {
+              "name": "BRITISH COLUMBIA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "MANITOBA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 25,
+              "land": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-17",
+      "usa": 452,
+      "canada": 136,
+      "north_america": 588,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 452,
+          "land": 437,
+          "offshore": 12,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 14,
+              "land": 2,
+              "offshore": 9,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 50,
+              "land": 50
+            },
+            {
+              "name": "TEXAS",
+              "total": 222,
+              "offshore": 1,
+              "land": 221
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 14,
+              "land": 14
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 136,
+          "land": 136,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 102,
+              "land": 102
+            },
+            {
+              "name": "MANITOBA",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 30,
+              "land": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-24",
+      "usa": 450,
+      "canada": 138,
+      "north_america": 588,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 450,
+          "land": 436,
+          "offshore": 11,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 14,
+              "land": 2,
+              "offshore": 9,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 50,
+              "land": 50
+            },
+            {
+              "name": "TEXAS",
+              "total": 219,
+              "land": 219
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 14,
+              "land": 14
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 138,
+          "land": 136,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 99,
+              "land": 99
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 32,
+              "land": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-31",
+      "usa": 451,
+      "canada": 150,
+      "north_america": 601,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 451,
+          "land": 436,
+          "offshore": 12,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 15,
+              "land": 2,
+              "offshore": 10,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 50,
+              "land": 50
+            },
+            {
+              "name": "TEXAS",
+              "total": 220,
+              "land": 220
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 150,
+          "land": 148,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 111,
+              "land": 111
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 32,
+              "land": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-07",
+      "usa": 454,
+      "canada": 146,
+      "north_america": 600,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 454,
+          "land": 439,
+          "offshore": 13,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 14,
+              "land": 2,
+              "offshore": 10,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 50,
+              "land": 50
+            },
+            {
+              "name": "TEXAS",
+              "total": 224,
+              "offshore": 1,
+              "land": 223
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 146,
+          "land": 143,
+          "offshore": 3,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 106,
+              "land": 106
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 32,
+              "land": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-14",
+      "usa": 455,
+      "canada": 151,
+      "north_america": 606,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 455,
+          "land": 441,
+          "offshore": 11,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 13,
+              "land": 2,
+              "offshore": 8,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEBRASKA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 93,
+              "land": 93
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 223,
+              "offshore": 1,
+              "land": 222
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 151,
+          "land": 148,
+          "offshore": 3,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 113,
+              "land": 113
+            },
+            {
+              "name": "MANITOBA",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 31,
+              "land": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-21",
+      "usa": 452,
+      "canada": 148,
+      "north_america": 600,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 452,
+          "land": 441,
+          "offshore": 9,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 11,
+              "land": 2,
+              "offshore": 7,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OHIO",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 227,
+              "land": 227
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 12,
+              "land": 12
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 148,
+          "land": 147,
+          "offshore": 1,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 111,
+              "land": 111
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 31,
+              "land": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-28",
+      "usa": 447,
+      "canada": 144,
+      "north_america": 591,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 447,
+          "land": 436,
+          "offshore": 8,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 9,
+              "offshore": 6,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 89,
+              "land": 89
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 225,
+              "land": 225
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 144,
+          "land": 143,
+          "offshore": 1,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 108,
+              "land": 108
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 30,
+              "land": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-04",
+      "usa": 449,
+      "canada": 140,
+      "north_america": 589,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 449,
+          "land": 439,
+          "offshore": 7,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 5,
+              "land": 4,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 11,
+              "land": 11
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 8,
+              "offshore": 5,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 90,
+              "land": 90
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 24,
+              "land": 24
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 226,
+              "land": 226
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 140,
+          "land": 139,
+          "offshore": 1,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 106,
+              "land": 106
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 28,
+              "land": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-11",
+      "usa": 450,
+      "canada": 141,
+      "north_america": 591,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 450,
+          "land": 441,
+          "offshore": 7,
+          "inland_waters": 2,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 4,
+              "land": 3,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 11,
+              "land": 11
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 7,
+              "offshore": 5,
+              "inland_waters": 2
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 87,
+              "land": 87
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 26,
+              "land": 26
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 230,
+              "land": 230
+            },
+            {
+              "name": "UTAH",
+              "total": 9,
+              "land": 9
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 141,
+          "land": 139,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 104,
+              "land": 104
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 30,
+              "land": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-18",
+      "usa": 452,
+      "canada": 134,
+      "north_america": 586,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 452,
+          "land": 443,
+          "offshore": 6,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 4,
+              "land": 3,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 7,
+              "offshore": 4,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 89,
+              "land": 89
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 27,
+              "land": 27
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 51,
+              "land": 51
+            },
+            {
+              "name": "TEXAS",
+              "total": 229,
+              "land": 229
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 134,
+          "land": 132,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 99,
+              "land": 99
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 28,
+              "land": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "usa": 455,
+      "canada": 145,
+      "north_america": 600,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 455,
+          "land": 445,
+          "offshore": 7,
+          "inland_waters": 3,
+          "states": [
+            {
+              "name": "ALASKA",
+              "total": 9,
+              "land": 8,
+              "offshore": 1
+            },
+            {
+              "name": "CALIFORNIA",
+              "total": 4,
+              "land": 3,
+              "offshore": 1
+            },
+            {
+              "name": "COLORADO",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "LOUISIANA",
+              "total": 7,
+              "offshore": 4,
+              "inland_waters": 3
+            },
+            {
+              "name": "MONTANA",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "name": "NEVADA",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "name": "NEW MEXICO",
+              "total": 92,
+              "land": 92
+            },
+            {
+              "name": "NORTH DAKOTA",
+              "total": 27,
+              "land": 27
+            },
+            {
+              "name": "OKLAHOMA",
+              "total": 52,
+              "land": 52
+            },
+            {
+              "name": "TEXAS",
+              "total": 227,
+              "offshore": 1,
+              "land": 226
+            },
+            {
+              "name": "UTAH",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "name": "WYOMING",
+              "total": 13,
+              "land": 13
+            }
+          ]
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 145,
+          "land": 143,
+          "offshore": 2,
+          "states": [
+            {
+              "name": "ALBERTA",
+              "total": 105,
+              "land": 105
+            },
+            {
+              "name": "MANITOBA",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "name": "NL OFFSHORE",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "name": "SASKATCHEWAN",
+              "total": 33,
+              "land": 33
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "north_america_monthly": [
+    {
+      "month": "2026-06",
+      "grain": "average_of_weekly_releases",
+      "weekly_releases": 4,
+      "usa": 434.25,
+      "canada": 125.5,
+      "north_america": 559.75,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 434.25,
+          "land": 422.5,
+          "offshore": 9.25,
+          "inland_waters": 2.5,
+          "weekly_releases_in_month": 4
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 125.5,
+          "land": 123.25,
+          "offshore": 2.25,
+          "weekly_releases_in_month": 4
+        }
+      ]
+    },
+    {
+      "month": "2026-07",
+      "grain": "average_of_weekly_releases",
+      "weekly_releases": 5,
+      "usa": 448.6,
+      "canada": 134.4,
+      "north_america": 583,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 448.6,
+          "land": 434.2,
+          "offshore": 11.8,
+          "inland_waters": 2.6,
+          "weekly_releases_in_month": 5
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 134.4,
+          "land": 132.8,
+          "offshore": 1.6,
+          "weekly_releases_in_month": 5
+        }
+      ]
+    },
+    {
+      "month": "2026-08",
+      "grain": "average_of_weekly_releases",
+      "weekly_releases": 4,
+      "usa": 452,
+      "canada": 147.25,
+      "north_america": 599.25,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 452,
+          "land": 439.25,
+          "offshore": 10.25,
+          "inland_waters": 2.5,
+          "weekly_releases_in_month": 4
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 147.25,
+          "land": 145.25,
+          "offshore": 2,
+          "weekly_releases_in_month": 4
+        }
+      ]
+    },
+    {
+      "month": "2026-09",
+      "grain": "average_of_weekly_releases",
+      "weekly_releases": 4,
+      "usa": 451.5,
+      "canada": 140,
+      "north_america": 591.5,
+      "countries": [
+        {
+          "source_name": "UNITED STATES",
+          "iso3": "USA",
+          "map_key": "USA",
+          "label_ko": "미국",
+          "total": 451.5,
+          "land": 442,
+          "offshore": 6.75,
+          "inland_waters": 2.75,
+          "weekly_releases_in_month": 4
+        },
+        {
+          "source_name": "CANADA",
+          "iso3": "CAN",
+          "map_key": "Canada",
+          "label_ko": "캐나다",
+          "total": 140,
+          "land": 138.25,
+          "offshore": 1.75,
+          "weekly_releases_in_month": 4
+        }
+      ]
+    }
+  ],
+  "international_monthly": [
+    {
+      "month": "2026-06",
+      "grain": "month_snapshot",
+      "excludes_north_america": true,
+      "total": 726,
+      "uae": {
+        "map_key": "UAE",
+        "label_ko": "아랍에미리트",
+        "total": 60,
+        "components": [
+          "UAE - ABU DHABI",
+          "UAE - DUBAI"
+        ],
+        "note_ko": "베이커휴스는 UAE를 토후국별로 발표한다. 이 합은 그 행들의 합이다."
+      },
+      "regions": [
+        {
+          "source_region": "Middle East",
+          "label_ko": "중동",
+          "total": 301,
+          "countries": [
+            {
+              "source_name": "SAUDI ARABIA",
+              "iso3": "SAU",
+              "map_key": "Saudi Arabia",
+              "label_ko": "사우디아라비아",
+              "total": 119,
+              "land": 63,
+              "offshore": 56
+            },
+            {
+              "source_name": "UAE - ABU DHABI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "아부다비",
+              "coverage": "emirate",
+              "total": 59,
+              "land": 46,
+              "offshore": 13
+            },
+            {
+              "source_name": "KUWAIT",
+              "iso3": "KWT",
+              "map_key": null,
+              "label_ko": "쿠웨이트",
+              "total": 41,
+              "land": 41
+            },
+            {
+              "source_name": "OMAN",
+              "iso3": "OMN",
+              "map_key": null,
+              "label_ko": "오만",
+              "total": 38,
+              "land": 38
+            },
+            {
+              "source_name": "EGYPT",
+              "iso3": "EGY",
+              "map_key": "Egypt",
+              "label_ko": "이집트",
+              "total": 24,
+              "land": 20,
+              "offshore": 4
+            },
+            {
+              "source_name": "IRAQ",
+              "iso3": "IRQ",
+              "map_key": "Iraq",
+              "label_ko": "이라크",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "source_name": "PAKISTAN",
+              "iso3": "PAK",
+              "map_key": "Pakistan",
+              "label_ko": "파키스탄",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "QATAR",
+              "iso3": "QAT",
+              "map_key": "Qatar",
+              "label_ko": "카타르",
+              "total": 4,
+              "land": 1,
+              "offshore": 3
+            },
+            {
+              "source_name": "BAHRAIN",
+              "iso3": "BHR",
+              "map_key": null,
+              "label_ko": "바레인",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "UAE - DUBAI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "두바이",
+              "coverage": "emirate",
+              "total": 1,
+              "offshore": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Latin America",
+          "label_ko": "중남미",
+          "total": 114,
+          "countries": [
+            {
+              "source_name": "ARGENTINA",
+              "iso3": "ARG",
+              "map_key": "Argentina",
+              "label_ko": "아르헨티나",
+              "total": 32,
+              "land": 32
+            },
+            {
+              "source_name": "MEXICO",
+              "iso3": "MEX",
+              "map_key": "Mexico",
+              "label_ko": "멕시코",
+              "total": 27,
+              "land": 13,
+              "offshore": 14
+            },
+            {
+              "source_name": "BRAZIL",
+              "iso3": "BRA",
+              "map_key": "Brazil",
+              "label_ko": "브라질",
+              "total": 20,
+              "land": 7,
+              "offshore": 13
+            },
+            {
+              "source_name": "COLOMBIA",
+              "iso3": "COL",
+              "map_key": "Colombia",
+              "label_ko": "콜롬비아",
+              "total": 16,
+              "land": 16
+            },
+            {
+              "source_name": "ECUADOR",
+              "iso3": "ECU",
+              "map_key": null,
+              "label_ko": "에콰도르",
+              "total": 12,
+              "land": 12
+            },
+            {
+              "source_name": "GUYANA",
+              "iso3": "GUY",
+              "map_key": null,
+              "label_ko": "가이아나",
+              "total": 4,
+              "inland_waters": 4
+            },
+            {
+              "source_name": "VENEZUELA",
+              "iso3": "VEN",
+              "map_key": null,
+              "label_ko": "베네수엘라",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "SURINAME",
+              "iso3": "SUR",
+              "map_key": null,
+              "label_ko": "수리남",
+              "total": 1,
+              "inland_waters": 1
+            },
+            {
+              "source_name": "TRINIDAD AND TOBAGO",
+              "iso3": "TTO",
+              "map_key": null,
+              "label_ko": "트리니다드토바고",
+              "total": 0,
+              "offshore": 0
+            }
+          ]
+        },
+        {
+          "source_region": "Africa",
+          "label_ko": "아프리카",
+          "total": 103,
+          "countries": [
+            {
+              "source_name": "ALGERIA",
+              "iso3": "DZA",
+              "map_key": "Algeria",
+              "label_ko": "알제리",
+              "total": 31,
+              "land": 31
+            },
+            {
+              "source_name": "LIBYA",
+              "iso3": "LBY",
+              "map_key": null,
+              "label_ko": "리비아",
+              "total": 30,
+              "land": 29,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGERIA",
+              "iso3": "NGA",
+              "map_key": "Nigeria",
+              "label_ko": "나이지리아",
+              "total": 18,
+              "land": 15,
+              "offshore": 3
+            },
+            {
+              "source_name": "GABON",
+              "iso3": "GAB",
+              "map_key": null,
+              "label_ko": "가봉",
+              "total": 5,
+              "land": 3,
+              "offshore": 2
+            },
+            {
+              "source_name": "CHAD",
+              "iso3": "TCD",
+              "map_key": null,
+              "label_ko": "차드",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "ANGOLA",
+              "iso3": "AGO",
+              "map_key": null,
+              "label_ko": "앙골라",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "UGANDA",
+              "iso3": "UGA",
+              "map_key": "Uganda",
+              "label_ko": "우간다",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "CONGO",
+              "iso3": "COG",
+              "map_key": null,
+              "label_ko": "콩고공화국",
+              "total": 2,
+              "land": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "TUNISIA",
+              "iso3": "TUN",
+              "map_key": null,
+              "label_ko": "튀니지",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "CAMEROON",
+              "iso3": "CMR",
+              "map_key": null,
+              "label_ko": "카메룬",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "GHANA",
+              "iso3": "GHA",
+              "map_key": "Ghana",
+              "label_ko": "가나",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "IVORY COAST - COTE D'IVOIRE",
+              "iso3": "CIV",
+              "map_key": "Ivory Coast",
+              "label_ko": "코트디부아르",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "NAMIBIA",
+              "iso3": "NAM",
+              "map_key": null,
+              "label_ko": "나미비아",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "SOMALIA",
+              "iso3": "SOM",
+              "map_key": null,
+              "label_ko": "소말리아",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGER",
+              "iso3": "NER",
+              "map_key": null,
+              "label_ko": "니제르",
+              "total": 0,
+              "land": 0
+            }
+          ]
+        },
+        {
+          "source_region": "Asia-Pacific",
+          "label_ko": "아시아태평양",
+          "total": 151,
+          "countries": [
+            {
+              "source_name": "INDIA",
+              "iso3": "IND",
+              "map_key": "India",
+              "label_ko": "인도",
+              "total": 69,
+              "land": 53,
+              "offshore": 16
+            },
+            {
+              "source_name": "CHINA OFFSHORE",
+              "iso3": "CHN",
+              "map_key": "China",
+              "label_ko": "중국 해상",
+              "coverage": "offshore_only",
+              "total": 37,
+              "offshore": 37
+            },
+            {
+              "source_name": "INDONESIA",
+              "iso3": "IDN",
+              "map_key": "Indonesia",
+              "label_ko": "인도네시아",
+              "total": 31,
+              "inland_waters": 1,
+              "land": 25,
+              "offshore": 5
+            },
+            {
+              "source_name": "VIETNAM",
+              "iso3": "VNM",
+              "map_key": "Vietnam",
+              "label_ko": "베트남",
+              "total": 4,
+              "offshore": 4
+            },
+            {
+              "source_name": "AUSTRALIA",
+              "iso3": "AUS",
+              "map_key": "Australia",
+              "label_ko": "호주",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "BANGLADESH",
+              "iso3": "BGD",
+              "map_key": "Bangladesh",
+              "label_ko": "방글라데시",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "MALAYSIA",
+              "iso3": "MYS",
+              "map_key": "Malaysia",
+              "label_ko": "말레이시아",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "source_name": "THAILAND",
+              "iso3": "THA",
+              "map_key": "Thailand",
+              "label_ko": "태국",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "JAPAN",
+              "iso3": "JPN",
+              "map_key": "Japan",
+              "label_ko": "일본",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "BRUNEI DARUSSALAM",
+              "iso3": "BRN",
+              "map_key": null,
+              "label_ko": "브루나이",
+              "total": 0,
+              "land": 0,
+              "offshore": 0
+            },
+            {
+              "source_name": "PAPUA NEW GUINEA",
+              "iso3": "PNG",
+              "map_key": null,
+              "label_ko": "파푸아뉴기니",
+              "total": 0,
+              "land": 0
+            },
+            {
+              "source_name": "PHILIPPINES",
+              "iso3": "PHL",
+              "map_key": "Philippines",
+              "label_ko": "필리핀",
+              "total": 0,
+              "offshore": 0
+            }
+          ]
+        },
+        {
+          "source_region": "Europe",
+          "label_ko": "유럽",
+          "total": 57,
+          "countries": [
+            {
+              "source_name": "TURKEY",
+              "iso3": "TUR",
+              "map_key": "Turkey",
+              "label_ko": "튀르키예",
+              "total": 27,
+              "land": 27
+            },
+            {
+              "source_name": "NORWAY",
+              "iso3": "NOR",
+              "map_key": "Norway",
+              "label_ko": "노르웨이",
+              "total": 13,
+              "offshore": 13
+            },
+            {
+              "source_name": "UNITED KINGDOM OFFSHORE",
+              "iso3": "GBR",
+              "map_key": "UK",
+              "label_ko": "영국 해상",
+              "coverage": "offshore_only",
+              "total": 6,
+              "offshore": 6
+            },
+            {
+              "source_name": "SERBIA AND MONTENEGRO",
+              "iso3": null,
+              "map_key": null,
+              "label_ko": "세르비아·몬테네그로(원본 표기)",
+              "coverage": "legacy_name",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "GERMANY",
+              "iso3": "DEU",
+              "map_key": "Germany",
+              "label_ko": "독일",
+              "total": 3,
+              "land": 2,
+              "offshore": 1
+            },
+            {
+              "source_name": "CZECH REPUBLIC",
+              "iso3": "CZE",
+              "map_key": null,
+              "label_ko": "체코",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "HUNGARY",
+              "iso3": "HUN",
+              "map_key": "Hungary",
+              "label_ko": "헝가리",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ITALY",
+              "iso3": "ITA",
+              "map_key": "Italy",
+              "label_ko": "이탈리아",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ROMANIA",
+              "iso3": "ROU",
+              "map_key": "Romania",
+              "label_ko": "루마니아",
+              "total": 1,
+              "land": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "month": "2026-07",
+      "grain": "month_snapshot",
+      "excludes_north_america": true,
+      "total": 744,
+      "uae": {
+        "map_key": "UAE",
+        "label_ko": "아랍에미리트",
+        "total": 59,
+        "components": [
+          "UAE - ABU DHABI",
+          "UAE - DUBAI"
+        ],
+        "note_ko": "베이커휴스는 UAE를 토후국별로 발표한다. 이 합은 그 행들의 합이다."
+      },
+      "regions": [
+        {
+          "source_region": "Middle East",
+          "label_ko": "중동",
+          "total": 313,
+          "countries": [
+            {
+              "source_name": "SAUDI ARABIA",
+              "iso3": "SAU",
+              "map_key": "Saudi Arabia",
+              "label_ko": "사우디아라비아",
+              "total": 125,
+              "land": 67,
+              "offshore": 58
+            },
+            {
+              "source_name": "UAE - ABU DHABI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "아부다비",
+              "coverage": "emirate",
+              "total": 58,
+              "land": 45,
+              "offshore": 13
+            },
+            {
+              "source_name": "KUWAIT",
+              "iso3": "KWT",
+              "map_key": null,
+              "label_ko": "쿠웨이트",
+              "total": 40,
+              "land": 40
+            },
+            {
+              "source_name": "OMAN",
+              "iso3": "OMN",
+              "map_key": null,
+              "label_ko": "오만",
+              "total": 39,
+              "land": 39
+            },
+            {
+              "source_name": "EGYPT",
+              "iso3": "EGY",
+              "map_key": "Egypt",
+              "label_ko": "이집트",
+              "total": 25,
+              "land": 21,
+              "offshore": 4
+            },
+            {
+              "source_name": "IRAQ",
+              "iso3": "IRQ",
+              "map_key": "Iraq",
+              "label_ko": "이라크",
+              "total": 12,
+              "land": 12
+            },
+            {
+              "source_name": "PAKISTAN",
+              "iso3": "PAK",
+              "map_key": "Pakistan",
+              "label_ko": "파키스탄",
+              "total": 6,
+              "land": 6
+            },
+            {
+              "source_name": "QATAR",
+              "iso3": "QAT",
+              "map_key": "Qatar",
+              "label_ko": "카타르",
+              "total": 6,
+              "land": 2,
+              "offshore": 4
+            },
+            {
+              "source_name": "BAHRAIN",
+              "iso3": "BHR",
+              "map_key": null,
+              "label_ko": "바레인",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "UAE - DUBAI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "두바이",
+              "coverage": "emirate",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "ISRAEL",
+              "iso3": "ISR",
+              "map_key": null,
+              "label_ko": "이스라엘",
+              "total": 0,
+              "land": 0
+            }
+          ]
+        },
+        {
+          "source_region": "Latin America",
+          "label_ko": "중남미",
+          "total": 117,
+          "countries": [
+            {
+              "source_name": "ARGENTINA",
+              "iso3": "ARG",
+              "map_key": "Argentina",
+              "label_ko": "아르헨티나",
+              "total": 34,
+              "land": 34
+            },
+            {
+              "source_name": "MEXICO",
+              "iso3": "MEX",
+              "map_key": "Mexico",
+              "label_ko": "멕시코",
+              "total": 26,
+              "land": 13,
+              "offshore": 13
+            },
+            {
+              "source_name": "BRAZIL",
+              "iso3": "BRA",
+              "map_key": "Brazil",
+              "label_ko": "브라질",
+              "total": 22,
+              "land": 7,
+              "offshore": 15
+            },
+            {
+              "source_name": "COLOMBIA",
+              "iso3": "COL",
+              "map_key": "Colombia",
+              "label_ko": "콜롬비아",
+              "total": 18,
+              "land": 18,
+              "offshore": 0
+            },
+            {
+              "source_name": "ECUADOR",
+              "iso3": "ECU",
+              "map_key": null,
+              "label_ko": "에콰도르",
+              "total": 10,
+              "land": 10
+            },
+            {
+              "source_name": "GUYANA",
+              "iso3": "GUY",
+              "map_key": null,
+              "label_ko": "가이아나",
+              "total": 4,
+              "inland_waters": 4
+            },
+            {
+              "source_name": "VENEZUELA",
+              "iso3": "VEN",
+              "map_key": null,
+              "label_ko": "베네수엘라",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "SURINAME",
+              "iso3": "SUR",
+              "map_key": null,
+              "label_ko": "수리남",
+              "total": 1,
+              "inland_waters": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Africa",
+          "label_ko": "아프리카",
+          "total": 100,
+          "countries": [
+            {
+              "source_name": "ALGERIA",
+              "iso3": "DZA",
+              "map_key": "Algeria",
+              "label_ko": "알제리",
+              "total": 33,
+              "land": 33
+            },
+            {
+              "source_name": "LIBYA",
+              "iso3": "LBY",
+              "map_key": null,
+              "label_ko": "리비아",
+              "total": 27,
+              "land": 26,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGERIA",
+              "iso3": "NGA",
+              "map_key": "Nigeria",
+              "label_ko": "나이지리아",
+              "total": 18,
+              "land": 13,
+              "offshore": 5
+            },
+            {
+              "source_name": "GABON",
+              "iso3": "GAB",
+              "map_key": null,
+              "label_ko": "가봉",
+              "total": 4,
+              "land": 2,
+              "offshore": 2
+            },
+            {
+              "source_name": "ANGOLA",
+              "iso3": "AGO",
+              "map_key": null,
+              "label_ko": "앙골라",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "CHAD",
+              "iso3": "TCD",
+              "map_key": null,
+              "label_ko": "차드",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "UGANDA",
+              "iso3": "UGA",
+              "map_key": "Uganda",
+              "label_ko": "우간다",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "CONGO",
+              "iso3": "COG",
+              "map_key": null,
+              "label_ko": "콩고공화국",
+              "total": 2,
+              "land": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "GHANA",
+              "iso3": "GHA",
+              "map_key": "Ghana",
+              "label_ko": "가나",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "source_name": "TUNISIA",
+              "iso3": "TUN",
+              "map_key": null,
+              "label_ko": "튀니지",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "IVORY COAST - COTE D'IVOIRE",
+              "iso3": "CIV",
+              "map_key": "Ivory Coast",
+              "label_ko": "코트디부아르",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGER",
+              "iso3": "NER",
+              "map_key": null,
+              "label_ko": "니제르",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "SOMALIA",
+              "iso3": "SOM",
+              "map_key": null,
+              "label_ko": "소말리아",
+              "total": 1,
+              "offshore": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Asia-Pacific",
+          "label_ko": "아시아태평양",
+          "total": 151,
+          "countries": [
+            {
+              "source_name": "INDIA",
+              "iso3": "IND",
+              "map_key": "India",
+              "label_ko": "인도",
+              "total": 67,
+              "land": 51,
+              "offshore": 16
+            },
+            {
+              "source_name": "CHINA OFFSHORE",
+              "iso3": "CHN",
+              "map_key": "China",
+              "label_ko": "중국 해상",
+              "coverage": "offshore_only",
+              "total": 36,
+              "offshore": 36
+            },
+            {
+              "source_name": "INDONESIA",
+              "iso3": "IDN",
+              "map_key": "Indonesia",
+              "label_ko": "인도네시아",
+              "total": 29,
+              "inland_waters": 1,
+              "land": 24,
+              "offshore": 4
+            },
+            {
+              "source_name": "AUSTRALIA",
+              "iso3": "AUS",
+              "map_key": "Australia",
+              "label_ko": "호주",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "THAILAND",
+              "iso3": "THA",
+              "map_key": "Thailand",
+              "label_ko": "태국",
+              "total": 4,
+              "land": 3,
+              "offshore": 1
+            },
+            {
+              "source_name": "MALAYSIA",
+              "iso3": "MYS",
+              "map_key": "Malaysia",
+              "label_ko": "말레이시아",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "VIETNAM",
+              "iso3": "VNM",
+              "map_key": "Vietnam",
+              "label_ko": "베트남",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "BANGLADESH",
+              "iso3": "BGD",
+              "map_key": "Bangladesh",
+              "label_ko": "방글라데시",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "JAPAN",
+              "iso3": "JPN",
+              "map_key": "Japan",
+              "label_ko": "일본",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "PAPUA NEW GUINEA",
+              "iso3": "PNG",
+              "map_key": null,
+              "label_ko": "파푸아뉴기니",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "PHILIPPINES",
+              "iso3": "PHL",
+              "map_key": "Philippines",
+              "label_ko": "필리핀",
+              "total": 1,
+              "offshore": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Europe",
+          "label_ko": "유럽",
+          "total": 63,
+          "countries": [
+            {
+              "source_name": "TURKEY",
+              "iso3": "TUR",
+              "map_key": "Turkey",
+              "label_ko": "튀르키예",
+              "total": 31,
+              "land": 31
+            },
+            {
+              "source_name": "NORWAY",
+              "iso3": "NOR",
+              "map_key": "Norway",
+              "label_ko": "노르웨이",
+              "total": 14,
+              "offshore": 14
+            },
+            {
+              "source_name": "UNITED KINGDOM OFFSHORE",
+              "iso3": "GBR",
+              "map_key": "UK",
+              "label_ko": "영국 해상",
+              "coverage": "offshore_only",
+              "total": 7,
+              "offshore": 7
+            },
+            {
+              "source_name": "SERBIA AND MONTENEGRO",
+              "iso3": null,
+              "map_key": null,
+              "label_ko": "세르비아·몬테네그로(원본 표기)",
+              "coverage": "legacy_name",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "GERMANY",
+              "iso3": "DEU",
+              "map_key": "Germany",
+              "label_ko": "독일",
+              "total": 3,
+              "land": 2,
+              "offshore": 1
+            },
+            {
+              "source_name": "CZECH REPUBLIC",
+              "iso3": "CZE",
+              "map_key": null,
+              "label_ko": "체코",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "HUNGARY",
+              "iso3": "HUN",
+              "map_key": "Hungary",
+              "label_ko": "헝가리",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ITALY",
+              "iso3": "ITA",
+              "map_key": "Italy",
+              "label_ko": "이탈리아",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ROMANIA",
+              "iso3": "ROU",
+              "map_key": "Romania",
+              "label_ko": "루마니아",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "FRANCE",
+              "iso3": "FRA",
+              "map_key": "France",
+              "label_ko": "프랑스",
+              "total": 0,
+              "land": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "month": "2026-08",
+      "grain": "month_snapshot",
+      "excludes_north_america": true,
+      "total": 749,
+      "uae": {
+        "map_key": "UAE",
+        "label_ko": "아랍에미리트",
+        "total": 60,
+        "components": [
+          "UAE - ABU DHABI",
+          "UAE - DUBAI",
+          "UAE - SHARJAH"
+        ],
+        "note_ko": "베이커휴스는 UAE를 토후국별로 발표한다. 이 합은 그 행들의 합이다."
+      },
+      "regions": [
+        {
+          "source_region": "Middle East",
+          "label_ko": "중동",
+          "total": 311,
+          "countries": [
+            {
+              "source_name": "SAUDI ARABIA",
+              "iso3": "SAU",
+              "map_key": "Saudi Arabia",
+              "label_ko": "사우디아라비아",
+              "total": 125,
+              "land": 67,
+              "offshore": 58
+            },
+            {
+              "source_name": "UAE - ABU DHABI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "아부다비",
+              "coverage": "emirate",
+              "total": 58,
+              "land": 46,
+              "offshore": 12
+            },
+            {
+              "source_name": "OMAN",
+              "iso3": "OMN",
+              "map_key": null,
+              "label_ko": "오만",
+              "total": 40,
+              "land": 40
+            },
+            {
+              "source_name": "KUWAIT",
+              "iso3": "KWT",
+              "map_key": null,
+              "label_ko": "쿠웨이트",
+              "total": 37,
+              "land": 37
+            },
+            {
+              "source_name": "EGYPT",
+              "iso3": "EGY",
+              "map_key": "Egypt",
+              "label_ko": "이집트",
+              "total": 21,
+              "land": 18,
+              "offshore": 3
+            },
+            {
+              "source_name": "IRAQ",
+              "iso3": "IRQ",
+              "map_key": "Iraq",
+              "label_ko": "이라크",
+              "total": 16,
+              "land": 16
+            },
+            {
+              "source_name": "PAKISTAN",
+              "iso3": "PAK",
+              "map_key": "Pakistan",
+              "label_ko": "파키스탄",
+              "total": 5,
+              "land": 5
+            },
+            {
+              "source_name": "QATAR",
+              "iso3": "QAT",
+              "map_key": "Qatar",
+              "label_ko": "카타르",
+              "total": 5,
+              "land": 3,
+              "offshore": 2
+            },
+            {
+              "source_name": "BAHRAIN",
+              "iso3": "BHR",
+              "map_key": null,
+              "label_ko": "바레인",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ISRAEL",
+              "iso3": "ISR",
+              "map_key": null,
+              "label_ko": "이스라엘",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "UAE - DUBAI",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "두바이",
+              "coverage": "emirate",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "UAE - SHARJAH",
+              "iso3": "ARE",
+              "map_key": "UAE",
+              "label_ko": "샤르자",
+              "coverage": "emirate",
+              "total": 1,
+              "land": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Latin America",
+          "label_ko": "중남미",
+          "total": 123,
+          "countries": [
+            {
+              "source_name": "ARGENTINA",
+              "iso3": "ARG",
+              "map_key": "Argentina",
+              "label_ko": "아르헨티나",
+              "total": 36,
+              "land": 36
+            },
+            {
+              "source_name": "MEXICO",
+              "iso3": "MEX",
+              "map_key": "Mexico",
+              "label_ko": "멕시코",
+              "total": 30,
+              "land": 17,
+              "offshore": 13
+            },
+            {
+              "source_name": "BRAZIL",
+              "iso3": "BRA",
+              "map_key": "Brazil",
+              "label_ko": "브라질",
+              "total": 22,
+              "land": 7,
+              "offshore": 15
+            },
+            {
+              "source_name": "COLOMBIA",
+              "iso3": "COL",
+              "map_key": "Colombia",
+              "label_ko": "콜롬비아",
+              "total": 19,
+              "land": 18,
+              "offshore": 1
+            },
+            {
+              "source_name": "ECUADOR",
+              "iso3": "ECU",
+              "map_key": null,
+              "label_ko": "에콰도르",
+              "total": 8,
+              "land": 8
+            },
+            {
+              "source_name": "GUYANA",
+              "iso3": "GUY",
+              "map_key": null,
+              "label_ko": "가이아나",
+              "total": 5,
+              "inland_waters": 5
+            },
+            {
+              "source_name": "VENEZUELA",
+              "iso3": "VEN",
+              "map_key": null,
+              "label_ko": "베네수엘라",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "SURINAME",
+              "iso3": "SUR",
+              "map_key": null,
+              "label_ko": "수리남",
+              "total": 1,
+              "inland_waters": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Africa",
+          "label_ko": "아프리카",
+          "total": 104,
+          "countries": [
+            {
+              "source_name": "ALGERIA",
+              "iso3": "DZA",
+              "map_key": "Algeria",
+              "label_ko": "알제리",
+              "total": 34,
+              "land": 34
+            },
+            {
+              "source_name": "LIBYA",
+              "iso3": "LBY",
+              "map_key": null,
+              "label_ko": "리비아",
+              "total": 27,
+              "land": 26,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGERIA",
+              "iso3": "NGA",
+              "map_key": "Nigeria",
+              "label_ko": "나이지리아",
+              "total": 20,
+              "land": 13,
+              "offshore": 7
+            },
+            {
+              "source_name": "ANGOLA",
+              "iso3": "AGO",
+              "map_key": null,
+              "label_ko": "앙골라",
+              "total": 4,
+              "offshore": 4
+            },
+            {
+              "source_name": "CHAD",
+              "iso3": "TCD",
+              "map_key": null,
+              "label_ko": "차드",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "GABON",
+              "iso3": "GAB",
+              "map_key": null,
+              "label_ko": "가봉",
+              "total": 3,
+              "land": 1,
+              "offshore": 2
+            },
+            {
+              "source_name": "UGANDA",
+              "iso3": "UGA",
+              "map_key": "Uganda",
+              "label_ko": "우간다",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "CONGO",
+              "iso3": "COG",
+              "map_key": null,
+              "label_ko": "콩고공화국",
+              "total": 2,
+              "land": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "GHANA",
+              "iso3": "GHA",
+              "map_key": "Ghana",
+              "label_ko": "가나",
+              "total": 2,
+              "offshore": 2
+            },
+            {
+              "source_name": "TUNISIA",
+              "iso3": "TUN",
+              "map_key": null,
+              "label_ko": "튀니지",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "CAMEROON",
+              "iso3": "CMR",
+              "map_key": null,
+              "label_ko": "카메룬",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "IVORY COAST - COTE D'IVOIRE",
+              "iso3": "CIV",
+              "map_key": "Ivory Coast",
+              "label_ko": "코트디부아르",
+              "total": 1,
+              "offshore": 1
+            },
+            {
+              "source_name": "NIGER",
+              "iso3": "NER",
+              "map_key": null,
+              "label_ko": "니제르",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "SOMALIA",
+              "iso3": "SOM",
+              "map_key": null,
+              "label_ko": "소말리아",
+              "total": 1,
+              "offshore": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Asia-Pacific",
+          "label_ko": "아시아태평양",
+          "total": 144,
+          "countries": [
+            {
+              "source_name": "INDIA",
+              "iso3": "IND",
+              "map_key": "India",
+              "label_ko": "인도",
+              "total": 66,
+              "land": 50,
+              "offshore": 16
+            },
+            {
+              "source_name": "CHINA OFFSHORE",
+              "iso3": "CHN",
+              "map_key": "China",
+              "label_ko": "중국 해상",
+              "coverage": "offshore_only",
+              "total": 34,
+              "offshore": 34
+            },
+            {
+              "source_name": "INDONESIA",
+              "iso3": "IDN",
+              "map_key": "Indonesia",
+              "label_ko": "인도네시아",
+              "total": 27,
+              "inland_waters": 1,
+              "land": 23,
+              "offshore": 3
+            },
+            {
+              "source_name": "THAILAND",
+              "iso3": "THA",
+              "map_key": "Thailand",
+              "label_ko": "태국",
+              "total": 4,
+              "land": 3,
+              "offshore": 1
+            },
+            {
+              "source_name": "AUSTRALIA",
+              "iso3": "AUS",
+              "map_key": "Australia",
+              "label_ko": "호주",
+              "total": 3,
+              "land": 3
+            },
+            {
+              "source_name": "MALAYSIA",
+              "iso3": "MYS",
+              "map_key": "Malaysia",
+              "label_ko": "말레이시아",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "VIETNAM",
+              "iso3": "VNM",
+              "map_key": "Vietnam",
+              "label_ko": "베트남",
+              "total": 3,
+              "offshore": 3
+            },
+            {
+              "source_name": "BANGLADESH",
+              "iso3": "BGD",
+              "map_key": "Bangladesh",
+              "label_ko": "방글라데시",
+              "total": 2,
+              "land": 2
+            },
+            {
+              "source_name": "BRUNEI DARUSSALAM",
+              "iso3": "BRN",
+              "map_key": null,
+              "label_ko": "브루나이",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "JAPAN",
+              "iso3": "JPN",
+              "map_key": "Japan",
+              "label_ko": "일본",
+              "total": 1,
+              "offshore": 1
+            }
+          ]
+        },
+        {
+          "source_region": "Europe",
+          "label_ko": "유럽",
+          "total": 67,
+          "countries": [
+            {
+              "source_name": "TURKEY",
+              "iso3": "TUR",
+              "map_key": "Turkey",
+              "label_ko": "튀르키예",
+              "total": 34,
+              "land": 34
+            },
+            {
+              "source_name": "NORWAY",
+              "iso3": "NOR",
+              "map_key": "Norway",
+              "label_ko": "노르웨이",
+              "total": 16,
+              "offshore": 16
+            },
+            {
+              "source_name": "UNITED KINGDOM OFFSHORE",
+              "iso3": "GBR",
+              "map_key": "UK",
+              "label_ko": "영국 해상",
+              "coverage": "offshore_only",
+              "total": 6,
+              "offshore": 6
+            },
+            {
+              "source_name": "SERBIA AND MONTENEGRO",
+              "iso3": null,
+              "map_key": null,
+              "label_ko": "세르비아·몬테네그로(원본 표기)",
+              "coverage": "legacy_name",
+              "total": 4,
+              "land": 4
+            },
+            {
+              "source_name": "GERMANY",
+              "iso3": "DEU",
+              "map_key": "Germany",
+              "label_ko": "독일",
+              "total": 3,
+              "land": 2,
+              "offshore": 1
+            },
+            {
+              "source_name": "CZECH REPUBLIC",
+              "iso3": "CZE",
+              "map_key": null,
+              "label_ko": "체코",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "FRANCE",
+              "iso3": "FRA",
+              "map_key": "France",
+              "label_ko": "프랑스",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "HUNGARY",
+              "iso3": "HUN",
+              "map_key": "Hungary",
+              "label_ko": "헝가리",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ROMANIA",
+              "iso3": "ROU",
+              "map_key": "Romania",
+              "label_ko": "루마니아",
+              "total": 1,
+              "land": 1
+            },
+            {
+              "source_name": "ITALY",
+              "iso3": "ITA",
+              "map_key": "Italy",
+              "label_ko": "이탈리아",
+              "total": 0,
+              "offshore": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "worldwide_oil_monthly": [
+    {
+      "month": "2026-06",
+      "international_oil": 726,
+      "usa_oil": 434.25,
+      "canada_oil": 125.5,
+      "north_america_oil": 559.75,
+      "worldwide_oil": 1285.75,
+      "method": "international = WW Monthly Oil excluding North America; north_america = NAM Monthly Oil from the 2026-09-25 file"
+    },
+    {
+      "month": "2026-07",
+      "international_oil": 744,
+      "usa_oil": 448.6,
+      "canada_oil": 134.4,
+      "north_america_oil": 583,
+      "worldwide_oil": 1327,
+      "method": "international = WW Monthly Oil excluding North America; north_america = NAM Monthly Oil from the 2026-09-25 file"
+    },
+    {
+      "month": "2026-08",
+      "international_oil": 749,
+      "usa_oil": 452,
+      "canada_oil": 147.25,
+      "north_america_oil": 599.25,
+      "worldwide_oil": 1348.25,
+      "method": "international = WW Monthly Oil excluding North America; north_america = NAM Monthly Oil from the 2026-09-25 file"
+    }
+  ]
+}
