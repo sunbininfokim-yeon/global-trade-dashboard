@@ -353,6 +353,49 @@ def _member_groups(views: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return groups
 
 
+_BOE_ROW_KO = {
+    "cpi": "CPI 인플레이션(전년 동기 대비 %)", "gdp": "실질 GDP 성장률(전년 동기 대비 %)", "excess": "수급갭(잠재 GDP 대비 %)",
+    "unemployment": "실업률(ILO 기준 %)", "wages": "민간 정규 주간임금 상승률(%)", "bank_rate": "Bank Rate(시장 내재 경로 %)",
+    "energy": "에너지 가격의 CPI 기여도(%p)", "world_export": "세계 수출물가(%)",
+}
+
+
+def _boe_table(entry: dict[str, Any]) -> dict[str, Any]:
+    """A Report table as the panel draws it: every row keeps the Bank's English label and the
+    definition its footnote gives; a Korean label is added only for the rows we know."""
+    notes = entry.get("footnotes", {})
+    blocks = []
+    for b in entry["blocks"]:
+        rows = []
+        for r in b["rows"]:
+            defs = [notes[k] for k in r.get("notes", []) if k in notes]
+            rows.append({"id": r["id"], "label_en": r["label_en"], "label_ko": _BOE_ROW_KO.get(r["id"]),
+                         "values": r["values"], "definition_en": " ".join(defs) or None})
+        blocks.append({"name": b["name"], "rows": rows})
+    prior_note = next((v for v in notes.values() if v.startswith("Figures in parentheses")), None)
+    used = {k for b in entry["blocks"] for r in b["rows"] for k in r.get("notes", [])}
+    general = [v for k, v in notes.items() if k not in used and v != prior_note]          # the notes on the table as a whole
+    return {"table_id": entry["table_id"], "title": entry["title"], "columns": entry["columns"], "blocks": blocks,
+            "prior_note_en": prior_note, "general_en": general}
+
+
+def _boe_outlook(doc: dict[str, Any], last_meeting_date: str) -> dict[str, Any] | None:
+    reports = sorted(doc.get("reports", []), key=lambda r: r["meeting_date"])
+    if not reports:
+        return None
+    cur = reports[-1]
+    prev = reports[-2] if len(reports) >= 2 else None
+    return {
+        "kind": "projection_blocks",
+        "meeting_date": cur["meeting_date"], "title": cur["title"], "source_url": cur["source_url"],
+        "forecast_round": cur["meeting_date"] == last_meeting_date,
+        "summary": _boe_table(cur["summary"]),
+        "annual": [_boe_table(a) for a in cur.get("annual", [])],
+        "previous": {"meeting_date": prev["meeting_date"], "title": prev["title"], "source_url": prev["source_url"],
+                     "summary": _boe_table(prev["summary"])} if prev else None,
+    }
+
+
 def assemble_boe(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
     meetings = sorted(doc.get("meetings", []), key=lambda m: m["meeting_date"])
     if not meetings:
@@ -417,7 +460,7 @@ def assemble_boe(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "votes": votes,
         "vote_history": vote_history,
         "statement_diffs": diffs,
-        "outlook": None,
+        "outlook": _boe_outlook(doc, last["meeting_date"]),
         "minutes": minutes,
         "member_views": views,
         "opinions": None,

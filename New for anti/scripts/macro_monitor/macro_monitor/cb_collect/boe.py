@@ -381,3 +381,125 @@ def parse_calendar(html: str) -> dict[str, Any]:
                          "monetary_policy_report": "Monetary Policy Report" in " ".join(cells[1:])})
     nd = re.search(r"Next due:\s*(\d{1,2} [A-Za-z]+ \d{4})", soup.get_text(" ", strip=True))
     return {"rows": sorted(rows, key=lambda r: r["decision_date"]), "next_due": _iso(nd.group(1)) if nd else None}
+
+
+# --------------------------------------------------------------------------
+# Monetary Policy Report (quarterly: Feb / May-Apr / Aug-Jul / Nov)
+# --------------------------------------------------------------------------
+
+def report_url(year: int, month: int) -> str:
+    return f"{BASE}/monetary-policy-report/{year}/{meeting_slug(year, month)}"
+
+
+def fetch_report(year: int, month: int) -> str | None:
+    """The Report page HTML (3-8 MB: it embeds its chart data), or None when the Bank has none for
+    that month (404: an MPC month that is not a forecast round)."""
+    try:
+        return fetch_text(report_url(year, month), timeout=120, min_size=20000)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise
+
+
+_SUMMARY_HEAD = re.compile(r"^Table (3\.[AB]): (Forecast summary|Summary of outputs of the central projection and scenarios|Summary of scenarios)")
+_ANNEX_HEAD = re.compile(r"^Table (A1\.[ABC]): (GDP|Wages and prices|The labour market)")
+_COL = re.compile(r"^\d{4}(?: Q[1-4])?$")
+_CELL = re.compile(r"^(?P<v>-?\d+(?:\.\d+)?)(?:\s*\((?P<p>-?\d+(?:\.\d+)?)\))?$")
+_ROW_IDS = (("CPI inflation", "cpi"), ("CPI", "cpi"), ("UK GDP", "gdp"), ("GDP", "gdp"), ("Excess supply", "excess"),
+            ("Unemployment rate", "unemployment"), ("Private sector regular", "wages"), ("Bank Rate", "bank_rate"),
+            ("Energy prices", "energy"), ("World export prices", "world_export"))
+
+
+def _cell(text: str) -> tuple[float | None, float | None]:
+    """"2.9" -> (2.9, None); "1.4 (1.5)" -> (1.4, 1.5): the figure in brackets is the previous Report's."""
+    m = _CELL.match(collapse(text).replace("−", "-").replace("–", "-"))
+    if not m:
+        return None, None
+    return float(m["v"]), (float(m["p"]) if m["p"] is not None else None)
+
+
+def _row_id(label: str) -> str | None:
+    return next((rid for prefix, rid in _ROW_IDS if label.startswith(prefix)), None)
+
+
+def _footnotes(table) -> dict[str, str]:
+    """The "(b) Four-quarter inflation rate ..." notes that follow a table, by letter."""
+    for el in table.find_all_next(["div", "table"]):
+        if el.name == "table":
+            break
+        if "img-note" in (el.get("class") or []):
+            out = {}
+            for li in el.find_all("li"):
+                m = re.match(r"^\(([a-z])\)\s*(.*)$", collapse(li.get_text(" ", strip=True)), re.S)
+                if m:
+                    out[m.group(1)] = m.group(2).strip()
+            return out
+    return {}
+
+
+def _read_table(table, *, columns_only: bool = True) -> tuple[list[str], list[dict[str, Any]]]:
+    """(column labels, blocks). A row with one non-empty cell opens a block ("Central projection",
+    "Scenario A"); a table without such rows is a single unnamed block."""
+    grid = [[collapse(c.get_text(" ", strip=True)) for c in tr.find_all(["td", "th"])] for tr in table.find_all("tr")]
+    grid = [g for g in grid if any(g)]
+    if not grid:
+        raise ValueError("empty table")
+    header = grid[0]
+    keep = [i for i, h in enumerate(header) if i > 0 and _COL.match(h)]
+    if not keep:
+        raise ValueError(f"no period columns in header {header!r}")
+    blocks: list[dict[str, Any]] = []
+    cur: dict[str, Any] | None = None
+    for cells in grid[1:]:
+        if all(c == "" for c in cells[1:]):
+            cur = {"name": cells[0], "rows": []}
+            blocks.append(cur)
+            continue
+        if cur is None:
+            cur = {"name": None, "rows": []}
+            blocks.append(cur)
+        refs = re.findall(r"\(\s*([a-z])\s*\)", cells[0])
+        label = re.sub(r"\s*\(\s*[a-z]\s*\)", "", cells[0]).strip()
+        cur["rows"].append({
+            "id": _row_id(label), "label_en": label, "notes": refs,
+            "values": [dict(zip(("value", "prior"), _cell(cells[i] if i < len(cells) else ""))) for i in keep],
+        })
+    return [header[i] for i in keep], blocks
+
+
+def parse_report(html: str, *, url: str) -> dict[str, Any]:
+    """The Report's forecast summary (Table 3.A) or, when the MPC published scenarios instead of a
+    single central projection, the scenario summary (Table 3.B), and -- where the Report carries
+    them -- the annual central-projection tables of Annex 1 (GDP, wages and prices, labour market).
+    Values are the printed ones; a figure in brackets is the previous Report's for the same date."""
+    soup = BeautifulSoup(html, "html.parser")
+    main = soup.find("main") or soup
+    h1 = main.find("h1")
+    title = collapse(h1.get_text()) if h1 else ""
+    summary = None
+    annual: list[dict[str, Any]] = []
+    for h in main.find_all("h3"):
+        text = collapse(h.get_text(" ", strip=True))
+        m = _SUMMARY_HEAD.match(text)
+        a = _ANNEX_HEAD.match(text)
+        if not (m or a):
+            continue
+        table = h.find_next("table")
+        if table is None:
+            continue
+        cols, blocks = _read_table(table)
+        note = _footnotes(table)
+        entry = {"table_id": (m or a).group(1), "title": re.sub(r"\s*\(\s*[a-z]\s*\)", "", text), "columns": cols, "blocks": blocks, "footnotes": note}
+        if m:
+            summary = summary or entry               # an edition carries 3.A (central projection) or 3.B (scenarios)
+        else:
+            annual.append(entry)
+    if summary is None:
+        raise NotHeld(f"no forecast summary table on {url}")
+    m_pub = re.search(r"Published on\s+(\d{1,2} [A-Za-z]+ \d{4})", soup.get_text(" ", strip=True))
+    return {
+        "title": title, "source_url": url,
+        "published": _iso(m_pub.group(1)) if m_pub else None,
+        "summary": summary, "annual": annual,
+    }

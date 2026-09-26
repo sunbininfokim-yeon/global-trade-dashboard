@@ -2046,9 +2046,53 @@ const mmCbRosterHtml = (cb) => {
     </div>`;
 };
 
+// Bank of England Monetary Policy Report: the forecast summary (Table 3.A / 3.B) as the Bank prints it --
+// a central projection, or scenarios where the MPC published scenarios -- and the annual tables of Annex 1.
+const mmCbProjFmt = (v) => (Number.isFinite(v) ? Number(v).toFixed(1) : '—');
+const mmCbProjCell = (c) => {
+    if (!c || !Number.isFinite(c.value)) return '<td class="mm-sep-na">—</td>';
+    let sub = '';
+    if (Number.isFinite(c.prior)) {
+        const diff = Math.round((c.value - c.prior) * 10) / 10;
+        const mark = diff > 0 ? `<b class="mm-sep-up">▲${diff.toFixed(1)}</b>` : (diff < 0 ? `<b class="mm-sep-down">▼${Math.abs(diff).toFixed(1)}</b>` : '<b>—</b>');
+        sub = `<small>직전 ${mmCbProjFmt(c.prior)} ${mark}</small>`;
+    }
+    return `<td>${mmCbProjFmt(c.value)}${sub}</td>`;
+};
+const mmCbProjTable = (t) => (t.blocks || []).map((b) => `
+    ${b.name ? `<p class="mm-quality-muted"><b>${finEsc(b.name)}</b></p>` : ''}
+    <div class="mm-sep-scroll"><table class="mm-sep-table">
+        <thead><tr><th></th>${(t.columns || []).map((c) => `<th>${finEsc(c)}</th>`).join('')}</tr></thead>
+        <tbody>${b.rows.map((r) => `<tr><th>${finEsc(r.label_ko || r.label_en)}${r.label_ko ? `<small>${finEsc(r.label_en)}</small>` : ''}</th>${r.values.map(mmCbProjCell).join('')}</tr>`).join('')}</tbody>
+    </table></div>`).join('');
+
+const mmCbProjectionHtml = (o) => {
+    const t = o.summary;
+    if (!t) return '';
+    const scenarios = (t.blocks || []).filter((b) => b.name).map((b) => b.name);
+    const defs = [];
+    (t.general_en || []).forEach((g) => defs.push(`<li>${finEsc(g)}</li>`));
+    ((t.blocks || [])[0] || { rows: [] }).rows.forEach((r) => { if (r.definition_en) defs.push(`<li><b>${finEsc(r.label_en)}</b> ${finEsc(r.definition_en)}</li>`); });
+    const link = (u, txt) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">${txt} ↗</a>`;
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">경제·물가 전망 · ${finEsc(o.meeting_date)} ${finEsc(o.title || '통화정책보고서')}${o.forecast_round ? ' (이번 회의와 함께 발표)' : ''}</span>
+        <details class="mm-quality-details" open><summary>${finEsc(t.title)}</summary>
+            ${mmCbProjTable(t)}
+            <p class="mm-quality-muted">MPC 전망을 보고서에 실린 그대로 옮겼습니다. 분기는 그 시점의 전년 동기 대비입니다.${scenarios.length > 1 ? ` 이 보고서는 시나리오(${finEsc(scenarios.join(' · '))})를 함께 냈습니다.` : ''}${t.prior_note_en ? ` 작은 글씨는 직전 보고서의 같은 시점 전망입니다(원문 각주: "${finEsc(t.prior_note_en)}")` : ''} · ${link(o.source_url, '보고서 원문')}</p>
+            ${defs.length ? `<details class="mm-cb-more"><summary>지표 정의 (원문 각주)</summary><ul class="mm-minutes-list">${defs.join('')}</ul></details>` : ''}
+        </details>
+        ${(o.annual || []).length ? `<details class="mm-quality-details"><summary>연도별 중심 전망 (부록 1 · ${(o.annual || []).length}개 표)</summary>
+            ${o.annual.map((a) => `<p class="mm-quality-muted"><b>${finEsc(a.title)}</b></p>${mmCbProjTable(a)}`).join('')}</details>` : ''}
+        ${o.previous ? `<details class="mm-quality-details"><summary>직전 보고서 · ${finEsc(o.previous.meeting_date)} ${finEsc(o.previous.title || '')}</summary>
+            ${mmCbProjTable(o.previous.summary)}<p class="mm-quality-muted">${link(o.previous.source_url, '원문')}</p></details>` : ''}
+    </div>`;
+};
+
 const mmCbOutlookHtml = (cb) => {
     const o = cb.outlook;
     if (!o) return '';
+    if (o.kind === 'projection_blocks') return mmCbProjectionHtml(o);
     if (o.kind === 'forecast_table') {
         const vars = [['real_gdp', '실질 GDP'], ['cpi', '소비자물가(신선식품 제외)'], ['core_cpi', '참고: 근원(식품·에너지 제외)']];
         const cell = (c, prior) => {

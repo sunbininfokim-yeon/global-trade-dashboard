@@ -3,7 +3,9 @@
 
 One record per meeting since --from: Bank Rate, the vote (every member named, checked against the
 stated tally), the Summary text, the Minutes by section, the attendance list and -- from November
-2025 -- each member's own rationale. Plus the Bank's confirmed meeting dates.
+2025 -- each member's own rationale. Plus the Bank's confirmed meeting dates, and the forecast
+tables of each Monetary Policy Report since --reports-from (a Report page is 3-8 MB, so only the
+recent ones are read, once each).
 
 Idempotent: a meeting already in the file is not fetched again. Months known to have no meeting
 (the Bank answers 404) are remembered; a month whose page exists but whose meeting has not
@@ -35,6 +37,7 @@ def _load() -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--from", dest="start", default="2024-01-01", help="earliest month to look at")
+    ap.add_argument("--reports-from", default="2025-11-01", help="earliest meeting whose Monetary Policy Report to read")
     ap.add_argument("--force", action="store_true", help="re-fetch meetings already stored")
     args = ap.parse_args()
 
@@ -74,6 +77,31 @@ def main() -> int:
             rec["page"] = slug
             meetings[rec["meeting_date"]] = rec
 
+    # Monetary Policy Reports: published with the Summary in the forecast rounds only (other months answer 404)
+    reports = {r["page"]: copy.deepcopy(r) for r in existing.get("reports", [])}
+    no_report = set(existing.get("no_report_months", []))
+    for d, rec in sorted(meetings.items()):
+        slug = rec["page"]
+        if d < args.reports_from or (not args.force and (slug in reports or slug in no_report)):
+            continue
+        year, month = int(slug.rsplit("-", 1)[1]), boe.MONTHS.index(slug.rsplit("-", 1)[0]) + 1
+        try:
+            html = boe.fetch_report(year, month)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"report {slug}: {exc}")
+            continue
+        if html is None:
+            no_report.add(slug)
+            continue
+        try:
+            rep = boe.parse_report(html, url=boe.report_url(year, month))
+        except boe.NotHeld:
+            continue
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"report {slug}: {exc}")
+            continue
+        reports[slug] = {"page": slug, "meeting_date": d, **rep}
+
     calendar = existing.get("calendar", {})
     try:
         calendar = boe.parse_calendar(fetch_text(boe.DATES_URL, min_size=5000)) or calendar
@@ -88,6 +116,8 @@ def main() -> int:
         "retrieved_at": existing.get("retrieved_at"),
         "meetings": [meetings[d] for d in sorted(meetings)],
         "no_meeting_months": sorted(no_meeting),
+        "reports": [reports[k] for k in sorted(reports, key=lambda k: reports[k]["meeting_date"])],
+        "no_report_months": sorted(no_report),
         "calendar": calendar,
     }
     # retrieved_at moves only when the content does, so a quiet day leaves the file byte-identical

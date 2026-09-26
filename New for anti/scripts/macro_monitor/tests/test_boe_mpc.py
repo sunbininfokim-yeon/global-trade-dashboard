@@ -188,6 +188,58 @@ class Calendar(unittest.TestCase):
                          [("2026-02-05", True), ("2026-03-19", False), ("2027-02-04", False)])
 
 
+def _report_page(head, rows, *, cols=("2026 Q3", "2027 Q3"), note="(b) Four-quarter inflation rate."):
+    body = "".join(rows)
+    return f"""<html><main><h1>Monetary Policy Report - July 2026</h1><p>Published on 30 July 2026</p>
+    <h3>{head}</h3><table><tr><td></td>{"".join(f"<td>{c}</td>" for c in cols)}</tr>{body}</table>
+    <div class="text-small img-note"><ul><li>(a) Figures in parentheses show the previous Report.</li><li>{note}</li></ul></div></main></html>"""
+
+
+def _tr(*cells):
+    return "<tr>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>"
+
+
+class Report(unittest.TestCase):
+    def test_scenario_table_is_split_into_blocks_with_footnote_definitions(self):
+        html = _report_page("Table 3.B: Summary of outputs of the central projection and scenarios ( a )", [
+            _tr("Central projection"), _tr("CPI inflation ( b )", "2.9", "2.6"), _tr("Bank Rate ( i )", "3.8", "4.2"),
+            _tr("Adverse scenario"), _tr("CPI inflation ( b )", "3.1", "4.1")])
+        r = boe.parse_report(html, url="u")
+        self.assertEqual((r["published"], r["summary"]["table_id"], r["summary"]["columns"]), ("2026-07-30", "3.B", ["2026 Q3", "2027 Q3"]))
+        self.assertEqual([b["name"] for b in r["summary"]["blocks"]], ["Central projection", "Adverse scenario"])
+        cpi = r["summary"]["blocks"][0]["rows"][0]
+        self.assertEqual((cpi["id"], cpi["label_en"], cpi["notes"]), ("cpi", "CPI inflation", ["b"]))
+        self.assertEqual([v["value"] for v in cpi["values"]], [2.9, 2.6])
+        self.assertEqual(r["summary"]["footnotes"]["b"], "Four-quarter inflation rate.")
+
+    def test_figure_in_brackets_is_the_previous_reports(self):
+        html = _report_page("Table 3.A: Forecast summary ( a ) ( b )", [_tr("GDP ( c )", "1.4 (1.5)", "1.4 (1.3)"), _tr("Excess supply/ Excess demand ( f )", "-0.8 (-0.6)", "0")])
+        blocks = boe.parse_report(html, url="u")["summary"]["blocks"]
+        self.assertEqual(len(blocks), 1)                                   # no block heading: one unnamed block
+        self.assertEqual([(v["value"], v["prior"]) for v in blocks[0]["rows"][0]["values"]], [(1.4, 1.5), (1.4, 1.3)])
+        self.assertEqual([(v["value"], v["prior"]) for v in blocks[0]["rows"][1]["values"]], [(-0.8, -0.6), (0.0, None)])
+
+    def test_dash_and_words_are_not_numbers(self):
+        self.assertEqual(boe._cell("–"), (None, None))
+        self.assertEqual(boe._cell("n/a"), (None, None))
+        self.assertEqual(boe._cell("−1.1"), (-1.1, None))                  # the typographic minus
+
+    def test_key_assumption_tables_are_not_forecast_summaries(self):
+        html = _report_page("Table 3.A: Key assumptions and judgements in the central projection and scenarios", [_tr("Energy prices", "up", "down")])
+        with self.assertRaises(boe.NotHeld):
+            boe.parse_report(html, url="u")
+
+    def test_annex_average_columns_are_left_out(self):
+        html = _report_page("Table 3.B: Summary of scenarios ( a )", [_tr("CPI inflation ( b )", "3.1", "2.9")]).replace(
+            "</main>", """<h3>Table A1.A: GDP ( a )</h3><table><tr><td></td><td>Average 1998–2007</td><td>2025</td><td>2026</td></tr>
+            <tr><td>UK GDP ( c )</td><td>2.8</td><td>1.3</td><td>1.1</td></tr></table></main>""")
+        annual = boe.parse_report(html, url="u")["annual"]
+        self.assertEqual((annual[0]["columns"], annual[0]["blocks"][0]["rows"][0]["id"]), (["2025", "2026"], "gdp"))
+
+    def test_report_url(self):
+        self.assertEqual(boe.report_url(2026, 7), "https://www.bankofengland.co.uk/monetary-policy-report/2026/july-2026")
+
+
 @unittest.skipUnless(CONFIG.exists(), "collected file not present")
 class Collected(unittest.TestCase):
     @classmethod
@@ -214,6 +266,17 @@ class Collected(unittest.TestCase):
             self.assertEqual(m["meeting_date"], (end + timedelta(days=1)).isoformat())
             self.assertEqual(date.fromisoformat(m["meeting_date"]).weekday(), 3, m["meeting_date"])      # always a Thursday
 
+    def test_reports_belong_to_forecast_rounds_and_read_all_columns(self):
+        dates = {m["meeting_date"] for m in self.meetings}
+        for r in self.doc["reports"]:
+            self.assertIn(r["meeting_date"], dates)
+            cols = r["summary"]["columns"]
+            self.assertEqual(len(cols), 4, r["page"])
+            for b in r["summary"]["blocks"]:
+                for row in b["rows"]:
+                    self.assertEqual(len(row["values"]), len(cols), f"{r['page']} {row['label_en']}")
+                    self.assertTrue(all(v["value"] is not None for v in row["values"]), f"{r['page']} {row['label_en']}")
+
     def test_announcement_days_appear_on_the_banks_calendar(self):
         days = {r["decision_date"] for r in self.doc["calendar"]["rows"]}
         for m in self.meetings:
@@ -231,6 +294,10 @@ class Assembled(unittest.TestCase):
         self.assertEqual(b["schedule"]["next_meeting_date"], "2026-11-05")
         self.assertEqual(b["schedule"]["next_outlook_release"], "2026-11-05")        # November is a Monetary Policy Report round
         self.assertEqual(sum(len(g["members"]) for g in b["member_views"]["groups"]), 9)
+        o = b["outlook"]
+        self.assertEqual((o["kind"], o["meeting_date"], o["previous"]["meeting_date"]), ("projection_blocks", "2026-07-30", "2026-04-30"))
+        cpi = o["summary"]["blocks"][0]["rows"][0]
+        self.assertEqual((cpi["id"], cpi["label_ko"] is not None, cpi["definition_en"] is not None), ("cpi", True, True))
         json.dumps(b, allow_nan=False)
 
 
