@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=90">
+    <link rel="stylesheet" href="style.css?v=91">
 </head>
 <body>
     <div id="app">
@@ -185,17 +185,21 @@
                         <a href="#" data-target="us-policy-hub">미국</a>
                     </div>
                 </div>
-                <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
-                </div>
-                <!-- Hidden until signed in -- auth.js toggles this on every
-                     auth state change, same as it does the login/logout
-                     button in #auth-container. No dropdown: a bare
-                     data-nav-default item navigates straight to mypage. -->
-                <div class="menu-item hidden" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
-                </div>
             </nav>
+            <!-- Split out of .main-menu so they land at the header's far
+                 right (with auth/date-picker), separate from the
+                 원자재/금융/해운/정치/정책 cluster -- main-menu's
+                 margin-right:auto pushes everything after </nav> rightward. -->
+            <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
+            </div>
+            <!-- Hidden until signed in -- auth.js toggles this on every
+                 auth state change, same as it does the login/logout
+                 button in #auth-container. No dropdown: a bare
+                 data-nav-default item navigates straight to mypage. -->
+            <div class="menu-item hidden" style="margin-left: 20px;" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
+            </div>
             <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
