@@ -108,12 +108,16 @@ def previous_raws(
         if not src:
             continue
         published = item.get("published_at")
+        # A source that lists older reports on purpose (GAIN keeps 150 days)
+        # carries them for as long as it would have shown them; a blocked
+        # run must not drop what a successful one would still list.
+        limit = max(CARRY_OVER_DAYS, int((src.get("html") or {}).get("max_age_days") or 0))
         if published:
             try:
                 age = (now - datetime.fromisoformat(published)).days
             except ValueError:
                 age = 0
-            if age > CARRY_OVER_DAYS:
+            if age > limit:
                 continue
         r = RawReport(
             source_id=src["id"],

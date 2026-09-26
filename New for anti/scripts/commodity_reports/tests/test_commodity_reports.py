@@ -448,6 +448,11 @@ class CarryOverTests(unittest.TestCase):
         carried = build_mod.previous_raws(previous, sources, now)
         self.assertEqual([r.title for r in carried["src_a"]], ["Fresh"])
         self.assertNotIn("gone", carried)
+        # A source with its own longer window (GAIN: 150 days) carries its
+        # older reports too.
+        long_src = [{"id": "src_a", "agency": "A", "kind": "fas_gain_pages", "url": "u", "html": {"max_age_days": 150}}]
+        self.assertEqual(sorted(r.title for r in build_mod.previous_raws(previous, long_src, now)["src_a"]),
+                         ["Fresh", "Stale"])
 
         orig = build_mod.fetch_source
         build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": False, "items": [],
