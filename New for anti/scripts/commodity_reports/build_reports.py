@@ -65,6 +65,9 @@ def main(argv: list[str] | None = None) -> int:
         max_items=args.max_items,
         translate=args.translate,
         translate_limit=args.translate_limit,
+        # A live build carries a failed source's last good reports forward
+        # from the file it is about to overwrite.
+        previous_path=args.output if args.fixtures is None else None,
     )
     write_json(doc, args.output)
 

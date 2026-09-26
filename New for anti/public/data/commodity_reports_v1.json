@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T05:24:03.894415+00:00",
+  "generated_at": "2026-09-26T13:05:29.008112+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
+    "sources_ok": 24,
     "sources_failed": 3,
-    "raw_items": 156,
-    "scored": 64,
-    "published": 37,
-    "commodities": 9,
-    "buckets": 11
+    "raw_items": 441,
+    "scored": 181,
+    "published": 135,
+    "commodities": 22,
+    "buckets": 65
   },
   "feed_status": [
     {
@@ -76,6 +76,27 @@
       "mode": "live"
     },
     {
+      "source_id": "br_conab",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_fao_newsroom",
+      "ok": true,
+      "count": 17,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "eu_agri",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
       "source_id": "in_pib_agriculture",
       "ok": true,
       "count": 20,
@@ -99,15 +120,100 @@
     {
       "source_id": "us_usgs_news",
       "ok": true,
-      "count": 0,
+      "count": 11,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_fas_gain_reports",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live",
+      "note": "45 list pages, 43 reports linked, 36 read, 0 already known"
+    },
+    {
+      "source_id": "my_mpob",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_kemendag",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cl_cochilco",
+      "ok": true,
+      "count": 9,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_iai",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_silver_institute",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_worldsteel",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_bpdp",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ca_nrcan",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_anrpc",
+      "ok": true,
+      "count": 12,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "vn_vra_world",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "vn_vra_domestic",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cn_mofcom_en",
       "ok": false,
       "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>",
       "mode": "live"
     }
   ],
@@ -140,7 +246,8 @@
     "coffee": "커피",
     "cocoa": "코코아",
     "cotton": "면화",
-    "palm_oil": "팜유"
+    "palm_oil": "팜유",
+    "rubber": "천연고무"
   },
   "country_names": {
     "USA": {
@@ -454,9 +561,71 @@
     "NZL": {
       "name": "New Zealand",
       "name_ko": "뉴질랜드"
+    },
+    "KHM": {
+      "name": "Cambodia",
+      "name_ko": "캄보디아"
+    },
+    "LAO": {
+      "name": "Laos",
+      "name_ko": "라오스"
+    },
+    "LKA": {
+      "name": "Sri Lanka",
+      "name_ko": "스리랑카"
+    },
+    "LBR": {
+      "name": "Liberia",
+      "name_ko": "라이베리아"
+    },
+    "UGA": {
+      "name": "Uganda",
+      "name_ko": "우간다"
+    },
+    "HND": {
+      "name": "Honduras",
+      "name_ko": "온두라스"
+    },
+    "GTM": {
+      "name": "Guatemala",
+      "name_ko": "과테말라"
     }
   },
   "index": {
+    "sugar": {
+      "COL": [
+        "4bd4def13588cc0a"
+      ],
+      "USA": [
+        "21e8e31c7b207b51"
+      ]
+    },
+    "cotton": {
+      "CHN": [
+        "b7b8e9c3c1038c73"
+      ],
+      "PAK": [
+        "ff085c358e1c8514"
+      ],
+      "_global": [
+        "0eb0404d29d2bbc2"
+      ],
+      "TUR": [
+        "c54d5583ad67060c"
+      ],
+      "MEX": [
+        "704821871273f761"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "094f2c679d643322",
+        "d2560303da2802d2",
+        "e4530ccde436c92d",
+        "82ad0c3c992ec514"
+      ]
+    },
     "oil": {
       "USA": [
         "cfe32235018b6add",
@@ -476,24 +645,38 @@
         "39ac9e91f73a0776"
       ]
     },
-    "thermal_coal": {
-      "USA": [
-        "f8aa4f64781b6480"
-      ]
-    },
-    "corn": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
+    "palm_oil": {
+      "MYS": [
+        "97be7c6c6195937a",
+        "9935e13cee618834",
+        "294d988a0c7a4c17",
+        "ade02dfd01340322",
+        "a26131708db86470",
+        "bbffeaa2f5411708",
+        "99ca28dd19b9f061",
+        "0ac19de06b45b2cf"
+      ],
+      "IDN": [
+        "3547f9608d850c98",
+        "7695372844e9b313",
+        "a78219d1002ebe81",
+        "671ae2ca9456c281",
+        "f8bf20af564959e9",
+        "7e2d9eaa2d937e0e",
+        "9b3aacef7418cd57",
+        "3038b0ed9276919c"
       ]
     },
     "soybeans": {
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
       "USA": [
         "9a2e4f0c6cc38378",
         "9d9ab72fff81736d",
@@ -503,9 +686,79 @@
         "205bcf62b2894e8b",
         "e54c2f7c294df06b",
         "9dd7845c2d4fc51e"
+      ],
+      "_global": [
+        "1e39f84cf71c2d58",
+        "8f3cba277d1d8f7f"
+      ]
+    },
+    "rice": {
+      "PHL": [
+        "71739cda84d2ebd6"
+      ],
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "THA": [
+        "eb8f3491f8c46070"
+      ],
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "USA": [
+        "2c8f727be89c0de5",
+        "e4530ccde436c92d",
+        "eb08bb539c63def3"
+      ],
+      "BRA": [
+        "e26dc58eafa42224",
+        "e65bffd316bf9313",
+        "90caf018877f574b"
+      ]
+    },
+    "corn": {
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "ARG": [
+        "dcc6cf91ba76aab6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "3ff8c2dd8b700c92"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ],
+      "ESP": [
+        "b736550c463bc772"
+      ],
+      "BRA": [
+        "7390cf9f524fb034",
+        "6a2f69a13bf9ae19",
+        "b29e7d11bb4e97c1",
+        "a0f50331005b9402"
       ]
     },
     "wheat": {
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "d6be49771c7e2707"
+      ],
       "USA": [
         "54cc3c274cf90c25",
         "44ef3d9e9fba437f",
@@ -517,22 +770,102 @@
         "e4530ccde436c92d"
       ]
     },
-    "cotton": {
+    "copper": {
+      "CHN": [
+        "9307f930910dd12d"
+      ],
       "USA": [
-        "094f2c679d643322",
-        "d2560303da2802d2",
-        "e4530ccde436c92d",
-        "82ad0c3c992ec514"
+        "9307f930910dd12d",
+        "0cc889de9eed1bf0"
+      ],
+      "CHL": [
+        "755265be684d892e",
+        "333bf7304a6961c5",
+        "62f11e17ce23601c",
+        "b7997f3d390d6fb8",
+        "b8e0e19f0f00a266",
+        "b87baa2603ba1ba3"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
       ]
     },
-    "rice": {
+    "iron_ore": {
+      "_global": [
+        "5576156cceda0a41",
+        "5f087a520744649c",
+        "d4de362acb2f5bd7",
+        "af3268d8f8f62548"
+      ]
+    },
+    "met_coal": {
+      "_global": [
+        "5576156cceda0a41",
+        "5f087a520744649c",
+        "d4de362acb2f5bd7",
+        "af3268d8f8f62548"
+      ]
+    },
+    "rubber": {
+      "_global": [
+        "58c936b97029a384",
+        "30a98869d9f0a4f3",
+        "12a040f17a066c45",
+        "4b770dbdba953c09",
+        "42259283a50d073b",
+        "48cc04a9052a8716",
+        "e49a08bd637153cb",
+        "259a0a3487393346"
+      ],
+      "MYS": [
+        "9dea9d96f6e39a19"
+      ],
+      "IDN": [
+        "f0c7e78a15b3b9db"
+      ],
+      "VNM": [
+        "7ccb8874c01bc513"
+      ]
+    },
+    "aluminum": {
+      "_global": [
+        "4f1e6b1fecad4872",
+        "c4debe37366d175b",
+        "03c379d5b310c445",
+        "cbae598c13644bf7",
+        "09ca834485d1ec42",
+        "930976e33c5a3743"
+      ],
+      "IRN": [
+        "795f411fda44aae8"
+      ],
       "USA": [
-        "2c8f727be89c0de5",
-        "e4530ccde436c92d",
-        "eb08bb539c63def3"
+        "795f411fda44aae8"
+      ],
+      "GBR": [
+        "66eae8938783b965"
+      ],
+      "BRA": [
+        "ab3a2a994bfc6642",
+        "e31766e85e2bb8fa"
+      ]
+    },
+    "thermal_coal": {
+      "USA": [
+        "f8aa4f64781b6480"
+      ]
+    },
+    "lithium": {
+      "USA": [
+        "44e05f03eab98000"
       ]
     },
     "gas": {
+      "CAN": [
+        "25541b98e1af190a",
+        "1a5e5c6b232458f1",
+        "89c825ce4cf18fd2"
+      ],
       "USA": [
         "5a1967d788350658",
         "181e4ee82214496a"
@@ -541,13 +874,180 @@
         "d09ef02fa55cc52b"
       ]
     },
-    "sugar": {
-      "USA": [
-        "21e8e31c7b207b51"
+    "coffee": {
+      "CHN": [
+        "8566a0485af28101",
+        "62ac4be598c099c2"
+      ],
+      "BRA": [
+        "11ac17f1a9aa9e08",
+        "bcd497516af1f0b1"
+      ]
+    },
+    "nickel": {
+      "CAN": [
+        "9a22d2cdf0982434"
+      ]
+    },
+    "gold": {
+      "CAN": [
+        "929e1ee5c8475871"
+      ],
+      "_global": [
+        "f5072178b1b60a30"
+      ]
+    },
+    "zinc": {
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
+    "silver": {
+      "_global": [
+        "96c93bcca16a1043",
+        "12501fa570ad4d21",
+        "aa17b478e6561bc9",
+        "1e42080f0e1e0d89",
+        "c73f66d2b69815ff",
+        "f5072178b1b60a30",
+        "592d3e5125237169",
+        "89f241fbe1c68b24"
+      ],
+      "CHN": [
+        "69939df0db75be9f"
+      ],
+      "ECU": [
+        "69939df0db75be9f"
+      ]
+    },
+    "cocoa": {
+      "IDN": [
+        "b2bc51accbde2d64",
+        "c45ef08bed6185fe",
+        "25fb768ac2e254c6"
       ]
     }
   },
   "items": [
+    {
+      "id": "4bd4def13588cc0a",
+      "title": {
+        "original": "Colombia: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Colombia's fuel ethanol production for 2026 is forecast to fall 10 percent to 400 million liters (ML) as sugar mills reallocate a larger share of cane toward...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/colombia-biofuels-annual",
+      "published_at": "2026-09-24T16:36:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "sugar"
+      ],
+      "countries": [
+        "COL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 5.451,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b7b8e9c3c1038c73",
+      "title": {
+        "original": "China: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post slightly lowered its forecast for MY 2026/27 cotton production to 7.12 million metric tons (MMT) or 32.7 million bales, a decrease of 5.6 percent from its...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-cotton-and-products-update",
+      "published_at": "2026-09-03T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.422,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "ff085c358e1c8514",
+      "title": {
+        "original": "Pakistan: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Pakistan’s 2026/27 cotton harvested area estimate is lowered to 1.85 million hectares, primarily due to a decline in Punjab province driven in part by lower...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/pakistan-cotton-and-products-update",
+      "published_at": "2026-09-02T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "PAK"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.355,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0eb0404d29d2bbc2",
+      "title": {
+        "original": "Senegal: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
+      "published_at": "2026-09-17T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.054,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure"
+      ]
+    },
     {
       "id": "cfe32235018b6add",
       "title": {
@@ -571,10 +1071,627 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.031,
+      "importance": 4.008,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "97be7c6c6195937a",
+      "title": {
+        "original": "Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": "Assalamualaikum Warahmatullahi Wabarakatuh, Salam Sejahtera dan Salam Malaysia MADANI. Alhamdulillah, kita panjatkan kesyukuran ke hadrat Allah SWT kerana pada hari ini kita dapat berkumpul di Kota Kinabalu sempena Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026 Bagi pihak Lembaga Minyak Sawit Malaysia (MPOB), saya merakamkan setinggi-tinggi penghargaan kepada Yang Berhormat Datuk Seri Dr. Noraini Ahmad, Menteri Perladangan dan Komoditi, atas kesudian hadir dan menyempurnakan Majlis Perasmian Persidangan Kebangsaan Pekebun Kecil Sawit. Saya juga merakamkan penghargaan kepada para…",
+      "url": "https://mpob.gov.my/2026/09/persidangan-kebangsaan-pekebun-kecil-sawit-pkpks-2026-2/",
+      "published_at": "2026-09-25T03:13:12+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 3.872,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9935e13cee618834",
+      "title": {
+        "original": "MPOB Lancar Sistem e-CoPN, perkukuh jaminan bekalan bahan tanaman sawit berkualiti.",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": "SIARAN MEDIA Untuk Siaran Segera MPOB Lancar Sistem e-CoPN, perkukuh jaminan bekalan bahan tanaman sawit berkualiti. KOTA KINABALU, 24 SEPTEMBER 2026 – Lembaga Minyak Sawit Malaysia (MPOB) hari ini melancarkan Sistem Kod Amalan Baik Tapak Semaian untuk Tapak Semaian Sawit (e-CoPN), satu inisiatif digital yang menyediakan rujukan kepada pekebun kecil bagi mendapatkan bahan tanaman berkualiti daripada tapak semaian yang mengamalkan kod amalan baik. Pelancaran e-CoPN disempurnakan oleh Menteri Perladangan dan Komoditi, Yang Berhormat Datuk Seri Dr. Noraini Ahmad, sempena Persidangan Kebangsaan…",
+      "url": "https://mpob.gov.my/2026/09/mpob-lancar-sistem-e-copn-perkukuh-jaminan-bekalan-bahan-tanaman-sawit-berkualiti/",
+      "published_at": "2026-09-25T02:46:45+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 3.87,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "71739cda84d2ebd6",
+      "title": {
+        "original": "Philippines: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Manila lowers its milled rice production forecast and maintains its consumption forecast for Marketing Year 2026/27, as a moderate to strong El Niño and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/philippines-grain-and-feed-update",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "PHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e08bde069abdfd83",
+      "title": {
+        "original": "Mexico: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Mexico’s corn, rice, and sorghum production are forecast to decline in marketing year 2026/27, pressured by weak profitability, elevated input costs, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/mexico-grain-and-feed-update",
+      "published_at": "2026-09-23T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.808,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "6e3880b1a989890a",
+      "title": {
+        "original": "China: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.772,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "eb8f3491f8c46070",
+      "title": {
+        "original": "Thailand: Grain and Feed Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Bangkok forecasts MY 2026/27 rice production, down 2 percent from MY 2025/26 to 20.3 million metric tons (MMT), as tighter water supplies and an emerging El...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-grain-and-feed-monthly",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "THA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.772,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "dcc6cf91ba76aab6",
+      "title": {
+        "original": "Argentina: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s fuel ethanol production is forecast to reach a record 1.35 billion liters in 2026, driven by record domestic consumption, additional corn-based...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/argentina-biofuels-annual",
+      "published_at": "2026-08-20T15:59:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.661,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "c54d5583ad67060c",
+      "title": {
+        "original": "Türkiye: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Turkish cotton production in Marketing Year (MY) 2026/27 is projected to decrease to 495,000 metric tons (MT) or 2.27 million bales due to smaller planting area...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-cotton-and-products-update",
+      "published_at": "2026-09-02T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.658,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9a2e551991dc06e6",
+      "title": {
+        "original": "Bangladesh: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "For MY 2026/27, Post forecasts higher rice imports following decreased production of aus and aman season rice. Post lowers its wheat import forecast to 6.6...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/bangladesh-grain-and-feed-update",
+      "published_at": "2026-09-08T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "rice"
+      ],
+      "countries": [
+        "BGD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.641,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9307f930910dd12d",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El cobre cerró en US$ 6,68 por libra, con un alza semanal de 1,45%. El promedio anual alcanzó US$ 6,09 por libra, 40,57% sobre igual período de 2025. La menor disponibilidad inmediata de metal en China y Londres sostuvo el precio, pese a la presión del dólar y las expectativas de nuevas alzas de tasas[...] La entrada Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-21-al-25-de-septiembre-de-2026/",
+      "published_at": "2026-09-25T14:46:33+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 3.5,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0cc889de9eed1bf0",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El precio del cobre cerró hoy en US$ 6,53 la libra, con una leve alza de 0,07% respecto del cierre de la semana anterior. Con este resultado, el promedio anual alcanzó US$ 6,07 por libra, lo que representa un aumento de 40,32% respecto de la misma fecha de 2025. Más que el precio, esta semana se[...] La entrada Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-01-al-05-de-junio-de-2026/",
+      "published_at": "2026-09-11T15:36:26+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 3.38,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "704821871273f761",
+      "title": {
+        "original": "Mexico: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post forecasts marketing year (MY) 2026/27 cotton production at 0.87 million 480-lb bales, a 32 percent increase. While production remains at historic lows...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/mexico-cotton-and-products-update",
+      "published_at": "2026-08-27T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.357,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "5576156cceda0a41",
+      "title": {
+        "original": "August 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 144.2 million tonnes (Mt) in August 2026, a 1.2% decrease compared to August 2025. The post August 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/august-2026-crude-steel-production/",
+      "published_at": "2026-09-24T08:40:42+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 3.025,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ]
+    },
+    {
+      "id": "6269fa1eda293c5a",
+      "title": {
+        "original": "India: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
+      "published_at": "2026-09-03T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.653,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "3038b0ed9276919c",
+      "title": {
+        "original": "Indonesia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Indonesia's transition to the B50 biodiesel mandate, which took effect in July 2026, is projected to raise domestic palm oil consumption by 11 percent to 25.3...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/indonesia-oilseeds-and-products-update",
+      "published_at": "2026-08-05T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.649,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "99ca28dd19b9f061",
+      "title": {
+        "original": "MPOB(T/P)37/26 – Perkhidmatan Pembersihan Bangunan Luar Dan Dalam Di Kompleks Dan Makmal Stesen Penyelidikan MPOB Kluang, Johor",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://mpob.gov.my/2026/09/mpobt-p37-26-perkhidmatan-pembersihan-bangunan-luar-dan-dalam-di-kompleks-dan-makmal-stesen-penyelidikan-mpob-kluang-johor/",
+      "published_at": "2026-09-09T04:42:02+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 2.478,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "58c936b97029a384",
+      "title": {
+        "original": "Anrpc releases monthly nr statistical report july 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report-july-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
+      "reasons": [
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
+      ]
+    },
+    {
+      "id": "30a98869d9f0a4f3",
+      "title": {
+        "original": "Anrpc releases monthly nr statistical report, june 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report%2C-june-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
+      "reasons": [
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
+      ]
+    },
+    {
+      "id": "4f1e6b1fecad4872",
+      "title": {
+        "original": "Aluminium cans lead global beverage recycling, new international dataset shows",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Global Beverage Can Circularity Alliance publishes the second year of its worldwide recycling study, with aluminium cans outperforming glass and PET bottles across major markets. New York, 22 September 2026 – Aluminum beverage cans are collected and recycled at a higher rate than any other major drinks container format worldwide, according to new figures released today by the Global Beverage Can Circularity Alliance (GBCCA). The 2026 Global Beverage Container Recycling Dataset shows that, globally, 77 percent of aluminum cans are collected for recycling and 76 percent are recycled. Both…",
+      "url": "https://international-aluminium.org/aluminium-cans-lead-global-beverage-recycling-new-international-dataset-shows/",
+      "published_at": "2026-09-22T12:11:00+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.426,
+      "reasons": [
+        "has_figure",
+        "revision_language"
+      ]
+    },
+    {
+      "id": "088f09f9aa8eb7c7",
+      "title": {
+        "original": "Ukraine: Grain and Feed Quarterly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "This report contains updated estimates for marketing year (MY) 2025/26 and MY2026/27 for wheat, corn, barley, and rye. Increased MY2026/27 production areas and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/ukraine-grain-and-feed-quarterly",
+      "published_at": "2026-08-05T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn"
+      ],
+      "countries": [
+        "UKR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.396,
+      "reasons": [
+        "series:USDA_GAIN",
         "revision_language",
         "country_in_text"
       ]
@@ -602,7 +1719,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.362,
+      "importance": 2.349,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -632,12 +1749,40 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.273,
+      "importance": 2.272,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
+      ]
+    },
+    {
+      "id": "a26131708db86470",
+      "title": {
+        "original": "MPOB(T/P)39/26 – Kerja-Kerja Penyelenggaraan Am Ladang (300 Hektar) Termasuk Penuaian Tandan Buah Segar (TBS) Serta Kerja Berkaitan Lain Di Ladang Stesen Penyelidikan MPOB Jerantut Pahang",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://mpob.gov.my/2026/09/mpobt-p39-26-kerja-kerja-penyelenggaraan-am-ladang-300-hektar-termasuk-penuaian-tandan-buah-segar-tbs-serta-kerja-berkaitan-lain-di-ladang-stesen-penyelidikan-mpob-jerantut-pahang/",
+      "published_at": "2026-09-17T10:31:08+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 2.211,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND"
       ]
     },
     {
@@ -663,9 +1808,66 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.094,
+      "importance": 2.08,
       "reasons": [
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "bbffeaa2f5411708",
+      "title": {
+        "original": "MPOB(T/P)38/26 – Langganan Perkhidmatan Web Application Firewall (WAF) Jenama PickPacket Atau Seumpamanya Secara Konsep Sewaan Perkhidmatan (Managed Services) Bagi Tempoh Tiga (3) Tahun",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://mpob.gov.my/2026/09/mpobt-p38-26-langganan-perkhidmatan-web-application-firewall-waf-jenama-pickpacket-atau-seumpamanya-secara-konsep-sewaan-perkhidmatan-managed-services-bagi-tempoh-tiga-3-tahun/",
+      "published_at": "2026-09-11T10:46:16+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 1.981,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND"
+      ]
+    },
+    {
+      "id": "3ff8c2dd8b700c92",
+      "title": {
+        "original": "Kenya: Dry Weather Decimates Kenyan Harvest",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Nairobi is downgrading Kenya’s marketing year 2026/27 corn production forecast by 51 percent to 2.2 million metric tons after a severe mid-year dry period...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/kenya-dry-weather-decimates-kenyan-harvest",
+      "published_at": "2026-08-28T07:27:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.883,
+      "reasons": [
+        "has_figure",
         "country_in_text"
       ]
     },
@@ -690,9 +1892,121 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.89,
+      "importance": 1.879,
       "reasons": [
         "series:EIA_STEO"
+      ]
+    },
+    {
+      "id": "294d988a0c7a4c17",
+      "title": {
+        "original": "Majlis Perasmian POMREQ 2026",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": "11 August 2026 Pullman Kuching, Sarawak",
+      "url": "https://mpob.gov.my/2026/09/majlis-perasmian-pomreq-2026/",
+      "published_at": "2026-09-20T16:35:45+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.86,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "ade02dfd01340322",
+      "title": {
+        "original": "Kunjungan Hormat ke atas Ketua Pengarah Bomba Malaysia",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": "8 September 2026 Ibu Pejabat Bomba Malaysia",
+      "url": "https://mpob.gov.my/2026/09/kunjungan-hormat-ke-atas-ketua-pengarah-bomba-malaysia/",
+      "published_at": "2026-09-20T16:28:28+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.86,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "d6be49771c7e2707",
+      "title": {
+        "original": "Kenya: Barley - The Alternative Lifeline for Kenyan Wheat Farmers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Kenyan wheat farmers are increasingly switching to barley to escape high costs, rigid pricing, and import competition. The transition is seamless because both...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/kenya-barley-alternative-lifeline-kenyan-wheat-farmers",
+      "published_at": "2026-09-15T09:09:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.799,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "5f087a520744649c",
+      "title": {
+        "original": "July 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 149.2 million tonnes (Mt) in July 2026, a 0.3% decrease compared to July 2025. The post July 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/july-2026-crude-steel-production/",
+      "published_at": "2026-08-24T05:35:43+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.795,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
       ]
     },
     {
@@ -789,6 +2103,121 @@
         "has_figure",
         "revision_language",
         "country_in_text"
+      ]
+    },
+    {
+      "id": "44e05f03eab98000",
+      "title": {
+        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
+      "published_at": "2026-09-17T12:58:25+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.749,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "25541b98e1af190a",
+      "title": {
+        "original": "Canadian LNG project signs third international offtake deal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
+      "published_at": "2026-09-15T23:07:23+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.69,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9dea9d96f6e39a19",
+      "title": {
+        "original": "Anrpc engages in high level dialogue in malaysia",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-engages-in-high-level-dialogue-in-malaysia%C2%A0",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.689,
+      "reasons": [
+        "country_in_text",
+        "no_date"
+      ]
+    },
+    {
+      "id": "f0c7e78a15b3b9db",
+      "title": {
+        "original": "Anrpc participated in irrdb socio economic seminar, bali indonesia",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-participated-in-irrdb-socio-economic-seminar%2C-bali-indonesia--",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.689,
+      "reasons": [
+        "country_in_text",
+        "no_date"
       ]
     },
     {
@@ -946,6 +2375,63 @@
       ]
     },
     {
+      "id": "b736550c463bc772",
+      "title": {
+        "original": "European Union: EU Corn September Update 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The EU's MY 2026/27 corn crop faces steep downward revisions across Western and Central Europe due to heat and drought. Irrigation in Spain and Portugal, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/european-union-eu-corn-september-update-2026",
+      "published_at": "2026-09-10T09:42:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ESP"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.646,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "0ac19de06b45b2cf",
+      "title": {
+        "original": "Malaysia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia's palm oil sector is expected to face a challenging production environment in Marketing Year (MY) 2026/27 as industry stakeholders monitor the...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/malaysia-oilseeds-and-products-update",
+      "published_at": "2026-07-01T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.567,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ]
+    },
+    {
       "id": "54cc3c274cf90c25",
       "title": {
         "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
@@ -1006,6 +2492,34 @@
       ]
     },
     {
+      "id": "333bf7304a6961c5",
+      "title": {
+        "original": "Cochilco publica estudio sobre el mercado de concentrados y la industria mundial de fundiciones",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El reporte analiza un mercado global tensionado por la expansión de la capacidad de fundición y una oferta restringida de concentrados. Para Chile, identifica oportunidades para fortalecer el procesamiento nacional mediante mayor continuidad operacional, eficiencia, modernización tecnológica y aprovechamiento de subproductos. La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria[...] La entrada Cochilco publica estudio sobre el mercado de concentrados y la industria mundial de fundiciones se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-publica-estudio-sobre-el-mercado-de-concentrados-y-la-industria-mundial-de-fundiciones/",
+      "published_at": "2026-09-07T17:29:53+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.469,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "c67666c03e916f6f",
       "title": {
         "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
@@ -1028,7 +2542,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.466,
+      "importance": 1.464,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1057,7 +2571,63 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.436,
+      "importance": 1.428,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "8566a0485af28101",
+      "title": {
+        "original": "China: Shanghai Fuels China's Growing Coffee Culture",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Shanghai has a reputation as one of the world's leading coffee cities. In 2025, the city surpassed 10,336 coffee shops, with per capita annual consumption...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-shanghai-fuels-chinas-growing-coffee-culture",
+      "published_at": "2026-08-31T10:57:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.406,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b7997f3d390d6fb8",
+      "title": {
+        "original": "Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El convenio permitirá impulsar el intercambio de datos, el desarrollo de herramientas metodológicas y la difusión de conocimiento para contribuir a una minería chilena responsable y sostenible. La Comisión Chilena del Cobre (Cochilco) y la Pontificia Universidad Católica de Chile suscribieron un Convenio Marco de Colaboración orientado a fortalecer la generación de evidencia técnica, el[...] La entrada Cochilco y la Universidad Católica suscriben acuerdo de colaboración para fortalecer la evidencia y las políticas públicas en minería se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-y-la-universidad-catolica-suscriben-acuerdo-de-colaboracion-para-fortalecer-la-evidencia-y-las-politicas-publicas-en-mineria/",
+      "published_at": "2026-09-04T14:49:50+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.397,
       "reasons": [
         "country_in_text"
       ]
@@ -1095,6 +2665,63 @@
       ]
     },
     {
+      "id": "9a22d2cdf0982434",
+      "title": {
+        "original": "Canada attracts a $2 billion mining investment in Sudbury’s Craig Mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Today, the Government of Canada welcomed a major milestone at Glencore Canada Corporation’s Craig Mine in Ontario with the completion of the Onaping Depth Project shaft, providing first access to nickel ore and marking an important step toward first production from the Onaping Depth Zone later this year.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-attracts-a-2-billion-mining-investment-in-sudburys-craig-mine.html",
+      "published_at": "2026-08-27T21:27:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.373,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "d4de362acb2f5bd7",
+      "title": {
+        "original": "June 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 155.7 million tonnes (Mt) in June 2026, a 1.7% increase compared to June 2025. The post June 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/june-2026-crude-steel-production/",
+      "published_at": "2026-07-23T06:13:35+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.347,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ]
+    },
+    {
       "id": "181e4ee82214496a",
       "title": {
         "original": "EIA expects highest natural gas inventories in a decade heading into winter",
@@ -1117,7 +2744,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.351,
+      "importance": 1.346,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1269,6 +2896,269 @@
       ]
     },
     {
+      "id": "b8e0e19f0f00a266",
+      "title": {
+        "original": "¡Crece la participación de la mujer en la minería del cobre!",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
+      "published_at": "2026-08-31T19:35:57+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.319,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "1a5e5c6b232458f1",
+      "title": {
+        "original": "Canada invests in renewable natural gas production in Ontario",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Today, the Honourable Tim Hodgson, Minister of Energy and Natural Resources, announced a federal investment of nearly $19 million for StormFisher Environmental Ltd., a subsidiary of Generate Upcycle, to expand its facility in London, Ontario. This facility, the London Digester, is the largest food waste anaerobic digestion facility in Canada that produces renewable natural gas (RNG) from municipal source-separated organics and industrial, commercial, institutional food and beverage waste.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-invests-in-renewable-natural-gas-production-in-ontario.html",
+      "published_at": "2026-08-24T13:00:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.314,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "c4debe37366d175b",
+      "title": {
+        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
+      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
+      "published_at": "2026-09-21T20:26:55+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.306,
+      "reasons": []
+    },
+    {
+      "id": "12a040f17a066c45",
+      "title": {
+        "original": "Dr. suttipong angthong secretary general of the association of natural rubber producing countries anrpc took center stage as a distinguished speaker at the prestigious world elastomer technology and engineering forum wetef held in shanghai from september 13 to 16 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/dr.-suttipong-angthong-secretary-general-of-the-association-of-natural-rubber-producing-countries-anrpc-took-center-stage-as-a-distinguished-speaker-at-the-prestigious-world-elastomer-technology-and-engineering-forum-wetef-held-in-shanghai-from-september-13-to-16-2026.",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "4b770dbdba953c09",
+      "title": {
+        "original": "Anrpc strengthens global engagement at irgce 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-strengthens-global-engagement-at-irgce-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "42259283a50d073b",
+      "title": {
+        "original": "Anrpc secretary general dr. suttipong angthong invited to speak at \"sustainability in tires 2026\" in bangkok",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-secretary-general-dr.-suttipong-angthong-invited-to-speak-at-%22sustainability-in-tires-2026%22-in-bangkok",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "48cc04a9052a8716",
+      "title": {
+        "original": "Anrpc sustainable natural rubber forum 2026 concludes with bold vision for resilient, climate positive supply chains",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-sustainable-natural-rubber-forum-2026-concludes-with-bold-vision-for-resilient%2C-climate-positive-supply-chains",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "e49a08bd637153cb",
+      "title": {
+        "original": "Sustainable natural rubber forum: aligning priorities for resilient supply chain",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/-sustainable-natural-rubber-forum%3A-aligning-priorities-for-resilient-supply-chain",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "259a0a3487393346",
+      "title": {
+        "original": "Sustainable natural rubber forum, aligning priorities for a resilient supply chain",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/sustainable-natural-rubber-forum%2C-aligning-priorities-for-a-resilient-supply-chain-",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "1e39f84cf71c2d58",
+      "title": {
+        "original": "Rewiring the Egg Supply Chain in Austria",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Austria cut emissions, strengthened EU protein production and reduced reliance on imported soya by changing what hens eat. Here&#039;s how coordination transformed a supply chain.",
+      "url": "https://agriculture.ec.europa.eu/media/stories/rewiring-egg-supply-chain-austria_en",
+      "published_at": "2026-09-10T21:35:35+00:00",
+      "agency": "European Commission DG AGRI",
+      "agency_ko": "EU 집행위 농업총국",
+      "source_id": "eu_agri",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.299,
+      "reasons": [
+        "revision_language"
+      ]
+    },
+    {
       "id": "cecfc55a16f54d74",
       "title": {
         "original": "EIA forecasts strongest four-year growth in U.S. electricity demand since 2000, fueled by data centers",
@@ -1328,6 +3218,473 @@
       ]
     },
     {
+      "id": "03c379d5b310c445",
+      "title": {
+        "original": "Advancing Aluminium Recycling as a Business Opportunity: IAI at Climate Week NYC",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The International Aluminium Institute joins partners across the beverage can value chain in New York on 22 September to make the economic case for recycling. The International Aluminium Institute (IAI) will take part in Climate Week NYC 2026 as a co-host of Advancing Aluminium Recycling as a Business Opportunity , convened by the Global Beverage Can Circularity Alliance (GBCCA). Held during one of the year’s most significant gatherings on climate action, the event reframes recycling not simply as an environmental imperative but as a commercial one, exploring how investment, innovation, and…",
+      "url": "https://international-aluminium.org/iai-at-climate-week-nyc-2026-the-business-case-for-recycling/",
+      "published_at": "2026-09-20T15:17:47+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.274,
+      "reasons": []
+    },
+    {
+      "id": "755265be684d892e",
+      "title": {
+        "original": "Cochilco publica una versión renovada de su Anuario de Estadísticas del Cobre y Otros Minerales",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La nueva edición incorpora gráficos, comparaciones y análisis para facilitar la comprensión de la minería chilena y apoyar las decisiones públicas y privadas. La Comisión Chilena del Cobre (Cochilco) presentó este viernes el Anuario de Estadísticas del Cobre y Otros Minerales 2025, una publicación que reúne los principales indicadores de la minería nacional y su[...] La entrada Cochilco publica una versión renovada de su Anuario de Estadísticas del Cobre y Otros Minerales se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-publica-una-version-renovada-de-su-anuario-de-estadisticas-del-cobre-y-otros-minerales/",
+      "published_at": "2026-09-11T15:22:27+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.256,
+      "reasons": []
+    },
+    {
+      "id": "7ccb8874c01bc513",
+      "title": {
+        "original": "Vra moi tham gia hoi nghi va hop mat doanh nhan cao su viet nam nam 2026",
+        "original_lang": "vi",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://vra.com.vn/tin-tuc/tin-trong-nuoc/vra-moi-tham-gia-hoi-nghi-va-hop-mat-doanh-nhan-cao-su-viet-nam-nam-2026.17389.html",
+      "published_at": null,
+      "agency": "Vietnam Rubber Association",
+      "agency_ko": "베트남고무협회(VRA)",
+      "source_id": "vn_vra_domestic",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [
+        "VNM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.238,
+      "reasons": [
+        "country_in_text",
+        "no_date"
+      ]
+    },
+    {
+      "id": "e26dc58eafa42224",
+      "title": {
+        "original": "Nota oficial - Conab informa cancelamento dos leilões de Avisos nº 68/2026 e nº 69/2026, de compra de arroz em casca",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-informa-cancelamento-dos-leiloes-de-avisos-no-68-2026-e-no-69-2026-de-compra-de-arroz-em-casca",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "7390cf9f524fb034",
+      "title": {
+        "original": "Conab abre pregão para transporte de 36,2 mil toneladas de milho",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-abre-pregao-para-transporte-de-36-2-mil-toneladas-de-milho",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "11ac17f1a9aa9e08",
+      "title": {
+        "original": "Produção de café é estimada em 67,6 milhões de sacas, influenciada por bienalidade positiva em 2026",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/producao-de-cafe-e-estimada-em-67-6-milhoes-de-sacas-influenciada-por-bienalidade-positiva-em-2026",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "e65bffd316bf9313",
+      "title": {
+        "original": "Leilões para compra de até 96,4 mil t de arroz ocorrem nesta sexta-feira (25)",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/leiloes-para-compra-de-ate-96-4-mil-t-de-arroz-ocorrem-nesta-sexta-feira-25",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "bcd497516af1f0b1",
+      "title": {
+        "original": "AVISO DE PAUTA – 3º Levantamento da Safra de Café 2026",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/aviso-de-pauta-2013-3o-levantamento-da-safra-de-cafe-2026",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "6a2f69a13bf9ae19",
+      "title": {
+        "original": "Conab compra mais de 190 mil toneladas de milho para abastecer estoques do Programa de Venda em Balcão",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-compra-mais-de-190-mil-toneladas-de-milho-para-abastecer-estoques-do-programa-de-venda-em-balcao",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "b29e7d11bb4e97c1",
+      "title": {
+        "original": "AVISO DE PAUTA – Leilões de milho e previsão da safra são temas da coletiva de imprensa realizada pela Conab",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/aviso-de-pauta-2013-leiloes-de-milho-e-previsao-da-safra-sao-temas-da-coletiva-de-imprensa-realizada-pela-conab",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "a0f50331005b9402",
+      "title": {
+        "original": "Compras de milho preveem até 224 mil toneladas para formação de estoques e prevenção ao El Niño",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/compras-de-milho-preveem-ate-224-mil-toneladas-para-formacao-de-estoques-e-prevencao-ao-el-nino",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "90caf018877f574b",
+      "title": {
+        "original": "Conab realiza primeiro leilão de compra de arroz para formar estoques públicos",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-realiza-primeiro-leilao-de-compra-de-arroz-para-formar-estoques-publicos",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ]
+    },
+    {
+      "id": "af3268d8f8f62548",
+      "title": {
+        "original": "May 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 157.9 million tonnes (Mt) in May 2026, a 0.3% decrease compared to May 2025. The post May 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/may-2026-crude-steel-production/",
+      "published_at": "2026-06-23T08:36:17+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.198,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ]
+    },
+    {
+      "id": "3547f9608d850c98",
+      "title": {
+        "original": "Customs x BPDP Goes to School and Campus Hadir di Manado, Kenalkan Peran Strategis Perkebunan kepada Generasi Muda",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/customs-x-bpdp-goes-to-school-and-campus-hadir-di-manado-kenalkan-peran-strategis-perkebunan-kepada-generasi-muda",
+      "published_at": "2026-09-25T12:16:01+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.174,
+      "reasons": []
+    },
+    {
+      "id": "62f11e17ce23601c",
+      "title": {
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.173,
+      "reasons": []
+    },
+    {
+      "id": "62ac4be598c099c2",
+      "title": {
+        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
+      "published_at": "2026-08-14T07:26:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.139,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "671ae2ca9456c281",
+      "title": {
+        "original": "Opini Publik: Lebah di Bawah Janur Mapan sebagai Simfoni Hijau Masa Depan Perkelapaan Indonesia",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-lebah-di-bawah-janur-mapan-sebagai-simfoni-hijau-masa-depan-perkelapaan-indonesia",
+      "published_at": "2026-09-09T06:55:51+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.12,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "636939b535053039",
       "title": {
         "original": "Petroleum Marketing Monthly",
@@ -1350,8 +3707,69 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.095,
+      "importance": 1.09,
       "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "929e1ee5c8475871",
+      "title": {
+        "original": "Canada celebrates progress on the McIlvenna Bay mine: production underway, jobs created, supply chains strengthened",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Located in Saskatchewan’s Flin Flon Greenstone Belt, one of Canada’s richest mineral regions, the McIlvenna Bay copper-zinc mine is one of Canada’s most significant new critical minerals mines, being developed by Eldorado Gold in close partnership with Indigenous partners. As a new source of minerals that are essential to clean energy technology, advanced manufacturing and national security, this project will strengthen Saskatchewan’s and Canada’s economic prosperity, supply chain security and industrial strength.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canada-celebrates-progress-on-the-mcilvenna-bay-mine-production-underway-jobs-created-supply-chains-strengthened.html",
+      "published_at": "2026-09-02T19:15:44+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gold",
+        "copper",
+        "zinc"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.067,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "795f411fda44aae8",
+      "title": {
+        "original": "IAI figures show attacks on production facilities and dwindling stocks of raw materials have had a serious impact on Gulf producers.",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "We are starting to see the impacts of the US-Iran war on aluminium production figures. Production in the Gulf countries fell by 6% in March to an average of 15,963 tonnes per day, down from 16,997 tonnes per day in February. We do not yet have final March figures for all our members’ smelters at this point and we can expect the actual output to be lower still when the full dataset becomes available in May. The war is having an obvious impact on the market, with the publicly quoted LME price now at a four-year high. Most smelters would have been drawing down their stocks of raw materials as…",
+      "url": "https://international-aluminium.org/iai-figures-show-attacks-on-production-facilities-and-dwindling-stocks-of-raw-materials-have-had-a-serious-impact-on-gulf-producers/",
+      "published_at": "2026-04-20T10:44:04+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "IRN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.06,
+      "reasons": [
+        "has_figure",
+        "revision_language",
         "country_in_text"
       ]
     },
@@ -1444,6 +3862,60 @@
       ]
     },
     {
+      "id": "7695372844e9b313",
+      "title": {
+        "original": "BPDP Ajak Aktivis Mahasiswa Kembangkan Wirausaha Berbasis Sawit",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-ajak-aktivis-mahasiswa-kembangkan-wirausaha-berbasis-sawit",
+      "published_at": "2026-09-16T08:51:35+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.977,
+      "reasons": []
+    },
+    {
+      "id": "9b3aacef7418cd57",
+      "title": {
+        "original": "Opini Publik: Kelapa di Ujung Krisis: Hilirisasi Sebagai Jalan Menyelamatkan Ekonomi Dan Petani Indonesia",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-kelapa-di-ujung-krisis-hilirisasi-sebagai-jalan-menyelamatkan-ekonomi-dan-petani-indonesia",
+      "published_at": "2026-08-26T06:32:05+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.907,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "0260f9aa0131b0b8",
       "title": {
         "original": "Petroleum Supply Monthly",
@@ -1464,7 +3936,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.876,
+      "importance": 0.872,
       "reasons": []
     },
     {
@@ -1488,7 +3960,59 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.876,
+      "importance": 0.872,
+      "reasons": []
+    },
+    {
+      "id": "a78219d1002ebe81",
+      "title": {
+        "original": "BPDP Perkuat Literasi Perkebunan melalui Komik dan Kolaborasi Perpustakaan",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-perkuat-literasi-perkebunan-melalui-komik-dan-kolaborasi-perpustakaan",
+      "published_at": "2026-09-09T11:18:21+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.864,
+      "reasons": []
+    },
+    {
+      "id": "b87baa2603ba1ba3",
+      "title": {
+        "original": "Informe Salud Mental en la Industria Minera Nacional",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
+      "published_at": "2026-08-13T15:07:49+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.844,
       "reasons": []
     },
     {
@@ -1518,6 +4042,233 @@
       "reasons": [
         "country_in_text"
       ]
+    },
+    {
+      "id": "f8bf20af564959e9",
+      "title": {
+        "original": "BPDP Dorong Kolaborasi dan Pemanfaatan Biofuel dalam Percepatan Transisi Energi melalui EBTKE ConEx 2026",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-dorong-kolaborasi-dan-pemanfaatan-biofuel-dalam-percepatan-transisi-energi-melalui-ebtke-conex-2026",
+      "published_at": "2026-09-07T04:27:31+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.832,
+      "reasons": []
+    },
+    {
+      "id": "66eae8938783b965",
+      "title": {
+        "original": "At COP30: Can-to-Can Recycling Delivers 18% Higher Efficiency and Major Climate Benefits for Aluminium Beverage Cans",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "As global leaders gather at COP30 to accelerate climate action, a new study by Innoval Technology , a UK-based aluminium consultancy, highlights how can-to-can recycling of aluminium beverage cans delivers major environmental gains and advances circular economy goals. The study finds that recycling used beverage cans back into new cans through dedicated remelt operations could increase melt recovery rates by 18% and cut energy use and greenhouse gas emissions by 15% compared to mixed-alloy recycling. Today, 23% of the aluminium beverage cans are leaked and recycled into cast aluminum…",
+      "url": "https://international-aluminium.org/at-cop30-can-to-can-recycling-delivers-18-higher-efficiency-and-major-climate-benefits-for-aluminium-beverage-cans/",
+      "published_at": "2025-11-13T18:02:40+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.798,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "7e2d9eaa2d937e0e",
+      "title": {
+        "original": "BPDP dan Kemenkeu Satu Perkuat UMKM Perkebunan melalui Sinara Fest 2026 di Semarang",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/bpdp-dan-kemenkeu-satu-perkuat-umkm-perkebunan-melalui-sinara-fest-2026-di-semarang",
+      "published_at": "2026-09-04T02:55:30+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.792,
+      "reasons": []
+    },
+    {
+      "id": "cbae598c13644bf7",
+      "title": {
+        "original": "GULF ALUMINIUM OUTPUT COLLAPSES BY 40% OF PRE-WAR LEVELS AS GLOBAL SUPPLY CRISIS DEEPENS",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "April figures show production down 26.7% in a single month, as IAI warns the worst is still ahead LONDON – Preliminary production data from the Gulf region shows aluminium output fell to 10,989 tonnes per day in April 2026, a 26.7% decline from the March figure of 15,000 tonnes per day [1] and less than two-thirds of the pre-conflict baseline of approximately 17,800 tonnes per day. Final April figures are still being compiled. The numbers, collated by the International Aluminium Institute (IAI), confirm the level of disruption to Gulf production. The region accounts for around 8% of global…",
+      "url": "https://international-aluminium.org/gulf-aluminium-output-collapses-by-40-of-pre-war-levels-as-global-supply-crisis-deepens/",
+      "published_at": "2026-05-20T10:03:41+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.776,
+      "reasons": [
+        "has_figure"
+      ]
+    },
+    {
+      "id": "96c93bcca16a1043",
+      "title": {
+        "original": "银世界新闻 2026年8月",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "点击此处看全文",
+      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b48%e6%9c%88/",
+      "published_at": "2026-09-01T20:20:02+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.765,
+      "reasons": []
+    },
+    {
+      "id": "12501fa570ad4d21",
+      "title": {
+        "original": "Agosto de 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Haga clic aquí para ver el artículo.",
+      "url": "https://silverinstitute.org/agosto-de-2026/",
+      "published_at": "2026-09-01T20:17:47+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.765,
+      "reasons": []
+    },
+    {
+      "id": "aa17b478e6561bc9",
+      "title": {
+        "original": "银世界新闻 2026年6月",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "点击此处看全文",
+      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b46%e6%9c%88/",
+      "published_at": "2026-09-01T20:16:24+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.765,
+      "reasons": []
+    },
+    {
+      "id": "1e42080f0e1e0d89",
+      "title": {
+        "original": "Junio de 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Haga clic aquí para ver el artículo.",
+      "url": "https://silverinstitute.org/junio-de-2026/",
+      "published_at": "2026-09-01T20:14:21+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.765,
+      "reasons": []
+    },
+    {
+      "id": "c73f66d2b69815ff",
+      "title": {
+        "original": "Silver News August 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "click here to view the article.",
+      "url": "https://silverinstitute.org/silver-news-august-2026/",
+      "published_at": "2026-08-31T01:49:00+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.746,
+      "reasons": []
     },
     {
       "id": "d09ef02fa55cc52b",
@@ -1574,6 +4325,32 @@
       ]
     },
     {
+      "id": "8f3cba277d1d8f7f",
+      "title": {
+        "original": "Rewiring the Egg Supply Chain in Austria",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Austria cut emissions, strengthened EU protein production and reduced reliance on imported soya by changing what hens eat. Here's how coordination transformed a supply chain.",
+      "url": "https://agriculture.ec.europa.eu/rewiring-egg-supply-chain-austria_en",
+      "published_at": "2026-07-02T14:01:47+00:00",
+      "agency": "European Commission DG AGRI",
+      "agency_ko": "EU 집행위 농업총국",
+      "source_id": "eu_agri",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.683,
+      "reasons": [
+        "revision_language"
+      ]
+    },
+    {
       "id": "094f2c679d643322",
       "title": {
         "original": "NASS discontinues select 2024 data collection programs and reports",
@@ -1600,6 +4377,172 @@
       "reasons": []
     },
     {
+      "id": "89c825ce4cf18fd2",
+      "title": {
+        "original": "Canada advances global energy exports by signing second European LNG deal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/07/canada-advances-global-energy-exports-by-signing-second-european-lng-deal.html",
+      "published_at": "2026-07-29T04:00:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.631,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "ab3a2a994bfc6642",
+      "title": {
+        "original": "Global Aluminium Can Recycling Reaches 75%, Marking Major Step Toward Circular Economy",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Global study reveals aluminium cans achieve highest collection-for-recycling and recycling rates among beverage containers Belém, Brazil, 11 th November 2025 At COP30 today, the International Aluminium Institute (IAI) announced that aluminium beverage cans achieved a global recycling rate of 75% in 2023, a major milestone in the industry’s drive toward full circularity. The achievement brings the sector more than halfway toward the Global Beverage Can Circularity Alliance (GBCCA)’s goal of 80% recycling by 2030, first established at COP28. The milestone is highlighted in a new global study…",
+      "url": "https://international-aluminium.org/global-aluminium-can-recycling-reaches-75-marking-major-step-toward-circular-economy/",
+      "published_at": "2025-11-11T10:48:16+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.63,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e31766e85e2bb8fa",
+      "title": {
+        "original": "COP30 Panel to Explore Formalising the Role of Waste Pickers in Global Aluminium Recycling Markets",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A major panel discussion at COP30, hosted by the International Aluminium Institute (IAI), the Aluminium Stewardship Initiative (ASI) and Associação Brasileira do Alumínio (ABAL) will highlight the crucial role of waste pickers in aluminium recycling and explore strategies for integrating them into mainstream recycling frameworks. The IAI is spearheading collaborative efforts at COP30 to drive knowledge sharing, technological innovation, and financial mobilisation across the aluminium sector. To this end, the session, “People Driving the Circular Economy: Integrating Waste Pickers in Aluminium…",
+      "url": "https://international-aluminium.org/cop30-panel-to-explore-formalising-the-role-of-waste-pickers-in-global-aluminium-recycling-markets/",
+      "published_at": "2025-11-10T13:18:02+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.63,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b2bc51accbde2d64",
+      "title": {
+        "original": "Mahasiswa Ditantang Hadirkan Riset untuk Meningkatkan Produktivitas Sawit, Kakao, dan Kelapa secara Berkelanjutan",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/mahasiswa-ditantang-hadirkan-riset-untuk-meningkatkan-produktivitas-sawit-kakao-dan-kelapa-secara-berkelanjutan",
+      "published_at": "2026-08-05T06:03:30+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "cocoa",
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.559,
+      "reasons": []
+    },
+    {
+      "id": "c45ef08bed6185fe",
+      "title": {
+        "original": "Opini Publik: Dari Timur Menuju Smart Cocoa: Digitalisasi Petani Kakao NTT dengan Sistem Monitoring Berbasis IoT",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-dari-timur-menuju-smart-cocoa-digitalisasi-petani-kakao-ntt-dengan-sistem-monitoring-berbasis-iot",
+      "published_at": "2026-08-05T05:30:23+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "cocoa"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.559,
+      "reasons": []
+    },
+    {
+      "id": "69939df0db75be9f",
+      "title": {
+        "original": "SILVER FROM CHINA AND BEYOND",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Discover how China has become a top destination for silver mining and foreign investment. Lon Shaver, the president of Silvercorp Metals, joins Michael DiRienzo, the president and CEO of The Silver Institute, to talk about Silvercorp’s activities in China, and projects in Ecuador and Kyrgyzstan. Click here to listen to the podcast.",
+      "url": "https://silverinstitute.org/silver-from-china-and-beyond/",
+      "published_at": "2026-06-12T19:55:07+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [
+        "CHN",
+        "ECU"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.555,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "af0be633a6c11395",
       "title": {
         "original": "EIA launches pilot survey on energy use at data centers",
@@ -1621,6 +4564,153 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.548,
+      "reasons": []
+    },
+    {
+      "id": "25fb768ac2e254c6",
+      "title": {
+        "original": "Opini Publik: DETEKA: Inovasi Alat Pendeteksi Kematangan Kakao Berbasis Mobile Application dengan Artificial Sensor untuk Optimalisasi Panen dan Peningkatan Kesejahteraan Petani",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-deteka-inovasi-alat-pendeteksi-kematangan-kakao-berbasis-mobile-application-dengan-artificial-sensor-untuk-optimalisasi-panen-dan-peningkatan-kesejahteraan-petani",
+      "published_at": "2026-07-29T03:14:09+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "cocoa"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.53,
+      "reasons": []
+    },
+    {
+      "id": "f5072178b1b60a30",
+      "title": {
+        "original": "Gold:Silver Ratio Continues to be Relevant in the Modern Era",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Washington, DC – July 22, 2026) A comprehensive study of the gold:silver ratio illustrates the continued relevance of this measure to today’s active precious metals markets. The Silver Institute’s newly released Market Trend Report, “Is the Gold:Silver Ratio Relevant Today?” produced by Precious Metals Insights, narrates the history of the ratio over more than 3,000 years and analyzes gold and silver price data and their relationship with supply/demand and economic variables for the period from 1970 to 2026. The Report indicates that the price correlation between the two precious metals has…",
+      "url": "https://silverinstitute.org/goldsilver-ratio-continues-to-be-relevant-in-the-modern-era/",
+      "published_at": "2026-07-21T23:57:05+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "gold",
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.507,
+      "reasons": []
+    },
+    {
+      "id": "09ca834485d1ec42",
+      "title": {
+        "original": "IAI has new a Secretary General",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The International Aluminium Institute (IAI) has appointed Jonathan Grant as its new Secretary General, succeeding Miles Prosser. Grant has now assumed the role and will lead the Institute at a time when aluminium is playing an increasingly important part in the global energy transition and the shift to a more resource efficient economy. With a career spanning industry, sustainability and international collaboration, Grant brings experience from organisations including IPIECA, the World Business Council for Sustainable Development, the International Council on Mining and Metals and the…",
+      "url": "https://international-aluminium.org/iai-has-new-secretary-general/",
+      "published_at": "2026-02-27T22:46:40+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.505,
+      "reasons": []
+    },
+    {
+      "id": "930976e33c5a3743",
+      "title": {
+        "original": "International Aluminium Institute Appoints Jonathan Grant as New Secretary General",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Jonathan Grant to lead global aluminium industry body in demonstrating the benefits of aluminium and the industry’s commitment to sustainable development and responsible production The International Aluminium Institute (IAI) today announced the appointment of Jonathan Grant as its new Secretary General. He will lead the organisation in advancing sustainability initiatives, strengthening industry collaboration, and maintaining the IAI’s position as the authoritative voice of the global primary aluminium industry. Jonathan Grant is a seasoned climate and sustainability leader with extensive…",
+      "url": "https://international-aluminium.org/international-aluminium-institute-appoints-jonathan-grant-as-new-secretary-general/",
+      "published_at": "2025-11-12T06:42:08+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.504,
+      "reasons": []
+    },
+    {
+      "id": "592d3e5125237169",
+      "title": {
+        "original": "Silver News June 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "click here to view the article.",
+      "url": "https://silverinstitute.org/silver-news-june-2026/",
+      "published_at": "2026-07-01T04:29:43+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.464,
+      "reasons": []
+    },
+    {
+      "id": "89f241fbe1c68b24",
+      "title": {
+        "original": "银世界新闻 2026年4月",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "点击此处看全文",
+      "url": "https://silverinstitute.org/%e9%93%b6%e4%b8%96%e7%95%8c%e6%96%b0%e9%97%bb-2026%e5%b9%b44%e6%9c%88/",
+      "published_at": "2026-05-11T18:32:26+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.428,
       "reasons": []
     }
   ]

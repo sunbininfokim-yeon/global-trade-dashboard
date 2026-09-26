@@ -139,6 +139,41 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 **새 종류의 중요 보고서**가 보이면 `config/series_catalog.json` 에 `series_id`를 추가하는 것이
 "학습 정의"의 정본이다.
 
+## 소스 상태 (2026-09-26 갱신 — 모든 대시보드 품목에 출처 연결)
+
+**URL은 추측으로 켜지 않는다.** 세션 환경에서는 발간처 대부분에 접속이 안 되므로,
+후보를 `tools/ops/feed_probe_targets.json` 에 적고 `claude/` 브랜치에 푸시하면
+`.github/workflows/feed_probe.yml` 이 러너에서 받아 본다 (상태코드, RSS 여부, 항목 수,
+최신 날짜, 페이지가 광고하는 피드, 차단 종류 — 브라우저 헤더·Chrome TLS 지문·실제 Chrome).
+
+| 품목 | 새로 붙은 출처 |
+|---|---|
+| 천연고무 (`rubber`, 신규 창) | ANRPC 사무국 뉴스(월간 NR 통계), 베트남고무협회 국내·해외 뉴스 |
+| 팜유 | MPOB RSS, BPDP RSS(수출부담금 규정), 인도네시아 무역부 RSS, GAIN(말레이시아·인니 Oilseeds) |
+| 커피 | CONAB 뉴스 목록(브라질 커피 생산 추정), GAIN(Coffee Annual) |
+| 구리·리튬 | Cochilco RSS |
+| 알루미늄 / 은 / 금 | IAI / Silver Institute / WGC RSS |
+| 철광석·원료탄 | worldsteel RSS (월간 조강 생산만 시리즈로 연결) |
+| 핵심광물 전반 | USGS NMIC 뉴스 목록, NRCan Atom, 중국 상무부 영문 뉴스(수출통제) |
+| 곡물 전반 | FAO 뉴스룸·EU DG AGRI(새 피드 주소), GAIN 복구 |
+
+**GAIN:** `fas.usda.gov/data/search` 는 러너에서 늘 `Access Denied` (헤더·TLS·실제 Chrome
+모두 — 경로 규칙). 품목 페이지(`/data/commodities/<x>`)와 국가 페이지(`/regions/<x>`)에
+최신 GAIN 링크(`/data/gain/YYYY/MM/<slug>`)가 박혀 있고 보고서 페이지도 열리므로
+`fas_gain_pages` 가 그 링크를 모아 각 페이지의 og:title·요약을 읽는다. 페이지에 그 달
+안의 날짜가 없으면 URL의 연·월만 쓰고 `published_precision: "month"` 로 표시한다.
+
+**간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
+(1회차 통과, 2회차 전부 403). 그래서 실패한 출처는 직전 결과 파일에서 그 출처의 보고서
+(45일 이내)를 다시 태깅해 이어 붙이고, `feed_status`에 `carried_over`로 표시한다.
+GAIN은 이미 읽은 보고서 페이지를 다시 받지 않고, 요청 사이에 1초를 쉬며,
+목록 페이지 5개가 연달아 실패하면 그 회차를 멈춘다.
+
+**안 되는 곳 (2026-09-26 확인):** ICSG·ILZSG·INSG·국제주석협회·GAPKI·MPOC·Cecafé
+(JS 챌린지), IEA·말레이시아고무협의회(Cloudflare), Cobalt Institute(Sucuri),
+태국 고무청(RAOT, 러너에서 타임아웃), 인도 고무청(중간 인증서 누락), ICO(RSS 비어 있음),
+USGS `/news/minerals/feed`(빈 채널). 말레이시아 고무청(LGM)은 SPA라 뉴스 API를 찾아야 한다.
+
 ## 소스 상태 (2026-09-02, 첫 라이브 Actions 실행 결과 반영)
 
 레포 작업 환경(이 세션)은 일반 웹 egress 자체가 대부분 막혀 있어 (github.com·npm·PyPI 류

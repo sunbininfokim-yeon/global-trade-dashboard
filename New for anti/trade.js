@@ -730,10 +730,14 @@ const loadCommodityReports = async (commodity, iso3, limit = 6) => {
 // ASB/news syndication) return a rolling archive years deep, not just this
 // week -- dropping the year made a 2020 notice and a 2026 one look identical.
 // A dateless list-page row shows nothing rather than a fabricated today.
-const reportDate = (iso) => {
+// A GAIN page that carries no date is placed by the /YYYY/MM/ in its URL
+// (published_precision "month"); printing its day would invent one.
+const reportDate = (iso, precision) => {
     if (!iso) return '';
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return '';
+    const ym = `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    if (precision === 'month') return ym;
     return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 };
 
@@ -745,7 +749,7 @@ const reportRowHtml = (item) => {
     const title = escapeFeedText(item.title?.ko || item.title?.original || '');
     const agency = escapeFeedText(item.agency_ko || item.agency || '');
     const summary = String(item.summary || '').trim();
-    const date = reportDate(item.published_at);
+    const date = reportDate(item.published_at, item.published_precision);
     // A world balance sheet sitting on a country's board should say so --
     // otherwise "world wheat production at a record" reads as a claim about
     // the country whose window it is on.

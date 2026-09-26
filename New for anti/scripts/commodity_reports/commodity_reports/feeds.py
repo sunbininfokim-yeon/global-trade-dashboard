@@ -15,13 +15,14 @@ import email.utils
 import hashlib
 import re
 import ssl
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from html import unescape
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin
+from urllib.parse import unquote, urljoin
 
 _TAG_RE = re.compile(r"<[^>]+>", re.S)
 _SCRIPT_RE = re.compile(r"<(script|style)[^>]*>.*?</\1>", re.I | re.S)
@@ -45,6 +46,10 @@ class RawReport:
     summary: str
     published_at: Optional[str]
     lang: str = "en"
+    # "month" when only the year and month are known (a GAIN page with no
+    # dated element falls back to the /YYYY/MM/ in its URL). The card then
+    # shows 2026.09, not a day nobody published.
+    date_precision: str = "day"
     weight: float = 1.0
     # Priors from the source catalog, used only where the text itself is silent.
     default_country: Optional[str] = None
@@ -58,17 +63,27 @@ def strip_html(doc: str) -> str:
     return _WS_RE.sub(" ", unescape(doc)).strip()
 
 
-def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0) -> str:
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": user_agent,
-            "Accept": "application/rss+xml, application/atom+xml, application/xml, "
-            "text/xml, text/html, */*",
-            "Accept-Language": "en,pt;q=0.8,es;q=0.8,fr;q=0.6",
-        },
-        method="GET",
-    )
+# Some ministries drop or reset a connection whose User-Agent is not a
+# browser's (MOFCOM's English site resets ours and serves Chrome's). A source
+# opts in with "headers": "browser"; everyone else keeps the honest UA.
+BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+
+def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0, browser: bool = False) -> str:
+    headers = dict(BROWSER_HEADERS) if browser else {
+        "User-Agent": user_agent,
+        "Accept": "application/rss+xml, application/atom+xml, application/xml, "
+        "text/xml, text/html, */*",
+        "Accept-Language": "en,pt;q=0.8,es;q=0.8,fr;q=0.6",
+    }
+    req = urllib.request.Request(url, headers=headers, method="GET")
     with urllib.request.urlopen(req, timeout=timeout, context=ssl.create_default_context()) as resp:
         raw = resp.read()
     if raw.startswith(b"\xef\xbb\xbf"):
@@ -222,8 +237,13 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         title = strip_html(inner)
         if len(title) < 12:
             # Icon-only or "read more" links: fall back to the slug, which for
-            # these publishers is a readable title.
-            title = re.sub(r"[-_]+", " ", full.rsplit("/", 1)[-1].split(".")[0]).strip()
+            # these publishers is a readable title -- once its %-escapes are
+            # decoded (ANRPC's "report%2C june 2026") and its first letter
+            # capitalized.
+            slug = unquote(full.rstrip("/").rsplit("/", 1)[-1])
+            slug = re.sub(r"\.(?:html?|php|aspx?)$|\.\d+\.html?$", "", slug, flags=re.I)
+            title = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", slug)).strip(" .")
+            title = title[:1].upper() + title[1:]
         if len(title) < 12:
             continue
         seen.add(key)
@@ -289,12 +309,172 @@ def parse_fas_gain_cards(body: str, source: Dict[str, Any], max_items: int = 40)
     return items
 
 
+_GAIN_PAGE_LINK_RE = re.compile(
+    r"href=[\"'](?:https?://(?:www\.)?fas\.usda\.gov)?(/data/gain/(\d{4})/(\d{2})/[a-z0-9-]+)[\"'?#]", re.I
+)
+_META_RE = re.compile(r"<meta\s+[^>]*>", re.I)
+_META_KEY_RE = re.compile(r"(?:property|name|itemprop)=[\"']([^\"']+)[\"']", re.I)
+# Quote-paired: a summary like content="Brazil's crop..." must not stop at
+# the apostrophe.
+_META_CONTENT_RE = re.compile(r"content=(?:\"([^\"]*)\"|'([^']*)')", re.I)
+_TIME_RE = re.compile(r"<time[^>]+datetime=[\"']([^\"']+)[\"']", re.I)
+_LD_DATE_RE = re.compile(r"\"datePublished\"\s*:\s*\"([^\"]+)\"")
+_PDF_RE = re.compile(r"href=[\"']([^\"']*/data/gain-report/[^\"']+\.pdf)[\"']", re.I)
+
+
+def _metas(body: str) -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    for tag in _META_RE.findall(body):
+        k = _META_KEY_RE.search(tag)
+        v = _META_CONTENT_RE.search(tag)
+        if k and v and k.group(1).lower() not in out:
+            out[k.group(1).lower()] = unescape(v.group(1) if v.group(1) is not None else v.group(2)).strip()
+    return out
+
+
+def gain_links(list_html: str) -> List[tuple]:
+    """(path, year, month) for every GAIN report a FAS list page links to."""
+    seen, out = set(), []
+    for path, year, month in _GAIN_PAGE_LINK_RE.findall(list_html):
+        if path not in seen:
+            seen.add(path)
+            out.append((path, int(year), int(month)))
+    return out
+
+
+def parse_fas_gain_page(body: str, url: str, year: int, month: int, source: Dict[str, Any]) -> Optional[RawReport]:
+    """One GAIN report page (fas.usda.gov/data/gain/YYYY/MM/slug).
+
+    The page is server-rendered with Open Graph tags: og:title is the report
+    title as FAS lists it ("Malaysia: Oilseeds and Products Update") and the
+    description is the report's own summary paragraph. The date comes from the
+    page when it carries one inside the URL's month; otherwise from the URL.
+    """
+    meta = _metas(body)
+    title = meta.get("og:title") or meta.get("twitter:title") or ""
+    if not title:
+        m = re.search(r"<title[^>]*>(.*?)</title>", body, re.I | re.S)
+        title = strip_html(m.group(1)).split(" | ")[0] if m else ""
+    title = strip_html(title)
+    if not title:
+        return None
+    summary = meta.get("og:description") or meta.get("description") or ""
+    published, precision = None, "month"
+    for raw in [meta.get("article:published_time", "")] + _TIME_RE.findall(body) + _LD_DATE_RE.findall(body):
+        iso = parse_date(raw)
+        if iso and iso[:7] == f"{year:04d}-{month:02d}":
+            published, precision = iso, "day"
+            break
+    if published is None:
+        published = datetime(year, month, 1, tzinfo=timezone.utc).isoformat()
+    item = _raw_from(source, title=title, url=url, summary=clip(strip_html(summary)), published_at=published)
+    item.date_precision = precision
+    return item
+
+
+def fetch_fas_gain_pages(
+    source: Dict[str, Any], *, fetch, max_items: int, now: Optional[datetime] = None,
+    known: Optional[List[RawReport]] = None, pause=None,
+) -> Dict[str, Any]:
+    """GAIN reports gathered from FAS's commodity and country pages.
+
+    fas.usda.gov/data/search -- the only page that lists every GAIN report --
+    answers "Access Denied" to Actions runners (urllib, browser headers, a
+    Chrome TLS fingerprint and a real headless Chrome alike; checked
+    2026-09-26 with tools/ops/feed_probe.py). The commodity pages
+    (/data/commodities/<x>) and country pages (/regions/<x>) are not blocked
+    and each links its latest few GAIN reports, and the report pages
+    themselves are readable, so the list is assembled from those.
+
+    `fetch(url) -> str` is injected so fixture builds and tests run offline.
+    `known` are the reports the last build already read; their pages are not
+    fetched again. `pause()` runs between requests (a delay, live only). Five
+    list pages failing in a row stops the run: that is a block, and asking
+    forty more times only makes it last longer.
+    """
+    pause = pause or (lambda: None)
+    known_by_url = {r.url: r for r in (known or [])}
+    cfg = source.get("html") or {}
+    base = cfg.get("base") or "https://www.fas.usda.gov"
+    now = now or datetime.now(timezone.utc)
+    max_age_days = int(cfg.get("max_age_days") or 150)
+    max_pages = int(cfg.get("max_pages") or max_items)
+    exclude = re.compile(cfg["exclude_slug_re"]) if cfg.get("exclude_slug_re") else None
+    slug_hints: Dict[str, List[str]] = cfg.get("slug_commodities") or {}
+
+    lists_ok, errors, failed_in_row = 0, [], 0
+    found: Dict[str, tuple] = {}
+    for n, path in enumerate(cfg.get("list_urls") or []):
+        if n:
+            pause()
+        try:
+            html = fetch(urljoin(base, path))
+        except Exception as exc:  # noqa: BLE001 -- one dead list page must not sink the rest
+            errors.append(f"{path}: {type(exc).__name__}")
+            failed_in_row += 1
+            if failed_in_row >= 5 and not lists_ok:
+                break
+            continue
+        failed_in_row = 0
+        lists_ok += 1
+        for link, year, month in gain_links(html):
+            slug = link.rsplit("/", 1)[-1]
+            if exclude and exclude.search(slug):
+                continue
+            age = (now - datetime(year, month, 1, tzinfo=timezone.utc)).days
+            if age > max_age_days or age < -31:
+                continue
+            found.setdefault(link, (year, month))
+    if not lists_ok:
+        return {"ok": False, "items": [], "error": "no list page answered: " + "; ".join(errors[:3])}
+
+    newest_first = sorted(found.items(), key=lambda kv: kv[1], reverse=True)[:max_pages]
+    items: List[RawReport] = []
+    reused = 0
+    for link, (year, month) in newest_first:
+        url = urljoin(base, link)
+        if url in known_by_url:
+            items.append(known_by_url[url])
+            reused += 1
+            continue
+        pause()
+        try:
+            body = fetch(url)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{link}: {type(exc).__name__}")
+            continue
+        item = parse_fas_gain_page(body, url, year, month, source)
+        if item is None:
+            continue
+        slug = link.rsplit("/", 1)[-1]
+        hints = [c for key, cs in slug_hints.items() if key in slug for c in cs]
+        if hints:
+            item.commodity_hint = list(dict.fromkeys(hints))
+        items.append(item)
+    return {"ok": True, "items": items, "error": None,
+            "note": f"{lists_ok} list pages, {len(found)} reports linked, {len(items) - reused} read, {reused} already known"
+            + (f"; {len(errors)} failed" if errors else "")}
+
+
 def fetch_source(
-    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int
+    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int,
+    known: Optional[List[RawReport]] = None,
 ) -> Dict[str, Any]:
     sid = source["id"]
+    if source.get("kind") == "fas_gain_pages":
+        delay = float((source.get("html") or {}).get("delay_sec", 1.0))
+        res = fetch_fas_gain_pages(
+            source,
+            fetch=lambda u: fetch_text(u, user_agent=user_agent, timeout=timeout),
+            max_items=max_items,
+            known=known,
+            pause=lambda: time.sleep(delay),
+        )
+        return {"source_id": sid, "ok": res["ok"], "items": res["items"],
+                "count": len(res["items"]), "error": res["error"], "note": res.get("note")}
     try:
-        body = fetch_text(source["url"], user_agent=user_agent, timeout=timeout)
+        body = fetch_text(source["url"], user_agent=user_agent, timeout=timeout,
+                          browser=source.get("headers") == "browser")
     except Exception as exc:  # noqa: BLE001 -- one dead publisher must not fail the build
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"{type(exc).__name__}: {exc}"}
@@ -312,6 +492,7 @@ def fetch_source(
         items = parse_html_list(body, source)
     elif kind == "fas_gain_cards":
         items = parse_fas_gain_cards(body, source, max_items=max_items)
+
     else:
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"unknown_kind:{kind}"}
