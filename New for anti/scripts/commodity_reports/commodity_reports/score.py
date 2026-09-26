@@ -56,7 +56,7 @@ EVENT_TERMS = [
 ADMIN_TERMS = [
     "report delayed", "release delayed", "delayed until", "delays weekly", "suspends", "suspended",
     "discontinue", "discontinues", "discontinued", "to review", "re-survey", "resurvey",
-    "to collect", "released on-time", "appoints", "appointed", "new secretary general",
+    "to collect", "released on-time", "appoints", "appointed", "secretary general", "reinstates",
     "aviso de pauta", "pregão", "pregao", "nota oficial", "suscriben acuerdo", "acuerdo de colaboración",
     "(t/p)", "tender", "lelang", "sebut harga", "call for proposal",
 ]

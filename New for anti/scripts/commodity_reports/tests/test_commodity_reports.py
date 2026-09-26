@@ -537,6 +537,7 @@ class RelevanceByCommodityTests(unittest.TestCase):
         self.assertIn("oil", self.run_one("EIA increases global oil production forecast after the opening of the Strait of Hormuz"))
         self.assertEqual(self.run_one("EIA releases latest Short-Term Energy Outlook amid Middle East conflict"), ["oil", "gas"])
         self.assertNotIn("oil", self.commodity.tag("Malaysia palm oil production rose 4% in August"))
+        self.assertNotIn("oil", self.commodity.tag("Brazil: Biofuels Annual -- ethanol blending and renewable diesel capacity"))
 
     def test_housekeeping_notices_are_dropped(self):
         for title in ("USDA Crop Progress report delayed until 5pm ET",
@@ -544,9 +545,17 @@ class RelevanceByCommodityTests(unittest.TestCase):
                       "USDA NASS to Re-Survey Operators with Previously Unharvested Corn and Soybeans",
                       "Aviso de pauta 2013 3o levantamento da safra de cafe 2026",
                       "MPOB(T/P)39/26 – Kerja-Kerja Penyelenggaraan Am Ladang Sawit",
-                      "International Aluminium Institute Appoints Jonathan Grant as New Secretary General"):
+                      "International Aluminium Institute Appoints Jonathan Grant as New Secretary General",
+                      "IAI has new a Secretary General",
+                      "NASS Reinstates Select Data Collection Programs and Reports"):
             self.assertIsNone(self.run_one(title, market_only=True), title)
         self.assertEqual(self.run_one("Produção de café é estimada em 67,6 milhões de sacas", market_only=True), ["coffee"])
+
+    def test_a_publisher_name_in_the_body_is_not_its_supply_series(self):
+        # MPOB_SUPPLY_DEMAND used to match on "mpob", so every MPOB post was
+        # a series item and skipped the event filter.
+        self.assertIsNone(self.run_one("Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026",
+                                       "Anjuran MPOB di Kuala Lumpur.", market_only=True))
 
     def test_market_only_board_keeps_market_news_only(self):
         self.assertIsNone(self.run_one("Aluminium cans lead global beverage recycling", market_only=True))
