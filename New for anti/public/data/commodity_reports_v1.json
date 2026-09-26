@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T14:05:46.856063+00:00",
+  "generated_at": "2026-09-26T14:22:34.073354+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -20,8 +20,8 @@
     "sources_ok": 30,
     "sources_failed": 3,
     "raw_items": 483,
-    "scored": 106,
-    "published": 91,
+    "scored": 105,
+    "published": 90,
     "commodities": 24,
     "buckets": 67
   },
@@ -699,30 +699,6 @@
         "f8544c356fd2f6b6"
       ]
     },
-    "soybeans": {
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "6ab9fd7ecd2c98de",
-        "dbef185c58693fb1",
-        "9d9ab72fff81736d",
-        "06cf84727ec466c3",
-        "727409c1a45dfec3",
-        "855ed5d7f1503c83"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
-      ]
-    },
     "rice": {
       "PHL": [
         "71739cda84d2ebd6"
@@ -774,6 +750,27 @@
         "a0f50331005b9402"
       ]
     },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
+        "6ab9fd7ecd2c98de",
+        "dbef185c58693fb1",
+        "9d9ab72fff81736d",
+        "06cf84727ec466c3",
+        "727409c1a45dfec3",
+        "855ed5d7f1503c83"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
+      ]
+    },
     "wheat": {
       "BGD": [
         "9a2e551991dc06e6"
@@ -808,7 +805,13 @@
     "thermal_coal": {
       "USA": [
         "f8aa4f64781b6480",
-        "fd94e1c0559f75cc"
+        "0a708bd4ffd29cfc",
+        "fd94e1c0559f75cc",
+        "cecfc55a16f54d74"
+      ],
+      "_global": [
+        "7376f1ff6d49470e",
+        "39ac9e91f73a0776"
       ]
     },
     "palm_oil": {
@@ -857,6 +860,11 @@
       ]
     },
     "gas": {
+      "_global": [
+        "7376f1ff6d49470e",
+        "39ac9e91f73a0776",
+        "d09ef02fa55cc52b"
+      ],
       "CAN": [
         "25541b98e1af190a",
         "1a5e5c6b232458f1",
@@ -868,9 +876,6 @@
         "0a708bd4ffd29cfc",
         "fd94e1c0559f75cc",
         "cecfc55a16f54d74"
-      ],
-      "_global": [
-        "d09ef02fa55cc52b"
       ]
     },
     "zinc": {
@@ -963,7 +968,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.446,
+      "importance": 5.445,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -995,7 +1000,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.895,
+      "importance": 4.894,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1026,7 +1031,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.445,
+      "importance": 4.444,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1058,7 +1063,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.419,
+      "importance": 4.418,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1090,7 +1095,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.352,
+      "importance": 4.351,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1120,7 +1125,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.051,
+      "importance": 4.05,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1160,36 +1165,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.805,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T14:05:46.856063+00:00"
-    },
-    {
       "id": "71739cda84d2ebd6",
       "title": {
         "original": "Philippines: Grain and Feed Update",
@@ -1212,7 +1187,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.805,
+      "importance": 3.804,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1243,7 +1218,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.805,
+      "importance": 3.804,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1273,7 +1248,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.77,
+      "importance": 3.769,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1304,7 +1279,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.77,
+      "importance": 3.769,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1335,7 +1310,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.66,
+      "importance": 3.659,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1367,7 +1342,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.656,
+      "importance": 3.655,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1399,7 +1374,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.639,
+      "importance": 3.638,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1460,7 +1435,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 3.022,
+      "importance": 3.021,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1490,7 +1465,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.734,
+      "importance": 2.733,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1552,7 +1527,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.648,
+      "importance": 2.647,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1669,7 +1644,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.447,
+      "importance": 2.446,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1700,7 +1675,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.396,
+      "importance": 2.395,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1763,7 +1738,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.882,
+      "importance": 1.881,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1784,7 +1759,9 @@
       "agency_ko": "미 에너지정보청",
       "source_id": "us_eia_whats_new",
       "commodities": [
-        "oil"
+        "oil",
+        "gas",
+        "thermal_coal"
       ],
       "countries": [],
       "scope": "global",
@@ -1850,7 +1827,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.798,
+      "importance": 1.797,
       "reasons": [
         "country_in_text"
       ],
@@ -1878,7 +1855,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.794,
+      "importance": 1.793,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2069,7 +2046,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.645,
+      "importance": 1.644,
       "reasons": [
         "country_in_text"
       ],
@@ -2148,7 +2125,9 @@
       "agency_ko": "미 에너지정보청",
       "source_id": "us_eia_press",
       "commodities": [
-        "oil"
+        "oil",
+        "gas",
+        "thermal_coal"
       ],
       "countries": [],
       "scope": "global",
@@ -2629,7 +2608,8 @@
       "source_id": "us_eia_press",
       "commodities": [
         "oil",
-        "gas"
+        "gas",
+        "thermal_coal"
       ],
       "countries": [
         "USA"
@@ -2696,7 +2676,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.305,
+      "importance": 1.304,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2715,7 +2695,8 @@
       "source_id": "us_eia_press",
       "commodities": [
         "oil",
-        "gas"
+        "gas",
+        "thermal_coal"
       ],
       "countries": [
         "USA"
@@ -2754,7 +2735,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.255,
+      "importance": 1.254,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2980,7 +2961,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.173,
+      "importance": 1.172,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3128,7 +3109,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.067,
+      "importance": 1.066,
       "reasons": [
         "country_in_text"
       ],
