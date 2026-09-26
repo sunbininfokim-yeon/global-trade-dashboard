@@ -50,6 +50,12 @@ class RawReport:
     # dated element falls back to the /YYYY/MM/ in its URL). The card then
     # shows 2026.09, not a day nobody published.
     date_precision: str = "day"
+    # Source-level relevance switches (config/sources.json): market_only drops
+    # an item whose text has no market term at all (publisher PR boards);
+    # commodity_from "title" tags commodities from the headline only (broad
+    # policy feeds whose bodies mention crops in passing).
+    market_only: bool = False
+    commodity_from: str = "text"
     weight: float = 1.0
     # Priors from the source catalog, used only where the text itself is silent.
     default_country: Optional[str] = None
@@ -143,6 +149,8 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         default_country=source.get("default_country") or None,
         commodity_hint=list(source.get("commodity_hint") or []),
         scope_hint=source.get("scope_hint", "country"),
+        market_only=bool(source.get("market_only")),
+        commodity_from=source.get("commodity_from", "text"),
         **kw,
     )
 

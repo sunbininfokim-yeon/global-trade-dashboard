@@ -11,14 +11,22 @@
       "aliases": [
         "crude oil", "crude", "petroleum", "brent", "wti", "opec basket",
         "west texas intermediate", "urals", "dubai crude", "condensate",
+        "oil production", "oil output", "oil demand", "oil supply", "oil prices", "oil price",
+        "oil market", "oil exports", "oil imports", "oil inventories", "oil stocks", "barrels per day",
+        "opec", "opec+", "strait of hormuz", "hormuz", "gasoline", "diesel", "jet fuel", "distillate",
         "원유", "석유", "브렌트", "نفط خام", "原油", "нефть", "petróleo", "petroleo"
       ],
       "not_when": [
+        "palm oil", "palm kernel oil", "soybean oil", "soy oil", "soyoil", "vegetable oil", "vegetable oils",
+        "sunflower oil", "sunflowerseed oil", "rapeseed oil", "canola oil", "olive oil", "coconut oil",
+        "cooking oil", "edible oil", "edible oils", "cottonseed oil",
+        "crude palm oil", "crude palm kernel oil", "crude soybean oil", "crude soy oil",
+        "crude sunflower oil", "crude rapeseed oil", "crude vegetable oil", "crude coconut oil",
         "crude steel", "crude palm", "crude soybean", "crude soy", "crude sunflower", "crude rapeseed",
         "crude vegetable", "crude glycerin", "crude glycerol", "crude degummed", "crude coconut",
         "crude tin", "crude copper", "crude lead", "crude zinc", "crude nickel", "crude bullion"
       ],
-      "notes": "Bare 'oil' is excluded on purpose: palm/soybean/sunflower oil are different markets with their own windows. not_when: 'crude' also qualifies steel and every vegetable oil -- worldsteel's 'crude steel production' and MPOB's 'crude palm oil' were landing on the crude oil board (2026-09-26)."
+      "notes": "Bare 'oil' is excluded on purpose: palm/soybean/sunflower oil are different markets with their own windows; 'oil production/demand/prices...' are aliases, with every vegetable oil phrase removed first (not_when) so 'palm oil production' stays palm oil. This lets EIA's releases be tagged by their text instead of an oil prior that also filed its electricity and data-centre releases as crude. not_when: 'crude' also qualifies steel and every vegetable oil -- worldsteel's 'crude steel production' and MPOB's 'crude palm oil' were landing on the crude oil board (2026-09-26)."
     },
     "gas": {
       "label_ko": "천연가스",

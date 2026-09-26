@@ -129,6 +129,8 @@ def previous_raws(
             commodity_hint=list(src.get("commodity_hint") or []),
             scope_hint=src.get("scope_hint", "country"),
             date_precision=item.get("published_precision") or "day",
+            market_only=bool(src.get("market_only")),
+            commodity_from=src.get("commodity_from", "text"),
         )
         if r.url and r.title:
             out.setdefault(src["id"], []).append(r)
@@ -276,6 +278,7 @@ def build_commodity_reports(
             country_tagger=country_tagger,
             commodity_hint=r.commodity_hint,
             default_country=r.default_country,
+            commodity_text=r.commodity_from,
         )
         # scope_hint lets a world publisher opt out of its own default: FAO's
         # untagged releases are world balance sheets, not FAO-the-country news.

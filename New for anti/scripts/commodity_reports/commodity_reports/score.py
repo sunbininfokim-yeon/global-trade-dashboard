@@ -45,7 +45,20 @@ EVENT_TERMS = [
     "anniversary", "award", "awards", "ceremony", "signing ceremony",
     "hội nghị", "họp mặt", "hội thảo", "tọa đàm", "hoi nghi", "hop mat", "hoi thao",
     "persidangan", "majlis", "kunjungan",
-    "seminário", "congreso", "foro",
+    "seminário", "congreso", "foro", "penghargaan", "larian", "opini publik",
+]
+
+# Housekeeping, not reports: a release that is late, a series that is
+# suspended, a survey being re-run, a tender, a new secretary general.
+# Headline only, and unlike EVENT_TERMS a series name does not save it --
+# "Crop Progress report delayed until 5pm" names the series and is still a
+# notice about a timetable. A figure in the headline does.
+ADMIN_TERMS = [
+    "report delayed", "release delayed", "delayed until", "delays weekly", "suspends", "suspended",
+    "discontinue", "discontinues", "discontinued", "to review", "re-survey", "resurvey",
+    "to collect", "released on-time", "appoints", "appointed", "new secretary general",
+    "aviso de pauta", "pregão", "pregao", "nota oficial", "suscriben acuerdo", "acuerdo de colaboración",
+    "(t/p)", "tender", "lelang", "sebut harga", "call for proposal",
 ]
 
 # A release that carries a number is a release that moved a balance sheet.
@@ -132,6 +145,10 @@ class ReportScorer:
         self.series = series_cfg.get("series", [])
         self.reject_pats = compile_terms(REJECT_TERMS)
         self.event_pats = compile_terms(EVENT_TERMS)
+        self.admin_pats = compile_terms(ADMIN_TERMS)
+        from .tag import CONTEXT_TERMS
+
+        self.context_pats = compile_terms(CONTEXT_TERMS)
         self.revision_pats = compile_terms(REVISION_TERMS)
         self.half_life_days = half_life_days
         self.learned: Dict[str, float] = {}
@@ -162,11 +179,15 @@ class ReportScorer:
 
         low = text.lower()
         series = self.match_series(low)
-        if (
-            not series
-            and any(p.search(raw.title) for p in self.event_pats)
-            and not NUMBER_RE.search(raw.title)
-        ):
+        title_has_figure = bool(NUMBER_RE.search(raw.title))
+        if not series and not title_has_figure and any(p.search(raw.title) for p in self.event_pats):
+            return None
+        if not title_has_figure and any(p.search(raw.title) for p in self.admin_pats):
+            return None
+        # A PR-heavy board (market_only in sources.json): keep only what reads
+        # as market news -- a production, price, trade or policy term -- or a
+        # named series.
+        if raw.market_only and not series and not any(p.search(text) for p in self.context_pats):
             return None
         series_weight = float(series.get("base_weight", 1.0)) if series else 1.0
         series_id = series.get("series_id") if series else None
