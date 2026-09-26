@@ -423,6 +423,33 @@
       "weight": 1.3,
       "html": {"base": "https://english.mofcom.gov.cn", "item_href_re": "(?:https?://english\\.mofcom\\.gov\\.cn)?(?:\\.\\./|/)?(?:News/)?(?:SignificantNews|SpokesmansRemarks|PressConference|PressRelease)/art/\\d{4}/art_[0-9a-f]+\\.html", "max_items": 20},
       "notes": "Added 2026-09-26. Where China announces export controls on gallium, germanium, graphite, antimony and rare earths, and their suspensions. MOFCOM resets connections from a non-browser User-Agent (probe: 'Connection reset by peer' with ours, 200 with Chrome's), hence headers: browser. Headline-only list; no commodity_hint -- trade-policy news that names no tracked commodity is dropped."
+    },
+    {
+      "id": "int_ita_tin",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "kind": "rss",
+      "url": "https://www.internationaltin.org/feed/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["tin"],
+      "notes": "Checked 2026-09-26 (tools/ops/feed_probe.py on Actions): 200, RSS, 10 items, newest 2026-09-22 -- tin market news and ITA analysis (China smelter moves, Indonesian and Myanmar supply). An earlier probe on another runner got a JS challenge page from the same host; the build carries the last reports over when that happens."
+    },
+    {
+      "id": "int_wgc_press",
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "kind": "html_list",
+      "url": "https://www.gold.org/news-and-events/press-releases",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.1,
+      "scope_hint": "global",
+      "commodity_hint": ["gold"],
+      "html": {"base": "https://www.gold.org", "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}", "max_items": 12},
+      "notes": "Added 2026-09-26 in place of int_wgc (its rss.xml is a page index). WGC press releases: Gold Demand Trends, central bank statistics, industry standards. Headline-only list, no date."
     }
   ]
 }

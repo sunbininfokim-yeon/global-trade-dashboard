@@ -427,6 +427,37 @@ class CarryOverTests(unittest.TestCase):
         self.assertFalse(status[0]["ok"])
 
 
+class FirstSeenTests(unittest.TestCase):
+    def test_first_seen_is_set_then_kept_across_builds(self):
+        import json as _json
+        import tempfile
+
+        doc = build_commodity_reports(fetch_live=False, fixture_dir=FIXTURES, per_bucket=8, now=NOW)
+        self.assertTrue(all(i["first_seen_at"] == NOW.isoformat() for i in doc["items"]))
+        # A later live build reads the previous file; with nothing fetched the
+        # items it republishes (none here) would keep their first_seen_at.
+        # Exercise the carry directly through a fixture rebuild that names
+        # the previous file.
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
+            _json.dump(doc, fh)
+        from commodity_reports import build as build_mod
+
+        later = datetime(2026, 8, 20, tzinfo=timezone.utc)
+        orig = build_mod._collect_live
+        raw_fixture, _ = build_mod._collect_fixtures(
+            [s for s in build_mod.load_json(build_mod.CONFIG / "sources.json")["sources"] if s.get("enabled", True)],
+            FIXTURES, 40, NOW)
+        build_mod._collect_live = lambda *a, **k: (raw_fixture, [])
+        try:
+            doc2 = build_commodity_reports(fetch_live=True, per_bucket=8, now=later, previous_path=fh.name)
+        finally:
+            build_mod._collect_live = orig
+        firsts = {i["id"]: i["first_seen_at"] for i in doc2["items"]}
+        shared = set(firsts) & {i["id"] for i in doc["items"]}
+        self.assertTrue(shared)
+        self.assertTrue(all(firsts[i] == NOW.isoformat() for i in shared))
+
+
 class BuildTests(unittest.TestCase):
     def setUp(self):
         self.doc = build_commodity_reports(

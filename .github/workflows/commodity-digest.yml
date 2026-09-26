@@ -10,6 +10,11 @@ on:
     # Monday 08:00 KST (UTC+9) = Sunday 23:00 UTC.
     - cron: '0 23 * * 0'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Read Supabase and print what would be sent; send and record nothing"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -34,5 +39,9 @@ jobs:
       - name: Validate script
         run: node --check scripts/notify-commodity-digest.js
 
+      # A manual run defaults to a dry run (counts only, nothing mailed); the
+      # Monday schedule has no inputs and always sends.
       - name: Send weekly commodity digest
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '' }}
         run: node scripts/notify-commodity-digest.js
