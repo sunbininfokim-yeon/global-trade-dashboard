@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-26T17:07:37.743175+00:00",
+  "generated_at": "2026-09-26T19:48:57.003911+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,19 +75,19 @@
   "stats": {
     "sources_ok": 34,
     "sources_failed": 4,
-    "raw_items": 822,
-    "scored_items": 96,
+    "raw_items": 802,
+    "scored_items": 88,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 6,
+      "mena": 4,
+      "commodity_specialist": 5,
       "china": 2,
-      "mena": 5,
-      "west": 2,
+      "west": 3,
       "russia": 2,
-      "turkey": 2,
       "india": 2,
+      "turkey": 2,
       "japan": 2,
-      "taiwan": 1
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 148,
+      "elapsed_ms": 89,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 401,
+      "elapsed_ms": 484,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 54,
+      "elapsed_ms": 72,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 989,
+      "elapsed_ms": 1189,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 20,
-      "elapsed_ms": 145,
+      "count": 0,
+      "elapsed_ms": 38,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 2373,
+      "elapsed_ms": 2962,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 643,
+      "elapsed_ms": 701,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 298,
+      "elapsed_ms": 276,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 162,
+      "elapsed_ms": 375,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 123,
+      "elapsed_ms": 56,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 395,
+      "elapsed_ms": 641,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 133,
+      "elapsed_ms": 71,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 327,
+      "elapsed_ms": 211,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1673,
+      "elapsed_ms": 744,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 448,
+      "elapsed_ms": 300,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 498,
+      "elapsed_ms": 472,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 541,
+      "elapsed_ms": 445,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 413,
+      "elapsed_ms": 308,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 80,
+      "elapsed_ms": 61,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 211,
+      "elapsed_ms": 267,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 40,
+      "elapsed_ms": 49,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 110,
+      "elapsed_ms": 143,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 83,
+      "elapsed_ms": 607,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 146,
+      "elapsed_ms": 361,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 126,
+      "elapsed_ms": 275,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 849,
+      "elapsed_ms": 1172,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 859,
+      "elapsed_ms": 1061,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 936,
+      "elapsed_ms": 2027,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 4080,
+      "elapsed_ms": 1840,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 196,
+      "elapsed_ms": 359,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 265,
+      "elapsed_ms": 615,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 96,
+      "elapsed_ms": 58,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 163,
+      "elapsed_ms": 58,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 62,
+      "elapsed_ms": 160,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 417,
+      "elapsed_ms": 858,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 77,
+      "elapsed_ms": 134,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 356,
+      "elapsed_ms": 699,
       "error": null,
       "mode": "live"
     },
@@ -392,12 +392,53 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 263,
+      "elapsed_ms": 301,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
+    {
+      "id": "132aa25c5f1551b8",
+      "published_at": "2026-09-26T17:10:24+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/530450/Araghchi-outlines-Iran-s-diplomatic-conditions-and-regional",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Araghchi outlines Iran’s diplomatic conditions, and regional priorities at NY",
+        "original_lang": "en",
+        "ko": "Araghchi는 뉴욕에서 이란의 외교 조건과 지역 우선 순위를 설명합니다."
+      },
+      "summary": "TEHRAN— Iranian Foreign Minister Abbas Araghchi has used a series of meetings, diplomatic engagements and media appearances on the sidelines of the 81st United Nations General Assembly to lay out Tehran’s positions on negotiations with Washington, the Strait of Hormuz, Iran’s nuc",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 4.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.929,
+        "importance": 4.415,
+        "final": 5.209
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:1",
+        "diplomacy:4"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
     {
       "id": "b4e1721cc7506328",
       "published_at": "2026-09-25T16:15:00+00:00",
@@ -424,9 +465,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.501,
-        "importance": 3.187,
-        "final": 3.689
+        "freshness": 0.465,
+        "importance": 2.958,
+        "final": 3.424
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -468,9 +509,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.458,
-        "importance": 2.912,
-        "final": 3.371
+        "freshness": 0.425,
+        "importance": 2.702,
+        "final": 3.128
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -512,9 +553,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.943,
-        "importance": 2.694,
-        "final": 3.119
+        "freshness": 0.875,
+        "importance": 2.5,
+        "final": 2.894
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -555,9 +596,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.998,
-        "importance": 2.65,
-        "final": 2.949
+        "freshness": 0.926,
+        "importance": 2.46,
+        "final": 2.736
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -571,50 +612,6 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "CHN"
-    },
-    {
-      "id": "6c272ff7bd99b22f",
-      "published_at": "2026-09-25T13:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Energy-General/Aramco-Restores-East-West-Pipeline-as-War-Risk-Closes-In-on-Yanbu.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Aramco Restores East-West Pipeline as War Risk Closes In on Yanbu",
-        "original_lang": "en",
-        "ko": "아람코, 얀부에서 전쟁 위험이 종결됨에 따라 동서 파이프라인 복원"
-      },
-      "summary": "Saudi Aramco has restarted its East-West pipeline (Petroline) less than two weeks after attacks knocked out the 7 million bpd system, restoring at least some of the route that has carried the bulk of Saudi crude around the Strait of Hormuz since the war began. Pumping has resumed",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.458,
-        "importance": 2.475,
-        "final": 2.865
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g1",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
     },
     {
       "id": "8cf5e5a04e2c3922",
@@ -641,9 +638,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.974,
-        "importance": 2.104,
-        "final": 2.483
+        "freshness": 0.904,
+        "importance": 1.953,
+        "final": 2.304
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -682,9 +679,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.937,
-        "importance": 1.921,
-        "final": 2.267
+        "freshness": 0.87,
+        "importance": 1.783,
+        "final": 2.104
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -696,49 +693,6 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "57ae743b307e408b",
-      "published_at": "2026-09-26T08:02:51+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/middle-east/iran-to-reopen-hormuz-within-7-days-if-us-agrees-to-proposed-plan-fm-3003231",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Iran to reopen Hormuz within 7 days if US agrees to proposed plan: FM",
-        "original_lang": "en",
-        "ko": "미국이 제안된 계획에 동의하는 경우 7일 이내에 이란이 호르무즈를 재개할 것: FM"
-      },
-      "summary": "Iran has proposed reopening the Strait of Hormuz within seven days if the United States agrees to a new plan, according to Iran's foreign minister. The proposal, conveyed via Qatar, stipulates that the US must meet certain conditions, reportedly including unfreezing Iranian asset",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.777,
-        "importance": 1.865,
-        "final": 2.201
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
       "country_hint": "USA"
     },
     {
@@ -766,9 +720,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.869,
-        "importance": 2.564,
-        "final": 2.045
+        "freshness": 0.807,
+        "importance": 2.379,
+        "final": 1.897
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -808,9 +762,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.426,
-        "importance": 1.747,
-        "final": 2.023
+        "freshness": 0.396,
+        "importance": 1.622,
+        "final": 1.877
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -824,89 +778,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
-    },
-    {
-      "id": "c4261eb3f6f956b4",
-      "published_at": "2026-09-26T16:40:49+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/trump-rejects-iranian-proposal-open-hormuz-and-end-fighting",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Trump rejects Iranian proposal to open Hormuz and end war",
-        "original_lang": "en",
-        "ko": "트럼프는 호르무즈를 개방하고 전쟁을 끝내자는 이란의 제안을 거부한다."
-      },
-      "summary": "Trump rejects Iranian proposal to open Hormuz and end war US President Donald Trump said on Saturday he had rejected an Iranian proposal to reopen the Strait of Hormuz and end the Iran war. Iran raised the initiative at the UN General Assembly in New York, saying it had been tran",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.988,
-        "importance": 1.458,
-        "final": 1.721
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "d3f53c728f45072f",
-      "published_at": "2026-09-26T13:50:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1118666",
-      "category": "commodity",
-      "commodities": [
-        "gas"
-      ],
-      "title": {
-        "original": "В руководстве АдГ выступили за восстановление \"Северного потока\"",
-        "original_lang": "ru",
-        "ko": "AfD 지도부는 Nord Stream의 복원을 옹호했습니다."
-      },
-      "summary": "Сопредседатель партии \"Альтернатива для Германии\" (АдГ) Тино Хрупалла высказал необходимость восстановления газопровода \"Северный поток\".\"Четыре года назад противники германского энергетического суверенитета подорвали \"Северный поток\".",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.913,
-        "importance": 1.406,
-        "final": 1.564
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g2",
-        "commodity:gas:1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
     },
     {
       "id": "2343c07a2e72d72f",
@@ -933,9 +804,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.712,
-        "importance": 1.891,
-        "final": 1.508
+        "freshness": 0.661,
+        "importance": 1.755,
+        "final": 1.399
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -951,44 +822,89 @@
       "country_hint": "CHN"
     },
     {
-      "id": "8a41f29933564b68",
-      "published_at": "2026-09-26T15:36:23+00:00",
+      "id": "f4eb5e726750397f",
+      "published_at": "2026-09-26T19:16:07+00:00",
       "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/china-pushes-back-against-us-iran-and-cuba-un-speech",
+      "url": "https://tass.ru/ekonomika/28155323",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "oil",
+        "rice"
       ],
       "title": {
-        "original": "China pushes back against US on Iran and Cuba in UN speech",
-        "original_lang": "en",
-        "ko": "중국, 유엔 연설에서 이란과 쿠바에 대해 미국에 반발"
+        "original": "В Ливии возобновили прокачку нефти по трубопроводу Эш-Шарара - Эз-Завия",
+        "original_lang": "ru",
+        "ko": "리비아에서 Al-Sharara - Al-Zawiya 파이프 라인을 통한 오일 펌핑이 재개되었습니다."
       },
-      "summary": "China pushes back against US on Iran and Cuba in UN speech China pushed back against the United States in its speech at the UN General Assembly on Saturday, saying sovereignty of countries in the Gulf should be respected and urging the \"relevant country\" to stop threatening Cuba ",
+      "summary": "Специалисты приступили к выполнению необходимых работ для безопасного восстановления эксплуатации трубопровода и обеспечения стабильных поставок сырья на нефтеперерабатывающий завод в Эз-Завии и в экспортные порты",
       "scores": {
-        "commodity": 1.0,
+        "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.959,
-        "importance": 1.103,
-        "final": 1.301
+        "region_weight": 1.25,
+        "freshness": 0.985,
+        "importance": 1.253,
+        "final": 1.394
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:russia*1.25",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:1"
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:rice:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "45aea89a18f71628",
+      "published_at": "2026-09-26T17:52:36+00:00",
+      "source": {
+        "id": "the_hindu",
+        "name": "The Hindu",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.thehindu.com/sport/asian-games-2026-live-updates-on-september-26-2026/article71510179.ece",
+      "category": "commodity",
+      "commodities": [
+        "gold",
+        "silver"
+      ],
+      "title": {
+        "original": "Asian Games 2026 highlights | India’s kabaddi teams dominate with double gold; Sindhu, Unnati enter quarters",
+        "original_lang": "en",
+        "ko": "2026년 아시안 게임 하이라이트 | 인도 카바디 팀이 더블 골드로 우세, 신두, 언나티 쿼터 진입"
+      },
+      "summary": "Sawan bags marathon silver; Tajinderpal finishes second; Prachi pulls off a surprise",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.948,
+        "importance": 1.046,
+        "final": 1.188
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gold:1",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
     },
     {
       "id": "d05659adac7315db",
@@ -1015,9 +931,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.392,
-        "importance": 1.082,
-        "final": 1.252
+        "freshness": 0.364,
+        "importance": 1.004,
+        "final": 1.162
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -1057,9 +973,9 @@
         "diplomacy": 3.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.823,
-        "importance": 1.095,
-        "final": 1.242
+        "freshness": 0.763,
+        "importance": 1.016,
+        "final": 1.153
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1074,46 +990,48 @@
       "country_hint": "TUR"
     },
     {
-      "id": "45aea89a18f71628",
-      "published_at": "2026-09-26T16:42:53+00:00",
+      "id": "9db5dc4655a38a4a",
+      "published_at": "2026-09-23T23:44:57+00:00",
       "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
+        "id": "ft_commodities",
+        "name": "FT Commodities",
+        "region": "west",
         "slant": null
       },
-      "url": "https://www.thehindu.com/sport/asian-games-2026-live-updates-on-september-26-2026/article71510179.ece",
-      "category": "commodity",
+      "url": "https://www.ft.com/content/c902e192-8bbb-4f32-813c-ee255d3aebd0?syn-25a6b1a6=1",
+      "category": "commodity_diplomacy",
       "commodities": [
-        "gold",
+        "oil",
         "silver"
       ],
       "title": {
-        "original": "Asian Games 2026 highlights | India’s kabaddi teams dominate with double gold; Sindhu, Unnati enter quarters",
+        "original": "US oil industry pushes back against proposed diesel export ban",
         "original_lang": "en",
-        "ko": "2026년 아시안 게임 하이라이트 | 인도 카바디 팀이 더블 골드로 우세, 신두, 언나티 쿼터 진입"
+        "ko": "미국 석유업계, 디젤 수출 금지 제안에 반발"
       },
-      "summary": "Sawan bags marathon silver; Tajinderpal finishes second; Prachi pulls off a surprise",
+      "summary": "Groups say there is no ‘silver bullet’ to fuel price crisis after president signals willingness to halt shipments abroad",
       "scores": {
         "commodity": 2.0,
-        "diplomacy": 0.0,
+        "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.989,
-        "importance": 1.092,
-        "final": 1.239
+        "region_weight": 0.55,
+        "freshness": 0.35,
+        "importance": 1.429,
+        "final": 1.14
       },
       "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "commodity:silver:1"
+        "region:west*0.55",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:silver:1",
+        "diplomacy:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
+      "info_grade": "1",
+      "country_hint": "USA"
     },
     {
       "id": "23732cb957e7ae64",
@@ -1140,9 +1058,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.518,
-        "importance": 1.062,
-        "final": 1.206
+        "freshness": 0.481,
+        "importance": 0.986,
+        "final": 1.119
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1197,45 +1115,168 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "17077ec69d722113",
-      "published_at": "2026-09-26T16:49:03+00:00",
+      "id": "0a92159f3768b4ae",
+      "published_at": "2026-09-26T18:35:34+00:00",
       "source": {
         "id": "rt_ru",
         "name": "RT Russian",
         "region": "russia",
         "slant": null
       },
-      "url": "https://russian.rt.com/ussr/news/1687602-zelenskii-merkuris-otchayanie?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://russian.rt.com/ussr/article/1687473-ukraina-rossiya-peremirie?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
       "category": "commodity",
       "commodities": [
-        "rice"
+        "gas"
       ],
       "title": {
-        "original": "Меркурис: Зеленский говорит о встрече с Трампом и Путиным на G20 из-за отчаяния",
+        "original": "«Самый тяжёлый период»: почему на Западе прогнозируют ухудшение ситуации для Украины",
         "original_lang": "ru",
-        "ko": "Mercouris: Zelensky는 절박함으로 인해 G20에서 트럼프와 푸틴을 만나는 것에 대해 이야기합니다."
+        "ko": "\"가장 힘든 시기\": 서방이 우크라이나 상황의 악화를 예측하는 이유"
       },
-      "summary": "Слова Владимира Зеленского о возможной трёхсторонней встрече с президентом России Владимиром Путиным и американским лидером Дональдом Трампом на полях саммита G20 говорят об отчаянии, заявил британский военный аналитик Александр Меркурис. Читать далее",
+      "summary": "Украина вступает в «самый тяжёлый период», считает американская газета The New York Times. При этом издание признаёт, что ситуацию усугубили действия самого Киева, развернувшего кампанию по ударам вглубь России. Однако ответ Москвы был столь серьёзным, что теперь украинские власт",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.992,
-        "importance": 0.976,
-        "final": 1.086
+        "freshness": 0.967,
+        "importance": 0.951,
+        "final": 1.058
       },
       "rank_reasons": [
         "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:rice:1",
+        "commodity:gas:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "RUS"
+    },
+    {
+      "id": "67d817b192505660",
+      "published_at": "2026-09-26T14:03:58+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/trump-rejects-iranian-proposal-to-open-hormuz-strait-3003271",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Trump rejects Iranian proposal to open Hormuz Strait",
+        "original_lang": "en",
+        "ko": "트럼프, 이란의 호르무즈 해협 개방 제안 거부"
+      },
+      "summary": "WASHINGTON: US President Donald Trump said on Saturday he had rejected an Iranian proposal to reopen the Strait of Hormuz and end fighting in the Middle East. Iran raised the initiative at the UN General Assembly in New York, saying it had been transmitted to the Americans via Qa",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.853,
+        "importance": 0.839,
+        "final": 0.99
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "2c129933996dc303",
+      "published_at": "2026-09-26T16:20:40+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/us-iran-war-theyre-losing-so-badly-donald-trump-rejects-iran-proposal-to-open-hormuz-12102783#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "'They're Losing So Badly': Trump Rejects Iran Proposal To Open Hormuz",
+        "original_lang": "en",
+        "ko": "'그들은 너무 나쁘게 패배하고 있다': 트럼프, 이란의 호르무즈 개방 제안 거부"
+      },
+      "summary": "The waterway is key to the world's energy supply",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.908,
+        "importance": 0.654,
+        "final": 0.742
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "5b59b1d83ef8ebb9",
+      "published_at": "2026-09-26T17:30:06+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5587245",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "川普證實拒伊朗停火提案 指對方「輸得一塌糊塗」",
+        "original_lang": "zh-TW",
+        "ko": "트럼프 대통령은 이란의 휴전 제안을 '완전한 손실' 로 거부했음을 확인했다."
+      },
+      "summary": "美國總統川普（Donald Trump）今天拒絕伊朗提出的停火協議。伊朗方面表示，若協議獲採納，荷莫茲海峽（Strait of Hormuz）最快可在一週內恢復航運。 法新社報導，荷莫茲海...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.938,
+        "importance": 0.665,
+        "final": 0.739
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     },
     {
       "id": "86e11e8de4ea1af0",
@@ -1262,9 +1303,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.672,
-        "importance": 0.661,
-        "final": 0.736
+        "freshness": 0.624,
+        "importance": 0.614,
+        "final": 0.683
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1277,46 +1318,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "CHN"
-    },
-    {
-      "id": "7047066a0cd63ad4",
-      "published_at": "2026-09-25T18:57:31+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/after-hormuz-proposal-iran-says-it-wont-make-nuclear-concessions-report-12099533#publisher=newsstand",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "After Hormuz Proposal, Iran Says It Won't Make Nuclear Concessions: Report",
-        "original_lang": "en",
-        "ko": "호르무즈 제안 이후, 이란은 핵 양보를 하지 않을 것이라고 말한다: 보고서"
-      },
-      "summary": "Tehran said it would be prepared to engage in detailed negotiations",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.54,
-        "importance": 0.621,
-        "final": 0.705
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "IND"
     },
     {
       "id": "6d9a8d21b96c7649",
@@ -1343,9 +1344,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.938,
-        "importance": 0.518,
-        "final": 0.576
+        "freshness": 0.871,
+        "importance": 0.481,
+        "final": 0.535
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1383,9 +1384,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.789,
-        "importance": 0.435,
-        "final": 0.484
+        "freshness": 0.732,
+        "importance": 0.404,
+        "final": 0.45
       },
       "rank_reasons": [
         "region:japan*1.25",
