@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from html import unescape
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin
+from urllib.parse import unquote, urljoin
 
 _TAG_RE = re.compile(r"<[^>]+>", re.S)
 _SCRIPT_RE = re.compile(r"<(script|style)[^>]*>.*?</\1>", re.I | re.S)
@@ -236,8 +236,13 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         title = strip_html(inner)
         if len(title) < 12:
             # Icon-only or "read more" links: fall back to the slug, which for
-            # these publishers is a readable title.
-            title = re.sub(r"[-_]+", " ", full.rsplit("/", 1)[-1].split(".")[0]).strip()
+            # these publishers is a readable title -- once its %-escapes are
+            # decoded (ANRPC's "report%2C june 2026") and its first letter
+            # capitalized.
+            slug = unquote(full.rstrip("/").rsplit("/", 1)[-1])
+            slug = re.sub(r"\.(?:html?|php|aspx?)$|\.\d+\.html?$", "", slug, flags=re.I)
+            title = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", slug)).strip(" .")
+            title = title[:1].upper() + title[1:]
         if len(title) < 12:
             continue
         seen.add(key)

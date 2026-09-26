@@ -26,6 +26,11 @@ REJECT_TERMS = [
     "job opening", "vacancy", "internship", "webinar registration",
     "scheduled dates", "correction notice", "obituary", "award winners",
     "national school lunch week", "podcast episode",
+    # Malay/Indonesian board and agency housekeeping (MPOB, BPDP, Kemendag):
+    # procurement, tenders, vacancies, scholarships, audited accounts, hoax
+    # warnings. The palm oil prior would otherwise file them all as palm oil.
+    "pengadaan", "pemenang tender", "sebut harga", "jawatan kosong", "beasiswa",
+    "call for proposal", "laporan keuangan", "hoaks", "penggajian",
 ]
 
 # A release that carries a number is a release that moved a balance sheet.

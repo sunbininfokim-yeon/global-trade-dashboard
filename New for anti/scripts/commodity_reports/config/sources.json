@@ -364,11 +364,11 @@
       "kind": "rss",
       "url": "https://www.gold.org/rss.xml",
       "lang": "en",
-      "enabled": true,
+      "enabled": false,
       "weight": 1.0,
       "scope_hint": "global",
       "commodity_hint": ["gold"],
-      "notes": "Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 10 items, newest 2026-09-08. Industry body behind Gold Demand Trends (quarterly supply/demand) and central-bank gold statistics. Some items are old research re-dated; recency decay keeps them low."
+      "notes": "DISABLED 2026-09-26 after its first live build: the feed is the site's page index, not news -- items were 'Community', 'Thank you', 'ESG', a 2018 Gold Investor. Kept for the URL. Checked 2026-09-26 (feed_probe, Actions): 200, RSS, 10 items, newest 2026-09-08. Industry body behind Gold Demand Trends (quarterly supply/demand) and central-bank gold statistics. Some items are old research re-dated; recency decay keeps them low."
     },
     {
       "id": "int_anrpc",
@@ -394,7 +394,6 @@
       "enabled": true,
       "weight": 1.1,
       "scope_hint": "global",
-      "commodity_hint": ["rubber"],
       "html": {"base": "https://vra.com.vn", "item_href_re": "(?:https?://vra\\.com\\.vn)?/?tin-tuc/tin-ngoai-nuoc/[a-z0-9-]+\\.\\d+\\.html", "max_items": 15},
       "notes": "Added 2026-09-26. VRA's world rubber market news (Vietnamese). No RSS (/rss, /rss.html 404); list page read by tools/ops/feed_probe.py on Actions. Country names are Vietnamese and not in countries.json, so most items land in the world bucket -- which is what this list is."
     },
@@ -408,7 +407,6 @@
       "lang": "vi",
       "enabled": true,
       "weight": 1.1,
-      "commodity_hint": ["rubber"],
       "html": {"base": "https://vra.com.vn", "item_href_re": "(?:https?://vra\\.com\\.vn)?/?tin-tuc/tin-trong-nuoc/[a-z0-9-]+\\.\\d+\\.html", "max_items": 15},
       "notes": "Added 2026-09-26. VRA's Vietnam news (exports, prices, EUDR compliance) -- the world's third-largest natural rubber producer. Same page structure as vn_vra_world."
     },

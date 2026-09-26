@@ -13,7 +13,11 @@
         "west texas intermediate", "urals", "dubai crude", "condensate",
         "원유", "석유", "브렌트", "نفط خام", "原油", "нефть", "petróleo", "petroleo"
       ],
-      "notes": "Bare 'oil' is excluded on purpose: palm/soybean/sunflower oil are different markets with their own windows."
+      "not_when": [
+        "crude steel", "crude palm", "crude soybean", "crude soy", "crude sunflower", "crude rapeseed",
+        "crude vegetable", "crude glycerin", "crude glycerol", "crude degummed", "crude coconut"
+      ],
+      "notes": "Bare 'oil' is excluded on purpose: palm/soybean/sunflower oil are different markets with their own windows. not_when: 'crude' also qualifies steel and every vegetable oil -- worldsteel's 'crude steel production' and MPOB's 'crude palm oil' were landing on the crude oil board (2026-09-26)."
     },
     "gas": {
       "label_ko": "천연가스",
@@ -195,13 +199,13 @@
     "rubber": {
       "label_ko": "천연고무",
       "aliases": [
-        "natural rubber", "rubber", "field latex", "rubber latex", "concentrated latex",
+        "natural rubber", "field latex", "rubber latex", "concentrated latex",
         "technically specified rubber", "ribbed smoked sheet", "tsr20", "tsr 20", "rss3", "rss no.3",
-        "천연고무", "천연 고무", "天然橡胶", "橡胶", "天然ゴム", "karet alam", "karet", "getah asli",
-        "ยางพารา", "cao su", "натуральный каучук", "каучук", "borracha natural", "caucho natural"
+        "천연고무", "천연 고무", "天然橡胶", "天然ゴム", "karet alam", "getah asli",
+        "ยางพารา", "cao su", "натуральный каучук", "borracha natural", "caucho natural"
       ],
-      "require_context": true,
-      "notes": "HS 4001. Bare 'rubber' is a common word (rubber stamp, rubber bullets), hence require_context. Bare 'RSS' is left out on purpose: it is the grade name of smoked sheet but also every feed's name, so only the numbered grade (RSS3) is an alias."
+      "context_aliases": ["rubber", "karet", "getah", "橡胶", "каучук"],
+      "notes": "HS 4001. Bare 'rubber' is a common word (rubber stamp, rubber bullets), so it and the other bare words are context_aliases -- counted only beside a market term. The rest name the crop outright ('cao su' is Vietnamese for rubber and nothing else). Bare 'RSS' is left out on purpose: it is the grade name of smoked sheet but also every feed's name, so only the numbered grade (RSS3) is an alias."
     }
   }
 }

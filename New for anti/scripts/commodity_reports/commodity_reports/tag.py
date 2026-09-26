@@ -10,7 +10,7 @@ only a fallback for releases that name no country at all (CONAB's
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 # Words that make a bare metal or crop noun a market statement rather than a
@@ -24,7 +24,8 @@ CONTEXT_TERMS = [
     "smelter", "refinery", "refined", "concentrate", "reserves", "forecast",
     "estimate", "estimates", "outlook", "balance sheet", "consumption",
     "생산", "수확", "수출", "수입", "재고", "가격", "전망", "출하",
-    "produção", "safra", "colheita", "exportação", "produccion", "producción",
+    "produção", "producao", "safra", "colheita", "exportação", "exportacao",
+    "estimada", "estimativa", "produccion", "producción",
     "cosecha", "exportaciones", "exportación", "precio", "precios", "preço", "mercado",
     "добыч", "урожа", "экспорт",
     # Producer-country languages of the rubber and palm-oil windows, whose
@@ -50,7 +51,10 @@ def compile_terms(terms: Sequence[str]) -> List[re.Pattern[str]]:
         if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 .'\-/]*", term):
             out.append(re.compile(rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])", re.I))
         else:
-            out.append(re.compile(re.escape(term)))
+            # IGNORECASE matters beyond Latin script: "Việt Nam", "Thái Lan"
+            # and "Нефть" are capitalized in headlines, the aliases are not.
+            # CJK and Hangul have no case, so it changes nothing there.
+            out.append(re.compile(re.escape(term), re.I))
     return out
 
 
@@ -71,25 +75,38 @@ class CommodityTagger:
     requires_context: Dict[str, bool]
     labels_ko: Dict[str, str]
     context_pats: List[re.Pattern[str]]
+    # Aliases that count only next to a market term, on a commodity whose
+    # other aliases are unambiguous ("cao su" is always rubber, "rubber" is
+    # also a stamp).
+    context_patterns: Dict[str, List[re.Pattern[str]]] = field(default_factory=dict)
+    # Phrases that contain an alias but name another market: "crude steel"
+    # and "crude palm oil" are not crude oil.
+    not_when: Dict[str, List[re.Pattern[str]]] = field(default_factory=dict)
 
     @classmethod
     def from_config(cls, cfg: Dict[str, Any]) -> "CommodityTagger":
-        pats, need, labels = {}, {}, {}
+        pats, need, labels, ctx, excl = {}, {}, {}, {}, {}
         for key, meta in (cfg.get("commodities") or {}).items():
             pats[key] = compile_terms(meta.get("aliases") or [])
             need[key] = bool(meta.get("require_context"))
             labels[key] = meta.get("label_ko") or key
-        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS))
+            ctx[key] = compile_terms(meta.get("context_aliases") or [])
+            excl[key] = compile_terms(meta.get("not_when") or [])
+        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl)
 
     def tag(self, text: str) -> List[str]:
         has_context = any(p.search(text) for p in self.context_pats)
         hits = []
         for key, pats in self.patterns.items():
-            if not any(p.search(text) for p in pats):
-                continue
-            if self.requires_context[key] and not has_context:
-                continue
-            hits.append(key)
+            own = text
+            for p in self.not_when.get(key, []):
+                own = p.sub(" ", own)
+            plain = any(p.search(own) for p in pats)
+            if plain and self.requires_context[key] and not has_context:
+                plain = False
+            contextual = has_context and any(p.search(own) for p in self.context_patterns.get(key, []))
+            if plain or contextual:
+                hits.append(key)
         return hits
 
 

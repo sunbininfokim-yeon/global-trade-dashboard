@@ -54,6 +54,20 @@ class CommodityTagTests(unittest.TestCase):
         self.assertIn("rubber", self.tagger.tag("ANRPC: global NR production forecast at 14.9 million tonnes; rubber demand"))
         self.assertIn("rubber", self.tagger.tag("Harga karet alam naik, ekspor meningkat"))
 
+    def test_crude_steel_and_crude_palm_oil_are_not_crude_oil(self):
+        # worldsteel's monthly release and MPOB's CPO notices landed on the
+        # crude oil board on the first live build (2026-09-26).
+        self.assertNotIn("oil", self.tagger.tag("August 2026 crude steel production"))
+        hits = self.tagger.tag("Crude palm oil exports rose 5% in August")
+        self.assertIn("palm_oil", hits)
+        self.assertNotIn("oil", hits)
+        self.assertIn("oil", self.tagger.tag("Crude oil stocks fell 3 million barrels"))
+
+    def test_unambiguous_rubber_names_need_no_market_term(self):
+        # VRA headlines name the crop ("cao su") without an English market word.
+        self.assertIn("rubber", self.tagger.tag("VRA mời tham gia hội nghị doanh nhân cao su Việt Nam"))
+        self.assertNotIn("rubber", self.tagger.tag("Kinh tế Việt Nam giữ đà tích cực trước biến động lãi suất"))
+
     def test_rss_the_feed_is_not_rss_the_rubber_grade(self):
         # Every feed calls itself RSS; only the numbered grade means rubber.
         self.assertNotIn("rubber", self.tagger.tag("Subscribe to our RSS feed for market prices"))
@@ -278,6 +292,22 @@ class FeedParseTests(unittest.TestCase):
         urls = [i.url for i in items]
         self.assertEqual(len(urls), len(set(u.split("?", 1)[0] for u in urls)))
         self.assertEqual(sum(1 for u in urls if "saudi-arabia" in u), 1)
+
+
+class NonLatinCaseTests(unittest.TestCase):
+    def test_capitalized_vietnamese_country_names_match(self):
+        tagger = CountryTagger.from_config(cfg("countries.json"))
+        self.assertEqual(tagger.tag("Xuất khẩu cao su của Thái Lan tăng"), ["THA"])
+        self.assertIn("VNM", tagger.tag("Ngành cao su Việt Nam"))
+
+
+class HtmlListTitleTests(unittest.TestCase):
+    def test_slug_title_is_decoded_and_capitalized(self):
+        source = {"id": "int_anrpc", "html": {"base": "https://www.anrpc.org",
+                                               "item_href_re": "/newsla/[^\"'#?]+"}}
+        body = '<a href="/newsla/anrpc-releases-monthly-nr-statistical-report%2C-june-2026"><img/></a>'
+        items = parse_html_list(body, source)
+        self.assertEqual(items[0].title, "Anrpc releases monthly nr statistical report, june 2026")
 
 
 class FasGainPagesTests(unittest.TestCase):
