@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T13:18:41.861691+00:00",
+  "generated_at": "2026-09-26T13:21:12.121881+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 28,
-    "sources_failed": 5,
-    "raw_items": 449,
-    "scored": 196,
-    "published": 152,
-    "commodities": 24,
-    "buckets": 73
+    "sources_ok": 30,
+    "sources_failed": 3,
+    "raw_items": 483,
+    "scored": 206,
+    "published": 159,
+    "commodities": 25,
+    "buckets": 78
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -126,11 +126,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
+      "ok": true,
+      "count": 36,
+      "error": null,
       "mode": "live",
-      "carried_over": 19
+      "note": "45 list pages, 43 reports linked, 18 read, 18 already known"
     },
     {
       "source_id": "my_mpob",
@@ -226,14 +226,14 @@
     {
       "source_id": "int_wgc_press",
       "ok": true,
-      "count": 0,
+      "count": 5,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "int_ilzsg",
       "ok": true,
-      "count": 0,
+      "count": 1,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +247,7 @@
     {
       "source_id": "id_esdm",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
@@ -680,7 +680,6 @@
         "cecfc55a16f54d74"
       ],
       "_global": [
-        "b8100702b4d10bff",
         "7376f1ff6d49470e",
         "0260f9aa0131b0b8",
         "735b13587e14b5a5",
@@ -695,12 +694,12 @@
       "MYS": [
         "97be7c6c6195937a",
         "9935e13cee618834",
-        "12ea40a375a50e2e",
         "294d988a0c7a4c17",
         "ade02dfd01340322",
         "a26131708db86470",
         "bbffeaa2f5411708",
-        "99ca28dd19b9f061"
+        "99ca28dd19b9f061",
+        "0ac19de06b45b2cf"
       ],
       "IDN": [
         "3547f9608d850c98",
@@ -710,7 +709,34 @@
         "f8bf20af564959e9",
         "7e2d9eaa2d937e0e",
         "9b3aacef7418cd57",
-        "4e43259f3f0f4b15"
+        "3038b0ed9276919c"
+      ]
+    },
+    "soybeans": {
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ],
+      "_global": [
+        "1e39f84cf71c2d58"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "rice": {
@@ -746,6 +772,9 @@
         "21c3dd4f0cf93fd0",
         "f4307738d454117b"
       ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
       "KEN": [
         "3ff8c2dd8b700c92"
       ],
@@ -769,34 +798,12 @@
         "a0f50331005b9402"
       ]
     },
-    "soybeans": {
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ],
-      "_global": [
-        "1e39f84cf71c2d58",
-        "8f3cba277d1d8f7f"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
-      ]
-    },
     "wheat": {
       "BGD": [
         "9a2e551991dc06e6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
       ],
       "KEN": [
         "d6be49771c7e2707"
@@ -947,6 +954,19 @@
         "d09ef02fa55cc52b"
       ]
     },
+    "zinc": {
+      "_global": [
+        "959d91c46a9a7514"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
+    "lead": {
+      "_global": [
+        "959d91c46a9a7514"
+      ]
+    },
     "coffee": {
       "CHN": [
         "8566a0485af28101",
@@ -967,12 +987,12 @@
         "929e1ee5c8475871"
       ],
       "_global": [
-        "f5072178b1b60a30"
-      ]
-    },
-    "zinc": {
-      "CAN": [
-        "929e1ee5c8475871"
+        "f5072178b1b60a30",
+        "c65c41fe90f08c31",
+        "d76aeebdc2170869",
+        "f704c390aa0eddb8",
+        "7aa1d9ea8f7acd29",
+        "824924c1c6c98021"
       ]
     },
     "cobalt": {
@@ -1127,7 +1147,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.054,
+      "importance": 4.053,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1225,6 +1245,36 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.807,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1436,7 +1486,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.641,
+      "importance": 3.64,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1590,12 +1640,43 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.653,
+      "importance": 2.652,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "3038b0ed9276919c",
+      "title": {
+        "original": "Indonesia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Indonesia's transition to the B50 biodiesel mandate, which took effect in July 2026, is projected to raise domestic palm oil consumption by 11 percent to 25.3...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/indonesia-oilseeds-and-products-update",
+      "published_at": "2026-08-05T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.648,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
       "id": "99ca28dd19b9f061",
@@ -1710,6 +1791,38 @@
         "revision_language"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "088f09f9aa8eb7c7",
+      "title": {
+        "original": "Ukraine: Grain and Feed Quarterly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "This report contains updated estimates for marketing year (MY) 2025/26 and MY2026/27 for wheat, corn, barley, and rye. Increased MY2026/27 production areas and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/ukraine-grain-and-feed-quarterly",
+      "published_at": "2026-08-05T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn"
+      ],
+      "countries": [
+        "UKR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.396,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
       "id": "5d3e84a676f4ec8b",
@@ -2532,6 +2645,64 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "0ac19de06b45b2cf",
+      "title": {
+        "original": "Malaysia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia's palm oil sector is expected to face a challenging production environment in Marketing Year (MY) 2026/27 as industry stakeholders monitor the...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/malaysia-oilseeds-and-products-update",
+      "published_at": "2026-07-01T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.567,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "959d91c46a9a7514",
+      "title": {
+        "original": "ILZSG Press Release August 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "International Lead and Zinc Study Group PRESS RELEASE 26 August 2026 The International Lead and Zinc Study Group (ILZSG) released preliminary data for world lead and zinc supply and demand during the first half of 2026. A brief summary is listed in the tables below. Full details are available in the August 2026 edition of the Group’s ‘Lead and Zinc Statistics’ Bulletin. Source: ILZSG  Provisional data reported to the ILZSG indicate that world refi ned lead metal supply exceeded demand by 49kt during the first half of 2026 with total reported inventories increasing by 62kt.  Global lead mine…",
+      "url": "https://www.ilzsg.org/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20August%202026.pdf",
+      "published_at": null,
+      "agency": "International Lead and Zinc Study Group",
+      "agency_ko": "국제납아연연구그룹(ILZSG)",
+      "source_id": "int_ilzsg",
+      "commodities": [
+        "zinc",
+        "lead"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.559,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
       "id": "54cc3c274cf90c25",
       "title": {
         "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
@@ -2849,7 +3020,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.381,
+      "importance": 1.38,
       "reasons": [
         "revision_language"
       ],
@@ -3146,7 +3317,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.314,
+      "importance": 1.313,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3398,33 +3569,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "12ea40a375a50e2e",
-      "title": {
-        "original": "PALMS 2030",
-        "original_lang": "ms",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://mpob.gov.my/2026/09/palms-2030/",
-      "published_at": "2026-09-22T08:27:55+00:00",
-      "agency": "Malaysian Palm Oil Board",
-      "agency_ko": "말레이시아 팜유청(MPOB)",
-      "source_id": "my_mpob",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.282,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "44ef3d9e9fba437f",
       "title": {
         "original": "NASS Delays Weekly Slaughter Release",
@@ -3521,7 +3665,6 @@
       "agency_ko": "국제주석협회(ITA)",
       "source_id": "int_ita_tin",
       "commodities": [
-        "oil",
         "tin"
       ],
       "countries": [],
@@ -3595,7 +3738,7 @@
     {
       "id": "7390cf9f524fb034",
       "title": {
-        "original": "Conab abre pregão para transporte de 36,2 mil toneladas de milho",
+        "original": "Conab abre pregao para transporte de 36 2 mil toneladas de milho",
         "original_lang": "pt",
         "ko": null
       },
@@ -3653,7 +3796,7 @@
     {
       "id": "e65bffd316bf9313",
       "title": {
-        "original": "Leilões para compra de até 96,4 mil t de arroz ocorrem nesta sexta-feira (25)",
+        "original": "Leiloes para compra de ate 96 4 mil t de arroz ocorrem nesta sexta feira 25",
         "original_lang": "pt",
         "ko": null
       },
@@ -3682,7 +3825,7 @@
     {
       "id": "bcd497516af1f0b1",
       "title": {
-        "original": "AVISO DE PAUTA – 3º Levantamento da Safra de Café 2026",
+        "original": "Aviso de pauta 2013 3o levantamento da safra de cafe 2026",
         "original_lang": "pt",
         "ko": null
       },
@@ -3740,7 +3883,7 @@
     {
       "id": "b29e7d11bb4e97c1",
       "title": {
-        "original": "AVISO DE PAUTA – Leilões de milho e previsão da safra são temas da coletiva de imprensa realizada pela Conab",
+        "original": "Aviso de pauta 2013 leiloes de milho e previsao da safra sao temas da coletiva de imprensa realizada pela conab",
         "original_lang": "pt",
         "ko": null
       },
@@ -3798,7 +3941,7 @@
     {
       "id": "90caf018877f574b",
       "title": {
-        "original": "Conab realiza primeiro leilão de compra de arroz para formar estoques públicos",
+        "original": "Conab realiza primeiro leilao de compra de arroz para formar estoques publicos",
         "original_lang": "pt",
         "ko": null
       },
@@ -3959,7 +4102,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.12,
+      "importance": 1.119,
       "reasons": [
         "country_in_text"
       ],
@@ -4351,9 +4494,144 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "c65c41fe90f08c31",
+      "title": {
+        "original": "World gold council launches gold dealer assurance standard",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-launches-gold-dealer-assurance-standard",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "d76aeebdc2170869",
+      "title": {
+        "original": "World gold council and artisanal gold council announce strategic",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-artisanal-gold-council-announce-strategic",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "f704c390aa0eddb8",
+      "title": {
+        "original": "World gold council and dynacor group enter strategic partnership",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-dynacor-group-enter-strategic-partnership",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "7aa1d9ea8f7acd29",
+      "title": {
+        "original": "World gold council and ocim metals and mining sa partner",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-ocim-metals-and-mining-sa-partner",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "824924c1c6c98021",
+      "title": {
+        "original": "World Gold Council launches Swarnim Udaan 2047: Unlocking the Full Potential of Gold Towards Viksit Bharat 2047 4 August, 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-launches-swarnim-udaan-2047",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
       "id": "3663a7d940e42f4f",
       "title": {
-        "original": "Europe’s Cobalt Recycling Ambitions Collide With Its Own Rulebook",
+        "original": "Europes cobalt recycling ambitions collide with its own rulebook",
         "original_lang": "en",
         "ko": null
       },
@@ -4380,7 +4658,7 @@
     {
       "id": "2c0cbe98bbeb2884",
       "title": {
-        "original": "Cobalt Institute Statement on the EU Interinstitutional Agreement on the Cobalt Occupational Exposure Limit",
+        "original": "Cobalt institute statement on the eu interinstitutional agreement on the cobalt occupational exposure limit",
         "original_lang": "en",
         "ko": null
       },
@@ -4407,7 +4685,7 @@
     {
       "id": "7b230de5cc0a6a36",
       "title": {
-        "original": "Europe’s Cobalt OEL: Is Europe About to Undermine Its Own Strategic Ambitions?",
+        "original": "Europes cobalt oel is europe about to undermine its own strategic ambitions",
         "original_lang": "en",
         "ko": null
       },
@@ -4434,7 +4712,7 @@
     {
       "id": "7671b1c780a2ff75",
       "title": {
-        "original": "AI: The Road to an Equitable and Sustainable Cobalt Supply",
+        "original": "Ai the road to an equitable and sustainable cobalt supply",
         "original_lang": "en",
         "ko": null
       },
@@ -4461,7 +4739,7 @@
     {
       "id": "d19590662333853e",
       "title": {
-        "original": "Strengthening ESG for a Competitive Cobalt Future: Cobalt Institute Hosts Workshop in Kinshasa",
+        "original": "Strengthening esg for a competitive cobalt future cobalt institute hosts workshop in kinshasa",
         "original_lang": "en",
         "ko": null
       },
@@ -4784,35 +5062,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "4e43259f3f0f4b15",
-      "title": {
-        "original": "Opini Publik: Pluralitas & Sawit: Harmoni Sosial dan Ekonomi Keberlanjutan Kalimantan Barat",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": null,
-      "url": "http://www.bpdp.or.id/opini-publik-pluralitas-sawit-harmoni-sosial-dan-ekonomi-keberlanjutan-kalimantan-barat",
-      "published_at": "2026-08-12T06:07:30+00:00",
-      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
-      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
-      "source_id": "id_bpdp",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.773,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "96c93bcca16a1043",
       "title": {
         "original": "银世界新闻 2026年8月",
@@ -4990,33 +5239,6 @@
       "importance": 0.687,
       "reasons": [
         "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "8f3cba277d1d8f7f",
-      "title": {
-        "original": "Rewiring the Egg Supply Chain in Austria",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Austria cut emissions, strengthened EU protein production and reduced reliance on imported soya by changing what hens eat. Here's how coordination transformed a supply chain.",
-      "url": "https://agriculture.ec.europa.eu/rewiring-egg-supply-chain-austria_en",
-      "published_at": "2026-07-02T14:01:47+00:00",
-      "agency": "European Commission DG AGRI",
-      "agency_ko": "EU 집행위 농업총국",
-      "source_id": "eu_agri",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.683,
-      "reasons": [
-        "revision_language"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
