@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-26T13:05:29.008112+00:00",
+  "generated_at": "2026-09-26T13:18:41.861691+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 24,
-    "sources_failed": 3,
-    "raw_items": 441,
-    "scored": 181,
-    "published": 135,
-    "commodities": 22,
-    "buckets": 65
+    "sources_ok": 28,
+    "sources_failed": 5,
+    "raw_items": 449,
+    "scored": 196,
+    "published": 152,
+    "commodities": 24,
+    "buckets": 73
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": true,
-      "count": 10,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
@@ -126,11 +126,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": true,
-      "count": 36,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
       "mode": "live",
-      "note": "45 list pages, 43 reports linked, 36 read, 0 already known"
+      "carried_over": 19
     },
     {
       "source_id": "my_mpob",
@@ -214,6 +214,48 @@
       "ok": false,
       "count": 0,
       "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>",
+      "mode": "live"
+    },
+    {
+      "source_id": "int_ita_tin",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_wgc_press",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_ilzsg",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_cobalt_institute",
+      "ok": true,
+      "count": 5,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_esdm",
+      "ok": true,
+      "count": 14,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ar_bcr",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -638,23 +680,27 @@
         "cecfc55a16f54d74"
       ],
       "_global": [
+        "b8100702b4d10bff",
         "7376f1ff6d49470e",
         "0260f9aa0131b0b8",
         "735b13587e14b5a5",
         "af0be633a6c11395",
         "39ac9e91f73a0776"
+      ],
+      "ARG": [
+        "f8544c356fd2f6b6"
       ]
     },
     "palm_oil": {
       "MYS": [
         "97be7c6c6195937a",
         "9935e13cee618834",
+        "12ea40a375a50e2e",
         "294d988a0c7a4c17",
         "ade02dfd01340322",
         "a26131708db86470",
         "bbffeaa2f5411708",
-        "99ca28dd19b9f061",
-        "0ac19de06b45b2cf"
+        "99ca28dd19b9f061"
       ],
       "IDN": [
         "3547f9608d850c98",
@@ -664,32 +710,7 @@
         "f8bf20af564959e9",
         "7e2d9eaa2d937e0e",
         "9b3aacef7418cd57",
-        "3038b0ed9276919c"
-      ]
-    },
-    "soybeans": {
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ],
-      "_global": [
-        "1e39f84cf71c2d58",
-        "8f3cba277d1d8f7f"
+        "4e43259f3f0f4b15"
       ]
     },
     "rice": {
@@ -721,10 +742,9 @@
         "e08bde069abdfd83"
       ],
       "ARG": [
-        "dcc6cf91ba76aab6"
-      ],
-      "UKR": [
-        "088f09f9aa8eb7c7"
+        "dcc6cf91ba76aab6",
+        "21c3dd4f0cf93fd0",
+        "f4307738d454117b"
       ],
       "KEN": [
         "3ff8c2dd8b700c92"
@@ -749,12 +769,34 @@
         "a0f50331005b9402"
       ]
     },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ],
+      "_global": [
+        "1e39f84cf71c2d58",
+        "8f3cba277d1d8f7f"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
+      ]
+    },
     "wheat": {
       "BGD": [
         "9a2e551991dc06e6"
-      ],
-      "UKR": [
-        "088f09f9aa8eb7c7"
       ],
       "KEN": [
         "d6be49771c7e2707"
@@ -855,6 +897,34 @@
         "f8aa4f64781b6480"
       ]
     },
+    "tin": {
+      "CHN": [
+        "1b171ff4ac638164"
+      ],
+      "MYS": [
+        "9fc6c0f2f5e3568a"
+      ],
+      "USA": [
+        "9fc6c0f2f5e3568a",
+        "9ae7ee5c11ee0e19"
+      ],
+      "IDN": [
+        "3cac3e995aa9e757",
+        "16f99349c6e2ef80"
+      ],
+      "AUS": [
+        "91c5d4fabdf7e01f"
+      ],
+      "GBR": [
+        "91c5d4fabdf7e01f"
+      ],
+      "_global": [
+        "8e83d3fd71d29ae4",
+        "b8100702b4d10bff",
+        "ea1cbcc559672646",
+        "022ee0b6016f3dd5"
+      ]
+    },
     "lithium": {
       "USA": [
         "44e05f03eab98000"
@@ -869,6 +939,9 @@
       "USA": [
         "5a1967d788350658",
         "181e4ee82214496a"
+      ],
+      "IDN": [
+        "39c5b5bde5c6b91e"
       ],
       "_global": [
         "d09ef02fa55cc52b"
@@ -900,6 +973,15 @@
     "zinc": {
       "CAN": [
         "929e1ee5c8475871"
+      ]
+    },
+    "cobalt": {
+      "_global": [
+        "3663a7d940e42f4f",
+        "2c0cbe98bbeb2884",
+        "7b230de5cc0a6a36",
+        "7671b1c780a2ff75",
+        "d19590662333853e"
       ]
     },
     "silver": {
@@ -952,12 +1034,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.451,
+      "importance": 5.45,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b7b8e9c3c1038c73",
@@ -982,13 +1065,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.422,
+      "importance": 4.421,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "ff085c358e1c8514",
@@ -1013,13 +1097,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.355,
+      "importance": 4.354,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0eb0404d29d2bbc2",
@@ -1046,7 +1131,8 @@
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "cfe32235018b6add",
@@ -1077,7 +1163,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "97be7c6c6195937a",
@@ -1102,11 +1189,12 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.872,
+      "importance": 3.871,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9935e13cee618834",
@@ -1135,36 +1223,8 @@
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
       ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.808,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ]
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1189,11 +1249,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.808,
+      "importance": 3.807,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e08bde069abdfd83",
@@ -1219,11 +1280,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.808,
+      "importance": 3.807,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "6e3880b1a989890a",
@@ -1253,7 +1315,8 @@
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "eb8f3491f8c46070",
@@ -1283,7 +1346,8 @@
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "dcc6cf91ba76aab6",
@@ -1314,7 +1378,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c54d5583ad67060c",
@@ -1339,12 +1404,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.658,
+      "importance": 3.657,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9a2e551991dc06e6",
@@ -1375,7 +1441,8 @@
         "series:USDA_GAIN",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9307f930910dd12d",
@@ -1401,11 +1468,12 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.5,
+      "importance": 3.499,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0cc889de9eed1bf0",
@@ -1435,7 +1503,8 @@
         "series:COCHILCO_COPPER_MARKET",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "704821871273f761",
@@ -1465,7 +1534,8 @@
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "5576156cceda0a41",
@@ -1489,11 +1559,12 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 3.025,
+      "importance": 3.024,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "6269fa1eda293c5a",
@@ -1523,37 +1594,8 @@
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "3038b0ed9276919c",
-      "title": {
-        "original": "Indonesia: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Indonesia's transition to the B50 biodiesel mandate, which took effect in July 2026, is projected to raise domestic palm oil consumption by 11 percent to 25.3...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/indonesia-oilseeds-and-products-update",
-      "published_at": "2026-08-05T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "palm_oil"
       ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.649,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "country_in_text"
-      ]
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "99ca28dd19b9f061",
@@ -1582,7 +1624,8 @@
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "58c936b97029a384",
@@ -1609,7 +1652,8 @@
       "reasons": [
         "series:ANRPC_MONTHLY_NR",
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "30a98869d9f0a4f3",
@@ -1636,7 +1680,8 @@
       "reasons": [
         "series:ANRPC_MONTHLY_NR",
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "4f1e6b1fecad4872",
@@ -1659,42 +1704,12 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.426,
+      "importance": 2.425,
       "reasons": [
         "has_figure",
         "revision_language"
-      ]
-    },
-    {
-      "id": "088f09f9aa8eb7c7",
-      "title": {
-        "original": "Ukraine: Grain and Feed Quarterly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "This report contains updated estimates for marketing year (MY) 2025/26 and MY2026/27 for wheat, corn, barley, and rye. Increased MY2026/27 production areas and...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/ukraine-grain-and-feed-quarterly",
-      "published_at": "2026-08-05T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat",
-        "corn"
       ],
-      "countries": [
-        "UKR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.396,
-      "reasons": [
-        "series:USDA_GAIN",
-        "revision_language",
-        "country_in_text"
-      ]
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "5d3e84a676f4ec8b",
@@ -1724,7 +1739,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "57e4eb5bfc9ebc1e",
@@ -1755,7 +1771,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "a26131708db86470",
@@ -1783,7 +1800,8 @@
       "importance": 2.211,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f8aa4f64781b6480",
@@ -1808,11 +1826,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.08,
+      "importance": 2.079,
       "reasons": [
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "bbffeaa2f5411708",
@@ -1840,7 +1859,8 @@
       "importance": 1.981,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "3ff8c2dd8b700c92",
@@ -1865,11 +1885,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.883,
+      "importance": 1.882,
       "reasons": [
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7376f1ff6d49470e",
@@ -1895,7 +1916,8 @@
       "importance": 1.879,
       "reasons": [
         "series:EIA_STEO"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "294d988a0c7a4c17",
@@ -1923,7 +1945,8 @@
       "importance": 1.86,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "ade02dfd01340322",
@@ -1951,7 +1974,8 @@
       "importance": 1.86,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d6be49771c7e2707",
@@ -1979,7 +2003,8 @@
       "importance": 1.799,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "5f087a520744649c",
@@ -2003,11 +2028,41 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.795,
+      "importance": 1.794,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "1b171ff4ac638164",
+      "title": {
+        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
+      "published_at": "2026-09-21T13:18:43+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.757,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9a2e4f0c6cc38378",
@@ -2039,7 +2094,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9d9ab72fff81736d",
@@ -2071,7 +2127,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "727409c1a45dfec3",
@@ -2103,7 +2160,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "44e05f03eab98000",
@@ -2131,7 +2189,40 @@
       "importance": 1.749,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9fc6c0f2f5e3568a",
+      "title": {
+        "original": "Higher tin prices and output lift MSC Q2 revenue",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
+      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
+      "published_at": "2026-08-17T09:32:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "MYS",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.699,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "25541b98e1af190a",
@@ -2156,11 +2247,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.69,
+      "importance": 1.689,
       "reasons": [
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9dea9d96f6e39a19",
@@ -2189,7 +2281,8 @@
       "reasons": [
         "country_in_text",
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f0c7e78a15b3b9db",
@@ -2218,7 +2311,8 @@
       "reasons": [
         "country_in_text",
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f9e7ed8b73ce1fa5",
@@ -2249,7 +2343,8 @@
       "reasons": [
         "series:USDA_PROSPECTIVE_PLANTINGS",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e4530ccde436c92d",
@@ -2282,7 +2377,8 @@
       "reasons": [
         "series:USDA_CROP_PRODUCTION",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "205bcf62b2894e8b",
@@ -2312,7 +2408,8 @@
       "reasons": [
         "series:USDA_CROP_PRODUCTION",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e54c2f7c294df06b",
@@ -2342,7 +2439,8 @@
       "reasons": [
         "series:USDA_CROP_PRODUCTION",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9dd7845c2d4fc51e",
@@ -2372,7 +2470,8 @@
       "reasons": [
         "series:USDA_CROP_PRODUCTION",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b736550c463bc772",
@@ -2400,36 +2499,37 @@
       "importance": 1.646,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "0ac19de06b45b2cf",
+      "id": "3cac3e995aa9e757",
       "title": {
-        "original": "Malaysia: Oilseeds and Products Update",
+        "original": "Tin to be traded on Indonesia’s new commodity exchange",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Malaysia's palm oil sector is expected to face a challenging production environment in Marketing Year (MY) 2026/27 as industry stakeholders monitor the...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/07/malaysia-oilseeds-and-products-update",
-      "published_at": "2026-07-01T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
+      "summary": "Tin is expected to be the first commodity traded on Indonesia’s new Mineral and Strategic Commodity Exchange (BMKS, or ICOMEX), with trading scheduled to begin on 4 January 2027. Following a hearing with Indonesia’s parliament, Sarjito, OJK’s Chief Executive for Mineral and Strategic Commodity Exchange Supervision, told local media that tin was chosen to “encourage transparency in trading”… Read the full article for free by registering on Tin Desk The post Tin to be traded on Indonesia’s new commodity exchange appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/35445-2/?utm_source=rss&utm_medium=rss&utm_campaign=35445-2",
+      "published_at": "2026-09-17T11:44:17+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "palm_oil"
+        "tin"
       ],
       "countries": [
-        "MYS"
+        "IDN"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.567,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.622,
       "reasons": [
-        "series:USDA_GAIN",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "54cc3c274cf90c25",
@@ -2459,7 +2559,8 @@
         "series:USDA_CROP_PRODUCTION",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d9459a6be37e5e91",
@@ -2489,7 +2590,8 @@
         "series:USDA_CROP_PRODUCTION",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "333bf7304a6961c5",
@@ -2514,10 +2616,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.469,
+      "importance": 1.468,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c67666c03e916f6f",
@@ -2546,7 +2649,64 @@
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "91c5d4fabdf7e01f",
+      "title": {
+        "original": "New Taronga DFS confirms low-cost open pit with simple processing flowsheet",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "British tin explorer First Tin (LON: 1SN) has published an updated DFS for its Taronga project in New South Wales, confirming low-cost open pit mining and a simple processing flowsheet. The mine would see average production of 3,100 tonnes tin-in-concentrate per year over the 10 year mine life, with potential to… Read the full article for free by registering on Tin Desk The post New Taronga DFS confirms low-cost open pit with simple processing flowsheet appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/new-taronga-dfs-confirms-low-cost-open-pit-with-simple-processing-flowsheet/?utm_source=rss&utm_medium=rss&utm_campaign=new-taronga-dfs-confirms-low-cost-open-pit-with-simple-processing-flowsheet",
+      "published_at": "2026-08-19T15:05:40+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "AUS",
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.463,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "8e83d3fd71d29ae4",
+      "title": {
+        "original": "Tin could help solar cells hold onto lost energy",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Researchers have uncovered why tin-based perovskites can retain energy from sunlight for unusually long periods — a property that could make them promising materials for a future generation of high-efficiency solar cells. Conventional solar cells cannot capture all the energy carried by sunlight. When light excites charge carriers within a solar material, they initially contain excess energy, but much of this is rapidly lost as heat as the carriers cool. Hot-carrier solar cells are an emerging concept designed to capture these carriers before that excess energy is lost. In theory, this could…",
+      "url": "https://www.internationaltin.org/tin-could-help-solar-cells-hold-onto-lost-energy/?utm_source=rss&utm_medium=rss&utm_campaign=tin-could-help-solar-cells-hold-onto-lost-energy",
+      "published_at": "2026-09-22T08:02:39+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.428,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "5a1967d788350658",
@@ -2571,10 +2731,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.428,
+      "importance": 1.427,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -2599,10 +2760,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.406,
+      "importance": 1.405,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b7997f3d390d6fb8",
@@ -2630,7 +2792,8 @@
       "importance": 1.397,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "06cf84727ec466c3",
@@ -2662,7 +2825,35 @@
         "series:USDA_GRAIN_STOCKS",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "ea1cbcc559672646",
+      "title": {
+        "original": "New ore sorting technology sees inside cassiterite",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Gem Recovery Systems (GRS) and the Fraunhofer Institute for Integrated Circuits IIS are exploring the application of dual-energy X-ray technology to see inside cassiterite-bearing ores. Laboratory testing has shown that cassiterite can be detected using the system, providing a basis for further work on its potential role in the pre-concentration of tin ores. Fraunhofer’s high throughput, industrial capacity XRT sorting system at the Furth base. Sensor-based ore sorting can separate mineral-bearing rock from lower-value or barren material before it enters later stages of processing. For tin…",
+      "url": "https://www.internationaltin.org/new-ore-sorting-technology-sees-inside-cassiterite/?utm_source=rss&utm_medium=rss&utm_campaign=new-ore-sorting-technology-sees-inside-cassiterite",
+      "published_at": "2026-09-04T11:35:20+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.381,
+      "reasons": [
+        "revision_language"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9a22d2cdf0982434",
@@ -2691,7 +2882,8 @@
       "reasons": [
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d4de362acb2f5bd7",
@@ -2719,7 +2911,8 @@
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "181e4ee82214496a",
@@ -2748,7 +2941,8 @@
       "reasons": [
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "82a9272720c2cdfb",
@@ -2778,7 +2972,8 @@
       "importance": 1.344,
       "reasons": [
         "series:USDA_CROP_PRODUCTION"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "389d4a4328f23545",
@@ -2806,7 +3001,8 @@
       "importance": 1.344,
       "reasons": [
         "series:USDA_CROP_PRODUCTION"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "2c8f727be89c0de5",
@@ -2834,7 +3030,8 @@
       "importance": 1.344,
       "reasons": [
         "series:USDA_PROSPECTIVE_PLANTINGS"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "eb08bb539c63def3",
@@ -2864,7 +3061,8 @@
       "importance": 1.344,
       "reasons": [
         "series:USDA_CROP_PRODUCTION"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0a708bd4ffd29cfc",
@@ -2893,7 +3091,8 @@
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b8e0e19f0f00a266",
@@ -2921,7 +3120,8 @@
       "importance": 1.319,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "1a5e5c6b232458f1",
@@ -2950,7 +3150,8 @@
       "reasons": [
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c4debe37366d175b",
@@ -2973,8 +3174,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.306,
-      "reasons": []
+      "importance": 1.305,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "12a040f17a066c45",
@@ -3000,7 +3202,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "4b770dbdba953c09",
@@ -3026,7 +3229,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "42259283a50d073b",
@@ -3052,7 +3256,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "48cc04a9052a8716",
@@ -3078,7 +3283,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e49a08bd637153cb",
@@ -3104,7 +3310,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "259a0a3487393346",
@@ -3130,7 +3337,8 @@
       "importance": 1.299,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "1e39f84cf71c2d58",
@@ -3153,10 +3361,11 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.299,
+      "importance": 1.298,
       "reasons": [
         "revision_language"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "cecfc55a16f54d74",
@@ -3185,7 +3394,35 @@
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "12ea40a375a50e2e",
+      "title": {
+        "original": "PALMS 2030",
+        "original_lang": "ms",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://mpob.gov.my/2026/09/palms-2030/",
+      "published_at": "2026-09-22T08:27:55+00:00",
+      "agency": "Malaysian Palm Oil Board",
+      "agency_ko": "말레이시아 팜유청(MPOB)",
+      "source_id": "my_mpob",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.282,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "44ef3d9e9fba437f",
@@ -3215,7 +3452,8 @@
       "importance": 1.277,
       "reasons": [
         "series:USDA_GRAIN_STOCKS"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "03c379d5b310c445",
@@ -3239,7 +3477,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 1.274,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "755265be684d892e",
@@ -3264,8 +3503,35 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.256,
-      "reasons": []
+      "importance": 1.255,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b8100702b4d10bff",
+      "title": {
+        "original": "AI model targets faster monitoring of tin losses in smelting",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Researchers working with Yunnan Tin Group have developed an AI model that estimates tin content in slag using live furnace data, potentially giving operators much faster insight into metal losses than conventional laboratory testing. Slag tin content is an important indicator of smelting performance. If too much tin remains in the slag, valuable metal is being lost rather than recovered as crude tin. The challenge is that slag tin is not normally measured continuously. In the industrial furnace used for this study, process data were recorded every minute, while slag tin content was measured…",
+      "url": "https://www.internationaltin.org/ai-model-targets-faster-monitoring-of-tin-losses-in-smelting/?utm_source=rss&utm_medium=rss&utm_campaign=ai-model-targets-faster-monitoring-of-tin-losses-in-smelting",
+      "published_at": "2026-09-15T09:05:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "oil",
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.247,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7ccb8874c01bc513",
@@ -3294,7 +3560,8 @@
       "reasons": [
         "country_in_text",
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e26dc58eafa42224",
@@ -3322,7 +3589,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7390cf9f524fb034",
@@ -3350,7 +3618,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "11ac17f1a9aa9e08",
@@ -3378,7 +3647,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e65bffd316bf9313",
@@ -3406,7 +3676,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "bcd497516af1f0b1",
@@ -3434,7 +3705,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "6a2f69a13bf9ae19",
@@ -3462,7 +3734,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b29e7d11bb4e97c1",
@@ -3490,7 +3763,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "a0f50331005b9402",
@@ -3518,7 +3792,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "90caf018877f574b",
@@ -3546,7 +3821,8 @@
       "importance": 1.212,
       "reasons": [
         "no_date"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "af3268d8f8f62548",
@@ -3574,7 +3850,8 @@
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "3547f9608d850c98",
@@ -3600,7 +3877,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 1.174,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "62f11e17ce23601c",
@@ -3626,7 +3904,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 1.173,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "62ac4be598c099c2",
@@ -3651,10 +3930,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.139,
+      "importance": 1.138,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "671ae2ca9456c281",
@@ -3682,7 +3962,8 @@
       "importance": 1.12,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "636939b535053039",
@@ -3707,10 +3988,40 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.09,
+      "importance": 1.089,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "16f99349c6e2ef80",
+      "title": {
+        "original": "Indonesian government allows PT Timah to buy tin ore from local miners",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Indonesian government has announced that state-owned tin producer PT Timah (IDX: TINS) will be allowed to purchase tin from local miners in Bangka Belitung. It is hoped that the arrangement will reduce illegal ore and concentrate exports as the country seeks to modify the regulatory framework of the tin industry… Read the full article for free by registering on Tin Desk The post Indonesian government allows PT Timah to buy tin ore from local miners appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/indonesian-government-allows-pt-timah-to-buy-tin-ore-from-local-miners/?utm_source=rss&utm_medium=rss&utm_campaign=indonesian-government-allows-pt-timah-to-buy-tin-ore-from-local-miners",
+      "published_at": "2026-08-21T11:38:56+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.068,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "929e1ee5c8475871",
@@ -3740,7 +4051,8 @@
       "importance": 1.067,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "795f411fda44aae8",
@@ -3771,7 +4083,8 @@
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "39ac9e91f73a0776",
@@ -3797,7 +4110,125 @@
       "importance": 1.04,
       "reasons": [
         "series:EIA_STEO"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "39c5b5bde5c6b91e",
+      "title": {
+        "original": "Pembangunan LNG Abadi Masela Mulai Jalan, Pemerintah Dorong Pertumbuhan Ekonomi Lokal",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita/pembangunan-lng-abadi-masela-mulai-jalan-pemerintah-dorong-pertumbuhan-ekonomi-lokal-",
+      "published_at": null,
+      "agency": "Ministry of Energy and Mineral Resources of Indonesia",
+      "agency_ko": "인도네시아 에너지광물자원부(ESDM)",
+      "source_id": "id_esdm",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "21c3dd4f0cf93fd0",
+      "title": {
+        "original": "Análisis de posibilidades de comercialización para soja y maíz de la campaña 2026/27 en el mercado a término",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/analisis-de-9",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f4307738d454117b",
+      "title": {
+        "original": "Maíz en racha: más de un millón de toneladas operadas por semana",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/maiz-en-racha",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f8544c356fd2f6b6",
+      "title": {
+        "original": "Reservas internacionales y petróleo marcan la agenda económica y financiera",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/reservas",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d2560303da2802d2",
@@ -3828,7 +4259,8 @@
       "importance": 1.008,
       "reasons": [
         "series:USDA_CROP_PROGRESS"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "82ad0c3c992ec514",
@@ -3859,7 +4291,37 @@
       "importance": 1.008,
       "reasons": [
         "series:USDA_CROP_PROGRESS"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9ae7ee5c11ee0e19",
+      "title": {
+        "original": "Tin shows thermal stability advantage in sodium-ion batteries",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "New research has found that tin anodes may offer a thermal stability advantage over hard carbon in sodium-ion batteries. The study also shows that electrolyte choice significantly influences how tin behaves as temperatures rise, providing new information for the development of high-energy tin-based batteries. Professor Lin Ma from the University of North Carolina. Researchers from the University of North Carolina, University of California San Diego, Argonne National Laboratory and Northwestern University, together with US sodium-ion battery company Peak Energy, compared the behaviour of tin…",
+      "url": "https://www.internationaltin.org/tin-shows-thermal-stability-advantage-in-sodium-ion-batteries/?utm_source=rss&utm_medium=rss&utm_campaign=tin-shows-thermal-stability-advantage-in-sodium-ion-batteries",
+      "published_at": "2026-08-14T10:15:26+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.988,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7695372844e9b313",
@@ -3885,7 +4347,168 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.977,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "3663a7d940e42f4f",
+      "title": {
+        "original": "Europe’s Cobalt Recycling Ambitions Collide With Its Own Rulebook",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/europes-cobalt-recycling-ambitions-collide-with-its-own-rulebook/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "2c0cbe98bbeb2884",
+      "title": {
+        "original": "Cobalt Institute Statement on the EU Interinstitutional Agreement on the Cobalt Occupational Exposure Limit",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/cobalt-institute-statement-on-the-eu-interinstitutional-agreement-on-the-cobalt-occupational-exposure-limit/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "7b230de5cc0a6a36",
+      "title": {
+        "original": "Europe’s Cobalt OEL: Is Europe About to Undermine Its Own Strategic Ambitions?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/europes-cobalt-oel-is-europe-about-to-undermine-its-own-strategic-ambitions/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "7671b1c780a2ff75",
+      "title": {
+        "original": "AI: The Road to an Equitable and Sustainable Cobalt Supply",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/ai-the-road-to-an-equitable-and-sustainable-cobalt-supply/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "d19590662333853e",
+      "title": {
+        "original": "Strengthening ESG for a Competitive Cobalt Future: Cobalt Institute Hosts Workshop in Kinshasa",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/strengthening-esg-for-a-competitive-cobalt-future-cobalt-institute-hosts-workshop-in-kinshasa/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "022ee0b6016f3dd5",
+      "title": {
+        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
+      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
+      "published_at": "2026-08-27T14:20:42+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.923,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "9b3aacef7418cd57",
@@ -3913,7 +4536,8 @@
       "importance": 0.907,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0260f9aa0131b0b8",
@@ -3937,7 +4561,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.872,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "735b13587e14b5a5",
@@ -3961,7 +4586,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.872,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "a78219d1002ebe81",
@@ -3987,7 +4613,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.864,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b87baa2603ba1ba3",
@@ -4013,7 +4640,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.844,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "21e8e31c7b207b51",
@@ -4041,7 +4669,8 @@
       "importance": 0.84,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f8bf20af564959e9",
@@ -4067,7 +4696,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.832,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "66eae8938783b965",
@@ -4096,7 +4726,8 @@
       "reasons": [
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7e2d9eaa2d937e0e",
@@ -4122,7 +4753,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.792,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "cbae598c13644bf7",
@@ -4148,7 +4780,37 @@
       "importance": 0.776,
       "reasons": [
         "has_figure"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "4e43259f3f0f4b15",
+      "title": {
+        "original": "Opini Publik: Pluralitas & Sawit: Harmoni Sosial dan Ekonomi Keberlanjutan Kalimantan Barat",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/opini-publik-pluralitas-sawit-harmoni-sosial-dan-ekonomi-keberlanjutan-kalimantan-barat",
+      "published_at": "2026-08-12T06:07:30+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.773,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "96c93bcca16a1043",
@@ -4172,7 +4834,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.765,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "12501fa570ad4d21",
@@ -4196,7 +4859,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.765,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "aa17b478e6561bc9",
@@ -4220,7 +4884,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.765,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "1e42080f0e1e0d89",
@@ -4244,7 +4909,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.765,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c73f66d2b69815ff",
@@ -4267,8 +4933,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.746,
-      "reasons": []
+      "importance": 0.745,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d09ef02fa55cc52b",
@@ -4294,7 +4961,8 @@
       "importance": 0.729,
       "reasons": [
         "revision_language"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "fd94e1c0559f75cc",
@@ -4322,7 +4990,8 @@
       "importance": 0.687,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "8f3cba277d1d8f7f",
@@ -4348,7 +5017,8 @@
       "importance": 0.683,
       "reasons": [
         "revision_language"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "094f2c679d643322",
@@ -4374,7 +5044,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.672,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "89c825ce4cf18fd2",
@@ -4402,7 +5073,8 @@
       "importance": 0.631,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "ab3a2a994bfc6642",
@@ -4430,7 +5102,8 @@
       "importance": 0.63,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "e31766e85e2bb8fa",
@@ -4458,7 +5131,8 @@
       "importance": 0.63,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b2bc51accbde2d64",
@@ -4485,7 +5159,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.559,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c45ef08bed6185fe",
@@ -4511,7 +5186,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.559,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "69939df0db75be9f",
@@ -4540,7 +5216,8 @@
       "importance": 0.555,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "af0be633a6c11395",
@@ -4564,7 +5241,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.548,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "25fb768ac2e254c6",
@@ -4590,7 +5268,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.53,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f5072178b1b60a30",
@@ -4615,7 +5294,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.507,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "09ca834485d1ec42",
@@ -4639,7 +5319,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.505,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "930976e33c5a3743",
@@ -4663,7 +5344,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.504,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "592d3e5125237169",
@@ -4687,7 +5369,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.464,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "89f241fbe1c68b24",
@@ -4711,7 +5394,8 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.428,
-      "reasons": []
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     }
   ]
 }
