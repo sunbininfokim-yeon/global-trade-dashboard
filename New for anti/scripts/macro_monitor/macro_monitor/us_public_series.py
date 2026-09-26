@@ -304,6 +304,16 @@ def sync_chips(usa: dict[str, Any], by_id: dict[str, dict[str, Any]], touched: s
                 h["label_ko"] = src["label_ko"]
 
 
+def refresh_status_summary(country: dict[str, Any]) -> None:
+    """The per-country badge counts (live / demo / ...) are read from the indicators; they went stale
+    when cards were replaced by real series without touching them."""
+    out: dict[str, int] = {}
+    for ind in country.get("indicators") or []:
+        status = str(ind.get("data_status") or "unknown")
+        out[status] = out.get(status, 0) + 1
+    country["data_status_summary"] = out
+
+
 def apply_gdp_composite(by_id: dict[str, dict[str, Any]], retrieved_at: str) -> bool:
     """The 'gdp' chip is YoY | QoQ; rebuild it from the two real series it is made of."""
     gdp, yoy, qoq = by_id.get("gdp"), by_id.get("gdp_yoy"), by_id.get("gdp_qoq")
@@ -351,7 +361,9 @@ def apply_all(usa: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrie
             removed.append(legacy)
     by_id = {i["id"]: i for i in usa["indicators"]}
     sync_chips(usa, by_id, set(changed))
-    return {"changed": changed, "removed": removed}
+    before = dict(usa.get("data_status_summary") or {})
+    refresh_status_summary(usa)
+    return {"changed": changed, "removed": removed, "summary_changed": before != usa["data_status_summary"]}
 
 
 def now_iso() -> str:
