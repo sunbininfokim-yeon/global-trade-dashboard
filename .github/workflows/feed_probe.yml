@@ -1,0 +1,40 @@
+name: Feed probe
+
+# Fetches the candidate report feeds in tools/ops/feed_probe_targets.json from
+# an Actions runner and prints what each one answers (status, feed or page,
+# item count, newest date, advertised feeds). Claude Code sessions cannot
+# reach most publishers, so this is where a scripts/commodity_reports source
+# is checked before it is enabled. GETs only; writes nothing to the repo.
+#
+# Runs on a push to a claude/ branch that touches the probe, so a session can
+# check a new candidate list without it being on main first.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths:
+      - tools/ops/feed_probe.py
+      - tools/ops/feed_probe_targets.json
+      - .github/workflows/feed_probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # curl_cffi reproduces a browser's TLS handshake, which tells a TLS
+      # fingerprint block (Akamai Bot Manager) apart from a User-Agent rule.
+      - run: pip install --quiet curl_cffi
+      - run: python tools/ops/feed_probe.py --json-out feed_probe.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feed-probe
+          path: feed_probe.json
