@@ -540,9 +540,21 @@ class RelevanceByCommodityTests(unittest.TestCase):
     def test_eia_electricity_is_not_crude_and_oil_market_news_is(self):
         self.assertIsNone(self.run_one("EIA forecasts strongest four-year growth in U.S. electricity demand since 2000"))
         self.assertIn("oil", self.run_one("EIA increases global oil production forecast after the opening of the Strait of Hormuz"))
-        self.assertEqual(self.run_one("EIA releases latest Short-Term Energy Outlook amid Middle East conflict"), ["oil", "gas"])
+        self.assertEqual(sorted(self.run_one("EIA releases latest Short-Term Energy Outlook amid Middle East conflict")),
+                         ["gas", "oil", "thermal_coal"])
         self.assertNotIn("oil", self.commodity.tag("Malaysia palm oil production rose 4% in August"))
         self.assertNotIn("oil", self.commodity.tag("Brazil: Biofuels Annual -- ethanol blending and renewable diesel capacity"))
+
+    def test_multi_commodity_series_reach_every_window_they_cover(self):
+        # EIA's STEO revises oil, gas and coal even when the headline names oil only.
+        got = self.run_one("Short-Term Energy Outlook: EIA expects lower crude oil prices")
+        self.assertEqual(sorted(got), ["gas", "oil", "thermal_coal"])
+        # An oil story that cites the STEO in its body is still an oil story.
+        self.assertEqual(self.run_one("United States on track for record crude oil production in 2026",
+                                      "In our latest Short-Term Energy Outlook we forecast 13.9 million b/d."),
+                         ["oil"])
+        # A single-commodity EIA story stays on its own window.
+        self.assertEqual(self.run_one("EIA expects highest natural gas inventories in a decade heading into winter"), ["gas"])
 
     def test_housekeeping_notices_are_dropped(self):
         for title in ("USDA Crop Progress report delayed until 5pm ET",

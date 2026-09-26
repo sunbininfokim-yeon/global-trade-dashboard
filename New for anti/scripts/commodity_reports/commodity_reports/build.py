@@ -32,12 +32,21 @@ def apply_series_commodity_fallback(
     when it's the most authoritative report in the bucket. Only fires when
     the text-based tagger found nothing at all; a report that already names
     a crop keeps that, series list or not.
+
+    Series marked "covers_all": true (WASDE, EIA's STEO and AEO) are
+    multi-commodity reports by construction: they go on every window they
+    cover even when the headline happens to name only one ("STEO: oil
+    demand to fall" still revises natural gas).
     """
-    if tagged.commodities:
-        return
     series = scorer.match_series(f"{title}\n{summary}".lower())
-    if series and series.get("commodities"):
+    if not series or not series.get("commodities"):
+        return
+    if not tagged.commodities:
         tagged.commodities = list(series["commodities"])
+    elif series.get("covers_all") and scorer.match_series(title.lower()) is series:
+        # Only when the headline is the release itself. A crude oil story
+        # that cites "our STEO" in its body stays a crude oil story.
+        tagged.commodities = list(dict.fromkeys(tagged.commodities + list(series["commodities"])))
 
 
 def load_json(path: Path) -> Dict[str, Any]:
