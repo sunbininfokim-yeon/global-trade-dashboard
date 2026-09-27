@@ -128,6 +128,12 @@ const totalVolumeEl = document.getElementById('total-volume');
 const topExporterEl = document.getElementById('top-exporter');
 const currentViewTitle = document.getElementById('current-view-title');
 const currentViewDesc = document.getElementById('current-view-desc');
+const mapSourceNoteEl = document.getElementById('map-source-note');
+// Data-source attribution (e.g. UN Comtrade period/route count) used to be
+// crammed into currentViewDesc alongside the commodity blurb, making the
+// subtitle line a run-on sentence. It now lives in its own corner-of-map
+// footnote so the subtitle stays a short interaction hint.
+const setMapSourceNote = (text) => { if (mapSourceNoteEl) mapSourceNoteEl.textContent = text || ''; };
 const mapContainer = document.getElementById('map');
 const chartView = document.getElementById('chart-view');
 const navLinks = document.querySelectorAll('.dropdown a');
@@ -5295,6 +5301,7 @@ const electionHost = () => ({
     setHeader(title, description) {
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
+        setMapSourceNote('');
     },
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
     // view from the URL path on render, so writing that path before the view
@@ -5692,6 +5699,7 @@ const setView = (target) => {
         
         currentViewTitle.textContent = '작황 모니터';
         currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
+        setMapSourceNote('');
         topExporterEl.textContent = 'Status coloring';
         hideCommodityFavStar(); // 작황 모니터는 개별 원자재가 아니라 집계 화면이라 즐겨찾기 대상이 아님
 
@@ -5729,7 +5737,8 @@ const setView = (target) => {
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
             currentViewDesc.textContent = "📡 UN Comtrade 최신 무역 통계 로딩 중...";
-            
+            setMapSourceNote('');
+
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
@@ -5741,25 +5750,29 @@ const setView = (target) => {
             window.fetchComtradeArcs(target).then(arcs => {
                 // Check if user hasn't navigated away
                 if (currentCommodity !== target) return;
-                
+
                 if (arcs.length > 0) {
                     data.arcs = arcs; // Cache for future clicks
-                    currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(arcs)} · 국가 클릭 → 수출 대상 순위`;
+                    currentViewDesc.textContent = '국가 클릭 → 수출 대상 순위';
+                    setMapSourceNote(comtradeSourceText(arcs));
                     renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
-                    currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
+                    currentViewDesc.textContent = "UN Comtrade 데이터 로딩 실패 — 재시도 필요";
+                    setMapSourceNote('');
                 }
             }).catch(err => {
                 if (currentCommodity !== target) return;
-                currentViewDesc.textContent = data.desc + " (API 연결 오류: " + err.message + ")";
+                currentViewDesc.textContent = "API 연결 오류: " + err.message;
+                setMapSourceNote('');
                 console.error('[Comtrade] Lazy load error:', err);
             });
         } else {
             // Already have data (cached from previous click or hardcoded)
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-            currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(data.arcs)} · 국가 클릭 → 수출 대상 순위`;
+            currentViewDesc.textContent = '국가 클릭 → 수출 대상 순위';
+            setMapSourceNote(comtradeSourceText(data.arcs));
             renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
@@ -5772,6 +5785,7 @@ const setView = (target) => {
         const categoryName = targetLink ? targetLink.textContent : target;
         currentViewTitle.textContent = `데이터 준비 중: ${categoryName}`;
         currentViewDesc.textContent = "API 연동 및 백엔드 파이프라인 구축 후 제공됩니다.";
+        setMapSourceNote('');
         
         // Update placeholder text
         chartView.innerHTML = `

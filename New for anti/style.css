@@ -1693,6 +1693,26 @@ body {
     margin-bottom: 8px;
 }
 
+/* Commodity trade map's data-source footnote -- bottom-right corner so it
+   never collides with .map-legend (bottom-left). */
+.map-source-note {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    z-index: 15;
+    max-width: 55%;
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: rgba(148, 163, 184, 0.85);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    text-align: right;
+    pointer-events: none;
+}
+
+.map-source-note:empty {
+    display: none;
+}
+
 .legend-item:last-child {
     margin-bottom: 0;
 }
