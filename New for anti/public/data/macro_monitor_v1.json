@@ -1,14 +1,14 @@
 {
   "schema_version": "macro-monitor-v1",
   "engine_version": "0.31.0",
-  "generated_at": "2026-09-26T22:11:33Z",
+  "generated_at": "2026-09-27T02:26:34Z",
   "source": {
     "kind": "hybrid_live",
     "quality": "partial_live",
-    "live_ok": 48,
-    "live_fail": 3,
-    "note": "실데이터 오버레이 48건: Yahoo + Worker FRED latest + BOK + Wikipedia 신용등급 + QRA 엔진. ISM PMI·CDS 스킵. FedWatch는 CME 사이트 스크래핑 금지(ToS/IP 차단) — FF 선물 정산가 기반 자체 스코어링 예정. KOSIS 미사용. BOJ는 Time-Series Search CSV 매핑 예정.",
-    "fetched_at": "2026-09-26T22:11:33Z",
+    "live_ok": 68,
+    "live_fail": 1,
+    "note": "실데이터 오버레이 68건: Yahoo + Worker FRED latest + BOK + Wikipedia 신용등급 + QRA 엔진. ISM PMI·CDS 스킵. FedWatch는 CME 사이트 스크래핑 금지(ToS/IP 차단) — FF 선물 정산가 기반 자체 스코어링 예정. KOSIS 미사용. BOJ는 Time-Series Search CSV 매핑 예정.",
+    "fetched_at": "2026-09-27T02:26:34Z",
     "backends": [
       "yahoo_chart",
       "fred_worker_latest",
@@ -1904,9 +1904,9 @@
             "unit": "tn_usd",
             "change_1m_pct": 1.0,
             "change_1y_pct": 1.66,
-            "asof": "2026-09-30",
+            "asof": "2026-09-23",
             "note_ko": "연준 총자산 − TGA − ON RRP",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-23",
             "retrieved_at": null,
             "source": "derived:live_latest",
             "data_status": "live_latest",
@@ -1922,7 +1922,7 @@
             "change_1y_pct": -0.58,
             "asof": "2026-09-23",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-23",
             "retrieved_at": null,
             "source": "fred_worker:WALCL",
             "data_status": "live_latest",
@@ -1954,7 +1954,7 @@
             "change_1y_pct": 48.79,
             "asof": "2026-09-25",
             "note_ko": "잔고 감소 → 시중 유동성 증가 해석",
-            "observed_at": "2026-08-13",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "fred_worker:RRPONTTLD",
             "data_status": "live_latest",
@@ -1999,7 +1999,7 @@
             "change_1y_pct": -19.65,
             "asof": "2026-09-23",
             "note_ko": "TGA↑ → 시중 유동성 흡수",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-23",
             "retrieved_at": null,
             "source": "fred_worker:WTREGEN",
             "data_status": "live_latest",
@@ -2013,7 +2013,7 @@
             "unit": "bn_usd",
             "change_1m_pct": 0.0,
             "change_1y_pct": 0.01,
-            "asof": "2026-08-03",
+            "asof": "2026-09-24",
             "note_ko": "August 3, 2026 발표. 당기 July–September 2026 순발행 739B, 기말현금 950B. 다음 분기 October–December 2026 예상 순발행 628B, 기말현금 850B. T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias",
             "chart_type": "bar",
             "ui": {
@@ -2197,7 +2197,51 @@
             "observed_at": "2026-08-08",
             "retrieved_at": null,
             "source": "qra_engine_v1",
-            "data_status": "live"
+            "data_status": "live",
+            "components": [
+              {
+                "id": "c2y",
+                "label_ko": "2Y",
+                "tenor": "2y",
+                "value": 207.0
+              },
+              {
+                "id": "c3y",
+                "label_ko": "3Y",
+                "tenor": "3y",
+                "value": 174.0
+              },
+              {
+                "id": "c5y",
+                "label_ko": "5Y",
+                "tenor": "5y",
+                "value": 210.0
+              },
+              {
+                "id": "c7y",
+                "label_ko": "7Y",
+                "tenor": "7y",
+                "value": 132.0
+              },
+              {
+                "id": "c10y",
+                "label_ko": "10Y",
+                "tenor": "10y",
+                "value": 120.0
+              },
+              {
+                "id": "c20y",
+                "label_ko": "20Y",
+                "tenor": "20y",
+                "value": 42.0
+              },
+              {
+                "id": "c30y",
+                "label_ko": "30Y",
+                "tenor": "30y",
+                "value": 69.0
+              }
+            ]
           },
           {
             "id": "m2_vs_2019",
@@ -2243,7 +2287,7 @@
             "change_1y_pct": 1.15,
             "asof": "2026-09-24",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:EFFR",
             "data_status": "live_latest",
@@ -2275,7 +2319,7 @@
             "change_1y_pct": 1.97,
             "asof": "2026-09-24",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:SOFR",
             "data_status": "live_latest",
@@ -2292,7 +2336,7 @@
             "asof": "2026-09-24",
             "note_ko": "시장 수익률 (TB3MS/DGS3MO) — SOMA 보유와 별개",
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:DGS3MO",
             "data_status": "live_latest"
@@ -2308,7 +2352,7 @@
             "asof": "2026-09-24",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:DGS2",
             "data_status": "live_latest"
@@ -2324,7 +2368,7 @@
             "asof": "2026-09-24",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:DGS10",
             "data_status": "live_latest"
@@ -2339,7 +2383,7 @@
             "change_1y_pct": -6.26,
             "asof": "2026-09-24",
             "note_ko": "10Y TIPS — 밸류에이션 핵심 변수",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:DFII10",
             "data_status": "live_latest",
@@ -2355,7 +2399,7 @@
             "change_1y_pct": -23.34,
             "asof": "2026-09-25",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "fred_worker:T10Y3M",
             "data_status": "live_latest",
@@ -2369,9 +2413,9 @@
             "unit": "bp",
             "change_1m_pct": -3.02,
             "change_1y_pct": 68.24,
-            "asof": "2026-09-30",
+            "asof": "2026-09-24",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "derived:live",
             "data_status": "live_latest",
@@ -2400,7 +2444,7 @@
             "asof": "2026-09-24",
             "note_ko": "투기등급(High Yield) 회사채 옵션조정 스프레드",
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "fred_worker:BAMLH0A0HYM2",
             "data_status": "live_latest"
@@ -2413,7 +2457,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -2439,7 +2483,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -2454,9 +2498,9 @@
             "unit": "index",
             "change_1m_pct": 1.09,
             "change_1y_pct": -7.94,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:DX-Y.NYB",
             "data_status": "live",
@@ -2470,9 +2514,9 @@
             "unit": "FX",
             "change_1m_pct": 0.3,
             "change_1y_pct": -2.29,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:EURUSD=X",
             "data_status": "live",
@@ -2486,9 +2530,9 @@
             "unit": "FX",
             "change_1m_pct": -0.35,
             "change_1y_pct": 8.17,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:USDJPY=X",
             "data_status": "live",
@@ -2504,10 +2548,10 @@
             "unit": "index",
             "change_1m_pct": 5.04,
             "change_1y_pct": 10.73,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^GSPC",
             "data_status": "live"
@@ -2520,10 +2564,10 @@
             "unit": "index",
             "change_1m_pct": -7.35,
             "change_1y_pct": 4.42,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^NDX",
             "data_status": "live"
@@ -2536,10 +2580,10 @@
             "unit": "index",
             "change_1m_pct": 6.17,
             "change_1y_pct": 9.26,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "금리·유동성 민감도 높음",
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^RUT",
             "data_status": "live"
@@ -2552,10 +2596,10 @@
             "unit": "index",
             "change_1m_pct": -15.64,
             "change_1y_pct": -38.68,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^VIX",
             "data_status": "live"
@@ -2570,9 +2614,9 @@
             "unit": "%",
             "change_1m_pct": null,
             "change_1y_pct": null,
-            "asof": "2026-09-26",
+            "asof": "2026-09-27",
             "note_ko": "애틀랜타 연은 GDPNow의 현재 분기 실질 GDP 성장률 추정(연율, %)입니다. 통계 발표가 나올 때마다 바뀌고, 지난 분기 값은 그 분기의 마지막 추정입니다. 공식 GDP가 아니며 gdp_qoq(비연율)와 척도가 다릅니다.",
-            "observed_at": "2026-09-26",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "fred:GDPNOW",
             "data_status": "live",
@@ -2663,7 +2707,7 @@
               "doc": "LABOR_BENCHMARKS.md"
             },
             "analog_ko": "미국 U3 기준점. 한국 실업(~2.5–3.5%)·OECD KR NAIRU≈3.5%와 숫자 직접 비교 금지(정의·자영업 비중 다름).",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-08-01",
             "retrieved_at": null,
             "source": "fred_worker:UNRATE",
             "data_status": "live_latest",
@@ -2680,7 +2724,7 @@
             "asof": "2026-08-01",
             "note_ko": "≥0.50%p → 침체 판별 규칙(미국 전용).",
             "analog_ko": "타국에 억지 복제하지 말 것. 미국 U3 3개월 이동평균 급등 신호.",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-08-01",
             "retrieved_at": null,
             "source": "fred_worker:SAHMREALTIME",
             "data_status": "live_latest",
@@ -2697,7 +2741,7 @@
             "asof": "2026-09-19",
             "note_ko": "주간 해고 속도. ~200–250k 부근이 흔히 “안정”으로 읽히는 구간(추세는 변함).",
             "analog_ko": "미국 전용. 타국 실업률보다 고빈도 선행에 가깝다.",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-19",
             "retrieved_at": null,
             "source": "fred_worker:ICSA",
             "data_status": "live_latest",
@@ -3018,7 +3062,7 @@
             "asof": "2026-09-25",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "fred_worker:T10YIE",
             "data_status": "live_latest"
@@ -3417,7 +3461,7 @@
           "quality": "live_latest",
           "fred_hint": "WALCL",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null,
           "balance_sheet": {
             "asof": "2026-08-12",
@@ -8628,7 +8672,7 @@
           "source": "fred_worker:WSHOMCB",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null
         },
         {
@@ -9023,7 +9067,7 @@
           "note_ko": "잔고 감소 → 시중 유동성 증가 해석",
           "fred_hint": "RRPONTTLD",
           "data_status": "live_latest",
-          "observed_at": "2026-08-13",
+          "observed_at": "2026-09-25",
           "retrieved_at": null,
           "display_chip": "0.45B"
         },
@@ -12373,7 +12417,7 @@
           "note_ko": "TGA↑ → 시중 유동성 흡수",
           "fred_hint": "WTREGEN",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null,
           "chart_type": "line",
           "ui": {
@@ -13684,7 +13728,7 @@
           "quality": "live_latest",
           "fred_hint": "EFFR",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -14263,7 +14307,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -14659,7 +14703,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -14735,7 +14779,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-24"
               ],
               "values": [
                 1.557,
@@ -14922,7 +14966,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-24"
               ],
               "values": [
                 1.834,
@@ -15055,7 +15099,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -15449,7 +15493,7 @@
           "quality": "live_latest",
           "note_ko": "10Y TIPS — 밸류에이션 핵심 변수",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -15842,7 +15886,7 @@
           "source": "fred_worker:T10Y3M",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -16239,7 +16283,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -16632,7 +16676,7 @@
           "source": "fred_worker:SOFR",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -16645,7 +16689,7 @@
           "display": "101.0",
           "change_1m_pct": 1.09,
           "change_1y_pct": -7.94,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -16708,7 +16752,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 94.120003,
@@ -16894,7 +16938,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 98.449997,
@@ -17023,7 +17067,7 @@
           "source": "yahoo:DX-Y.NYB",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -17036,7 +17080,7 @@
           "display": "1.140",
           "change_1m_pct": 0.3,
           "change_1y_pct": -2.29,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -17099,7 +17143,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 1.156136,
@@ -17285,7 +17329,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -17415,7 +17459,7 @@
           "quality": "live",
           "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -17428,7 +17472,7 @@
           "display": "157.2",
           "change_1m_pct": -0.35,
           "change_1y_pct": 8.17,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -17491,7 +17535,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 113.834999,
@@ -17677,7 +17721,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -17806,7 +17850,7 @@
           "source": "yahoo:USDJPY=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -17819,7 +17863,7 @@
           "display": "7,743",
           "change_1m_pct": 5.04,
           "change_1y_pct": 10.73,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -17882,7 +17926,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 4605.379883,
@@ -18130,7 +18174,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 2126.149902,
@@ -18388,7 +18432,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -18401,7 +18445,7 @@
           "display": "30,608",
           "change_1m_pct": -7.35,
           "change_1y_pct": 4.42,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -18464,7 +18508,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 15850.469727,
@@ -18712,7 +18756,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 4801.27002,
@@ -18970,7 +19014,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -18983,7 +19027,7 @@
           "display": "2,838",
           "change_1m_pct": 6.17,
           "change_1y_pct": 9.26,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -19046,7 +19090,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 2297.189941,
@@ -19294,7 +19338,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 1191.390015,
@@ -19553,7 +19597,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -19566,7 +19610,7 @@
           "display": "14.9",
           "change_1m_pct": -15.64,
           "change_1y_pct": -38.68,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -19629,7 +19673,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 16.26,
@@ -19877,7 +19921,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 17.059999,
@@ -20130,7 +20174,7 @@
           "refresh_tier": "market_intraday",
           "chart_type": "line",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -20315,7 +20359,7 @@
           "display": "5.0%",
           "change_1m_pct": null,
           "change_1y_pct": null,
-          "asof": "2026-09-26",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -20454,8 +20498,8 @@
           "quality": "live",
           "note_ko": "애틀랜타 연은 GDPNow의 현재 분기 실질 GDP 성장률 추정(연율, %)입니다. 통계 발표가 나올 때마다 바뀌고, 지난 분기 값은 그 분기의 마지막 추정입니다. 공식 GDP가 아니며 gdp_qoq(비연율)와 척도가 다릅니다.",
           "data_status": "live",
-          "observed_at": "2026-09-26",
-          "retrieved_at": "2026-09-26T12:24:03Z",
+          "observed_at": "2026-09-27",
+          "retrieved_at": "2026-09-27T02:26:42Z",
           "display_chip": "5.0%",
           "reference_period": "2026Q3",
           "source_urls": [
@@ -21727,7 +21771,7 @@
                 "2026-05-31",
                 "2026-06-30",
                 "2026-07-31",
-                "2026-08-31"
+                "2026-08-01"
               ],
               "values": [
                 4.625605,
@@ -21914,7 +21958,7 @@
                 "2026-05-31",
                 "2026-06-30",
                 "2026-07-31",
-                "2026-08-31"
+                "2026-08-01"
               ],
               "values": [
                 4.649316,
@@ -22057,7 +22101,7 @@
           },
           "analog_ko": "미국 U3 기준점. 한국 실업(~2.5–3.5%)·OECD KR NAIRU≈3.5%와 숫자 직접 비교 금지(정의·자영업 비중 다름).",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-08-01",
           "retrieved_at": null
         },
         {
@@ -22133,7 +22177,7 @@
                 "2026-05-31",
                 "2026-06-30",
                 "2026-07-31",
-                "2026-08-31"
+                "2026-08-01"
               ],
               "values": [
                 0.116334,
@@ -22320,7 +22364,7 @@
                 "2026-05-31",
                 "2026-06-30",
                 "2026-07-31",
-                "2026-08-31"
+                "2026-08-01"
               ],
               "values": [
                 0.195804,
@@ -22452,7 +22496,7 @@
           "note_ko": "≥0.50%p → 침체 판별 규칙(미국 전용).",
           "analog_ko": "타국에 억지 복제하지 말 것. 미국 U3 3개월 이동평균 급등 신호.",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-08-01",
           "retrieved_at": null
         },
         {
@@ -22847,7 +22891,7 @@
           "note_ko": "주간 해고 속도. ~200–250k 부근이 흔히 “안정”으로 읽히는 구간(추세는 변함).",
           "analog_ko": "미국 전용. 타국 실업률보다 고빈도 선행에 가깝다.",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-19",
           "retrieved_at": null
         },
         {
@@ -28172,7 +28216,7 @@
           ],
           "news": null,
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -29968,7 +30012,7 @@
           "display": "5.8T",
           "change_1m_pct": 1.0,
           "change_1y_pct": 1.66,
-          "asof": "2026-09-30",
+          "asof": "2026-09-23",
           "history": {
             "5y": {
               "dates": [
@@ -30350,7 +30394,7 @@
           "note_ko": "연준 총자산 − TGA − ON RRP",
           "derived": "fed_total_assets - tga - on_rrp",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null
         },
         {
@@ -30363,7 +30407,7 @@
           "display": "+31bp",
           "change_1m_pct": -3.02,
           "change_1y_pct": 68.24,
-          "asof": "2026-09-30",
+          "asof": "2026-09-24",
           "history": {
             "5y": {
               "dates": [
@@ -30744,7 +30788,7 @@
           "quality": "live_latest",
           "derived": "(bond_10y - bond_2y) * 100",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -34345,7 +34389,7 @@
           "display": "739.0",
           "change_1m_pct": 0.0,
           "change_1y_pct": 0.01,
-          "asof": "2026-08-03",
+          "asof": "2026-09-24",
           "history": {
             "5y": {
               "dates": [
@@ -34425,7 +34469,7 @@
             }
           },
           "source": "qra_engine_v1",
-          "quality": "engine",
+          "quality": "live",
           "note_ko": "August 3, 2026 발표. 당기 July–September 2026 순발행 739B, 기말현금 950B. 다음 분기 October–December 2026 예상 순발행 628B, 기말현금 850B. T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias",
           "refresh_tier": "quarterly",
           "chart_type": "bar",
@@ -34484,62 +34528,6 @@
               "label_ko": "30Y",
               "tenor": "30y",
               "value": 69.0
-            },
-            {
-              "id": "bill_4w",
-              "kind": "bill",
-              "label_ko": "T-bill 4W",
-              "tenor": "4w",
-              "value": 790.0,
-              "n_auctions": 8
-            },
-            {
-              "id": "bill_6w",
-              "kind": "bill",
-              "label_ko": "T-bill 6W",
-              "tenor": "6w",
-              "value": 775.0,
-              "n_auctions": 9
-            },
-            {
-              "id": "bill_8w",
-              "kind": "bill",
-              "label_ko": "T-bill 8W",
-              "tenor": "8w",
-              "value": 730.0,
-              "n_auctions": 8
-            },
-            {
-              "id": "bill_13w",
-              "kind": "bill",
-              "label_ko": "T-bill 13W",
-              "tenor": "13w",
-              "value": 831.0,
-              "n_auctions": 9
-            },
-            {
-              "id": "bill_17w",
-              "kind": "bill",
-              "label_ko": "T-bill 17W",
-              "tenor": "17w",
-              "value": 576.0,
-              "n_auctions": 8
-            },
-            {
-              "id": "bill_26w",
-              "kind": "bill",
-              "label_ko": "T-bill 26W",
-              "tenor": "26w",
-              "value": 714.0,
-              "n_auctions": 9
-            },
-            {
-              "id": "bill_52w",
-              "kind": "bill",
-              "label_ko": "T-bill 52W",
-              "tenor": "52w",
-              "value": 158.0,
-              "n_auctions": 3
             }
           ],
           "compare": {
@@ -35091,7 +35079,7 @@
           "display": "AA+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -35258,7 +35246,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -38470,9 +38458,9 @@
             "unit": "%",
             "change_1m_pct": 0.33,
             "change_1y_pct": -2.32,
-            "asof": "2026-09-30",
+            "asof": "2026-09-24",
             "note_ko": "물가·환율·가계부채 종합",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest",
@@ -38578,7 +38566,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -38604,7 +38592,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -38619,9 +38607,9 @@
             "unit": "FX",
             "change_1m_pct": 2.29,
             "change_1y_pct": -9.08,
-            "asof": "2026-09-30",
+            "asof": "2026-09-24",
             "note_ko": "1400원 등 임계점 · 개입·자본이탈",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-24",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest",
@@ -38701,10 +38689,10 @@
             "unit": "index",
             "change_1m_pct": 1.33,
             "change_1y_pct": -2.03,
-            "asof": "2026-09-30",
+            "asof": "2026-09-23",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-23",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest"
@@ -38717,9 +38705,9 @@
             "unit": "index",
             "change_1m_pct": -0.72,
             "change_1y_pct": -13.48,
-            "asof": "2026-09-30",
+            "asof": "2026-09-23",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-23",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest",
@@ -43894,7 +43882,7 @@
           "display": "3.00%",
           "change_1m_pct": 0.33,
           "change_1y_pct": -2.32,
-          "asof": "2026-09-30",
+          "asof": "2026-09-24",
           "history": {
             "5y": {
               "dates": [
@@ -44275,7 +44263,7 @@
           "quality": "live_latest",
           "note_ko": "물가·환율·가계부채 종합",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -45881,7 +45869,7 @@
           "display": "1,366.0",
           "change_1m_pct": 2.29,
           "change_1y_pct": -9.08,
-          "asof": "2026-09-30",
+          "asof": "2026-09-24",
           "history": {
             "5y": {
               "dates": [
@@ -45944,7 +45932,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-24"
               ],
               "values": [
                 1174.380005,
@@ -46131,7 +46119,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-24"
               ],
               "values": [
                 null,
@@ -46262,7 +46250,7 @@
           "quality": "live_latest",
           "note_ko": "1400원 등 임계점 · 개입·자본이탈",
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-24",
           "retrieved_at": null
         },
         {
@@ -46729,7 +46717,7 @@
           "display": "7,081",
           "change_1m_pct": 1.33,
           "change_1y_pct": -2.03,
-          "asof": "2026-09-30",
+          "asof": "2026-09-23",
           "history": {
             "5y": {
               "dates": [
@@ -46792,7 +46780,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-23"
               ],
               "values": [
                 2839.01001,
@@ -47041,7 +47029,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-23"
               ],
               "values": [
                 1983.47998,
@@ -47300,7 +47288,7 @@
             ]
           },
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null
         },
         {
@@ -47313,7 +47301,7 @@
           "display": "844",
           "change_1m_pct": -0.72,
           "change_1y_pct": -13.48,
-          "asof": "2026-09-30",
+          "asof": "2026-09-23",
           "history": {
             "5y": {
               "dates": [
@@ -47882,7 +47870,7 @@
             ]
           },
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-23",
           "retrieved_at": null
         },
         {
@@ -50683,7 +50671,7 @@
           "display": "AA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -50850,7 +50838,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -54234,7 +54222,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -54260,7 +54248,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -54275,9 +54263,9 @@
             "unit": "FX",
             "change_1m_pct": -0.23,
             "change_1y_pct": 7.06,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:USDJPY=X",
             "data_status": "live",
@@ -54373,10 +54361,10 @@
             "unit": "index",
             "change_1m_pct": 1.44,
             "change_1y_pct": -0.7,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^N225",
             "data_status": "live"
@@ -55840,7 +55828,7 @@
           "display": "157.2",
           "change_1m_pct": -0.23,
           "change_1y_pct": 7.06,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -55903,7 +55891,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 113.834999,
@@ -56089,7 +56077,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -56218,7 +56206,7 @@
           "source": "yahoo:USDJPY=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -64992,7 +64980,7 @@
           "display": "66,364",
           "change_1m_pct": 1.44,
           "change_1y_pct": -0.7,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -65055,7 +65043,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 27821.759766,
@@ -65303,7 +65291,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 18308.480469,
@@ -65561,7 +65549,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -72204,7 +72192,7 @@
           "display": "A+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -72371,7 +72359,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -75739,7 +75727,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -75765,7 +75753,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -90526,7 +90514,7 @@
           "display": "A+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -90693,7 +90681,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -93334,7 +93322,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -93360,7 +93348,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -93375,9 +93363,9 @@
             "unit": "FX",
             "change_1m_pct": 0.44,
             "change_1y_pct": -1.91,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:EURUSD=X",
             "data_status": "live",
@@ -93473,9 +93461,9 @@
             "unit": "index",
             "change_1m_pct": 4.17,
             "change_1y_pct": 10.31,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "유로존 대형주 50 대표지수.",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^STOXX50E",
             "data_status": "live",
@@ -93505,9 +93493,9 @@
             "unit": "index",
             "change_1m_pct": -1.19,
             "change_1y_pct": -19.65,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^GDAXI",
             "data_status": "live",
@@ -93704,7 +93692,7 @@
           "display": "1.140",
           "change_1m_pct": 0.44,
           "change_1y_pct": -1.91,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -93767,7 +93755,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 1.156136,
@@ -93953,7 +93941,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -94083,7 +94071,7 @@
           "quality": "live",
           "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -100549,7 +100537,7 @@
           "display": "6,303",
           "change_1m_pct": 4.17,
           "change_1y_pct": 10.31,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -100612,7 +100600,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 4063.060059,
@@ -100860,7 +100848,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 3051.610107,
@@ -101117,7 +101105,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -101130,7 +101118,7 @@
           "display": "25,409",
           "change_1m_pct": -1.19,
           "change_1y_pct": -19.65,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -101193,7 +101181,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 15100.129883,
@@ -101441,7 +101429,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 10640.299805,
@@ -101697,7 +101685,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -106630,7 +106618,7 @@
           "display": "AAA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -106797,7 +106785,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -108798,7 +108786,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -108824,7 +108812,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -108839,9 +108827,9 @@
             "unit": "FX",
             "change_1m_pct": 3.39,
             "change_1y_pct": 3.73,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "Risk-on/off 민감 · 약세→수입물가→금리압력",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:ZAR=X",
             "data_status": "live",
@@ -114312,7 +114300,7 @@
           "display": "16.27",
           "change_1m_pct": 3.39,
           "change_1y_pct": 3.73,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -114375,7 +114363,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 15.21571,
@@ -114561,7 +114549,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -114691,7 +114679,7 @@
           "quality": "live",
           "note_ko": "Risk-on/off 민감 · 약세→수입물가→금리압력",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -119225,7 +119213,7 @@
           "display": "BB",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -119392,7 +119380,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -123120,7 +123108,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -123146,7 +123134,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -123161,9 +123149,9 @@
             "unit": "FX",
             "change_1m_pct": 0.8,
             "change_1y_pct": 3.51,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:SGD=X",
             "data_status": "live",
@@ -127003,7 +126991,7 @@
           "display": "1.277",
           "change_1m_pct": 0.8,
           "change_1y_pct": 3.51,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -127066,7 +127054,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 1.34792,
@@ -127252,7 +127240,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -127381,7 +127369,7 @@
           "source": "yahoo:SGD=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -133510,7 +133498,7 @@
           "display": "AAA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -133677,7 +133665,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -135616,7 +135604,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -135642,7 +135630,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -135673,9 +135661,9 @@
             "unit": "FX",
             "change_1m_pct": 0.07,
             "change_1y_pct": -0.08,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "밴드 7.75–7.85 · 7.85=HKMA 자동개입",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:HKD=X",
             "data_status": "live",
@@ -141218,7 +141206,7 @@
           "display": "7.8434",
           "change_1m_pct": 0.07,
           "change_1y_pct": -0.08,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -141281,7 +141269,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 7.7767,
@@ -141467,7 +141455,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -141597,7 +141585,7 @@
           "quality": "live",
           "note_ko": "밴드 7.75–7.85 · 7.85=HKMA 자동개입",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -144957,7 +144945,7 @@
           "display": "AA+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -145124,7 +145112,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -148761,7 +148749,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -148780,7 +148768,7 @@
                 "outlook": "Ratings withdrawn"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -159350,7 +159338,7 @@
           "display": "Ca",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -159510,7 +159498,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -163259,7 +163247,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -163285,7 +163273,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -163296,13 +163284,13 @@
             "id": "gbpusd",
             "label_ko": "GBP/USD",
             "display": "1.325",
-            "value": 1.324644,
+            "value": 1.325346,
             "unit": "FX",
             "change_1m_pct": -0.7,
             "change_1y_pct": -0.41,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": null,
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "yahoo:GBPUSD=X",
             "data_status": "live",
@@ -163382,9 +163370,9 @@
             "unit": "index",
             "change_1m_pct": 1.42,
             "change_1y_pct": -2.34,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "다국적 매출 ~75% · 내수 대리변수 금지",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:^FTSE",
             "data_status": "live",
@@ -171154,11 +171142,11 @@
           "label_ko": "GBP/USD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.324644,
+          "value": 1.325346,
           "display": "1.325",
           "change_1m_pct": -0.7,
           "change_1y_pct": -0.41,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -171221,7 +171209,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-27"
               ],
               "values": [
                 1.369,
@@ -171283,7 +171271,7 @@
                 1.346094,
                 1.354041,
                 1.324152,
-                1.324644
+                1.325346
               ]
             },
             "10y": {
@@ -171407,7 +171395,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-27"
               ],
               "values": [
                 null,
@@ -171529,14 +171517,14 @@
                 1.346094,
                 1.354041,
                 1.324152,
-                1.324644
+                1.325346
               ]
             }
           },
           "source": "yahoo:GBPUSD=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -172331,7 +172319,7 @@
           "display": "10,695",
           "change_1m_pct": 1.42,
           "change_1y_pct": -2.34,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -172394,7 +172382,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 7237.600098,
@@ -172642,7 +172630,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 null,
@@ -172899,7 +172887,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -176076,7 +176064,7 @@
           "display": "AA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -176243,7 +176231,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -179983,7 +179971,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -180009,7 +179997,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -180024,9 +180012,9 @@
             "unit": "FX",
             "change_1m_pct": -2.73,
             "change_1y_pct": -9.98,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "상품통화 · 약세=수출유리·수입물가",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:CAD=X",
             "data_status": "live",
@@ -185961,7 +185949,7 @@
           "display": "1.414",
           "change_1m_pct": -2.73,
           "change_1y_pct": -9.98,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -186024,7 +186012,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 1.2386,
@@ -186210,7 +186198,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -186340,7 +186328,7 @@
           "quality": "live",
           "note_ko": "상품통화 · 약세=수출유리·수입물가",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -191044,7 +191032,7 @@
           "display": "AAA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -191211,7 +191199,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -194951,7 +194939,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -194977,7 +194965,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -194992,9 +194980,9 @@
             "unit": "FX",
             "change_1m_pct": -0.3,
             "change_1y_pct": -4.98,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "상품통화 · 위험선호·중국·원자재 프록시",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:AUDUSD=X",
             "data_status": "live",
@@ -201712,7 +201700,7 @@
           "display": "0.703",
           "change_1m_pct": -0.3,
           "change_1y_pct": -4.98,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -201775,7 +201763,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 0.75316,
@@ -201961,7 +201949,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -202091,7 +202079,7 @@
           "quality": "live",
           "note_ko": "상품통화 · 위험선호·중국·원자재 프록시",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -205820,7 +205808,7 @@
           "display": "AAA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -205987,7 +205975,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -209712,7 +209700,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -209738,7 +209726,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -209753,9 +209741,9 @@
             "unit": "FX",
             "change_1m_pct": -0.79,
             "change_1y_pct": -6.03,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "글로벌 안전자산 선호도",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:CHF=X",
             "data_status": "live",
@@ -215977,7 +215965,7 @@
           "display": "0.828",
           "change_1m_pct": -0.79,
           "change_1y_pct": -6.03,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -216040,7 +216028,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 0.915033,
@@ -216226,7 +216214,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 null,
@@ -216356,7 +216344,7 @@
           "quality": "live",
           "note_ko": "글로벌 안전자산 선호도",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -218707,7 +218695,7 @@
           "display": "AAA",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -218874,7 +218862,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -222598,7 +222586,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -222624,7 +222612,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -222639,9 +222627,9 @@
             "unit": "FX",
             "change_1m_pct": 0.9,
             "change_1y_pct": 2.1,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "Risk-off·원자재 하락 시 급등",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:BRL=X",
             "data_status": "live",
@@ -228153,7 +228141,7 @@
           "display": "5.187",
           "change_1m_pct": 0.9,
           "change_1y_pct": 2.1,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -228216,7 +228204,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 5.6337,
@@ -228402,7 +228390,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 null,
@@ -228532,7 +228520,7 @@
           "quality": "live",
           "note_ko": "Risk-off·원자재 하락 시 급등",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -232451,7 +232439,7 @@
           "display": "BB",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -232618,7 +232606,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -236323,7 +236311,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -236342,7 +236330,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -245074,7 +245062,7 @@
           "display": "BB+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -245234,7 +245222,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -247662,7 +247650,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -247688,7 +247676,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -255841,7 +255829,7 @@
           "display": "BBB",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -256008,7 +255996,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -256729,7 +256717,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -256755,7 +256743,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -256770,9 +256758,9 @@
             "unit": "FX",
             "change_1m_pct": 0.83,
             "change_1y_pct": -1.77,
-            "asof": "2026-09-30",
+            "asof": "2026-09-25",
             "note_ko": "IT·외국인·생보 환헤지 물량",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-25",
             "retrieved_at": null,
             "source": "yahoo:TWD=X",
             "data_status": "live",
@@ -261061,7 +261049,7 @@
           "display": "31.70",
           "change_1m_pct": 0.83,
           "change_1y_pct": -1.77,
-          "asof": "2026-09-30",
+          "asof": "2026-09-25",
           "history": {
             "5y": {
               "dates": [
@@ -261124,7 +261112,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 27.8167,
@@ -261310,7 +261298,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-25"
               ],
               "values": [
                 null,
@@ -261440,7 +261428,7 @@
           "quality": "live",
           "note_ko": "IT·외국인·생보 환헤지 물량",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-25",
           "retrieved_at": null
         },
         {
@@ -265751,7 +265739,7 @@
           "display": "AA+",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -265918,7 +265906,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -266703,7 +266691,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -266729,7 +266717,7 @@
                 "outlook": "Stable"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -266744,9 +266732,9 @@
             "unit": "FX",
             "change_1m_pct": -0.27,
             "change_1y_pct": 1.05,
-            "asof": "2026-09-30",
+            "asof": "2026-09-26",
             "note_ko": "RBI 개입으로 변동성 인위 억제 경향",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-26",
             "retrieved_at": null,
             "source": "yahoo:INR=X",
             "data_status": "live",
@@ -271365,7 +271353,7 @@
           "display": "95.82",
           "change_1m_pct": -0.27,
           "change_1y_pct": 1.05,
-          "asof": "2026-09-30",
+          "asof": "2026-09-26",
           "history": {
             "5y": {
               "dates": [
@@ -271428,7 +271416,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 74.797203,
@@ -271614,7 +271602,7 @@
                 "2026-06-30",
                 "2026-07-31",
                 "2026-08-31",
-                "2026-09-30"
+                "2026-09-26"
               ],
               "values": [
                 null,
@@ -271744,7 +271732,7 @@
           "quality": "live",
           "note_ko": "RBI 개입으로 변동성 인위 억제 경향",
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-26",
           "retrieved_at": null
         },
         {
@@ -276298,7 +276286,7 @@
           "display": "BBB",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -276465,7 +276453,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -279054,7 +279042,7 @@
             "unit": "rating",
             "change_1m_pct": -100.0,
             "change_1y_pct": -100.0,
-            "asof": "2026-09-30",
+            "asof": "2026-09-27",
             "note_ko": "Wikipedia 집계(S&P·Moody's·Fitch). 공시 원문보다 지연·오기 가능.",
             "chart_type": "status",
             "components": [
@@ -279080,7 +279068,7 @@
                 "outlook": "Negative"
               }
             ],
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-09-27",
             "retrieved_at": null,
             "source": "wikipedia:List_of_countries_by_credit_rating",
             "data_status": "live_latest"
@@ -287478,7 +287466,7 @@
           "display": "A",
           "change_1m_pct": -100.0,
           "change_1y_pct": -100.0,
-          "asof": "2026-09-30",
+          "asof": "2026-09-27",
           "history": {
             "5y": {
               "dates": [
@@ -287645,7 +287633,7 @@
             }
           ],
           "data_status": "live_latest",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-09-27",
           "retrieved_at": null
         },
         {
@@ -291144,33 +291132,51 @@
       "SGP:usdsgd",
       "HKG:usdhkd",
       "ZAF:usdzar",
-      "USA:initial_claims:latest",
-      "USA:fed_total_assets:latest",
-      "USA:spread_10y3m:latest",
-      "USA:effr:latest",
+      "USA:hy_oas:latest",
+      "USA:tips_10y:latest",
       "USA:sofr:latest",
-      "USA:bei_10y:latest",
-      "USA:bond_3m:latest",
+      "USA:effr:latest",
       "USA:bond_2y:latest",
+      "USA:fed_total_assets:latest",
+      "USA:tga:latest",
+      "USA:spread_10y3m:latest",
       "USA:unemployment:latest",
       "USA:sahm:latest",
-      "USA:on_rrp:latest",
-      "USA:tga:latest",
-      "USA:hy_oas:latest",
       "USA:bond_10y:latest",
+      "USA:bei_10y:latest",
+      "USA:initial_claims:latest",
+      "USA:bond_3m:latest",
       "USA:fed_mbs:latest",
-      "USA:tips_10y:latest",
+      "USA:on_rrp:latest",
       "USA:net_liquidity:latest",
       "USA:spread_10y2y",
       "KOR:bok_base_rate",
       "KOR:usdkrw",
       "KOR:kospi",
-      "KOR:kosdaq"
+      "KOR:kosdaq",
+      "USA:sovereign_ratings",
+      "KOR:sovereign_ratings",
+      "JPN:sovereign_ratings",
+      "CHN:sovereign_ratings",
+      "EMU:sovereign_ratings",
+      "ZAF:sovereign_ratings",
+      "SGP:sovereign_ratings",
+      "HKG:sovereign_ratings",
+      "RUS:sovereign_ratings",
+      "GBR:sovereign_ratings",
+      "CAN:sovereign_ratings",
+      "AUS:sovereign_ratings",
+      "CHE:sovereign_ratings",
+      "BRA:sovereign_ratings",
+      "VNM:sovereign_ratings",
+      "KAZ:sovereign_ratings",
+      "TWN:sovereign_ratings",
+      "IND:sovereign_ratings",
+      "ISR:sovereign_ratings",
+      "USA:qra_issuance"
     ],
     "fail": [
-      "CHN:usdcnh:sparse",
-      "RATINGS:No module named 'pandas'",
-      "QRA:No module named 'bs4'"
+      "CHN:usdcnh:sparse"
     ],
     "skip": []
   },
