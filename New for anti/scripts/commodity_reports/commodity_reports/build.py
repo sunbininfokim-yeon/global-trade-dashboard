@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections import OrderedDict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -94,9 +94,36 @@ def _collect_fixtures(
     return raw, status
 
 
-# How long a failed source's last good reports stay on the board. Past this
-# they would read as current news from a source that has gone quiet.
-CARRY_OVER_DAYS = 45
+# How far back the board keeps reports: every build re-adds the previous
+# build's reports, so a report that has scrolled off its publisher's feed
+# stays browsable (the panel pages through them) until it is this old. A
+# source that lists older reports on purpose (GAIN: max_age_days 150) keeps
+# them as long as it would list them. Dateless reports age from first_seen_at.
+ARCHIVE_DAYS = 84
+CARRY_OVER_DAYS = ARCHIVE_DAYS  # kept for callers that tune it (tests)
+
+
+def horizon_days(src: Optional[Dict[str, Any]]) -> int:
+    return max(CARRY_OVER_DAYS, int(((src or {}).get("html") or {}).get("max_age_days") or 0))
+
+
+def news_time(published: Optional[str], precision: Optional[str], first_seen: Optional[str],
+              now: datetime) -> datetime:
+    """When a report became news: its date, the end of its month for a
+    month-only date, else when the pipeline first saw it, else now."""
+    for raw in (published, first_seen):
+        if not raw:
+            continue
+        try:
+            dt = datetime.fromisoformat(raw)
+        except ValueError:
+            continue
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        if raw is published and precision == "month":
+            dt = dt + timedelta(days=30)
+        return dt
+    return now
 
 
 def previous_raws(
@@ -117,17 +144,9 @@ def previous_raws(
         if not src:
             continue
         published = item.get("published_at")
-        # A source that lists older reports on purpose (GAIN keeps 150 days)
-        # carries them for as long as it would have shown them; a blocked
-        # run must not drop what a successful one would still list.
-        limit = max(CARRY_OVER_DAYS, int((src.get("html") or {}).get("max_age_days") or 0))
-        if published:
-            try:
-                age = (now - datetime.fromisoformat(published)).days
-            except ValueError:
-                age = 0
-            if age > limit:
-                continue
+        seen = news_time(published, item.get("published_precision"), item.get("first_seen_at"), now)
+        if (now - seen).days > horizon_days(src):
+            continue
         r = RawReport(
             source_id=src["id"],
             agency=src.get("agency", src["id"]),
@@ -165,12 +184,21 @@ def _collect_live(
                "error": res["error"], "mode": "live"}
         if res.get("note"):
             row["note"] = res["note"]
-        # A publisher that blocked this one run (fas.usda.gov answers 403 to
-        # some runners and not others) should not empty its windows until the
-        # next run: keep what it last published.
-        if not res["ok"] and carried.get(s["id"]):
-            raw.extend(carried[s["id"]])
-            row["carried_over"] = len(carried[s["id"]])
+        previous = carried.get(s["id"]) or []
+        if not res["ok"] and previous:
+            # A publisher that blocked this one run (fas.usda.gov answers 403
+            # to some runners and not others) keeps what it last published.
+            raw.extend(previous)
+            row["carried_over"] = len(previous)
+        elif previous:
+            # Reports that have scrolled off the publisher's feed since the
+            # last build stay on the board, for paging back through, until
+            # they pass the archive horizon (previous_raws drops those).
+            fresh = {r.url for r in res["items"]}
+            older = [r for r in previous if r.url not in fresh]
+            raw.extend(older)
+            if older:
+                row["archived"] = len(older)
         status.append(row)
     return raw, status
 
@@ -243,8 +271,8 @@ def build_commodity_reports(
     *,
     fetch_live: bool = True,
     fixture_dir: Optional[Path] = None,
-    per_bucket: int = 8,
-    max_items: int = 500,
+    per_bucket: int = 500,
+    max_items: int = 5000,
     translate: bool = False,
     translate_limit: int = 60,
     now: Optional[datetime] = None,
@@ -306,6 +334,22 @@ def build_commodity_reports(
         if item is None:
             continue
         scored.append(item)
+
+    # The board is the last ARCHIVE_DAYS (or a source's own longer window).
+    # Some feeds carry a rolling archive years deep (NASS's ASB and news
+    # feeds reach back to 2023); those stay out now that the panel pages
+    # through history instead of showing the top eight.
+    prev_first_seen = {
+        it.get("id"): it.get("first_seen_at")
+        for it in (previous or {}).get("items") or []
+        if it.get("first_seen_at")
+    }
+    by_source = {s["id"]: s for s in sources}
+    scored = [
+        r for r in scored
+        if (now - news_time(r.published_at, r.date_precision, prev_first_seen.get(r.id), now)).days
+        <= horizon_days(by_source.get(r.source_id))
+    ]
 
     reports = _dedupe(scored)[:max_items]
 

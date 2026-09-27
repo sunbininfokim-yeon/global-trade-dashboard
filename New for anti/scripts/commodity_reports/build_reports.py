@@ -27,9 +27,11 @@ def main(argv: list[str] | None = None) -> int:
 
     b = sub.add_parser("build", help="Build the snapshot")
     b.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    b.add_argument("--per-bucket", type=int, default=8,
-                   help="Reports kept per commodity × country window")
-    b.add_argument("--max-items", type=int, default=500)
+    b.add_argument("--per-bucket", type=int, default=500,
+                   help="Reports kept per commodity × country window. A backstop, "
+                        "not a page size: the archive horizon is what ages items "
+                        "out, and the panel pages through whatever is kept")
+    b.add_argument("--max-items", type=int, default=5000)
     b.add_argument("--fixtures", type=Path, default=None)
     b.add_argument("--no-fetch", action="store_true")
     b.add_argument("--translate", action="store_true",

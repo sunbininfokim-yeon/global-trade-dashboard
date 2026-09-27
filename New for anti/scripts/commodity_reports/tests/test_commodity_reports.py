@@ -616,6 +616,46 @@ class FirstSeenTests(unittest.TestCase):
         self.assertTrue(all(firsts[i] == NOW.isoformat() for i in shared))
 
 
+class ArchiveTests(unittest.TestCase):
+    """The board keeps what scrolled off a feed, up to ARCHIVE_DAYS."""
+
+    def test_scrolled_off_reports_stay_and_old_ones_go(self):
+        from commodity_reports import build as build_mod
+
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        sources = [{"id": "src_a", "agency": "A", "kind": "rss", "url": "https://a.example/feed"}]
+        previous = {"items": [
+            {"source_id": "src_a", "url": "https://a.example/old-but-recent", "title": {"original": "Recent"},
+             "summary": "", "published_at": "2026-09-01T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/too-old", "title": {"original": "Too old"},
+             "summary": "", "published_at": "2026-05-01T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/undated", "title": {"original": "Undated"},
+             "summary": "", "published_at": None, "first_seen_at": "2026-06-01T00:00:00+00:00"},
+        ]}
+        carried = build_mod.previous_raws(previous, sources, now)
+        self.assertEqual([r.title for r in carried["src_a"]], ["Recent"])
+
+        fresh = RawReport(source_id="src_a", agency="A", agency_ko="A", url="https://a.example/new",
+                          title="New", summary="", published_at="2026-09-25T00:00:00+00:00")
+        orig = build_mod.fetch_source
+        build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": True, "items": [fresh],
+                                                   "count": 1, "error": None}
+        try:
+            raw, status = build_mod._collect_live(sources, ua="t", timeout=1, max_per=10, carried=carried)
+        finally:
+            build_mod.fetch_source = orig
+        self.assertEqual(sorted(r.title for r in raw), ["New", "Recent"])
+        self.assertEqual(status[0]["archived"], 1)
+
+    def test_news_time_uses_month_end_and_first_seen(self):
+        from commodity_reports.build import news_time
+
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        self.assertEqual(news_time("2026-07-01T00:00:00+00:00", "month", None, now).date().isoformat(), "2026-07-31")
+        self.assertEqual(news_time(None, None, "2026-09-20T00:00:00+00:00", now).date().isoformat(), "2026-09-20")
+        self.assertEqual(news_time(None, None, None, now), now)
+
+
 class BuildTests(unittest.TestCase):
     def setUp(self):
         self.doc = build_commodity_reports(

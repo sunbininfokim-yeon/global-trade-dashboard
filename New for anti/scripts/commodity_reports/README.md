@@ -94,7 +94,14 @@ python3 build_reports.py build --translate --translate-limit 60
 GET /api/commodity-reports                                  # 어떤 창에 몇 건 있는지
 GET /api/commodity-reports?commodity=soybeans               # 세계 → 나머지
 GET /api/commodity-reports?commodity=soybeans&country=USA   # 그 나라 먼저, 세계는 뒤
+GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다음 묶음
 ```
+
+창 하나에 고정 개수 상한은 없다(`--per-bucket` 500은 안전판일 뿐). 발표는 피드에서
+밀려나도 `ARCHIVE_DAYS`(84일, 12주) 동안 스냅샷에 남고, 그보다 오래되면 빠진다.
+응답의 `total`이 창 전체 건수, `offset`/`count`가 이번 묶음이다(`limit` 최대 100).
+우측 패널은 60건씩 받아 화면 높이에 맞춰 쪽을 나누고, 마지막 쪽에서 `›`를 누르면
+다음 묶음을 받아 이어 붙인다.
 
 로컬 정적 서버에는 `/api`가 없으므로 404가 정상이다.
 `trade.js`가 `public/data/commodity_reports_v1.json`을 직접 읽어 **같은 순서로** 폴백한다.
