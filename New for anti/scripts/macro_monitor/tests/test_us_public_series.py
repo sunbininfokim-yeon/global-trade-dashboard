@@ -188,7 +188,7 @@ class Apply(unittest.TestCase):
         for p in again.values():
             p["retrieved_at"] = "T2"
         r = ups.apply_all(usa, again, retrieved_at="T2")
-        self.assertEqual(r, {"changed": [], "removed": []})
+        self.assertEqual((r["changed"], r["removed"], r["summary_changed"]), ([], [], False))
         self.assertEqual(usa, snapshot)
 
     def test_a_series_not_fetched_leaves_its_card(self):
