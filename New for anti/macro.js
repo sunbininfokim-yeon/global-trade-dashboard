@@ -639,7 +639,8 @@ const mmBarSeries = (dates, values, opts = {}) => {
 const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployment', 'youth_unemployment', 'inactivity_rate',
     'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
 const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
-    'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw']);
+    'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw',
+    'semi_export_krw']);
 const mmUseBars = (ind) => {
     const ct = ind.chart_type;
     if (ct === 'bar') return true;

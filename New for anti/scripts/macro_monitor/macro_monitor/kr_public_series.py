@@ -15,10 +15,11 @@ The ECOS key stays on the machine that has it. What it reads is written to a sma
 run without the key (the scheduled one, if the secret is not set) reads that cache.
 
 Not grafted: the BOK base rate. The live overlay already pins its latest value (from the BOK key
-statistics) on every run; a second writer would flip the card between the two. Left as demo, and why: VKOSPI (no free source found), real-estate PF balance and delinquency (the
+statistics) on every run; a second writer would flip the card between the two. Semiconductor exports come from KOSIS (the MSIT's monthly IT-industry export table, class "반도체":
+memory, system chips, discrete devices, optoelectronics, wafers, parts), converted to won the same way.
+Left as demo, and why: VKOSPI (no free source found), real-estate PF balance and delinquency (the
 Financial Supervisory Service publishes them, not ECOS), sovereign CDS (licensed), the FX intervention
-(the authorities publish it with a lag that cannot be told from "none"), semiconductor exports (the
-Customs Service's item-level table is not in ECOS).
+(the authorities publish it with a lag that cannot be told from "none").
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ from typing import Any, Callable
 
 from . import ecos
 from . import jp_public_series as jps
+from . import kosis
 from . import us_public_series as ups
 from .us_public_series import Points, Spec
 
@@ -142,9 +144,30 @@ def ecos_reader(cache: dict[str, Any], updates: dict[str, dict[str, Any]], today
     return read
 
 
+def kosis_reader(cache: dict[str, Any], updates: dict[str, dict[str, Any]], today: date | None = None):
+    """read(org, tbl, c1_code, c1_name) -> (points, unit): a monthly KOSIS series for one first-level
+    classification value, chosen by code and checked by name. Live with the key, else the cache."""
+    today = today or date.today()
+
+    def read(org: str, tbl: str, c1: str, c1_nm: str) -> tuple[Points, str | None]:
+        key = f"kosis/{org}/{tbl}/{c1}"
+        try:
+            rows = kosis.data(org, tbl, prd_se="M", start=f"{today.year - 11}01", end=today.strftime("%Y%m"), obj_l1=c1)
+        except kosis.MissingKey:
+            cached = (cache.get("series") or {}).get(key)
+            if not cached:
+                raise
+            return [(d, float(v)) for d, v in cached["points"]], cached["unit"]
+        pts = kosis.series(rows, prd_se="M", c1=c1, c1_nm=c1_nm)
+        unit = next((r.get("UNIT_NM") for r in rows if r.get("UNIT_NM")), None)
+        updates[key] = {"points": pts, "unit": unit}
+        return pts, unit
+    return read
+
+
 class Sources:
-    def __init__(self, *, ecos_read, fred=ups.fetch_fred):
-        self._read, self._fred = ecos_read, fred
+    def __init__(self, *, ecos_read, kosis_read=None, fred=ups.fetch_fred):
+        self._read, self._kosis_read, self._fred = ecos_read, kosis_read, fred
         self._cache: dict[Any, Any] = {}
 
     def _memo(self, key, fn):
@@ -154,6 +177,9 @@ class Sources:
 
     def ecos(self, stat: str, cycle: str, items: tuple[str, ...], mode: str = "raw") -> tuple[Points, str | None]:
         return self._memo((stat, cycle, items, mode), lambda: self._read(stat, cycle, items, mode))
+
+    def kosis(self, org: str, tbl: str, c1: str, c1_nm: str) -> tuple[Points, str | None]:
+        return self._memo(("kosis", org, tbl, c1), lambda: self._kosis_read(org, tbl, c1, c1_nm))
 
     def pts(self, *a, **kw) -> Points:
         return self.ecos(*a, **kw)[0]
@@ -214,6 +240,8 @@ SPECS: dict[str, Spec] = {s.id: s for s in [
          "fred:DFEDTARU+ecos:722Y001", _u("https://fred.stlouisfed.org/series/DFEDTARU", _ECOS_PAGE), "daily"),
     Spec("foreign_equity_kr", "monthly", "tn_krw", "tn2", "외국인 주식 순매수(유가증권시장 + 코스닥, 조원)의 월 합계입니다. ECOS 802Y001의 일별 값을 더했고, 진행 중인 달은 부분 합이라 싣지 않습니다.",
          "ecos:802Y001", _u(_ECOS_PAGE), "monthly"),
+    Spec("semi_export_krw", "monthly", "tn_krw", "krw_tn1", "반도체 월별 수출액의 원화 환산입니다 = 과기정통부 'IT산업별/월별 수출 현황'의 '반도체'(메모리·시스템반도체·개별소자·광전자·웨이퍼·부품 포함) 달러 수출액(KOSIS) × 그 달 평균 원/달러(FRED EXKOUS). 환산값이며 원화로 결제된 금액이 아닙니다. 평균 환율이 아직 안 나온 달은 싣지 않습니다.",
+         "kosis:127/DT_092_115_2009_S023+fred:EXKOUS", _u("https://kosis.kr/", "https://fred.stlouisfed.org/series/EXKOUS"), "monthly", label_ko="반도체 수출(원화 환산)"),
     Spec("export_krw", "monthly", "tn_krw", "krw_tn1", "월별 수출액(통관 기준)의 원화 환산입니다 = 관세청 달러 수출액(ECOS 901Y118) × 그 달 평균 원/달러(FRED EXKOUS). 환산값이며 원화로 결제된 금액이 아닙니다. 평균 환율이 아직 안 나온 달은 싣지 않습니다.",
          "ecos:901Y118+fred:EXKOUS", _u(_ECOS_PAGE, "https://fred.stlouisfed.org/series/EXKOUS"), "monthly", label_ko="수출(원화 환산)"),
 ]}
@@ -263,6 +291,9 @@ def series_for(spec_id: str, s: Sources, today: date | None = None) -> Points:
     if spec_id == "foreign_equity_kr":
         kospi, kosdaq = s.pts("802Y001", "D", ("0030000",), "sum"), s.pts("802Y001", "D", ("0113000",), "sum")
         return ups.scale(month_join(kospi, kosdaq, lambda a, b: a + b), 1e-4)      # 100 million won -> trillion won
+    if spec_id == "semi_export_krw":
+        usd, unit = s.kosis("127", "DT_092_115_2009_S023", "13102131003A.AF11100000", "반도체")
+        return export_krw_tn(unit or "", usd, s.fred("EXKOUS"))
     if spec_id == "export_krw":
         usd, unit = s.ecos("901Y118", "M", ("T002",))
         return export_krw_tn(unit or "", usd, s.fred("EXKOUS"))
@@ -286,8 +317,9 @@ def build_patch(spec_id: str, points: Points, *, retrieved_at: str, today: date 
 def apply_all(kor: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrieved_at: str) -> dict[str, Any]:
     """Apply the patches to the Korea block: rename the exports card first (a YoY rate becomes an amount
     in won), then the indicators, the GDP composite, chips, and the status counts."""
-    if "export_krw" in patches:
-        rename_indicator(kor, "export_yoy_kr", "export_krw", {})
+    for old, new in (("export_yoy_kr", "export_krw"), ("semi_export_yoy", "semi_export_krw")):
+        if new in patches:
+            rename_indicator(kor, old, new, {})
     by_id = {i["id"]: i for i in kor["indicators"]}
     changed = [k for k, p in patches.items() if k in by_id and ups.apply_patch(by_id[k], p)]
     if jps.apply_gdp_composite(by_id, retrieved_at, source="ecos:200Y106+200Y104"):

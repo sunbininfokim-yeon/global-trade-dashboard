@@ -11,6 +11,7 @@ name: Refresh public series (USA/JPN/KOR)
 # 한국: 거의 전부 한국은행 ECOS(시크릿 ECOS_API_KEY — CPI·GDP·경상수지·외환보유액·CCSI·BSI·가계신용·M2·
 # 금리·스프레드·외국인 순매수·수출)이고, 원화 환산과 금리차에 FRED 를 쓴다. 읽은 값은
 # config/kr_ecos_series_v1.json 에 남고, 시크릿이 없으면 그 캐시를 읽는다(이 경우 새 달로 안 넘어간다).
+# 반도체 수출만 KOSIS(과기정통부 IT산업별 월별 수출 현황; 시크릿 KOSIS_API_KEY)에서 읽는다.
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -46,6 +47,7 @@ jobs:
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

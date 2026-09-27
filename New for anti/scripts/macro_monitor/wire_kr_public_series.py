@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Replace the Korea fixture indicators with observed series (see kr_public_series.py).
 
-    set -a; . ~/.config/ecos.env; set +a
+    set -a; . ~/.config/ecos.env; . ~/.config/kosis.env; set +a
     python3 wire_kr_public_series.py      # fetch ECOS (+FRED), graft into public/data/macro_monitor_v1.json
 
 With ECOS_API_KEY set the series are read live and remembered in config/kr_ecos_series_v1.json; without
@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor import ecos  # noqa: E402
+from macro_monitor import kosis  # noqa: E402
 from macro_monitor import kr_public_series as krs  # noqa: E402
 from macro_monitor import us_public_series as ups  # noqa: E402
 
@@ -33,13 +34,13 @@ def main() -> int:
     retrieved = ups.now_iso()
     cache = krs.load_cache()
     updates: dict = {}
-    src = krs.Sources(ecos_read=krs.ecos_reader(cache, updates, date.today()))
+    src = krs.Sources(ecos_read=krs.ecos_reader(cache, updates, date.today()), kosis_read=krs.kosis_reader(cache, updates, date.today()))
 
     patches, failures, skipped = {}, [], []
     for spec_id in krs.SPECS:
         try:
             patches[spec_id] = krs.build_patch(spec_id, krs.series_for(spec_id, src), retrieved_at=retrieved)
-        except ecos.MissingKey as exc:
+        except (ecos.MissingKey, kosis.MissingKey) as exc:
             skipped.append(f"{spec_id}: {exc} and nothing cached")
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{spec_id}: {exc}")

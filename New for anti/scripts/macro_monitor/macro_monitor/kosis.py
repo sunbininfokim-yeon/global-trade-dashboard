@@ -28,10 +28,14 @@ class KosisError(RuntimeError):
         self.code = code
 
 
+class MissingKey(KosisError):
+    """KOSIS_API_KEY is not set: a run falls back to its cache instead of failing."""
+
+
 def api_key() -> str:
     key = os.environ.get("KOSIS_API_KEY", "").strip()
     if not key:
-        raise KosisError("KOSIS_API_KEY is not set")
+        raise MissingKey("KOSIS_API_KEY is not set")
     return key
 
 
@@ -62,9 +66,10 @@ def _get(path: str, params: dict[str, Any], *, timeout: int = 60, tries: int = 3
 
 
 def data(org_id: str, tbl_id: str, *, prd_se: str = "M", newest: int | None = None,
-         start: str | None = None, end: str | None = None, itm_id: str = "ALL") -> list[dict[str, Any]]:
-    """Rows of a statistics table for every classification value and item ("ALL"). Either the newest
-    `newest` periods or a start/end range (YYYYMM for monthly, YYYYQ-style as KOSIS spells it)."""
+         start: str | None = None, end: str | None = None, itm_id: str = "ALL", obj_l1: str = "ALL") -> list[dict[str, Any]]:
+    """Rows of a statistics table: every classification value and item by default ("ALL"), or the given
+    first-level classification code. Either the newest `newest` periods or a start/end range (YYYYMM
+    for monthly). KOSIS refuses more than 40,000 cells, so a long range needs `obj_l1`."""
     base: dict[str, Any] = {"method": "getList", "orgId": org_id, "tblId": tbl_id, "prdSe": prd_se, "itmId": itm_id}
     if newest:
         base["newEstPrdCnt"] = newest
@@ -72,7 +77,7 @@ def data(org_id: str, tbl_id: str, *, prd_se: str = "M", newest: int | None = No
         base["startPrdDe"], base["endPrdDe"] = start, end
     last: KosisError | None = None
     for levels in range(1, 5):
-        params = {**base, **{f"objL{i}": "ALL" for i in range(1, levels + 1)}}
+        params = {**base, "objL1": obj_l1, **{f"objL{i}": "ALL" for i in range(2, levels + 1)}}
         try:
             return _get("Param/statisticsParameterData.do", params)
         except KosisError as exc:

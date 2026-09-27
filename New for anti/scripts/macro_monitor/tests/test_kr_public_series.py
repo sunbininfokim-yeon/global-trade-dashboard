@@ -132,10 +132,14 @@ class EcosClient(unittest.TestCase):
 
 
 def stub(**series):
-    """A Sources whose ECOS reader answers from a dict {"stat/cycle/item[/item]": (points, unit)}."""
+    """A Sources whose ECOS reader answers from a dict {"stat/cycle/item[/item]": (points, unit)} and whose
+    KOSIS reader answers from {"kosis/<tbl>": (points, unit)}."""
     def read(stat, cycle, items, mode="raw"):
         return series[f"{stat}/{cycle}/{'/'.join(items)}"]
-    return krs.Sources(ecos_read=read, fred=lambda sid: series[sid])
+
+    def kread(org, tbl, c1, c1_nm):
+        return series[f"kosis/{tbl}"]
+    return krs.Sources(ecos_read=read, kosis_read=kread, fred=lambda sid: series[sid])
 
 
 class KoreaSeries(unittest.TestCase):
@@ -179,6 +183,13 @@ class KoreaSeries(unittest.TestCase):
         s2 = stub(**{"901Y118/M/T002": ([("2026-07-01", 98959099.0)], "천불"), "EXKOUS": [("2026-06-01", 1529.0)]})
         self.assertEqual(krs.series_for("export_krw", s2), [])                               # no July rate yet: nothing filled in
 
+    def test_semiconductor_exports_are_a_won_amount_from_the_dollar_series(self):
+        s = stub(**{"kosis/DT_092_115_2009_S023": ([("2026-07-01", 41015104140.0), ("2026-08-01", 46670721377.0)], "달러"),
+                    "EXKOUS": [("2026-07-01", 1486.0132), ("2026-08-01", 1403.2186)]})
+        out = krs.series_for("semi_export_krw", s)
+        self.assertAlmostEqual(out[-1][1], 46670721377 * 1403.2186 / 1e12)                  # about 65.5 trillion won
+        self.assertEqual(krs.usd_multiplier("달러"), 1.0)
+
     def test_the_running_month_is_dated_by_the_run_date(self):
         p = krs.build_patch("ccsi", [("2026-08-01", 104.5), ("2026-09-01", 106.6)], retrieved_at="t", today=date(2026, 9, 27))
         self.assertEqual((p["asof"], p["observed_at"], p["display"]), ("2026-09-27", "2026-09-27", "106.6"))
@@ -209,6 +220,23 @@ class Cache(unittest.TestCase):
         finally:
             if old is not None:
                 os.environ["ECOS_API_KEY"] = old
+
+
+class KosisReader(unittest.TestCase):
+    def test_a_key_less_run_reads_the_cached_kosis_series(self):
+        import os
+
+        old = os.environ.pop("KOSIS_API_KEY", None)
+        try:
+            cache = {"series": {"kosis/127/T/X": {"unit": "달러", "points": [["2026-08-01", 46670721377.0]]}}}
+            read = krs.kosis_reader(cache, {}, date(2026, 9, 27))
+            self.assertEqual(read("127", "T", "X", "반도체"), ([("2026-08-01", 46670721377.0)], "달러"))
+            with self.assertRaises(kosis.MissingKey):
+                read("127", "T", "OTHER", "반도체")                                        # nothing cached for it: the missing key surfaces
+            self.assertTrue(issubclass(kosis.MissingKey, kosis.KosisError))
+        finally:
+            if old is not None:
+                os.environ["KOSIS_API_KEY"] = old
 
 
 class Apply(unittest.TestCase):
