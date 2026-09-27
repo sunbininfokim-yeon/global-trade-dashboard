@@ -100,6 +100,20 @@ def rename_indicator(country: dict[str, Any], old_id: str, new_id: str, patch: d
     return changed
 
 
+def sync_chip_units(country: dict[str, Any], by_id: dict[str, dict[str, Any]], ids: set[str]) -> bool:
+    """A card that became an amount (from a rate) must not keep the chip's old '%' unit and old analog note.
+    Returns True when a chip changed."""
+    changed = False
+    for chips in (country.get("categories") or {}).values():
+        for chip in chips:
+            src = by_id.get(chip.get("id"))
+            if src and chip["id"] in ids and (chip.get("unit") != src.get("unit") or "analog_ko" in chip):
+                chip["unit"] = src.get("unit")
+                chip.pop("analog_ko", None)
+                changed = True
+    return changed
+
+
 # --------------------------------------------------------------------------
 # Reading ECOS (live with the key, cached without it)
 # --------------------------------------------------------------------------
@@ -300,6 +314,10 @@ def series_for(spec_id: str, s: Sources, today: date | None = None) -> Points:
     raise KeyError(spec_id)
 
 
+# An amount drawn as bars also shows its year-on-year growth as a line under them (macro.js mmYoyPanel).
+YOY_LINE_IDS = frozenset({"export_krw", "semi_export_krw"})
+
+
 def build_patch(spec_id: str, points: Points, *, retrieved_at: str, today: date | None = None) -> dict[str, Any]:
     """A monthly figure is dated by its month end -- except the running month (the consumer survey of this
     month is out before the month is), which is dated by the run date, never by a day that has not happened."""
@@ -311,6 +329,8 @@ def build_patch(spec_id: str, points: Points, *, retrieved_at: str, today: date 
         patch["asof"] = patch["observed_at"] = today_s
     if daily or patch["asof"] == today_s:
         jps.pin_last_date(patch, patch["asof"])
+    if spec_id in YOY_LINE_IDS:
+        patch["yoy_line"] = True
     return patch
 
 
@@ -325,6 +345,7 @@ def apply_all(kor: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrie
     if jps.apply_gdp_composite(by_id, retrieved_at, source="ecos:200Y106+200Y104"):
         changed.append("gdp")
     ups.sync_chips(kor, by_id, set(changed))
+    units_changed = sync_chip_units(kor, by_id, YOY_LINE_IDS & set(by_id))
     before = dict(kor.get("data_status_summary") or {})
     ups.refresh_status_summary(kor)
-    return {"changed": changed, "summary_changed": before != kor["data_status_summary"]}
+    return {"changed": changed, "summary_changed": units_changed or before != kor["data_status_summary"]}

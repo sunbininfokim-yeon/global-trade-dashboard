@@ -640,7 +640,32 @@ const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployme
     'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
 const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
     'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw',
-    'semi_export_krw']);
+    'semi_export_krw', 'nodx_sgd', 'export_il']);
+// An amount that is drawn as bars (exports) also shows its growth: the same monthly history, this month
+// against the same month a year earlier, as a line under the bars. Nothing extra is stored -- the rate is
+// computed from the amount series, so it can never disagree with it. The card opts in with `yoy_line`.
+const mmYoyPanel = (ind, win) => {
+    const h = (ind.history || {})['10y'];
+    if (!ind.yoy_line || !h || !Array.isArray(h.values) || !Array.isArray(h.dates)) return '';
+    // "the same month a year earlier" is looked up by date, not by position: a month the source did not
+    // publish (or that had no exchange rate) is a hole in the series, and counting 12 steps back would
+    // then compare the wrong months.
+    const byMonth = new Map();
+    h.dates.forEach((d, i) => { if (Number.isFinite(h.values[i])) byMonth.set(String(d).slice(0, 7), h.values[i]); });
+    const prior = (d) => { const y = Number(String(d).slice(0, 4)); return `${y - 1}${String(d).slice(4, 7)}`; };
+    const rows = h.dates.map((d, i) => {
+        const v = h.values[i];
+        const p = byMonth.get(prior(d));
+        return { d, y: Number.isFinite(v) && Number.isFinite(p) && p !== 0 ? (v / p - 1) * 100 : null };
+    }).filter((r) => r.y !== null);
+    const shown = win === '10y' ? rows : rows.slice(-60);
+    if (shown.length < 6) return '';
+    return `
+        <p class="mm-view-title">전년 동월 대비 성장률 (%)</p>
+        ${mmLineChart(shown.map((r) => r.d), shown.map((r) => r.y), { unit: '%', label: `${ind.label_ko} 전년 동월 대비` })}
+        <p class="fin-note">위 금액을 12개월 전 같은 달과 비교한 변화율입니다(같은 시계열에서 계산).</p>`;
+};
+
 const mmUseBars = (ind) => {
     const ct = ind.chart_type;
     if (ct === 'bar') return true;
@@ -1552,6 +1577,7 @@ const mmChartDrawer = () => {
         // A series that is not a plain observed print says so under the chart
         // (QRA: announced quarterly estimates, not outturns).
         if (ind.history_note_ko) body += `<p class="fin-note">${finEsc(ind.history_note_ko)}</p>`;
+        body += mmYoyPanel(ind, MM_CHART.window);
     }
 
     // With a mode selected the header has to follow it. The label carries the

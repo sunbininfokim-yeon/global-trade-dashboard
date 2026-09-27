@@ -254,6 +254,9 @@ class Apply(unittest.TestCase):
         self.assertNotIn("export_yoy_kr", by)
         self.assertEqual(by["export_krw"]["display"], "147.1조원")
         self.assertEqual(kor["categories"]["growth"][0]["id"], "export_krw")
+        self.assertEqual(kor["categories"]["growth"][0]["unit"], "tn_krw")           # the chip no longer says "%"
+        self.assertTrue(by["export_krw"]["yoy_line"])                                # the drawer draws the growth line
+        self.assertNotIn("yoy_line", by["gdp_yoy"])                                  # a rate is not given a second rate
         self.assertEqual(by["gdp"]["source"], "ecos:200Y106+200Y104")
         self.assertEqual(kor["data_status_summary"], {"live": 3, "demo": 1} if by["gdp"]["data_status"] == "demo" else {"live": 4})
         again = krs.apply_all(kor, patches, retrieved_at="later")
