@@ -1433,7 +1433,12 @@ async function handleMacro(request, env, ctx) {
             // enough to tell a seasonal drawdown from a genuine trend.
             // Daily spot prices carry a shorter window for the same reason:
             // the home panel draws a sparkline beside the latest print.
-            const length = freq === 'weekly' ? 52 : 30;
+            // A caller that wants more (e.g. the SPR/Cushing card's 3-year
+            // view) can ask via `length`, capped well under EIA's own
+            // per-request row limit.
+            const defaultLength = freq === 'weekly' ? 52 : 30;
+            const lengthParam = parseInt(url.searchParams.get('length'), 10);
+            const length = Number.isFinite(lengthParam) ? Math.min(Math.max(lengthParam, 1), 500) : defaultLength;
             // A weekly series cannot have new data more than once a week, so
             // an hourly cache TTL was doing nothing but multiplying how often
             // this Worker hits EIA's own API -- and each of those live calls
