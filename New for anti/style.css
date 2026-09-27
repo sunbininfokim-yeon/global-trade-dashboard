@@ -6514,6 +6514,36 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 }
 .tut-strip b { color: var(--tut-hue); margin-right: 6px; }
 
+.tut-jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+.tut-jump button {
+    display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 14px;
+    font: inherit; font-size: 14px; text-align: left; color: var(--text-primary); cursor: pointer;
+    background: var(--tut-panel); border: 1px solid var(--border); border-radius: 10px;
+    transition: border-color .18s ease;
+}
+.tut-jump button:hover { border-color: color-mix(in srgb, var(--tut-hue) 50%, transparent); }
+.tut-jump button:focus-visible { outline: 2px solid var(--tut-hue); outline-offset: 2px; }
+.tut-jump-n {
+    flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; color: var(--tut-hue);
+    border: 1px solid color-mix(in srgb, var(--tut-hue) 50%, transparent);
+}
+.tut-step { scroll-margin-top: 110px; margin-top: 52px; }
+.tut-step-h { display: flex; align-items: baseline; gap: 12px; }
+.tut-step-n { font-size: 13px; font-weight: 700; color: var(--tut-hue); font-variant-numeric: tabular-nums; }
+.tut-callout {
+    padding: 22px 24px; border-radius: 14px;
+    background: color-mix(in srgb, var(--tut-hue) 6%, var(--tut-panel));
+    border: 1px solid color-mix(in srgb, var(--tut-hue) 35%, transparent);
+}
+.tut-marked { position: relative; }
+.tut-mark {
+    position: absolute; top: 12px; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; pointer-events: none;
+    font-size: 12px; font-weight: 700; color: #0f111a; background: var(--tut-hue);
+}
+.tut-facts b.tut-key { color: var(--tut-hue); font-weight: 700; margin-right: 4px; }
+
 .tut-steps { list-style: none; margin: 0; padding: 0; counter-reset: tut; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
 .tut-two-plain .tut-steps { grid-template-columns: minmax(0, 1fr); }
 .tut-steps-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; }
@@ -6542,6 +6572,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 
 @media (max-width: 760px) {
     .tut-two, .tut-three, .tut-media, .tut-steps, .tut-row, .tut-facts, .tut-strip { grid-template-columns: minmax(0, 1fr); }
+    .tut-jump { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tut-mark { top: 6px; width: 20px; height: 20px; font-size: 11px; }
+    .tut-callout { padding: 16px; }
     .tut-wrap { padding: 0 16px 64px; }
     .tut-tabbar { margin: 0 -16px; padding: 10px 16px; }
     .tut-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -6550,7 +6583,7 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     .tut-steps-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
-    .tut-tab, .tut-open, .tut-noshot-cta { transition: none; }
+    .tut-tab, .tut-open, .tut-noshot-cta, .tut-jump button { transition: none; }
 }
 
 
