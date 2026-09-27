@@ -6416,7 +6416,14 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     color: var(--text-primary);
     font-size: 15px;
     line-height: 1.65;
+    /* Korean wraps between any two syllables by default ("신 / 고하지").
+       Break at spaces only; overflow-wrap still rescues a token too long
+       for its column. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
+.tut-wrap p, .tut-wrap li { text-wrap: pretty; }
+.tut-wrap h3, .tut-wrap h4 { text-wrap: balance; }
 .tut-wrap [data-hue="amber"]  { --tut-hue: #fbbf24; }
 .tut-wrap [data-hue="sky"]    { --tut-hue: #38bdf8; }
 .tut-wrap [data-hue="violet"] { --tut-hue: #a78bfa; }
@@ -6562,6 +6569,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     display: grid; place-items: center; pointer-events: none;
     font-size: 12px; font-weight: 700; color: #0f111a; background: var(--tut-hue);
 }
+/* Label on its own line, description underneath: in a three-column cell an
+   inline label left the description starting mid-line and ragged. */
+.tut-facts p > b:last-of-type::after, .tut-strip p > b::after { content: ""; display: block; height: 2px; }
 .tut-facts b.tut-key { color: var(--tut-hue); font-weight: 700; margin-right: 4px; }
 
 .tut-steps { list-style: none; margin: 0; padding: 0; counter-reset: tut; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }

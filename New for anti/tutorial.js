@@ -5,10 +5,10 @@
   const IMG = '/public/tutorial/';
 
   const TABS = [
-    { id: 'commodities', label: '원자재', sub: '작황 · 무역 흐름 · RSS', hue: 'amber' },
-    { id: 'finance', label: '금융', sub: '매크로 · 미시구조 · 계산기', hue: 'sky' },
-    { id: 'politics', label: '정치 & 정책', sub: '법안 · 선거 · 슈퍼팩', hue: 'violet' },
-    { id: 'shipping', label: '해운', sub: '선대 · 항로 · 초크포인트', hue: 'teal' },
+    { id: 'commodities', label: '원자재', sub: '작황&nbsp;· 무역 흐름&nbsp;· RSS', hue: 'amber' },
+    { id: 'finance', label: '금융', sub: '매크로&nbsp;· 미시구조&nbsp;· 계산기', hue: 'sky' },
+    { id: 'politics', label: '정치 & 정책', sub: '법안&nbsp;· 선거&nbsp;· 슈퍼팩', hue: 'violet' },
+    { id: 'shipping', label: '해운', sub: '선대&nbsp;· 항로&nbsp;· 초크포인트', hue: 'teal' },
   ];
 
   const shot = (href, src, alt, cls = '') => `
@@ -76,9 +76,9 @@
       ${stepHead(2, '원자재 무역 흐름 — 누가 누구에게 파나', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 그려집니다. UN Comtrade <b>최신 연간 통계</b> 기준이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다.')}
       <div class="tut-block">
         <div class="tut-strip">
-          <p><b>에너지 4</b> 원유 · 천연가스 · 석탄 2종</p>
-          <p><b>금속 16</b> 금 · 은 · 구리 · 니켈 · 리튬 · 희토류 …</p>
-          <p><b>농산물 5</b> 밀 · 옥수수 · 대두 · 설탕 · 커피</p>
+          <p><b>에너지 4</b> 원유&nbsp;· 천연가스&nbsp;· 석탄 2종</p>
+          <p><b>금속 16</b> 금&nbsp;· 은&nbsp;· 구리&nbsp;· 니켈&nbsp;· 리튬&nbsp;· 희토류 …</p>
+          <p><b>농산물 5</b> 밀&nbsp;· 옥수수&nbsp;· 대두&nbsp;· 설탕&nbsp;· 커피</p>
         </div>
         ${shot('/oil', 'oil-flows.webp', '원유 무역 흐름 세계 지도', 'tut-shot-natural')}
         <div class="tut-facts">
@@ -107,7 +107,7 @@
           <span class="tut-mark" style="left: 77%" aria-hidden="true">C</span>
         </div>
         <div class="tut-facts">
-          <p><b class="tut-key">A</b> <b>교역 · 집중도</b> 수출·수입·순수지, 연간·월별 전환. 판로 상위 3개국 CR3 28.7% · HHI 0.060 '낮음'</p>
+          <p><b class="tut-key">A</b> <b>교역&nbsp;· 집중도</b> 수출·수입·순수지, 연간·월별 전환. 판로 상위 3개국 CR3 28.7%&nbsp;· HHI 0.060 '낮음'</p>
           <p><b class="tut-key">B</b> <b>기관 리포트</b> 그 품목·나라에 연결된 발표 목록. 제목을 누르면 원문, ★로 담기</p>
           <p><b class="tut-key">C</b> <b>저장 통계</b> 천연가스는 EIA 지역별 지하 저장(Bcf)과 전주 대비</p>
         </div>
@@ -120,17 +120,17 @@
 
       ${sub('매크로 모니터 — 나라별 핵심 지표를 한 화면에', '야간광 지도에서 나라를 누르면 그 나라 창이 열립니다. 미국·한국·일본·중국·유로존 등 <b>19개국</b>의 유동성·금리·환율·주식·성장·물가 지표를 여섯 탭으로 모아 보여 줍니다. 나라마다 구할 수 있는 지표가 달라 카드 수는 다릅니다.')}
       <div class="tut-block">
-        ${card('6 TABS · 미국 예시', `<div class="tut-facts">
-            <p><b>유동성</b> 연준 총자산 · 역레포(RRP) · TGA · QRA 국채 발행</p>
-            <p><b>금리</b> 기준금리(EFFR) · 2년·10년 국채 · 10Y−3M 스프레드 · 하이일드 OAS</p>
-            <p><b>환율</b> 달러지수(DXY) · EUR/USD · USD/JPY</p>
-            <p><b>주식</b> S&amp;P 500 · 나스닥 100 · 러셀 2000 · VIX</p>
-            <p><b>성장</b> 실질GDP · GDPNow · ISM · 비농업고용 · 실업률</p>
-            <p><b>물가</b> CPI · 근원 CPI · PCE · 10년 기대인플레(BEI)</p>
+        ${card('6 TABS&nbsp;· 미국 예시', `<div class="tut-facts">
+            <p><b>유동성</b> 연준 총자산&nbsp;· 역레포(RRP)&nbsp;· TGA&nbsp;· QRA 국채 발행</p>
+            <p><b>금리</b> 기준금리(EFFR)&nbsp;· 2년·10년 국채&nbsp;· 10Y−3M 스프레드&nbsp;· 하이일드 OAS</p>
+            <p><b>환율</b> 달러지수(DXY)&nbsp;· EUR/USD&nbsp;· USD/JPY</p>
+            <p><b>주식</b> S&amp;P 500&nbsp;· 나스닥 100&nbsp;· 러셀 2000&nbsp;· VIX</p>
+            <p><b>성장</b> 실질GDP&nbsp;· GDPNow&nbsp;· ISM&nbsp;· 비농업고용&nbsp;· 실업률</p>
+            <p><b>물가</b> CPI&nbsp;· 근원 CPI&nbsp;· PCE&nbsp;· 10년 기대인플레(BEI)</p>
           </div>`)}
       </div>
       <div class="tut-block">
-        ${card('예시 · 미국 유동성 → QRA 발행', `<div class="tut-media">
+        ${card('예시&nbsp;· 미국 유동성 → QRA 발행', `<div class="tut-media">
           ${shot('/macro_monitor', 'qra.webp', 'QRA 발행 비교 패널')}
           <div class="tut-media-text">
             <p>카드를 누르면 그 지표의 차트가 열립니다. QRA는 재무부가 분기마다 공시하는 국채 순발행 계획으로, 세 줄을 나란히 비교합니다.</p>
@@ -146,44 +146,44 @@
 
       ${sub('시장 미시구조 — 파생과 외국인이 코스피를 얼마나 움직이나', '두 질문으로 나뉩니다. 파생상품(선물·옵션·레버리지 ETF)이 코스피에 얼마나 힘을 싣는지, 그리고 외국인·해외 거래가 코스피에 어떻게 번지는지.')}
       <div class="tut-block tut-two">
-        ${card('DERIVATIVES → KOSPI · 파생 영향력', feats([
+        ${card('DERIVATIVES → KOSPI&nbsp;· 파생 영향력', feats([
           ['파생 수급', '외국인 K200 선물·콜·풋 순매수, 풋/콜 비율, 선물 거래대금.'],
           ['수급 불균형', '레버리지·인버스 ETF가 코스피 현물 대비 얼마나 큰지, 그중 삼성전자·SK하이닉스 단일종목 비중, 상위 종목 집중도.'],
           ['해외 LETF', '해외에 상장된 삼성전자·SK하이닉스 레버리지 상품의 거래와 추정 리밸런싱.'],
         ]))}
-        ${card('FOREIGN FLOW → KOSPI · 외국인 파급', feats([
+        ${card('FOREIGN FLOW → KOSPI&nbsp;· 외국인 파급', feats([
           ['해외-국내 선행', '미국 옵션 시장의 흐름과 VIX가 한국으로 넘어오는지 봅니다.'],
           ['가격대별 체결', '외국인·개인·기관이 어느 가격대에서 사고팔았는지 (아래 예시).'],
           ['종가일 수급', '시총 상위 종목마다 그날 외국인이 몇 주를 순매수했는지.'],
         ]))}
       </div>
       <div class="tut-block">
-        ${card('예시 · 가격대별 체결 — 누가 어느 가격에서 샀나', `${shot('/fin_derivatives', 'ms-levels-3m.webp', '가격대별 누적 수급 차트: 투자자별 가격대 막대, 종가, 예탁금·신용공여 추이', 'tut-shot-natural')}
+        ${card('예시&nbsp;· 가격대별 체결 — 누가 어느 가격에서 샀나', `${shot('/fin_derivatives', 'ms-levels-3m.webp', '가격대별 누적 수급 차트: 투자자별 가격대 막대, 종가, 예탁금·신용공여 추이', 'tut-shot-natural')}
           <div class="tut-two tut-two-tight">
             ${feats([
               ['막대', '가격대마다 <b>개인</b>(파랑)·<b>외국인</b>(분홍)·<b>기관</b>(보라)이 순매수(오른쪽)·순매도(왼쪽)한 금액.'],
               ['흰 선', '같은 기간의 종가. 막대와 같은 세로축(가격)을 씁니다.'],
-              ['점선 네 개', "'예탁금 · 신용공여' 버튼을 켜면 투자자 예탁금·신용융자·미수금·반대매매가 같은 날짜축에 겹쳐집니다."],
+              ['점선 네 개', "'예탁금&nbsp;· 신용공여' 버튼을 켜면 투자자 예탁금·신용융자·미수금·반대매매가 같은 날짜축에 겹쳐집니다."],
             ])}
             ${feats([
-              ['종목 · 기간', '위 칩으로 코스피 지수나 종목을, 아래 버튼으로 1·2·3·6개월·전체를 고릅니다.'],
+              ['종목&nbsp;· 기간', '위 칩으로 코스피 지수나 종목을, 아래 버튼으로 1·2·3·6개월·전체를 고릅니다.'],
               ['점선은 기울기만', '네 값은 규모가 100배 넘게 차이 나서 각자의 범위로 그렸습니다. 선끼리 높이를 비교하지 마세요.'],
               ['매집도가 아닙니다', '실측 일별 수급을 종가 가격대에 쌓은 것이고, 체결 단위 데이터는 공개되지 않습니다.'],
             ])}
           </div>`)}
       </div>
       <div class="tut-block tut-two">
-        ${card('WHO · WHEN', `${shot('/fin_derivatives', 'ms-flows.webp', '종가일 수급 표')}
+        ${card('WHO&nbsp;· WHEN', `${shot('/fin_derivatives', 'ms-flows.webp', '종가일 수급 표')}
           <h4>종가일 수급</h4><p>시총 상위 종목마다 그날 <b>개인·외국인·기관</b>이 몇 주를 순매수했는지. 행의 '그 주 →'를 누르면 그 주의 날짜별 흐름이 열립니다.</p>`)}
-        ${card('CREDIT · MARGIN', `${shot('/fin_derivatives', 'ms-credit.webp', '투자자 예탁금·신용공여 카드')}
-          <h4>투자자 예탁금 · 신용공여</h4><p>대기 중인 돈(예탁금)과 빌려서 산 돈(<b>신용융자 · 미수금</b>), 강제 청산(<b>반대매매</b>)의 최신 값. 금융투자협회 FreeSIS 공개 집계라 시장 전체 합계이고, 종목별 숫자는 아닙니다.</p>`)}
+        ${card('CREDIT&nbsp;· MARGIN', `${shot('/fin_derivatives', 'ms-credit.webp', '투자자 예탁금·신용공여 카드')}
+          <h4>투자자 예탁금&nbsp;· 신용공여</h4><p>대기 중인 돈(예탁금)과 빌려서 산 돈(<b>신용융자&nbsp;· 미수금</b>), 강제 청산(<b>반대매매</b>)의 최신 값. 금융투자협회 FreeSIS 공개 집계라 시장 전체 합계이고, 종목별 숫자는 아닙니다.</p>`)}
       </div>
 
       <div class="tut-block">
         <h3>계산기 두 개</h3>
         <div class="tut-two">
           ${card('COMPANY VALUATION', `<h4>기업 가치 계산기</h4>
-            <p>종목을 검색하면 OpenDART 연결재무제표를 불러와 최근 회계연도들을 나란히 놓습니다. 회계상 이익과 실제 현금흐름(영업활동현금흐름 · 이익의 질)을 나눠 봅니다.</p>
+            <p>종목을 검색하면 OpenDART 연결재무제표를 불러와 최근 회계연도들을 나란히 놓습니다. 회계상 이익과 실제 현금흐름(영업활동현금흐름&nbsp;· 이익의 질)을 나눠 봅니다.</p>
             <a class="tut-link" href="/fin_valuation" target="_blank" rel="noopener">기업 가치 계산기 열기 ↗</a>`)}
           ${card('PORTFOLIO LAB', `<h4>포트폴리오 계산기</h4>
             <p>과거 전략을 돌려보는 <b>시나리오 백테스트</b>와, 지금 보유 자산의 위험 쏠림을 보는 <b>직접 입력</b> 두 모드입니다. 어느 쪽도 수익 예측이 아닙니다.</p>
@@ -208,11 +208,11 @@
 
       ${sub('정책 — 상임위에서 법안으로', '발의된 법안은 먼저 소관 상임위로 갑니다. 그래서 주요 상임위 화면에서 시작하면 지금 어떤 법안이 어느 단계에 걸려 있는지 한 번에 보입니다.')}
       <div class="tut-block tut-two">
-        ${card('COMMITTEE → BILL · 하원 세입위원회', `${shot('/policy/us/bill/119-hres-1156', 'policy-bill.webp', '하원 세입위원회를 거친 법안 상세 화면')}
+        ${card('COMMITTEE → BILL&nbsp;· 하원 세입위원회', `${shot('/policy/us/bill/119-hres-1156', 'policy-bill.webp', '하원 세입위원회를 거친 법안 상세 화면')}
           <h4>상임위를 거친 법안 한 건</h4><p>법안을 열면 지금 단계가 <b>발의 → 위원회 회부·심사 → 상임위 보고 → 본회의 통과</b> 레일로 보이고, 오른쪽에 회부 위원회·분류·법안 원문(PDF)이 붙습니다. 표결이 있었다면 찬반 수까지 나옵니다. 위쪽 경로에서 위원회 이름을 누르면 그 상임위의 소관 법안 목록으로 올라갑니다.</p>`)}
-        ${card('SEARCH · "수출통제"', `${shot(`/policy/us/search/${encodeURIComponent('수출통제')}`, 'policy-search.webp', '정책 검색 결과: 수출통제')}
-          <h4>제정법안 · 발의법안 · 행정명령</h4><p>검색 결과는 세 칸으로 갈립니다. 통과된 <b>제정법안</b>, 아직 진행 중인 <b>발의법안</b>, 그리고 <b>행정명령</b>. 발의법안에는 지금 단계(회부 · 위원회 심사 등)가 함께 붙습니다.</p>
-          ${chips(['발의 · 회부', '위원회 심사', '발의원 본회의 통과', '제정'], ['발의 · 회부', '위원회 심사', '발의원 본회의 통과', '제정'])}`)}
+        ${card('SEARCH&nbsp;· "수출통제"', `${shot(`/policy/us/search/${encodeURIComponent('수출통제')}`, 'policy-search.webp', '정책 검색 결과: 수출통제')}
+          <h4>제정법안&nbsp;· 발의법안&nbsp;· 행정명령</h4><p>검색 결과는 세 칸으로 갈립니다. 통과된 <b>제정법안</b>, 아직 진행 중인 <b>발의법안</b>, 그리고 <b>행정명령</b>. 발의법안에는 지금 단계(회부&nbsp;· 위원회 심사 등)가 함께 붙습니다.</p>
+          ${chips(['발의&nbsp;· 회부', '위원회 심사', '발의원 본회의 통과', '제정'], ['발의&nbsp;· 회부', '위원회 심사', '발의원 본회의 통과', '제정'])}`)}
       </div>
       <div class="tut-block tut-two tut-two-plain">
         <div>
@@ -237,9 +237,9 @@
 
       ${sub('정치 — 권력 구조와 선거 돈', '세계 선거 지도에서 나라를 고르면 행정부·의회·정당 블록이 열립니다. 미국은 주를 누르면 그 주의 선거와 외부 지출까지 내려갑니다.')}
       <div class="tut-block tut-two">
-        ${card('EXECUTIVE · 백악관', `${shot('/politics/USA/executive', 'us-executive.webp', '미국 행정부 창')}
+        ${card('EXECUTIVE&nbsp;· 백악관', `${shot('/politics/USA/executive', 'us-executive.webp', '미국 행정부 창')}
           <h4>백악관 — 누가 어디에 앉아 있나</h4><p>대통령·부통령·비서실장, 국가안보회의(NSC)·국가경제위원회(NEC)·무역대표부(USTR) 같은 직속 위원회의 수장, 그리고 분야별 특별보좌관까지 한 창에 모입니다.</p>`)}
-        ${card('SUPER PAC · 캘리포니아', `${shot('/politics/USA/CA?view=finance', 'us-ca-superpac.webp', '캘리포니아 외부 독립지출 화면')}
+        ${card('SUPER PAC&nbsp;· 캘리포니아', `${shot('/politics/USA/CA?view=finance', 'us-ca-superpac.webp', '캘리포니아 외부 독립지출 화면')}
           <h4>외부 독립지출 — 후보 밖에서 쓴 돈</h4><p>슈퍼팩 같은 외부 단체가 특정 후보를 <b>지지</b>하거나 <b>반대</b>하려고 쓴 돈입니다. 후보 캠프의 후원금이 아닙니다. 주 화면에서 '선거' 버튼을 켜면 나옵니다.</p>`)}
       </div>
       <div class="tut-block">
@@ -247,7 +247,7 @@
           ${shot('/politics', 'elections.webp', '세계 선거 지도와 일정')}
           <div>
             <div class="tut-label">ELECTION CALENDAR</div>
-            <h4>선거 일정 · 결과</h4>
+            <h4>선거 일정&nbsp;· 결과</h4>
             <p>왼쪽 날짜순 일정과 지도가 연동됩니다. 선거 유형별로 색이 다르고, 끝난 선거는 결과로 이어집니다.</p>
           </div>
         </div>
