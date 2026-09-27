@@ -580,7 +580,11 @@ async function handleCommodityReports(request, env) {
     const url = new URL(request.url);
     const commodity = (url.searchParams.get('commodity') || '').trim();
     const country = (url.searchParams.get('country') || '').trim().toUpperCase();
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 30);
+    // The panel pages through a window's whole history (everything inside the
+    // pipeline's archive horizon), a chunk at a time: `offset` picks up where
+    // the last chunk ended and `total` tells the panel whether more is left.
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 100);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
 
     const doc = await loadStaticJson(env, url.origin, 'commodity_reports_v1.json');
     if (!doc) {
@@ -626,13 +630,16 @@ async function handleCommodityReports(request, env) {
         }
     }
 
-    const items = ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    const known = ids.filter((id) => byId.has(id));
+    const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
     return jsonWithCache({
         generated_at: doc.generated_at,
         commodity,
         commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
         country: country || null,
         country_name: country ? (doc.country_names || {})[country] || null : null,
+        total: known.length,
+        offset,
         count: items.length,
         items,
     });
