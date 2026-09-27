@@ -656,6 +656,39 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(news_time(None, None, None, now), now)
 
 
+class CommodityScopeTests(unittest.TestCase):
+    """commodity_scope: a narrow source is never filed under anything else."""
+
+    def test_grain_exchange_macro_column_is_not_an_oil_report(self):
+        from commodity_reports import build as build_mod
+
+        def raw(url, title):
+            return RawReport(source_id="ar_bcr", agency="BCR", agency_ko="BCR", url=url, title=title,
+                             summary="", published_at="2026-09-25T00:00:00+00:00", lang="es",
+                             default_country="ARG", commodity_scope=["soybeans", "corn", "wheat"])
+
+        items = [
+            raw("https://bcr.example/macro", "Reservas internacionales y petróleo marcan la agenda económica y financiera"),
+            raw("https://bcr.example/maiz", "Maíz en racha: más de un millón de toneladas de maíz exportadas por semana"),
+        ]
+
+        def fake_fetch(s, **kw):
+            ok = s["id"] == "ar_bcr"
+            return {"source_id": s["id"], "ok": ok, "items": items if ok else [],
+                    "count": len(items) if ok else 0, "error": None if ok else "skipped"}
+
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = fake_fetch
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: fake_fetch(s)
+        try:
+            doc = build_commodity_reports(fetch_live=True, now=datetime(2026, 9, 26, tzinfo=timezone.utc))
+        finally:
+            build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+        bcr = {it["url"]: it["commodities"] for it in doc["items"] if it["source_id"] == "ar_bcr"}
+        self.assertNotIn("https://bcr.example/macro", bcr)
+        self.assertEqual(bcr.get("https://bcr.example/maiz"), ["corn"])
+
+
 class BuildTests(unittest.TestCase):
     def setUp(self):
         self.doc = build_commodity_reports(

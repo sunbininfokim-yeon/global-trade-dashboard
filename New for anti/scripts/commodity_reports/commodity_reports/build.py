@@ -163,6 +163,7 @@ def previous_raws(
             date_precision=item.get("published_precision") or "day",
             market_only=bool(src.get("market_only")),
             commodity_from=src.get("commodity_from", "text"),
+            commodity_scope=list(src.get("commodity_scope") or []),
         )
         if r.url and r.title:
             out.setdefault(src["id"], []).append(r)
@@ -326,6 +327,10 @@ def build_commodity_reports(
         if r.scope_hint == "global" and tagged.country_source == "source_default":
             tagged.countries, tagged.scope, tagged.country_source = [], "global", "none"
         apply_series_commodity_fallback(tagged, scorer, r.title, r.summary)
+        # A narrow publisher's off-topic piece loses its tags here and is then
+        # dropped like any untagged item.
+        if r.commodity_scope:
+            tagged.commodities = [c for c in tagged.commodities if c in r.commodity_scope]
         item = scorer.score(r, tagged, now=now)
         # No commodity this dashboard tracks, or rejected outright (photo
         # galleries etc.) -- dropped, not queued anywhere. A review loop over

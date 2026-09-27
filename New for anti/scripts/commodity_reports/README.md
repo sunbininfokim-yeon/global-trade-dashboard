@@ -115,7 +115,7 @@ GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다�
 
 | 파일 | 역할 |
 |------|------|
-| `config/sources.json` | 발간처 레지스트리 (`default_country`, `scope_hint`, `commodity_hint`, `weight`) |
+| `config/sources.json` | 발간처 레지스트리 (`default_country`, `scope_hint`, `commodity_hint`, `commodity_scope`, `weight`) |
 | `config/commodities.json` | 상품 다국어 별칭. **키는 `index.html`의 `data-target` 과 반드시 같아야 한다** |
 | `config/countries.json` | ISO3 별칭 + 형용사형 + 산지(주·지방) |
 | `config/series_catalog.json` | "주요 보고서" 정의 (WASDE, safra, STEO, MOMR…) |
@@ -192,6 +192,7 @@ WGC·Silver Institute처럼 "이 출처 글은 기본적으로 X"라는 사전�
 - EIA 출처의 "기본 원유" 사전분류를 없앴습니다. 원유는 본문으로 판단합니다(`oil production/demand/prices…`, `OPEC`, `Hormuz`, `gasoline/diesel` 별칭). 식물성 기름 문구(`palm oil`, `soybean oil`…)는 먼저 지우고 봅니다. STEO/AEO는 시리즈로 원유·가스(·석탄)에 붙습니다.
 - 출처 옵션 `market_only: true`: 시장 용어(생산·가격·재고·교역·정책·비축 매입 등)가 없는 글은 버립니다. PR성 게시판(MPOB·BPDP·IAI·Cochilco·NRCan·Cobalt·VRA·ESDM·MOFCOM·WGC·Silver·ITA·EU AGRI·NASS·CONAB)에 겁니다.
 - 출처 옵션 `commodity_from: "title"`: 품목은 제목에서만 판단합니다(EU DG AGRI — 본문에 사료 대두가 스쳐 나오는 달걀 기사).
+- 출처 옵션 `commodity_scope: [...]`: 이 출처는 목록 안 품목으로만 분류됩니다. 목록 밖 품목만 잡힌 글은 버립니다(로사리오 곡물거래소 — 거시 칼럼에 "petróleo"가 한 번 나와 원유 보고서로 잡혔던 건, 2026-09-27).
 - 제목 기준 행정 공지 필터 `ADMIN_TERMS`: 보고서 지연, 추정 중단, 재조사, 입찰(T/P), 보도 예고, 인사, 협약. 시리즈 이름이 붙어 있어도 버리고, 제목에 수치가 있으면 남깁니다.
 
 **간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
