@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=92">
+    <link rel="stylesheet" href="style.css?v=95">
 </head>
 <body>
     <div id="app">
@@ -234,12 +234,12 @@
                 <div class="panel-section hidden" id="commodity-info-panel">
                     <div class="panel-header">
                         <div class="panel-header-title-row">
-                            <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                            <h2 id="current-view-title">원자재: 석탄</h2>
                             <button type="button" class="policy-fav commodity-fav-star hidden" id="commodity-fav-star" aria-pressed="false" title="즐겨찾기">
                                 <span class="policy-fav-icon" aria-hidden="true">☆</span>
                             </button>
                         </div>
-                        <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
+                        <p id="current-view-desc">국가 클릭 → 수출 대상 순위</p>
                     </div>
                     
                     <div class="stats-container" id="commodity-stats">
@@ -280,6 +280,12 @@
             <!-- Center Pane: Map -->
             <div class="map-pane">
                 <div id="map"></div>
+
+                <!-- Corner attribution for the commodity trade map -- data
+                     source used to be crammed into #current-view-desc next to
+                     the commodity blurb; it now lives here so the subtitle
+                     stays a short interaction hint. -->
+                <div id="map-source-note" class="map-source-note"></div>
 
                 <!-- Election blocks open here: a window centred over the map,
                      scoped to .map-pane so the nav and right pane stay usable. -->
@@ -419,7 +425,7 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=17"></script>
+    <script src="data.js?v=18"></script>
     <script src="shipping.js?v=19"></script>
     <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
          and window.auth-container are ready by the time app.js's other
@@ -452,8 +458,8 @@
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
     <script src="mypage.js?v=5"></script>
-    <script src="tutorial.js?v=5"></script>
-    <script src="app.js?v=129"></script>
+    <script src="tutorial.js?v=8"></script>
+    <script src="app.js?v=130"></script>
     <script src="gas-storage.js?v=2"></script>
     <script src="trade.js?v=reports-pager-2"></script>
     <script src="trade-monthly.js?v=5"></script>
