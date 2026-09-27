@@ -56,6 +56,10 @@ class RawReport:
     # policy feeds whose bodies mention crops in passing).
     market_only: bool = False
     commodity_from: str = "text"
+    # commodity_scope: the only commodities this source may be filed under. A
+    # grain exchange's macro column that says "petróleo" once is not an oil
+    # report (BCR, 2026-09-27). Empty means no restriction.
+    commodity_scope: List[str] = field(default_factory=list)
     weight: float = 1.0
     # Priors from the source catalog, used only where the text itself is silent.
     default_country: Optional[str] = None
@@ -151,6 +155,7 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         scope_hint=source.get("scope_hint", "country"),
         market_only=bool(source.get("market_only")),
         commodity_from=source.get("commodity_from", "text"),
+        commodity_scope=list(source.get("commodity_scope") or []),
         **kw,
     )
 

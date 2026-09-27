@@ -165,17 +165,17 @@
       "default_country": "JPN",
       "kind": "rss",
       "url": "https://www.meti.go.jp/ml_index_en_atom.xml",
-      "lang": "en", "enabled": true, "weight": 1.1,
-      "notes": "URL supplied directly by the operator 2026-09-02, corroborated by search turning up a sibling feed at the same naming convention (meti.go.jp/ml_index_release_atom.xml). Atom, not RSS 2.0 -- parse_feed() handles both. METI is Japan's economy/trade/industry ministry: mostly SME policy, manufacturing, IP and safety regulation that this pipeline will correctly drop as untagged, but it is also where Japan's energy security and critical-minerals policy comes out (LNG/oil import policy, JOGMEC-adjacent rare earth/cobalt/lithium stockpiling announcements) -- the actual reason it's worth having. default_country JPN is a fallback only; a release about, say, Australian lithium still routes to Australia same as any other source here. Not yet confirmed live -- next Actions run's feed_status decides."
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "notes": "URL supplied directly by the operator 2026-09-02, corroborated by search turning up a sibling feed at the same naming convention (meti.go.jp/ml_index_release_atom.xml). Atom, not RSS 2.0 -- parse_feed() handles both. METI is Japan's economy/trade/industry ministry: mostly SME policy, manufacturing, IP and safety regulation that this pipeline will correctly drop as untagged, but it is also where Japan's energy security and critical-minerals policy comes out (LNG/oil import policy, JOGMEC-adjacent rare earth/cobalt/lithium stockpiling announcements) -- the actual reason it's worth having. default_country JPN is a fallback only; a release about, say, Australian lithium still routes to Australia same as any other source here. Not yet confirmed live -- next Actions run's feed_status decides. Disabled 2026-09-27: 403 on all 35 builds since, never once live."
     },
     {
       "id": "int_spglobal_energy",
       "agency": "S&P Global Commodity Insights", "agency_ko": "S&P 글로벌 원자재 인사이트",
       "kind": "rss",
       "url": "https://www.spglobal.com/energy/en/news-research/rss-feed",
-      "lang": "en", "enabled": true, "weight": 1.0,
+      "lang": "en", "enabled": false, "weight": 1.0,
       "scope_hint": "global",
-      "notes": "The one deliberate exception to 'official publishers only' in this file (see the top-level notes array) -- operator's call 2026-09-02, on the reasoning that the RSS feed itself (headline + short excerpt) is free even though the full S&P Global Commodity Insights articles sit behind a paywall, which is the standard shape for trade-press RSS. Weighted at 1.0, the low end of this file, on purpose: as a commercial outlet covering the same ground official sources already do here, it should not outrank USDA/EIA/NASS when both cover the same release. URL supplied directly by the operator; search corroborates spglobal.com/energy hosts multiple real RSS endpoints, though the exact one given may turn out to be a landing page rather than raw XML -- if so this reports not_a_feed_payload like br_conab did, not garbage data. Not yet confirmed live."
+      "notes": "The one deliberate exception to 'official publishers only' in this file (see the top-level notes array) -- operator's call 2026-09-02, on the reasoning that the RSS feed itself (headline + short excerpt) is free even though the full S&P Global Commodity Insights articles sit behind a paywall, which is the standard shape for trade-press RSS. Weighted at 1.0, the low end of this file, on purpose: as a commercial outlet covering the same ground official sources already do here, it should not outrank USDA/EIA/NASS when both cover the same release. URL supplied directly by the operator; search corroborates spglobal.com/energy hosts multiple real RSS endpoints, though the exact one given may turn out to be a landing page rather than raw XML -- if so this reports not_a_feed_payload like br_conab did, not garbage data. Not yet confirmed live. Disabled 2026-09-27: 403 on all 35 builds since, never once live."
     },
     {
       "id": "au_abares",
@@ -417,10 +417,10 @@
       "headers": "browser",
       "url": "https://english.mofcom.gov.cn/News/index.html",
       "lang": "en",
-      "enabled": true,
+      "enabled": false,
       "weight": 1.3, "market_only": true,
       "html": {"base": "https://english.mofcom.gov.cn", "item_href_re": "(?:https?://english\\.mofcom\\.gov\\.cn)?(?:\\.\\./|/)?(?:News/)?(?:SignificantNews|SpokesmansRemarks|PressConference|PressRelease)/art/\\d{4}/art_[0-9a-f]+\\.html", "max_items": 20},
-      "notes": "Added 2026-09-26. Where China announces export controls on gallium, germanium, graphite, antimony and rare earths, and their suspensions. MOFCOM resets connections from a non-browser User-Agent (probe: 'Connection reset by peer' with ours, 200 with Chrome's), hence headers: browser. Headline-only list; no commodity_hint -- trade-policy news that names no tracked commodity is dropped."
+      "notes": "Added 2026-09-26. Where China announces export controls on gallium, germanium, graphite, antimony and rare earths, and their suspensions. MOFCOM resets connections from a non-browser User-Agent (probe: 'Connection reset by peer' with ours, 200 with Chrome's), hence headers: browser. Headline-only list; no commodity_hint -- trade-policy news that names no tracked commodity is dropped. Disabled 2026-09-27: connection reset on all 14 builds since, browser headers or not -- the probe's 200 came from curl_cffi's Chrome TLS handshake, which the pipeline's urllib does not have. Re-enable only with a TLS-impersonating fetch."
     },
     {
       "id": "int_ita_tin",
@@ -500,8 +500,9 @@
       "lang": "es",
       "enabled": true,
       "weight": 1.2,
+      "commodity_scope": ["soybeans", "corn", "wheat"],
       "html": {"base": "https://www.bcr.com.ar", "item_href_re": "(?:https?://www\\.bcr\\.com\\.ar)?/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/[a-z0-9-]+", "max_items": 15},
-      "notes": "Added 2026-09-26. Weekly research bulletin of Argentina's main grain exchange -- soybean, corn and wheat crop, crush and export analysis. An exchange, not a ministry: Argentina's agriculture secretariat has no feed, and BCR's crop estimates are the ones the market quotes."
+      "notes": "Added 2026-09-26. Weekly research bulletin of Argentina's main grain exchange -- soybean, corn and wheat crop, crush and export analysis. An exchange, not a ministry: Argentina's agriculture secretariat has no feed, and BCR's crop estimates are the ones the market quotes. commodity_scope (2026-09-27): the bulletin also carries macro columns, and one that said 'petróleo' once was filed as an oil report -- only the three grains count from here."
     }
   ]
 }
