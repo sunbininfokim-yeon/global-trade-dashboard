@@ -2581,6 +2581,19 @@ async function handleDartFinancials(request, env) {
             }
             const latestYear = years[0];
 
+            // The current calendar year's own interim filings (1분기/반기보고서)
+            // land months before its annual report does -- Q1 in May, H1 in
+            // August -- while `years` above only ever picks up a year once its
+            // 사업보고서 is filed the following spring. Left out of the interim
+            // loop below, this year's quarters would never appear even after
+            // they exist on OpenDART (verified live on 003490: as of
+            // 2026-09-27, 2026Q1/Q2 CFO/FCF were missing for exactly this
+            // reason). `years` (and `latestYear`/`factsByYear`, the annual
+            // cards) stay annual-report-only; only the quarterly fetch below
+            // gets this extra, possibly annual-report-less year.
+            const thisYear = now.getUTCFullYear();
+            const quarterlyYears = years.includes(thisYear) ? years : [thisYear, ...years];
+
             // Interim filings, for the quarterly view. Three more calls per
             // year on top of the annual one, so this is the single most
             // expensive part of a cold-cache request -- but the whole body is
@@ -2588,14 +2601,14 @@ async function handleDartFinancials(request, env) {
             // no quarterly points for that year rather than failing the
             // request. Sequential for the same 020 reason as the loop above.
             const factsByPeriod = {};
-            for (const y of years) {
-                factsByPeriod[y] = { FY: factsByYear[y] };
+            for (const y of quarterlyYears) {
+                factsByPeriod[y] = factsByYear[y] ? { FY: factsByYear[y] } : {};
                 for (const code of ['Q1', 'H1', 'Q3']) {
                     const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
                     if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
                 }
             }
-            const quarterly = dartQuarterlySeries(factsByPeriod, years);
+            const quarterly = dartQuarterlySeries(factsByPeriod, quarterlyYears);
 
             // Independent of the facts loop above -- neither blocks the other,
             // and either failing still leaves the filing-derived cards intact.
@@ -2640,9 +2653,12 @@ async function handleDartFinancials(request, env) {
                         facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
                         // Which interim reports actually came back, per year --
                         // a quarterly gap in the UI is explained here rather
-                        // than looking like a rendering bug.
+                        // than looking like a rendering bug. Covers
+                        // quarterlyYears, not just years, so the current
+                        // calendar year's own interims (no annual report yet)
+                        // show up here too instead of being silently absent.
                         interim_reports_fetched: Object.fromEntries(
-                            years.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
+                            quarterlyYears.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
                         quarterly_derivation: 'flows differenced from YTD cumulatives (Q2=H1-Q1, Q3=3Q-H1, Q4=FY-3Q); balances point-in-time',
                         // Reaching here at all required a keyed OpenDART fetch.
                         live_key_present: true,
