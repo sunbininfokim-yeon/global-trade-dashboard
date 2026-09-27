@@ -628,6 +628,31 @@ const mmBarSeries = (dates, values, opts = {}) => {
     </div>`;
 };
 
+// Bars or a line. A price, a yield or an index is a continuous level -- a line is honest. A growth
+// rate, an inflation print or a flow (trade balance, jobs added, exports in won) is one number per
+// release period: a line between two months draws values that were never measured, and the sign
+// of a change matters more than its slope. So the discrete releases get bars, in every country,
+// unless the engine already gave the indicator its own panel (stack, components, fiscal pair).
+//
+// Rates that are themselves levels (unemployment rate, output gap, breakeven inflation, a nowcast
+// that is revised daily) stay lines: they are states, not changes.
+const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployment', 'youth_unemployment', 'inactivity_rate',
+    'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
+const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
+    'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw']);
+const mmUseBars = (ind) => {
+    const ct = ind.chart_type;
+    if (ct === 'bar') return true;
+    if (ct && ct !== 'line' && ct !== 'line+components') return false;      // status, stack, fiscal_dual_line: their own panels
+    // (line+components is GDP: its history is a growth rate, its breakdown has a separate view)
+    if (MM_LEVEL_IDS.has(ind.id)) return false;
+    if (MM_FLOW_IDS.has(ind.id)) return true;
+    const pct = ind.unit === '%' || ind.unit === 'pct';
+    if (!pct) return false;
+    // a growth rate of anything (M2 YoY, household credit YoY) is a per-period change too
+    return ind.category === 'inflation' || ind.category === 'growth' || /_(yoy|qoq|mom)(_[a-z]{2})?$/.test(ind.id);
+};
+
 // Same fetch and computation as app.js's openChartModal (the 원자재/금융 home
 // chart modal): daily bars over the /api/macro?source=yfinance Worker route,
 // 5/20/60/120/240-day running-sum averages. Ported rather than shared because
@@ -1505,7 +1530,7 @@ const mmChartDrawer = () => {
                 secondaryLabel: fiscal.secondary_label_ko || '비율',
                 secondaryUnit: fiscal.secondary_unit || '%',
             });
-        } else if (ind.chart_type === 'bar') {
+        } else if (mmUseBars(ind)) {
             body = mmBarSeries(hist.dates || [], hist.values || [], {
                 unit: src.unit === 'pct' ? '%' : (src.unit || ''),
                 label: src.label_ko || ind.label_ko,
