@@ -74,7 +74,7 @@
 
       ${sub('원자재 무역 흐름', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 지도 위에 그려집니다. 기준은 UN Comtrade의 <b>최신 연간 통계</b>이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다. 나라를 고르면 월별 데이터가 있는 경우 연간·월별을 바꿔 볼 수 있습니다.')}
       <div class="tut-block">
-        ${card('TRADE FLOWS · 밀', `${noShot('/wheat', '밀 무역 흐름 지도', 'tut-noshot-wide')}
+        ${card('TRADE FLOWS · 원유', `${shot('/oil', 'oil-flows.webp', '원유 무역 흐름 지도', 'tut-shot-natural')}
           <div class="tut-facts">
             <p><b>굵기·밝기</b> 물동량 (낮음·중간·높음)</p>
             <p><b>주황색 나라</b> 수출 제한이 걸린 곳</p>
