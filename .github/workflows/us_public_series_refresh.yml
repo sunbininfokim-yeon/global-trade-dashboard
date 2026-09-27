@@ -1,6 +1,6 @@
-name: Refresh public series (USA/JPN)
+name: Refresh public series (USA/JPN/KOR)
 
-# 미국(us_public_series.py)·일본(jp_public_series.py) 매크로 카드 중 fixture_synth 로 남아 있던 것을
+# 미국(us_public_series.py)·일본(jp_public_series.py)·한국(kr_public_series.py) 매크로 카드 중 fixture_synth 로 남아 있던 것을
 # 공개 관측값으로 채운다. 나라마다 워크플로를 따로 두지 않고 한 번에 돌린다 -- 같은 팩 파일을 쓰고,
 # 워크플로 하나가 끝날 때마다 배포가 한 번 뜨기 때문이다.
 # 일본: 일본은행 시계열 API(총자산·ETF·J-REIT·콜금리·M2·기업물가·경상수지), 재무성 국채 수익률,
@@ -8,6 +8,9 @@ name: Refresh public series (USA/JPN)
 # 실질임금·유효구인배율은 후생노동성 엑셀인데, 최신 파일을 찾는 e-Stat 카탈로그 조회에 appId(시크릿
 # ESTAT_APP_ID)가 필요하다. 읽은 값은 config/jp_estat_series_v1.json 에 남고, 시크릿이 없거나 조회가
 # 안 되는 실행은 그 캐시를 읽는다 -- 그래서 키 문제로 이 두 카드가 빠지지는 않는다.
+# 한국: 거의 전부 한국은행 ECOS(시크릿 ECOS_API_KEY — CPI·GDP·경상수지·외환보유액·CCSI·BSI·가계신용·M2·
+# 금리·스프레드·외국인 순매수·수출)이고, 원화 환산과 금리차에 FRED 를 쓴다. 읽은 값은
+# config/kr_ecos_series_v1.json 에 남고, 시크릿이 없으면 그 캐시를 읽는다(이 경우 새 달로 안 넘어간다).
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -38,22 +41,24 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py) || true
           }
           for attempt in 1 2 3; do
             refresh
             git add "New for anti/scripts/macro_monitor/config/fima_repo_v1.json" \
                     "New for anti/scripts/macro_monitor/config/jp_estat_series_v1.json" \
+                    "New for anti/scripts/macro_monitor/config/kr_ecos_series_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
-            git commit -m "chore: refresh USA/JPN public series" || { echo "nothing changed"; exit 0; }
+            git commit -m "chore: refresh USA/JPN/KOR public series" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi
             echo "push raced (attempt $attempt); recomputing on the latest main"
             git fetch origin main

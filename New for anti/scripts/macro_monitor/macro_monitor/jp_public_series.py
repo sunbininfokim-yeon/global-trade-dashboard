@@ -586,7 +586,7 @@ def build_patch(spec_id: str, points: Points, *, retrieved_at: str) -> dict[str,
 # Applying to the pack
 # --------------------------------------------------------------------------
 
-def apply_gdp_composite(by_id: dict[str, dict[str, Any]], retrieved_at: str) -> bool:
+def apply_gdp_composite(by_id: dict[str, dict[str, Any]], retrieved_at: str, source: str = "fred:JPNRGDPEXP") -> bool:
     """The 'gdp' chip is YoY | QoQ; rebuild it from the two real series (and keep its contribution
     breakdown, which is a separate view)."""
     gdp, yoy, qoq = by_id.get("gdp"), by_id.get("gdp_yoy"), by_id.get("gdp_qoq")
@@ -599,7 +599,7 @@ def apply_gdp_composite(by_id: dict[str, dict[str, Any]], retrieved_at: str) -> 
     patch = {
         "value": yoy["value"], "display": f"{yoy['display']} | {qoq['display']}", "display_chip": f"{yoy['display']} | {qoq['display']}",
         "asof": yoy["asof"], "observed_at": yoy["observed_at"], "reference_period": yoy["reference_period"],
-        "source": "fred:JPNRGDPEXP", "source_urls": yoy["source_urls"], "quality": "live", "data_status": "live",
+        "source": source, "source_urls": yoy["source_urls"], "quality": "live", "data_status": "live",
         "change_1m_pct": None, "change_1y_pct": None,
         "modes": {"yoy": mode("YoY", yoy), "qoq": {**mode("QoQ", qoq), "note_ko": "분기 대비 % (연율 환산 아님)"}},
         "retrieved_at": retrieved_at,
