@@ -47,57 +47,71 @@
   const sub = (title, text) => `
     <div class="tut-block tut-sub"><h3>${title}</h3>${text ? `<p class="tut-muted">${text}</p>` : ''}</div>`;
 
+  // Numbered step heading; its id is what the jump chips scroll to.
+  const stepHead = (n, title, text) => `
+    <div class="tut-block tut-sub tut-step" id="tut-step-${n}">
+      <div class="tut-step-h"><span class="tut-step-n">0${n}</span><h3>${title}</h3></div>
+      ${text ? `<p class="tut-muted">${text}</p>` : ''}
+    </div>`;
+
+  const jumps = (names) => `
+    <nav class="tut-jump" aria-label="단계 바로가기">${names.map((t, i) => `
+      <button type="button" data-tut-jump="${i + 1}"><span class="tut-jump-n">${i + 1}</span>${t}</button>`).join('')}
+    </nav>`;
+
   const PANELS = {
     commodities: () => `
-      ${head('COMMODITY FLOWS', '원자재 — 작황부터 무역 흐름까지',
-        '원자재 메뉴는 두 가지를 봅니다. 산지의 날씨와 작황을 보는 <b>작황 모니터</b>, 그리고 품목별로 누가 누구에게 파는지를 그리는 <b>무역 흐름</b>입니다.')}
+      ${head('COMMODITY FLOWS', '원자재 — 네 단계로 따라가기',
+        '산지 작황을 보고, 품목의 무역 흐름을 읽고, 챙길 리포트는 별로 담아 메일로 받습니다. 나라를 누르면 그 나라 데이터로 들어갑니다.')}
+      ${jumps(['작황 모니터', '무역 흐름', '★ → 메일', '국가별 화면'])}
 
-      ${sub('작황 모니터', '세계 전체를 한 번에 보는 화면과, 나라 하나를 파고드는 화면 두 단계입니다. 지도에서 나라를 누르면 내려가고, 빈 바다를 누르면 올라옵니다.')}
+      ${stepHead(1, '작황 모니터 — 세계에서 나라로', '지도에서 나라를 누르면 내려가고, 빈 바다를 누르면 올라옵니다. 농산물 메뉴 맨 위에 있습니다.')}
       <div class="tut-block tut-two">
         ${card('WORLD VIEW', `${shot('/climate', 'climate-world.webp', '작황 모니터 세계 화면')}
-          <h4>전체 화면</h4><p>전 세계 산지를 한 번에. 색으로 작황 이상과 수출통제가 어디에 몰려 있는지 먼저 봅니다.</p>`)}
+          <h4>전체 화면</h4><p>작황 이상과 수출통제가 어디에 몰려 있는지 색으로 먼저 봅니다.</p>`)}
         ${card('COUNTRY VIEW', `${shot('/climate', 'climate-country.webp', '브라질을 누른 국가별 작황 화면')}
-          <h4>국가별 화면</h4><p>산지별 기상·작황 예측이 왼쪽 패널에 붙습니다. 나라 안에서 다시 지역을 고를 수 있습니다.</p>`)}
+          <h4>국가별 화면</h4><p>산지별 기상·작황 예측이 왼쪽 패널에 붙고, 나라 안에서 지역을 다시 고릅니다.</p>`)}
       </div>
 
-      <div class="tut-block">
-        <h3>즐겨찾기 → 메일로 받기</h3>
-        ${steps([
-          ['로그인', '헤더 오른쪽에서 가입·로그인합니다.'],
-          ['리포트에서 ★', '아래 국가별 화면 오른쪽 리포트에서 별을 누르면 담깁니다.'],
-          ['마이페이지에서 확인', '출처별로 모입니다. 항목별로 메일만 끌 수 있습니다.'],
-          ['바뀌면 메일 수신', '계정 단위 전체 일시정지도 됩니다.'],
-        ], 'tut-steps-4')}
-      </div>
-
-      <div class="tut-rule"></div>
-
-      ${sub('원자재 무역 흐름', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 지도 위에 그려집니다. 기준은 UN Comtrade의 <b>최신 연간 통계</b>이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다. 나라를 고르면 월별 데이터가 있는 경우 연간·월별을 바꿔 볼 수 있습니다.')}
-      <div class="tut-block">
-        ${card('TRADE FLOWS · 원유', `${shot('/oil', 'oil-flows.webp', '원유 무역 흐름 지도', 'tut-shot-natural')}
-          <div class="tut-facts">
-            <p><b>굵기·밝기</b> 물동량 (낮음·중간·높음)</p>
-            <p><b>주황색 나라</b> 수출 제한이 걸린 곳</p>
-            <p><b>올리면</b> 교역량 · <b>누르면</b> 그 나라 노선만 · <b>배경</b> 처음으로</p>
-          </div>`)}
-      </div>
+      ${stepHead(2, '원자재 무역 흐름 — 누가 누구에게 파나', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 그려집니다. UN Comtrade <b>최신 연간 통계</b> 기준이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다.')}
       <div class="tut-block">
         <div class="tut-strip">
           <p><b>에너지 4</b> 원유 · 천연가스 · 석탄 2종</p>
           <p><b>금속 16</b> 금 · 은 · 구리 · 니켈 · 리튬 · 희토류 …</p>
           <p><b>농산물 5</b> 밀 · 옥수수 · 대두 · 설탕 · 커피</p>
         </div>
+        ${shot('/oil', 'oil-flows.webp', '원유 무역 흐름 세계 지도', 'tut-shot-natural')}
+        <div class="tut-facts">
+          <p><b>왼쪽 순위</b> 글로벌 물동량, 최대 수출국, 주요 수출국·수입국 비중</p>
+          <p><b>선 굵기·밝기</b> 물동량 낮음·중간·높음. 주황색 나라는 수출 제한</p>
+          <p><b>마우스</b> 올리면 교역량, 누르면 그 나라 노선만, 배경은 처음으로</p>
+        </div>
       </div>
 
-      ${sub('나라를 누르면 — 국가별 화면', '지도에서 나라를 누르면 그 나라의 데이터가 양옆에 붙습니다. 아래는 천연가스에서 미국을 누른 화면입니다.')}
+      ${stepHead(3, '★ 즐겨찾기 → 메일로 받기', '')}
+      <div class="tut-block tut-callout">
+        ${steps([
+          ['로그인', '헤더 오른쪽에서 가입·로그인합니다.'],
+          ['리포트에서 ★', '4번 국가별 화면 오른쪽 리포트 목록에서 별을 누릅니다.'],
+          ['마이페이지', '출처별로 모이고, 항목별로 메일만 끌 수 있습니다.'],
+          ['바뀌면 메일', '계정 단위 전체 일시정지도 됩니다.'],
+        ], 'tut-steps-4')}
+      </div>
+
+      ${stepHead(4, '나라를 누르면 — 국가별 화면', '그 나라 데이터가 지도 양옆에 붙습니다. 아래는 천연가스에서 미국을 누른 화면입니다.')}
       <div class="tut-block">
-        ${card('COUNTRY VIEW · 천연가스 × 미국', `${shot('/gas', 'gas-usa-country.webp', '천연가스 미국 국가별 화면과 저장 통계', 'tut-shot-natural')}
-          <div class="tut-facts">
-            <p><b>왼쪽 · 교역</b> 수출·수입·순수지, 연간·월별 전환, 상대국 순위</p>
-            <p><b>왼쪽 · 집중도</b> 판로(수출국) 또는 공급처(수입국) 상위 3개국 CR3와 HHI. 미국 가스 수출은 CR3 28.7% · HHI 0.060 '낮음'</p>
-            <p><b>오른쪽 · 리포트</b> 기관 발표 목록. ★로 담으면 바뀔 때 메일로. 천연가스는 EIA 지역별 지하 저장(Bcf) 추이도 함께</p>
-          </div>
-          <p class="tut-fine">집중도는 상대국의 정치적 신뢰도를 반영하지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>`)}
+        <div class="tut-marked">
+          ${shot('/gas', 'gas-usa-country.webp', '천연가스 미국 국가별 화면과 EIA 저장 통계', 'tut-shot-natural')}
+          <span class="tut-mark" style="left: 1.2%" aria-hidden="true">A</span>
+          <span class="tut-mark" style="left: 52.2%" aria-hidden="true">B</span>
+          <span class="tut-mark" style="left: 77%" aria-hidden="true">C</span>
+        </div>
+        <div class="tut-facts">
+          <p><b class="tut-key">A</b> <b>교역 · 집중도</b> 수출·수입·순수지, 연간·월별 전환. 판로 상위 3개국 CR3 28.7% · HHI 0.060 '낮음'</p>
+          <p><b class="tut-key">B</b> <b>기관 리포트</b> 그 품목·나라에 연결된 발표 목록. 제목을 누르면 원문, ★로 담기</p>
+          <p><b class="tut-key">C</b> <b>저장 통계</b> 천연가스는 EIA 지역별 지하 저장(Bcf)과 전주 대비</p>
+        </div>
+        <p class="tut-fine">집중도는 상대국의 정치적 신뢰도를 넣지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>
       </div>`,
 
     finance: () => `
@@ -283,6 +297,10 @@
       const bar = host.querySelector('.tut-tabbar');
       if (bar && host.scrollTop > bar.offsetTop) host.scrollTop = bar.offsetTop;
     };
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    host.querySelectorAll('[data-tut-jump]').forEach((b) => b.addEventListener('click', () => {
+      host.querySelector(`#tut-step-${b.dataset.tutJump}`)?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    }));
     tabs.forEach((b, i) => {
       b.addEventListener('click', () => select(b.dataset.tutTab, false));
       b.addEventListener('keydown', (e) => {
