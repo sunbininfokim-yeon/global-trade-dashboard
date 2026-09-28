@@ -751,30 +751,31 @@ const deckgl = new DeckGL({
     controller: true,
     views: [new MapView({ id: 'map', repeat: true })], // Flat equirectangular, as the mockup
     layers: [],
-    onViewStateChange: ({ viewState, interactionState }) => {
-        currentViewState = viewState;
-        // Avoid stomping climate MapView while interacting on other screens only
-        if (currentCommodity === 'climate') {
-            // Still track; controller needs viewState updates for pan/zoom
-            deckgl.setProps({ viewState });
-            return;
-        }
-        deckgl.setProps({ viewState: currentViewState });
-
-        // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
-        // Zooming is deliberately excluded: scrolling to resize the globe should
-        // not stop the spin, and rotationStep preserves whatever zoom the user
-        // lands on. Debounced -- this fires once per interaction frame, so
-        // re-arm a single timer instead of queueing one per frame.
-        if (interactionState.isDragging) {
-            stopRotation();
-            clearTimeout(resumeRotationTimer);
-            resumeRotationTimer = setTimeout(() => {
-                if (currentCommodity === 'home') startRotation();
-            }, 2000);
-        }
-    }
+    onViewStateChange: (params) => defaultDeckViewStateChange(params),
 });
+function defaultDeckViewStateChange({ viewState, interactionState }) {
+    currentViewState = viewState;
+    // Avoid stomping climate MapView while interacting on other screens only
+    if (currentCommodity === 'climate') {
+        // Still track; controller needs viewState updates for pan/zoom
+        deckgl.setProps({ viewState });
+        return;
+    }
+    deckgl.setProps({ viewState: currentViewState });
+
+    // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
+    // Zooming is deliberately excluded: scrolling to resize the globe should
+    // not stop the spin, and rotationStep preserves whatever zoom the user
+    // lands on. Debounced -- this fires once per interaction frame, so
+    // re-arm a single timer instead of queueing one per frame.
+    if (interactionState?.isDragging) {
+        stopRotation();
+        clearTimeout(resumeRotationTimer);
+        resumeRotationTimer = setTimeout(() => {
+            if (currentCommodity === 'home') startRotation();
+        }, 2000);
+    }
+}
 
 // The home and climate maps draw once, so a basemap that arrives after that
 // first paint would sit invisible until the next interaction. Redraw on arrival.
@@ -2094,6 +2095,7 @@ let currentElectionMapOnClick = null;
 // climate's equivalent path already had this same guard
 // (handleClimateDeckClick's lastClimatePickAt); this one never got it.
 let lastElectionsPickAt = 0;
+let electionsGestureConsumed = false;
 const tryElectionsMapPick = (clientX, clientY) => {
     if (currentCommodity !== 'elections' || !currentElectionMapOnClick || !deckgl?.pickObject) return;
     const xy = climateCanvasLocalXY(clientX, clientY);
@@ -2111,18 +2113,28 @@ const ensureElectionsMapPointerFallback = () => {
     mapContainer.addEventListener('pointerdown', (e) => {
         if (currentCommodity !== 'elections') return;
         if (e.button !== 0) return;
-        electionsPointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+        // e.timeStamp, not performance.now(): the first frames after entering
+        // 정치 can block the main thread long enough that handler-time dt
+        // exceeded 600ms for a plain quick click, and it was dropped.
+        electionsPointerDown = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+        electionsGestureConsumed = false;
     }, true);
     const onPointerLikeClick = (e) => {
         if (currentCommodity !== 'elections') return;
         if (e.button != null && e.button !== 0) return;
         if (!electionsPointerDown) {
-            if (e.type === 'click') tryElectionsMapPick(e.clientX, e.clientY);
+            // click after a pointerup that already handled (or rejected as a
+            // drag) this gesture: skip. Picking again here resolved against the
+            // post-click layout -- the left pane had closed and the canvas
+            // shifted, so the same client point landed on another country.
+            if (e.type === 'click' && !electionsGestureConsumed) tryElectionsMapPick(e.clientX, e.clientY);
+            electionsGestureConsumed = false;
             return;
         }
+        electionsGestureConsumed = true;
         const dx = e.clientX - electionsPointerDown.x;
         const dy = e.clientY - electionsPointerDown.y;
-        const dt = performance.now() - electionsPointerDown.t;
+        const dt = e.timeStamp - electionsPointerDown.t;
         electionsPointerDown = null;
         if (dt > 600 || Math.hypot(dx, dy) > 8) return;
         tryElectionsMapPick(e.clientX, e.clientY);
@@ -5232,6 +5244,46 @@ const electionModalHostEl = document.getElementById('elections-modal-host');
 // enough that a path segment would just add another disambiguation case.
 const isUsStateCode = (segment) => /^[A-Za-z]{2}$/.test(segment || '');
 
+// The 정치 map owns every interaction prop it depends on, instead of
+// inheriting whatever the previous view left on the shared deckgl instance /
+// #map container ("정치 들어오고 바로 국가 클릭하면 안돼, F5 해야 됨",
+// 2026-09-28). Reproduced leftovers, each of which broke the first visit
+// until a reload reset them:
+//  - pointer-events:none on #map from 선박/정책/튜토리얼/금융/마이페이지
+//    (togglePanels only restores display) -> clicks hit the pane underneath;
+//  - climate's onViewStateChange (early-returns outside climate) and macro's
+//    -> drag froze; climate's pickingRadius:18, macro's getTooltip.
+// onClick is deliberately null: ensureElectionsMapPointerFallback is the one
+// click path, so a single gesture can't open two things (the native prop and
+// the fallback each firing once opened a second, wrong country after the
+// layout shift -- e.g. USA then TUR).
+const electionsViewStateChange = (params) => {
+    // Views that don't install their own handler (home/trade) inherit this
+    // one after a 정치 visit -- hand them back the constructor's behaviour.
+    if (currentCommodity !== 'elections') return defaultDeckViewStateChange(params);
+    const { viewState } = params;
+    currentViewState = viewState;
+    deckgl.setProps({ viewState });
+};
+const applyElectionMapProps = (layers) => {
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
+        mapContainer.style.pointerEvents = 'auto';
+    }
+    deckgl.setProps({
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
+        viewState: currentViewState,
+        controller: { dragRotate: false, touchRotate: false },
+        onViewStateChange: electionsViewStateChange,
+        onClick: null,
+        onHover: null,
+        getTooltip: null,
+        pickingRadius: 0,
+        getCursor: ({ isDragging, isHovering }) => (isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab'),
+        layers,
+    });
+};
+
 const electionHost = () => ({
     deckgl,
     layers: { GeoJsonLayer },
@@ -5271,26 +5323,12 @@ const electionHost = () => ({
         // actually under the cursor -- the original miss doesn't apply to it.
         // Reverified with repeat:true: 10/10 clicks landed, dragging works,
         // antimeridian wraparound is back as a side benefit.
-        deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: true })],
-            viewState: currentViewState,
-            controller: { dragRotate: false, touchRotate: false },
-            onClick,
-            onHover: null,
-            layers,
-        });
+        applyElectionMapProps(layers);
     },
     setElectionMap(layers, onClick, viewState) {
         if (viewState) currentViewState = viewState;
         currentElectionMapOnClick = onClick;
-        deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: true })],
-            viewState: currentViewState,
-            controller: { dragRotate: false, touchRotate: false },
-            onClick,
-            onHover: null,
-            layers,
-        });
+        applyElectionMapProps(layers);
     },
     setPanels({ timeline = false, country = false, left = true, right = false }) {
         togglePanels({ macro: false, countryStats: false, news: false, forecast: false, climateRight: false, left, right, chart: false, map: true });
