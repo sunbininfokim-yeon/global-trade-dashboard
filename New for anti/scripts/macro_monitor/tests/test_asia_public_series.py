@@ -38,6 +38,41 @@ class CenStatD(unittest.TestCase):
         self.assertEqual(hks.series_for("current_account", lambda name: csv, hks.SUPPRESSED_FALLBACK), [("2026-04-01", 96.0)])
 
 
+class HkAdditions(unittest.TestCase):
+    def test_rvd_index_skips_the_title_line_and_reads_all_classes(self):
+        csv = ("PRIVATE DOMESTIC - PRICE INDICES,,,\n"
+               "Month,Class A,Class A - Remarks,All Classes,All Classes - Remarks\n"
+               "07-2026,340.3,P,320.3,P\n08-2026,340.3,P,320.5,P\n")
+        self.assertEqual(hks.parse_rvd(csv), [("2026-07-01", 320.3), ("2026-08-01", 320.5)])
+
+    def test_spread_uses_sofr_on_or_before_the_quarter_end(self):
+        hibor = [("2026-04-01", 2.97)]
+        sofr = [("2026-06-29", 3.60), ("2026-06-30", 3.63), ("2026-07-01", 9.99)]
+        (d, bp), = hks.quarter_spread(hibor, sofr)
+        self.assertEqual(d, "2026-04-01")
+        self.assertAlmostEqual(bp, -66.0)
+        self.assertEqual(hks.quarter_spread([("2010-01-01", 1.0)], sofr), [])   # before SOFR existed
+
+    def test_home_price_card_replaces_the_ccl_card(self):
+        c = {"indicators": [{"id": "ccl_index", "unit": "index", "data_status": "demo"}],
+             "categories": {"equity": [{"id": "ccl_index"}]}, "headlines": [], "data_status_summary": {}}
+        patch = hks.build_patch("hk_home_price", [("2026-08-01", 320.5)], retrieved_at="t")
+        hks.apply_all(c, {"hk_home_price": patch}, retrieved_at="t")
+        self.assertEqual([i["id"] for i in c["indicators"]], ["hk_home_price"])
+        self.assertEqual(c["categories"]["equity"][0]["id"], "hk_home_price")
+
+
+class SgAdditions(unittest.TestCase):
+    def test_bis_csv(self):
+        csv = "FREQ,TIME_PERIOD,OBS_VALUE\nM,2026-02,113.47\nM,2026-01,113.32\nM,2026-03,\n"
+        self.assertEqual(sgs.parse_bis_csv(csv), [("2026-01-01", 113.32), ("2026-02-01", 113.47)])
+
+    def test_reserves_in_billions_with_unit_check(self):
+        self.assertEqual(sgs.series_for("mas_ofr", lambda t, r: ([("2026-08-01", 433000.0)], "Million US Dollars")),
+                         [("2026-08-01", 433.0)])
+        self.assertEqual(sgs.series_for("sgd_neer", bis=lambda: [("2026-08-01", 114.0)]), [("2026-08-01", 114.0)])
+
+
 def sg_doc(row_no, *cols, unit="Index"):
     return {"Data": {"row": [{"seriesNo": row_no, "rowText": "x", "uoM": unit,
                               "columns": [{"key": k, "value": v} for k, v in cols]}]}}

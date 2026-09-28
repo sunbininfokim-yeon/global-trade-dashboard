@@ -20,8 +20,12 @@ Cards (table in brackets):
 Money supply and HIBOR are only published by C&SD at quarter ends; the monthly/daily figures are the
 HKMA's, whose API (api.hkma.gov.hk) could not be reached from here (connection refused behind its WAF).
 
-Not here, and why: aggregate balance, FX reserves, base rate (HKMA API, see above), HIBOR-SOFR spread
-(no free 3-month term SOFR to set against 3-month HIBOR), Centa-City index (no free source), CDS (paid).
+  hibor_sofr_spread 3-month HIBOR (quarter end) minus the 90-day SOFR average (FRED) -- 3-month term SOFR is
+                  not free, so the backward-looking average stands in, and the card says so
+  hk_home_price   RVD private domestic price index, all classes, monthly (www.rvd.gov.hk/datagovhk/1.4M.csv);
+                  replaces the Centa-City Leading index card (a private weekly index with no free source)
+
+Not here, and why: aggregate balance, FX reserves, base rate (HKMA API, see above), CDS (paid).
 Stock indices (HSI, HSCEI) are Yahoo series in live_catalog.py; total exports are in export_public_series.py.
 """
 
@@ -54,6 +58,7 @@ SUPPRESSED_FALLBACK = frozenset(
 ups._FORMATS.update({
     "pct2": lambda v: f"{v:.2f}%",
     "bn1hkd": lambda v: f"HK${v:,.1f}B",
+    "idx1": lambda v: f"{v:,.1f}",
 })
 
 
@@ -155,12 +160,62 @@ SPECS: dict[str, HkSpec] = {h.spec.id: h for h in [
     HkSpec(_s("retail_sales_yoy", "monthly", "%", "pct1", "소매판매 YoY",
               "소매판매액 지수(금액 기준) 전년 동월 대비입니다. 통계처 표 620-67001.", "620-67001"),
            "MDT_75_620-67001_VAL_IDX_RS_YoY_1dp_percent_s"),
+    HkSpec(Spec("hibor_sofr_spread", "quarterly", "bp", "bp0",
+                "HIBOR 3개월물(분기말 고시, 통계처 표 340-45022)에서 SOFR 90일 평균(같은 날, FRED SOFR90DAYAVG)을 뺀 값입니다. 3개월 기간물 SOFR는 무료 출처가 없어 90일 평균으로 맞췄습니다. 마이너스 → 캐리 유출 · 환율 7.85 압력.",
+                "censtatd:340-45022+fred:SOFR90DAYAVG", (PAGE.format(table="340-45022"), "https://fred.stlouisfed.org/series/SOFR90DAYAVG"),
+                "quarterly", label_ko="HIBOR 3M − SOFR"),
+           "MDT_96_340-45022_SET_RATE_Rate_2dp_percent_n", where=(("MATURITY", "3M"),), gap_months=3),
+    HkSpec(Spec("hk_home_price", "monthly", "index", "idx1",
+                "민간 주택 가격지수(전 등급, 1999=100, 월)입니다 — 정부 평가처(RVD) 공식 지수. 예전 카드는 민간 'Centa-City Leading' 주간 지수였는데 무료 출처가 없어 공식 월간 지수로 바꿨습니다. 최근 몇 달은 잠정치(P).",
+                "rvd:1.4M", ("https://www.rvd.gov.hk/en/publications/property_market_statistics.html",), "monthly",
+                label_ko="주택가격지수(RVD)"),
+           ""),
 ]}
 
+RENAMES = {"ccl_index": "hk_home_price"}
+RVD_CSV = "https://www.rvd.gov.hk/datagovhk/1.4M.csv"
 
-def series_for(spec_id: str, get: Callable[[str], str], suppressed: frozenset[str]) -> Points:
+
+def parse_rvd(text: str, column: str = "All Classes") -> Points:
+    """RVD 'Month,Class A,Class A - Remarks,...' with months 'MM-YYYY'; the title line above the header is skipped."""
+    rows = list(csv.reader(io.StringIO(text.lstrip("\ufeff"))))
+    hi = next((i for i, r in enumerate(rows) if r and r[0].strip() == "Month"), None)
+    if hi is None or column not in rows[hi]:
+        raise ValueError(f"RVD csv has no {column!r} column")
+    j = rows[hi].index(column)
+    out: Points = []
+    for r in rows[hi + 1:]:
+        if len(r) <= j or len(r[0]) != 7 or r[0][2] != "-":
+            continue
+        try:
+            out.append((f"{r[0][3:]}-{r[0][:2]}-01", float(r[j])))
+        except ValueError:
+            continue
+    if not out:
+        raise ValueError("RVD csv has no monthly rows")
+    return sorted(out)
+
+
+def quarter_spread(hibor: Points, sofr: Points) -> Points:
+    """HIBOR at each quarter end minus SOFR on the last day at or before that quarter end, in bp."""
+    out: Points = []
+    for d, h in hibor:
+        end = ups.quarter_end(d)
+        s = [v for sd, v in sofr if sd <= end]
+        if s and sofr[0][0] <= end:
+            out.append((d, (h - s[-1]) * 100))
+    return out
+
+
+def series_for(spec_id: str, get: Callable[[str], str], suppressed: frozenset[str],
+               fred: Callable[[str], Points] = ups.fetch_fred,
+               rvd: Callable[[], str] = lambda: _get(RVD_CSV).decode("utf-8-sig")) -> Points:
     h = SPECS[spec_id]
+    if spec_id == "hk_home_price":
+        return parse_rvd(rvd())
     pts = parse_censtatd(get(h.file), where=dict(h.where), suppressed=suppressed)
+    if spec_id == "hibor_sofr_spread":
+        return quarter_spread(pts, fred("SOFR90DAYAVG"))
     if h.transform == "vs_2019q4":
         pts = ups.vs_base(pts, "2019-10-01")
     elif h.transform == "bn":
@@ -178,6 +233,9 @@ def build_patch(spec_id: str, points: Points, *, retrieved_at: str) -> dict[str,
 
 
 def apply_all(hkg: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrieved_at: str) -> dict[str, Any]:
+    for old, new in RENAMES.items():
+        if new in patches:
+            krs.rename_indicator(hkg, old, new, {})
     by_id = {i["id"]: i for i in hkg["indicators"]}
     changed = [k for k, p in patches.items() if k in by_id and ups.apply_patch(by_id[k], p)]
     if jps.apply_gdp_composite(by_id, retrieved_at, source="censtatd:310-31001"):

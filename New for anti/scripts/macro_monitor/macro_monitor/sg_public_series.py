@@ -16,8 +16,11 @@ activity; the first new-basis month is 2.7% below the last old one). A year-on-y
 a new-basis month with an old-basis one would mix the two, so 2021-07..2022-06 is left empty, and "M2
 against 2019-12" is not published here at all: its base is on the old basis.
 
+  mas_ofr        official foreign reserves, US$ (M701211 / 1)                   monthly
+  sgd_neer       S$ nominal effective exchange rate from the BIS (WS_EER M.N.B.SG) -- MAS does not publish its
+                 own NEER, slope or band as numbers, so the BIS index (its own weights) stands in and says so
 Not here, and why: SORA and the SORA-SOFR spread (MAS publishes SORA through its API gateway, which
-needs a registered key -- 401 without one -- or an ASP.NET page), the S$NEER level, slope and band
+needs a registered key -- 401 without one -- or an ASP.NET page), the NEER slope and band
 (MAS does not publish them as numbers), MAS/total liquidity and FX deposits (no table found), the
 S-REIT index and the SIPMM PMI (no free source), CDS (paid). STI is a Yahoo series in live_catalog.py.
 """
@@ -41,6 +44,7 @@ ups._FORMATS.update({
     "pct2": lambda v: f"{v:.2f}%",
     "bn1sgd": lambda v: f"S${v:,.1f}B",
     "idx1": lambda v: f"{v:,.1f}",
+    "bn0usd": lambda v: f"${v:,.0f}B",
 })
 
 
@@ -130,6 +134,11 @@ SPECS: dict[str, SgSpec] = {s.spec.id: s for s in [
               "싱가포르 국채 2년 수익률(월말, 프라이머리 딜러 호가 평균)입니다. 통계청 M700071(MAS 자료).", ("M700071",))),
     SgSpec(_s("sgs_10y", "monthly", "%", "pct2", "SGS 10년",
               "싱가포르 국채 10년 수익률(월말)입니다. 통계청 M700071(MAS 자료).", ("M700071",))),
+    SgSpec(_s("mas_ofr", "monthly", "bn_usd", "bn0usd", "MAS 외환보유(OFR)",
+              "공식 외환보유액(월말, 십억 달러)입니다. 통계청 Table Builder M701211(MAS 자료). 환율 밴드 개입 실탄.", ("M701211",))),
+    SgSpec(Spec("sgd_neer", "monthly", "index", "idx1",
+                "싱가포르달러 명목실효환율(광의, 64개국 교역가중, 2020=100, 월평균)입니다 — BIS 산출. MAS는 자체 S$NEER 수준·기울기·밴드를 숫자로 공개하지 않아, 같은 개념의 BIS 지수로 싣습니다(가중치가 MAS와 다를 수 있음).",
+                "bis:WS_EER:M.N.B.SG", ("https://data.bis.org/topics/EER",), "monthly", label_ko="S$NEER(BIS)")),
     SgSpec(_s("sg_private_home", "quarterly", "index", "idx1", "민간주택가격지수",
               "민간 주거용 부동산 가격지수(2009년 1분기=100, 전체)입니다. 통계청 M212261(URA 자료).", ("M212261",)), 3),
 ]}
@@ -140,7 +149,34 @@ ROWS: dict[str, tuple[str, str]] = {
     "current_account": ("M060171", "1.1"),
     "sgs_2y": ("M700071", "13"), "sgs_10y": ("M700071", "15"),
     "sg_private_home": ("M212261", "1"),
+    "mas_ofr": ("M701211", "1"),
 }
+
+BIS_EER = "https://stats.bis.org/api/v2/data/dataflow/BIS/WS_EER/1.0/{key}?format=csv&startPeriod=2000-01"
+
+
+def parse_bis_csv(text: str) -> Points:
+    """BIS SDMX CSV: TIME_PERIOD '2026-03', OBS_VALUE."""
+    import csv
+    import io
+
+    rows = list(csv.DictReader(io.StringIO(text.lstrip("\ufeff"))))
+    out: Points = []
+    for r in rows:
+        p, v = r.get("TIME_PERIOD", ""), r.get("OBS_VALUE", "")
+        if len(p) == 7 and p[4] == "-" and v not in ("", "NaN"):
+            out.append((f"{p}-01", float(v)))
+    if not out:
+        raise ValueError("BIS answer has no monthly observations")
+    return sorted(out)
+
+
+def fetch_bis(key: str = "M.N.B.SG") -> Points:
+    import urllib.request
+
+    req = urllib.request.Request(BIS_EER.format(key=key), headers={"User-Agent": eps.UA})
+    with urllib.request.urlopen(req, timeout=90) as resp:
+        return parse_bis_csv(resp.read().decode("utf-8"))
 
 
 def m2_yoy(fetch: Callable[[str, str], tuple[Points, str | None]]) -> Points:
@@ -150,7 +186,10 @@ def m2_yoy(fetch: Callable[[str, str], tuple[Points, str | None]]) -> Points:
     return splice(ups.pct_change(old, 12), ups.pct_change(new, 12))
 
 
-def series_for(spec_id: str, fetch: Callable[[str, str], tuple[Points, str | None]] = fetch_row) -> Points:
+def series_for(spec_id: str, fetch: Callable[[str, str], tuple[Points, str | None]] = fetch_row,
+               bis: Callable[[], Points] = fetch_bis) -> Points:
+    if spec_id == "sgd_neer":
+        return bis()
     if spec_id == "m2_yoy":
         return m2_yoy(fetch)
     table, row = ROWS[spec_id]
@@ -161,7 +200,7 @@ def series_for(spec_id: str, fetch: Callable[[str, str], tuple[Points, str | Non
         return ups.pct_change(pts, 4)
     if spec_id == "gdp_qoq":
         return ups.pct_change(pts, 1)
-    if spec_id == "current_account":
+    if spec_id in ("current_account", "mas_ofr"):
         if "million" not in (unit or "").lower():
             raise ValueError(f"unexpected SingStat unit {unit!r}")
         return ups.scale(pts, 1e-3)
