@@ -12,7 +12,8 @@ name: Refresh public series (USA/JPN/KOR)
 # 금리·스프레드·외국인 순매수·수출)이고, 원화 환산과 금리차에 FRED 를 쓴다. 읽은 값은
 # config/kr_ecos_series_v1.json 에 남고, 시크릿이 없으면 그 캐시를 읽는다(이 경우 새 달로 안 넘어간다).
 # 반도체 수출만 KOSIS(과기정통부 IT산업별 월별 수출 현황; 시크릿 KOSIS_API_KEY)에서 읽는다.
-# 수출 금액(export_public_series.py): 싱가포르 NODX(통계청 Table Builder)·이스라엘 상품수출(FRED). 키 없음.
+# 수출 금액(export_public_series.py): 싱가포르 NODX(통계청 Table Builder)·이스라엘 상품수출(FRED)·
+# 홍콩 총수출(통계처 표 410-50001). 키 없음. 베트남 수출 카드는 무료 출처를 못 찾아 뺐다(remove_unsourced_cards.py).
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -53,7 +54,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python remove_unsourced_cards.py) || true
           }
           for attempt in 1 2 3; do
             refresh

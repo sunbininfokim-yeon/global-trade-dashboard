@@ -219,6 +219,26 @@ HTML_2020 = HTML_NOW.replace("Wednesday Sep 23, 2026", "Wednesday Mar 25, 2020")
     "<td>Foreign official</td><td>0</td><td>- 1</td><td>0</td><td>0</td>", "<td>Foreign official</td><td>1,000</td><td>+ 5</td><td>+ 9</td><td>60,000</td>")
 
 
+class RemoveIndicator(unittest.TestCase):
+    def country(self):
+        return {"indicators": [{"id": "export_yoy_vn", "label_ko": "수출 YoY"}, {"id": "gdp_yoy"}],
+                "categories": {"growth": [{"id": "export_yoy_vn"}, {"id": "gdp_yoy"}], "liquidity": [{"id": "m2_yoy"}]},
+                "headlines": [{"id": "export_yoy_vn"}]}
+
+    def test_drops_the_indicator_its_chip_and_its_headline(self):
+        c = self.country()
+        self.assertTrue(ups.remove_indicator(c, "export_yoy_vn"))
+        self.assertEqual([i["id"] for i in c["indicators"]], ["gdp_yoy"])
+        self.assertEqual([ch["id"] for ch in c["categories"]["growth"]], ["gdp_yoy"])
+        self.assertEqual([ch["id"] for ch in c["categories"]["liquidity"]], ["m2_yoy"])   # untouched category
+        self.assertEqual(c["headlines"], [])
+
+    def test_an_id_already_gone_is_a_no_op(self):
+        c = self.country()
+        ups.remove_indicator(c, "export_yoy_vn")
+        self.assertFalse(ups.remove_indicator(c, "export_yoy_vn"))
+
+
 class H41(unittest.TestCase):
     def test_wednesday_level_of_the_foreign_official_row(self):
         self.assertEqual(h41_fima.parse_release(HTML_NOW), {"wednesday": "2026-09-23", "foreign_official_mn": 0.0})

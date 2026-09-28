@@ -1,4 +1,5 @@
-"""Export amounts for Singapore (SingStat NODX) and Israel (FRED goods exports): macro_monitor.export_public_series."""
+"""Export amounts for Singapore (SingStat NODX), Israel (FRED goods exports) and Hong Kong (C&SD total
+exports): macro_monitor.export_public_series."""
 from __future__ import annotations
 
 import sys
@@ -31,7 +32,26 @@ class SingStat(unittest.TestCase):
             eps.parse_singstat(doc(("garbage", "1")), "4.2")
 
 
+class HKGCsv(unittest.TestCase):
+    def test_monthly_rows_are_dated_the_annual_row_is_skipped(self):
+        csv = "CCYY,MM,obs_value,sd_value\n1952,,2899.0000000000,\n2026,7,672518.0000000000,\n2026,8,667851.0000000000,\n"
+        self.assertEqual(eps.parse_hkg_csv(csv), [("2026-07-01", 672518.0), ("2026-08-01", 667851.0)])
+
+    def test_a_malformed_row_is_skipped_not_a_crash(self):
+        csv = "CCYY,MM,obs_value,sd_value\n2026,8,667851.0,\n2026,not-a-month,1.0,\ngarbage\n"
+        self.assertEqual(eps.parse_hkg_csv(csv), [("2026-08-01", 667851.0)])
+
+    def test_no_monthly_rows_raises(self):
+        with self.assertRaises(ValueError):
+            eps.parse_hkg_csv("CCYY,MM,obs_value,sd_value\n1952,,2899.0,\n")
+
+
 class Series(unittest.TestCase):
+    def test_hong_kong_hkd_million_becomes_billions(self):
+        hk = next(e for e in eps.EXPORTS if e.iso3 == "HKG")
+        out = eps.series_for(hk, hkg_csv=lambda: [("2026-07-01", 672518.0), ("2026-08-01", 667851.0)])
+        self.assertEqual(out, [("2026-07-01", 672.518), ("2026-08-01", 667.851)])
+
     def test_singapore_thousand_dollars_become_billions(self):
         sg = next(e for e in eps.EXPORTS if e.iso3 == "SGP")
         out = eps.series_for(sg, singstat=lambda t, r: ([("2026-08-01", 19413566.0)], "Thousand Dollars"))
@@ -86,6 +106,18 @@ class Apply(unittest.TestCase):
     def test_singapore_display_carries_its_currency(self):
         sg = next(e for e in eps.EXPORTS if e.iso3 == "SGP")
         self.assertEqual(eps.build_patch(sg, [("2026-08-01", 19.4136)], retrieved_at="t")["display"], "S$19.4B")
+
+    def test_hong_kong_trade_yoy_becomes_an_exports_amount(self):
+        hk = next(e for e in eps.EXPORTS if e.iso3 == "HKG")
+        c = {"indicators": [{"id": "trade_yoy", "label_ko": "수출입 YoY", "unit": "%", "data_status": "demo"}],
+             "categories": {"growth": [{"id": "trade_yoy", "unit": "%"}]}, "headlines": [], "data_status_summary": {"demo": 1}}
+        patch = eps.build_patch(hk, self.points(), retrieved_at="t")
+        self.assertTrue(eps.apply(c, hk, patch))
+        by = {i["id"]: i for i in c["indicators"]}
+        self.assertNotIn("trade_yoy", by)
+        ind = by["export_hk"]
+        self.assertTrue(ind["display"].startswith("HK$") and ind["display"].endswith("B"))
+        self.assertEqual((ind["unit"], ind["data_status"]), ("bn_hkd", "live"))
 
 
 class Ids(unittest.TestCase):

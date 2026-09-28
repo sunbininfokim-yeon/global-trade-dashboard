@@ -309,6 +309,27 @@ def sync_chips(usa: dict[str, Any], by_id: dict[str, dict[str, Any]], touched: s
                 h["label_ko"] = src["label_ko"]
 
 
+def remove_indicator(country: dict[str, Any], indicator_id: str) -> bool:
+    """Drop a card outright -- for a fixture that turned out to have no free source at all (a rate
+    or an amount both left demo forever is worse than one that says nothing), rather than renaming
+    it into something else. Idempotent: a second call on an id that is already gone changes nothing."""
+    indicators = country.get("indicators") or []
+    before = len(indicators)
+    country["indicators"] = [i for i in indicators if i.get("id") != indicator_id]
+    changed = len(country["indicators"]) != before
+    for cat, chips in list((country.get("categories") or {}).items()):
+        kept = [c for c in chips if c.get("id") != indicator_id]
+        if len(kept) != len(chips):
+            country["categories"][cat] = kept
+            changed = True
+    headlines = country.get("headlines") or []
+    kept_h = [h for h in headlines if h.get("id") != indicator_id]
+    if len(kept_h) != len(headlines):
+        country["headlines"] = kept_h
+        changed = True
+    return changed
+
+
 def refresh_status_summary(country: dict[str, Any]) -> None:
     """The per-country badge counts (live / demo / ...) are read from the indicators; they went stale
     when cards were replaced by real series without touching them."""
