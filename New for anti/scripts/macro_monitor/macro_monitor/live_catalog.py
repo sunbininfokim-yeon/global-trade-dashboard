@@ -31,6 +31,13 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("SGP", "usdsgd"): {"symbol": "SGD=X"},
     ("HKG", "usdhkd"): {"symbol": "HKD=X"},
     ("ZAF", "usdzar"): {"symbol": "ZAR=X"},
+    # stock indices (Yahoo chart, monthly closes; symbols checked 2026-09-29 -- HSTECH and an S-REIT
+    # index have no usable Yahoo history, so those cards stay as they are)
+    ("ZAF", "jse_top40"): {"symbol": "^J200.JO"},
+    ("HKG", "hsi"): {"symbol": "^HSI"},
+    ("HKG", "hscei"): {"symbol": "^HSCE"},
+    ("SGP", "sti"): {"symbol": "^STI"},
+    ("TWN", "taiex"): {"symbol": "^TWII"},
 }
 
 # Worker /api/macro?source=fred&series_id=… (limit=1 latest only)

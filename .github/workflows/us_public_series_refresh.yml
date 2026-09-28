@@ -14,6 +14,11 @@ name: Refresh public series (USA/JPN/KOR)
 # 반도체 수출만 KOSIS(과기정통부 IT산업별 월별 수출 현황; 시크릿 KOSIS_API_KEY)에서 읽는다.
 # 수출 금액(export_public_series.py): 싱가포르 NODX(통계청 Table Builder)·이스라엘 상품수출(FRED)·
 # 홍콩 총수출(통계처 표 410-50001). 키 없음. 베트남 수출 카드는 무료 출처를 못 찾아 뺐다(remove_unsourced_cards.py).
+# 남아공(za_public_series.py): 최신값은 SARB 웹 API, 과거는 FRED(OECD·IMF)·세계은행 Pink Sheet. 키 없음.
+# SARB 는 최근 25개 관측치만 주므로 받은 값을 config/za_sarb_series_v1.json 에 쌓아 두고(일별 시계열이 자라남),
+# 사이트가 막히면(봇 방어) 그 캐시를 쓴다.
+# 홍콩·싱가포르·대만(wire_asia_public_series.py): 통계처 CSV, SingStat, 대만 중앙은행 통계DB API. 모두 키 없음.
+# (워크플로 이름은 deploy.yml 의 workflow_run 목록과 맞물려 있어 그대로 둔다.)
 #
 # 미국:
 # FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
@@ -44,7 +49,7 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
@@ -54,15 +59,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python remove_unsourced_cards.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python remove_unsourced_cards.py) || true
           }
           for attempt in 1 2 3; do
             refresh
             git add "New for anti/scripts/macro_monitor/config/fima_repo_v1.json" \
                     "New for anti/scripts/macro_monitor/config/jp_estat_series_v1.json" \
                     "New for anti/scripts/macro_monitor/config/kr_ecos_series_v1.json" \
+                    "New for anti/scripts/macro_monitor/config/za_sarb_series_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
-            git commit -m "chore: refresh USA/JPN/KOR public series" || { echo "nothing changed"; exit 0; }
+            git commit -m "chore: refresh public series (USA/JPN/KOR/ZAF/HKG/SGP/TWN)" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi
             echo "push raced (attempt $attempt); recomputing on the latest main"
             git fetch origin main

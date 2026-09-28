@@ -90,21 +90,13 @@ def fetch_singstat(table: str, row_no: str, tries: int = 3) -> tuple[Points, str
 def parse_hkg_csv(text: str) -> Points:
     """CCYY,MM,obs_value,sd_value -- one row per month plus, interleaved, one undated annual total
     (blank MM) per year. Only the monthly rows are a point; the annual row is a different series
-    wearing the same table and would double the readings for whichever month it lands next to."""
-    out: Points = []
-    lines = text.strip().splitlines()
-    for line in lines[1:]:
-        parts = line.split(",")
-        if len(parts) < 3 or not parts[1].strip():
-            continue
-        try:
-            year, month, value = int(parts[0]), int(parts[1]), float(parts[2])
-        except ValueError:
-            continue
-        out.append((f"{year:04d}-{month:02d}-01", value))
-    if not out:
-        raise ValueError("HKG total-exports CSV has no monthly rows")
-    return sorted(out)
+    wearing the same table and would double the readings for whichever month it lands next to.
+    A figure C&SD marks as not released (sd_value) is skipped too -- see hk_public_series.parse_censtatd."""
+    from .hk_public_series import parse_censtatd
+    try:
+        return parse_censtatd(text)
+    except ValueError as exc:
+        raise ValueError(f"HKG total-exports CSV: {exc}") from exc
 
 
 def fetch_hkg_csv(url: str = HKG_TX_CSV, tries: int = 3) -> Points:

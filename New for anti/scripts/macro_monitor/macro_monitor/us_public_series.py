@@ -102,8 +102,12 @@ def quarter_label(iso: str) -> str:
     return f"{iso[:4]}Q{(int(iso[5:7]) - 1) // 3 + 1}"
 
 
-_WINDOWS = {"monthly": (60, 120), "quarterly": (20, 40), "weekly": (261, 522)}
-_DATE = {"monthly": month_end, "quarterly": quarter_end, "weekly": lambda d: d}
+def year_end(iso: str) -> str:
+    return f"{iso[:4]}-12-31"
+
+
+_WINDOWS = {"monthly": (60, 120), "quarterly": (20, 40), "weekly": (261, 522), "annual": (10, 20)}
+_DATE = {"monthly": month_end, "quarterly": quarter_end, "weekly": lambda d: d, "annual": year_end}
 
 
 def history_block(points: Points, cadence: str) -> dict[str, Any]:
@@ -111,7 +115,7 @@ def history_block(points: Points, cadence: str) -> dict[str, Any]:
     out = {}
     for key, n in zip(("5y", "10y"), _WINDOWS[cadence]):
         tail = points[-n:]
-        out[key] = {"dates": [dates(d) for d, _ in tail], "values": [round(v, 4) for _, v in tail]}
+        out[key] = {"dates": [dates(d) for d, _ in tail], "values": [None if v is None else round(v, 4) for _, v in tail]}
     return out
 
 
@@ -142,7 +146,7 @@ _FORMATS: dict[str, Callable[[float], str]] = {"pct1": _fmt_pct1, "k0": _fmt_k0,
 @dataclass(frozen=True)
 class Spec:
     id: str
-    cadence: str                 # weekly | monthly | quarterly
+    cadence: str                 # weekly | monthly | quarterly | annual
     unit: str
     fmt: str
     note_ko: str
@@ -204,7 +208,7 @@ def build_patch(spec: Spec, points: Points, *, retrieved_at: str, asof: str | No
     last_date, last = points[-1]
     dates = _DATE[spec.cadence]
     ref = quarter_label(last_date) if spec.cadence == "quarterly" else (
-        last_date[:7] if spec.cadence == "monthly" else last_date)
+        last_date[:7] if spec.cadence == "monthly" else last_date[:4] if spec.cadence == "annual" else last_date)
     display = _FORMATS[spec.fmt](last)
     if spec.asof_is_retrieval:
         # GDPNow's observation date is the start of the quarter it is about (and its period end is

@@ -186,6 +186,9 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
             ind["history"][key]["ma5"] = ma
     ind["source"] = source
     ind["quality"] = "live"
+    # The badge reads data_status, not quality. A card added to the Yahoo catalog after the pack was
+    # built kept its "demo" badge over a real price history until this was set here too.
+    ind["data_status"] = "live"
     real_date = (last_obs.isoformat() if last_obs is not None and last_obs.isoformat()[:7] == dates[last_real][:7] else dates[last_real])
     ind["asof"] = real_date
     ind["observed_at"] = real_date
@@ -224,6 +227,9 @@ def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
                 ch["display"] = ind.get("display_chip") or ind["display"]
                 ch["value"] = ind["value"]
                 ch["asof"] = ind["asof"]
+                for k in ("data_status", "source"):
+                    if k in ind:
+                        ch[k] = ind[k]
                 if "observed_at" in ch or "observed_at" in ind:
                     ch["observed_at"] = ind.get("observed_at", ind["asof"])
 
