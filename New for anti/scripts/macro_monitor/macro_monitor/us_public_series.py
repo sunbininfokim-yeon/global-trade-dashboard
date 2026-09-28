@@ -140,7 +140,7 @@ def _fmt_krw_tn1(v: float) -> str:
 
 
 _FORMATS: dict[str, Callable[[float], str]] = {"pct1": _fmt_pct1, "k0": _fmt_k0, "bn2": _fmt_bn2, "mn0": _fmt_mn0,
-                                               "krw_tn1": _fmt_krw_tn1}
+                                               "krw_tn1": _fmt_krw_tn1, "tn2usd": lambda v: f"${v:,.2f}T"}
 
 
 @dataclass(frozen=True)
@@ -197,7 +197,15 @@ SPECS: dict[str, Spec] = {s.id: s for s in [
     Spec("import_price_yoy", "monthly", "%", "pct1",
          "BLS 수입물가지수(전 품목)의 전년 같은 달 대비 증가율입니다.",
          "fred:IR", _fred_urls("IR"), "monthly", chart_type="line"),
+    Spec("auto_loans", "quarterly", "tn_usd", "tn2usd",
+         "자동차대출 잔액(금융기관 보유분 + 증권화분, 분기말, 계절조정 안 됨, 조 달러)입니다. 연준 G.19 소비자신용(FRED MVLOASM, 원자료 백만 달러). 가계의 차량 구매·신용 여건을 봅니다. 카드를 열면 잔액 아래에 전년 동기 대비 증가율 선이 함께 나옵니다.",
+         "fred:MVLOASM", _fred_urls("MVLOASM"), "quarterly", label_ko="자동차대출 잔액", chart_type="line"),
 ]}
+
+# Cards that are not in the built pack: created (in this category) the first time their series is read.
+NEW_CARDS = {"auto_loans": "growth"}
+# An amount that also shows its year-on-year growth as a line in the drawer (macro.js mmYoyPanel).
+YOY_LINE_IDS = frozenset({"auto_loans"})
 
 
 def build_patch(spec: Spec, points: Points, *, retrieved_at: str, asof: str | None = None) -> dict[str, Any]:
@@ -238,6 +246,8 @@ def build_patch(spec: Spec, points: Points, *, retrieved_at: str, asof: str | No
         patch["chart_type"] = spec.chart_type
     if spec.label_ko:
         patch["label_ko"] = spec.label_ko
+    if spec.id in YOY_LINE_IDS:
+        patch["yoy_line"] = True
     return patch
 
 
@@ -267,7 +277,24 @@ def series_for(spec_id: str, fred: Callable[[str], Points], fima_weeks: Points |
         return pct_change(fred("IQ"), 12)
     if spec_id == "import_price_yoy":
         return pct_change(fred("IR"), 12)
+    if spec_id == "auto_loans":
+        return scale(fred("MVLOASM"), 1e-6)                      # $ million -> $ trillion
     raise KeyError(spec_id)
+
+
+def ensure_card(country: dict[str, Any], card_id: str, category: str, spec: Spec) -> bool:
+    """Add a card the built pack does not have (its indicator and a chip at the end of `category`).
+    Only called with a patch in hand, so an empty card is never shown. Idempotent."""
+    if any(i.get("id") == card_id for i in country.get("indicators") or []):
+        return False
+    country.setdefault("indicators", []).append({
+        "id": card_id, "category": category, "label_ko": spec.label_ko or card_id, "unit": spec.unit,
+        "format": spec.fmt, "history": {}, "data_status": "live", "quality": "live",
+    })
+    chips = country.setdefault("categories", {}).setdefault(category, [])
+    if not any(c.get("id") == card_id for c in chips):
+        chips.append({"id": card_id, "label_ko": spec.label_ko or card_id, "unit": spec.unit})
+    return True
 
 
 # --------------------------------------------------------------------------
@@ -378,6 +405,9 @@ def apply_gdp_composite(by_id: dict[str, dict[str, Any]], retrieved_at: str) -> 
 def apply_all(usa: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrieved_at: str) -> dict[str, Any]:
     """Apply indicator patches, drop the legacy synthetic duplicates, rebuild the GDP composite and
     resync chips. Returns {'changed': [...], 'removed': [...]}."""
+    for card_id, category in NEW_CARDS.items():
+        if card_id in patches:
+            ensure_card(usa, card_id, category, SPECS[card_id])
     by_id = {i["id"]: i for i in usa["indicators"]}
     changed = [k for k, p in patches.items() if k in by_id and apply_patch(by_id[k], p)]
     if apply_gdp_composite(by_id, retrieved_at):

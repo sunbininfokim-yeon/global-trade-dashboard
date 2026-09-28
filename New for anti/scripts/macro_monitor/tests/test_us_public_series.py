@@ -219,6 +219,29 @@ HTML_2020 = HTML_NOW.replace("Wednesday Sep 23, 2026", "Wednesday Mar 25, 2020")
     "<td>Foreign official</td><td>0</td><td>- 1</td><td>0</td><td>0</td>", "<td>Foreign official</td><td>1,000</td><td>+ 5</td><td>+ 9</td><td>60,000</td>")
 
 
+class AutoLoans(unittest.TestCase):
+    def test_millions_become_trillions_and_the_card_carries_a_growth_line(self):
+        pts = ups.series_for("auto_loans", lambda sid: [("2026-03-01", 1559740.62), ("2026-06-01", 1574750.49)])
+        self.assertAlmostEqual(pts[-1][1], 1.57475049)
+        patch = ups.build_patch(ups.SPECS["auto_loans"], pts, retrieved_at="t")
+        self.assertEqual((patch["display"], patch["reference_period"], patch["asof"]), ("$1.57T", "2026Q2", "2026-06-30"))
+        self.assertTrue(patch["yoy_line"])
+
+    def test_a_card_missing_from_the_pack_is_added_once_with_its_chip(self):
+        usa = {"indicators": [], "categories": {"growth": [{"id": "nfp"}]}, "headlines": []}
+        patch = ups.build_patch(ups.SPECS["auto_loans"], [("2026-06-01", 1.57)], retrieved_at="t")
+        ups.apply_all(usa, {"auto_loans": patch}, retrieved_at="t")
+        ups.apply_all(usa, {"auto_loans": patch}, retrieved_at="t")
+        self.assertEqual([i["id"] for i in usa["indicators"]], ["auto_loans"])
+        self.assertEqual([c["id"] for c in usa["categories"]["growth"]], ["nfp", "auto_loans"])
+        self.assertEqual(usa["categories"]["growth"][1]["display"], "$1.57T")
+
+    def test_no_patch_no_card(self):
+        usa = {"indicators": [], "categories": {"growth": []}, "headlines": []}
+        ups.apply_all(usa, {}, retrieved_at="t")
+        self.assertEqual(usa["indicators"], [])
+
+
 class RemoveIndicator(unittest.TestCase):
     def country(self):
         return {"indicators": [{"id": "export_yoy_vn", "label_ko": "수출 YoY"}, {"id": "gdp_yoy"}],

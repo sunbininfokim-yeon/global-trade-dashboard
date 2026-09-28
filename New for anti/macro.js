@@ -641,7 +641,8 @@ const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployme
     'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
 const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
     'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw',
-    'semi_export_krw', 'nodx_sgd', 'export_il', 'export_hk', 'export_tw']);
+    'semi_export_krw', 'nodx_sgd', 'export_il', 'export_hk', 'export_tw', 'foreign_equity_flow_za',
+    'load_shedding_hours']);
 // An amount that is drawn as bars (exports) also shows its growth: the same monthly history, this month
 // against the same month a year earlier, as a line under the bars. Nothing extra is stored -- the rate is
 // computed from the amount series, so it can never disagree with it. The card opts in with `yoy_line`.

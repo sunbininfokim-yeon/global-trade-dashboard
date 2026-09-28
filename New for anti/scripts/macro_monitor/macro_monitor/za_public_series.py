@@ -50,9 +50,10 @@ SARB_PAUSE_S = 2.0
 
 ups._FORMATS.update({
     "pct2": lambda v: f"{v:.2f}%",
-    "bn1zar": lambda v: f"R{v:,.1f}B",
+    "bn1zar": lambda v: f"-R{abs(v):,.1f}B" if v < 0 else f"R{v:,.1f}B",
     "usd0": lambda v: f"${v:,.0f}",
     "usd1": lambda v: f"${v:,.1f}",
+    "hrs0": lambda v: f"{v:,.0f}시간",
 })
 
 
@@ -130,14 +131,17 @@ def sarb_reader(cache: dict[str, Any], updates: dict[str, Points], fetch: Callab
     return read
 
 
-def save_cache(cache: dict[str, Any], updates: dict[str, Points], retrieved_at: str, path: Path = SARB_CACHE) -> bool:
-    if not updates:
+def save_cache(cache: dict[str, Any], updates: dict[str, Points], retrieved_at: str, path: Path = SARB_CACHE,
+               force: bool = False) -> bool:
+    if not updates and not force:
         return False
     for code, pts in updates.items():
         cache.setdefault("series", {})[code] = [[d, v] for d, v in pts]
     cache["source"] = "SARB web API (GetTimeseriesObservations), accumulated; see za_public_series.py"
     cache["retrieved_at"] = retrieved_at
-    cache["series"] = dict(sorted(cache["series"].items()))
+    cache["series"] = dict(sorted(cache.setdefault("series", {}).items()))
+    if "eskom_mlr_days" in cache:
+        cache["eskom_mlr_days"] = dict(sorted(cache["eskom_mlr_days"].items()))
     path.write_text(json.dumps(cache, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     return True
 
@@ -275,6 +279,85 @@ def chain_yoy(qoq: Points) -> Points:
 
 
 # --------------------------------------------------------------------------
+# Eskom: hours of manual load reduction (load shedding)
+# --------------------------------------------------------------------------
+
+ESKOM_CSV = ("https://www.eskom.co.za/dataportal/wp-content/uploads/{y:04d}/{m:02d}/"
+             "Pumped_storage_gen_hours_gas_generation_and_manual_load_reduction.csv")
+
+
+def fetch_eskom_csv(today: date) -> str:
+    """The portal re-uploads the rolling file into the current month's folder (and its page can link an
+    older one that is gone): try this month's folder, then the three before it."""
+    y, m = today.year, today.month
+    last: Exception | None = None
+    for _ in range(4):
+        try:
+            return jps._get(ESKOM_CSV.format(y=y, m=m), tries=1).decode("utf-8-sig")
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+        y, m = (y - 1, 12) if m == 1 else (y, m - 1)
+    raise RuntimeError(f"Eskom MLR csv: {last}")
+
+
+def parse_eskom_mlr(text: str) -> list[tuple[str, float]]:
+    """Hourly rows 'YYYY-MM-DD HH:MM:SS, ..., Manual Load Reduction(MLR), ...' -> [(hour, MW)]."""
+    import csv
+    import io
+
+    rows = list(csv.reader(io.StringIO(text.lstrip("\ufeff"))))
+    if not rows or "Date" not in rows[0]:
+        raise ValueError(f"unexpected Eskom csv: {text[:60]!r}")
+    col = next((i for i, h in enumerate(rows[0]) if h.strip().startswith("Manual Load Reduction")), None)
+    if col is None:
+        raise ValueError("Eskom csv has no Manual Load Reduction column")
+    out = []
+    for r in rows[1:]:
+        if len(r) <= col or len(r[0]) < 13:
+            continue
+        try:
+            out.append((r[0][:13], float(r[col] or 0)))
+        except ValueError:
+            continue
+    if not out:
+        raise ValueError("Eskom csv has no hourly rows")
+    return out
+
+
+def merge_mlr(cache: dict[str, Any], hourly: list[tuple[str, float]]) -> bool:
+    """Per day two 24-character masks: hours observed, hours with load shedding (MLR > 0). A later file
+    that covers the same hours only adds what was not seen; nothing is counted twice."""
+    days: dict[str, list[str]] = cache.setdefault("eskom_mlr_days", {})
+    changed = False
+    for stamp, mw in hourly:
+        day, hour = stamp[:10], int(stamp[11:13])
+        seen, shed = days.get(day, ["0" * 24, "0" * 24])
+        new_seen = seen[:hour] + "1" + seen[hour + 1:]
+        new_shed = shed[:hour] + ("1" if mw > 0 or shed[hour] == "1" else "0") + shed[hour + 1:]
+        if [new_seen, new_shed] != [seen, shed]:
+            days[day] = [new_seen, new_shed]
+            changed = True
+    return changed
+
+
+def mlr_monthly(cache: dict[str, Any]) -> tuple[Points, str | None]:
+    """Load-shedding hours per month over the hours observed, and the last day observed."""
+    days = cache.get("eskom_mlr_days") or {}
+    if not days:
+        raise ValueError("no Eskom hours kept yet")
+    by: dict[str, float] = {}
+    for day, (seen, shed) in sorted(days.items()):
+        key = day[:7] + "-01"
+        by[key] = by.get(key, 0) + shed.count("1")
+    return sorted(by.items()), max(days)
+
+
+def mlr_coverage(cache: dict[str, Any], month: str) -> int:
+    """Days of `month` (YYYY-MM) with at least one hour observed."""
+    return sum(1 for d, (seen, _) in (cache.get("eskom_mlr_days") or {}).items() if d.startswith(month) and "1" in seen)
+
+
+# --------------------------------------------------------------------------
 # What each card is made of
 # --------------------------------------------------------------------------
 
@@ -351,6 +434,14 @@ SPECS: dict[str, ZaSpec] = {z.spec.id: z for z in [
               "백금 가격(달러/온스, 월평균)입니다. 세계은행 Pink Sheet. 남아공이 세계 공급 대부분을 차지하는 수출 원자재.",
               "worldbank:pinksheet", ("https://www.worldbank.org/en/research/commodity-markets",)),
            pink="Platinum"),
+    ZaSpec(_s("foreign_equity_flow_za", "monthly", "bn_zar", "bn1zar", "외국인 주식순매수",
+              "비거주자의 JSE 주식 순매수(월, 십억 랜드; 음수는 순매도)입니다. SARB 월간 자본시장 통계(CAPM311A). SARB가 최근 25개월만 공개해 그 이전 이력은 매일 쌓아 가며 늘어납니다.",
+              "sarb:CAPM311A", (SARB_PAGE,)),
+           sarb_codes=("CAPM311A",)),
+    ZaSpec(_s("load_shedding_hours", "monthly", "hours", "hrs0", "Load Shedding",
+              "Eskom 데이터 포털의 '수동 부하 감축(MLR)'이 0보다 큰 시간 수(월)입니다 — 순환정전이 실제로 시행된 시간. 포털이 최근 약 9일치만 공개해 2026-09-14부터 매일 쌓고 있고, 그 이전 이력은 Eskom 데이터 요청 양식으로만 받을 수 있어 싣지 않았습니다.",
+              "eskom:dataportal:MLR", ("https://www.eskom.co.za/dataportal/supply-side/pumped-storage-generating-hours-gas-generation-and-manual-load-reduction/",)),
+           ),
     ZaSpec(_s("coal_price", "monthly", "usd_t", "usd1", "석탄 가격",
               "남아공 석탄(리처즈베이 FOB, 달러/톤, 월평균)입니다. 세계은행 Pink Sheet 'Coal, South African'.",
               "worldbank:pinksheet", ("https://www.worldbank.org/en/research/commodity-markets",)),
@@ -359,15 +450,18 @@ SPECS: dict[str, ZaSpec] = {z.spec.id: z for z in [
 
 JOIN = {"cpi_yoy": "override", "sarb_repo": "override", "m3_yoy_za": "override",
         "sagb_10y": "extend", "gold_price": "extend"}
-SCALE = {"current_account": 1e-3, "trade_balance": 1e-9}          # R million -> R bn; Rand -> R bn
+SCALE = {"current_account": 1e-3, "trade_balance": 1e-9, "foreign_equity_flow_za": 1e-3}   # R million -> R bn; Rand -> R bn
 
 
 @dataclass
 class Sources:
     sarb: Callable[[str], Points]
     fred: Callable[[str], Points] = ups.fetch_fred
-    pink: Callable[[], dict[str, Points]] = fetch_pink_sheet
+    pink: Callable[[], dict[str, Points]] = lambda: fetch_pink_sheet()
     today: date = field(default_factory=date.today)
+    cache: dict[str, Any] = field(default_factory=dict)       # the SARB cache; the Eskom hours are kept in it too
+    eskom: Callable[[date], str] = lambda today: fetch_eskom_csv(today)
+    eskom_changed: bool = False
     _pink: dict[str, Points] | None = None
 
     def pink_series(self, title: str) -> Points:
@@ -408,6 +502,11 @@ def series_for(spec_id: str, src: Sources) -> tuple[list[tuple[str, float | None
         pts = to_annual(src.sarb("KBP4420J"))
     elif spec_id == "current_account":
         pts = to_quarterly(src.sarb("KBP5007L"))
+    elif spec_id == "foreign_equity_flow_za":
+        pts = to_monthly(src.sarb("CAPM311A"))[0]
+    elif spec_id == "load_shedding_hours":
+        src.eskom_changed |= merge_mlr(src.cache, parse_eskom_mlr(src.eskom(src.today)))
+        pts, last_day = mlr_monthly(src.cache)
     elif z.pink:
         pts = src.pink_series(z.pink)
     elif z.fred_ids:
@@ -420,10 +519,13 @@ def series_for(spec_id: str, src: Sources) -> tuple[list[tuple[str, float | None
 
 
 def build_patch(spec_id: str, points: list[tuple[str, float | None]], last_day: str | None, *,
-                retrieved_at: str) -> dict[str, Any]:
+                retrieved_at: str, cache: dict[str, Any] | None = None) -> dict[str, Any]:
     patch = ups.build_patch(SPECS[spec_id].spec, points, retrieved_at=retrieved_at, asof=last_day)
     if last_day:
         jps.pin_last_date(patch, last_day)
+    if spec_id == "load_shedding_hours" and cache is not None and last_day:
+        month = last_day[:7]
+        patch["note_ko"] += f" 이번 달({month})은 관측된 {mlr_coverage(cache, month)}일 기준입니다."
     return patch
 
 

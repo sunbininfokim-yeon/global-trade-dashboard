@@ -114,5 +114,29 @@ class Series(unittest.TestCase):
         self.assertEqual(patch["history"]["10y"]["dates"][-1], "2026-09-28")
 
 
+class LoadShedding(unittest.TestCase):
+    CSV = ("Date,Eskom OCGT Generation,Manual Load Reduction(MLR),Other\n"
+           "2026-09-14 00:00:00,0,0,1\n2026-09-14 01:00:00,0,1500,1\n2026-09-15 00:00:00,0,0,1\n")
+
+    def test_hours_with_load_reduction_are_counted_once(self):
+        cache = {}
+        hourly = zas.parse_eskom_mlr(self.CSV)
+        self.assertEqual(hourly[1], ("2026-09-14 01", 1500.0))
+        self.assertTrue(zas.merge_mlr(cache, hourly))
+        self.assertFalse(zas.merge_mlr(cache, hourly))              # the same file again adds nothing
+        pts, last = zas.mlr_monthly(cache)
+        self.assertEqual(pts, [("2026-09-01", 1.0)])
+        self.assertEqual(last, "2026-09-15")
+        self.assertEqual(zas.mlr_coverage(cache, "2026-09"), 2)
+
+    def test_a_file_without_the_column_is_refused(self):
+        with self.assertRaises(ValueError):
+            zas.parse_eskom_mlr("Date,Other\n2026-09-14 00:00:00,1\n")
+
+    def test_negative_rand_amounts_read_as_outflows(self):
+        self.assertEqual(zas.ups._FORMATS["bn1zar"](-16.221), "-R16.2B")
+        self.assertEqual(zas.ups._FORMATS["bn1zar"](8.2), "R8.2B")
+
+
 if __name__ == "__main__":
     unittest.main()

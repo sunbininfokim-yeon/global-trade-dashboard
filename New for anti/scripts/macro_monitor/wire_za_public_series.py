@@ -30,17 +30,17 @@ def main() -> int:
     retrieved = ups.now_iso()
     cache = zas.load_cache()
     updates: dict = {}
-    src = zas.Sources(sarb=zas.sarb_reader(cache, updates))
+    src = zas.Sources(sarb=zas.sarb_reader(cache, updates), cache=cache)
 
     patches, failures = {}, []
     for spec_id in zas.SPECS:
         try:
             pts, last_day = zas.series_for(spec_id, src)
-            patches[spec_id] = zas.build_patch(spec_id, pts, last_day, retrieved_at=retrieved)
+            patches[spec_id] = zas.build_patch(spec_id, pts, last_day, retrieved_at=retrieved, cache=cache)
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{spec_id}: {exc}")
 
-    cache_written = zas.save_cache(cache, updates, retrieved)
+    cache_written = zas.save_cache(cache, updates, retrieved, force=src.eskom_changed)
     result = zas.apply_all(zaf, patches, retrieved_at=retrieved)
     if result["changed"] or result["summary_changed"]:
         PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
