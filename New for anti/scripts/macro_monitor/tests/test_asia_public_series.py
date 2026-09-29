@@ -105,6 +105,19 @@ def cbc_doc(rows, *tables):
                                  "dataSets": rows}}
 
 
+class SgNewCards(unittest.TestCase):
+    def test_growth_cards_are_added_once_and_yoy_is_from_the_index(self):
+        idx = [(f"2025-{m:02d}-01", 100.0) for m in range(1, 13)] + [("2026-01-01", 115.4)]
+        pts = sgs.series_for("sg_ip_yoy", lambda t, r: (idx, "Index"))
+        self.assertAlmostEqual(pts[-1][1], 15.4)
+        c = {"indicators": [], "categories": {"growth": [{"id": "gdp"}]}, "headlines": [], "data_status_summary": {}}
+        patch = sgs.build_patch("sg_ip_yoy", pts, retrieved_at="t")
+        sgs.apply_all(c, {"sg_ip_yoy": patch}, retrieved_at="t")
+        sgs.apply_all(c, {"sg_ip_yoy": patch}, retrieved_at="t")
+        self.assertEqual([x["id"] for x in c["categories"]["growth"]], ["gdp", "sg_ip_yoy"])
+        self.assertEqual(len(c["indicators"]), 1)
+
+
 class Cbc(unittest.TestCase):
     def test_columns_are_the_product_of_the_tables_in_order(self):
         doc = cbc_doc([["2026M07", "702248", "7.42", "701550", "6.58"]], ["M2"], ["日平均", "期底"], ["金額", "年增率"])

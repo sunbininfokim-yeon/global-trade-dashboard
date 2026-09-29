@@ -26,6 +26,10 @@ PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 # series. Checked 2026-09-28; see docs/ops/handoff for the fuller source-by-source writeup.
 REMOVE = [
     ("VNM", "export_yoy_vn", "no free export-amount source found (GSO unreachable, Customs blank, no FRED/OECD MEI series)"),
+    # Singapore SORA (2026-09-29): only MAS publishes it, and the MAS API portal's terms forbid republishing
+    # without prior written permission; SingStat and data.gov.sg carry no SORA. The spread needs SORA too.
+    ("SGP", "sora", "MAS API terms forbid republishing; no open-licensed SORA source"),
+    ("SGP", "sofr_sora_spread", "needs SORA (see above)"),
 ]
 
 
