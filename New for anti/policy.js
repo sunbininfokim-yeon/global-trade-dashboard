@@ -209,6 +209,7 @@
     `<div class="policy-search" data-search>
        <input type="search" class="policy-search-input" data-search-input autocomplete="off"
               placeholder="${esc('법안·행정명령 검색 (예: 니켈, 수출통제)')}" value="${esc(state.search.query)}">
+       <span class="policy-search-spinner" data-search-spinner hidden aria-hidden="true"></span>
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
 
@@ -312,16 +313,24 @@
   let searchToken = 0;
   let searchTimer = null;
 
+  function setSearchSpinner(visible) {
+    const spinner = host?.querySelector('[data-search-spinner]');
+    if (spinner) spinner.hidden = !visible;
+  }
+
   async function runSearch(value) {
     const token = ++searchToken;
+    setSearchSpinner(true);
     try {
       const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(value)}`);
       const body = await res.json().catch(() => null);
       if (token !== searchToken || !host) return;
+      setSearchSpinner(false);
       if (!res.ok || !body) return renderSearchMessage('검색 중 오류가 발생했습니다');
       renderSearchResults(body);
     } catch {
       if (token !== searchToken || !host) return;
+      setSearchSpinner(false);
       renderSearchMessage('검색 중 오류가 발생했습니다');
     }
   }
@@ -336,6 +345,7 @@
     const box = host.querySelector('[data-search-results]');
     if (!input.value.trim()) {
       searchToken += 1; // drop any in-flight response for the old query
+      setSearchSpinner(false);
       if (box) box.hidden = true;
       return;
     }
@@ -350,6 +360,7 @@
       if (!query) return;
       clearTimeout(searchTimer);
       searchToken += 1; // drop any in-flight dropdown fetch, the full page is taking over
+      setSearchSpinner(false);
       const box = host.querySelector('[data-search-results]');
       if (box) box.hidden = true;
       go('search', query);
@@ -360,6 +371,7 @@
     state.search.query = '';
     clearTimeout(searchTimer);
     searchToken += 1;
+    setSearchSpinner(false);
     const box = host.querySelector('[data-search-results]');
     if (box) box.hidden = true;
   }
@@ -1388,6 +1400,8 @@
   function onClick(event) {
     const searchWrap = host.querySelector('[data-search]');
     if (searchWrap && !searchWrap.contains(event.target)) {
+      searchToken += 1; // drop any in-flight dropdown fetch now that it's dismissed
+      setSearchSpinner(false);
       const box = searchWrap.querySelector('[data-search-results]');
       if (box) box.hidden = true;
     }
@@ -1398,6 +1412,8 @@
     }
     const searchResult = event.target.closest('.policy-search-result');
     if (searchResult && host.contains(searchResult)) {
+      searchToken += 1;
+      setSearchSpinner(false);
       const box = host.querySelector('[data-search-results]');
       const input = host.querySelector('[data-search-input]');
       if (box) box.hidden = true;
