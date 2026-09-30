@@ -349,7 +349,7 @@
       if (box) box.hidden = true;
       return;
     }
-    searchTimer = setTimeout(() => runSearch(input.value.trim()), 300);
+    searchTimer = setTimeout(() => runSearch(input.value.trim()), 100);
   }
 
   function onSearchKeydown(event) {
