@@ -6705,3 +6705,24 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .policy-search-match-section .policy-search-result { align-items: flex-start; }
 .policy-search-match-section .policy-search-result-meta { color: #aebbd0; }
 .policy-search-match-section .policy-search-result-meta strong { color: #d8e6ff; }
+
+/* A single normal-flow wrapper prevents help text and match tiers becoming columns. */
+.policy-condition-search { width: 100%; min-width: 0; }
+.policy-search-preview { max-width: 640px; }
+.policy-search-preview .policy-search-result { padding: 7px 10px; }
+.policy-search-preview .policy-search-result-title { white-space: nowrap; }
+.policy-search-preview-count { display: block; padding: 6px 10px; font-size: 11px; color: #94a3b8; }
+.policy-search-details { margin-top: 8px; border: 1px solid #334155; border-radius: 8px; }
+.policy-search-details > summary, .policy-search-count-group > summary { cursor: pointer; padding: 10px 12px; color: #d8e6ff; font-size: 12px; }
+.policy-search-details > summary span, .policy-search-count-group > summary span { float: right; color: #94a3b8; font-size: 11px; }
+.policy-search-details > summary:focus-visible, .policy-search-count-group > summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.policy-condition-search:has(> .policy-search-details[open]) > .policy-search-preview { display: none; }
+.policy-search-details-body { padding: 4px 8px 8px; }
+.policy-search-count-group { border-top: 1px solid #253247; }
+.policy-search-count-results { padding: 4px; }
+.policy-search-count-results .policy-search-group { margin: 4px 0 10px; }
+.policy-search-count-results .policy-search-result { align-items: flex-start; }
+.policy-search-count-results .policy-search-result-meta { color: #aebbd0; }
+.policy-search-results:has(.policy-condition-search) { width: min(320px, calc(100vw - 32px)); max-height: 280px; }
+.policy-search-results .policy-search-details > summary span { display: none; }
+.policy-search-match-note { padding: 4px 8px; font-size: 11px; }

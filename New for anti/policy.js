@@ -267,7 +267,7 @@
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
-    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치${item.match_level === 'partial' ? ' · 일부 조건 일치' : ' · 전체 조건 일치'}</strong></span>
+    const conditionLabel = opts.preview && matches.length ? `<span class="policy-search-result-meta">${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</span>` : matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치${item.match_level === 'partial' ? ' · 일부 조건 일치' : ' · 전체 조건 일치'}</strong></span>
       <span class="policy-search-result-meta">${matches.map(m => `${esc(m.term)}: ${m.matched ? '확인' : '미확인'}`).join(' · ')}</span>
       ${!opts.compact ? matches.filter(m => m.matched).map(m => `<span class="policy-search-result-meta">${esc(m.term)} 근거 (${m.field === 'title' ? '제목' : '요약'}): ${esc(m.snippet)}</span>`).join('') : ''}` : '';
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
@@ -311,17 +311,28 @@
     if (body.search_mode !== 'conditions') return items.length
       ? groupSearchItems(items).map(g => searchGroupBlock(g, opts)).join('')
       : empty('검색 결과가 없습니다');
-    const counts = [...new Set(items.map(i => i.matched_condition_count))].sort((a,b) => b-a);
-    const note = '<p class="policy-search-match-note">저장된 제목·요약의 단어·등록된 유사 표현 기준입니다. 원문 전체나 조건 간 관계를 확인한 결과는 아닙니다.</p>';
-    const limits = body.candidate_limited || body.result_limited ? '<p class="policy-search-match-note">후보·표시 수 제한이 있습니다. 조건을 구체화하면 더 정확히 찾을 수 있습니다.</p>' : '';
-    const degraded = body.semantic_available === false ? '<p class="policy-search-match-note">의미 검색을 사용할 수 없어 단어·유사 표현 검색 결과만 표시합니다.</p>' : '';
-    const noAll = !items.some(i => i.match_level === 'all') ? '<p class="policy-search-match-note">검색된 후보의 제목·요약에서 모든 조건이 확인되는 문서는 없습니다.</p>' : '';
-    return note + limits + degraded + noAll + (counts.length ? counts.map(count => {
-      const subset = items.filter(i => i.matched_condition_count === count);
-      const total = subset[0].total_condition_count;
-      return `<section class="policy-search-match-section"><h3>${count === total ? '전체 조건 일치' : '일부 조건 일치'} · ${esc(total)}개 중 ${esc(count)}개</h3>${groupSearchItems(subset).map(g => searchGroupBlock(g, opts)).join('')}</section>`;
-    }).join('') : empty('확인된 조건 일치 결과가 없습니다. 문장형 의미 검색도 시도해 보세요.'));
+    const total = body.conditions?.length || items[0]?.total_condition_count || 0;
+    const counts = Array.from({ length: total }, (_, i) => total - i);
+    const sorted = [...items].sort((a,b) => b.matched_condition_count - a.matched_condition_count);
+    const note = '<p class="policy-search-match-note">제목·요약에서 확인된 표현 기준입니다. 미확인은 원문에 없다는 뜻이 아닙니다.</p>';
+    const limits = body.candidate_limited || body.result_limited ? '<p class="policy-search-match-note">검색된 후보·표시 결과 기준이며, 전체 자료 수가 아닙니다.</p>' : '';
+    const degraded = body.semantic_available === false ? '<p class="policy-search-match-note">현재 단어·유사 표현 검색 결과만 표시합니다.</p>' : '';
+    const preview = sorted.length ? sorted.slice(0,3).map(item => searchResultRow(item, {compact:true, preview:true})).join('') : empty('확인된 조건 일치 결과가 없습니다');
+    return `<div class="policy-condition-search">
+      <div class="policy-search-preview">${preview}${items.length > 3 ? `<span class="policy-search-preview-count">${esc(items.length)}건 중 상위 3건</span>` : ''}</div>
+      <details class="policy-search-details"><summary>세부 사항 확인 <span>조건별 결과 보기</span></summary>
+        <div class="policy-search-details-body">${note}${limits}${degraded}
+          ${counts.map(count => {
+            const subset = sorted.filter(i => i.matched_condition_count === count);
+            return `<details class="policy-search-count-group"><summary>${count === total ? `${esc(total)}개 모두 일치` : `${esc(total)}개 중 ${esc(count)}개 일치`} <span>${subset.length}건</span></summary>
+              <div class="policy-search-count-results">${subset.length ? groupSearchItems(subset).map(g => searchGroupBlock(g, opts)).join('') : empty('검색된 후보 중 이 조건 수에 해당하는 결과가 없습니다')}</div>
+            </details>`;
+          }).join('')}
+        </div>
+      </details>
+    </div>`;
   }
+
   function renderSearchResults(body) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;

@@ -6,7 +6,10 @@ const row=(id,count,type='bill')=>({id,type,title:`Result ${id}`,total_condition
 test('dropdown and full page place all-condition section before partial section with missing terms visible',()=>{
  for(const compact of [true,false]){
  const html=render({search_mode:'conditions',items:[row('p',2),row('a',3,'executive_order')]},compact);
- assert.ok(html.indexOf('전체 조건 일치')<html.indexOf('일부 조건 일치'));
+ assert.ok(html.indexOf('<summary>3개 모두 일치')<html.indexOf('<summary>3개 중 2개 일치'));
+ assert.match(html, /<details class="policy-search-details"><summary>세부 사항 확인/);
+ assert.ok(!html.includes('<details class="policy-search-details" open'));
+ assert.ok(!html.split('<details class="policy-search-details">')[0].includes('근거')); 
  assert.match(html,/3개 중 2개 일치/);assert.match(html,/수출통제: 미확인/);
  if(!compact)assert.match(html,/수출통제 근거 \(요약\)/);
  }
@@ -18,5 +21,5 @@ test('evidence and terms are escaped and unsafe external source URLs are not lin
 });
 test('empty and truncated candidate sets disclose scope without claiming no relevant law exists',()=>{
  const html=render({search_mode:'conditions',items:[],candidate_limited:true,semantic_available:false});
- assert.match(html,/후보·표시 수 제한/);assert.match(html,/단어·유사 표현 검색 결과만/);assert.match(html,/검색된 후보의 제목·요약/);
+ assert.match(html,/검색된 후보·표시 결과 기준/);assert.match(html,/단어·유사 표현 검색 결과만/);assert.match(html,/전체 자료 수가 아닙니다/);
 });
