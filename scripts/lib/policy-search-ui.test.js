@@ -9,7 +9,7 @@ test('dropdown and full page place all-condition section before partial section 
  assert.ok(html.indexOf('<summary>3개 모두 일치')<html.indexOf('<summary>3개 중 2개 일치'));
  assert.match(html, /<details class="policy-search-details"><summary>세부 사항 확인/);
  assert.ok(!html.includes('<details class="policy-search-details" open'));
- assert.ok(!html.split('<details class="policy-search-details">')[0].includes('근거')); 
+ assert.ok(!html.split('<details class="policy-search-details">')[0].includes('근거'));
  assert.match(html,/3개 중 2개 일치/);assert.match(html,/수출통제: 미확인/);
  if(!compact)assert.match(html,/수출통제 근거 \(요약\)/);
  }
