@@ -57,7 +57,7 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_source_notices.py tests/test_cpi_api.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_hidden_flags.py tests/test_source_notices.py tests/test_cpi_api.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
@@ -69,7 +69,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python remove_unsourced_cards.py; python apply_source_notices.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh

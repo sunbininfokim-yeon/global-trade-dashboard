@@ -93,6 +93,13 @@ def main() -> int:
             if ind and h.get("id") == "gdp_yoy":
                 h["display"] = ind.get("display_chip") or ind.get("display")
                 h["data_status"] = ind.get("data_status")
+        # ... and so is the chip (it kept the fixture's demo badge over a World Bank card)
+        for chips in (country.get("categories") or {}).values():
+            for ch in chips:
+                if ind and ch.get("id") == "gdp_yoy":
+                    for k in ("display", "value", "asof", "observed_at", "source", "data_status"):
+                        if k in ind:
+                            ch[k] = ind.get("display_chip") if k == "display" and ind.get("display_chip") else ind[k]
 
     PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     print(f"refreshed gdp_yoy for {len(refreshed)} countries: {', '.join(refreshed)}")

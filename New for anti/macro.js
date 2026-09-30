@@ -2525,14 +2525,22 @@ const mmSourceNotices = (notices) => {
         /^https:\/\//.test(n.url || '') ? ` <a href="${finEsc(n.url)}" target="_blank" rel="noopener noreferrer">↗</a>` : ''}</p>`).join('')}</div>`;
 };
 
+// Cards without an observed source carry hidden: true (apply_hidden_flags.py,
+// recomputed on every refresh, so a card that gets real data reappears by
+// itself). A tab whose cards are all hidden is disabled like an absent one.
+const mmShown = (x) => x && !x.hidden;
+const mmVisibleCats = (c) => (c.active_categories || [])
+    .filter((id) => ((c.categories || {})[id] || []).some(mmShown));
+
 const mmOverlay = () => {
     if (!MM_COUNTRY) return '';
     const c = MM_COUNTRY.country;
     const tabs = (MM_INDEX.ui && MM_INDEX.ui.category_tabs) || [];
-    const active = (c.active_categories || []).includes(MM_TAB) ? MM_TAB
-        : (c.active_categories || [])[0] || 'liquidity';
+    const visibleCats = mmVisibleCats(c);
+    const active = visibleCats.includes(MM_TAB) ? MM_TAB : visibleCats[0] || 'liquidity';
     MM_TAB = active;
-    const chips = (c.categories || {})[active] || [];
+    const chips = ((c.categories || {})[active] || []).filter(mmShown);
+    const headlines = (c.headlines || []).filter(mmShown);
     const tabMeta = tabs.find((t) => t.id === active) || {};
     const lim = c.limitations || {};
 
@@ -2548,9 +2556,9 @@ const mmOverlay = () => {
             <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
         </div>
 
-        ${(c.headlines || []).length ? `
+        ${headlines.length ? `
         <div class="mm-headlines">
-            ${c.headlines.map((h) => `
+            ${headlines.map((h) => `
                 <button class="mm-headline" data-mm-tab="${finEsc(h.category)}"
                         title="${finEsc(mmStatus(h.data_status).label)}">
                     <span class="mm-headline-label">
@@ -2566,7 +2574,7 @@ const mmOverlay = () => {
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
                 const on = t.id === active;
-                const has = (c.active_categories || []).includes(t.id);
+                const has = visibleCats.includes(t.id);
                 return `<button class="mm-tab ${on ? 'on' : ''}" data-mm-tab="${finEsc(t.id)}"
                         ${has ? '' : 'disabled'} role="tab">${finEsc(t.label_ko)}</button>`;
             }).join('')}
@@ -2701,7 +2709,7 @@ const mmOpenCountry = async (iso3) => {
         if (quality) MM_COUNTRY.quality = quality;
         if (statementDiff) MM_COUNTRY.statementDiff = statementDiff;
         if (cbDoc && cbDoc[iso3]) MM_COUNTRY.cbPolicy = cbDoc[iso3];
-        MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
+        MM_TAB = mmVisibleCats(MM_COUNTRY.country)[0] || 'liquidity';
         MM_CHART = null;
     } catch (err) {
         if (host) host.innerHTML = `<div class="mm-overlay"><p class="fin-p">${finEsc(err.message)}</p>
