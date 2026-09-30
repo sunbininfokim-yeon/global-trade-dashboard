@@ -19,6 +19,7 @@ name: Refresh public series (USA/JPN/KOR)
 # 사이트가 막히면(봇 방어) 그 캐시를 쓴다.
 # 홍콩·싱가포르·대만(wire_asia_public_series.py): 통계처 CSV, SingStat, 대만 중앙은행 통계DB API. 모두 키 없음.
 # 스위스(wire_che_public_series.py): SNB 데이터 포털(정책금리·10년물·CPI·M3·대차대조표·요구불예금·경상수지·외환거래·REER)과 FRED(실질GDP·독일 10년물). 키 없음.
+# 호주(wire_aus_public_series.py): ABS Data API(CPI·절사평균·노동력·국민계정·국제수지·상품교역·건축승인), FRED(OECD 금리), 세계은행 Pink Sheet(철광석·석탄). 키 없음. RBA는 접근 불가(403).
 # 러시아(wire_ru_public_series.py): 러시아은행(환율·기준금리·CPI·외환보유고·M2·OFZ 곡선)과 모스크바거래소. 키 없음.
 # OFZ 10년은 날짜당 1회 조회라 월말 값을 config/ru_cbr_series_v1.json 에 쌓아 둔다(첫 실행만 백필).
 # (워크플로 이름은 deploy.yml 의 workflow_run 목록과 맞물려 있어 그대로 둔다.)
@@ -52,7 +53,7 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_source_notices.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_source_notices.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
@@ -62,7 +63,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python remove_unsourced_cards.py; python apply_source_notices.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python remove_unsourced_cards.py; python apply_source_notices.py) || true
           }
           for attempt in 1 2 3; do
             refresh

@@ -468,4 +468,9 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
         ],
     }
     universe["live_stats"] = stats
+    # The per-country badge counts are read from the indicators; a card this overlay turned live
+    # (a new Yahoo symbol) otherwise stayed counted as demo.
+    from .us_public_series import refresh_status_summary
+    for country in by_country.values():
+        refresh_status_summary(country)
     return stats
