@@ -21,6 +21,8 @@ name: Refresh public series (USA/JPN/KOR)
 # 스위스(wire_che_public_series.py): SNB 데이터 포털(정책금리·10년물·CPI·M3·대차대조표·요구불예금·경상수지·외환거래·REER)과 FRED(실질GDP·독일 10년물). 키 없음.
 # 호주(wire_aus_public_series.py): ABS Data API(CPI·절사평균·노동력·국민계정·국제수지·상품교역·건축승인), FRED(OECD 금리), 세계은행 Pink Sheet(철광석·석탄). 키 없음. RBA는 접근 불가(403).
 # 인도네시아(wire_idn_public_series.py): BPS WebAPI(시크릿 BPS_API_KEY -- 없으면 건너뜀), FRED(외환보유액), Yahoo. 첫 실행 때 국가를 만든다. 패널에 'BPS API 사용' 표기(source_notices).
+# 미국 물가(BLS CPI·BEA PCE)와 연준 대차대조표·QE/QT·Z.1 헤지펀드 국채: 빌더와 wire가 있었지만 정기 실행에 빠져 있어
+# CPI·PCE가 한 달씩 밀려 있었다(2026-09-30 발견). BLS_API_KEY는 선택(없으면 무키 한도로 돈다).
 # 러시아(wire_ru_public_series.py): 러시아은행(환율·기준금리·CPI·외환보유고·M2·OFZ 곡선)과 모스크바거래소. 키 없음.
 # OFZ 10년은 날짜당 1회 조회라 월말 값을 config/ru_cbr_series_v1.json 에 쌓아 둔다(첫 실행만 백필).
 # (워크플로 이름은 deploy.yml 의 workflow_run 목록과 맞물려 있어 그대로 둔다.)
@@ -54,18 +56,19 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_source_notices.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_source_notices.py tests/test_cpi_api.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
           BPS_API_KEY: ${{ secrets.BPS_API_KEY }}
+          BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python remove_unsourced_cards.py; python apply_source_notices.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python remove_unsourced_cards.py; python apply_source_notices.py) || true
           }
           for attempt in 1 2 3; do
             refresh
@@ -74,6 +77,11 @@ jobs:
                     "New for anti/scripts/macro_monitor/config/kr_ecos_series_v1.json" \
                     "New for anti/scripts/macro_monitor/config/za_sarb_series_v1.json" \
                     "New for anti/scripts/macro_monitor/config/ru_cbr_series_v1.json" \
+                    "New for anti/public/data/us_cpi_api_history_v1.json" \
+                    "New for anti/public/data/us_pce_history_v1.json" \
+                    "New for anti/public/data/hedge_fund_ust_v1.json" \
+                    "New for anti/public/data/fed_qe_qt_history_v1.json" \
+                    "New for anti/public/data/fed_balance_sheet_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
             git commit -m "chore: refresh public series (USA/JPN/KOR/ZAF/HKG/SGP/TWN/RUS)" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi
