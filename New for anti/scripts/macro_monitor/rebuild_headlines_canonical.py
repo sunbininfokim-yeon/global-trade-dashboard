@@ -25,11 +25,11 @@ OUT = Path(__file__).resolve().parents[2] / "public" / "data" / "macro_monitor_v
 FIELD_MAP: dict[str, tuple[str, str, str, str, str]] = {
     "KOR": ("gdp_yoy", "cpi_yoy", "bok_base_rate", "usdkrw", "kospi"),
     "JPN": ("gdp_yoy", "core_cpi_jp", "call_rate", "usdjpy", "nikkei"),
-    "CHN": ("gdp_yoy", "cpi_yoy", "lpr_1y", "usdcnh", "sse_composite"),
+    "CHN": ("gdp_yoy", "cpi_yoy", "lpr_1y", "usdcny", "sse_composite"),
     "EMU": ("gdp_yoy", "hicp_yoy", "deposit_facility", "eurusd", "dax40"),
     "ZAF": ("gdp_yoy", "cpi_yoy", "sarb_repo", "usdzar", "jse_top40"),
     "IDN": ("gdp_yoy", "cpi_yoy", "bi_rate", "usdidr", "jci"),
-    "SGP": ("gdp_yoy", "cpi_yoy", "sora", "usdsgd", "sti"),
+    "SGP": ("gdp_yoy", "cpi_yoy", "sgd_neer", "usdsgd", "sti"),
     "HKG": ("gdp_yoy", "composite_cpi", "hk_base_rate", "usdhkd", "hsi"),
     "RUS": ("gdp_yoy", "cpi_yoy", "cbr_key_rate", "usdrub", "moex_index"),
     "GBR": ("gdp_yoy", "cpi_yoy", "bank_rate", "gbpusd", "ftse100"),

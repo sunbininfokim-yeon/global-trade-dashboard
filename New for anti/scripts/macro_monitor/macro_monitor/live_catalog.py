@@ -44,6 +44,23 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("AUS", "asx_vix"): {"symbol": "^AXVI"},
     ("IDN", "usdidr"): {"symbol": "IDR=X"},
     ("IDN", "jci"): {"symbol": "^JKSE"},
+    # 2026-09-30: indices / crosses for the countries wired by wire_world_public_series.py (CSI 300 and
+    # VN-Index have a single Yahoo point, Euro Stoxx Banks no symbol -- left out)
+    ("CAN", "tsx"): {"symbol": "^GSPTSE"},
+    ("GBR", "eurgbp"): {"symbol": "EURGBP=X"},
+    ("GBR", "ftse250"): {"symbol": "^FTMC"},
+    ("EMU", "eurjpy"): {"symbol": "EURJPY=X"},
+    ("EMU", "eurgbp"): {"symbol": "EURGBP=X"},
+    ("EMU", "cac40"): {"symbol": "^FCHI"},
+    ("BRA", "ibovespa"): {"symbol": "^BVSP"},
+    ("IND", "nifty50"): {"symbol": "^NSEI"},
+    ("IND", "sensex"): {"symbol": "^BSESN"},
+    ("ISR", "usdils"): {"symbol": "ILS=X"},
+    ("ISR", "ta125"): {"symbol": "^TA125.TA"},
+    ("CHN", "usdcny"): {"symbol": "CNY=X"},
+    ("CHN", "sse_composite"): {"symbol": "000001.SS"},
+    ("KAZ", "usdkzt"): {"symbol": "KZT=X"},
+    ("VNM", "usdvnd"): {"symbol": "VND=X"},
 }
 
 # Worker /api/macro?source=fred&series_id=… (limit=1 latest only)
