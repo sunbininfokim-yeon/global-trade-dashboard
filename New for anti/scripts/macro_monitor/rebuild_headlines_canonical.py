@@ -28,6 +28,7 @@ FIELD_MAP: dict[str, tuple[str, str, str, str, str]] = {
     "CHN": ("gdp_yoy", "cpi_yoy", "lpr_1y", "usdcnh", "sse_composite"),
     "EMU": ("gdp_yoy", "hicp_yoy", "deposit_facility", "eurusd", "dax40"),
     "ZAF": ("gdp_yoy", "cpi_yoy", "sarb_repo", "usdzar", "jse_top40"),
+    "IDN": ("gdp_yoy", "cpi_yoy", "bi_rate", "usdidr", "jci"),
     "SGP": ("gdp_yoy", "cpi_yoy", "sora", "usdsgd", "sti"),
     "HKG": ("gdp_yoy", "composite_cpi", "hk_base_rate", "usdhkd", "hsi"),
     "RUS": ("gdp_yoy", "cpi_yoy", "cbr_key_rate", "usdrub", "moex_index"),

@@ -42,6 +42,8 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("CHE", "smi"): {"symbol": "^SSMI"},
     ("AUS", "asx200"): {"symbol": "^AXJO"},
     ("AUS", "asx_vix"): {"symbol": "^AXVI"},
+    ("IDN", "usdidr"): {"symbol": "IDR=X"},
+    ("IDN", "jci"): {"symbol": "^JKSE"},
 }
 
 # Worker /api/macro?source=fred&series_id=… (limit=1 latest only)
