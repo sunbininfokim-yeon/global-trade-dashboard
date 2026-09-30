@@ -1,3 +1,4 @@
+import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
 import PolicyEvidence from './New for anti/policy-evidence.js';
 
 export default {
@@ -3086,10 +3087,11 @@ async function handleUsPolicy(request, env) {
         }
 
         if (path === 'search') {
-            const filter = usSearchFilter(q);
+            let filter;
+            try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!filter.billRef && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v3:${filter.cacheKey}`, US_TTL.search,
+            if (!filter.billRef && !filter.conditions && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
+            return await kvCachedJson(env, `us:search:v4:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -3237,15 +3239,18 @@ async function geminiEmbedQuery(env, text) {
 }
 
 function usSearchFilter(q) {
-    const query = (q.get('q') || '').trim().slice(0, 200);
+    const rawQuery = (q.get('q') || '').trim();
+    const conditions = PolicySearchTerms.parse(rawQuery);
+    const query = rawQuery.slice(0, 200);
     const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
     const billRef = PolicyEvidence.parseBillQuery(query);
-    return { query, limit, billRef, cacheKey: `${query}|${limit}` };
+    return { query, limit, billRef, conditions, cacheKey: `${query}|${limit}` };
 }
 
 // search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
+    if (f.conditions) return usConditionSearch(env, f);
     if (f.billRef) {
         const ref = f.billRef;
         const query = new URLSearchParams({ select: 'bill_id,title,congress_number,bill_type,bill_number,congress_url,current_stage,origin_chamber,law_type,law_number,latest_action_date',
@@ -3322,6 +3327,53 @@ async function usSearch(env, f) {
         };
     });
     return { ok: true, body: { query: f.query, items } };
+}
+
+
+// Candidate discovery uses aliases AND a semantic candidate set. Labels are
+// verified only against stored title/summary, never inferred from cosine scores.
+const CONDITION_SOURCES = [
+    {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
+    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,federal_register_url'},
+    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,federal_register_url'},
+    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,govinfo_url,congress_url'},
+];
+async function usConditionSearch(env,f){
+    const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
+    const add=(source,row,score=0)=>{
+        const id=String(row[source.key]),key=`${source.type}:${id}`;
+        candidates.set(key,{...row,type:source.type,id,title:row.title||row.law_title,
+            summary:row.summary||row.abstract||'',similarity_score:Math.max(score,candidates.get(key)?.similarity_score||0),
+            source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+            ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
+    };
+    // Search the conjunction separately so many single-condition matches cannot
+    // crowd all-condition documents out of the bounded candidate pool.
+    const jobs=CONDITION_SOURCES.flatMap(source=>[f.conditions,...f.conditions.map(t=>[t])].map(terms=>({source,terms})));
+    for(let offset=0;offset<jobs.length;offset+=4){
+        await Promise.all(jobs.slice(offset,offset+4).map(async({source,terms})=>{
+            const query=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.asc`,and:`(${terms.map(t=>PolicySearchTerms.clause(source.fields,t)).join(',')})`});
+            const rows=await usFetch(env,source.table,query.toString());
+            candidateLimited ||= rows.length===60;
+            for(const row of rows)add(source,row);
+        }));
+    }
+    if(hasPolicyEmbeddingProvider(env)){
+        try{
+            const vector=await geminiEmbedQuery(env,f.conditions.map(t=>t.aliases.find(a=>/^[a-z]/.test(a))||t.label).join(' '));
+            const hits=await usRpc(env,'search_policy_corpus',{p_query_embedding:vector,p_embedding_model:GEMINI_EMBEDDING_MODEL,p_result_limit:50});
+            await Promise.all(CONDITION_SOURCES.map(async source=>{
+                const ids=[...new Set(hits.filter(r=>r.source_type===source.type).map(r=>String(r.source_id)))];
+                if(!ids.length)return;
+                const query=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+                for(const row of await usFetch(env,source.table,query.toString()))add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
+            }));semanticAvailable=true;
+        }catch{ /* Exact evidence search still works; expose degraded retrieval. */ }
+    }
+    const ranked=PolicySearchTerms.rank([...candidates.values()],f.conditions,10000);
+    return {ok:true,body:{query:f.query,search_mode:'conditions',conditions:f.conditions.map(t=>({label:t.label,aliases:t.aliases})),
+        match_basis:'stored_title_summary',semantic_available:semanticAvailable,candidate_limited:candidateLimited,
+        result_limited:ranked.length>f.limit,items:ranked.slice(0,f.limit)}};
 }
 
 // The obvious way to write this is a PostgREST group-by aggregate
