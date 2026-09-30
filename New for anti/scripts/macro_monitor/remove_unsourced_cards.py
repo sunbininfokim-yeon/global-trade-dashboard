@@ -30,6 +30,9 @@ REMOVE = [
     # without prior written permission; SingStat and data.gov.sg carry no SORA. The spread needs SORA too.
     ("SGP", "sora", "MAS API terms forbid republishing; no open-licensed SORA source"),
     ("SGP", "sofr_sora_spread", "needs SORA (see above)"),
+    # SIPMM PMI (2026-09-30): SIPMM publishes the PMI as a press-release PDF with no data feed or open
+    # licence, and SingStat/data.gov.sg don't carry it.
+    ("SGP", "sipmm_pmi", "no feed or open licence for the SIPMM PMI"),
 ]
 
 

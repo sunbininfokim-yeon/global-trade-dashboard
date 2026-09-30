@@ -2515,6 +2515,16 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
     </section>`;
 };
 
+// Source and licence footnotes (config/source_notices_v1.json). Some licences
+// (Singapore ODL, Indonesia BPS) make the attribution a condition of use, so
+// these print as plain text under the cards, not behind a fold.
+const mmSourceNotices = (notices) => {
+    const rows = (notices || []).filter((n) => n && n.text);
+    if (!rows.length) return '';
+    return `<div class="mm-source-notices">${rows.map((n) => `<p>${finEsc(n.text)}${
+        /^https:\/\//.test(n.url || '') ? ` <a href="${finEsc(n.url)}" target="_blank" rel="noopener noreferrer">↗</a>` : ''}</p>`).join('')}</div>`;
+};
+
 const mmOverlay = () => {
     if (!MM_COUNTRY) return '';
     const c = MM_COUNTRY.country;
@@ -2595,6 +2605,7 @@ const mmOverlay = () => {
                 </div>`).join('')}
         </details>` : ''}
 
+        ${mmSourceNotices(c.source_notices)}
         <p class="mm-disclaimer">${finEsc(MM_COUNTRY.disclaimer_ko || MM_INDEX.disclaimer_ko || '')}</p>
     </div>`;
 };
