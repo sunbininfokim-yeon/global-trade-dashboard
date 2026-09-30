@@ -349,12 +349,17 @@ const signalSlotHtml = (slot) => {
     // hasn't answered -- "로딩 중", never "연동 예정", since that reads as
     // "this will never work" -- or (b) declared with no feed behind it at
     // all, which is the only case 연동 예정 (or a custom slot.pending label)
-    // still applies to.
+    // still applies to. Only (a) is actually in flight, so only it gets the
+    // spinner -- 연동 예정 isn't loading anything, it just doesn't exist yet.
+    const pendingLabel = slot.pending || (slot.value ? '불러오는 중' : '연동 예정');
+    const pendingLoading = !slot.pending && !!slot.value;
     const body = shown
         ? `<span class="signal-slot-value">${finEsc(shown)}${
               slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || (slot.value ? '불러오는 중' : '연동 예정'))}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(pendingLabel)}${
+              pendingLoading ? '<span class="signal-slot-spinner" aria-hidden="true"></span>' : ''
+          }</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
