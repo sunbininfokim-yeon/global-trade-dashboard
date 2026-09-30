@@ -15,6 +15,12 @@ _SC = "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid={pid}"
 BN_CAD = money("C$", 1)
 BN0_CAD = money("C$", 0, signed=False)
 
+def _gdp_per_capita(f):
+    pop = dict(f.get("statcan", 1))
+    per = [(d, v / pop[d]) for d, v in f.get("statcan", 62305752) if d in pop]
+    return ups.pct_change(per, 4)
+
+
 CARDS: list[Card] = [
     card("boc_overnight", "monthly", "%", "pct2", "BOC Overnight",
          "캐나다은행 기준금리(익일물 목표)입니다. 차트는 각 달 말, 최신 점은 최근 영업일. BoC Valet V39079.",
@@ -65,6 +71,9 @@ CARDS: list[Card] = [
     card("gdp_yoy", "quarterly", "%", "pct1", "실질GDP YoY",
          "실질GDP(연쇄 2017년 가격, 계절조정) 전년 동기 대비입니다. StatCan 36-10-0104, v62305752.",
          "statcan:v62305752", _SC.format(pid="3610010401"), lambda f: ups.pct_change(f.get("statcan", 62305752), 4)),
+    card("gdp_per_capita_yoy", "quarterly", "%", "pct1", "1인당 실질GDP YoY",
+         "실질GDP(v62305752) ÷ 분기 인구추계(v1)의 전년 동기 대비입니다. 총량 GDP와 갈리면 이민 주도 성장.",
+         "statcan:v62305752/v1", _SC.format(pid="1710000901"), lambda f: _gdp_per_capita(f)),
     card("current_account", "quarterly", "bn_cad", BN_CAD, "경상수지",
          "경상수지(분기, 계절조정, 십억 캐나다달러)입니다. StatCan 36-10-0018, v61915304.",
          "statcan:v61915304", _SC.format(pid="3610001801"), lambda f: ups.scale(f.get("statcan", 61915304), 1e-9)),

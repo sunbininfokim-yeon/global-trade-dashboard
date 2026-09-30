@@ -54,6 +54,9 @@ ups._FORMATS.update({
     "usd1": lambda v: f"${v:,.1f}",
     "bn0usd": lambda v: f"${v:,.0f}B",
     "bn1usds": lambda v: f"+${v:,.1f}B" if v >= 0 else f"-${-v:,.1f}B",
+    "fx4": lambda v: f"{v:,.4f}",
+    "num2": lambda v: f"{v:,.2f}",
+    "tn_jpys": lambda v: "0" if v == 0 else (f"+¥{v:,.2f}T" if v > 0 else f"-¥{-v:,.2f}T"),
 })
 
 
@@ -288,6 +291,104 @@ def read_imf(flow: str, country: str, filters: tuple[tuple[str, str], ...], star
     return found[0]
 
 
+def read_mof_intervention() -> Points:
+    """Japan MOF foreign exchange interventions (every operation since April 1991) summed by month, in
+    trillion yen; negative = dollars sold for yen. Months without an operation are 0 -- the MOF
+    discloses every one, so an absent month is a true zero."""
+    text = _get("https://www.mof.go.jp/english/policy/international_policy/reference/feio/"
+                "foreign_exchange_intervention_operations.csv").decode("shift_jis", "replace")
+    months = {m: i + 1 for i, m in enumerate(("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))}
+    sums: dict[str, float] = {}
+    year = month = None
+    first = last = None
+    covered = None                                   # the last quarter the CSV has closed out
+    for row in csv.reader(io.StringIO(text)):
+        if len(row) >= 4 and "期計" in row[0]:
+            span = row[3].split()                    # "April - June 2026"
+            if len(span) >= 4 and span[-1].isdigit() and span[-2][:3] in months:
+                covered = f"{int(span[-1]):04d}-{months[span[-2][:3]]:02d}-01"
+            continue
+        if len(row) < 9:
+            continue
+        if row[3].strip().isdigit():
+            year = int(row[3])
+        if row[4].strip() in months:
+            month = months[row[4].strip()]
+        amount = _num(row[6])
+        if not (year and month and amount is not None and row[5].strip().isdigit()):
+            continue
+        sign = -1.0 if row[8].lower().startswith("the us dollar (sold)") else 1.0
+        key = f"{year:04d}-{month:02d}-01"
+        sums[key] = sums.get(key, 0.0) + sign * amount / 1e4
+        first = min(first or key, key)
+    if not sums:
+        raise ValueError("MOF intervention CSV: no operations parsed")
+    # Daily detail is published after each quarter ends; months past the last quarter total are not
+    # known to be zero yet, so the series stops there.
+    out, y, m = [], int(first[:4]), int(first[5:7])
+    while covered and f"{y:04d}-{m:02d}-01" <= covered:
+        k = f"{y:04d}-{m:02d}-01"
+        out.append((k, round(sums.get(k, 0.0), 4)))
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return out
+
+
+def read_ecb_programme(kind: str) -> dict[str, Points]:
+    """ECB purchase-programme history CSVs (www.ecb.europa.eu/mopo/pdf/{APP,PEPP}_breakdown_history.csv):
+    month-end holdings (book value) and the month's net purchases, EUR million."""
+    text = _get(f"https://www.ecb.europa.eu/mopo/pdf/{kind}_breakdown_history.csv").decode("utf-8-sig", "replace")
+    months = {m: i + 1 for i, m in enumerate(("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December"))}
+    hold, net, year = [], [], None
+    for row in csv.reader(io.StringIO(text)):
+        if len(row) < 10:
+            continue
+        if row[0].strip().isdigit():
+            year = int(row[0])
+        m = months.get(row[1].strip())
+        if not (year and m):
+            continue
+        d = f"{year:04d}-{m:02d}-01"
+        vals = [_num(x) for x in row[2:]]
+        if kind == "APP":                         # 4 net purchase, 4 amortisation, 4 holdings columns
+            n, h = vals[0:4], vals[8:12]
+        else:                                     # PEPP: 5 + total net, 5 amortisation, 5 + total holdings
+            n, h = vals[5:6], vals[-1:]
+        if all(v is not None for v in n + h):
+            net.append((d, sum(n)))
+            hold.append((d, sum(h)))
+    if not hold:
+        raise ValueError(f"ECB {kind} history: no rows")
+    return {"holdings": hold, "net": net}
+
+
+def read_tesouro_prefixado_10y() -> Points:
+    """Brazil: yield of the fixed-rate coupon bond (NTN-F, 'Tesouro Prefixado com Juros Semestrais') whose
+    maturity is nearest to ten years, on the last base date of each month (Tesouro Direto buy rate)."""
+    url = ("https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/"
+           "796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv")
+    text = _get(url, timeout=300).decode("latin-1")
+    by_day: dict[str, list[tuple[date, float]]] = {}
+    for row in csv.reader(io.StringIO(text), delimiter=";"):
+        if len(row) < 4 or row[0] != "Tesouro Prefixado com Juros Semestrais":
+            continue
+        dm, mm, ym = row[1].split("/")
+        db, mb, yb = row[2].split("/")
+        v = _num(row[3].replace(",", "."))
+        if v is not None:
+            by_day.setdefault(f"{yb}-{mb}-{db}", []).append((date(int(ym), int(mm), int(dm)), v))
+    last: dict[str, tuple[str, float]] = {}
+    for day in sorted(by_day):
+        base = date.fromisoformat(day)
+        target = base.replace(year=base.year + 10)
+        mat, v = min(by_day[day], key=lambda x: abs((x[0] - target).days))
+        if abs((mat - target).days) <= 730:
+            last[day[:7]] = (day, v)
+    if not last:
+        raise ValueError("Tesouro Direto: no NTN-F near ten years")
+    return [(k + "-01", v) for k, (_, v) in sorted(last.items())], max(d for d, _ in last.values())
+
+
 def read_boe(code: str, start: str = "01/Jan/2014") -> Points:
     url = ("https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp?csv.x=yes"
            f"&Datefrom={start}&Dateto=now&SeriesCodes={code}&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N")
@@ -361,6 +462,10 @@ class Fetch:
     boi: Callable[[str, str], Points] = read_boi
     imf: Callable[..., Points] = read_imf
     lpr: Callable[[str], Points] = read_chinamoney_lpr
+    mof_fx: Callable[[], Points] = read_mof_intervention
+    ecb_prog: Callable[[str], dict[str, Points]] = read_ecb_programme
+    tesouro10: Callable[[], Any] = read_tesouro_prefixado_10y
+    yahoo: Callable[[str], Points] | None = None
     ons: Callable[[str], Points] = read_ons
     pink_sheet: Callable[[], dict[str, Points]] | None = None
     bis: Callable[[str], Points] | None = None
@@ -374,6 +479,10 @@ class Fetch:
                     from .za_public_series import fetch_pink_sheet
                     self.pink_sheet = fetch_pink_sheet
                 self._cache[k] = self.pink_sheet()
+            elif kind == "yahoo" and self.yahoo is None:
+                from .live_overlay import fetch_yahoo_monthly
+                self.yahoo = lambda sym: [(d.replace(day=1).isoformat(), v) for d, v in fetch_yahoo_monthly(sym)]
+                self._cache[k] = self.yahoo(*args)
             elif kind == "bis" and self.bis is None:
                 from .sg_public_series import fetch_bis
                 self.bis = fetch_bis
@@ -464,6 +573,12 @@ IMF_BROAD_MONEY = (("INDICATOR", "DCORP_L_BM"), ("TYPE_OF_TRANSFORMATION", "SA_X
 IMF_EXPORTS = (("INDICATOR", "XG"), ("TYPE_OF_TRANSFORMATION", "FOB_USD"), ("FREQUENCY", "M"))
 IMF_IMPORTS = (("INDICATOR", "MG"), ("TYPE_OF_TRANSFORMATION", "CIF_USD"), ("FREQUENCY", "M"))
 IMF_URL = "https://data.imf.org/"
+IMF_CA = (("INDICATOR", "CAB"), ("UNIT", "USD"), ("FREQUENCY", "Q"), ("BOP_ACCOUNTING_ENTRY", "NETCD_T"))
+
+
+def imf_current_account(iso3: str):
+    """A card reader: quarterly current account balance, US$ billion (IMF BOP, BPM6)."""
+    return lambda f: ups.scale(f.get("imf", "BOP", iso3, IMF_CA), 1e-9)
 
 
 def imf_trade_balance(f: "Fetch", iso3: str) -> Points:

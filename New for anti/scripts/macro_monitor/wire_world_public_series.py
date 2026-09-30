@@ -24,7 +24,7 @@ from macro_monitor.world_public_series import Fetch, run_country  # noqa: E402
 
 PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 MODULES = {"CAN": "can", "GBR": "gbr", "EMU": "emu", "BRA": "bra", "ISR": "isr", "IND": "ind", "CHN": "chn",
-           "KAZ": "kaz", "VNM": "vnm"}
+           "KAZ": "kaz", "VNM": "vnm", "JPN": "jpn_world", "RUS": "rus_world"}
 
 
 def main(argv: list[str]) -> int:

@@ -16,6 +16,11 @@ from . import us_public_series as ups
 from .world_public_series import Card, card, monthly_last, spread_bp
 
 GDP_SOURCE = "eurostat:namq_10_gdp"
+
+
+def _ecb_net(f):
+    pepp = dict(f.get("ecb_prog", "PEPP")["net"])
+    return [(d, (v + pepp.get(d, 0.0)) * 1e-3) for d, v in f.get("ecb_prog", "APP")["net"]]
 _ECB = "https://data.ecb.europa.eu/data/datasets/{ds}"
 _ESTAT = "https://ec.europa.eu/eurostat/databrowser/view/{ds}/default/table"
 _HICP = "unit=RCH_A&geo=EA&coicop18={c}"
@@ -69,6 +74,18 @@ CARDS: list[Card] = [
          "유로존(EA21, 구성 변화 반영) 대외 경상수지(월, 원계열, 십억 유로)입니다. Eurostat ei_bpm6ca_m.",
          "eurostat:ei_bpm6ca_m", _ESTAT.format(ds="ei_bpm6ca_m"),
          lambda f: ups.scale(f.get("eurostat", "ei_bpm6ca_m", _CA), 1e-3), chart="bar"),
+    card("app_balance", "monthly", "tn_eur", "tn_eur2", "APP 잔액",
+         "자산매입프로그램(APP: PSPP·CSPP·CBPP3·ABSPP) 월말 보유액(장부가, 조 유로)입니다. ECB APP 이력 CSV.",
+         "ecb:APP_breakdown_history", "https://www.ecb.europa.eu/mopo/implement/app/html/index.en.html",
+         lambda f: ups.scale(f.get("ecb_prog", "APP")["holdings"], 1e-6)),
+    card("pepp_balance", "monthly", "tn_eur", "tn_eur2", "PEPP 잔액",
+         "팬데믹 긴급매입(PEPP) 월말 보유액(장부가, 조 유로)입니다. ECB PEPP 이력 CSV.",
+         "ecb:PEPP_breakdown_history", "https://www.ecb.europa.eu/mopo/implement/pepp/html/index.en.html",
+         lambda f: ups.scale(f.get("ecb_prog", "PEPP")["holdings"], 1e-6)),
+    card("ecb_bond_ops", "monthly", "bn_eur", "bn1eurs", "APP/PEPP 순매입 (월)",
+         "APP + PEPP 월 순매입(장부가, 십억 유로)입니다. 음수 = 만기 미재투자에 따른 축소(QT).",
+         "ecb:APP+PEPP", "https://www.ecb.europa.eu/mopo/implement/app/html/index.en.html",
+         lambda f: _ecb_net(f), chart="bar"),
     card("eur_eer", "monthly", "index", "num1", "유로 EER",
          "유로 실질실효환율(BIS 광의 바스켓, 2020=100)입니다. 오르면 유로 강세.", "bis:WS_EER:M.R.B.XM",
          "https://data.bis.org/topics/EER", lambda f: f.get("bis", "M.R.B.XM")),

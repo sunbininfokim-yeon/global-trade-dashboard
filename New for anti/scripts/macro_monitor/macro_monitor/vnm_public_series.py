@@ -8,7 +8,7 @@ rates have no source; PMI (licensed), CDS.
 from __future__ import annotations
 
 from . import us_public_series as ups
-from .world_public_series import IMF_CPI_YOY, IMF_RESERVES, IMF_URL, Card, card, imf_trade_balance
+from .world_public_series import imf_current_account, IMF_CPI_YOY, IMF_RESERVES, IMF_URL, Card, card, imf_trade_balance
 
 CARDS: list[Card] = [
     card("cpi_yoy", "monthly", "%", "pct1", "CPI YoY",
@@ -20,4 +20,7 @@ CARDS: list[Card] = [
     card("vn_trade_balance", "monthly", "bn_usd", "bn1usds", "무역수지",
          "상품 수출(FOB) − 수입(CIF), 월, 십억 달러입니다. IMF 상품교역 통계(원계열).", "imf:ITG", IMF_URL,
          lambda f: imf_trade_balance(f, "VNM"), chart="bar"),
+    card("current_account", "quarterly", "bn_usd", "bn1usds", "경상수지",
+         "경상수지(분기, 십억 달러)입니다. IMF 국제수지 통계(BPM6).", "imf:BOP:CAB", IMF_URL,
+         imf_current_account("VNM")),
 ]

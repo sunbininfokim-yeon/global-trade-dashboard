@@ -59,6 +59,7 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("ISR", "ta125"): {"symbol": "^TA125.TA"},
     ("CHN", "usdcny"): {"symbol": "CNY=X"},
     ("CHN", "sse_composite"): {"symbol": "000001.SS"},
+    ("CHN", "hscei"): {"symbol": "^HSCE"},
     ("KAZ", "usdkzt"): {"symbol": "KZT=X"},
     ("VNM", "usdvnd"): {"symbol": "VND=X"},
 }

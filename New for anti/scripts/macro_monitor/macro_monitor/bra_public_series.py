@@ -9,7 +9,7 @@ foreign portfolio flows, S&P Global PMIs (licensed), CDS.
 from __future__ import annotations
 
 from . import us_public_series as ups
-from .world_public_series import Card, card, monthly_last
+from .world_public_series import IMF_URL, Card, card, imf_current_account, monthly_last
 
 GDP_SOURCE = "ibge:sidra:5932"
 _SGS = "https://www3.bcb.gov.br/sgspub/"
@@ -21,12 +21,16 @@ CARDS: list[Card] = [
     card("selic_rate", "monthly", "%", "pct2", "SELIC",
          "Selic 목표금리(Copom)입니다. 차트는 각 달 말, 최신 점은 오늘까지. BCB SGS 432.",
          "bcb:sgs:432", _SGS, lambda f: monthly_last(f.get("bcb", 432))),
+    card("bond_10y", "monthly", "%", "pct2", "국채 10년",
+         "고정금리 국채 NTN-F 중 만기가 10년에 가장 가까운 종목의 수익률(Tesouro Direto 매수 금리, 각 달 마지막 기준일)입니다.",
+         "tesouro:precotaxatesourodireto", "https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto",
+         lambda f: f.get("tesouro10")),
     card("ipca", "monthly", "%", "pct1", "IPCA",
          "IPCA(공식 소비자물가) 12개월 누적 상승률입니다. BCB SGS 13522(IBGE 발표).",
          "bcb:sgs:13522", _SGS, lambda f: f.get("bcb", 13522)),
     card("ipca_15", "monthly", "%", "pct1", "IPCA-15",
          "IPCA-15(월 중순 기준 선행 물가) 12개월 누적 상승률입니다. IBGE SIDRA 7062.",
-         "ibge:sidra:7062", _SIDRA.format(t="7062"), lambda f: f.get("sidra", "t/7062/n1/all/v/1120/p/all/c315/7169")),
+         "ibge:sidra:7062", _SIDRA.format(t="7062"), lambda f: f.get("sidra", "t/7062/n1/all/v/1120/p/last%20150/c315/7169")),
     card("unemployment", "monthly", "%", "pct1", "실업률",
          "실업률(PNAD 연속조사, 3개월 이동)입니다. 날짜는 3개월 구간의 마지막 달. BCB SGS 24369(IBGE).",
          "bcb:sgs:24369", _SGS, lambda f: f.get("bcb", 24369)),
@@ -47,10 +51,10 @@ CARDS: list[Card] = [
          "bcb:sgs:24364", _SGS, lambda f: f.get("bcb", 24364)),
     card("gdp_qoq", "quarterly", "%", "pct1", "실질GDP QoQ",
          "실질GDP(계절조정) 전기 대비 %입니다(연율 아님). IBGE SIDRA 5932.",
-         "ibge:sidra:5932", _SIDRA.format(t="5932"), lambda f: f.get("sidra", "t/5932/n1/all/v/6564/p/all/c11255/90707")),
+         "ibge:sidra:5932", _SIDRA.format(t="5932"), lambda f: f.get("sidra", "t/5932/n1/all/v/6564/p/last%2050/c11255/90707")),
     card("gdp_yoy", "quarterly", "%", "pct1", "실질GDP YoY",
          "실질GDP 전년 동기 대비입니다. IBGE SIDRA 5932.",
-         "ibge:sidra:5932", _SIDRA.format(t="5932"), lambda f: f.get("sidra", "t/5932/n1/all/v/6562/p/all/c11255/90707")),
+         "ibge:sidra:5932", _SIDRA.format(t="5932"), lambda f: f.get("sidra", "t/5932/n1/all/v/6562/p/last%2050/c11255/90707")),
     card("iron_ore", "monthly", "usd_t", "usd0", "철광석",
          "철광석(중국 CFR 현물, 달러/건조톤, 월평균)입니다. 세계은행 Pink Sheet.", "worldbank:pinksheet", _WB,
          lambda f: f.get("pink")["Iron ore, cfr spot"]),
@@ -60,4 +64,7 @@ CARDS: list[Card] = [
     card("crude_oil", "monthly", "usd_bbl", "usd1", "원유",
          "브렌트유(달러/배럴, 월평균)입니다. 세계은행 Pink Sheet.", "worldbank:pinksheet", _WB,
          lambda f: f.get("pink")["Crude oil, Brent"]),
+    card("current_account", "quarterly", "bn_usd", "bn1usds", "경상수지",
+         "경상수지(분기, 십억 달러)입니다. IMF 국제수지 통계(BPM6).", "imf:BOP:CAB", IMF_URL,
+         imf_current_account("BRA")),
 ]

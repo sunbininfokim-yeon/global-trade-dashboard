@@ -7,7 +7,7 @@ fiscal balance and debt ratio (annual; the sovereign fiscal pipeline covers debt
 from __future__ import annotations
 
 from . import us_public_series as ups
-from .world_public_series import Card, card
+from .world_public_series import IMF_RESERVES, IMF_URL, Card, card, imf_current_account
 
 GDP_SOURCE = "boi:NA:CHAINED_GDP_Q_FP_SA"
 _BOI = "https://www.boi.org.il/en/economic-roles/statistics/"
@@ -43,4 +43,9 @@ CARDS: list[Card] = [
     card("unemployment", "monthly", "%", "pct1", "실업률",
          "실업률(계절조정)입니다. OECD 집계, FRED LRUNTTTTILM156S.", "fred:LRUNTTTTILM156S",
          "https://fred.stlouisfed.org/series/LRUNTTTTILM156S", lambda f: f.get("fred", "LRUNTTTTILM156S")),
+    card("current_account", "quarterly", "bn_usd", "bn1usds", "경상수지",
+         "경상수지(분기, 십억 달러)입니다. IMF 국제수지 통계(BPM6).", "imf:BOP:CAB", IMF_URL,
+         imf_current_account("ISR")),    card("fx_reserves", "monthly", "bn_usd", "bn0usd", "외환보유액",
+         "외환보유액(금 시가 포함, 월말, 십억 달러)입니다. IMF 국제유동성 통계.", "imf:IL:TRGMV_REVS", IMF_URL,
+         lambda f: ups.scale(f.get("imf", "IL", "ISR", IMF_RESERVES), 1e-9)),
 ]
