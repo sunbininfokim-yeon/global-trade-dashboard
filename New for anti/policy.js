@@ -208,7 +208,7 @@
   const searchBox = () =>
     `<div class="policy-search" data-search>
        <input type="search" class="policy-search-input" data-search-input autocomplete="off"
-              placeholder="${esc('법안·행정명령 검색 (예: 니켈, 수출통제)')}" value="${esc(state.search.query)}">
+              placeholder="${esc('쉼표로 조건 구분 (예: 니켈, 수출통제, 배터리)')}" value="${esc(state.search.query)}">
        <span class="policy-search-spinner" data-search-spinner hidden aria-hidden="true"></span>
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
@@ -230,7 +230,7 @@
   ];
   const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
 
-  const searchGroupKey = (item) => (item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
+  const searchGroupKey = (item) => (item.type === 'public_law' ? 'enacted' : item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
 
   // Groups in a fixed order, and drops any group with no hits for this query
   // -- three blocks most of the time, a fourth only when a regulation result
@@ -266,16 +266,21 @@
     const group = SEARCH_GROUP_BY_KEY.get(searchGroupKey(item));
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
+    const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치${item.match_level === 'partial' ? ' · 일부 조건 일치' : ' · 전체 조건 일치'}</strong></span>
+      <span class="policy-search-result-meta">${matches.map(m => `${esc(m.term)}: ${m.matched ? '확인' : '미확인'}`).join(' · ')}</span>
+      ${!opts.compact ? matches.filter(m => m.matched).map(m => `<span class="policy-search-result-meta">${esc(m.term)} 근거 (${m.field === 'title' ? '제목' : '요약'}): ${esc(m.snippet)}</span>`).join('') : ''}` : '';
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
+          ${conditionLabel}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
-    if (item.type === 'regulation') {
-      return item.source_url
+    if (item.type === 'regulation' || item.type === 'public_law') {
+      return /^https:\/\//i.test(item.source_url || '')
         ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
         : `<div class="policy-search-result is-inert">${body}</div>`;
     }
@@ -301,12 +306,27 @@
     box.hidden = false;
   }
 
+  function searchResultsMarkup(body, opts = {}) {
+    const items = body.items || [];
+    if (body.search_mode !== 'conditions') return items.length
+      ? groupSearchItems(items).map(g => searchGroupBlock(g, opts)).join('')
+      : empty('검색 결과가 없습니다');
+    const counts = [...new Set(items.map(i => i.matched_condition_count))].sort((a,b) => b-a);
+    const note = '<p class="policy-search-match-note">저장된 제목·요약의 단어·등록된 유사 표현 기준입니다. 원문 전체나 조건 간 관계를 확인한 결과는 아닙니다.</p>';
+    const limits = body.candidate_limited || body.result_limited ? '<p class="policy-search-match-note">후보·표시 수 제한이 있습니다. 조건을 구체화하면 더 정확히 찾을 수 있습니다.</p>' : '';
+    const degraded = body.semantic_available === false ? '<p class="policy-search-match-note">의미 검색을 사용할 수 없어 단어·유사 표현 검색 결과만 표시합니다.</p>' : '';
+    const noAll = !items.some(i => i.match_level === 'all') ? '<p class="policy-search-match-note">검색된 후보의 제목·요약에서 모든 조건이 확인되는 문서는 없습니다.</p>' : '';
+    return note + limits + degraded + noAll + (counts.length ? counts.map(count => {
+      const subset = items.filter(i => i.matched_condition_count === count);
+      const total = subset[0].total_condition_count;
+      return `<section class="policy-search-match-section"><h3>${count === total ? '전체 조건 일치' : '일부 조건 일치'} · ${esc(total)}개 중 ${esc(count)}개</h3>${groupSearchItems(subset).map(g => searchGroupBlock(g, opts)).join('')}</section>`;
+    }).join('') : empty('확인된 조건 일치 결과가 없습니다. 문장형 의미 검색도 시도해 보세요.'));
+  }
   function renderSearchResults(body) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;
     if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
-    if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
-    box.innerHTML = groupSearchItems(body.items).map((g) => searchGroupBlock(g, { compact: true })).join('');
+    box.innerHTML = searchResultsMarkup(body, { compact: true });
     box.hidden = false;
   }
 
@@ -326,7 +346,7 @@
       const body = await res.json().catch(() => null);
       if (token !== searchToken || !host) return;
       setSearchSpinner(false);
-      if (!res.ok || !body) return renderSearchMessage('검색 중 오류가 발생했습니다');
+      if (!res.ok || !body) return renderSearchMessage(res.status === 400 && body?.error ? body.error : '검색 중 오류가 발생했습니다');
       renderSearchResults(body);
     } catch {
       if (token !== searchToken || !host) return;
@@ -1120,10 +1140,8 @@
     const heading = `"${query}" 검색`;
     if (!body) return shell(card(heading, empty('검색 결과를 불러오지 못했습니다')));
     if (body.unavailable) return shell(card(heading, empty('검색 기능 준비 중입니다')));
-    if (!body.items?.length) return shell(card(heading, empty('검색 결과가 없습니다')));
-    const groups = groupSearchItems(body.items);
-    return shell(card(`${heading} (${body.items.length}건)`,
-      `<div class="policy-search-page-results">${groups.map((g) => searchGroupBlock(g, { compact: false })).join('')}</div>`));
+    return shell(card(`${heading} (${body.items?.length || 0}건)`,
+      `<div class="policy-search-page-results">${searchResultsMarkup(body, { compact: false })}</div>`));
   }
 
   /* -------------------------------------------------------------- routing */
