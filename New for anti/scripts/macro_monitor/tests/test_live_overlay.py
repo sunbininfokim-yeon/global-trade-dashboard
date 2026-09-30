@@ -146,5 +146,15 @@ class TestOtherDates(unittest.TestCase):
         self.assertEqual((spread["asof"], spread["observed_at"]), ("2026-09-22", "2026-09-22"))
 
 
+class TestHeadlineSync(unittest.TestCase):
+    def test_headline_follows_the_live_card(self):
+        from macro_monitor.live_overlay import _sync_chips
+        pack = {"categories": {"fx": [{"id": "usdchf"}]},
+                "headlines": [{"id": "usdchf", "display": "0.812", "data_status": "demo"}, {"id": "smi", "display": "12,200"}]}
+        _sync_chips(pack, {"id": "usdchf", "value": 0.834, "display": "0.834", "asof": "2026-09-30", "data_status": "live"})
+        self.assertEqual(pack["headlines"][0], {"id": "usdchf", "display": "0.834", "data_status": "live"})
+        self.assertEqual(pack["headlines"][1]["display"], "12,200")
+
+
 if __name__ == "__main__":
     unittest.main()

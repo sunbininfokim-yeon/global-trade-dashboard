@@ -52,6 +52,13 @@ def main() -> int:
             skipped.append(f"{iso3}:no-indicator")
             continue
 
+        # A country whose own pipeline (wire_*_public_series.py) already carries quarterly observed GDP
+        # keeps it: the annual World Bank figure is the fallback, not an override. Before this check the
+        # weekly run swapped those cards to annual data until the next daily wire put them back.
+        if ind.get("data_status") == "live":
+            skipped.append(f"{iso3}:has-quarterly")
+            continue
+
         axes = _axis_from_indicator(ind)
         if axes is None:
             skipped.append(f"{iso3}:no-axis")
@@ -77,6 +84,15 @@ def main() -> int:
         ind["data_status"] = "official_snapshot"
         ind["note_ko"] = "세계은행 실질GDP 성장률 연간 실측치만 표시합니다. 전망치는 포함하지 않습니다."
         refreshed.append(iso3)
+
+    # The headline is a projection of the card, including for countries skipped above: it used to keep
+    # the fixture's figure (Russia 3.5% over a 1.0% card).
+    for country in pack.get("countries") or []:
+        ind = next((i for i in country.get("indicators") or [] if i.get("id") == "gdp_yoy"), None)
+        for h in country.get("headlines") or []:
+            if ind and h.get("id") == "gdp_yoy":
+                h["display"] = ind.get("display_chip") or ind.get("display")
+                h["data_status"] = ind.get("data_status")
 
     PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     print(f"refreshed gdp_yoy for {len(refreshed)} countries: {', '.join(refreshed)}")

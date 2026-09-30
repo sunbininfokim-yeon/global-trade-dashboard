@@ -25,6 +25,7 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("CAN", "usdcad"): {"symbol": "CAD=X"},
     ("AUS", "audusd"): {"symbol": "AUDUSD=X"},
     ("CHE", "usdchf"): {"symbol": "CHF=X"},
+    ("CHE", "eurchf"): {"symbol": "EURCHF=X"},
     ("BRA", "usdbrl"): {"symbol": "BRL=X"},
     ("IND", "usdinr"): {"symbol": "INR=X"},
     ("TWN", "usdtwd"): {"symbol": "TWD=X"},
@@ -38,6 +39,7 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("HKG", "hscei"): {"symbol": "^HSCE"},
     ("SGP", "sti"): {"symbol": "^STI"},
     ("TWN", "taiex"): {"symbol": "^TWII"},
+    ("CHE", "smi"): {"symbol": "^SSMI"},
 }
 
 # Worker /api/macro?source=fred&series_id=… (limit=1 latest only)

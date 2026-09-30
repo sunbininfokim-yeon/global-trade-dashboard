@@ -232,6 +232,13 @@ def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
                         ch[k] = ind[k]
                 if "observed_at" in ch or "observed_at" in ind:
                     ch["observed_at"] = ind.get("observed_at", ind["asof"])
+    # Headlines are a projection too; left alone they kept the fixture's quote (USD/CHF 0.812 over a
+    # live 0.834 card).
+    for h in pack.get("headlines") or []:
+        if h.get("id") == ind["id"]:
+            h["display"] = ind.get("display_chip") or ind["display"]
+            if "data_status" in ind:
+                h["data_status"] = ind["data_status"]
 
 
 def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[str, Any]:
