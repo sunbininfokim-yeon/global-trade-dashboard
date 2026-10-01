@@ -248,12 +248,11 @@
             // Wheat/corn/soybeans/sugar: IMF's monthly PWHEAMTUSDM/PMAIZMTUSDM/
             // PSOYBUSDM/PSUGAISAUSDM (fetched above into macroData already)
             // lag real-world prices by weeks, so overwrite with Yahoo futures
-            // when available. Yahoo quotes wheat/corn/soybeans in US cents per
-            // bushel; convert to USD per metric tonne to match the IMF unit.
-            // Sugar (SB=F) is already US cents per pound, no conversion needed.
-            { symbol: "ZW=F", name: "WHEAT", convert: (c) => (c / 100) * 36.7437 },
-            { symbol: "ZC=F", name: "CORN", convert: (c) => (c / 100) * 39.3684 },
-            { symbol: "ZS=F", name: "SOYBEANS", convert: (c) => (c / 100) * 36.7437 },
+            // when available -- displayed in Yahoo's own quoting units
+            // (cents/bushel for wheat/corn/soybeans, cents/lb for sugar).
+            { symbol: "ZW=F", name: "WHEAT" },
+            { symbol: "ZC=F", name: "CORN" },
+            { symbol: "ZS=F", name: "SOYBEANS" },
             { symbol: "SB=F", name: "SUGAR" }
         ];
 
@@ -296,14 +295,11 @@
             const picked = await fetchYahooDaily(b.symbol).catch(() => null)
                 || await fetchCnbcQuote(b.symbol).catch(() => null);
             if (picked) {
-                const convert = b.convert || (v => v);
                 macroData[b.name] = {
-                    value: convert(picked.value),
+                    value: picked.value,
                     date: picked.date + " (UTC 00:00 Normalized)",
                     asOf: picked.date,
-                    history: picked.history
-                        ? picked.history.map(p => ({ label: p.label, value: convert(p.value) }))
-                        : (macroData[b.name]?.history || [])
+                    history: picked.history || macroData[b.name]?.history || []
                 };
             }
         }));
