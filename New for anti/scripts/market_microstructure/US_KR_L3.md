@@ -12,11 +12,11 @@ Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, 
 
 ## Hit-rate (overnight open, any driver ≤−2%)
 - alert days: 94 / 246
-- frac_neg alert=0.766 vs baseline=0.4797 (lift=0.2863)
+- frac_neg alert=0.7766 vs baseline=0.4797 (lift=0.2969)
 - mean alert R=-0.020294 baseline=0.007105
 
 ## Recalibration suggestions
-- downside_hit_rate_mean=0.8449
+- downside_hit_rate_mean=0.8421
 - keep_downside_emphasis=True
 
 ## Regime-proxy backtest (downside overnight)
