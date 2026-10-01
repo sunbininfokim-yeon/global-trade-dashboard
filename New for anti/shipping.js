@@ -579,7 +579,9 @@
       // ledger stay exactly as the engine published them.
       const officialCargo = payload.official_cargo_monitor?.chokepoints?.[point.id] || null;
       const reconstruction = point.id === 'hormuz' ? (payload.hormuz_reconstruction || null) : null;
-      return { ...point, live, display, metricKey, metric, shortfall, remaining, officialCargo, reconstruction };
+      // The Red Sea bypass touches Hormuz (origin) and both Red Sea exits.
+      const bypass = ['hormuz', 'bab_el_mandeb', 'suez'].includes(point.id) ? (payload.hormuz_bypass_monitor || null) : null;
+      return { ...point, live, display, metricKey, metric, shortfall, remaining, officialCargo, reconstruction, bypass };
     });
 
     return {
@@ -896,7 +898,8 @@
   const GEOGRAPHY_LABELS = {
     strait_of_hormuz: '호르무즈 해협',
     suez_canal_and_sumed_pipeline: '수에즈+SUMED',
-    suez_canal: '수에즈 운하 단독'
+    suez_canal: '수에즈 운하 단독',
+    strait_of_bab_el_mandeb: '바브엘만데브 해협'
   };
 
   // Display scaling only (4,900,000 b/d → 490만 배럴/일); LNG keeps its unit.
@@ -913,7 +916,7 @@
   const officialCard = card => `
     <article class="shipping-kpi">
       <span class="shipping-kpi-label">${escapeHtml(card.publisher || '기관')} · ${escapeHtml(GEOGRAPHY_LABELS[card.geography_scope] || card.geography_scope || '')}</span>
-      <strong>${formatOfficialValue(card.value, card.unit)}</strong>
+      <strong>${finite(card.value) ? formatOfficialValue(card.value, card.unit) : '미보고'}</strong>
       <small>${escapeHtml(card.display_label_ko || card.label_ko || '')}</small>
       <small>${escapeHtml(card.period_start || '')} ~ ${escapeHtml(card.period_end || '')} · 발표 ${escapeHtml(card.source_published_at || '—')}</small>
       ${card.license ? `<small>라이선스 ${escapeHtml(card.license)}</small>` : ''}
@@ -1147,15 +1150,146 @@
       ${attributions.map(text => `<p class="shipping-note" style="overflow-wrap:anywhere">${escapeHtml(text)}</p>`).join('')}`;
   };
 
+  // Red Sea bypass of Hormuz. Threat events are a manual, source-cited log
+  // whose status the engine expires; Yanbu figures are AIS estimates.
+  const THREAT_STATUS = {
+    recent_events_reported: ['최근 위협 보도', 'estimated'],
+    no_recent_events_in_log: ['최근 기록 없음', 'neutral'],
+    log_review_stale: ['기록 검토 필요', 'neutral']
+  };
+  const BYPASS_COLORS = { hormuz: '#f87171', bab_el_mandeb: '#fbbf24', suez: '#38bdf8' };
+
+  const threatenedSegments = bypass => {
+    if (bypass?.threat?.status !== 'recent_events_reported') return new Set();
+    return new Set(asArray(bypass.threat.events).flatMap(event => asArray(event.affects)));
+  };
+
+  const bypassThreatensPoint = point => {
+    const hit = threatenedSegments(point.bypass);
+    return asArray(point.bypass?.route?.segments).some(segment => segment.chokepoint_id === point.id && hit.has(segment.id));
+  };
+
+  const renderBypass = (bypass, point) => {
+    if (!bypass) return '';
+    const route = bypass.route || {};
+    const threat = bypass.threat || {};
+    const events = asArray(threat.events);
+    const hit = threatenedSegments(bypass);
+    const segmentBadge = segment => {
+      const threatened = hit.has(segment.id);
+      const here = segment.chokepoint_id === point.id;
+      return `<span class="shipping-badge ${threatened ? 'estimated' : here ? 'observed' : 'neutral'}">${escapeHtml(segment.label_ko)}${threatened ? ' · 위협 보도' : ''}</span>`;
+    };
+    const segments = asArray(route.segments);
+    const arrow = '<span aria-hidden="true" style="color:#64748b">→</span>';
+    const chain = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px">
+      ${segments.filter(segment => segment.type !== 'chokepoint').map(segmentBadge).join(arrow)}
+      ${arrow}
+      ${segments.filter(segment => segment.type === 'chokepoint').map(segmentBadge).join('<span style="color:#64748b">또는</span>')}
+    </div>`;
+    const facts = asArray(route.context_facts).map(fact => `<p class="shipping-note">${escapeHtml(fact.label_ko)} ${asArray(fact.sources).map(source => sourceLink(source.url, `${source.publisher}${source.published_at ? ` ${source.published_at}` : ''} ↗`)).join(' ')}</p>`).join('');
+    const first = events[0];
+    const [statusLabel, statusTier] = THREAT_STATUS[threat.status] || ['상태 미상', 'neutral'];
+    const statusHtml = threat.status === 'recent_events_reported'
+      ? `<div class="shipping-callout warning"><strong>홍해 우회로에 대한 후티 반군의 봉쇄 위협이 보도되고 있습니다.</strong> ${first ? `${escapeHtml(first.date)} ${escapeHtml(first.event_ko)} 이후` : ''} 얀부 앞바다와 바브엘만데브에서 공격이 이어졌습니다(최근 기록 ${escapeHtml(threat.latest_event_date || '—')}, 기록 검토 ${escapeHtml(threat.reviewed_at || '—')}). 아래는 출처가 달린 수기 기록이며 실시간 경보가 아닙니다. 최신 상황은 통항 여건 확인의 공식 경보 원문을 보세요.</div>`
+      : threat.status === 'log_review_stale'
+        ? `<div class="shipping-callout info"><strong>위협 기록 검토 필요.</strong> 마지막 검토(${escapeHtml(threat.reviewed_at || '—')}) 후 ${formatNumber(threat.days_since_review)}일이 지나 현재 위협 여부를 표시하지 않습니다.</div>`
+        : `<div class="shipping-callout info">최근 ${formatNumber(threat.recent_event_window_days)}일 안에 기록된 사건이 없습니다(검토 ${escapeHtml(threat.reviewed_at || '—')}).</div>`;
+    const timeline = events.length ? table(['날짜', '사건', '위치', '근거', '출처'], [...events].reverse().map(event => `<tr>
+      <td>${escapeHtml(event.date)}${event.date_precision === 'month' ? '<br><small>월 단위</small>' : ''}</td>
+      <td>${escapeHtml(event.event_ko)}</td>
+      <td>${escapeHtml(event.location_ko || '')}</td>
+      <td>${badge(event.evidence_label_ko || event.evidence_class, event.evidence_class === 'official_statement' ? 'observed' : 'neutral')}</td>
+      <td>${asArray(event.sources).map(source => sourceLink(source.url, `${source.publisher} ↗`)).join('<br>')}</td>
+    </tr>`).join('')) : '';
+
+    const yanbu = bypass.yanbu_port_activity || {};
+    const portSource = bypass.sources?.portwatch_ports || {};
+    const yanbuBody = asArray(yanbu.monthly).length ? `
+      <div class="shipping-chart-wrap"><canvas id="shipping-bypass-yanbu-chart"></canvas></div>
+      ${definitionRows([
+        ['최근 7일 평균', finite(yanbu.recent_7d_mean_tonnes_per_day) ? `${formatTonnes(yanbu.recent_7d_mean_tonnes_per_day)}/일` : '—'],
+        ['직전 28일 평균', finite(yanbu.prior_28d_mean_tonnes_per_day) ? `${formatTonnes(yanbu.prior_28d_mean_tonnes_per_day)}/일` : '—'],
+        ['변화', finite(yanbu.change_pct) ? formatPct(yanbu.change_pct, 1) : '—'],
+        ['기준일', escapeHtml(yanbu.latest_date || '—')],
+        ['수집 상태', sourceStatusBadge(portSource.status)]
+      ])}
+      <p class="shipping-note">${escapeHtml(yanbu.warning_ko || '')}</p>
+      <p class="shipping-note">${escapeHtml(asArray(yanbu.ports).map(port => port.portname).join(' + '))} 합계 · 흐린 막대는 관측일이 모자란 달 ${sourceLink(portSource.source_url, 'PortWatch ↗')}</p>`
+      : '<div class="shipping-callout warning">얀부항 PortWatch 자료를 아직 받지 못했습니다.</div>';
+
+    const comparison = bypass.official_crude_comparison || {};
+    const hasComparison = asArray(comparison.series).some(series => asArray(series.points).length);
+    const comparisonBody = hasComparison ? `
+      <div class="shipping-chart-wrap"><canvas id="shipping-bypass-eia-chart"></canvas></div>
+      <p class="shipping-note">단위 백만 배럴/일 · EIA 분기 일평균 · 원유+콘덴세이트. ${escapeHtml(comparison.warning_ko || '')}</p>`
+      : '<div class="shipping-callout warning">EIA 해협별 원유 자료를 아직 받지 못했습니다.</div>';
+
+    return `
+      ${panel('HORMUZ BYPASS · RED SEA', escapeHtml(route.label_ko || '호르무즈 우회로'), `
+        ${chain}
+        <p class="shipping-note" style="margin-top:0">${escapeHtml(route.note_ko || '')}</p>
+        ${facts}
+        <div style="margin-top:14px">${statusHtml}</div>
+        ${timeline}`, badge(statusLabel, statusTier))}
+      <div class="shipping-grid two-columns">
+        ${panel('YANBU · PORTWATCH', '얀부항 탱커 선적 (AIS 추정, 월평균)', yanbuBody, badge('AIS 추정', 'estimated'))}
+        ${panel('EIA · CRUDE + CONDENSATE', '해협별 원유 분기 일평균', comparisonBody, badge('기관 분기 평균', 'estimated'))}
+      </div>`;
+  };
+
+  const drawBypassCharts = (mount, bypass) => {
+    const charts = [];
+    const monthly = asArray(bypass?.yanbu_port_activity?.monthly);
+    if (monthly.length) {
+      charts.push(createChart(mount, 'shipping-bypass-yanbu-chart', {
+        type: 'bar',
+        data: {
+          labels: monthly.map(row => row.month),
+          datasets: [{
+            label: '탱커 수출 추정 (천 톤/일)',
+            data: monthly.map(row => finite(row.tanker_export_tonnes_per_day) ? Number(row.tanker_export_tonnes_per_day) / 1000 : null),
+            backgroundColor: monthly.map(row => row.partial_month ? '#818cf866' : '#818cf8'),
+            borderRadius: 4
+          }]
+        },
+        options: chartOptions({ unit: '천 톤/일' })
+      }));
+    }
+    const series = asArray(bypass?.official_crude_comparison?.series).filter(row => asArray(row.points).length);
+    if (series.length) {
+      const periods = [...new Map(series.flatMap(row => row.points.map(item => [item.period_start, item.period]))).entries()]
+        .sort(([a], [b]) => String(a).localeCompare(String(b)));
+      charts.push(createChart(mount, 'shipping-bypass-eia-chart', {
+        type: 'bar',
+        data: {
+          labels: periods.map(([, label]) => label),
+          datasets: series.map(row => ({
+            label: row.label_ko,
+            data: periods.map(([start]) => {
+              const item = row.points.find(entry => entry.period_start === start);
+              return item && finite(item.value) ? Number(item.value) / 1e6 : null;
+            }),
+            backgroundColor: BYPASS_COLORS[row.chokepoint_id] || SHIP_TYPE_COLORS.other,
+            borderRadius: 4
+          }))
+        },
+        options: chartOptions({ unit: '백만 배럴/일', legend: true })
+      }));
+    }
+    return charts.filter(Boolean);
+  };
+
   let officialCharts = [];
   const renderOfficialCargoInto = (mount, point) => {
     if (!mount) return;
     officialCharts.forEach(chart => { try { chart.destroy(); } catch (_) { /* already gone */ } });
     activeCharts = activeCharts.filter(chart => !officialCharts.includes(chart));
     officialCharts = [];
-    if (!point.officialCargo && !point.reconstruction) { mount.innerHTML = ''; return; }
+    if (!point.officialCargo && !point.reconstruction && !point.bypass) { mount.innerHTML = ''; return; }
     mount.innerHTML = `<div class="shipping-content" style="margin-top:18px">
       ${renderOfficialCargo(point.officialCargo, point)}
+      ${renderBypass(point.bypass, point)}
       ${renderReconstruction(point.reconstruction)}
     </div>`;
     const { periods, oil } = eiaOilSeries(asArray(point.officialCargo?.reported_series));
@@ -1178,6 +1312,7 @@
       });
       if (chart) officialCharts.push(chart);
     }
+    officialCharts.push(...drawBypassCharts(mount, point.bypass));
     bindPopovers(mount);
   };
 
@@ -1203,6 +1338,7 @@
           <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
           ${badge(isStale ? '기준일 경과' : '최근 신호', isStale ? 'neutral' : 'observed')}
         </div>
+        ${bypassThreatensPoint(point) ? `<div style="margin:8px 0 2px">${badge('호르무즈 우회로 · 후티 봉쇄 위협 보도', 'estimated', '출처가 달린 수기 기록 기준. 상세에서 사건과 공식 경보를 확인')}</div>` : ''}
         <strong class="shipping-change ${severity}">${formatPct(shortfallPct, 0)}</strong>
         <p>${escapeHtml(display.headline_label_ko || '추정 교역량 감소율')} · ${escapeHtml(display.basis_label_ko || '최근 7일 기준')}</p>
         ${definitionRows([

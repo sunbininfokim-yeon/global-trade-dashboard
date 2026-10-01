@@ -110,6 +110,40 @@ class OfficialCargoTests(unittest.TestCase):
             self.assertEqual(point["daily_chart"]["classification"], "ship_type_not_commodity")
         self.assertEqual(result["api_keys_required"], [])
 
+    def test_bab_el_mandeb_table_is_parsed_when_present(self):
+        table = """<table><caption>Volume of crude oil, condensate, petroleum products, and liquefied natural gas transported through the Bab el-Mandeb Strait</caption>
+        <thead><tr><td colspan="3">million barrels per day</td></tr>
+        <tr><th></th><th>1Q26</th><th>2Q26</th></tr></thead>
+        <tbody><tr><td>Total oil flows through the Bab el-Mandeb Strait</td><td>5.6</td><td>8.1</td></tr>
+        <tr><td>Crude oil and condensate</td><td>3.4</td><td>6.1</td></tr>
+        <tr><td>Petroleum products</td><td>2.2</td><td>2.0</td></tr>
+        <tr><td>LNG flows through the Bab el-Mandeb Strait (billion cubic feet per day)</td><td>3.0</td><td>-</td></tr></tbody></table>"""
+        parsed = parse_eia(fixture_html() + table, RETRIEVED)
+        self.assertEqual(parsed["missing_optional_tables"], [])
+        rows = {(row["period"], row["cargo_category"]): row for row in parsed["records"]["bab_el_mandeb"]}
+        self.assertEqual(rows[("2Q26", "crude_condensate")]["value"], 6_100_000)
+        self.assertEqual(rows[("2Q26", "crude_condensate")]["geography_scope"], "strait_of_bab_el_mandeb")
+        self.assertIsNone(rows[("2Q26", "lng")]["value"])  # '-' is not reported, not zero
+        self.assertEqual(rows[("2Q26", "lng")]["status"], "not_reported")
+
+    def test_missing_bab_el_mandeb_table_does_not_block_hormuz_and_suez(self):
+        parsed = parse_eia(fixture_html(), RETRIEVED)
+        self.assertEqual(parsed["missing_optional_tables"], ["bab_el_mandeb"])
+        self.assertEqual(parsed["records"]["bab_el_mandeb"], [])
+        result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
+        self.assertEqual(result["chokepoints"]["bab_el_mandeb"]["status"], "official_reference_unavailable")
+        self.assertEqual(result["chokepoints"]["bab_el_mandeb"]["reference_cards"], [])
+
+    def test_red_sea_page_keeps_imo_statements_as_links_only(self):
+        html = ('<a href="https&#58;//www.imo.org/en/mediacentre/pressbriefings/pages/statement-on-deadly-ship-attack-in-the-red-sea.aspx">Statement on deadly ship attack in the Red Sea</a>'
+                '<a href="https://www.ukmto.org/ukmto-products/advisories">UKMTO - Advisories</a>'
+                '<a href="https://www.imo.org/en/about/pages/default.aspx">About IMO</a>')
+        links = {link["source_url"]: link for link in parse_imo_links(html, "https://www.imo.org/en/mediacentre/hottopics/pages/red-sea.aspx", include_statements=True)}
+        self.assertEqual(len(links), 2)
+        statement = links["https://www.imo.org/en/mediacentre/pressbriefings/pages/statement-on-deadly-ship-attack-in-the-red-sea.aspx"]
+        self.assertEqual(statement["evidence_class"], "official_statement")
+        self.assertEqual(len(parse_imo_links(html)), 1)  # Hormuz page rules ignore statements
+
     def test_wrong_source_redirect_links_are_not_accepted(self):
         with self.assertRaises(ValueError):
             parse_imo_links('<a href="https://unknown.example/test">Advisories</a>')

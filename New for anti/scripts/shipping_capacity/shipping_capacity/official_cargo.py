@@ -22,11 +22,20 @@ from shipping_capacity.iea_reports import collect_iea_reports
 
 EIA_URL = "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php"
 IMO_URL = "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx"
+IMO_RED_SEA_URL = "https://www.imo.org/en/mediacentre/hottopics/pages/red-sea.aspx"
 SCA_URL = "https://www.suezcanal.gov.eg/English/Navigation/pages/navigationstatistics.aspx"
 WARNING_KO = (
     "기관의 기간별 일평균 추정값입니다. 특정 날짜의 실제 통항량이나 "
     "안전한 통항 확률이 아닙니다. AIS 누락과 사후 수정 가능성이 있습니다."
 )
+# Bab el-Mandeb is optional: an older or trimmed EIA page without that table
+# must not cost the Hormuz/Suez references their refresh.
+EIA_TABLES = (
+    ("hormuz", "strait of hormuz", "strait_of_hormuz", True),
+    ("suez", "suez canal and sumed pipeline", "suez_canal_and_sumed_pipeline", True),
+    ("bab_el_mandeb", "bab el-mandeb strait", "strait_of_bab_el_mandeb", False),
+)
+POINT_IDS = tuple(point_id for point_id, *_ in EIA_TABLES)
 CARGO_LABELS = {
     "total_oil": "석유 전체",
     "crude_condensate": "원유+콘덴세이트",
@@ -115,9 +124,13 @@ def parse_eia(html: str, retrieved_at: str) -> dict[str, Any]:
         raise ValueError("EIA section publication date missing or ambiguous")
     released = parsed.releases[0].removeprefix("Release Date:").strip()
     published = datetime.strptime(released, "%B %d, %Y").date().isoformat()
-    records: dict[str, list[dict[str, Any]]] = {"hormuz": [], "suez": []}
-    for chokepoint_id, caption_term in (("hormuz", "strait of hormuz"), ("suez", "suez canal and sumed pipeline")):
+    records: dict[str, list[dict[str, Any]]] = {point_id: [] for point_id in POINT_IDS}
+    missing_optional: list[str] = []
+    for chokepoint_id, caption_term, oil_scope, required in EIA_TABLES:
         tables = [table for table in parsed.tables if caption_term in table["caption"].lower()]
+        if not tables and not required:
+            missing_optional.append(chokepoint_id)
+            continue
         if len(tables) != 1:
             raise ValueError(f"EIA {chokepoint_id} cargo table missing or ambiguous")
         table = tables[0]
@@ -146,7 +159,7 @@ def parse_eia(html: str, retrieved_at: str) -> dict[str, Any]:
             if category == "lng" and "billion cubic feet per day" not in label:
                 raise ValueError("EIA LNG unit changed")
             unit = "billion_cubic_feet_per_day" if category == "lng" else "barrels_per_day"
-            scope = "suez_canal_and_sumed_pipeline" if chokepoint_id == "suez" and category != "lng" else "suez_canal" if chokepoint_id == "suez" else "strait_of_hormuz"
+            scope = "suez_canal" if chokepoint_id == "suez" and category == "lng" else oil_scope
             for period, raw_value in zip(periods, row[1:]):
                 start, end = quarter_dates(period)
                 if date.fromisoformat(end) > date.fromisoformat(published):
@@ -192,22 +205,28 @@ def parse_eia(html: str, retrieved_at: str) -> dict[str, Any]:
                 difference = abs(oil["total_oil"] - oil["crude_condensate"] - oil["petroleum_products"])
                 if difference > 0.150001:
                     raise ValueError("EIA oil composition does not reconcile within source rounding")
-    return {"records": records, "source_published_at": published, "content_sha256": hashlib.sha256(html.encode()).hexdigest()}
+    return {"records": records, "missing_optional_tables": missing_optional,
+            "source_published_at": published, "content_sha256": hashlib.sha256(html.encode()).hexdigest()}
 
 
-def parse_imo_links(html: str) -> list[dict[str, str]]:
+def parse_imo_links(html: str, base_url: str = IMO_URL, include_statements: bool = False) -> list[dict[str, str]]:
     parsed = OfficialHTML()
     parsed.feed(html)
     links: dict[str, dict[str, str]] = {}
     for link in parsed.links:
         title = link["title"]
-        if not any(term in title.lower() for term in ("list of incidents", "latest incidents", "advisories", "navarea ix warnings")):
-            continue
-        url = urllib.parse.urljoin(IMO_URL, link["href"])
+        url = urllib.parse.urljoin(base_url, link["href"])
         parts = urllib.parse.urlparse(url)
+        # The Red Sea page also lists IMO's own statements on attacks; they
+        # are official text, so they are kept as links (not parsed for counts).
+        statement = (include_statements and parts.hostname == "www.imo.org" and "/pressbriefings/" in parts.path.lower()
+                     and re.search(r"statement|attack", title, re.IGNORECASE) is not None)  # not the menu link
+        if not statement and not any(term in title.lower() for term in ("list of incidents", "latest incidents", "advisories", "navarea ix warnings")):
+            continue
         if parts.scheme != "https" or parts.hostname not in {"www.imo.org", "wwwcdn.imo.org", "www.ukmto.org", "hydrography.paknavy.gov.pk"}:
             continue
-        links[url] = {"title": title, "source_url": url, "publisher": "IMO linked official source", "evidence_class": "official_advisory_reference"}
+        links[url] = {"title": title, "source_url": url, "publisher": "IMO" if statement else "IMO linked official source",
+                      "evidence_class": "official_statement" if statement else "official_advisory_reference"}
     if not links:
         raise ValueError("IMO official advisory references missing")
     return list(links.values())
@@ -232,12 +251,18 @@ def collect_official_cargo(
     timestamp = now.isoformat()
     previous = previous or {}
     eia: dict[str, Any] = copy.deepcopy(previous.get("sources", {}).get("eia", {}))
-    eia.setdefault("records", {"hormuz": [], "suez": []})
+    eia.setdefault("records", {})
+    for point_id in POINT_IDS:
+        eia["records"].setdefault(point_id, [])
     imo = copy.deepcopy(previous.get("sources", {}).get("imo", {}))
     imo.setdefault("links", [])
+    imo_red_sea = copy.deepcopy(previous.get("sources", {}).get("imo_red_sea", {}))
+    imo_red_sea.setdefault("links", [])
     for source_id, source, url, parser in (
         ("eia", eia, EIA_URL, lambda html: parse_eia(html, timestamp)),
         ("imo", imo, IMO_URL, lambda html: {"links": parse_imo_links(html)}),
+        ("imo_red_sea", imo_red_sea, IMO_RED_SEA_URL,
+         lambda html: {"links": parse_imo_links(html, IMO_RED_SEA_URL, include_statements=True)}),
     ):
         source.update({"source_url": url, "last_attempt_at": timestamp if fetch else source.get("last_attempt_at"), "api_key_required": False})
         if fetch:
@@ -249,16 +274,21 @@ def collect_official_cargo(
                 source.update(update)
                 source.update({"status": "fetched", "retrieved_at": timestamp, "error_code": None})
             except Exception as exc:
-                has_cache = bool(source.get("links")) if source_id == "imo" else any(source.get("records", {}).values())
+                has_cache = bool(source.get("links")) if source_id != "eia" else any(source.get("records", {}).values())
                 source.update({"status": "cached_fallback" if has_cache else "unavailable", "error_code": type(exc).__name__})
         else:
             source["status"] = "cached_offline" if source.get("retrieved_at") else "not_fetched"
     iea = collect_iea_reports(
         fetch=fetch, previous=previous.get("sources", {}).get("iea"), timestamp=timestamp, fetcher=fetcher,
     )
-    sources = {"eia": eia, "imo": imo, "iea": iea}
+    sources = {"eia": eia, "imo": imo, "imo_red_sea": imo_red_sea, "iea": iea}
+    advisories = {
+        "hormuz": (imo["links"], imo["status"]),
+        "suez": ([{"title": "Suez Canal Authority navigation statistics", "source_url": SCA_URL, "evidence_class": "official_reference"}], "reference_link_only"),
+        "bab_el_mandeb": (imo_red_sea["links"], imo_red_sea["status"]),
+    }
     points = {}
-    for point_id in ("hormuz", "suez"):
+    for point_id in POINT_IDS:
         eia_rows = eia.get("records", {}).get(point_id, [])
         iea_rows = iea.get("records", {}).get(point_id, [])
         rows = eia_rows + iea_rows
@@ -296,11 +326,11 @@ def collect_official_cargo(
                 "status": "evidence_references_only_not_probability",
                 "success_probability": None,
                 "insurance_availability": "unknown",
-                "advisory_references": imo["links"] if point_id == "hormuz" else [{"title": "Suez Canal Authority navigation statistics", "source_url": SCA_URL, "evidence_class": "official_reference"}],
-                "advisory_source_status": imo["status"] if point_id == "hormuz" else "reference_link_only",
+                "advisory_references": advisories[point_id][0],
+                "advisory_source_status": advisories[point_id][1],
                 "warning_ko": "통항 물량은 안전·보험·허가를 갖춘 일반 상업운항의 성공확률이 아닙니다. 경보 원문과 발표일을 확인하세요.",
             },
-            "commodity_breakdown_status": "official_quarterly_energy_reference_only" if point_id == "hormuz" else "latest_sca_commodity_tonnes_not_connected",
+            "commodity_breakdown_status": "latest_sca_commodity_tonnes_not_connected" if point_id == "suez" else "official_quarterly_energy_reference_only",
         }
     return {
         "contract_version": "official-chokepoint-cargo-v1",

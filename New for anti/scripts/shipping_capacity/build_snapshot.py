@@ -30,6 +30,7 @@ from shipping_capacity.portwatch import (
 from shipping_capacity.route_distances import attach_distance_evidence
 from shipping_capacity.official_cargo import collect_official_cargo
 from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
+from shipping_capacity.hormuz_bypass import collect_hormuz_bypass
 
 
 def load_json(path: Path) -> Any:
@@ -702,6 +703,10 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "hormuz_reconstruction.producer_exports",
                     "hormuz_reconstruction.importer_receipts",
                     "hormuz_reconstruction.sar_coverage",
+                    "hormuz_bypass_monitor.route",
+                    "hormuz_bypass_monitor.threat.events[]",
+                    "hormuz_bypass_monitor.yanbu_port_activity.monthly[]",
+                    "hormuz_bypass_monitor.official_crude_comparison.series[]",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
                     "ui_scenario_grid.input_policy",
@@ -731,6 +736,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "daily_averages": "일별 추정 교역량 및 관측일 기준 이동평균",
                     "official_cargo_monitor": "기관 발표 기간별 일평균; 일별 실제 원유량·통항 성공확률 아님",
                     "hormuz_reconstruction": "호르무즈 미포착 흐름 역산 원장; 입력이 식별될 때만 월간 미설명 물량 범위, 그 전에는 null",
+                    "hormuz_bypass_monitor": "홍해 우회로(동서 파이프라인→얀부→바브엘만데브/수에즈) 근거; 우회 물량은 계산하지 않음",
                 },
                 "render_only_rule": (
                     "Match a precomputed row by all three input fields. Do not calculate "
@@ -867,6 +873,7 @@ def build_snapshot(
     fallback_official_cargo: dict[str, Any] | None = None,
     fetch_reconstruction: bool = False,
     fallback_reconstruction: dict[str, Any] | None = None,
+    fallback_bypass: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     build_time = datetime.now(timezone.utc)
     official_cargo = collect_official_cargo(
@@ -1301,6 +1308,11 @@ def build_snapshot(
                 fetch=fetch_reconstruction, previous=fallback_reconstruction, now=build_time,
                 official_cargo=official_cargo, live_status=live_status,
             ),
+            # Same keyless refresh as the reconstruction ledger.
+            "hormuz_bypass_monitor": collect_hormuz_bypass(
+                config_dir, fetch=fetch_reconstruction, previous=fallback_bypass, now=build_time,
+                official_cargo=official_cargo,
+            ),
             "live_display": live_display,
             "scenario_signal_comparison": scenario_signal_comparison,
             "live_fetch_errors": live_errors,
@@ -1426,12 +1438,14 @@ def main() -> None:
     fallback_container_context: dict[str, Any] = {}
     fallback_official_cargo: dict[str, Any] = {}
     fallback_reconstruction: dict[str, Any] = {}
+    fallback_bypass: dict[str, Any] = {}
     previous_path = args.previous_snapshot or args.output
     if previous_path.exists():
         try:
             previous_snapshot = load_json(previous_path)
             fallback_official_cargo = previous_snapshot.get("official_cargo_monitor", {})
             fallback_reconstruction = previous_snapshot.get("hormuz_reconstruction", {})
+            fallback_bypass = previous_snapshot.get("hormuz_bypass_monitor", {})
             fallback_live_status = previous_snapshot.get("chokepoints_live", {})
             # A screen cache has only 180 days. An official-only refresh must
             # not erase the matching diagnostic cache's 730-day AIS history.
@@ -1470,6 +1484,7 @@ def main() -> None:
         # Same keyless rule: the daily --fetch-portwatch run refreshes it.
         fetch_reconstruction=args.fetch_reconstruction or args.fetch_portwatch,
         fallback_reconstruction=fallback_reconstruction,
+        fallback_bypass=fallback_bypass,
     )
     bundle = build_artifact_bundle(snapshot)
     scenario_grid_output = args.scenario_grid_output or (
