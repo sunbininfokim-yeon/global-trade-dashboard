@@ -29,6 +29,7 @@ from shipping_capacity.portwatch import (
 )
 from shipping_capacity.route_distances import attach_distance_evidence
 from shipping_capacity.official_cargo import collect_official_cargo
+from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
 
 
 def load_json(path: Path) -> Any:
@@ -696,6 +697,11 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "official_cargo_monitor.chokepoints.<id>.supplementary_reference_cards[]",
                     "official_cargo_monitor.chokepoints.<id>.reported_series[]",
                     "official_cargo_monitor.chokepoints.<id>.transit_assessment",
+                    "hormuz_reconstruction.headline",
+                    "hormuz_reconstruction.mass_balance.terms[]",
+                    "hormuz_reconstruction.producer_exports",
+                    "hormuz_reconstruction.importer_receipts",
+                    "hormuz_reconstruction.sar_coverage",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
                     "ui_scenario_grid.input_policy",
@@ -724,6 +730,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "cargo_segment_breakdown": "화물 세그먼트별 모델 결과; LNG 전용 세계 선대 DWT 분모는 무료 공개 검증 전까지 사용하지 않음",
                     "daily_averages": "일별 추정 교역량 및 관측일 기준 이동평균",
                     "official_cargo_monitor": "기관 발표 기간별 일평균; 일별 실제 원유량·통항 성공확률 아님",
+                    "hormuz_reconstruction": "호르무즈 미포착 흐름 역산 원장; 입력이 식별될 때만 월간 미설명 물량 범위, 그 전에는 null",
                 },
                 "render_only_rule": (
                     "Match a precomputed row by all three input fields. Do not calculate "
@@ -858,6 +865,8 @@ def build_snapshot(
     fallback_container_context: dict[str, Any] | None = None,
     fetch_official_cargo: bool = False,
     fallback_official_cargo: dict[str, Any] | None = None,
+    fetch_reconstruction: bool = False,
+    fallback_reconstruction: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     build_time = datetime.now(timezone.utc)
     official_cargo = collect_official_cargo(
@@ -1288,6 +1297,10 @@ def build_snapshot(
             "chokepoints": chokepoints,
             "chokepoints_live": live_status,
             "official_cargo_monitor": official_cargo,
+            "hormuz_reconstruction": collect_hormuz_reconstruction(
+                fetch=fetch_reconstruction, previous=fallback_reconstruction, now=build_time,
+                official_cargo=official_cargo, live_status=live_status,
+            ),
             "live_display": live_display,
             "scenario_signal_comparison": scenario_signal_comparison,
             "live_fetch_errors": live_errors,
@@ -1400,6 +1413,7 @@ def main() -> None:
     )
     parser.add_argument("--fetch-portwatch", action="store_true")
     parser.add_argument("--fetch-official-cargo", action="store_true")
+    parser.add_argument("--fetch-reconstruction", action="store_true")
     parser.add_argument("--previous-snapshot", type=Path)
     parser.add_argument("--fetch-portwatch-port-context", action="store_true")
     parser.add_argument("--fetch-container-context", action="store_true")
@@ -1411,11 +1425,13 @@ def main() -> None:
     fallback_portwatch_port_context: dict[str, Any] = {}
     fallback_container_context: dict[str, Any] = {}
     fallback_official_cargo: dict[str, Any] = {}
+    fallback_reconstruction: dict[str, Any] = {}
     previous_path = args.previous_snapshot or args.output
     if previous_path.exists():
         try:
             previous_snapshot = load_json(previous_path)
             fallback_official_cargo = previous_snapshot.get("official_cargo_monitor", {})
+            fallback_reconstruction = previous_snapshot.get("hormuz_reconstruction", {})
             fallback_live_status = previous_snapshot.get("chokepoints_live", {})
             # A screen cache has only 180 days. An official-only refresh must
             # not erase the matching diagnostic cache's 730-day AIS history.
@@ -1451,6 +1467,9 @@ def main() -> None:
         # This is deliberately keyless and needs no workflow/secret change.
         fetch_official_cargo=args.fetch_official_cargo or args.fetch_portwatch,
         fallback_official_cargo=fallback_official_cargo,
+        # Same keyless rule: the daily --fetch-portwatch run refreshes it.
+        fetch_reconstruction=args.fetch_reconstruction or args.fetch_portwatch,
+        fallback_reconstruction=fallback_reconstruction,
     )
     bundle = build_artifact_bundle(snapshot)
     scenario_grid_output = args.scenario_grid_output or (
