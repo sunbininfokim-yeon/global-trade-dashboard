@@ -1,8 +1,16 @@
 {
   "schema": "usa_eop_refresh_report_v1",
-  "generated_at": "2026-10-01T00:37:17.086821+00:00",
-  "fetch_requested": false,
-  "fetch": {},
+  "generated_at": "2026-10-01T16:53:43.278441+00:00",
+  "fetch_requested": true,
+  "fetch": {
+    "cabinet_fetched": true,
+    "admin_fetched": true,
+    "cea_fetched": true,
+    "ceq_fetched": true,
+    "ondcp_fetched": true,
+    "staff_pdf": "/home/runner/work/global-trade-dashboard/global-trade-dashboard/New for anti/scripts/election_watch/raw/usa/wh_staff_report_latest.pdf",
+    "staff_url": "https://www.whitehouse.gov/wp-content/uploads/2026/07/2026-Annual-Report-to-Congress-on-White-House-Staff.pdf"
+  },
   "cabinet_count": 21,
   "staff_as_of": "2026-07-01",
   "assistant_ids": [
@@ -54,9 +62,7 @@
     "official_not_on_payroll": 1
   },
   "changes": [
-    "topical_advisors 20 -> 20",
-    "eop_office_heads.ceq -> Rachael McNitt reported_reliable",
-    "core.vp_chief_of_staff -> Nick Luna reported_reliable"
+    "topical_advisors 20 -> 20"
   ],
   "errors": [],
   "policy_ko": "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. 공식 원문에 이름이 없는 자리는 신뢰 매체 2곳 이상이 같은 이름을 댈 때만 '보도 기준'(reported_reliable)으로 채운다. 공식 이름 칸(office_status.name_en)에는 넣지 않는다. 주제별 보좌관은 WHO 급여명부 직함의 포트폴리오 키워드로만 분류한다."
