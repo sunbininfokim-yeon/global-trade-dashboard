@@ -65,31 +65,78 @@
 
 ### 2.1 GitHub Actions → `public/data` (또는 KV)
 
-| 워크플로 | cron (UTC) | KST 감 | 산출 | 성격 |
-|----------|------------|--------|------|------|
-| `commodity_news_ticker.yml` | `12 * * * *` | **매시** :12 | `ticker_v1.json` | 속보 RSS (구: 30분마다 → 쿼터 절감) |
-| `official_reports.yml` | `20 */4 * * *` | 4시간마다 (:20) | `official_reports_v1.json` | 기관 피드 |
-| `commodity_reports.yml` | `40 */4 * * *` | 4시간마다 (:40) | `commodity_reports_v1.json` | 상품×국가 보고서 (Phase 2-2) |
-| `macro_liquidity_intel.yml` | `15 */6 * * *` | 6시간마다 | `liquidity_intel_v1.json` | QRA·Fed·기자 유동성 |
-| `shipping_capacity_update.yml` | `30 18 * * *` | 매일 03:30 | `shipping_capacity_v1.json` | PortWatch 등 |
-| `daily_update.yml` | `0 18 * * *` | 매일 03:00 | **CF KV** (Brazil agri bot) | 브라질 농업 |
-| `update_data.yml` | `0 0 * * 0` | 일 09:00 | `live_override.json` | USDA PSD·Comex |
-| `yield_forecast.yml` | `0 9 * * 1` | 월 18:00 | `yield_forecast.json` | 미국 등 수율 |
-| `brazil_yield_forecast.yml` | `30 9 * * 1` | 월 18:30 | `brazil_yield_forecast.json` | BR 수율 |
-| `argentina_yield_forecast.yml` | `0 10 * * 1` | 월 19:00 | `argentina_…` | AR 수율 |
-| `india_yield_forecast.yml` | `0 10 * * 1` | 월 19:00 | `india_…` | IN 수율 |
-| `china_yield_forecast.yml` | `30 10 * * 1` | 월 19:30 | `china_…` | CN 수율 |
-| `canada_yield_forecast.yml` | `0 11 1 * *` | **매월 1일** 20:00 | `canada_yield_forecast.json` + `canada_gov_outlooks.json` | CA SAD 수율 + AAFC/주 작황 스크랩 |
-| `fetch_icrisat.yml` | `0 0 * * 0` | 일 09:00 | `icrisat_…` (대용량 주의) | 인도 작물 통계 |
-| `india_icrisat_fetch.yml` | (수동 위주) | — | icrisat blob | 일회 재수집 |
+2026-09-24 에 `.github/workflows/*.yml` 크론을 그대로 옮겨 다시 썼다. 이전 표는
+수율 예측을 월요일로 적고 있었지만 실제로는 금요일 밤(UTC)에 돈다.
 
-> **주의:** `elections_board` 빌드·배팅(Polymarket) 전용 workflow cron은 **아직 미연결**. 수동 `build_board.py` 또는 티커 후속 잡으로 추가 권장.
+**배포 연결:** 봇이 `main` 에 올린 커밋은 `on: push` 를 깨우지 못한다. 그래서
+아래 표에서 `main` 에 커밋하는 워크플로는 전부 `deploy.yml` 의 `workflow_run`
+목록에 있어야 사이트에 반영된다. 커밋 없이 끝난 실행은 배포 단계에서 건너뛴다.
+목록 누락은 PR 마다 `tools/ops/check_deploy_chain.py` 가 잡는다.
+
+금요일(UTC) 밤 배치는 push 경합을 피하려고 시각을 흩어 놓았다. 옮길 때 서로
+겹치지 않게 할 것.
+
+| 워크플로 | cron (UTC) | KST | 산출 | 성격 |
+|----------|------------|-----|------|------|
+| **수시 (매시~6시간)** | | | | |
+| `commodity_news_ticker.yml` | `12 * * * *` | 매시 :12 | `ticker_v1.json` | 속보 RSS |
+| `official_reports.yml` | `20 */4 * * *` | 4시간마다 :20 | `official_reports_v1.json` | 기관 피드 |
+| `commodity_reports.yml` | `40 */4 * * *` | 4시간마다 :40 | `commodity_reports_v1.json` | 상품×국가 보고서 |
+| `macro_liquidity_intel.yml` | `15 */6 * * *` | 6시간마다 :15 | `liquidity_intel_v1.json` | QRA·Fed·기자 유동성 |
+| `data_freshness_watchdog.yml` | `9 */4 * * *` | 4시간마다 :09 | (없음, 실패 알림만) | 미시구조·해운 파일 신선도 감시 |
+| **매일** | | | | |
+| `gas_storage_daily.yml` | `35 0 * * *` | 매일 09:35 | `gas_storage_v1.json` | 천연가스 재고 (EIA·GIE) |
+| `sync-congress.yml` | `17 2 * * *` | 매일 11:17 | Supabase | 미국 의회·연방관보·공법 |
+| `daily_update.yml` | `6 18 * * *` | 매일 03:06 | **CF KV** (Brazil agri bot) | 브라질 농업 |
+| `shipping_capacity_update.yml` | `37 18 * * *` | 매일 03:37 | `shipping_capacity_*_v1.json` 4종 | PortWatch 등 |
+| `fomc_collect_refresh.yml` | `2 19 * * *` | 매일 04:02 | `fomc_statement_diff_v1.json`, `us_macro_quality_v1.json` | FOMC·베이지북 (회의일만 실제 변화) |
+| `macro_live_overlay_refresh.yml` | `40 19 * * *` | 매일 04:40 | `macro_monitor_v1.json` | TGA·금리·환율·지수 (FRED/Yahoo/BOK) |
+| **평일** | | | | |
+| `market_microstructure_daily.yml` | `13 21 * * 1-5` | 화–토 06:13 | `market_microstructure_v1.json` 외 20여 종 | 코스피 미시구조·US→KR 전이·파생 보드. `KRX_API` 없으면 US·집중도만 |
+| `overseas_letf_daily.yml` | `35 23 * * 1-5` | 화–토 08:35 | `overseas_letf_board_v1.json` | 해외 레버리지 ETF |
+| **주간** | | | | |
+| `us_superpac_refresh.yml` | `25 8 * 1-9,11-12 1` / `25 8 * 10 1,5` | 월 17:25 (10월은 월·금) | `usa_superpac_index_v1.json` 외 | 미국 선거자금 |
+| `peer_gdp_refresh.yml` | `30 18 * * 3` | 목 03:30 | `macro_monitor_v1.json` | 주요국 실질 GDP (World Bank, 연간 원천) |
+| `soma_maturity_refresh.yml` | `45 18 * * 3` | 목 03:45 | `soma_maturity_v1.json`, `macro_monitor_v1.json` | 연준 SOMA 만기 버킷 |
+| `commodity-digest.yml` | `0 23 * * 0` | 월 08:00 | (메일 발송) | 즐겨찾기 원자재 주간 메일 |
+| `fetch_icrisat.yml` | `8 15 * * 5` | 토 00:08 | `icrisat_crop_production.json` (대용량) | 인도 작물 통계 |
+| `yield_forecast.yml` | `22 15 * * 5` | 토 00:22 | `yield_forecast.json` | 미국 수율 |
+| `brazil_yield_forecast.yml` | `44 15 * * 5` | 토 00:44 | `brazil_yield_forecast.json` | BR 수율 |
+| `argentina_yield_forecast.yml` | `6 16 * * 5` | 토 01:06 | `argentina_yield_forecast.json` | AR 수율 |
+| `india_yield_forecast.yml` | `28 16 * * 5` | 토 01:28 | `india_yield_forecast.json` | IN 수율 |
+| `china_yield_forecast.yml` | `50 16 * * 5` | 토 01:50 | `china_yield_forecast.json` | CN 수율 |
+| `russia_yield_forecast.yml` | `12 17 * * 5` | 토 02:12 | `russia_yield_forecast.json` | RU 겨울밀 수율 |
+| `climate_global_refresh.yml` | `34 17 * * 5` | 토 02:34 | `climate_global_v1.json` | ENSO·IOD (NOAA) |
+| `japan_growth_refresh.yml` | `56 17 * * 5` | 토 02:56 | `macro_monitor_v1.json` | 일본 성장 진단 (ESRI/BOJ) |
+| `sst_refresh.yml` | `18 18 * * 5` | 토 03:18 | `sst_anomaly_v1.json` | 해수면 온도 격자 |
+| `city_wx_refresh.yml` | `40 18 * * 5` | 토 03:40 | `city_wx_v1.json` | 주요 산지 기상 |
+| `update_data.yml` | `24 19 * * 5` | 토 04:24 | `live_override.json` | USDA PSD·Comex |
+| **월간·분기** | | | | |
+| `elections_eop_monthly.yml` | `0 10 1 * *` | 매월 1일 19:00 | `elections_board_v1.json`, `elections_ui_manifest_v1.json` | 백악관·EOP 명단 |
+| `canada_yield_forecast.yml` | `0 11 1 * *` | 매월 1일 20:00 | `canada_yield_forecast.json`, `canada_gov_outlooks.json` | CA 수율 + AAFC/주 작황 |
+| `sync-policy-reference-monthly.yml` | `31 3 1 * *` | 매월 1일 12:31 | Supabase | 의원·상임위 기준정보 |
+| `sovereign_fiscal_refresh.yml` | `18 18 3 * *` | 매월 4일 03:18 | `macro_monitor_v1.json` | IMF/재무부 국가부채·이자 |
+| `elections_committees_quarterly.yml` | `0 10 1 1,2,3,4,7,10 *` | 1·2·3·4·7·10월 1일 19:00 | `elections_board_v1.json` | 미국 상임위 지도부 |
+| **이벤트·수동** | | | | |
+| `validate_registry.yml` | main push 시 | — | `climate_registry_v1.json` | 수율 모델 레지스트리 재생성 |
+| `deploy.yml` | main push + 위 수집기 완료 시 | — | Cloudflare Worker | 배포 |
+| `india_icrisat_fetch.yml`, `market_microstructure_backfill.yml`, `fetch_congressional_districts.yml`, `comtrade_probe.yml`, `probe_tigerweb_120th.yml`, `rollover-congress.yml` | 수동 | — | — | 일회성 재수집·진단 |
+
+> **워크플로가 없는 공개 파일:** 호주·인도네시아·태국·베트남·가나·코트디부아르·
+> 에티오피아·남아공·우간다 수율 예측, `rig_count_v1.json`, `qra_engine_v1.json`,
+> `sst_regions_v1.json`, `race_progress_*`, `russia_export_pulse_v1.json`,
+> `hedge_fund_ust_v1.json`, `export_controls_v1.json`, `usda_gain_outlook_v1.json` 은
+> 손으로 한 번 만든 뒤 갱신 경로가 없다 (2026-09-24 기준). 파일 안의
+> `generated_at`/`as_of` 를 보고 판단할 것.
+>
+> 선거 보드(`elections_board_v1.json`)는 위 월간·분기 잡과 PR 머지로 다시 만들어지고,
+> 배팅(Polymarket) 전용 크론은 아직 없다.
 
 ### 2.2 Cloudflare Worker (요청 시 캐시 + 야간 warm)
 
 | 경로 / 소스 | KV TTL (대략) | 원천 실제 갱신 | 비고 |
 |-------------|---------------|----------------|------|
-| **cron `0 18 * * *`** | — | 야간 1회 | Comtrade `API_CACHE` warm-up |
+| **cron `0 * * * *`** (`wrangler.jsonc`) | — | 매시 | Comtrade `API_CACHE` warm-up (신선한 키는 건너뜀) |
 | Comtrade 에너지 2709/2711 | 48h | 원천은 연·월 리비전 | 방문 시 프록시 |
 | Comtrade 석탄·아연·Al | 7d | 느림 | |
 | Comtrade 귀금속·Cu | 24h | 느림 | |
@@ -378,5 +425,3 @@ Q. 학습에 넣을까?
 ```
 
 문서 갱신 시 cron 변경은 **본 표 As-Is 섹션과 workflow 파일을 같이** 수정한다.
-
-| `market_microstructure_daily.yml` | `30 7 * * 1-5` UTC (16:30 KST) | 코스피 미시구조·집중도·US→KR 전이·파생 보드·가격×수급. `KRX_API` 시크릿이 있으면 KR OI·외인 파생까지, 없으면 US·집중도만 갱신 |

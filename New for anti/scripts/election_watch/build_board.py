@@ -227,6 +227,7 @@ def build_board(
     polls_doc = load_extracted("governance_polls.json") or {}
     usa_congress = load_extracted("usa_congress.json") or {}
     usa_committees = load_extracted("usa_committees.json") or {}
+    usa_officers = load_extracted("usa_congress_officers.json") or {}
     usa_gov = load_extracted("usa_governors.json") or {}
     usa_state_legs = load_extracted("usa_state_legislatures.json") or {}
     usa_state_officials = load_extracted("usa_state_officials.json") or {}
@@ -410,6 +411,10 @@ def build_board(
                     "standing_committee_cards": public_committee_cards(
                         build_committee_cards(usa_committees)
                     ),
+                    "officer_cards": {
+                        key: usa_officers.get(key)
+                        for key in ("schema", "as_of", "policy_ko", "house", "senate", "counts")
+                    } if usa_officers else None,
                     "missing_fields": usa_committees_missing(usa_committees),
                 },
             }

@@ -13,6 +13,9 @@ from pathlib import Path
 import ee
 import pandas as pd
 
+import gee_live
+import seasonal_history
+
 from .regions import POINTS
 
 PROJECT = "climate-project-504313"
@@ -21,7 +24,7 @@ CACHE = HERE / "cache"
 
 
 def initialize_ee() -> None:
-    ee.Initialize(project=PROJECT)
+    gee_live.initialize(ee, PROJECT)
 
 
 def _zones() -> ee.FeatureCollection:
@@ -127,33 +130,22 @@ def collect_seasonal(
 ) -> pd.DataFrame:
     end_year = end_year or date.today().year
     CACHE.mkdir(parents=True, exist_ok=True)
-    target = CACHE / f"gee_maize_belt_v2_{start_year}_{end_year}.csv"
+    # Dated so a same-day rerun is free but the next run re-reads the current
+    # season (the old undated name returned August's partial season forever).
+    target = CACHE / f"gee_maize_belt_v2_{start_year}_{end_year}_{date.today().isoformat()}.csv"
     if target.exists() and not refresh:
         return pd.read_csv(target)
-
     initialize_ee()
     zones = _zones()
-    records = []
-    # A single FeatureCollection for all 45 seasons expands to hundreds of
-    # simultaneous reductions and Earth Engine rejects it with HTTP 429 "Too
-    # many concurrent aggregations". One season at a time keeps only five
-    # weighted reductions live. Checkpoint each successful year so a network
-    # interruption never discards completed server work.
-    checkpoint = CACHE / f"gee_maize_belt_v2_{start_year}_{end_year}.partial.csv"
-    if checkpoint.exists() and not refresh:
-        records = pd.read_csv(checkpoint).to_dict("records")
-    completed = {int(record["year"]) for record in records}
-    for year in range(start_year, end_year + 1):
-        if year in completed:
-            continue
-        feature = _season_feature(ee.Number(year), zones).getInfo()
-        records.append(feature["properties"])
-        pd.DataFrame(records).sort_values("year").to_csv(checkpoint, index=False)
-        if (year - start_year + 1) % 5 == 0 or year == end_year:
-            print(f"[climate] Earth Engine seasons through {year}", flush=True)
-    frame = pd.DataFrame(records).sort_values("year").reset_index(drop=True)
+    frame = seasonal_history.collect_incremental(
+        lambda year: _season_feature(ee.Number(year), zones).getInfo()["properties"],
+        start_year,
+        end_year,
+        HERE / "training" / "commercial_maize_belt.csv",
+        source="gee",
+        refresh=refresh,
+    )
     frame.to_csv(target, index=False)
-    checkpoint.unlink(missing_ok=True)
     return frame
 
 

@@ -14,6 +14,7 @@ const {
 const API_BASE = 'https://api.congress.gov/v3';
 const API_KEY = process.env.CONGRESS_API_KEY || process.env.DATA_GOV_API_KEY;
 const RESOURCE = 'congress.gov:bills';
+const STATE_RESOURCE = process.env.SYNC_MODE === 'incremental' ? `${RESOURCE}:incremental` : RESOURCE;
 const MAX_BILLS = Number(process.env.MAX_BILLS || 200);
 const CONCURRENCY = Number(process.env.DETAIL_CONCURRENCY || 2);
 const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 850);
@@ -113,7 +114,7 @@ async function activeCongress() {
   return Number(body?.congress?.number || 119);
 }
 async function loadState() {
-  return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${RESOURCE}`, limit: '1' }))?.[0] || null;
+  return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${STATE_RESOURCE}`, limit: '1' }))?.[0] || null;
 }
 function lastFour(active) {
   return process.env.CONGRESS_NUMBERS
@@ -134,6 +135,7 @@ function initialWindow(state) {
 }
 
 function shouldBootstrap(state) {
+  if (process.env.SYNC_MODE === 'incremental') return false;
   // Daily runs automatically continue a deliberately-started bootstrap until
   // the stored cursor is complete. This is what makes backfill truly resumable.
   return process.env.SYNC_MODE === 'bootstrap'
@@ -158,23 +160,32 @@ async function candidates(congresses, state, bootstrap) {
       checkpointCursor: null,
     };
   }
-  const windowFrom = initialWindow(state);
-  const items = [];
-  for (const congress of congresses) {
-    let offset = 0;
-    for (let page = 0; page < MAX_DISCOVERY_PAGES; page += 1) {
-      const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset, fromDateTime: windowFrom });
-      const pageItems = asArray(body?.bills);
-      items.push(...pageItems.map((item) => refFrom(item, congress)).filter(Boolean));
-      if (pageItems.length < DISCOVERY_PAGE_SIZE || !body?.pagination?.next) break;
-      offset += pageItems.length;
-    }
+  const prior = state?.cursor;
+  if (prior?.mode === 'incremental' && !prior.complete && prior.window_to &&
+      ((prior.congresses && JSON.stringify(prior.congresses) !== JSON.stringify(congresses)) ||
+       (!prior.congresses && JSON.stringify(congresses) !== '[119]'))) {
+    throw new Error('Congress scope differs from unfinished incremental cursor');
   }
-  return {
-    refs: unique(items),
-    cursor: { mode: 'incremental', congresses, window_from: windowFrom },
-    checkpointCursor: null,
-  };
+  let next = prior?.mode === 'incremental' && !prior.complete && prior.window_to
+    ? { ...prior, congresses }
+    : { mode: 'incremental', congresses, window_from: congressDateTime(process.env.FROM_DATE_TIME ||
+        new Date((Date.parse(prior?.window_to || state?.last_successful_at) || Date.now()-7*86400000)-36*3600000)),
+        window_to: congressDateTime(Date.now()), next_congress_index: 0, next_offset: 0, complete: false };
+  const refs = [];
+  for (let page=0; page<MAX_DISCOVERY_PAGES && !next.complete; page++) {
+    const i=next.next_congress_index || 0, offset=next.next_offset || 0;
+    const body=await apiGet(`/bill/${congresses[i]}`, {limit:DISCOVERY_PAGE_SIZE, offset,
+      fromDateTime:next.window_from, toDateTime:next.window_to, sort:'updateDate+asc'});
+    const rows=asArray(body?.bills);
+    const pageRefs=unique(rows.map(item=>refFrom(item,congresses[i])).filter(Boolean));
+    // Queue durability precedes advancing discovery. Replaying a page is idempotent.
+    await stageCandidates(pageRefs); refs.push(...pageRefs);
+    next = rows.length && body?.pagination?.next
+      ? {...next,next_offset:offset+rows.length}
+      : {...next,next_congress_index:i+1,next_offset:0,complete:i+1>=congresses.length};
+    await checkpointSyncState(STATE_RESOURCE,next);
+  }
+  return {refs:unique(refs),cursor:next,checkpointCursor:null};
 }
 
 function detailLevel(currentStage) {
@@ -467,7 +478,7 @@ async function run() {
     await reapStalePolicyQueue(RESOURCE);
     const next = await candidates(congresses, state, bootstrap);
     const staged = await stageCandidates(next.refs);
-    await checkpointSyncState(RESOURCE, next.cursor);
+    await checkpointSyncState(STATE_RESOURCE, next.cursor);
     const queued = await takePolicyQueue(RESOURCE, MAX_BILLS);
     read = queued.length;
     console.log(`Congress.gov: discovered ${next.refs.length}, staged ${staged}, processing ${read} queued bills for Congress ${congresses.join(', ')}.`);
@@ -521,7 +532,7 @@ async function run() {
     const embeddedBills = await embed(embeds);
     const semanticRelations = await refreshSemanticRelations(embeddedBills);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
-    await updateSyncState(RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
+    await updateSyncState(STATE_RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
     const status = written === read ? 'succeeded' : 'partial';
     await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
       cursor: next.cursor, staged, embedded: embeddedBills.length, semantic_relations: semanticRelations,

@@ -25,12 +25,43 @@ YAHOO: dict[tuple[str, str], dict] = {
     ("CAN", "usdcad"): {"symbol": "CAD=X"},
     ("AUS", "audusd"): {"symbol": "AUDUSD=X"},
     ("CHE", "usdchf"): {"symbol": "CHF=X"},
+    ("CHE", "eurchf"): {"symbol": "EURCHF=X"},
     ("BRA", "usdbrl"): {"symbol": "BRL=X"},
     ("IND", "usdinr"): {"symbol": "INR=X"},
     ("TWN", "usdtwd"): {"symbol": "TWD=X"},
     ("SGP", "usdsgd"): {"symbol": "SGD=X"},
     ("HKG", "usdhkd"): {"symbol": "HKD=X"},
     ("ZAF", "usdzar"): {"symbol": "ZAR=X"},
+    # stock indices (Yahoo chart, monthly closes; symbols checked 2026-09-29 -- HSTECH and an S-REIT
+    # index have no usable Yahoo history, so those cards stay as they are)
+    ("ZAF", "jse_top40"): {"symbol": "^J200.JO"},
+    ("HKG", "hsi"): {"symbol": "^HSI"},
+    ("HKG", "hscei"): {"symbol": "^HSCE"},
+    ("SGP", "sti"): {"symbol": "^STI"},
+    ("TWN", "taiex"): {"symbol": "^TWII"},
+    ("CHE", "smi"): {"symbol": "^SSMI"},
+    ("AUS", "asx200"): {"symbol": "^AXJO"},
+    ("AUS", "asx_vix"): {"symbol": "^AXVI"},
+    ("IDN", "usdidr"): {"symbol": "IDR=X"},
+    ("IDN", "jci"): {"symbol": "^JKSE"},
+    # 2026-09-30: indices / crosses for the countries wired by wire_world_public_series.py (CSI 300 and
+    # VN-Index have a single Yahoo point, Euro Stoxx Banks no symbol -- left out)
+    ("CAN", "tsx"): {"symbol": "^GSPTSE"},
+    ("GBR", "eurgbp"): {"symbol": "EURGBP=X"},
+    ("GBR", "ftse250"): {"symbol": "^FTMC"},
+    ("EMU", "eurjpy"): {"symbol": "EURJPY=X"},
+    ("EMU", "eurgbp"): {"symbol": "EURGBP=X"},
+    ("EMU", "cac40"): {"symbol": "^FCHI"},
+    ("BRA", "ibovespa"): {"symbol": "^BVSP"},
+    ("IND", "nifty50"): {"symbol": "^NSEI"},
+    ("IND", "sensex"): {"symbol": "^BSESN"},
+    ("ISR", "usdils"): {"symbol": "ILS=X"},
+    ("ISR", "ta125"): {"symbol": "^TA125.TA"},
+    ("CHN", "usdcny"): {"symbol": "CNY=X"},
+    ("CHN", "sse_composite"): {"symbol": "000001.SS"},
+    ("CHN", "hscei"): {"symbol": "^HSCE"},
+    ("KAZ", "usdkzt"): {"symbol": "KZT=X"},
+    ("VNM", "usdvnd"): {"symbol": "VND=X"},
 }
 
 # Worker /api/macro?source=fred&series_id=… (limit=1 latest only)

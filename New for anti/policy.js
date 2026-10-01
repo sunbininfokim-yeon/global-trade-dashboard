@@ -209,6 +209,9 @@
     `<div class="policy-search" data-search>
        <input type="search" class="policy-search-input" data-search-input autocomplete="off"
               placeholder="${esc('쉼표로 조건 구분 (예: 니켈, 수출통제, 배터리)')}" value="${esc(state.search.query)}">
+       <button type="button" class="policy-search-submit" data-search-submit aria-label="검색">
+         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+       </button>
        <span class="policy-search-spinner" data-search-spinner hidden aria-hidden="true"></span>
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
@@ -337,6 +340,11 @@
   let searchToken = 0;
   let searchTimer = null;
 
+  // Shows next to the search box -- but only for a query the user actually
+  // submitted (Enter, the magnifying-glass button, or picking a dropdown
+  // row), not for the live-as-you-type preview below. The magnifying-glass
+  // button itself stays visible; the spinner occupies its own slot to its
+  // left (see .policy-search-spinner).
   function setSearchSpinner(visible) {
     const spinner = host?.querySelector('[data-search-spinner]');
     if (spinner) spinner.hidden = !visible;
@@ -344,19 +352,29 @@
 
   async function runSearch(value) {
     const token = ++searchToken;
-    setSearchSpinner(true);
     try {
       const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(value)}`);
       const body = await res.json().catch(() => null);
       if (token !== searchToken || !host) return;
-      setSearchSpinner(false);
       if (!res.ok || !body) return renderSearchMessage(res.status === 400 && body?.error ? body.error : '검색 중 오류가 발생했습니다');
       renderSearchResults(body);
     } catch {
       if (token !== searchToken || !host) return;
-      setSearchSpinner(false);
       renderSearchMessage('검색 중 오류가 발생했습니다');
     }
+  }
+
+  // Enter, the magnifying-glass button, and picking a dropdown row all land
+  // here. go() doesn't touch the DOM until its fetch resolves (see go()
+  // below), so the spinner set here just sits next to the box until paint()
+  // swaps the whole header -- including this box -- for the destination.
+  function submitSearch(query) {
+    clearTimeout(searchTimer);
+    searchToken += 1; // drop any in-flight dropdown fetch, this submit takes over
+    setSearchSpinner(true);
+    const box = host.querySelector('[data-search-results]');
+    if (box) box.hidden = true;
+    go('search', query);
   }
 
   // Delegated on `host` (not the input itself) because paint() replaces the
@@ -382,12 +400,7 @@
     if (event.key === 'Enter') {
       const query = input.value.trim();
       if (!query) return;
-      clearTimeout(searchTimer);
-      searchToken += 1; // drop any in-flight dropdown fetch, the full page is taking over
-      setSearchSpinner(false);
-      const box = host.querySelector('[data-search-results]');
-      if (box) box.hidden = true;
-      go('search', query);
+      submitSearch(query);
       return;
     }
     if (event.key !== 'Escape') return;
@@ -1437,6 +1450,12 @@
       const box = searchWrap.querySelector('[data-search-results]');
       if (box) box.hidden = true;
     }
+    const searchSubmit = event.target.closest('[data-search-submit]');
+    if (searchSubmit && host.contains(searchSubmit)) {
+      const query = host.querySelector('[data-search-input]')?.value.trim();
+      if (query) submitSearch(query);
+      return;
+    }
     const fav = event.target.closest('.policy-fav');
     if (fav && host.contains(fav)) {
       toggleFavorite(fav);
@@ -1444,8 +1463,9 @@
     }
     const searchResult = event.target.closest('.policy-search-result');
     if (searchResult && host.contains(searchResult)) {
+      clearTimeout(searchTimer);
       searchToken += 1;
-      setSearchSpinner(false);
+      setSearchSpinner(true); // this row's own [data-view]/[data-id] nav below is the submit
       const box = host.querySelector('[data-search-results]');
       const input = host.querySelector('[data-search-input]');
       if (box) box.hidden = true;
@@ -1504,7 +1524,7 @@
     const token = ++renderToken;
     host.classList.add('policy-surface');
     host.dataset.policyTarget = target;
-    host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}</div>`;
+    host.innerHTML = `<div class="policy-loading"><span class="mm-cpi-spinner" aria-hidden="true"></span>${esc('정책 데이터를 불러오는 중')}</div>`;
 
     subscribeToAuth();
 

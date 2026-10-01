@@ -110,6 +110,8 @@ python3 build_snapshot.py --fetch-portwatch \
   --output "../../public/data/shipping_capacity_v1.json"
 ```
 
+`--fetch-portwatch`는 키 없는 공식 화물 참고(`official_cargo_monitor`)와 호르무즈 미포착 흐름 역산 원장(`hormuz_reconstruction`)도 함께 갱신합니다. 홍해 우회로 근거(`hormuz_bypass_monitor`: 얀부항 PortWatch 탱커 활동, EIA 해협별 원유 비교, `config/hormuz_bypass.json`의 출처 달린 위협 사건 기록)도 같은 실행에서 갱신됩니다. 공식 자료만 따로 갱신하려면 `--fetch-official-cargo --fetch-reconstruction`을 씁니다. 위협 사건 기록은 수기이며 `reviewed_at`이 45일을 넘기면 화면이 "기록 검토 필요"로 바뀝니다 — 사건을 추가·확인할 때 이 날짜를 갱신합니다. 역산 원장은 `HORMUZ_UNOBSERVED_FLOW_RESEARCH.md`의 오만만 질량수지·생산국/수입국 월간 대조·Sentinel-1 촬영 커버리지를 구현하며, 같은 경계·기간·품목의 배럴 입력이 모두 갖춰지기 전에는 미포착 물량을 `null`로 둡니다.
+
 생성물은 동일 `bundle_id`를 공유하는 세 파일로 분리합니다.
 
 - `shipping_capacity_v1.json`: 화면 전용 경량 snapshot.
