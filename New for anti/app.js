@@ -291,6 +291,15 @@ const signalAsOf = (raw) => {
     return s.split(' ')[0];
 };
 
+// "기준일:25.10.01" for the rotating signal panel's footer -- shorter than
+// spelling out "as of 2026-10-01" in a tile this small.
+const signalAsOfKo = (iso) => {
+    const m = String(iso || '').match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
+    if (!m) return iso;
+    const yy = m[1].slice(2);
+    return m[3] ? `${yy}.${m[2]}.${m[3]}` : `${yy}.${m[2]}`;
+};
+
 const signalFormat = (fmt, raw) => {
     const num = parseFloat(raw);
     if (!isFinite(num)) return null;
@@ -367,7 +376,7 @@ const signalSlotHtml = (slot) => {
     // still has a chart behind it. A slot that has a feed and simply hasn't
     // answered yet gets no footnote -- claiming it is chart-only would be wrong.
     const foot = shown
-        ? (asOf ? `as of ${finEsc(asOf)}` : (slot.note ? finEsc(slot.note) : ''))
+        ? (asOf ? `기준일:${finEsc(signalAsOfKo(asOf))}` : (slot.note ? finEsc(slot.note) : ''))
         : (!slot.value && slot.symbol ? '차트만 제공' : '');
 
     // Only a slot showing a real number gets a line; a sparkline over a
