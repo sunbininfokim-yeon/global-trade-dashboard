@@ -5374,6 +5374,7 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     height: 100%;
     color: #94a3b8;
     font-size: 12px;
@@ -5433,7 +5434,7 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 .policy-search-input {
     width: 240px;
-    padding: 7px 26px 7px 12px;
+    padding: 7px 48px 7px 12px;
     border: 1px solid rgba(148, 163, 184, 0.24);
     border-radius: 999px;
     background: rgba(15, 23, 42, 0.6);
@@ -5456,9 +5457,9 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     width: 300px;
 }
 
-/* Magnifying-glass submit button and its loading spinner share the same
-   slot in the pill's right padding -- setSearchSpinner() toggles which of
-   the two is shown, so submitting never shifts the layout. */
+/* Magnifying-glass submit button stays visible at all times; its loading
+   spinner gets its own slot to the left of it (see .policy-search-spinner)
+   rather than swapping into the same spot, so it never covers the icon. */
 .policy-search-submit {
     position: absolute;
     top: 50%;
@@ -5478,11 +5479,13 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 .policy-search-submit:hover { color: #38bdf8; }
 
-/* Same rotating-ring look as .mm-cpi-spinner (reuses its @keyframes). */
+/* Same rotating-ring look as .mm-cpi-spinner (reuses its @keyframes).
+   Sits to the left of .policy-search-submit (right:8px, 18px wide) so the
+   two never overlap. */
 .policy-search-spinner {
     position: absolute;
     top: 50%;
-    right: 10px;
+    right: 32px;
     width: 11px;
     height: 11px;
     margin-top: -5.5px;
