@@ -223,8 +223,8 @@
   // law_number/current_stage; searchGroupKey turns that into the four
   // buckets a reader actually asks about.
   const SEARCH_GROUPS = [
-    { key: 'enacted', cls: 'is-enacted', label: '제정법안', badgeLabel: '법률' },
-    { key: 'pending', cls: 'is-pending', label: '발의법안', badgeLabel: '법안' },
+    { key: 'pending', cls: 'is-pending', label: '법안', badgeLabel: '법안' },
+    { key: 'enacted', cls: 'is-enacted', label: '법률', badgeLabel: '법률' },
     { key: 'executive_order', cls: 'is-eo', label: '행정명령', badgeLabel: 'EO' },
     { key: 'regulation', cls: 'is-regulation', label: '규정', badgeLabel: '규정' },
   ];
@@ -235,7 +235,7 @@
   // Groups in a fixed order, and drops any group with no hits for this query
   // -- three blocks most of the time, a fourth only when a regulation result
   // actually turned up, rather than an empty "규정" column every search.
-  function groupSearchItems(items) {
+  function groupSearchItems(items, includeEmpty = false) {
     const buckets = new Map();
     for (const item of items) {
       const key = searchGroupKey(item);
@@ -244,7 +244,7 @@
     }
     return SEARCH_GROUPS
       .map((def) => ({ ...def, items: buckets.get(def.key) || [] }))
-      .filter((g) => g.items.length);
+      .filter((g) => includeEmpty || g.items.length);
   }
 
   // Only a bill has anything worth a second line here: an enacted one cites
@@ -269,7 +269,7 @@
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
     const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
     const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
-    const matchAttrs = matches.length ? ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-search-date="${esc(searchDate)}"` : '';
+    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
@@ -297,7 +297,7 @@
         <span class="policy-search-group-label">${esc(group.label)}</span>
         <span class="policy-search-group-count">${group.items.length}건</span>
       </div>
-      <div class="policy-search-group-rows">${group.items.map((item) => searchResultRow(item, opts)).join('')}</div>
+      <div class="policy-search-group-rows">${group.items.length ? group.items.map((item) => searchResultRow(item, opts)).join('') : empty('검색 결과 없음')}</div>
     </section>`;
 
   function renderSearchMessage(message) {
@@ -309,14 +309,12 @@
 
   function searchResultsMarkup(body, opts = {}) {
     const items = body.items || [];
-    if (body.search_mode !== 'conditions') return items.length
-      ? groupSearchItems(items).map(g => searchGroupBlock(g, opts)).join('')
-      : empty('검색 결과가 없습니다');
     const sorted = [...items].sort((a,b) => searchOrderCompare(a,b,'matches'));
+    const groups = groupSearchItems(sorted, !opts.compact);
     return `<div class="policy-condition-search">
-      ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">일치 많은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
-      <div class="policy-search-group-rows">${sorted.length ? sorted.map(item => searchResultRow(item, opts)).join('') : empty('확인된 조건 일치 결과가 없습니다')}</div>
-      ${!opts.compact ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
+      ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
+      <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
+      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
     </div>`;
   }
 
@@ -324,7 +322,8 @@
     const count = Number(b.matched_condition_count || 0) - Number(a.matched_condition_count || 0);
     const date = item => Date.parse(item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '') || 0;
     const time = date(b) - date(a);
-    return order === 'latest' ? time || count : count || time;
+    const similarity = Number(b.similarity_score || 0) - Number(a.similarity_score || 0);
+    return order === 'latest' ? time || count || similarity : count || similarity || time;
   }
 
   function renderSearchResults(body) {
@@ -1424,10 +1423,10 @@
     const sortButton = event.target.closest('[data-search-order]');
     if (sortButton && host.contains(sortButton)) {
       const wrapper = sortButton.closest('.policy-condition-search');
-      const list = wrapper.querySelector('.policy-search-group-rows');
+      const lists = wrapper.querySelectorAll('.policy-search-group-rows');
       const order = sortButton.dataset.searchOrder;
-      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, latest_action_date: row.dataset.searchDate });
-      [...list.children].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row));
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
+      lists.forEach(list => [...list.querySelectorAll('[data-condition-row]')].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row)));
       wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
       return;
     }

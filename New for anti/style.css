@@ -6697,7 +6697,7 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .mm-cb-para { margin: 6px 0 0; color: #94a3b8; font-size: 10.5px; line-height: 1.65; }
 .mm-sep-table th small { display: block; margin-top: 1px; color: #64748b; font-size: 9px; font-weight: 400; }
 
-/* Condition search keeps one normal-flow card list, with counts inside each card. */
+/* Search keeps four document-type lanes, with counts inside each card. */
 .policy-condition-search { width: 100%; min-width: 0; }
 .policy-condition-search .policy-search-result { align-items: flex-start; border: 1px solid #28364a; border-radius: 8px; margin-bottom: 6px; }
 .policy-search-order { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 10px; }
@@ -6708,3 +6708,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .policy-search-results:has(.policy-condition-search) { width: min(320px, calc(100vw - 32px)); max-height: 280px; }
 
 .policy-condition-search .policy-search-result-meta strong { color: #c4dcff; font-size: 12px; }
+
+.policy-search-page-results .policy-search-lanes { display: flex; gap: 14px; align-items: flex-start; }
+.policy-search-results .policy-search-lanes { display: flex; flex-direction: column; }
+@media (max-width: 1080px) {
+  .policy-search-page-results .policy-search-lanes { flex-direction: column; }
+}
