@@ -3283,10 +3283,11 @@ async function usSearch(env, f) {
         .filter((r) => r.source_type === 'regulation')
         .map((r) => r.source_id))];
     const regulationUrls = new Map();
+    const documentDates = new Map();
     if (regulationIds.length) {
         const regRows = await usFetch(env, 'regulations',
-            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
-        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+            `select=regulation_id,federal_register_url,publication_date&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) { regulationUrls.set(reg.regulation_id, reg.federal_register_url); documentDates.set(`regulation:${reg.regulation_id}`, {publication_date: reg.publication_date}); }
     }
     // search_policy_corpus (Supabase RPC, owned separately -- see
     // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
@@ -3306,6 +3307,16 @@ async function usSearch(env, f) {
             + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const b of billRows) billMeta.set(b.bill_id, b);
     }
+    await Promise.all([
+        {type:'executive_order',table:'executive_orders',key:'eo_number',dates:['publication_date','signed_date']},
+        {type:'public_law',table:'public_laws',key:'public_law_id',dates:['enacted_date']},
+    ].map(async source => {
+        const ids=[...new Set((rows || []).filter(r=>r.source_type===source.type).map(r=>r.source_id))];
+        if(!ids.length)return;
+        const query=new URLSearchParams({select:[source.key,...source.dates].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        const metadata=await usFetch(env,source.table,query.toString());
+        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,Object.fromEntries(source.dates.map(key=>[key,row[key]])));
+    }));
     const items = (rows || []).map((r) => {
         const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
         return {
@@ -3313,6 +3324,7 @@ async function usSearch(env, f) {
             id: r.source_id,
             title: r.title,
             similarity_score: r.similarity_score,
+            ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
             source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
             ...(bill ? {
                 congress_number: bill.congress_number,
