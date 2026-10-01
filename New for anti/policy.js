@@ -226,8 +226,8 @@
   // law_number/current_stage; searchGroupKey turns that into the four
   // buckets a reader actually asks about.
   const SEARCH_GROUPS = [
-    { key: 'enacted', cls: 'is-enacted', label: '제정법안', badgeLabel: '법률' },
-    { key: 'pending', cls: 'is-pending', label: '발의법안', badgeLabel: '법안' },
+    { key: 'pending', cls: 'is-pending', label: '법안', badgeLabel: '법안' },
+    { key: 'enacted', cls: 'is-enacted', label: '법률', badgeLabel: '법률' },
     { key: 'executive_order', cls: 'is-eo', label: '행정명령', badgeLabel: 'EO' },
     { key: 'regulation', cls: 'is-regulation', label: '규정', badgeLabel: '규정' },
   ];
@@ -238,7 +238,7 @@
   // Groups in a fixed order, and drops any group with no hits for this query
   // -- three blocks most of the time, a fourth only when a regulation result
   // actually turned up, rather than an empty "규정" column every search.
-  function groupSearchItems(items) {
+  function groupSearchItems(items, includeEmpty = false) {
     const buckets = new Map();
     for (const item of items) {
       const key = searchGroupKey(item);
@@ -247,7 +247,7 @@
     }
     return SEARCH_GROUPS
       .map((def) => ({ ...def, items: buckets.get(def.key) || [] }))
-      .filter((g) => g.items.length);
+      .filter((g) => includeEmpty || g.items.length);
   }
 
   // Only a bill has anything worth a second line here: an enacted one cites
@@ -270,26 +270,27 @@
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
-    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치${item.match_level === 'partial' ? ' · 일부 조건 일치' : ' · 전체 조건 일치'}</strong></span>
-      <span class="policy-search-result-meta">${matches.map(m => `${esc(m.term)}: ${m.matched ? '확인' : '미확인'}`).join(' · ')}</span>
-      ${!opts.compact ? matches.filter(m => m.matched).map(m => `<span class="policy-search-result-meta">${esc(m.term)} 근거 (${m.field === 'title' ? '제목' : '요약'}): ${esc(m.snippet)}</span>`).join('') : ''}` : '';
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
+    const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
+    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
           ${conditionLabel}
+          ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
     if (item.type === 'regulation' || item.type === 'public_law') {
       return /^https:\/\//i.test(item.source_url || '')
-        ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
-        : `<div class="policy-search-result is-inert">${body}</div>`;
+        ? `<a class="policy-search-result"${matchAttrs} href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
+        : `<div class="policy-search-result is-inert"${matchAttrs}>${body}</div>`;
     }
     const tag = view ? 'button' : 'div';
     const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
-    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}${matchAttrs}>${body}</${tag}>`;
   };
 
   const searchGroupBlock = (group, opts = {}) => `
@@ -299,7 +300,7 @@
         <span class="policy-search-group-label">${esc(group.label)}</span>
         <span class="policy-search-group-count">${group.items.length}건</span>
       </div>
-      <div class="policy-search-group-rows">${group.items.map((item) => searchResultRow(item, opts)).join('')}</div>
+      <div class="policy-search-group-rows">${group.items.length ? group.items.map((item) => searchResultRow(item, opts)).join('') : empty('검색 결과 없음')}</div>
     </section>`;
 
   function renderSearchMessage(message) {
@@ -311,20 +312,24 @@
 
   function searchResultsMarkup(body, opts = {}) {
     const items = body.items || [];
-    if (body.search_mode !== 'conditions') return items.length
-      ? groupSearchItems(items).map(g => searchGroupBlock(g, opts)).join('')
-      : empty('검색 결과가 없습니다');
-    const counts = [...new Set(items.map(i => i.matched_condition_count))].sort((a,b) => b-a);
-    const note = '<p class="policy-search-match-note">저장된 제목·요약의 단어·등록된 유사 표현 기준입니다. 원문 전체나 조건 간 관계를 확인한 결과는 아닙니다.</p>';
-    const limits = body.candidate_limited || body.result_limited ? '<p class="policy-search-match-note">후보·표시 수 제한이 있습니다. 조건을 구체화하면 더 정확히 찾을 수 있습니다.</p>' : '';
-    const degraded = body.semantic_available === false ? '<p class="policy-search-match-note">의미 검색을 사용할 수 없어 단어·유사 표현 검색 결과만 표시합니다.</p>' : '';
-    const noAll = !items.some(i => i.match_level === 'all') ? '<p class="policy-search-match-note">검색된 후보의 제목·요약에서 모든 조건이 확인되는 문서는 없습니다.</p>' : '';
-    return note + limits + degraded + noAll + (counts.length ? counts.map(count => {
-      const subset = items.filter(i => i.matched_condition_count === count);
-      const total = subset[0].total_condition_count;
-      return `<section class="policy-search-match-section"><h3>${count === total ? '전체 조건 일치' : '일부 조건 일치'} · ${esc(total)}개 중 ${esc(count)}개</h3>${groupSearchItems(subset).map(g => searchGroupBlock(g, opts)).join('')}</section>`;
-    }).join('') : empty('확인된 조건 일치 결과가 없습니다. 문장형 의미 검색도 시도해 보세요.'));
+    const sorted = [...items].sort((a,b) => searchOrderCompare(a,b,'matches'));
+    const groups = groupSearchItems(sorted, !opts.compact);
+    return `<div class="policy-condition-search">
+      ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
+      <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
+      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
+    </div>`;
   }
+
+  function searchOrderCompare(a, b, order) {
+    const count = Number(b.matched_condition_count || 0) - Number(a.matched_condition_count || 0);
+    const date = item => Date.parse(item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '') || 0;
+    const time = date(b) - date(a);
+    const similarity = Number(b.similarity_score || 0) - Number(a.similarity_score || 0);
+    const name = Number(b.relevance_rank || 0) - Number(a.relevance_rank || 0);
+    return order === 'latest' ? time || count || name || similarity : count || name || similarity || time;
+  }
+
   function renderSearchResults(body) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;
@@ -442,15 +447,17 @@
   // not by current_stage alone.
   const stageRail = (bill) => {
     const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
     const steps = stageFlow.map((step, i) => {
+      const failed = setback?.step_id === step.id;
       const observed = step.state === 'observed';
       const evidence = step.evidence.at(-1);
-      const title = evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
-      return `<li class="policy-stage-step${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
+      const title = failed ? `${step.label} · ${setback.date || '날짜 미확인'} · ${setback.label}. ${setback.note}` : evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
+      return `<li class="policy-stage-step${failed ? ' is-failed' : ''}${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${failed ? esc(setback.label) : observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
     const alert = lifecycle.procedural_alert;
     return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
-      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(alert.label)} — 법안 통과 여부와 별도입니다.</p>` : ''}
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(setback ? `${CHAMBER_LABELS[alert.chamber]} ${setback.label} — ${setback.note}` : alert.label + ' — 법안 통과 여부와 별도입니다.')}</p>` : ''}
       <p class="policy-notice">${esc(lifecycle.note)}</p>
       ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
@@ -521,6 +528,7 @@
       // wipe whatever the visitor has typed into the search box.
       paintFavButton(button, !on);
     } catch (err) {
+      window.alert('즐겨찾기를 저장하지 못했습니다. 로그인 상태와 인터넷 연결을 확인한 뒤 다시 시도해주세요.');
       console.error('Failed to toggle favorite:', err);
     } finally {
       button.disabled = false;
@@ -822,6 +830,7 @@
   // row keyed by that same id.
   function favoriteBillCardHtml(bill, notifyEnabled) {
     const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
     const currentLabel = lifecycle.current.label;
     const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
@@ -841,6 +850,7 @@
         <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
         ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
       </div>
+      ${setback ? `<p class="policy-notice policy-procedural-alert">${esc(`${CHAMBER_LABELS[lifecycle.procedural_alert.chamber]} ${setback.label}`)}</p>` : ''}
       <div class="policy-fav-bill-actions">
         <label class="policy-fav-bill-notify">
           <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
@@ -1429,6 +1439,16 @@
   }
 
   function onClick(event) {
+    const sortButton = event.target.closest('[data-search-order]');
+    if (sortButton && host.contains(sortButton)) {
+      const wrapper = sortButton.closest('.policy-condition-search');
+      const lists = wrapper.querySelectorAll('.policy-search-group-rows');
+      const order = sortButton.dataset.searchOrder;
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, relevance_rank: row.dataset.relevanceRank, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
+      lists.forEach(list => [...list.querySelectorAll('[data-condition-row]')].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row)));
+      wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
+      return;
+    }
     const searchWrap = host.querySelector('[data-search]');
     if (searchWrap && !searchWrap.contains(event.target)) {
       searchToken += 1; // drop any in-flight dropdown fetch now that it's dismissed

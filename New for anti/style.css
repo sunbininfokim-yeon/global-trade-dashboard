@@ -6745,11 +6745,20 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .mm-cb-para { margin: 6px 0 0; color: #94a3b8; font-size: 10.5px; line-height: 1.65; }
 .mm-sep-table th small { display: block; margin-top: 1px; color: #64748b; font-size: 9px; font-weight: 400; }
 
-/* Condition-search sections retain document-type grouping within match tiers. */
-.policy-search-match-note { font-size: 12px; line-height: 1.6; color: #94a3b8; padding: 8px 12px; margin: 0; }
-.policy-search-match-section { margin: 12px 0; }
-.policy-search-match-section > h3 { font-size: 14px; padding: 8px 12px; margin: 0; color: #e2e8f0; }
-.policy-search-match-section + .policy-search-match-section { border-top: 1px solid #334155; padding-top: 8px; }
-.policy-search-match-section .policy-search-result { align-items: flex-start; }
-.policy-search-match-section .policy-search-result-meta { color: #aebbd0; }
-.policy-search-match-section .policy-search-result-meta strong { color: #d8e6ff; }
+/* Search keeps four document-type lanes, with counts inside each card. */
+.policy-condition-search { width: 100%; min-width: 0; }
+.policy-condition-search .policy-search-result { align-items: flex-start; border: 1px solid #28364a; border-radius: 8px; margin-bottom: 6px; }
+.policy-search-order { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 10px; }
+.policy-search-order button { background: transparent; color: #aebbd0; border: 1px solid #334155; border-radius: 6px; padding: 5px 9px; cursor: pointer; }
+.policy-search-order button[aria-pressed="true"] { color: #e2e8f0; background: #26364a; }
+.policy-search-order button:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.policy-search-scope { display: block; color: #94a3b8; font-size: 11px; padding-top: 6px; }
+.policy-search-results:has(.policy-condition-search) { width: min(320px, calc(100vw - 32px)); max-height: 280px; }
+
+.policy-condition-search .policy-search-result-meta strong { color: #c4dcff; font-size: 12px; }
+
+.policy-search-page-results .policy-search-lanes { display: flex; gap: 14px; align-items: flex-start; }
+.policy-search-results .policy-search-lanes { display: flex; flex-direction: column; }
+@media (max-width: 1080px) {
+  .policy-search-page-results .policy-search-lanes { flex-direction: column; }
+}
