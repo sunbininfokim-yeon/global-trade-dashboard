@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-01T00:16:44.963019+00:00",
+  "generated_at": "2026-10-01T00:19:44.698546+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 28,
-    "sources_failed": 3,
-    "raw_items": 459,
-    "scored": 84,
-    "published": 71,
+    "sources_ok": 31,
+    "sources_failed": 0,
+    "raw_items": 499,
+    "scored": 88,
+    "published": 75,
     "commodities": 24,
-    "buckets": 60
+    "buckets": 66
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -114,11 +114,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
+      "ok": true,
+      "count": 36,
+      "error": null,
       "mode": "live",
-      "carried_over": 21
+      "note": "45 list pages, 38 reports linked, 15 read, 21 already known"
     },
     {
       "source_id": "my_mpob",
@@ -199,9 +199,9 @@
     },
     {
       "source_id": "cn_mofcom_en",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>",
+      "ok": true,
+      "count": 15,
+      "error": null,
       "mode": "live"
     },
     {
@@ -622,6 +622,26 @@
     }
   },
   "index": {
+    "wheat": {
+      "EGY": [
+        "2d296d85261a767b"
+      ],
+      "PAK": [
+        "598ef301ee60a6fd"
+      ],
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "d6be49771c7e2707"
+      ],
+      "KAZ": [
+        "901d32f93671371c"
+      ]
+    },
     "sugar": {
       "COL": [
         "4bd4def13588cc0a"
@@ -681,6 +701,9 @@
       "CHN": [
         "6e3880b1a989890a"
       ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
       "IND": [
         "6269fa1eda293c5a"
       ],
@@ -700,6 +723,9 @@
       ],
       "BGD": [
         "9a2e551991dc06e6"
+      ],
+      "KAZ": [
+        "901d32f93671371c"
       ],
       "BRA": [
         "e65bffd316bf9313",
@@ -721,23 +747,15 @@
       "KEN": [
         "3ff8c2dd8b700c92"
       ],
+      "KAZ": [
+        "901d32f93671371c"
+      ],
       "ESP": [
         "b736550c463bc772"
       ],
       "BRA": [
         "6a2f69a13bf9ae19",
         "a0f50331005b9402"
-      ]
-    },
-    "wheat": {
-      "BGD": [
-        "9a2e551991dc06e6"
-      ],
-      "UKR": [
-        "088f09f9aa8eb7c7"
-      ],
-      "KEN": [
-        "d6be49771c7e2707"
       ]
     },
     "iron_ore": {
@@ -880,6 +898,38 @@
     }
   },
   "items": [
+    {
+      "id": "2d296d85261a767b",
+      "title": {
+        "original": "Egypt: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Cairo estimates a decrease in Egypt’s wheat imports for marketing year 2026/27, totaling 12.0 million metric tons, due to increased domestic production and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/egypt-grain-and-feed-update",
+      "published_at": "2026-09-28T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "EGY"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 6.417,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
+    },
     {
       "id": "4bd4def13588cc0a",
       "title": {
@@ -1040,6 +1090,36 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "598ef301ee60a6fd",
+      "title": {
+        "original": "Pakistan: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Government of Pakistan has approved the import of up to one million tons of wheat in 2026, the first significant imports since 2024, in response to rapidly...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/pakistan-grain-and-feed-update",
+      "published_at": "2026-09-29T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "PAK"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.932,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
+    },
+    {
       "id": "0eb0404d29d2bbc2",
       "title": {
         "original": "Senegal: Cotton and Products Update",
@@ -1194,6 +1274,36 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.48,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
+    },
+    {
       "id": "71739cda84d2ebd6",
       "title": {
         "original": "Philippines: Grain and Feed Update",
@@ -1277,7 +1387,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.429,
+      "importance": 3.428,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1671,7 +1781,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.748,
+      "importance": 1.747,
       "reasons": [
         "series:EIA_STEO"
       ],
@@ -1788,7 +1898,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.661,
+      "importance": 1.66,
       "reasons": [
         "country_in_text"
       ],
@@ -1825,6 +1935,38 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "901d32f93671371c",
+      "title": {
+        "original": "Kazakhstan: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The 2026 spring planting season in Kazakhstan was characterized by effective government coordination and investment, diversified cropping favoring high-margin...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/kazakhstan-grain-and-feed-update",
+      "published_at": "2026-07-14T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "KAZ"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.616,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -2105,7 +2247,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.357,
+      "importance": 1.356,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
