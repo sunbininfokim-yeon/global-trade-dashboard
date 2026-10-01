@@ -136,8 +136,8 @@ def predict(year: int = None) -> dict:
         "forecast_available": True,
         "source_note": (
             "Commercial maize yield labels: Crop Estimates Committee via SAGIS. "
-            "Climate: Google Earth Engine CHIRPS daily precipitation and "
-            "ERA5-Land daily temperature, VPD and 0-100 cm soil moisture."
+            "Climate: NASA POWER daily precipitation, maximum temperature, "
+            "VPD and root-zone soil wetness at six belt locations."
         ),
         "methodology_note": (
             "A national commercial-maize yield target is paired with a fixed, "
