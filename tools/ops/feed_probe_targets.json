@@ -5,18 +5,29 @@
  "targets": [
   {
    "group": "mofcom",
-   "id": "mofcom_aqygzj_gzdt",
-   "url": "https://aqygzj.mofcom.gov.cn/gzdt/index.html",
-   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/gzdt/art/\\d{4}/art_[0-9a-f]+\\.html",
-   "samples": 12,
-   "show_body": 2500
+   "id": "aqygzj_home_articles",
+   "url": "https://aqygzj.mofcom.gov.cn/",
+   "variants": true,
+   "link_text": true,
+   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/[a-z]+/art/\\d{4}/art_[0-9a-f]+\\.html",
+   "samples": 40
   },
   {
    "group": "mofcom",
-   "id": "mofcom_en_news_body",
-   "url": "https://english.mofcom.gov.cn/News/index.html",
+   "id": "aqygzj_home_sections",
+   "url": "https://aqygzj.mofcom.gov.cn/",
+   "link_text": true,
+   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/[a-z]+/(?:[a-z]+/)?index\\.html",
+   "samples": 40
+  },
+  {
+   "group": "mofcom",
+   "id": "mofcom_blgg",
+   "url": "https://www.mofcom.gov.cn/zcfb/blgg/index.html",
    "variants": true,
-   "show_body": 1500
+   "link_text": true,
+   "link_re": "mofcom\\.gov\\.cn/[^\\\"' ]*art_[0-9a-f]+\\.html",
+   "samples": 30
   },
   {
    "group": "prod",
