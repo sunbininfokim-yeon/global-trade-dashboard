@@ -4,6 +4,39 @@
  ],
  "targets": [
   {
+   "group": "mofcom",
+   "id": "mofcom_en_news",
+   "url": "https://english.mofcom.gov.cn/News/index.html",
+   "variants": true,
+   "link_re": "(?:https?://english\\.mofcom\\.gov\\.cn)?(?:\\.\\./|/)?(?:News/)?(?:SignificantNews|SpokesmansRemarks|PressConference|PressRelease)/art/\\d{4}/art_[0-9a-f]+\\.html",
+   "samples": 8,
+   "render": true
+  },
+  {
+   "group": "mofcom",
+   "id": "mofcom_en_home",
+   "url": "https://english.mofcom.gov.cn/",
+   "variants": true,
+   "link_re": "mofcom\\.gov\\.cn/[A-Za-z]+/[A-Za-z/]*index\\.html",
+   "samples": 15
+  },
+  {
+   "group": "mofcom",
+   "id": "mofcom_cn_aqygzj",
+   "url": "https://aqygzj.mofcom.gov.cn/",
+   "variants": true,
+   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/[^\\\"' ]+\\.html",
+   "samples": 10
+  },
+  {
+   "group": "mofcom",
+   "id": "mofcom_cn_gztz",
+   "url": "https://www.mofcom.gov.cn/zcfb/blgg/index.html",
+   "variants": true,
+   "link_re": "mofcom\\.gov\\.cn/[^\\\"' ]*art_[0-9a-f]+\\.html",
+   "samples": 10
+  },
+  {
    "group": "prod",
    "id": "reports_pager_oil_usa_p1",
    "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=0",
