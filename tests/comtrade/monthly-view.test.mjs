@@ -187,3 +187,80 @@ test('national units in single currency units are shown in millions, FOB and CIF
     assert.equal(fob.unitLabel, '백만 바트 (FOB)');
     assert.equal(Math.round(fob.points[0].value), 1936);
 });
+
+test('Comtrade monthly: breakdown rows collapse to the total, HS codes sum, months sort', () => {
+    const rows = [
+        // Same month/flow/HS: total plus a mode-of-transport breakdown row.
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 100e6, netWgt: 10e6 },
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 60e6, netWgt: 6e6 },
+        // Second HS code of the same commodity, same month: summed.
+        { period: '202605', flowCode: 'X', partnerCode: 0, cmdCode: '8105', primaryValue: 20e6, netWgt: null },
+        { period: '202604', flowCode: 'X', partnerCode: 0, cmdCode: '2822', primaryValue: 90e6, netWgt: 9e6 },
+        { period: '202605', flowCode: 'M', partnerCode: 0, cmdCode: '2822', primaryValue: 5e6, netWgt: 1e6 },
+        // Re-exports and non-World partners are not part of the series.
+        { period: '202605', flowCode: 'RX', partnerCode: 0, cmdCode: '2822', primaryValue: 7e6 },
+        { period: '202605', flowCode: 'X', partnerCode: 156, cmdCode: '2822', primaryValue: 50e6 },
+    ];
+    const s = host(T.aggregateComtradeMonthly(rows));
+    assert.deepEqual(s.X.map((p) => p.month), ['2026-04', '2026-05']);
+    assert.equal(s.X[1].usd, 120e6);
+    assert.equal(s.X[1].kgKnown, false);    // one HS code had no weight
+    assert.equal(s.M[0].usd, 5e6);
+});
+
+test('Comtrade monthly: 36 complete months in three blocks of 12', () => {
+    const blocks = host(T.monthBlocks(new Date(Date.UTC(2026, 8, 24))));
+    assert.equal(blocks.length, 3);
+    assert.deepEqual(blocks.map((b) => b.length), [12, 12, 12]);
+    assert.equal(blocks[0][0], '202309');
+    assert.equal(blocks[2][11], '202608');
+});
+
+test('Comtrade monthly: reporter codes use Comtrade\'s own where they differ', () => {
+    assert.equal(T.reporterCodeFor('USA'), 842);
+    assert.equal(T.reporterCodeFor('IND'), 699);
+    assert.equal(T.reporterCodeFor(null), null);
+});
+
+test('Comtrade monthly card: range, YoY, and missing months are stated', () => {
+    const X = Array.from({ length: 36 }, (_, i) => {
+        const d = new Date(Date.UTC(2023, 8 + i, 1));
+        return { month: `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`, usd: (100 + i) * 1e6, kg: 1e9, kgKnown: true };
+    }).filter((_, i) => i !== 30);   // one unreported month
+    const html = T.liveCardHtml({ X, M: [], hs: '2709', failures: 0 }, 12, 'Saudi Arabia');
+    assert.match(html, /12개월 중 11개월 보고/);
+    assert.match(html, /전년 동월 \+9\.8%/);   // 2026-08 135 vs 2025-08 123
+    assert.match(html, /최근 36개월 보고 없음/); // imports
+    assert.match(html, /data-range="36"/);
+});
+
+test('fetchComtradeArcs: a blended year keeps one year per route and marks older routes', async () => {
+    let payload = null;
+    const fetchStub = async (url) => {
+        if (!String(url).startsWith('/api/comtrade')) return new Response('{}', { status: 404 });
+        return new Response(JSON.stringify(payload.body), { status: 200, headers: payload.headers });
+    };
+    const document = new Proxy({}, { get: () => () => null });
+    const win = { fetch: fetchStub, document, addEventListener() {} };
+    win.window = win;
+    const ctx = vm.createContext({ ...win, console: { log() {}, warn() {}, error() {} }, URLSearchParams, Response, setTimeout, clearTimeout });
+    vm.runInContext(fs.readFileSync(path.join(repo, 'New for anti/data.js'), 'utf8'), ctx);
+    payload = {
+        headers: { 'X-Comtrade-Period': '2025', 'X-Comtrade-Blend': '2024' },
+        body: { data: [
+            { reporterCode: 76, partnerCode: 156, flowCode: 'X', primaryValue: 33e9, netWgt: 1, period: '2025' },
+            // Stray older row of the same route must not be added.
+            { reporterCode: 156, partnerCode: 76, flowCode: 'M', primaryValue: 31e9, netWgt: 1, period: '2024' },
+            { reporterCode: 682, partnerCode: 156, flowCode: 'X', primaryValue: 40e9, netWgt: 1, period: '2024' },
+        ] },
+    };
+    const arcs = host((await ctx.window.fetchComtradeArcs('oil')).map((a) =>
+        ({ s: a.sourceName, v: a.volume, y: a.dataYear, b: a.blendFrom, p: a.period })));
+    const bra = arcs.find((a) => a.s === 'Brazil');
+    assert.equal(bra.v, 33000);
+    assert.equal(bra.y, '2025');
+    const sau = arcs.find((a) => a.v === 40000);
+    assert.equal(sau.y, '2024');
+    assert.equal(sau.b, '2024');
+    assert.equal(sau.p, '2025');
+});

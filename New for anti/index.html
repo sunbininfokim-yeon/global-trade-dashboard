@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=86">
+    <link rel="stylesheet" href="style.css?v=98">
 </head>
 <body>
     <div id="app">
@@ -148,6 +148,7 @@
                             <a href="#" data-target="soybeans">대두</a>
                             <a href="#" data-target="sugar">설탕</a>
                             <a href="#" data-target="palm_oil">팜유</a>
+                            <a href="#" data-target="rubber">천연고무</a>
                             <a href="#" data-target="coffee">커피</a>
                         </div>
                     </div>
@@ -184,17 +185,21 @@
                         <a href="#" data-target="us-policy-hub">미국</a>
                     </div>
                 </div>
-                <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
-                </div>
-                <!-- Hidden until signed in -- auth.js toggles this on every
-                     auth state change, same as it does the login/logout
-                     button in #auth-container. No dropdown: a bare
-                     data-nav-default item navigates straight to mypage. -->
-                <div class="menu-item hidden" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
-                </div>
             </nav>
+            <!-- Split out of .main-menu so they land at the header's far
+                 right (with auth/date-picker), separate from the
+                 원자재/금융/해운/정치/정책 cluster -- main-menu's
+                 margin-right:auto pushes everything after </nav> rightward. -->
+            <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
+            </div>
+            <!-- Hidden until signed in -- auth.js toggles this on every
+                 auth state change, same as it does the login/logout
+                 button in #auth-container. No dropdown: a bare
+                 data-nav-default item navigates straight to mypage. -->
+            <div class="menu-item hidden" style="margin-left: 20px;" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
+            </div>
             <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
@@ -229,12 +234,12 @@
                 <div class="panel-section hidden" id="commodity-info-panel">
                     <div class="panel-header">
                         <div class="panel-header-title-row">
-                            <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                            <h2 id="current-view-title">원자재: 석탄</h2>
                             <button type="button" class="policy-fav commodity-fav-star hidden" id="commodity-fav-star" aria-pressed="false" title="즐겨찾기">
                                 <span class="policy-fav-icon" aria-hidden="true">☆</span>
                             </button>
                         </div>
-                        <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
+                        <p id="current-view-desc">국가 클릭 → 수출 대상 순위</p>
                     </div>
                     
                     <div class="stats-container" id="commodity-stats">
@@ -275,6 +280,12 @@
             <!-- Center Pane: Map -->
             <div class="map-pane">
                 <div id="map"></div>
+
+                <!-- Corner attribution for the commodity trade map -- data
+                     source used to be crammed into #current-view-desc next to
+                     the commodity blurb; it now lives here so the subtitle
+                     stays a short interaction hint. -->
+                <div id="map-source-note" class="map-source-note"></div>
 
                 <!-- Election blocks open here: a window centred over the map,
                      scoped to .map-pane so the nav and right pane stay usable. -->
@@ -414,7 +425,7 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=14"></script>
+    <script src="data.js?v=18"></script>
     <script src="shipping.js?v=19"></script>
     <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
          and window.auth-container are ready by the time app.js's other
@@ -439,19 +450,19 @@
          _worker.js), so these query strings are what actually pins the group
          to one build. -->
     <script src="macro.js?v=15"></script>
-    <script src="market-microstructure.js?v=krx-deriv-flow-2"></script>
+    <script src="market-microstructure.js?v=krx-deriv-flow-3"></script>
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
     <script src="policy-evidence.js?v=1"></script>
-    <script src="policy.js?v=23"></script>
+    <script src="policy.js?v=26"></script>
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
     <script src="mypage.js?v=5"></script>
-    <script src="tutorial.js?v=1"></script>
-    <script src="app.js?v=125"></script>
+    <script src="tutorial.js?v=8"></script>
+    <script src="app.js?v=132"></script>
     <script src="gas-storage.js?v=2"></script>
-    <script src="trade.js?v=monthly-1"></script>
-    <script src="trade-monthly.js?v=4"></script>
-    <script type="module" src="js/elections/index.js?v=4"></script>
+    <script src="trade.js?v=spr-3y-1"></script>
+    <script src="trade-monthly.js?v=5"></script>
+    <script type="module" src="js/elections/index.js?v=5"></script>
 </body>
 </html>

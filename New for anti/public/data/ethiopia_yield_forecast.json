@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T05:45:27.216251+00:00",
+  "generated_at": "2026-09-24T12:09:34.426434+00:00",
   "season": "FAOSTAT 2024 actual / USDA MY 2026/27 outlook",
   "country": "Ethiopia",
   "forecast_available": false,
@@ -30,8 +30,8 @@
       "supports": "지역 비중, stumping, 노령목, MY 2026/27 전망"
     },
     {
-      "name": "GEE CHIRPS + ERA5-Land",
-      "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+      "name": "NASA POWER daily",
+      "url": "https://power.larc.nasa.gov/",
       "supports": "산지 강수·열·토양수분·VPD"
     }
   ],
@@ -82,36 +82,35 @@
           "climate_risk_monitor": {
             "period": "2025-08-01 through 2026-07-31",
             "source_latest_dates": {
-              "chirps": "2026-06-30",
-              "era5_land": "2026-08-02"
+              "chirps": "2026-09-21",
+              "era5_land": "2026-09-21",
+              "source": "nasa_power"
             },
             "anomalies_vs_1993_2024": {
-              "rain_prev_aug_dec_mm_z": 0.693,
-              "rain_flowering_mar_may_mm_z": 1.95,
-              "rain_filling_jun_jul_mm_z": null,
-              "hot30_mar_jul_c_days_z": -0.699,
-              "root_sm_mar_jul_z": 0.398,
-              "vpd_mar_jul_kpa_z": -0.182
+              "rain_prev_aug_dec_mm_z": 1.489,
+              "rain_flowering_mar_may_mm_z": 0.843,
+              "rain_filling_jun_jul_mm_z": -0.773,
+              "hot30_mar_jul_c_days_z": -1.585,
+              "root_sm_mar_jul_z": 0.127,
+              "vpd_mar_jul_kpa_z": -0.597
             },
-            "coverage_warnings": [
-              "CHIRPS Jun-Jul filling-rain window incomplete; do not read the partial sum as drought."
-            ],
+            "coverage_warnings": [],
             "note_ko": "생산가중 국가 기후 위험값이며 단수 예측이 아닙니다. 미완성 창은 null 처리합니다."
           },
           "model_diagnostics": {
-            "selected": "rain_heat_cycle",
-            "holdout_skill_vs_trend": -0.001,
-            "holdout_rmse_kg_ha": 36.7,
+            "selected": "water_cycle",
+            "holdout_skill_vs_trend": -0.012,
+            "holdout_rmse_kg_ha": 37.1,
             "trend_rmse_kg_ha": 36.7,
             "cycle_only_rmse_kg_ha": 36.7,
-            "weather_incremental_skill_vs_cycle": -0.0,
+            "weather_incremental_skill_vs_cycle": -0.012,
             "decision": "no_forecast_reference",
             "candidate_2026_kg_ha": 660.9,
             "trend_2026_kg_ha": 660.9,
             "boosted_tree": {
-              "development_skill_vs_trend": -0.063,
-              "holdout_skill_vs_trend": -0.069,
-              "holdout_rmse_kg_ha": 39.2,
+              "development_skill_vs_trend": 0.15,
+              "holdout_skill_vs_trend": -0.312,
+              "holdout_rmse_kg_ha": 48.1,
               "decision": "reject_overfit_or_no_gain"
             }
           },
@@ -138,7 +137,7 @@
   "research_notes": [
     {
       "title_ko": "모델 판정",
-      "body_ko": "선택 모델 rain_heat_cycle의 홀드아웃 추세 대비 skill은 -0.1%, 비기상 cycle-only 대비 추가 skill은 -0.0%입니다. 부스팅 홀드아웃 skill도 -6.9%로 기각했습니다."
+      "body_ko": "선택 모델 water_cycle의 홀드아웃 추세 대비 skill은 -1.2%, 비기상 cycle-only 대비 추가 skill은 -1.2%입니다. 부스팅 홀드아웃 skill도 -31.2%로 기각했습니다."
     },
     {
       "title_ko": "나무 연령·갱신",

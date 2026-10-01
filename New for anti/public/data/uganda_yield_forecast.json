@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T05:27:35.511220+00:00",
+  "generated_at": "2026-09-24T12:09:58.552348+00:00",
   "season": "FAOSTAT 2024 actual / USDA MY 2025/26 outlook",
   "country": "Uganda",
   "forecast_available": false,
@@ -43,7 +43,7 @@
     },
     {
       "title_ko": "날씨는 무관한가",
-      "body_ko": "아닙니다. 농가 패널 연구에서는 Robusta에 강수의 양(+) 효과와 고온의 비선형 손실이 관측됐습니다. 다만 그 관계가 FAOSTAT 국가 연간 단수에서는 관리·수종·두 수확 주기와 섞여 시간순 예측력으로 재현되지 않았습니다. CHIRPS·ERA5 지표는 예측값이 아니라 위험 모니터로만 유지합니다.",
+      "body_ko": "아닙니다. 농가 패널 연구에서는 Robusta에 강수의 양(+) 효과와 고온의 비선형 손실이 관측됐습니다. 다만 그 관계가 FAOSTAT 국가 연간 단수에서는 관리·수종·두 수확 주기와 섞여 시간순 예측력으로 재현되지 않았습니다. 기상 지표는 예측값이 아니라 위험 모니터로만 유지합니다.",
       "links": [
         {
           "label": "Lwiza & Barkley (2025)",
@@ -80,26 +80,27 @@
     "ridge": {
       "candidate": "Ridge weather residual",
       "selected_features": [
+        "rain_short_rains_mm_z",
         "rain_long_rains_mm_z",
-        "hot28_edd_c_days_z"
+        "rain_jun_jul_mm_z"
       ],
-      "development_skill_vs_trend": 0.071,
+      "development_skill_vs_trend": -0.0,
       "holdout_period": "2015-2024",
-      "holdout_skill_vs_trend": -0.039,
-      "holdout_rmse_kg_ha": 21.5,
+      "holdout_skill_vs_trend": 0.001,
+      "holdout_rmse_kg_ha": 20.6,
       "trend_rmse_kg_ha": 20.7,
       "decision": "rejected; do not publish a weather forecast"
     },
     "boosted_tree": {
       "candidate": "sklearn GradientBoostingRegressor (XGBoost-like nonlinear challenger; not XGBoost)",
-      "development_skill_vs_trend": 0.083,
+      "development_skill_vs_trend": -0.081,
       "holdout_period": "2015-2024",
-      "holdout_skill_vs_trend": -0.867,
-      "holdout_rmse_kg_ha": 38.6,
+      "holdout_skill_vs_trend": -0.296,
+      "holdout_rmse_kg_ha": 26.8,
       "decision": "reject_overfit_or_no_gain"
     },
     "trend_reference_2026_kg_ha_not_forecast": 538.0,
-    "weather_candidate_2026_kg_ha_rejected": 535.4
+    "weather_candidate_2026_kg_ha_rejected": 538.4
   },
   "sources": [
     {
@@ -118,8 +119,8 @@
       "supports": "Robusta 강수·고온 반응"
     },
     {
-      "name": "Google Earth Engine CHIRPS and ERA5-Land",
-      "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+      "name": "NASA POWER daily",
+      "url": "https://power.larc.nasa.gov/",
       "supports": "산지 기후 위험 지표"
     }
   ],
@@ -158,29 +159,30 @@
             {
               "candidate": "Ridge weather residual",
               "selected_features": [
+                "rain_short_rains_mm_z",
                 "rain_long_rains_mm_z",
-                "hot28_edd_c_days_z"
+                "rain_jun_jul_mm_z"
               ],
-              "development_skill_vs_trend": 0.071,
+              "development_skill_vs_trend": -0.0,
               "holdout_period": "2015-2024",
-              "holdout_skill_vs_trend": -0.039,
-              "holdout_rmse_kg_ha": 21.5,
+              "holdout_skill_vs_trend": 0.001,
+              "holdout_rmse_kg_ha": 20.6,
               "trend_rmse_kg_ha": 20.7,
               "decision": "rejected; do not publish a weather forecast"
             },
             {
               "candidate": "sklearn GradientBoostingRegressor (XGBoost-like nonlinear challenger; not XGBoost)",
-              "development_skill_vs_trend": 0.083,
+              "development_skill_vs_trend": -0.081,
               "holdout_period": "2015-2024",
-              "holdout_skill_vs_trend": -0.867,
-              "holdout_rmse_kg_ha": 38.6,
+              "holdout_skill_vs_trend": -0.296,
+              "holdout_rmse_kg_ha": 26.8,
               "decision": "reject_overfit_or_no_gain"
             }
           ],
           "climate_risk_monitor": {
             "weather_window": "2025-10-01 through 2026-07-31",
-            "long_rains_anomaly_z": -1.037,
-            "tmax_excess_28c_anomaly_z": 0.075,
+            "long_rains_anomaly_z": -0.028,
+            "tmax_excess_28c_anomaly_z": 1.159,
             "note_ko": "위험 관측값이며 단수 예측값이 아닙니다."
           }
         }

@@ -946,8 +946,11 @@ const msLevelsTab = (D) => {
         <p class="fin-note">
             ${finEsc(src.method_ko || '')} 단위 억원 · quality ${finEsc(src.quality || '—')} ·
             원본 ${src.n_days || 0}일 (${finEsc(src.date_start || '')} ~ ${finEsc(src.date_end || '')}) ·
-            출처 ${finEsc(src.source || '—')}
+            출처 ${finEsc([].concat(src.source || '—').join(' · '))}
         </p>
+        ${isIndex && src.scope_ko ? `<p class="fin-note ms-warn">${finEsc(src.scope_ko)}</p>` : ''}
+        ${isIndex ? msStaleNote('코스피 시장 투자자별 수급', src.flow_date_end || src.date_end) : ''}
+        ${isIndex && src.quality !== 'observed' ? `<p class="fin-note">${msMissing('코스피 시장 수급이 비어 있습니다')} — 위 종목 버튼은 종목별 수급으로 따로 그려집니다.</p>` : ''}
     </section>
 
     <section class="fin-block fin-block-wide">

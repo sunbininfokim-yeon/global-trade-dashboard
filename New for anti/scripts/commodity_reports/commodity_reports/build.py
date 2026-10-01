@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 from collections import OrderedDict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .feeds import RawReport, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
 
@@ -32,24 +32,50 @@ def apply_series_commodity_fallback(
     when it's the most authoritative report in the bucket. Only fires when
     the text-based tagger found nothing at all; a report that already names
     a crop keeps that, series list or not.
+
+    Series marked "covers_all": true (WASDE, EIA's STEO and AEO) are
+    multi-commodity reports by construction: they go on every window they
+    cover even when the headline happens to name only one ("STEO: oil
+    demand to fall" still revises natural gas).
     """
-    if tagged.commodities:
-        return
     series = scorer.match_series(f"{title}\n{summary}".lower())
-    if series and series.get("commodities"):
+    if not series or not series.get("commodities"):
+        return
+    if not tagged.commodities:
         tagged.commodities = list(series["commodities"])
+    elif series.get("covers_all") and scorer.match_series(title.lower()) is series:
+        # Only when the headline is the release itself. A crude oil story
+        # that cites "our STEO" in its body stays a crude oil story.
+        tagged.commodities = list(dict.fromkeys(tagged.commodities + list(series["commodities"])))
 
 
 def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def _collect_fixtures(sources: List[Dict[str, Any]], fixture_dir: Path, max_per: int):
+def _collect_fixtures(
+    sources: List[Dict[str, Any]], fixture_dir: Path, max_per: int, now: Optional[datetime] = None
+):
     raw: List[RawReport] = []
     status: List[Dict[str, Any]] = []
     for s in sources:
         xml = fixture_dir / f"{s['id']}.xml"
         html = fixture_dir / f"{s['id']}.html"
+        pages = fixture_dir / f"{s['id']}.pages.json"
+        if s.get("kind") == "fas_gain_pages" and pages.exists():
+            # {"<url>": "<html>"} for every list page and report page it reads.
+            store = json.loads(pages.read_text(encoding="utf-8"))
+
+            def fetch(url: str, store=store) -> str:
+                if url not in store:
+                    raise FileNotFoundError(url)
+                return store[url]
+
+            res = fetch_fas_gain_pages(s, fetch=fetch, max_items=max_per, now=now)
+            raw.extend(res["items"])
+            status.append({"source_id": s["id"], "ok": res["ok"], "count": len(res["items"]),
+                           "error": res["error"], "mode": "fixture"})
+            continue
         if xml.exists():
             items = parse_feed(xml.read_text(encoding="utf-8", errors="replace"), s, max_per)
         elif html.exists():
@@ -68,14 +94,113 @@ def _collect_fixtures(sources: List[Dict[str, Any]], fixture_dir: Path, max_per:
     return raw, status
 
 
-def _collect_live(sources: List[Dict[str, Any]], *, ua: str, timeout: float, max_per: int):
+# How far back the board keeps reports: every build re-adds the previous
+# build's reports, so a report that has scrolled off its publisher's feed
+# stays browsable (the panel pages through them) until it is this old. A
+# source that lists older reports on purpose (GAIN: max_age_days 150) keeps
+# them as long as it would list them. Dateless reports age from first_seen_at.
+ARCHIVE_DAYS = 84
+CARRY_OVER_DAYS = ARCHIVE_DAYS  # kept for callers that tune it (tests)
+
+
+def horizon_days(src: Optional[Dict[str, Any]]) -> int:
+    return max(CARRY_OVER_DAYS, int(((src or {}).get("html") or {}).get("max_age_days") or 0))
+
+
+def news_time(published: Optional[str], precision: Optional[str], first_seen: Optional[str],
+              now: datetime) -> datetime:
+    """When a report became news: its date, the end of its month for a
+    month-only date, else when the pipeline first saw it, else now."""
+    for raw in (published, first_seen):
+        if not raw:
+            continue
+        try:
+            dt = datetime.fromisoformat(raw)
+        except ValueError:
+            continue
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        if raw is published and precision == "month":
+            dt = dt + timedelta(days=30)
+        return dt
+    return now
+
+
+def previous_raws(
+    previous: Optional[Dict[str, Any]], sources: List[Dict[str, Any]], now: datetime
+) -> Dict[str, List[RawReport]]:
+    """The last build's published reports, back as RawReports per source.
+
+    Rebuilt from the published items (headline, summary, link, date) plus the
+    source's own config, then tagged and scored again like a fresh fetch --
+    so a config or alias fix applies to carried reports too.
+    """
+    out: Dict[str, List[RawReport]] = {}
+    if not previous:
+        return out
+    by_id = {s["id"]: s for s in sources}
+    for item in previous.get("items") or []:
+        src = by_id.get(item.get("source_id"))
+        if not src:
+            continue
+        published = item.get("published_at")
+        seen = news_time(published, item.get("published_precision"), item.get("first_seen_at"), now)
+        if (now - seen).days > horizon_days(src):
+            continue
+        r = RawReport(
+            source_id=src["id"],
+            agency=src.get("agency", src["id"]),
+            agency_ko=src.get("agency_ko", src.get("agency", src["id"])),
+            url=item.get("url") or "",
+            title=(item.get("title") or {}).get("original") or "",
+            summary=item.get("summary") or "",
+            published_at=published,
+            lang=src.get("lang", "en"),
+            weight=float(src.get("weight", 1.0)),
+            default_country=src.get("default_country") or None,
+            commodity_hint=list(src.get("commodity_hint") or []),
+            scope_hint=src.get("scope_hint", "country"),
+            date_precision=item.get("published_precision") or "day",
+            market_only=bool(src.get("market_only")),
+            commodity_from=src.get("commodity_from", "text"),
+            commodity_scope=list(src.get("commodity_scope") or []),
+        )
+        if r.url and r.title:
+            out.setdefault(src["id"], []).append(r)
+    return out
+
+
+def _collect_live(
+    sources: List[Dict[str, Any]], *, ua: str, timeout: float, max_per: int,
+    carried: Optional[Dict[str, List[RawReport]]] = None,
+):
     raw: List[RawReport] = []
     status: List[Dict[str, Any]] = []
+    carried = carried or {}
     for s in sources:
-        res = fetch_source(s, user_agent=ua, timeout=timeout, max_items=max_per)
+        res = fetch_source(s, user_agent=ua, timeout=timeout, max_items=max_per,
+                           known=carried.get(s["id"]))
         raw.extend(res["items"])
-        status.append({"source_id": res["source_id"], "ok": res["ok"], "count": res["count"],
-                       "error": res["error"], "mode": "live"})
+        row = {"source_id": res["source_id"], "ok": res["ok"], "count": res["count"],
+               "error": res["error"], "mode": "live"}
+        if res.get("note"):
+            row["note"] = res["note"]
+        previous = carried.get(s["id"]) or []
+        if not res["ok"] and previous:
+            # A publisher that blocked this one run (fas.usda.gov answers 403
+            # to some runners and not others) keeps what it last published.
+            raw.extend(previous)
+            row["carried_over"] = len(previous)
+        elif previous:
+            # Reports that have scrolled off the publisher's feed since the
+            # last build stay on the board, for paging back through, until
+            # they pass the archive horizon (previous_raws drops those).
+            fresh = {r.url for r in res["items"]}
+            older = [r for r in previous if r.url not in fresh]
+            raw.extend(older)
+            if older:
+                row["archived"] = len(older)
+        status.append(row)
     return raw, status
 
 
@@ -87,10 +212,16 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     not the title, which the two feeds word differently.
     """
     best: "OrderedDict[str, ScoredReport]" = OrderedDict()
+    titles = set()
     for item in sorted(scored, key=lambda x: -x.importance):
         key = item.url.split("?", 1)[0].rstrip("/").lower()
-        if key not in best:
+        # One publisher sometimes links the same post under two addresses
+        # (ITA's feed: a permalink and a ?p= link); same source, same
+        # headline is one report.
+        title_key = (item.source_id, " ".join(item.title.lower().split()))
+        if key not in best and title_key not in titles:
             best[key] = item
+            titles.add(title_key)
     return list(best.values())
 
 
@@ -141,11 +272,12 @@ def build_commodity_reports(
     *,
     fetch_live: bool = True,
     fixture_dir: Optional[Path] = None,
-    per_bucket: int = 8,
-    max_items: int = 500,
+    per_bucket: int = 500,
+    max_items: int = 5000,
     translate: bool = False,
     translate_limit: int = 60,
     now: Optional[datetime] = None,
+    previous_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     sources_cfg = load_json(CONFIG / "sources.json")
@@ -162,10 +294,19 @@ def build_commodity_reports(
     max_per = int(sources_cfg.get("max_items_per_source", 40))
     sources = [s for s in sources_cfg.get("sources", []) if s.get("enabled", True)]
 
+    previous = None
     if fixture_dir:
-        raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per)
+        raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per, now)
     elif fetch_live:
-        raw, feed_status = _collect_live(sources, ua=ua, timeout=timeout, max_per=max_per)
+        if previous_path and Path(previous_path).exists():
+            try:
+                previous = load_json(Path(previous_path))
+            except (OSError, ValueError):
+                previous = None
+        raw, feed_status = _collect_live(
+            sources, ua=ua, timeout=timeout, max_per=max_per,
+            carried=previous_raws(previous, sources, now),
+        )
     else:
         raw, feed_status = [], [{"source_id": "_", "ok": False, "count": 0,
                                  "error": "no_fetch", "mode": "none"}]
@@ -179,12 +320,17 @@ def build_commodity_reports(
             country_tagger=country_tagger,
             commodity_hint=r.commodity_hint,
             default_country=r.default_country,
+            commodity_text=r.commodity_from,
         )
         # scope_hint lets a world publisher opt out of its own default: FAO's
         # untagged releases are world balance sheets, not FAO-the-country news.
         if r.scope_hint == "global" and tagged.country_source == "source_default":
             tagged.countries, tagged.scope, tagged.country_source = [], "global", "none"
         apply_series_commodity_fallback(tagged, scorer, r.title, r.summary)
+        # A narrow publisher's off-topic piece loses its tags here and is then
+        # dropped like any untagged item.
+        if r.commodity_scope:
+            tagged.commodities = [c for c in tagged.commodities if c in r.commodity_scope]
         item = scorer.score(r, tagged, now=now)
         # No commodity this dashboard tracks, or rejected outright (photo
         # galleries etc.) -- dropped, not queued anywhere. A review loop over
@@ -193,6 +339,22 @@ def build_commodity_reports(
         if item is None:
             continue
         scored.append(item)
+
+    # The board is the last ARCHIVE_DAYS (or a source's own longer window).
+    # Some feeds carry a rolling archive years deep (NASS's ASB and news
+    # feeds reach back to 2023); those stay out now that the panel pages
+    # through history instead of showing the top eight.
+    prev_first_seen = {
+        it.get("id"): it.get("first_seen_at")
+        for it in (previous or {}).get("items") or []
+        if it.get("first_seen_at")
+    }
+    by_source = {s["id"]: s for s in sources}
+    scored = [
+        r for r in scored
+        if (now - news_time(r.published_at, r.date_precision, prev_first_seen.get(r.id), now)).days
+        <= horizon_days(by_source.get(r.source_id))
+    ]
 
     reports = _dedupe(scored)[:max_items]
 
@@ -207,6 +369,18 @@ def build_commodity_reports(
     # is weight in a file the browser downloads on the static fallback path.
     referenced = {rid for buckets in index.values() for ids in buckets.values() for rid in ids}
     items = [r.to_item() for r in reports if r.id in referenced]
+    # When this build first saw each report. List-page sources publish no
+    # date, and the weekly favorites digest mails what is new in the last
+    # week -- without this those reports (ANRPC, VRA, CONAB, USGS...) could
+    # never be mailed. Carried from the previous build by id; never shown as
+    # a publication date.
+    first_seen = {
+        it.get("id"): it.get("first_seen_at")
+        for it in (previous or {}).get("items") or []
+        if it.get("first_seen_at")
+    }
+    for it in items:
+        it["first_seen_at"] = first_seen.get(it["id"]) or now.isoformat()
 
     commodity_labels = {
         key: meta.get("label_ko") or key

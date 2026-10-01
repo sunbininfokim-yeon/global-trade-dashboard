@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-24T05:18:04.839882+00:00",
+  "generated_at": "2026-09-27T05:40:36.672251+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -14,16 +14,16 @@
       ],
       "how": "build_reports.py label --series-id ... --label promote; next build re-weights that series."
     },
-    "per_bucket_limit": 8
+    "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 2,
-    "raw_items": 162,
-    "scored": 65,
-    "published": 39,
-    "commodities": 8,
-    "buckets": 12
+    "sources_ok": 30,
+    "sources_failed": 3,
+    "raw_items": 483,
+    "scored": 84,
+    "published": 70,
+    "commodities": 24,
+    "buckets": 60
   },
   "feed_status": [
     {
@@ -36,7 +36,7 @@
     {
       "source_id": "us_nass_todays_reports",
       "ok": true,
-      "count": 1,
+      "count": 6,
       "error": null,
       "mode": "live"
     },
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 18,
+      "count": 19,
       "error": null,
       "mode": "live"
     },
@@ -72,6 +72,27 @@
       "source_id": "us_eia_whats_new",
       "ok": true,
       "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "br_conab",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_fao_newsroom",
+      "ok": true,
+      "count": 17,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "eu_agri",
+      "ok": true,
+      "count": 30,
       "error": null,
       "mode": "live"
     },
@@ -99,14 +120,141 @@
     {
       "source_id": "us_usgs_news",
       "ok": true,
-      "count": 0,
+      "count": 11,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_fas_gain_reports",
       "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live",
+      "note": "45 list pages, 43 reports linked, 14 read, 22 already known"
+    },
+    {
+      "source_id": "my_mpob",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_kemendag",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cl_cochilco",
+      "ok": true,
+      "count": 9,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_iai",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_silver_institute",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_worldsteel",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_bpdp",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ca_nrcan",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_anrpc",
+      "ok": true,
       "count": 12,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "vn_vra_world",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "vn_vra_domestic",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cn_mofcom_en",
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>",
+      "mode": "live"
+    },
+    {
+      "source_id": "int_ita_tin",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_wgc_press",
+      "ok": true,
+      "count": 5,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_ilzsg",
+      "ok": true,
+      "count": 1,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_cobalt_institute",
+      "ok": true,
+      "count": 5,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_esdm",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ar_bcr",
+      "ok": true,
+      "count": 6,
       "error": null,
       "mode": "live"
     }
@@ -140,7 +288,8 @@
     "coffee": "커피",
     "cocoa": "코코아",
     "cotton": "면화",
-    "palm_oil": "팜유"
+    "palm_oil": "팜유",
+    "rubber": "천연고무"
   },
   "country_names": {
     "USA": {
@@ -454,102 +603,481 @@
     "NZL": {
       "name": "New Zealand",
       "name_ko": "뉴질랜드"
+    },
+    "KHM": {
+      "name": "Cambodia",
+      "name_ko": "캄보디아"
+    },
+    "LAO": {
+      "name": "Laos",
+      "name_ko": "라오스"
+    },
+    "LKA": {
+      "name": "Sri Lanka",
+      "name_ko": "스리랑카"
+    },
+    "LBR": {
+      "name": "Liberia",
+      "name_ko": "라이베리아"
+    },
+    "UGA": {
+      "name": "Uganda",
+      "name_ko": "우간다"
+    },
+    "HND": {
+      "name": "Honduras",
+      "name_ko": "온두라스"
+    },
+    "GTM": {
+      "name": "Guatemala",
+      "name_ko": "과테말라"
     }
   },
   "index": {
+    "sugar": {
+      "COL": [
+        "4bd4def13588cc0a"
+      ]
+    },
+    "copper": {
+      "CHN": [
+        "9307f930910dd12d"
+      ],
+      "USA": [
+        "9307f930910dd12d",
+        "0cc889de9eed1bf0"
+      ],
+      "CHL": [
+        "755265be684d892e",
+        "333bf7304a6961c5",
+        "62f11e17ce23601c",
+        "b8e0e19f0f00a266",
+        "b87baa2603ba1ba3"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
+    "cotton": {
+      "CHN": [
+        "b7b8e9c3c1038c73"
+      ],
+      "PAK": [
+        "ff085c358e1c8514"
+      ],
+      "_global": [
+        "0eb0404d29d2bbc2"
+      ],
+      "TUR": [
+        "c54d5583ad67060c"
+      ],
+      "MEX": [
+        "704821871273f761"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ]
+    },
     "oil": {
       "USA": [
         "cfe32235018b6add",
-        "5d3e84a676f4ec8b",
         "636939b535053039",
-        "c67666c03e916f6f",
-        "57e4eb5bfc9ebc1e",
-        "0a708bd4ffd29cfc",
-        "fd94e1c0559f75cc",
-        "cecfc55a16f54d74"
+        "c67666c03e916f6f"
       ],
       "_global": [
         "7376f1ff6d49470e",
         "0260f9aa0131b0b8",
-        "735b13587e14b5a5",
-        "af0be633a6c11395",
-        "39ac9e91f73a0776"
-      ]
-    },
-    "cotton": {
-      "_global": [
-        "0eb0404d29d2bbc2"
+        "735b13587e14b5a5"
       ],
-      "USA": [
-        "094f2c679d643322",
-        "d2560303da2802d2",
-        "e4530ccde436c92d",
-        "82ad0c3c992ec514"
-      ]
-    },
-    "soybeans": {
-      "TWN": [
-        "8f29624b5d0167ec"
-      ],
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ]
-    },
-    "corn": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ]
-    },
-    "wheat": {
-      "USA": [
-        "54cc3c274cf90c25",
-        "44ef3d9e9fba437f",
-        "06cf84727ec466c3",
-        "82a9272720c2cdfb",
-        "d9459a6be37e5e91",
-        "389d4a4328f23545",
-        "f9e7ed8b73ce1fa5",
-        "e4530ccde436c92d"
+      "ARG": [
+        "f8544c356fd2f6b6"
       ]
     },
     "rice": {
+      "PHL": [
+        "71739cda84d2ebd6"
+      ],
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "THA": [
+        "eb8f3491f8c46070"
+      ],
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "BRA": [
+        "e65bffd316bf9313",
+        "90caf018877f574b"
+      ]
+    },
+    "corn": {
+      "MEX": [
+        "e08bde069abdfd83"
+      ],
+      "ARG": [
+        "dcc6cf91ba76aab6",
+        "21c3dd4f0cf93fd0",
+        "f4307738d454117b"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "3ff8c2dd8b700c92"
+      ],
+      "ESP": [
+        "b736550c463bc772"
+      ],
+      "BRA": [
+        "6a2f69a13bf9ae19",
+        "a0f50331005b9402"
+      ]
+    },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
+      ]
+    },
+    "wheat": {
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "UKR": [
+        "088f09f9aa8eb7c7"
+      ],
+      "KEN": [
+        "d6be49771c7e2707"
+      ]
+    },
+    "iron_ore": {
+      "_global": [
+        "5576156cceda0a41",
+        "5f087a520744649c",
+        "d4de362acb2f5bd7"
+      ]
+    },
+    "met_coal": {
+      "_global": [
+        "5576156cceda0a41",
+        "5f087a520744649c",
+        "d4de362acb2f5bd7"
+      ]
+    },
+    "thermal_coal": {
       "USA": [
-        "2c8f727be89c0de5",
-        "e4530ccde436c92d",
-        "eb08bb539c63def3"
+        "f8aa4f64781b6480"
+      ],
+      "_global": [
+        "7376f1ff6d49470e"
+      ]
+    },
+    "palm_oil": {
+      "IDN": [
+        "2469120340370df4",
+        "3038b0ed9276919c"
+      ],
+      "MYS": [
+        "0ac19de06b45b2cf"
+      ]
+    },
+    "rubber": {
+      "_global": [
+        "58c936b97029a384",
+        "30a98869d9f0a4f3"
+      ]
+    },
+    "tin": {
+      "CHN": [
+        "1b171ff4ac638164"
+      ],
+      "MYS": [
+        "9fc6c0f2f5e3568a"
+      ],
+      "USA": [
+        "9fc6c0f2f5e3568a"
+      ],
+      "IDN": [
+        "3cac3e995aa9e757",
+        "16f99349c6e2ef80"
+      ],
+      "AUS": [
+        "91c5d4fabdf7e01f"
+      ],
+      "GBR": [
+        "91c5d4fabdf7e01f"
+      ],
+      "_global": [
+        "b8100702b4d10bff",
+        "022ee0b6016f3dd5"
+      ]
+    },
+    "lithium": {
+      "USA": [
+        "44e05f03eab98000"
       ]
     },
     "gas": {
+      "_global": [
+        "7376f1ff6d49470e"
+      ],
+      "CAN": [
+        "25541b98e1af190a",
+        "1a5e5c6b232458f1",
+        "89c825ce4cf18fd2"
+      ],
       "USA": [
         "5a1967d788350658",
-        "de49cf7992871dbf",
         "181e4ee82214496a"
-      ],
-      "_global": [
-        "d09ef02fa55cc52b"
       ]
     },
-    "sugar": {
-      "USA": [
-        "21e8e31c7b207b51"
+    "zinc": {
+      "_global": [
+        "959d91c46a9a7514"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
+    "lead": {
+      "_global": [
+        "959d91c46a9a7514"
+      ]
+    },
+    "coffee": {
+      "CHN": [
+        "8566a0485af28101",
+        "62ac4be598c099c2"
+      ],
+      "BRA": [
+        "11ac17f1a9aa9e08"
+      ]
+    },
+    "nickel": {
+      "CAN": [
+        "9a22d2cdf0982434"
+      ]
+    },
+    "aluminum": {
+      "_global": [
+        "c4debe37366d175b"
+      ]
+    },
+    "gold": {
+      "CAN": [
+        "929e1ee5c8475871"
+      ],
+      "_global": [
+        "f5072178b1b60a30",
+        "7aa1d9ea8f7acd29"
+      ]
+    },
+    "cobalt": {
+      "_global": [
+        "3663a7d940e42f4f",
+        "7671b1c780a2ff75"
+      ]
+    },
+    "silver": {
+      "_global": [
+        "f5072178b1b60a30"
       ]
     }
   },
   "items": [
+    {
+      "id": "4bd4def13588cc0a",
+      "title": {
+        "original": "Colombia: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Colombia's fuel ethanol production for 2026 is forecast to fall 10 percent to 400 million liters (ML) as sugar mills reallocate a larger share of cane toward...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/colombia-biofuels-annual",
+      "published_at": "2026-09-24T16:36:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "sugar"
+      ],
+      "countries": [
+        "COL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 5.373,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9307f930910dd12d",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El cobre cerró en US$ 6,68 por libra, con un alza semanal de 1,45%. El promedio anual alcanzó US$ 6,09 por libra, 40,57% sobre igual período de 2025. La menor disponibilidad inmediata de metal en China y Londres sostuvo el precio, pese a la presión del dólar y las expectativas de nuevas alzas de tasas[...] La entrada Informe del Mercado Internacional del Cobre, semana del 21 al 25 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-21-al-25-de-septiembre-de-2026/",
+      "published_at": "2026-09-25T14:46:33+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 4.829,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0cc889de9eed1bf0",
+      "title": {
+        "original": "Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El precio del cobre cerró hoy en US$ 6,53 la libra, con una leve alza de 0,07% respecto del cierre de la semana anterior. Con este resultado, el promedio anual alcanzó US$ 6,07 por libra, lo que representa un aumento de 40,32% respecto de la misma fecha de 2025. Más que el precio, esta semana se[...] La entrada Informe del Mercado Internacional del Cobre, semana del 14 a 17 de septiembre de 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-del-mercado-internacional-del-cobre-semana-del-01-al-05-de-junio-de-2026/",
+      "published_at": "2026-09-11T15:36:26+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "COCHILCO_COPPER_MARKET",
+      "series_label_ko": "Cochilco 구리시장 보고",
+      "importance": 4.395,
+      "reasons": [
+        "series:COCHILCO_COPPER_MARKET",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b7b8e9c3c1038c73",
+      "title": {
+        "original": "China: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post slightly lowered its forecast for MY 2026/27 cotton production to 7.12 million metric tons (MMT) or 32.7 million bales, a decrease of 5.6 percent from its...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-cotton-and-products-update",
+      "published_at": "2026-09-03T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.375,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "ff085c358e1c8514",
+      "title": {
+        "original": "Pakistan: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Pakistan’s 2026/27 cotton harvested area estimate is lowered to 1.85 million hectares, primarily due to a decline in Punjab province driven in part by lower...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/pakistan-cotton-and-products-update",
+      "published_at": "2026-09-02T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "PAK"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.31,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0eb0404d29d2bbc2",
+      "title": {
+        "original": "Senegal: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
+      "published_at": "2026-09-17T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 4.001,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
     {
       "id": "cfe32235018b6add",
       "title": {
@@ -573,111 +1101,86 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.176,
+      "importance": 3.961,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "5d3e84a676f4ec8b",
+      "id": "71739cda84d2ebd6",
       "title": {
-        "original": "EIA expects record electricity generation in 2026 and 2027",
+        "original": "Philippines: Grain and Feed Update",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "The U.S. Energy Information Administration (EIA) expects U.S. electricity generation will grow 2.2% to a record 4,368 billion kilowatthours (BkWh) this year. EIA expects an additional 1.7% growth in electricity generation next year.",
-      "url": "https://www.eia.gov/pressroom/releases/press592.php",
-      "published_at": "2026-09-09T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.446,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "0eb0404d29d2bbc2",
-      "title": {
-        "original": "Senegal: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to decrease 7.7 percent to 1.79 million bales when compared to the April 2026 report. The late...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
-      "published_at": "2026-09-17T15:00:00+00:00",
+      "summary": "FAS Manila lowers its milled rice production forecast and maintains its consumption forecast for Marketing Year 2026/27, as a moderate to strong El Niño and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/philippines-grain-and-feed-update",
+      "published_at": "2026-09-23T15:01:00+00:00",
       "agency": "USDA FAS GAIN",
       "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
       "source_id": "us_fas_gain_reports",
       "commodities": [
-        "cotton"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.357,
-      "reasons": [
-        "has_figure"
-      ]
-    },
-    {
-      "id": "57e4eb5bfc9ebc1e",
-      "title": {
-        "original": "EIA expects a drop in global oil demand will limit price increases from Hormuz disruptions",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its June Short-Term Energy Outlook (STEO), reducing its expectation for global oil demand in 2026. High fuel prices, reduced fuel availability, and government initiatives are curbing oil consumption this year, particularly in Asia, resulting in the world consuming 1 million fewer barrels of oil each day on average than it did last year. The reduced demand could limit crude oil price increases resulting from near-term disruptions in the flow of oil out of the Middle East through the Strait of Hormuz.",
-      "url": "https://www.eia.gov/pressroom/releases/press589.php",
-      "published_at": "2026-06-09T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
+        "rice"
       ],
       "countries": [
-        "USA"
+        "PHL"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.281,
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.754,
       "reasons": [
-        "series:EIA_STEO",
-        "has_figure",
-        "revision_language",
+        "series:USDA_GAIN",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "8f29624b5d0167ec",
+      "id": "e08bde069abdfd83",
       "title": {
-        "original": "Taiwan: Taiwan Further Extends Tariff and Business Tax Cuts for Selected Imported Agricultural Commodities",
+        "original": "Mexico: Grain and Feed Update",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "On September 16, 2026, Taiwan’s Executive Yuan announced the 18th wave of tariff and business tax cuts on selected agricultural imports, extending relief through March 31, 2027. The measures maintain full waivers on the business tax for soybeans...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/taiwan-taiwan-further-extends-tariff-and-business-tax-cuts-selected-imported-agricultural",
-      "published_at": "2026-09-18T09:12:00+00:00",
+      "summary": "Mexico’s corn, rice, and sorghum production are forecast to decline in marketing year 2026/27, pressured by weak profitability, elevated input costs, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/mexico-grain-and-feed-update",
+      "published_at": "2026-09-23T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.754,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "6e3880b1a989890a",
+      "title": {
+        "original": "China: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
+      "published_at": "2026-09-04T15:01:00+00:00",
       "agency": "USDA FAS GAIN",
       "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
       "source_id": "us_fas_gain_reports",
@@ -685,16 +1188,476 @@
         "soybeans"
       ],
       "countries": [
-        "TWN"
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.732,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "eb8f3491f8c46070",
+      "title": {
+        "original": "Thailand: Grain and Feed Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Bangkok forecasts MY 2026/27 rice production, down 2 percent from MY 2025/26 to 20.3 million metric tons (MMT), as tighter water supplies and an emerging El...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-grain-and-feed-monthly",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "THA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.732,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "dcc6cf91ba76aab6",
+      "title": {
+        "original": "Argentina: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s fuel ethanol production is forecast to reach a record 1.35 billion liters in 2026, driven by record domestic consumption, additional corn-based...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/argentina-biofuels-annual",
+      "published_at": "2026-08-20T15:59:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.632,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c54d5583ad67060c",
+      "title": {
+        "original": "Türkiye: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Turkish cotton production in Marketing Year (MY) 2026/27 is projected to decrease to 495,000 metric tons (MT) or 2.27 million bales due to smaller planting area...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-cotton-and-products-update",
+      "published_at": "2026-09-02T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.62,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9a2e551991dc06e6",
+      "title": {
+        "original": "Bangladesh: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "For MY 2026/27, Post forecasts higher rice imports following decreased production of aus and aman season rice. Post lowers its wheat import forecast to 6.6...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/bangladesh-grain-and-feed-update",
+      "published_at": "2026-09-08T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "rice"
+      ],
+      "countries": [
+        "BGD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.6,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "704821871273f761",
+      "title": {
+        "original": "Mexico: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post forecasts marketing year (MY) 2026/27 cotton production at 0.87 million 480-lb bales, a 32 percent increase. While production remains at historic lows...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/mexico-cotton-and-products-update",
+      "published_at": "2026-08-27T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "MEX"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.326,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "5576156cceda0a41",
+      "title": {
+        "original": "August 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 144.2 million tonnes (Mt) in August 2026, a 1.2% decrease compared to August 2025. The post August 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/august-2026-crude-steel-production/",
+      "published_at": "2026-09-24T08:40:42+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 2.982,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-09-24T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.994,
+      "importance": 2.697,
       "reasons": [
+        "has_figure",
+        "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "3038b0ed9276919c",
+      "title": {
+        "original": "Indonesia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Indonesia's transition to the B50 biodiesel mandate, which took effect in July 2026, is projected to raise domestic palm oil consumption by 11 percent to 25.3...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/indonesia-oilseeds-and-products-update",
+      "published_at": "2026-08-05T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.634,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "6269fa1eda293c5a",
+      "title": {
+        "original": "India: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
+      "published_at": "2026-09-03T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.625,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "58c936b97029a384",
+      "title": {
+        "original": "Anrpc releases monthly nr statistical report july 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report-july-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
+      "reasons": [
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "30a98869d9f0a4f3",
+      "title": {
+        "original": "Anrpc releases monthly nr statistical report, june 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report%2C-june-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
+      "reasons": [
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "1b171ff4ac638164",
+      "title": {
+        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
+      "published_at": "2026-09-21T13:18:43+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.427,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "44e05f03eab98000",
+      "title": {
+        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
+      "published_at": "2026-09-17T12:58:25+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.417,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "088f09f9aa8eb7c7",
+      "title": {
+        "original": "Ukraine: Grain and Feed Quarterly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "This report contains updated estimates for marketing year (MY) 2025/26 and MY2026/27 for wheat, corn, barley, and rye. Increased MY2026/27 production areas and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/ukraine-grain-and-feed-quarterly",
+      "published_at": "2026-08-05T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn"
+      ],
+      "countries": [
+        "UKR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.383,
+      "reasons": [
+        "series:USDA_GAIN",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "3ff8c2dd8b700c92",
+      "title": {
+        "original": "Kenya: Dry Weather Decimates Kenyan Harvest",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Nairobi is downgrading Kenya’s marketing year 2026/27 corn production forecast by 51 percent to 2.2 million metric tons after a severe mid-year dry period...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/kenya-dry-weather-decimates-kenyan-harvest",
+      "published_at": "2026-08-28T07:27:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.865,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7376f1ff6d49470e",
@@ -710,295 +1673,286 @@
       "agency_ko": "미 에너지정보청",
       "source_id": "us_eia_whats_new",
       "commodities": [
-        "oil"
+        "oil",
+        "gas",
+        "thermal_coal"
       ],
       "countries": [],
       "scope": "global",
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.956,
+      "importance": 1.858,
       "reasons": [
         "series:EIA_STEO"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "9a2e4f0c6cc38378",
+      "id": "b8e0e19f0f00a266",
       "title": {
-        "original": "USDA Forecasts U.S. Corn Production Up and Soybean Production Down from 2024",
-        "original_lang": "en",
+        "original": "¡Crece la participación de la mujer en la minería del cobre!",
+        "original_lang": "es",
         "ko": null
       },
-      "summary": "– The Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS) forecasted corn production up from 2024 and soybean production down from last year. Corn production is up 13% from last year, forecast at 16.7 billion bushels; soybean growers are expected to decrease their production 2% from 2024, forecast at 4.29 billion bushels.",
-      "url": "https://www.nass.usda.gov/Newsroom/2025/08-12-2025.php",
-      "published_at": "2025-08-12T04:00:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
+      "published_at": "2026-08-31T19:35:57+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
       "commodities": [
-        "corn",
-        "soybeans"
+        "copper"
       ],
       "countries": [
-        "USA"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.75,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.828,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION",
         "has_figure",
-        "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "9d9ab72fff81736d",
+      "id": "5f087a520744649c",
       "title": {
-        "original": "US corn production up while soybean production down from September",
+        "original": "July 2026 crude steel production",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "According to the Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS), corn production is forecast at 15.2 billion bushels, up less than 1% from the previous forecast, but down 1% from last year; soybean growers are expected to increase their production 10% from 2023, forecast at 4.58 billion bushels.",
-      "url": "https://www.nass.usda.gov/Newsroom/2024/10-11-2024.php",
-      "published_at": "2024-10-11T18:45:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 149.2 million tonnes (Mt) in July 2026, a 0.3% decrease compared to July 2025. The post July 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/july-2026-crude-steel-production/",
+      "published_at": "2026-08-24T05:35:43+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
       "commodities": [
-        "corn",
-        "soybeans"
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.779,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "d6be49771c7e2707",
+      "title": {
+        "original": "Kenya: Barley - The Alternative Lifeline for Kenyan Wheat Farmers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Kenyan wheat farmers are increasingly switching to barley to escape high costs, rigid pricing, and import competition. The transition is seamless because both...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/kenya-barley-alternative-lifeline-kenyan-wheat-farmers",
+      "published_at": "2026-09-15T09:09:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
       ],
       "countries": [
-        "USA"
+        "KEN"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.75,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.776,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "has_figure",
-        "revision_language",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "727409c1a45dfec3",
+      "id": "9fc6c0f2f5e3568a",
       "title": {
-        "original": "USDA forecasts US corn production down and soybean production up from 2023",
+        "original": "Higher tin prices and output lift MSC Q2 revenue",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "The Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS) forecasted corn production down from 2023 and soybean production up from last year. Corn production is down 1% from last year, forecast at 15.1 billion bushels; soybean growers are expected to increase their production 10% from 2023, forecast at a record high 4.59 billion bushels.",
-      "url": "https://www.nass.usda.gov/Newsroom/2024/08-12-2024.php",
-      "published_at": "2024-08-12T16:30:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
+      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
+      "published_at": "2026-08-17T09:32:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "corn",
-        "soybeans"
+        "tin"
       ],
       "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.75,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "f9e7ed8b73ce1fa5",
-      "title": {
-        "original": "NASS to collect updated information on planted acreage",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "In July, the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will collect updated information on 2022 acres planted to barley, canola, corn, dry edible beans, oats, sorghum, soybeans, sunflowers, and Durum and other spring wheat in three states. NASS previously collected planted acreage information during the first two weeks of June, with the results published in the June 30 Acreage report.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2022/06-30-2022.php",
-      "published_at": "2022-06-30T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "wheat",
-        "corn",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_PROSPECTIVE_PLANTINGS",
-      "series_label_ko": "USDA 파종의향면적",
-      "importance": 1.68,
-      "reasons": [
-        "series:USDA_PROSPECTIVE_PLANTINGS",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "e4530ccde436c92d",
-      "title": {
-        "original": "NASS suspends pecan estimates for December and January",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The Crop Production report to be published on Dec. 9, 2021, by the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will not contain forecasted pecan production estimates. Also, NASS will not publish the Pecan Production report in January 2022 that typically contains preliminary acreage, yield, production, price, and value estimates.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/12-02-2021.php",
-      "published_at": "2021-12-02T17:45:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "corn",
-        "wheat",
-        "soybeans",
-        "cotton",
-        "rice"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.68,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "205bcf62b2894e8b",
-      "title": {
-        "original": "USDA NASS to Collect Additional Harvested Acreage Information",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Corn and soybeans in Iowa have been particularly impacted by the recent derecho. USDA’s National Agricultural Statistics Service will collect harvested acreage information for both crops in Iowa in preparation for the September 11 Crop Production report. These additional data will help to better assess the full impact. If the newly collected data justifies any changes, NASS will publish updated harvested acreage estimates in the September report.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/08-17-2020.php",
-      "published_at": "2020-08-17T20:15:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "corn",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.68,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "e54c2f7c294df06b",
-      "title": {
-        "original": "USDA NASS to Re-Survey North Dakota Operators with Previously Unharvested Corn and Soybeans",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "In May, USDA’s National Agricultural Statistics Service (NASS) will contact survey respondents in North Dakota who previously reported unharvested corn and/or soybean acreage. If the newly collected data justifies any changes, NASS will update the Jan. 10 estimates in the June 11 Crop Production report. Stocks estimates are also subject to review since unharvested production is included in the estimate of on-farm stocks.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/05-12-2020.php",
-      "published_at": "2020-05-12T16:15:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "corn",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.68,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "9dd7845c2d4fc51e",
-      "title": {
-        "original": "USDA NASS to Re-Survey Operators with Previously Unharvested Corn and Soybeans",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Later this month, USDA’s National Agricultural Statistics Service will contact survey respondents in Michigan, Minnesota, South Dakota, and Wisconsin who previously reported unharvested corn and/or soybean acreage. If the newly collected data justifies any changes, NASS will update the Jan. 10 estimates in the May 12 Crop Production report. Stocks estimates are also subject to review since unharvested production is included in the estimate of on-farm stocks.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/04-07-2020.php",
-      "published_at": "2020-04-07T15:30:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "corn",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.68,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-09-17T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
+        "MYS",
         "USA"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.493,
+      "importance": 1.686,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "25541b98e1af190a",
+      "title": {
+        "original": "Canadian LNG project signs third international offtake deal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
+      "published_at": "2026-09-15T23:07:23+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.668,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b736550c463bc772",
+      "title": {
+        "original": "European Union: EU Corn September Update 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The EU's MY 2026/27 corn crop faces steep downward revisions across Western and Central Europe due to heat and drought. Irrigation in Spain and Portugal, and...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/european-union-eu-corn-september-update-2026",
+      "published_at": "2026-09-10T09:42:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ESP"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.627,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "3cac3e995aa9e757",
+      "title": {
+        "original": "Tin to be traded on Indonesia’s new commodity exchange",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tin is expected to be the first commodity traded on Indonesia’s new Mineral and Strategic Commodity Exchange (BMKS, or ICOMEX), with trading scheduled to begin on 4 January 2027. Following a hearing with Indonesia’s parliament, Sarjito, OJK’s Chief Executive for Mineral and Strategic Commodity Exchange Supervision, told local media that tin was chosen to “encourage transparency in trading”… Read the full article for free by registering on Tin Desk The post Tin to be traded on Indonesia’s new commodity exchange appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/35445-2/?utm_source=rss&utm_medium=rss&utm_campaign=35445-2",
+      "published_at": "2026-09-17T11:44:17+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.601,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0ac19de06b45b2cf",
+      "title": {
+        "original": "Malaysia: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia's palm oil sector is expected to face a challenging production environment in Marketing Year (MY) 2026/27 as industry stakeholders monitor the...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/malaysia-oilseeds-and-products-update",
+      "published_at": "2026-07-01T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.564,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "959d91c46a9a7514",
+      "title": {
+        "original": "ILZSG Press Release August 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "International Lead and Zinc Study Group PRESS RELEASE 26 August 2026 The International Lead and Zinc Study Group (ILZSG) released preliminary data for world lead and zinc supply and demand during the first half of 2026. A brief summary is listed in the tables below. Full details are available in the August 2026 edition of the Group’s ‘Lead and Zinc Statistics’ Bulletin. Source: ILZSG  Provisional data reported to the ILZSG indicate that world refi ned lead metal supply exceeded demand by 49kt during the first half of 2026 with total reported inventories increasing by 62kt.  Global lead mine…",
+      "url": "https://www.ilzsg.org/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20August%202026.pdf",
+      "published_at": null,
+      "agency": "International Lead and Zinc Study Group",
+      "agency_ko": "국제납아연연구그룹(ILZSG)",
+      "source_id": "int_ilzsg",
+      "commodities": [
+        "zinc",
+        "lead"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.559,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
       "id": "c67666c03e916f6f",
@@ -1023,103 +1977,216 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.477,
+      "importance": 1.46,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "54cc3c274cf90c25",
+      "id": "333bf7304a6961c5",
       "title": {
-        "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
+        "original": "Cochilco publica estudio sobre el mercado de concentrados y la industria mundial de fundiciones",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El reporte analiza un mercado global tensionado por la expansión de la capacidad de fundición y una oferta restringida de concentrados. Para Chile, identifica oportunidades para fortalecer el procesamiento nacional mediante mayor continuidad operacional, eficiencia, modernización tecnológica y aprovechamiento de subproductos. La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria[...] La entrada Cochilco publica estudio sobre el mercado de concentrados y la industria mundial de fundiciones se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-publica-estudio-sobre-el-mercado-de-concentrados-y-la-industria-mundial-de-fundiciones/",
+      "published_at": "2026-09-07T17:29:53+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.452,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "91c5d4fabdf7e01f",
+      "title": {
+        "original": "New Taronga DFS confirms low-cost open pit with simple processing flowsheet",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "– U.S. farmers are expected to produce 1.38 billion bushels of winter wheat this year, according to the Crop Production report released today by USDA’s National Agricultural Statistics Service (NASS).",
-      "url": "https://www.nass.usda.gov/Newsroom/2025/05-12-2025.php",
-      "published_at": "2025-05-12T16:45:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "British tin explorer First Tin (LON: 1SN) has published an updated DFS for its Taronga project in New South Wales, confirming low-cost open pit mining and a simple processing flowsheet. The mine would see average production of 3,100 tonnes tin-in-concentrate per year over the 10 year mine life, with potential to… Read the full article for free by registering on Tin Desk The post New Taronga DFS confirms low-cost open pit with simple processing flowsheet appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/new-taronga-dfs-confirms-low-cost-open-pit-with-simple-processing-flowsheet/?utm_source=rss&utm_medium=rss&utm_campaign=new-taronga-dfs-confirms-low-cost-open-pit-with-simple-processing-flowsheet",
+      "published_at": "2026-08-19T15:05:40+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "wheat"
+        "tin"
+      ],
+      "countries": [
+        "AUS",
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.452,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-09-17T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
       ],
       "countries": [
         "USA"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.47,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.409,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "d9459a6be37e5e91",
+      "id": "8566a0485af28101",
       "title": {
-        "original": "USDA NASS to host webinar to highlight available data for recently discontinued programs",
+        "original": "China: Shanghai Fuels China's Growing Coffee Culture",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "U.S. farmers are expected to produce 1.28 billion bushels of winter wheat this year, according to the Crop Production report released today by USDA’s National Agricultural Statistics Service (NASS). In NASS’s first winter wheat production forecast for 2024, production is expected to increase 2% from 2023. As of May 1, the U.S. yield is expected to average 50.7 bushels per acre, up 0.1 bushel from last year’s average of 50.6 bushels per acre.",
-      "url": "https://www.nass.usda.gov/Newsroom/2024/05-10-2024.php",
-      "published_at": "2024-05-10T19:00:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "Shanghai has a reputation as one of the world's leading coffee cities. In 2025, the city surpassed 10,336 coffee shops, with per capita annual consumption...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-shanghai-fuels-chinas-growing-coffee-culture",
+      "published_at": "2026-08-31T10:57:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
       "commodities": [
-        "wheat"
+        "coffee"
       ],
       "countries": [
-        "USA"
+        "CHN"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.47,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.392,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION",
-        "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "06cf84727ec466c3",
+      "id": "022ee0b6016f3dd5",
       "title": {
-        "original": "US corn ending stocks up 29% from last year, soybean ending stocks up 29%",
+        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Old crop corn stocks on hand as of Sept. 1, 2024 totaled 1.76 billion bushels, up 29% from Sept. 1, 2023, according to the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) Grain Stocks report released today. Old crop soybeans stored in all positions were up 29% from Sept. 1, 2023, and all wheat stocks were up 12% from a year earlier.",
-      "url": "https://www.nass.usda.gov/Newsroom/2024/09-30-2024.php",
-      "published_at": "2024-09-30T18:00:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
+      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
+      "published_at": "2026-08-27T14:20:42+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "wheat",
-        "corn",
-        "soybeans"
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.372,
+      "reasons": [
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9a22d2cdf0982434",
+      "title": {
+        "original": "Canada attracts a $2 billion mining investment in Sudbury’s Craig Mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Today, the Government of Canada welcomed a major milestone at Glencore Canada Corporation’s Craig Mine in Ontario with the completion of the Onaping Depth Project shaft, providing first access to nickel ore and marking an important step toward first production from the Onaping Depth Zone later this year.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-attracts-a-2-billion-mining-investment-in-sudburys-craig-mine.html",
+      "published_at": "2026-08-27T21:27:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "nickel"
       ],
       "countries": [
-        "USA"
+        "CAN"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_GRAIN_STOCKS",
-      "series_label_ko": "USDA 곡물 재고",
-      "importance": 1.397,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.36,
       "reasons": [
-        "series:USDA_GRAIN_STOCKS",
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "d4de362acb2f5bd7",
+      "title": {
+        "original": "June 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 155.7 million tonnes (Mt) in June 2026, a 1.7% increase compared to June 2025. The post June 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/june-2026-crude-steel-production/",
+      "published_at": "2026-07-23T06:13:35+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.342,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "181e4ee82214496a",
@@ -1144,215 +2211,320 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.378,
+      "importance": 1.338,
       "reasons": [
         "has_figure",
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "82a9272720c2cdfb",
+      "id": "1a5e5c6b232458f1",
       "title": {
-        "original": "NASS to review acreage data",
+        "original": "Canada invests in renewable natural gas production in Ontario",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "In preparation for the August Crop Production report, USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for barley, corn, cotton, dry edible beans, oats, peanuts, rice, sorghum, soybeans, sugarbeets, Durum wheat, other spring wheat, and winter wheat. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Aug. 12, 2024, report.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2024/07-31-2024.php",
-      "published_at": "2024-07-31T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": "Today, the Honourable Tim Hodgson, Minister of Energy and Natural Resources, announced a federal investment of nearly $19 million for StormFisher Environmental Ltd., a subsidiary of Generate Upcycle, to expand its facility in London, Ontario. This facility, the London Digester, is the largest food waste anaerobic digestion facility in Canada that produces renewable natural gas (RNG) from municipal source-separated organics and industrial, commercial, institutional food and beverage waste.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-invests-in-renewable-natural-gas-production-in-ontario.html",
+      "published_at": "2026-08-24T13:00:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
       "commodities": [
-        "wheat",
-        "corn",
-        "soybeans"
+        "gas"
       ],
       "countries": [
-        "USA"
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.302,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c4debe37366d175b",
+      "title": {
+        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
+      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
+      "published_at": "2026-09-21T20:26:55+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.288,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "755265be684d892e",
+      "title": {
+        "original": "Cochilco publica una versión renovada de su Anuario de Estadísticas del Cobre y Otros Minerales",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La nueva edición incorpora gráficos, comparaciones y análisis para facilitar la comprensión de la minería chilena y apoyar las decisiones públicas y privadas. La Comisión Chilena del Cobre (Cochilco) presentó este viernes el Anuario de Estadísticas del Cobre y Otros Minerales 2025, una publicación que reúne los principales indicadores de la minería nacional y su[...] La entrada Cochilco publica una versión renovada de su Anuario de Estadísticas del Cobre y Otros Minerales se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/cochilco-publica-una-version-renovada-de-su-anuario-de-estadisticas-del-cobre-y-otros-minerales/",
+      "published_at": "2026-09-11T15:22:27+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
       ],
       "scope": "country",
       "country_source": "source_default",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.344,
-      "reasons": [
-        "series:USDA_CROP_PRODUCTION"
-      ]
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.241,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "389d4a4328f23545",
+      "id": "b8100702b4d10bff",
       "title": {
-        "original": "NASS to review small grain acreage information",
+        "original": "AI model targets faster monitoring of tin losses in smelting",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "In preparation for the August Crop Production report, USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for barley, oats, Durum wheat, other spring wheat, and winter wheat. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Aug. 11, 2023, report.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2023/08-08-2023.php",
-      "published_at": "2023-08-08T19:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": "Researchers working with Yunnan Tin Group have developed an AI model that estimates tin content in slag using live furnace data, potentially giving operators much faster insight into metal losses than conventional laboratory testing. Slag tin content is an important indicator of smelting performance. If too much tin remains in the slag, valuable metal is being lost rather than recovered as crude tin. The challenge is that slag tin is not normally measured continuously. In the industrial furnace used for this study, process data were recorded every minute, while slag tin content was measured…",
+      "url": "https://www.internationaltin.org/ai-model-targets-faster-monitoring-of-tin-losses-in-smelting/?utm_source=rss&utm_medium=rss&utm_campaign=ai-model-targets-faster-monitoring-of-tin-losses-in-smelting",
+      "published_at": "2026-09-15T09:05:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "wheat"
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.232,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "11ac17f1a9aa9e08",
+      "title": {
+        "original": "Produção de café é estimada em 67,6 milhões de sacas, influenciada por bienalidade positiva em 2026",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/producao-de-cafe-e-estimada-em-67-6-milhoes-de-sacas-influenciada-por-bienalidade-positiva-em-2026",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "coffee"
       ],
       "countries": [
-        "USA"
+        "BRA"
       ],
       "scope": "country",
       "country_source": "source_default",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.344,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "2c8f727be89c0de5",
+      "id": "e65bffd316bf9313",
       "title": {
-        "original": "NASS Acreage report released on-time; Quickstats data delayed",
-        "original_lang": "en",
+        "original": "Leiloes para compra de ate 96 4 mil t de arroz ocorrem nesta sexta feira 25",
+        "original_lang": "pt",
         "ko": null
       },
-      "summary": "At Noon ET, USDA’s National Agricultural Statistics Service (NASS) successfully released the Acreage report. The JSON, .txt, .pdf and .csv formats of the report are available at Today’s Reports on the NASS website and at Cornell’s Mann Library. Due to a technical issue, the 2023 Acreage data for Quickstats is delayed. The Grain Stocks and Rice Stocks Quickstats data are not impacted by this delay.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2023/06-30-2023.php",
-      "published_at": "2023-06-30T16:30:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/leiloes-para-compra-de-ate-96-4-mil-t-de-arroz-ocorrem-nesta-sexta-feira-25",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
       "commodities": [
         "rice"
       ],
       "countries": [
-        "USA"
+        "BRA"
       ],
       "scope": "country",
       "country_source": "source_default",
-      "series_id": "USDA_PROSPECTIVE_PLANTINGS",
-      "series_label_ko": "USDA 파종의향면적",
-      "importance": 1.344,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
       "reasons": [
-        "series:USDA_PROSPECTIVE_PLANTINGS"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "eb08bb539c63def3",
+      "id": "6a2f69a13bf9ae19",
       "title": {
-        "original": "NASS to review acreage earlier for certain crops",
-        "original_lang": "en",
+        "original": "Conab compra mais de 190 mil toneladas de milho para abastecer estoques do Programa de Venda em Balcão",
+        "original_lang": "pt",
         "ko": null
       },
-      "summary": "USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data, satellite-based data, and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for corn, cotton, peanuts, rice, sorghum, soybeans, and sugarbeets in preparation for the September Crop Production report. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Sept. 10 report.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/09-01-2021.php",
-      "published_at": "2021-09-01T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-compra-mais-de-190-mil-toneladas-de-milho-para-abastecer-estoques-do-programa-de-venda-em-balcao",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
       "commodities": [
-        "corn",
-        "soybeans",
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "a0f50331005b9402",
+      "title": {
+        "original": "Compras de milho preveem até 224 mil toneladas para formação de estoques e prevenção ao El Niño",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/compras-de-milho-preveem-ate-224-mil-toneladas-para-formacao-de-estoques-e-prevencao-ao-el-nino",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "90caf018877f574b",
+      "title": {
+        "original": "Conab realiza primeiro leilao de compra de arroz para formar estoques publicos",
+        "original_lang": "pt",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gov.br/conab/pt-br/assuntos/noticias/conab-realiza-primeiro-leilao-de-compra-de-arroz-para-formar-estoques-publicos",
+      "published_at": null,
+      "agency": "CONAB",
+      "agency_ko": "브라질 국가식량공급공사",
+      "source_id": "br_conab",
+      "commodities": [
         "rice"
       ],
       "countries": [
-        "USA"
+        "BRA"
       ],
       "scope": "country",
       "country_source": "source_default",
-      "series_id": "USDA_CROP_PRODUCTION",
-      "series_label_ko": "USDA 작황 생산량",
-      "importance": 1.344,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.212,
       "reasons": [
-        "series:USDA_CROP_PRODUCTION"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "0a708bd4ffd29cfc",
+      "id": "62f11e17ce23601c",
       "title": {
-        "original": "EIA updates forecast amid continued Mideast disruption; will publish new energy security datasets",
-        "original_lang": "en",
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
         "ko": null
       },
-      "summary": "The U.S. Energy Information Administration published its May Short-Term Energy Outlook, reflecting a continued disruption to Middle Eastern oil flows.",
-      "url": "https://www.eia.gov/pressroom/releases/press588.php",
-      "published_at": "2026-05-12T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
       "commodities": [
-        "oil"
+        "copper"
       ],
       "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.325,
-      "reasons": [
-        "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "cecfc55a16f54d74",
-      "title": {
-        "original": "EIA forecasts strongest four-year growth in U.S. electricity demand since 2000, fueled by data centers",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration (EIA) published its first energy-sector forecasts through 2027 in the January Short-Term Energy Outlook (STEO).",
-      "url": "https://www.eia.gov/pressroom/releases/press582.php",
-      "published_at": "2026-01-13T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.297,
-      "reasons": [
-        "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "44ef3d9e9fba437f",
-      "title": {
-        "original": "NASS Delays Weekly Slaughter Release",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Due to the National Day of Mourning for President James Earl Carter, Jr., USDA’s National Agricultural Statistics Service (NASS) has rescheduled the Weekly Slaughter data release from Jan. 9 to Jan. 10 at 3 p.m. ET. Other reports scheduled for release on Jan. 10 such as Crop Production and Grain Stocks reports will be published as scheduled.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2025/01-02-2025.php",
-      "published_at": "2025-01-02T17:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "corn",
-        "wheat",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "source_default",
-      "series_id": "USDA_GRAIN_STOCKS",
-      "series_label_ko": "USDA 곡물 재고",
-      "importance": 1.277,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.16,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "62ac4be598c099c2",
+      "title": {
+        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
+      "published_at": "2026-08-14T07:26:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.131,
       "reasons": [
-        "series:USDA_GRAIN_STOCKS"
-      ]
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "636939b535053039",
@@ -1377,126 +2549,240 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 1.079,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "de49cf7992871dbf",
+      "id": "16f99349c6e2ef80",
       "title": {
-        "original": "Natural Gas Monthly",
+        "original": "Indonesian government allows PT Timah to buy tin ore from local miners",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-08-31T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
+      "summary": "The Indonesian government has announced that state-owned tin producer PT Timah (IDX: TINS) will be allowed to purchase tin from local miners in Bangka Belitung. It is hoped that the arrangement will reduce illegal ore and concentrate exports as the country seeks to modify the regulatory framework of the tin industry… Read the full article for free by registering on Tin Desk The post Indonesian government allows PT Timah to buy tin ore from local miners appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/indonesian-government-allows-pt-timah-to-buy-tin-ore-from-local-miners/?utm_source=rss&utm_medium=rss&utm_campaign=indonesian-government-allows-pt-timah-to-buy-tin-ore-from-local-miners",
+      "published_at": "2026-08-21T11:38:56+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
       "commodities": [
-        "gas"
+        "tin"
       ],
       "countries": [
-        "USA"
+        "IDN"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.111,
+      "importance": 1.059,
       "reasons": [
         "country_in_text"
-      ]
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "39ac9e91f73a0776",
+      "id": "929e1ee5c8475871",
       "title": {
-        "original": "EIA releases latest Short-Term Energy Outlook amid Middle East conflict",
+        "original": "Canada celebrates progress on the McIlvenna Bay mine: production underway, jobs created, supply chains strengthened",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Crude oil price movements. The Brent crude oil spot price has risen sharply following the onset of military action in the Middle East. Brent settled at $94 per barrel (b) on March 9, up about 50% from the beginning of the year and the highest since September 2023. Crude oil prices have risen as petroleum shipments through the Strait of Hormuz have fallen, and some Middle East oil production has been shut in.",
-      "url": "https://www.eia.gov/pressroom/releases/press584.php",
-      "published_at": "2026-03-10T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
+      "summary": "Located in Saskatchewan’s Flin Flon Greenstone Belt, one of Canada’s richest mineral regions, the McIlvenna Bay copper-zinc mine is one of Canada’s most significant new critical minerals mines, being developed by Eldorado Gold in close partnership with Indigenous partners. As a new source of minerals that are essential to clean energy technology, advanced manufacturing and national security, this project will strengthen Saskatchewan’s and Canada’s economic prosperity, supply chain security and industrial strength.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canada-celebrates-progress-on-the-mcilvenna-bay-mine-production-underway-jobs-created-supply-chains-strengthened.html",
+      "published_at": "2026-09-02T19:15:44+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gold",
+        "copper",
+        "zinc"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.056,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "21c3dd4f0cf93fd0",
+      "title": {
+        "original": "Análisis de posibilidades de comercialización para soja y maíz de la campaña 2026/27 en el mercado a término",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/analisis-de-9",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f4307738d454117b",
+      "title": {
+        "original": "Maíz en racha: más de un millón de toneladas operadas por semana",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/maiz-en-racha",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f8544c356fd2f6b6",
+      "title": {
+        "original": "Reservas internacionales y petróleo marcan la agenda económica y financiera",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/reservas",
+      "published_at": null,
+      "agency": "Bolsa de Comercio de Rosario",
+      "agency_ko": "로사리오 곡물거래소(BCR)",
+      "source_id": "ar_bcr",
       "commodities": [
         "oil"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "7aa1d9ea8f7acd29",
+      "title": {
+        "original": "World gold council and ocim metals and mining sa partner",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.gold.org/news-and-events/press-releases/world-gold-council-and-ocim-metals-and-mining-sa-partner",
+      "published_at": null,
+      "agency": "World Gold Council",
+      "agency_ko": "세계금위원회(WGC)",
+      "source_id": "int_wgc_press",
+      "commodities": [
+        "gold"
       ],
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.04,
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
       "reasons": [
-        "series:EIA_STEO"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
-      "id": "d2560303da2802d2",
+      "id": "3663a7d940e42f4f",
       "title": {
-        "original": "USDA-NASS Crop Progress report delayed until Nov. 29",
+        "original": "Europes cobalt recycling ambitions collide with its own rulebook",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Due to system outages, USDA’s National Agricultural Statistics Service delayed the release of today’s scheduled Crop Progress report until tomorrow, Nov. 29, at 4 p.m. EST.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2022/11-28-2022.php",
-      "published_at": "2022-11-28T21:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/europes-cobalt-recycling-ambitions-collide-with-its-own-rulebook/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
       "commodities": [
-        "corn",
-        "wheat",
-        "soybeans",
-        "cotton"
+        "cobalt"
       ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": "USDA_CROP_PROGRESS",
-      "series_label_ko": "USDA 작황 진도",
-      "importance": 1.008,
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
       "reasons": [
-        "series:USDA_CROP_PROGRESS"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "82ad0c3c992ec514",
+      "id": "7671b1c780a2ff75",
       "title": {
-        "original": "USDA Crop Progress report delayed until 5pm ET",
+        "original": "Ai the road to an equitable and sustainable cobalt supply",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "USDA’s National Agricultural Statistics Service (NASS) is delaying today’s Crop Progress report one hour until, April 5 at 5 p.m. ET.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/04-05-2021.php",
-      "published_at": "2021-04-05T20:30:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": null,
+      "url": "https://www.cobaltinstitute.org/news/ai-the-road-to-an-equitable-and-sustainable-cobalt-supply/",
+      "published_at": null,
+      "agency": "Cobalt Institute",
+      "agency_ko": "코발트협회(Cobalt Institute)",
+      "source_id": "int_cobalt_institute",
       "commodities": [
-        "corn",
-        "wheat",
-        "soybeans",
-        "cotton"
+        "cobalt"
       ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": "USDA_CROP_PROGRESS",
-      "series_label_ko": "USDA 작황 진도",
-      "importance": 1.008,
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
       "reasons": [
-        "series:USDA_CROP_PROGRESS"
-      ]
+        "no_date"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0260f9aa0131b0b8",
@@ -1519,8 +2805,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
-      "reasons": []
+      "importance": 0.863,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "735b13587e14b5a5",
@@ -1543,140 +2830,118 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
-      "reasons": []
+      "importance": 0.863,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "21e8e31c7b207b51",
+      "id": "b87baa2603ba1ba3",
       "title": {
-        "original": "USDA NASS Discontinues County Level Estimates for Selected Crops",
-        "original_lang": "en",
+        "original": "Informe Salud Mental en la Industria Minera Nacional",
+        "original_lang": "es",
         "ko": null
       },
-      "summary": "The U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will no longer publish county level estimates for dry edible beans, flaxseed, hay (alfalfa and other), potatoes, sugarbeets, sugarcane, sunflower (non-oil and oil varieties) and tobacco. In addition, NASS will discontinue county estimates based on irrigated/non-irrigated practices for all crops. These changes are effective beginning with the 2019 crop year.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/02-13-2020.php",
-      "published_at": "2020-02-13T18:45:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
+      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
+      "published_at": "2026-08-13T15:07:49+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
       "commodities": [
-        "sugar"
+        "copper"
       ],
       "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.84,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "d09ef02fa55cc52b",
-      "title": {
-        "original": "EIA raises natural gas price forecast following increased heating demand amid severe winter weather",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Natural gas prices rose sharply in January, averaging $7.72 per million British thermal units (MMBtu), as cold weather increased heating demand, reduced production, and led to record storage withdrawals during Winter Storm Fern. The drawdown for the week ending January 30 was the largest weekly net withdrawal recorded in the history of EIA's Weekly Natural Gas Storage Report.",
-      "url": "https://www.eia.gov/pressroom/releases/press583.php",
-      "published_at": "2026-02-10T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.729,
-      "reasons": [
-        "revision_language"
-      ]
-    },
-    {
-      "id": "fd94e1c0559f75cc",
-      "title": {
-        "original": "EIA releases the Annual Energy Outlook 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The Annual Energy Outlook 2026 (AEO2026) explores medium- and long-term alternative futures in the United States through 2050. AEO2026 enables the public to explore a suite of alternative pathways for our energy future depending on assumptions made about markets, technological breakthroughs, and policy. It includes a narrative report, as well as the full set of data tables and visualizations, assumptions and methodologies, and detailed descriptions of the 11 cases we ran to explore these alternative futures.",
-      "url": "https://www.eia.gov/pressroom/releases/press587.php",
-      "published_at": "2026-04-08T20:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.687,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "094f2c679d643322",
-      "title": {
-        "original": "NASS discontinues select 2024 data collection programs and reports",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The USDA’s National Agricultural Statistics Service (NASS) is canceling the July Cattle report and discontinuing the Cotton Objective Yield Survey, as well as all County Estimates for Crops and Livestock beginning with the 2024 production year. The decision to discontinue these surveys and reports was not made lightly, but was necessary, given appropriated budget levels.",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2024/04-09-2024.php",
-      "published_at": "2024-04-09T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [
-        "USA"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.672,
-      "reasons": []
+      "importance": 0.838,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
-      "id": "af0be633a6c11395",
+      "id": "2469120340370df4",
       "title": {
-        "original": "EIA launches pilot survey on energy use at data centers",
+        "original": "Lidi Sawit Tembus Pasar Tiongkok, Kolaborasi BPDP dan Petani Sawit Jadi Kunci Penguatan Ekspor Produk UMKM Perkebunan",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": null,
+      "url": "http://www.bpdp.or.id/lidi-sawit-tembus-pasar-tiongkok-kolaborasi-bpdp-dan-petani-sawit-jadi-kunci-penguatan-ekspor-produk-umkm-perkebunan",
+      "published_at": "2026-08-24T07:42:02+00:00",
+      "agency": "BPDP (Indonesian Plantation Fund Management Agency)",
+      "agency_ko": "인도네시아 농원기금관리청(BPDP)",
+      "source_id": "id_bpdp",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.675,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
+      "id": "89c825ce4cf18fd2",
+      "title": {
+        "original": "Canada advances global energy exports by signing second European LNG deal",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "EIA is launching three voluntary pilot field studies to evaluate energy consumption in data centers, with web-based pilot surveys in Texas and Washington state as well as in-person interviews in Northern Virginia and Washington, DC.",
-      "url": "https://www.eia.gov/pressroom/releases/press585.php",
-      "published_at": "2026-03-25T16:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
+      "summary": null,
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/07/canada-advances-global-energy-exports-by-signing-second-european-lng-deal.html",
+      "published_at": "2026-07-29T04:00:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
       "commodities": [
-        "oil"
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.628,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f5072178b1b60a30",
+      "title": {
+        "original": "Gold:Silver Ratio Continues to be Relevant in the Modern Era",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Washington, DC – July 22, 2026) A comprehensive study of the gold:silver ratio illustrates the continued relevance of this measure to today’s active precious metals markets. The Silver Institute’s newly released Market Trend Report, “Is the Gold:Silver Ratio Relevant Today?” produced by Precious Metals Insights, narrates the history of the ratio over more than 3,000 years and analyzes gold and silver price data and their relationship with supply/demand and economic variables for the period from 1970 to 2026. The Report indicates that the price correlation between the two precious metals has…",
+      "url": "https://silverinstitute.org/goldsilver-ratio-continues-to-be-relevant-in-the-modern-era/",
+      "published_at": "2026-07-21T23:57:05+00:00",
+      "agency": "The Silver Institute",
+      "agency_ko": "실버인스티튜트",
+      "source_id": "int_silver_institute",
+      "commodities": [
+        "gold",
+        "silver"
       ],
       "countries": [],
       "scope": "global",
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.548,
-      "reasons": []
+      "importance": 0.505,
+      "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     }
   ]
 }

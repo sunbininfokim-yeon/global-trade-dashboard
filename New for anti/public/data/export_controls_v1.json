@@ -1,134 +1,542 @@
 {
   "schema_version": "export-controls-v1",
-  "as_of": "2026-08",
+  "as_of": "2026-09",
   "status": "curated_seed",
-  "note_ko": "수집 자동화 전 수기 정리본입니다. 각 항목에 근거 URL과 확인 시점을 답니다. 정책은 자주 바뀌므로 화면은 이 파일의 as_of 를 함께 표시하고, 최신 여부는 원문으로 확인해야 합니다.",
+  "note_ko": "수기 정리본이다. 농산물 확인일은 2026-09-24. 인도 쌀 수출금지 해제(2024-10)는 12개월이 지나 삭제했다. 인도 설탕은 DGFT 고시 16/2026-27 사본으로 2026-09-30까지 금지. 러시아 석유제품은 정부 결의 954 원문. 금속·광물 7행은 2026-09-24 원문 링크로 재확인(중국 대미 조치 유예는 2026-11-10·11-27 만료 → review_valid_until). 주간 절차는 New for anti/scripts/export_controls/README.md.",
   "levels": {
-    "prohibited": { "label_ko": "수출 금지", "rank": 3 },
-    "restricted": { "label_ko": "수출 제한 (쿼터·인허가·관세)", "rank": 2 },
-    "watch": { "label_ko": "통제 논의·검토", "rank": 1 }
+    "prohibited": {
+      "label_ko": "수출 금지",
+      "rank": 3
+    },
+    "restricted": {
+      "label_ko": "수출 제한 (쿼터·인허가·관세·국영 단일창구)",
+      "rank": 2
+    },
+    "watch": {
+      "label_ko": "통제 논의·검토",
+      "rank": 1
+    },
+    "lifted": {
+      "label_ko": "최근 해제",
+      "rank": 0
+    }
+  },
+  "categories": {
+    "agri": "농산물",
+    "energy": "에너지",
+    "minerals": "금속·광물"
   },
   "controls": [
     {
-      "country": "Indonesia",
-      "iso": "IDN",
-      "commodities": ["nickel"],
+      "id": "ind-wheat",
+      "country": "India",
+      "iso": "IND",
+      "category": "agri",
+      "commodities": [
+        "wheat"
+      ],
+      "level": "lifted",
+      "measure_type": "ban",
+      "since": "2022-05",
+      "lifted_at": "2026-08-24",
+      "measure_ko": "밀 수출 금지 해제 — 2026-01 밀가루 50만 톤, 2026-02 밀 250만 톤 허용 후 2026-08-24 전면 해제",
+      "source": "Bloomberg / DGFT",
+      "url": "https://www.bloomberg.com/news/articles/2026-08-24/india-lifts-wheat-export-ban-in-boost-to-war-hit-global-supply",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1001"
+      ],
+      "effective_from": "2022-05-01",
+      "effective_to": "2026-08-24",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "ind-sugar",
+      "country": "India",
+      "iso": "IND",
+      "category": "agri",
+      "commodities": [
+        "sugar"
+      ],
       "level": "prohibited",
-      "since": "2020-01",
-      "measure_ko": "니켈 원광 수출 금지 — 국내 제련 유도",
-      "source": "Indonesia MEMR / Reuters",
-      "url": "https://www.reuters.com/markets/commodities/",
-      "confidence": "high"
+      "measure_type": "ban",
+      "since": "2026-05",
+      "until": "2026-09-30",
+      "measure_ko": "원당·백설탕·정제당 수출을 2026-09-30까지 금지(정책이 Restricted에서 Prohibited로 변경). EU·미국 CXL/TRQ, 선급허가(AAS), 정부간 식량안보 수출, 고시 전 이미 선적 절차에 들어간 물량은 예외. 연장이 없으면 10월 1일 Restricted로 되돌아감.",
+      "source": "DGFT Notification 16/2026-27 (2026-05-13)",
+      "url": "https://www.caalley.com/dgft26/noti16.pdf",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "17011490",
+        "17019990"
+      ],
+      "effective_from": "2026-05-13",
+      "effective_to": "2026-09-30",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
     },
     {
-      "country": "Indonesia",
-      "iso": "IDN",
-      "commodities": ["bauxite", "aluminum"],
-      "level": "prohibited",
-      "since": "2023-06",
-      "measure_ko": "보크사이트 원광 수출 금지",
-      "source": "Indonesia MEMR",
-      "url": "https://www.esdm.go.id/",
-      "confidence": "medium"
-    },
-    {
-      "country": "China",
-      "iso": "CHN",
-      "commodities": ["gallium", "germanium"],
-      "level": "restricted",
-      "since": "2023-08",
-      "measure_ko": "갈륨·게르마늄 수출 허가제",
-      "source": "MOFCOM Announcement 23/2023",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "high"
-    },
-    {
-      "country": "China",
-      "iso": "CHN",
-      "commodities": ["graphite"],
-      "level": "restricted",
-      "since": "2023-12",
-      "measure_ko": "흑연 수출 허가제",
-      "source": "MOFCOM",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "high"
-    },
-    {
-      "country": "China",
-      "iso": "CHN",
-      "commodities": ["rare_earths"],
-      "level": "restricted",
-      "since": "2023-12",
-      "measure_ko": "희토류 추출·분리 기술 수출 금지 (기술 통제)",
-      "source": "MOFCOM 기술수출금지·제한목록",
-      "url": "http://english.mofcom.gov.cn/",
-      "confidence": "medium"
-    },
-    {
+      "id": "rus-wheat",
       "country": "Russia",
       "iso": "RUS",
-      "commodities": ["wheat"],
+      "category": "agri",
+      "commodities": [
+        "wheat",
+        "corn",
+        "barley"
+      ],
       "level": "restricted",
+      "measure_type": "quota",
       "since": "2021-02",
-      "measure_ko": "밀 수출세(floating duty) 및 쿼터 운용",
-      "source": "Russian Ministry of Agriculture",
-      "url": "https://mcx.gov.ru/",
-      "confidence": "high"
+      "measure_ko": "곡물 수출 쿼터(2026년 2/15~6/30, 2,000만 톤) + 변동 수출세. 흑해 선적 차질로 변동 수출세는 2026년 말까지 일시 중단",
+      "source": "Russian Government / Bloomberg",
+      "url": "https://www.bloomberg.com/news/articles/2026-09-02/russia-pauses-grain-export-duty-through-the-end-of-2026",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1001",
+        "1003",
+        "1005"
+      ],
+      "effective_from": "2021-02-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
     },
     {
-      "country": "India",
-      "iso": "IND",
-      "commodities": ["wheat"],
-      "level": "prohibited",
-      "since": "2022-05",
-      "measure_ko": "밀 수출 금지 (예외 승인 기반)",
-      "source": "DGFT Notification",
-      "url": "https://www.dgft.gov.in/",
-      "confidence": "high"
-    },
-    {
-      "country": "India",
-      "iso": "IND",
-      "commodities": ["rice"],
+      "id": "rus-sunflower-oil",
+      "country": "Russia",
+      "iso": "RUS",
+      "category": "agri",
+      "commodities": [
+        "sunflower_oil",
+        "sunflower_seed"
+      ],
       "level": "restricted",
-      "since": "2023-07",
-      "measure_ko": "비바스마티 백미 수출 제한·관세",
-      "source": "DGFT",
-      "url": "https://www.dgft.gov.in/",
-      "confidence": "medium"
+      "measure_type": "duty",
+      "since": "2021-09",
+      "until": "2028-08-31",
+      "measure_ko": "해바라기씨 수출세 50%(톤당 최소 3.2만 루블), 해바라기유 변동 수출세(2026-07 톤당 7,748루블) — 해바라기유 세제는 2028-08까지 연장",
+      "source": "Interfax / Global Trade Alert",
+      "url": "https://globaltradealert.org/state-act/99524-russia-increased-export-duties-on-sunflower-oil-and-its-mixtures-august-2026",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1206",
+        "1512"
+      ],
+      "effective_from": "2021-09-01",
+      "effective_to": "2028-08-31",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
     },
     {
+      "id": "arg-grains",
       "country": "Argentina",
       "iso": "ARG",
-      "commodities": ["corn", "wheat", "soybeans"],
+      "category": "agri",
+      "commodities": [
+        "soybeans",
+        "corn",
+        "wheat",
+        "barley"
+      ],
       "level": "restricted",
-      "since": "2020-01",
-      "measure_ko": "수출세(retenciones) 및 등록제(DJVE)",
-      "source": "MAGyP / AFIP",
-      "url": "https://www.argentina.gob.ar/economia/agroindustria",
-      "confidence": "high"
+      "measure_type": "duty",
+      "since": "2002-01",
+      "measure_ko": "수출세(retenciones): 대두 24%, 옥수수 8.5%, 밀·보리 5.5%(2026-06-05~). 감축 일정상 대두 2028-12 15%까지 인하 (Decreto 423/2026)",
+      "source": "Decreto 423/2026",
+      "url": "https://www.infobae.com/economia/2026/05/22/el-gobierno-extendio-la-baja-de-retenciones-al-maiz-el-girasol-y-el-sorgo-cuando-empezara-a-regir-el-esquema/",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1001",
+        "1003",
+        "1005",
+        "1201"
+      ],
+      "effective_from": "2002-01-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
     },
     {
+      "id": "idn-palm-oil",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "category": "agri",
+      "commodities": [
+        "palm_oil"
+      ],
+      "level": "restricted",
+      "measure_type": "state_trading",
+      "since": "2022-05",
+      "measure_ko": "팜유 수출 부담금 12.5%(2026-03 인상) + 수출세 + 국내공급의무(DMO 1:4). 2026-09-01부터 국영 Danantara(DSI)가 계약·선적·대금을 단독 처리하는 단일 창구 수출",
+      "source": "Palm Oil Magazine / Lexology",
+      "url": "https://www.palmoilmagazine.com/cpo-export/2026/05/25/indonesia-to-launch-new-cpo-export-reporting-system-through-danantara-on-june-1/",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1511"
+      ],
+      "effective_from": "2022-05-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "idn-cocoa",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "category": "agri",
+      "commodities": [
+        "cocoa"
+      ],
+      "level": "restricted",
+      "measure_type": "duty",
+      "since": "2010-04",
+      "measure_ko": "코코아 원두 수출세 7.5% + 수출 부담금 7.5% (2026-08 기준가 톤당 5,424.96달러)",
+      "source": "Indonesia Ministry of Trade",
+      "url": "https://www.huandacocoa.com/indonesia-cocoa-reference-price-august-2026.html",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1801"
+      ],
+      "effective_from": "2010-04-01",
+      "verified_as_of": "2026-09-24"
+    },
+    {
+      "id": "mys-palm-oil",
+      "country": "Malaysia",
+      "iso": "MYS",
+      "category": "agri",
+      "commodities": [
+        "palm_oil"
+      ],
+      "level": "restricted",
+      "measure_type": "duty",
+      "since": "2019-01",
+      "measure_ko": "원유 팜유(CPO) 수출세 10% — 월별 기준가 연동 (2026-10 기준가 톤당 RM4,452.66)",
+      "source": "MPOC / New Straits Times",
+      "url": "https://www.nst.com.my/business/economy/2026/09/1533388/malaysia-raises-october-crude-palm-oil-reference-price-duty",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1511"
+      ],
+      "effective_from": "2019-01-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "ukr-soybeans",
+      "country": "Ukraine",
+      "iso": "UKR",
+      "category": "agri",
+      "commodities": [
+        "soybeans",
+        "rapeseed"
+      ],
+      "level": "restricted",
+      "measure_type": "duty",
+      "since": "2025-09",
+      "measure_ko": "대두·유채 수출세 10% (직접 재배 농가 면제) — 원료 대신 박·유 가공 수출 유도",
+      "source": "USDA FAS GAIN",
+      "url": "https://www.fas.usda.gov/data/gain-report/2026/04/Oilseeds%20and%20Products%20Annual_Kyiv_Ukraine_UP2026-0011.pdf",
+      "confidence": "high",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "1201",
+        "1205"
+      ],
+      "effective_from": "2025-09-04",
+      "verified_as_of": "2026-09-24"
+    },
+    {
+      "id": "chn-fertilizer",
+      "country": "China",
+      "iso": "CHN",
+      "category": "agri",
+      "commodities": [
+        "fertilizer",
+        "urea",
+        "phosphate"
+      ],
+      "level": "restricted",
+      "measure_type": "licensing",
+      "since": "2026-03",
+      "measure_ko": "비료 수출 제한 — 요소 쿼터, DAP·MAP·일부 NPK 수출 중단 (2026-08까지 연장 보도, 이후 여부 확인 필요)",
+      "source": "Fertilizer Daily / World Bank",
+      "url": "https://www.fertilizerdaily.com/20260729-china-phosphate-export-restrictions-august-2026-russia-quotas/",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "3102",
+        "310210",
+        "3105",
+        "310530",
+        "310540"
+      ],
+      "effective_from": "2026-03-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "idn-coal-single-gate",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "category": "energy",
+      "commodities": [
+        "thermal_coal",
+        "coal"
+      ],
+      "level": "restricted",
+      "measure_type": "state_trading",
+      "since": "2026-09",
+      "measure_ko": "석탄 수출을 국영 Danantara(DSI) 단일 창구로 일원화 (2026-06 서류 검증, 2026-09 계약·선적·대금 직접 처리). 페로합금은 별도 행.",
+      "source": "Lexology",
+      "url": "https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2701"
+      ],
+      "effective_from": "2026-09-01",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "idn-nickel-ore",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "commodities": [
+        "nickel"
+      ],
+      "level": "prohibited",
+      "since": "2020-01",
+      "measure_ko": "니켈 원광 수출 전면 금지(2020-01~, ESDM 장관령 11/2019) — 국내 제련 유도",
+      "source": "ESDM 장관령 11/2019 (IEA 정책 DB)",
+      "url": "https://www.iea.org/policies/16084-prohibition-of-the-export-of-nickel-ore",
+      "confidence": "medium",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2604"
+      ],
+      "effective_from": "2020-01-01",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "ban",
+      "needs_reconfirm": false
+    },
+    {
+      "id": "idn-bauxite",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "commodities": [
+        "bauxite",
+        "aluminum"
+      ],
+      "level": "prohibited",
+      "since": "2023-06",
+      "measure_ko": "보크사이트 원광(세척광 포함) 수출 금지(2023-06~) — 국내 제련 의무",
+      "source": "인도네시아 국회(DPR) 연구 브리프 / ESDM",
+      "url": "https://berkas.dpr.go.id/pusaka/files/info_singkat/Info%20Singkat-XV-4-II-P3DI-Februari-2023-191-EN.pdf",
+      "confidence": "medium",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2606"
+      ],
+      "effective_from": "2023-06-01",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "ban",
+      "needs_reconfirm": false
+    },
+    {
+      "id": "chn-gallium",
+      "country": "China",
+      "iso": "CHN",
+      "commodities": [
+        "gallium",
+        "germanium"
+      ],
+      "level": "restricted",
+      "since": "2023-08",
+      "measure_ko": "갈륨·게르마늄 수출 허가제(2023-08~, 공고 23/2023). 2024-12 대미 수출 원칙 불허(공고 46/2024 2항)는 공고 72/2025로 2026-11-27까지 유예 — 기본 허가제는 유지",
+      "source": "MOFCOM·해관총서 공고 23/2023, MOFCOM 공고 72/2025",
+      "url": "https://www.mofcom.gov.cn/zcfb/dwmygl/art/2023/art_52b9a321087f402bb3d310d18b07967e.html",
+      "confidence": "high",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "811292",
+        "811299"
+      ],
+      "effective_from": "2023-08-01",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "licensing",
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-27"
+    },
+    {
+      "id": "chn-graphite",
+      "country": "China",
+      "iso": "CHN",
+      "commodities": [
+        "graphite"
+      ],
+      "level": "restricted",
+      "since": "2023-12",
+      "measure_ko": "고순도·고강도·고밀도 인조흑연, 천연 인상·구상·팽창흑연 수출 허가제(2023-12~, 공고 39/2023). 대미 최종사용자 강화 심사는 2026-11-27까지 유예(공고 72/2025)",
+      "source": "MOFCOM·해관총서 공고 39/2023, MOFCOM 공고 72/2025",
+      "url": "https://www.mofcom.gov.cn/zcfb/blgg/art/2023/art_f6b1bc49e2c8482f8eb749012bc66dec.html",
+      "confidence": "high",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2504",
+        "3801"
+      ],
+      "effective_from": "2023-12-01",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "licensing",
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-27"
+    },
+    {
+      "id": "chn-rare-earths",
+      "country": "China",
+      "iso": "CHN",
+      "commodities": [
+        "rare_earths"
+      ],
+      "level": "restricted",
+      "since": "2025-04",
+      "measure_ko": "중·중희토 7종(사마륨·가돌리늄·테르븀·디스프로슘·루테튬·스칸듐·이트륨) 금속·산화물·합금·화합물 수출 허가제(2025-04-04~, 공고 18/2025). 2025-10 확대 조치(역외 적용 등)는 2026-11-10까지 유예. 추출·분리 기술 수출 금지(2023-12)는 별도 유지",
+      "source": "MOFCOM·해관총서 공고 18/2025, MOFCOM 공고 70/2025",
+      "url": "https://www.mofcom.gov.cn/zwgk/zcfb/art/2025/art_9c2108ccaf754f22a34abab2fedaa944.html",
+      "confidence": "high",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2805",
+        "2846"
+      ],
+      "effective_from": "2025-04-04",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "licensing",
+      "needs_reconfirm": false,
+      "review_valid_until": "2026-11-10"
+    },
+    {
+      "id": "cod-cobalt",
       "country": "Democratic Republic of the Congo",
       "iso": "COD",
-      "commodities": ["cobalt"],
+      "commodities": [
+        "cobalt"
+      ],
       "level": "restricted",
-      "since": "2025-02",
-      "measure_ko": "코발트 수출 쿼터·일시 중단 조치",
-      "source": "ARECOMS / Reuters",
-      "url": "https://www.reuters.com/markets/commodities/",
-      "confidence": "low"
+      "since": "2025-10",
+      "measure_ko": "코발트 수출 쿼터 — 2025-02~10 수출 중단 후 2025-10-16부터 쿼터제. 2026·2027년 연 96,600톤(월 7,250톤, 그중 9,600톤은 ARECOMS 재량 전략 쿼터). 2026-06 미사용 쿼터 회수",
+      "source": "ARECOMS 결정 004·005/2025 (IEA 정책 DB)",
+      "url": "https://www.iea.org/policies/29138-drc-arecoms-decision-no-0042025-cobalt-quota-system",
+      "confidence": "medium",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2605",
+        "2822",
+        "8105"
+      ],
+      "effective_from": "2025-10-16",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "quota",
+      "needs_reconfirm": false,
+      "until": "2027-12-31",
+      "effective_to": "2027-12-31"
     },
     {
+      "id": "chl-lithium",
       "country": "Chile",
       "iso": "CHL",
-      "commodities": ["lithium"],
+      "commodities": [
+        "lithium"
+      ],
       "level": "watch",
       "since": "2023-04",
-      "measure_ko": "국가 리튬 전략 — 신규 개발 국영 참여 의무 (수출 금지 아님)",
-      "source": "Gobierno de Chile",
-      "url": "https://www.gob.cl/",
-      "confidence": "medium"
+      "measure_ko": "국가 리튬 전략(2023-04) — 전략 염호는 국영 과반 참여, 코델코·SQM 합작 NovaAndino(2025-12 출범). 수출 제한은 아님",
+      "source": "Gobierno de Chile (UNCTAD 투자정책 모니터)",
+      "url": "https://investmentpolicy.unctad.org/investment-policy-monitor/measures/4305/chile-launches-a-new-national-strategy-for-lithium",
+      "confidence": "medium",
+      "category": "minerals",
+      "verified_at": "2026-09-24",
+      "hs_prefixes": [
+        "2530",
+        "2825",
+        "2836"
+      ],
+      "effective_from": "2023-04-01",
+      "verified_as_of": "2026-09-24",
+      "measure_type": "licensing",
+      "needs_reconfirm": false
+    },
+    {
+      "id": "idn-ferroalloys-single-gate",
+      "country": "Indonesia",
+      "iso": "IDN",
+      "category": "minerals",
+      "commodities": [
+        "ferroalloys"
+      ],
+      "hs_prefixes": [
+        "7202"
+      ],
+      "level": "restricted",
+      "measure_type": "state_trading",
+      "since": "2026-09",
+      "effective_from": "2026-09-01",
+      "measure_ko": "페로합금 수출을 국영 Danantara(DSI) 단일 창구로 일원화 (2026-06 서류 검증, 2026-09 계약·선적·대금 직접 처리).",
+      "source": "Lexology",
+      "url": "https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true
+    },
+    {
+      "id": "rus-fuel-products",
+      "country": "Russia",
+      "iso": "RUS",
+      "category": "energy",
+      "commodities": [
+        "petroleum_products"
+      ],
+      "hs_prefixes": [
+        "271012",
+        "271019"
+      ],
+      "level": "prohibited",
+      "measure_type": "ban",
+      "since": "2026-08",
+      "effective_from": "2026-08-01",
+      "until": "2027-01-31",
+      "effective_to": "2027-01-31",
+      "measure_ko": "상품 휘발유·경유·선박유·기타 가스오일 수출 임시 금지(2026-08-01~2027-01-31). 인도적 지원, 정부간 합의 물량, 선박 연료, 개인 사용 등 예외가 있다. 경유 생산자 예외 기한을 옮겼다는 8월 28일 개정은 이 원문에 없다.",
+      "source": "Government of Russia, Resolution No. 954 of 2026-07-30",
+      "url": "http://static.government.ru/media/files/MzBUkoWAA4u0TLr01yp7ee3cPS2wZD3F.pdf",
+      "confidence": "medium",
+      "verified_at": "2026-09-24",
+      "verified_as_of": "2026-09-24",
+      "needs_reconfirm": true,
+      "official_document_verified": true,
+      "scope_verified": true,
+      "review_valid_until": "2026-10-08"
     }
-  ]
+  ],
+  "survey": {
+    "cadence": "weekly",
+    "universe": "New for anti/scripts/export_controls/universe.json",
+    "note_ko": "주간 점검은 기록을 남긴다. 이 파일의 행은 원문을 확인한 것만이고, 행이 없음은 통제 없음이 아니다."
+  }
 }

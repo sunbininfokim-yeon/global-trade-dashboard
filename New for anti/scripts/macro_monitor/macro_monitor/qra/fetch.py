@@ -11,6 +11,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
+from bs4 import BeautifulSoup
+
 UA = "Mozilla/5.0 (compatible; macro-monitor-qra/1.0; research)"
 BASE = "https://home.treasury.gov"
 
@@ -56,40 +58,40 @@ def absolutize(href: str) -> str:
 
 
 def parse_year_quarter_table(html: str, kind: str) -> List[ArchiveDoc]:
-    """Parse Treasury archive tables: year header row + quarter link row."""
+    """Parse Treasury archive tables: year header row + quarter link row.
+
+    Read with a real HTML parser, not regexes over the raw text: Treasury
+    began serving this page minified with unquoted attributes (``id=2026>``,
+    ``headers=2026>``), which the previous regex parser silently matched zero
+    times -- build_qra_engine.py then "succeeded" with 0 archive docs and
+    would have written an empty engine file. Each quarter cell carries
+    ``headers=<year>``; a cell with no link yet (a quarter not published) is
+    skipped.
+    """
     docs: List[ArchiveDoc] = []
-    # Each year block: id="YYYY" ... then links with headers="YYYY"
-    for ym in re.finditer(
-        r'id="(20\d{2})"[\s\S]*?</tr>\s*<tr>([\s\S]*?)</tr>',
-        html,
-    ):
-        year = int(ym.group(1))
-        row = ym.group(2)
-        # Prefer headers=YEAR + optional <a href=... attrs...>Quarter
-        for m in re.finditer(
-            r'headers="%d"[^>]*>\s*(?:<a href="([^"]+)"[^>]*>)?\s*'
-            r"((?:1st|2nd|3rd|4th)\s*Quarter[^<]*)"
-            % year,
-            row,
-            re.I,
-        ):
-            href, label = m.group(1), re.sub(r"\s+", " ", m.group(2)).strip()
-            # strip zero-width / odd unicode in Treasury labels
-            label = label.replace("\u200b", "").strip()
-            qmatch = re.match(r"(1st|2nd|3rd|4th)", label, re.I)
-            quarter = _QTR_MAP.get(qmatch.group(1).lower()) if qmatch else None
-            if not href:
-                # e.g. 2026 4th Quarter not yet published — plain text cell
-                continue
-            docs.append(
-                ArchiveDoc(
-                    kind=kind,
-                    year=year,
-                    quarter=quarter,
-                    url=absolutize(href),
-                    label=f"{year} Q{quarter} {kind}" if quarter else f"{year} {label}",
-                )
+    soup = BeautifulSoup(html, "html.parser")
+    for cell in soup.find_all(attrs={"headers": True}):
+        headers = cell.get("headers")
+        year_text = " ".join(headers) if isinstance(headers, list) else str(headers)
+        if not re.fullmatch(r"20\d{2}", year_text.strip()):
+            continue
+        year = int(year_text)
+        # zero-width / odd unicode in Treasury labels
+        label = re.sub(r"\s+", " ", cell.get_text(" ", strip=True).replace("\u200b", "")).strip()
+        qmatch = re.match(r"(1st|2nd|3rd|4th)\s*Quarter", label, re.I)
+        anchor = cell.find("a", href=True)
+        if not qmatch or anchor is None:
+            continue
+        quarter = _QTR_MAP[qmatch.group(1).lower()]
+        docs.append(
+            ArchiveDoc(
+                kind=kind,
+                year=year,
+                quarter=quarter,
+                url=absolutize(anchor["href"]),
+                label=f"{year} Q{quarter} {kind}",
             )
+        )
     return docs
 
 
@@ -119,11 +121,11 @@ def discover_most_recent_assets() -> List[Tuple[str, str]]:
     """Return (label, url) for PDFs / press links on the most-recent documents page."""
     html = _get(ARCHIVE_URLS["most_recent"]).decode("utf-8", errors="replace")
     items: List[Tuple[str, str]] = []
-    for m in re.finditer(
-        r'href="([^"]+)"[^>]*>\s*([^<]{3,160})',
-        html,
-    ):
-        href, text = m.group(1), re.sub(r"\s+", " ", m.group(2)).strip()
+    for anchor in BeautifulSoup(html, "html.parser").find_all("a", href=True):
+        href = anchor["href"]
+        text = re.sub(r"\s+", " ", anchor.get_text(" ", strip=True)).strip()
+        if not (3 <= len(text) <= 160):
+            continue
         low = (href + " " + text).lower()
         if not any(
             k in low
