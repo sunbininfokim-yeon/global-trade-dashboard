@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-01T00:19:44.698546+00:00",
+  "generated_at": "2026-10-01T05:17:38.713382+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 31,
+    "sources_ok": 32,
     "sources_failed": 0,
-    "raw_items": 499,
-    "scored": 88,
-    "published": 75,
+    "raw_items": 510,
+    "scored": 97,
+    "published": 83,
     "commodities": 24,
-    "buckets": 66
+    "buckets": 62
   },
   "feed_status": [
     {
@@ -118,7 +118,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 38 reports linked, 15 read, 21 already known"
+      "note": "45 list pages, 38 reports linked, 11 read, 25 already known"
     },
     {
       "source_id": "my_mpob",
@@ -205,6 +205,13 @@
       "mode": "live"
     },
     {
+      "source_id": "cn_mofcom_aqygzj",
+      "ok": true,
+      "count": 11,
+      "error": null,
+      "mode": "live"
+    },
+    {
       "source_id": "int_ita_tin",
       "ok": true,
       "count": 10,
@@ -247,6 +254,20 @@
       "mode": "live"
     }
   ],
+  "boards": {
+    "cn_export_controls": [
+      "882a7745e1a1f1d0",
+      "62948d40ba0908de",
+      "51fd0b97a38800e4",
+      "12b1ebd663809d68",
+      "272dad20d1638da6",
+      "05101536483c310c",
+      "4098432089e3ba07",
+      "12695f26b9990433",
+      "fe480e0d2cd7dfc1",
+      "573a0facb6a8f6f9"
+    ]
+  },
   "commodity_labels": {
     "oil": "원유",
     "gas": "천연가스",
@@ -637,9 +658,6 @@
       ],
       "KEN": [
         "d6be49771c7e2707"
-      ],
-      "KAZ": [
-        "901d32f93671371c"
       ]
     },
     "sugar": {
@@ -701,9 +719,6 @@
       "CHN": [
         "6e3880b1a989890a"
       ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
       "IND": [
         "6269fa1eda293c5a"
       ],
@@ -724,9 +739,6 @@
       "BGD": [
         "9a2e551991dc06e6"
       ],
-      "KAZ": [
-        "901d32f93671371c"
-      ],
       "BRA": [
         "e65bffd316bf9313",
         "90caf018877f574b"
@@ -746,9 +758,6 @@
       ],
       "KEN": [
         "3ff8c2dd8b700c92"
-      ],
-      "KAZ": [
-        "901d32f93671371c"
       ],
       "ESP": [
         "b736550c463bc772"
@@ -795,6 +804,11 @@
         "30a98869d9f0a4f3"
       ]
     },
+    "lithium": {
+      "USA": [
+        "44e05f03eab98000"
+      ]
+    },
     "tin": {
       "CHN": [
         "1b171ff4ac638164"
@@ -819,11 +833,6 @@
       ],
       "GBR": [
         "91c5d4fabdf7e01f"
-      ]
-    },
-    "lithium": {
-      "USA": [
-        "44e05f03eab98000"
       ]
     },
     "gas": {
@@ -921,13 +930,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.417,
+      "importance": 6.39,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
     },
     {
@@ -953,12 +963,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.976,
+      "importance": 4.956,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -985,12 +996,13 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.468,
+      "importance": 4.449,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1016,13 +1028,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.139,
+      "importance": 4.127,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1048,13 +1061,14 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.124,
+      "importance": 4.11,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1080,13 +1094,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.082,
+      "importance": 4.07,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1112,11 +1127,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.932,
+      "importance": 3.915,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
     },
     {
@@ -1140,11 +1156,12 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.732,
+      "importance": 3.718,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1170,13 +1187,14 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.721,
+      "importance": 3.709,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1202,12 +1220,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.527,
+      "importance": 3.517,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1233,12 +1252,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.527,
+      "importance": 3.517,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1264,44 +1284,15 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.483,
+      "importance": 3.476,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.48,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1326,11 +1317,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.48,
+      "importance": 3.466,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1357,11 +1349,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.48,
+      "importance": 3.466,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1387,12 +1380,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.428,
+      "importance": 3.419,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1419,12 +1413,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.388,
+      "importance": 3.377,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1450,12 +1445,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.169,
+      "importance": 3.161,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1480,11 +1476,12 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.762,
+      "importance": 2.751,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
       ],
+      "agency_url": "https://worldsteel.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1510,12 +1507,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.558,
+      "importance": 2.554,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
@@ -1541,12 +1539,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.499,
+      "importance": 2.489,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1573,11 +1572,12 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.484,
+      "importance": 2.476,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1606,6 +1606,7 @@
         "series:ANRPC_MONTHLY_NR",
         "no_date"
       ],
+      "agency_url": "https://www.anrpc.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1634,6 +1635,7 @@
         "series:ANRPC_MONTHLY_NR",
         "no_date"
       ],
+      "agency_url": "https://www.anrpc.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1660,43 +1662,14 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.314,
+      "importance": 2.31,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
-    },
-    {
-      "id": "1b171ff4ac638164",
-      "title": {
-        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
-      "published_at": "2026-09-21T13:18:43+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.254,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "44e05f03eab98000",
@@ -1721,11 +1694,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.254,
+      "importance": 2.246,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "1b171ff4ac638164",
+      "title": {
+        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
+      "published_at": "2026-09-21T13:18:43+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.245,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1751,11 +1756,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.776,
+      "importance": 1.771,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1781,10 +1787,11 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.747,
+      "importance": 1.742,
       "reasons": [
         "series:EIA_STEO"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1810,11 +1817,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.734,
+      "importance": 1.73,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1839,11 +1847,12 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.701,
+      "importance": 1.697,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
       ],
+      "agency_url": "https://worldsteel.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1869,10 +1878,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.696,
+      "importance": 1.688,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
@@ -1898,10 +1908,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.66,
+      "importance": 1.655,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -1928,45 +1939,14 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.622,
+      "importance": 1.619,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "901d32f93671371c",
-      "title": {
-        "original": "Kazakhstan: Grain and Feed Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The 2026 spring planting season in Kazakhstan was characterized by effective government coordination and investment, diversified cropping favoring high-margin...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/07/kazakhstan-grain-and-feed-update",
-      "published_at": "2026-07-14T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat",
-        "corn",
-        "rice"
-      ],
-      "countries": [
-        "KAZ"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.616,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -1994,6 +1974,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.ilzsg.org/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
@@ -2019,11 +2000,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.558,
+      "importance": 1.553,
       "reasons": [
         "revision_language",
         "country_in_text"
       ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2054,6 +2036,7 @@
         "series:USDA_GAIN",
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
@@ -2079,10 +2062,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.528,
+      "importance": 1.523,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2108,10 +2092,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.494,
+      "importance": 1.488,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2135,8 +2120,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.478,
+      "importance": 1.472,
       "reasons": [],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
@@ -2162,8 +2148,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.424,
+      "importance": 1.418,
       "reasons": [],
+      "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
@@ -2190,11 +2177,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.394,
+      "importance": 1.391,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2220,10 +2208,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.368,
+      "importance": 1.364,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2247,8 +2236,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.356,
+      "importance": 1.351,
       "reasons": [],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2274,10 +2264,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.321,
+      "importance": 1.317,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2302,11 +2293,12 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.315,
+      "importance": 1.313,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
       ],
+      "agency_url": "https://worldsteel.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2332,10 +2324,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.315,
+      "importance": 1.31,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2359,10 +2352,11 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.307,
+      "importance": 1.304,
       "reasons": [
         "has_figure"
       ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2388,11 +2382,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.295,
+      "importance": 1.292,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2418,11 +2413,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.293,
+      "importance": 1.29,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2448,11 +2444,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.244,
+      "importance": 1.241,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2482,6 +2479,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gov.br/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2511,6 +2509,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gov.br/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2540,6 +2539,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gov.br/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2569,6 +2569,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gov.br/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2598,6 +2599,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gov.br/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2621,8 +2623,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.196,
+      "importance": 1.191,
       "reasons": [],
+      "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2648,8 +2651,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.164,
+      "importance": 1.16,
       "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2673,9 +2677,126 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.151,
+      "importance": 1.147,
       "reasons": [],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "4098432089e3ba07",
+      "title": {
+        "original": "中韩出口管制对话机制第三次会议及政企交流活动在陕西西安举行",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/gzdt/art/2026/art_5f65b9c9ea0a497f86578fd282dd0eee.html",
+      "published_at": null,
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.126,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "12695f26b9990433",
+      "title": {
+        "original": "中英出口管制工作组第二次会议在英国伦敦举行",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/gzdt/art/2026/art_d0b072d559c747948d20c061bd871c7e.html",
+      "published_at": null,
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.126,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "fe480e0d2cd7dfc1",
+      "title": {
+        "original": "“升级版”中欧出口管制对话机制第二次会议在京举行",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/gzdt/art/2026/art_35947907e2f341a5b2661286909c15c8.html",
+      "published_at": null,
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.126,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "573a0facb6a8f6f9",
+      "title": {
+        "original": "中欧出口管制对话磋商在布鲁塞尔举行",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/gzdt/art/2025/art_55b881aafe7d43bb9c2449646fd18aac.html",
+      "published_at": null,
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.126,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
       "id": "62f11e17ce23601c",
@@ -2700,8 +2821,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.093,
+      "importance": 1.09,
       "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2727,11 +2849,39 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.09,
+      "importance": 1.088,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "882a7745e1a1f1d0",
+      "title": {
+        "original": "商务部等5部门关于调整《向特定国家（地区）出口易制毒化学品管理目录》的公告",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/qdml/art/2026/art_7dc996a8c63e4a8cbb44ce5d1ac3ecc1.html",
+      "published_at": "2026-09-22T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.078,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
       "id": "21c3dd4f0cf93fd0",
@@ -2761,6 +2911,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.bcr.com.ar/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2790,6 +2941,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.bcr.com.ar/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2815,10 +2967,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.023,
+      "importance": 1.02,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2844,10 +2997,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.015,
+      "importance": 1.013,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2875,10 +3029,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.0,
+      "importance": 0.997,
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2906,6 +3061,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.gold.org/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
@@ -2933,6 +3089,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.cobaltinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2960,6 +3117,7 @@
       "reasons": [
         "no_date"
       ],
+      "agency_url": "https://www.cobaltinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2983,8 +3141,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.818,
+      "importance": 0.816,
       "reasons": [],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3010,8 +3169,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.809,
+      "importance": 0.808,
       "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
@@ -3037,8 +3197,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.645,
+      "importance": 0.643,
       "reasons": [],
+      "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
@@ -3068,7 +3229,62 @@
       "reasons": [
         "country_in_text"
       ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "62948d40ba0908de",
+      "title": {
+        "original": "商务部新闻发言人就对美国联邦通信委员会、美国土安全部系列涉华消极措施实施反制答记者问",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_3e6dd02f94254490827db74df101ca97.html",
+      "published_at": "2026-08-05T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.583,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "51fd0b97a38800e4",
+      "title": {
+        "original": "商务部新闻发言人就将14家欧盟实体列入出口管制管控名单答记者问",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_90f295b25fce4401b72ddf1b9adac31f.html",
+      "published_at": "2026-07-24T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.541,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
       "id": "f5072178b1b60a30",
@@ -3092,9 +3308,91 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.495,
+      "importance": 0.494,
       "reasons": [],
+      "agency_url": "https://silverinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "12b1ebd663809d68",
+      "title": {
+        "original": "商务部新闻发言人就对日相关出口管制措施答记者问",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_04eb369671dd4142804fc5cffdb3c2d9.html",
+      "published_at": "2026-06-29T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.493,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "272dad20d1638da6",
+      "title": {
+        "original": "商务部新闻发言人就进一步完善战略矿产两用物项出口管制违法违规行为举报处理工作答记者问",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_70cd24108cfc41fe90fadcfc5793ab60.html",
+      "published_at": "2026-06-24T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.487,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "05101536483c310c",
+      "title": {
+        "original": "商务部新闻发言人就将10家美国实体列入出口管制管控名单答记者问",
+        "original_lang": "zh",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_db5b556cc33a44398dd31ceb72cbecf9.html",
+      "published_at": "2026-06-22T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.485,
+      "reasons": [],
+      "board": "cn_export_controls",
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     }
   ]
 }
