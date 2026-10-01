@@ -94,9 +94,10 @@ class BypassTests(unittest.TestCase):
         suez = next(series for series in comparison["series"] if series["chokepoint_id"] == "suez")
         self.assertEqual(suez["points"], [])
 
-    def test_fetch_failure_keeps_last_good_rows(self):
+    def test_fetch_failure_keeps_last_good_summary(self):
         good = collect_hormuz_bypass(ROOT / "config", fetch=True, now=NOW, fetcher=lambda url: json.dumps(payload(35)).encode())
         self.assertEqual(good["sources"]["portwatch_ports"]["status"], "fetched")
+        self.assertNotIn("rows", good["sources"]["portwatch_ports"])  # raw rows are not republished
 
         def fail(url):
             raise OSError("down")
