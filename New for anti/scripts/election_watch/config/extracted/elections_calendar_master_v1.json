@@ -1,7 +1,7 @@
 {
   "schema": "elections_calendar_master_v1",
-  "as_of": "2026-09-18",
-  "generated_at": "2026-09-18T08:48:00.587914+00:00",
+  "as_of": "2026-09-19",
+  "generated_at": "2026-09-19T00:14:36.109195+00:00",
   "sources": [
     "config/calendars/*_2026.json (board tracked countries)",
     "https://en.wikipedia.org/wiki/2026_national_electoral_calendar",
@@ -13,13 +13,18 @@
     "불명": "미확정"
   },
   "summary": {
-    "board_tracked_event_rows": 122,
-    "board_party_leadership_rows": 27,
+    "board_tracked_event_rows": 187,
+    "board_party_leadership_rows": 50,
     "world_national_highlight_rows": 38,
     "board_countries": [
       "ARE",
+      "ARG",
+      "AUS",
       "BRA",
+      "CAN",
+      "CHL",
       "CHN",
+      "COL",
       "DEU",
       "FRA",
       "GBR",
@@ -27,24 +32,78 @@
       "IND",
       "IRN",
       "ISR",
+      "ITA",
       "JPN",
       "KOR",
+      "MEX",
+      "MYS",
       "NGA",
+      "PHL",
       "POL",
       "RUS",
       "SAU",
+      "THA",
       "TUR",
       "TWN",
       "USA",
+      "VNM",
       "ZAF"
     ],
-    "world_by_month_rows": 109,
-    "world_by_month_excluded_rows": 26,
-    "world_by_month_excluded_없음": 11,
-    "world_by_month_excluded_불명": 15,
-    "world_by_month_carried_untracked_rows": 13
+    "world_by_month_rows": 142,
+    "world_by_month_excluded_rows": 55,
+    "world_by_month_excluded_없음": 19,
+    "world_by_month_excluded_불명": 36,
+    "world_by_month_carried_untracked_rows": 10
   },
   "party_leadership_and_conventions": [
+    {
+      "id": "can-2025-lpc-leadership",
+      "type": "party_leadership",
+      "party_id": "lpc",
+      "party_abbr": "LPC",
+      "label_ko": "자유당 당대표 선거 (현 여당 수장)",
+      "label_en": "Liberal Party leadership",
+      "date": "2025-03-09",
+      "date_end": "2025-03-09",
+      "date_start": "2025-02-26",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "자유당 당대표 1인",
+      "electorate_ko": "당원 순위선택투표",
+      "carry_forward_incumbent": true,
+      "board_include_years": [
+        2026
+      ],
+      "notes": "트뤼도 사임 후 후임 당대표. 2026 보드: 현 여당 수장. 2026년 정기 당대표 선거 공고는 못 찾음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Canada_leadership_election"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "aus-2025-liberal-leadership",
+      "type": "party_leadership",
+      "party_id": "liberal",
+      "party_abbr": "LP",
+      "label_ko": "자유당 당대표 선거 (현 야당 수장 계열)",
+      "label_en": "Liberal leadership",
+      "date": "2025-05-13",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "자유당 당대표 1인",
+      "electorate_ko": "당 소속 연방의원 투표",
+      "carry_forward_incumbent": true,
+      "board_include_years": [
+        2026
+      ],
+      "notes": "2025 총선 패배 직후. 이후 추가 교체가 있는지는 이 작업에서 확인하지 않음(대진 세션).",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Australia_leadership_election"
+      ],
+      "iso3": "AUS"
+    },
     {
       "id": "kor-2025-ppp-convention",
       "type": "party_leadership",
@@ -73,8 +132,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "국민의힘 당대표 1인",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "jpn-2025-ldp-president",
@@ -101,8 +159,7 @@
       "chamber": "없음",
       "contested_ko": "자민당 총재 1인 (국회의원 + 당원 표)",
       "electorate_ko": "국회의원표와 당원표 동수",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "twn-2025-kmt-chair",
@@ -130,8 +187,27 @@
       "chamber": "없음",
       "contested_ko": "국민당 당주석 1인",
       "electorate_ko": "당원 투표",
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
+    },
+    {
+      "id": "vnm-2026-cpv-congress",
+      "type": "party_leadership",
+      "party_id": "cpv",
+      "party_abbr": "CPV",
+      "label_ko": "공산당 제14차 전당대회",
+      "label_en": "CPV 14th National Congress",
+      "date": "2026-01-19",
+      "date_end": "2026-01-23",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "공산당 중앙 지도부 (전당대회)",
+      "electorate_ko": "전당대회 당대표",
+      "notes": "당권·노선 대회. 복수 정당 당권 경선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/14th_National_Congress_of_the_Communist_Party_of_Vietnam"
+      ],
+      "iso3": "VNM"
     },
     {
       "id": "deu-2026-cdu-parteitag-38",
@@ -181,8 +257,7 @@
         "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition",
         "https://wiadomosci.gazeta.pl/polityka/7,198012,32648397,wybory-na-przewodniczacego-ko-bezkonkurencyjnie-wygrywa-donald.html"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "gbr-2026-labour-leadership",
@@ -206,8 +281,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "노동당 당대표 특별당대회",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "twn-2026-dpp-chair",
@@ -227,8 +301,7 @@
         "https://www.dpp.org.tw/en/media/contents/127",
         "https://www.taiwannews.com.tw/news/6404222"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
     },
     {
       "id": "gbr-2026-pm-succession",
@@ -244,8 +317,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "총리 교체(노동당·내각)",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "kor-2026-dpk-convention-tour",
@@ -292,8 +364,7 @@
       "sources": [
         "https://agenciabrasil.ebc.com.br/en/politica/noticia/2026-08/workers-party-officially-nominates-lula-presidential-candidate"
       ],
-      "iso3": "BRA",
-      "date_end": null
+      "iso3": "BRA"
     },
     {
       "id": "kor-2026-dpk-convention",
@@ -349,8 +420,7 @@
       "chamber": "없음",
       "contested_ko": "더불어민주당 당대표·최고위원",
       "electorate_ko": "대의원·권리당원 70% + 국민여론조사 30%",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "isr-2026-likud-primaries",
@@ -366,8 +436,7 @@
         "https://www.jpost.com/israel-news/politics-and-diplomacy/article-903831",
         "https://www.timesofisrael.com/likud-postpones-primaries-to-august-4-as-netanyahu-fights-for-control-of-party-slate/"
       ],
-      "iso3": "ISR",
-      "date_end": null
+      "iso3": "ISR"
     },
     {
       "id": "fra-2026-rn-congres-19",
@@ -398,24 +467,28 @@
       "iso3": "FRA"
     },
     {
-      "id": "tur-2026-akp-chp-leadership",
-      "type": "party_leadership",
-      "label_ko": "AKP·CHP 당대표/전당대회",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "YSK·당 공고 전",
-      "iso3": "TUR",
-      "date_end": null
-    },
-    {
       "id": "zaf-2026-party-leadership",
       "type": "party_leadership",
       "label_ko": "ANC·DA·EFF 주요 전당대회/지도부 선출",
       "date": "불명",
       "status": "tentative",
       "notes": "Party notices not yet captured.",
-      "iso3": "ZAF",
-      "date_end": null
+      "iso3": "ZAF"
+    },
+    {
+      "id": "nga-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "APC·PDP 지도부·전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "APC·PDP 당권",
+      "notes": "당 공고를 확인하지 못함. 야권 재편은 유동적.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Nigeria"
+      ],
+      "iso3": "NGA"
     },
     {
       "id": "ind-2026-party-leadership-bjp-inc",
@@ -426,8 +499,7 @@
       "notes": "2026 공개 정기 당대표 교체 일정 미확정",
       "level": "party",
       "contested_ko": "BJP·INC 전국 당대표 전당대회",
-      "iso3": "IND",
-      "date_end": null
+      "iso3": "IND"
     },
     {
       "id": "bra-2026-pl-ticket",
@@ -444,8 +516,7 @@
           "status": "reported_pref"
         }
       ],
-      "iso3": "BRA",
-      "date_end": null
+      "iso3": "BRA"
     },
     {
       "id": "deu-2026-spd-leadership",
@@ -458,8 +529,149 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "SPD 당대표 교체 경선",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
+    },
+    {
+      "id": "idn-2026-gerindra-leadership",
+      "type": "party_leadership",
+      "party_id": "gerindra",
+      "party_abbr": "Gerindra",
+      "label_ko": "게린드라 당권 경선",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "게린드라 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gerindra_Party"
+      ],
+      "iso3": "IDN"
+    },
+    {
+      "id": "chl-2026-republicanos-leadership",
+      "type": "party_leadership",
+      "party_id": "republicanos",
+      "party_abbr": "PRCh",
+      "label_ko": "공화당 당권 경선",
+      "label_en": "Republican Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "공화당 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "tur-2026-chp-leadership",
+      "type": "party_leadership",
+      "party_id": "chp",
+      "party_abbr": "CHP",
+      "label_ko": "공화인민당 당대표/전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "CHP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인. 직전 확인된 전당은 2023-11-04·05.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/38th_Republican_People%27s_Party_Ordinary_Convention"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "chl-2026-fa-leadership",
+      "type": "party_leadership",
+      "party_id": "fa",
+      "party_abbr": "FA",
+      "label_ko": "광역전선(FA) 당권 경선",
+      "label_en": "Broad Front leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "광역전선 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "mys-2026-bn-leadership",
+      "type": "party_leadership",
+      "party_id": "bn",
+      "party_abbr": "BN",
+      "label_ko": "국민전선(BN)/UMNO 당권 경선",
+      "label_en": "BN/UMNO leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "BN/UMNO 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Malaysian_general_election"
+      ],
+      "iso3": "MYS"
+    },
+    {
+      "id": "mex-2026-pan-leadership",
+      "type": "party_leadership",
+      "party_id": "pan",
+      "party_abbr": "PAN",
+      "label_ko": "국민행동당(PAN) 당대표 선거",
+      "label_en": "PAN leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PAN 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://www.ine.mx/"
+      ],
+      "iso3": "MEX"
+    },
+    {
+      "id": "aus-2026-alp-leadership",
+      "type": "party_leadership",
+      "party_id": "alp",
+      "party_abbr": "ALP",
+      "label_ko": "노동당 당대표 선거",
+      "label_en": "Labor leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "노동당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Australian_federal_election"
+      ],
+      "iso3": "AUS"
+    },
+    {
+      "id": "ita-2026-lega-leadership",
+      "type": "party_leadership",
+      "party_id": "lega",
+      "party_abbr": "Lega",
+      "label_ko": "동맹(Lega) 당대표 선거",
+      "label_en": "Lega leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "동맹 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
     },
     {
       "id": "fra-2026-renaissance-leadership",
@@ -472,28 +684,200 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "르네상스(여) 당대표/전당",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
     },
     {
-      "id": "idn-2026-party-leadership",
+      "id": "mex-2026-morena-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 전당대회·지도부 선출",
+      "party_id": "morena",
+      "party_abbr": "MORENA",
+      "label_ko": "모레나 당대표 선거",
+      "label_en": "Morena leadership",
       "date": "불명",
       "status": "tentative",
-      "notes": "Party notice not yet captured; verify directly from party sites.",
-      "iso3": "IDN",
-      "date_end": null
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "모레나 당대표 1인",
+      "notes": "2026년 당권 경선 일자를 INE·당 공고에서 확인하지 못함.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Morena_(political_party)"
+      ],
+      "iso3": "MEX"
     },
     {
-      "id": "nga-2026-party-leadership",
+      "id": "ita-2026-pd-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 지도부·전당대회",
+      "party_id": "pd",
+      "party_abbr": "PD",
+      "label_ko": "민주당 당대표 선거",
+      "label_en": "PD leadership",
       "date": "불명",
       "status": "tentative",
-      "notes": "Opposition alignment is fluid; verify party notices and legal status directly.",
-      "iso3": "NGA",
-      "date_end": null
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "민주당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
+    },
+    {
+      "id": "can-2026-cpc-leadership",
+      "type": "party_leadership",
+      "party_id": "cpc",
+      "party_abbr": "CPC",
+      "label_ko": "보수당 당대표 선거",
+      "label_en": "Conservative Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "보수당 당대표 1인",
+      "notes": "2026년 당대표 경선 일자를 공식·위키 페이지에서 확인하지 못함.",
+      "sources": [
+        "https://www.conservative.ca/"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "can-2026-ndp-leadership",
+      "type": "party_leadership",
+      "party_id": "ndp",
+      "party_abbr": "NDP",
+      "label_ko": "신민주당 당대표 선거",
+      "label_en": "NDP leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "신민주당 당대표 1인",
+      "notes": "2026년 당대표 경선 일자 미확인.",
+      "sources": [
+        "https://www.ndp.ca/"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "ita-2026-fdi-leadership",
+      "type": "party_leadership",
+      "party_id": "fdi",
+      "party_abbr": "FdI",
+      "label_ko": "이탈리아의 형제들 당대표 선거",
+      "label_en": "FdI leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "FdI 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
+    },
+    {
+      "id": "tha-2026-pp-leadership",
+      "type": "party_leadership",
+      "party_id": "pp",
+      "party_abbr": "PP",
+      "label_ko": "인민당 당대표 선거",
+      "label_en": "People's Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "인민당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
+    },
+    {
+      "id": "arg-2026-lla-leadership",
+      "type": "party_leadership",
+      "party_id": "lla",
+      "party_abbr": "LLA",
+      "label_ko": "자유전진(LLA) 당권 경선",
+      "label_en": "LLA leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "LLA 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "tur-2026-akp-leadership",
+      "type": "party_leadership",
+      "party_id": "akp",
+      "party_abbr": "AKP",
+      "label_ko": "정의개발당 당대표/전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "AKP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "arg-2026-fp-leadership",
+      "type": "party_leadership",
+      "party_id": "fp",
+      "party_abbr": "FP",
+      "label_ko": "조국힘(Fuerza Patria) 당권 경선",
+      "label_en": "Fuerza Patria leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "조국힘 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인. 2025 중간선거의 제1야당 계열 명칭.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Argentine_legislative_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "col-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "주요 정당 당권 경선",
+      "label_en": "Major-party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "주요 정당 당권",
+      "notes": "2026년 당권 경선 일자를 확인하지 못함. 대진·후보는 다른 세션.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ],
+      "iso3": "COL"
+    },
+    {
+      "id": "phl-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "주요 정당 당권 경선",
+      "label_en": "Major-party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "주요 정당 당권",
+      "notes": "2026년 전국 당권 경선 일자 미확인. 대진은 다른 세션.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election"
+      ],
+      "iso3": "PHL"
     },
     {
       "id": "rus-2026-ur-congress",
@@ -503,8 +887,60 @@
       "date": "불명",
       "status": "tentative",
       "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo",
-      "iso3": "RUS",
-      "date_end": null
+      "iso3": "RUS"
+    },
+    {
+      "id": "idn-2026-pdip-leadership",
+      "type": "party_leadership",
+      "party_id": "pdip",
+      "party_abbr": "PDI-P",
+      "label_ko": "투쟁민주당 당권 경선",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PDI-P 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://www.kpu.go.id/"
+      ],
+      "iso3": "IDN"
+    },
+    {
+      "id": "tha-2026-bjt-leadership",
+      "type": "party_leadership",
+      "party_id": "bjt",
+      "party_abbr": "BJT",
+      "label_ko": "품자이타이당 당대표 선거",
+      "label_en": "Bhumjaithai leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "품자이타이당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
+    },
+    {
+      "id": "mys-2026-ph-leadership",
+      "type": "party_leadership",
+      "party_id": "ph",
+      "party_abbr": "PH",
+      "label_ko": "희망연대(PH) 주축 당권 경선",
+      "label_en": "Pakatan Harapan leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PH 주축 정당 당권",
+      "notes": "2026년 당권 경선 일자 미확인. 연정 이름이지 단일 당이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pakatan_Harapan"
+      ],
+      "iso3": "MYS"
     },
     {
       "id": "usa-party-leadership-national",
@@ -520,8 +956,7 @@
       "sources": [
         "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
       ],
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "pol-2026-pis-leadership",
@@ -539,8 +974,7 @@
       "sources": [
         "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "gbr-2026-con-leadership",
@@ -556,8 +990,7 @@
       "sources": [
         "https://www.conservatives.com/"
       ],
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "jpn-2026-cdp-leader",
@@ -575,8 +1008,7 @@
       "sources": [
         "https://cdp-japan.jp/"
       ],
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-ldp-president",
@@ -592,11 +1024,58 @@
       "sources": [
         "https://www.jimin.jp/"
       ],
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     }
   ],
   "board_tracked_all_events": [
+    {
+      "id": "can-2025-lpc-leadership",
+      "type": "party_leadership",
+      "party_id": "lpc",
+      "party_abbr": "LPC",
+      "label_ko": "자유당 당대표 선거 (현 여당 수장)",
+      "label_en": "Liberal Party leadership",
+      "date": "2025-03-09",
+      "date_end": "2025-03-09",
+      "date_start": "2025-02-26",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "자유당 당대표 1인",
+      "electorate_ko": "당원 순위선택투표",
+      "carry_forward_incumbent": true,
+      "board_include_years": [
+        2026
+      ],
+      "notes": "트뤼도 사임 후 후임 당대표. 2026 보드: 현 여당 수장. 2026년 정기 당대표 선거 공고는 못 찾음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Canada_leadership_election"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "aus-2025-liberal-leadership",
+      "type": "party_leadership",
+      "party_id": "liberal",
+      "party_abbr": "LP",
+      "label_ko": "자유당 당대표 선거 (현 야당 수장 계열)",
+      "label_en": "Liberal leadership",
+      "date": "2025-05-13",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "자유당 당대표 1인",
+      "electorate_ko": "당 소속 연방의원 투표",
+      "carry_forward_incumbent": true,
+      "board_include_years": [
+        2026
+      ],
+      "notes": "2025 총선 패배 직후. 이후 추가 교체가 있는지는 이 작업에서 확인하지 않음(대진 세션).",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Australia_leadership_election"
+      ],
+      "iso3": "AUS"
+    },
     {
       "id": "pol-2025-presidential",
       "type": "presidential",
@@ -623,8 +1102,7 @@
         "https://wybory.gov.pl/index/",
         "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "jpn-2025-sangiin",
@@ -644,8 +1122,7 @@
       "level": "national",
       "chamber": "sangiin",
       "contested_ko": "참의원 절반 改選",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "kor-2025-ppp-convention",
@@ -675,8 +1152,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "국민의힘 당대표 1인",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "jpn-2025-ldp-president",
@@ -703,8 +1179,7 @@
       "chamber": "없음",
       "contested_ko": "자민당 총재 1인 (국회의원 + 당원 표)",
       "electorate_ko": "국회의원표와 당원표 동수",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "twn-2025-kmt-chair",
@@ -732,8 +1207,27 @@
       "chamber": "없음",
       "contested_ko": "국민당 당주석 1인",
       "electorate_ko": "당원 투표",
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
+    },
+    {
+      "id": "vnm-2026-cpv-congress",
+      "type": "party_leadership",
+      "party_id": "cpv",
+      "party_abbr": "CPV",
+      "label_ko": "공산당 제14차 전당대회",
+      "label_en": "CPV 14th National Congress",
+      "date": "2026-01-19",
+      "date_end": "2026-01-23",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "공산당 중앙 지도부 (전당대회)",
+      "electorate_ko": "전당대회 당대표",
+      "notes": "당권·노선 대회. 복수 정당 당권 경선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/14th_National_Congress_of_the_Communist_Party_of_Vietnam"
+      ],
+      "iso3": "VNM"
     },
     {
       "id": "jpn-2026-gov-fukui",
@@ -748,8 +1242,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "usa-2026-tx18-special-runoff",
@@ -768,8 +1261,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (TX-18)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-nj11-special-primary",
@@ -786,8 +1278,23 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (NJ-11)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
+    },
+    {
+      "id": "tha-2026-referendum",
+      "type": "referendum",
+      "label_ko": "개헌 국민투표 (2017 헌법 대체 여부)",
+      "label_en": "Constitutional referendum",
+      "date": "2026-02-08",
+      "status": "completed",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "2017 헌법을 새 헌법으로 바꿀지",
+      "notes": "하원 총선과 같은 날. 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
     },
     {
       "id": "jpn-2026-gov-nagasaki",
@@ -803,8 +1310,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-gov-yamaguchi",
@@ -820,8 +1326,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-gov-osaka",
@@ -837,8 +1342,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-shugiin-51",
@@ -855,8 +1359,24 @@
       "system_id": "jpn-shugiin",
       "level": "national",
       "contested_ko": "중의원 정수 전원 (소선거구+비례)",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "tha-2026-general",
+      "type": "general",
+      "label_ko": "하원 총선",
+      "label_en": "House of Representatives",
+      "date": "2026-02-08",
+      "status": "completed",
+      "system_id": "tha-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 500석 전원",
+      "notes": "의회 해산 후 조기 총선. 같은 날 개헌 국민투표(tha-2026-referendum).",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
     },
     {
       "id": "deu-2026-cdu-parteitag-38",
@@ -897,8 +1417,25 @@
       "level": "subnational",
       "chamber": "landtag",
       "contested_ko": "해당 주 주의회 의석 전원",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
+    },
+    {
+      "id": "col-2026-congress",
+      "type": "general",
+      "label_ko": "상원·하원 총선",
+      "label_en": "Congressional elections",
+      "date": "2026-03-08",
+      "status": "completed",
+      "system_id": "col-chamber",
+      "level": "national",
+      "chamber": "chamber",
+      "contested_ko": "상원 + 하원 (2026–2030 임기)",
+      "notes": "위키 2026 의회선거 페이지: 상원 103(전국 100+원주민 2+대선 차점 1 예약), 하원 183. 다른 위키 요약(Elections in Colombia)은 상원 102·하원 162로 적어 병기.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election",
+        "https://en.wikipedia.org/wiki/Congress_of_Colombia"
+      ],
+      "iso3": "COL"
     },
     {
       "id": "pol-2026-ko-leadership",
@@ -922,8 +1459,7 @@
         "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition",
         "https://wiadomosci.gazeta.pl/polityka/7,198012,32648397,wybory-na-przewodniczacego-ko-bezkonkurencyjnie-wygrywa-donald.html"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "jpn-2026-gov-ishikawa",
@@ -938,8 +1474,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "usa-2026-ga14-special-general",
@@ -956,8 +1491,25 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (GA-14)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
+    },
+    {
+      "id": "vnm-2026-na",
+      "type": "general",
+      "label_ko": "국회(제16대) 선거",
+      "label_en": "National Assembly election",
+      "date": "2026-03-15",
+      "status": "completed",
+      "system_id": "vnm-na",
+      "level": "national",
+      "chamber": "national_assembly",
+      "contested_ko": "국회 대의원 (제16대)",
+      "notes": "일당 체제. 후보는 공산당 주도의 조국전선 사전 추천. 복수 정당 경쟁 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Vietnamese_legislative_election",
+        "https://en.wikipedia.org/wiki/Elections_in_Vietnam"
+      ],
+      "iso3": "VNM"
     },
     {
       "id": "fra-2026-municipal-r1",
@@ -971,8 +1523,7 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "코뮌 의회·단체장",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
     },
     {
       "id": "ind-2026-rajya-sabha-mar",
@@ -988,8 +1539,24 @@
       "level": "national",
       "chamber": "rajya_sabha",
       "contested_ko": "라지야 사바 해당 회차 간선분",
-      "iso3": "IND",
-      "date_end": null
+      "iso3": "IND"
+    },
+    {
+      "id": "aus-2026-sa",
+      "type": "local",
+      "label_ko": "사우스오스트레일리아 주의회",
+      "label_en": "South Australian state election",
+      "date": "2026-03-21",
+      "status": "completed",
+      "system_id": "aus-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "주의회 하원 47석 전원 + 상원 일부",
+      "notes": "연방 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_South_Australian_state_election"
+      ],
+      "iso3": "AUS"
     },
     {
       "id": "deu-2026-rlp-landtag",
@@ -1004,8 +1571,7 @@
       "level": "subnational",
       "chamber": "landtag",
       "contested_ko": "해당 주 주의회 의석 전원",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
       "id": "fra-2026-municipal-r2",
@@ -1019,8 +1585,24 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "코뮌 의회·단체장",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
+    },
+    {
+      "id": "ita-2026-constitutional-referendum",
+      "type": "referendum",
+      "label_ko": "헌법개정 국민투표 (사법 개혁)",
+      "label_en": "Constitutional referendum",
+      "date": "2026-03-22",
+      "date_end": "2026-03-23",
+      "status": "completed",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "헌법 개정안 찬반 (사법부 조직)",
+      "notes": "일회성 국민투표. 하원·상원 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Italian_constitutional_referendum"
+      ],
+      "iso3": "ITA"
     },
     {
       "id": "jpn-2026-gov-kyoto",
@@ -1035,8 +1617,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "usa-2026-ga14-special-runoff",
@@ -1055,8 +1636,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (GA-14)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-nj11-special-general",
@@ -1075,8 +1655,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (NJ-11)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "gbr-2026-scottish-parliament",
@@ -1092,8 +1671,7 @@
       "level": "subnational",
       "chamber": "holyrood",
       "contested_ko": "스코틀랜드 의회 의석 전원",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "gbr-2026-senedd",
@@ -1109,8 +1687,7 @@
       "level": "subnational",
       "chamber": "senedd",
       "contested_ko": "웨일스 세네드 의석 전원",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "gbr-2026-local-may7",
@@ -1126,8 +1703,7 @@
       "notes": "같은 날 스코틀랜드 의회·세네드와 겹침. 제도 행은 각각 별도.",
       "system_id": "gbr-england-local",
       "chamber": "없음",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "jpn-2026-gov-niigata",
@@ -1143,8 +1719,26 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "col-2026-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 1차",
+      "label_en": "Presidential first round",
+      "date": "2026-05-31",
+      "first_round_date": "2026-05-31",
+      "runoff_date": "2026-06-21",
+      "status": "completed",
+      "system_id": "col-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "1차 과반 미달로 결선 2026-06-21. 현직 재선 금지.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ],
+      "iso3": "COL"
     },
     {
       "id": "usa-2026-ca01-special-general",
@@ -1163,8 +1757,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (CA-01)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "kor-2026-na-byelections-local-day",
@@ -1181,8 +1774,7 @@
       "level": "national",
       "chamber": "national_assembly",
       "contested_ko": "국회의원 재보궐 (지방선거 동시)",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "kor-2026-local",
@@ -1208,8 +1800,7 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "광역단체장 17곳 + 기초단체장 226곳 등 동시",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "kor-2026-speaker-half",
@@ -1229,8 +1820,7 @@
       "sources": [
         "https://korea.assembly.go.kr/"
       ],
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "usa-2026-ca14-special-general",
@@ -1247,8 +1837,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (CA-14)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "ind-2026-rajya-sabha-jun",
@@ -1263,8 +1852,24 @@
       "level": "national",
       "chamber": "rajya_sabha",
       "contested_ko": "라지야 사바 해당 회차 간선분",
-      "iso3": "IND",
-      "date_end": null
+      "iso3": "IND"
+    },
+    {
+      "id": "col-2026-presidential-r2",
+      "type": "presidential",
+      "label_ko": "대통령 선거 결선",
+      "label_en": "Presidential runoff",
+      "date": "2026-06-21",
+      "status": "completed",
+      "system_id": "col-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (결선)",
+      "notes": "col-2026-presidential 1차의 결선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ],
+      "iso3": "COL"
     },
     {
       "id": "jpn-2026-gov-shiga",
@@ -1288,8 +1893,24 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "mys-2026-johor",
+      "type": "local",
+      "label_ko": "조호르 주의회",
+      "label_en": "Johor state election",
+      "date": "2026-07-11",
+      "status": "completed",
+      "system_id": "mys-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "조호르 주의회 56석 전원",
+      "notes": "연방 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Johor_state_election"
+      ],
+      "iso3": "MYS"
     },
     {
       "id": "gbr-2026-labour-leadership",
@@ -1313,8 +1934,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "노동당 당대표 특별당대회",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "twn-2026-dpp-chair",
@@ -1334,8 +1954,7 @@
         "https://www.dpp.org.tw/en/media/contents/127",
         "https://www.taiwannews.com.tw/news/6404222"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
     },
     {
       "id": "gbr-2026-pm-succession",
@@ -1351,8 +1970,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "총리 교체(노동당·내각)",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "usa-2026-ga13-special-general",
@@ -1369,8 +1987,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (GA-13)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "kor-2026-dpk-convention-tour",
@@ -1417,8 +2034,7 @@
       "sources": [
         "https://agenciabrasil.ebc.com.br/en/politica/noticia/2026-08/workers-party-officially-nominates-lula-presidential-candidate"
       ],
-      "iso3": "BRA",
-      "date_end": null
+      "iso3": "BRA"
     },
     {
       "id": "usa-2026-ca01-special-runoff",
@@ -1435,8 +2051,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (CA-01)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "jpn-2026-gov-nagano",
@@ -1452,8 +2067,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "gbr-2026-clacton-by",
@@ -1470,8 +2084,7 @@
       "sources": [
         "https://www.tendringdc.gov.uk/news/date-set-for-clacton-constituency-by-election"
       ],
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "kor-2026-dpk-convention",
@@ -1527,8 +2140,7 @@
       "chamber": "없음",
       "contested_ko": "더불어민주당 당대표·최고위원",
       "electorate_ko": "대의원·권리당원 70% + 국민여론조사 30%",
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "isr-2026-likud-primaries",
@@ -1544,8 +2156,7 @@
         "https://www.jpost.com/israel-news/politics-and-diplomacy/article-903831",
         "https://www.timesofisrael.com/likud-postpones-primaries-to-august-4-as-netanyahu-fights-for-control-of-party-slate/"
       ],
-      "iso3": "ISR",
-      "date_end": null
+      "iso3": "ISR"
     },
     {
       "id": "usa-2026-ca14-special-runoff",
@@ -1563,8 +2174,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (CA-14)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-ga13-special-runoff",
@@ -1582,8 +2192,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (GA-13)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "jpn-2026-gov-kagawa",
@@ -1599,8 +2208,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "deu-2026-st-landtag",
@@ -1616,8 +2224,7 @@
       "level": "subnational",
       "chamber": "landtag",
       "contested_ko": "해당 주 주의회 의석 전원",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
       "id": "isr-2026-candidate-lists",
@@ -1630,8 +2237,7 @@
         "wiki_knesset_2026",
         "cec_il"
       ],
-      "iso3": "ISR",
-      "date_end": null
+      "iso3": "ISR"
     },
     {
       "id": "usa-2026-rnc-midterm-convention",
@@ -1667,8 +2273,24 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "phl-2026-barmm",
+      "type": "local",
+      "label_ko": "방사모로 의회 선거",
+      "label_en": "Bangsamoro Parliament",
+      "date": "2026-09-14",
+      "status": "completed",
+      "system_id": "phl-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "방사모로 의회 80석 중 78석",
+      "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election"
+      ],
+      "iso3": "PHL"
     },
     {
       "id": "rus-2026-duma",
@@ -1692,8 +2314,7 @@
       "level": "national",
       "chamber": "duma",
       "contested_ko": "국가두마 450석 전원",
-      "iso3": "RUS",
-      "date_end": null
+      "iso3": "RUS"
     },
     {
       "id": "rus-2026-single-voting-day-regions",
@@ -1715,8 +2336,7 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "단일투표일 지방 수장·주의회",
-      "iso3": "RUS",
-      "date_end": null
+      "iso3": "RUS"
     },
     {
       "id": "deu-2026-mv-landtag",
@@ -1732,8 +2352,7 @@
       "level": "subnational",
       "chamber": "landtag",
       "contested_ko": "해당 주 주의회 의석 전원",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
       "id": "deu-2026-berlin-ag",
@@ -1748,8 +2367,7 @@
       "level": "subnational",
       "chamber": "landtag",
       "contested_ko": "해당 주 주의회 의석 전원",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
       "id": "pol-2026-krakow-mayor",
@@ -1766,8 +2384,7 @@
       "sources": [
         "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "bra-2026-general-r1",
@@ -1781,8 +2398,28 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 3,
-      "iso3": "BRA",
-      "date_end": null
+      "system_id": "bra-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 + 연방의회 + 주지사 (1차)",
+      "iso3": "BRA"
+    },
+    {
+      "id": "can-2026-quebec",
+      "type": "local",
+      "label_ko": "퀘벡 주의회 총선",
+      "label_en": "Quebec general election",
+      "date": "2026-10-05",
+      "status": "scheduled",
+      "system_id": "can-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "퀘벡 주의회 127석 전원",
+      "notes": "2026-08-27 의회 해산 고시. 연방 총선이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Quebec_general_election"
+      ],
+      "iso3": "CAN"
     },
     {
       "id": "gbr-2026-holborn-st-pancras-by",
@@ -1800,8 +2437,7 @@
         "https://en.wikipedia.org/wiki/2026_Holborn_and_St_Pancras_by-election",
         "https://elections.democracyclub.org.uk/elections/parl.holborn-and-st-pancras.by.2026-10-08/"
       ],
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "fra-2026-rn-congres-19",
@@ -1847,8 +2483,7 @@
       "chamber": "shugiin",
       "contested_ko": "국정 재보궐 (10월 통일창)",
       "system_id": "jpn-shugiin",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "bra-2026-general-r2",
@@ -1861,8 +2496,11 @@
         "wiki_bra_2026",
         "tse"
       ],
-      "iso3": "BRA",
-      "date_end": null
+      "system_id": "bra-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령·주지사 결선 (해당 시)",
+      "iso3": "BRA"
     },
     {
       "id": "jpn-2026-fukushima-governor",
@@ -1879,8 +2517,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-fukushima-assembly-by",
@@ -1895,8 +2532,7 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "후쿠시마현의회 보궐 3선거구",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "isr-2026-knesset",
@@ -1909,8 +2545,7 @@
         "wiki_knesset_2026",
         "cec_il"
       ],
-      "iso3": "ISR",
-      "date_end": null
+      "iso3": "ISR"
     },
     {
       "id": "usa-2026-senate-special-oh",
@@ -1929,8 +2564,7 @@
       "system_id": "usa-senate",
       "level": "national",
       "contested_ko": "해당 주 연방상원 잔여임기 1석",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-senate-special-fl",
@@ -1949,8 +2583,7 @@
       "system_id": "usa-senate",
       "level": "national",
       "contested_ko": "해당 주 연방상원 잔여임기 1석",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-governors",
@@ -1968,8 +2601,7 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "주지사 36개 주 + 공고된 자치령",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-midterms",
@@ -1987,8 +2619,7 @@
       "level": "national",
       "chamber": "house",
       "contested_ko": "연방하원 435석 전원 + 상원 Class 1 정기改選(약 33석)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "zaf-2026-local-government",
@@ -2004,8 +2635,8 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "지방정부 의원·단체장",
-      "iso3": "ZAF",
-      "date_end": null
+      "system_id": "zaf-local",
+      "iso3": "ZAF"
     },
     {
       "id": "twn-2026-local",
@@ -2024,8 +2655,7 @@
         "https://www.cna.com.tw/news/aipl/202608200078.aspx",
         "https://en.wikipedia.org/wiki/2026_Taiwanese_local_elections"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
     },
     {
       "id": "jpn-2026-gov-ehime",
@@ -2041,8 +2671,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-gov-saga",
@@ -2058,8 +2687,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-gov-miyazaki",
@@ -2075,8 +2703,7 @@
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "fra-2027-presidential",
@@ -2096,8 +2723,44 @@
       "date_note": "2026년 회차 아님. Invest Lens 1차 4/11 결선 4/25.",
       "first_round_date": "2027-04-11",
       "runoff_date": "2027-04-25",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
+    },
+    {
+      "id": "mex-2027-state",
+      "type": "local",
+      "label_ko": "주지사 등 지방선거 (하원 중간과 동시)",
+      "label_en": "State elections",
+      "date": "2027-06-06",
+      "date_note": "위키 2027 하원 페이지가 주지사 등 주 선거와 동시라고 적음. 대상 주 전수는 이 수집에서 올리지 않음.",
+      "status": "outside_year",
+      "system_id": "mex-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "주지사 등 해당 주 공직 (하원 중간과 같은 날)",
+      "notes": "전국 대선이 아님. 주 목록은 공고를 전수하지 않아 합산하지 않음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election"
+      ],
+      "iso3": "MEX"
+    },
+    {
+      "id": "mex-2027-deputies",
+      "type": "general",
+      "label_ko": "하원(Diputados) 중간선거",
+      "label_en": "Chamber of Deputies",
+      "date": "2027-06-06",
+      "date_note": "2027년 중간선거. 하원 500석 전원. 상원·대선은 이 날이 아님.",
+      "status": "outside_year",
+      "system_id": "mex-deputies",
+      "level": "national",
+      "chamber": "deputies",
+      "contested_ko": "하원 500석 전원",
+      "notes": "2026년 회차 아님. 같은 날 주지사 등 지방 선거가 겹친다고 위키 2027 페이지가 적음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election",
+        "https://www.ine.mx/"
+      ],
+      "iso3": "MEX"
     },
     {
       "id": "fra-2027-assemblee",
@@ -2115,8 +2778,7 @@
       "chamber": "assemblee",
       "contested_ko": "국민의회 의석 전원",
       "date_note": "2026년 회차 아님. 대선 직후 실시 가정(Invest Lens).",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
     },
     {
       "id": "jpn-2027-shugiin-invest-lens",
@@ -2134,8 +2796,80 @@
       "level": "national",
       "chamber": "shugiin",
       "contested_ko": "중의원 정수 전원 (Invest Lens 추정, 비정본)",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "arg-2027-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2027-10-24",
+      "date_note": "위키 2027 총선 페이지가 본선을 2027-10-24로 적음. 결선이 있으면 그 다음.",
+      "status": "outside_year",
+      "system_id": "arg-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령·부통령 1조 (1차 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "arg-2027-congress",
+      "type": "general",
+      "label_ko": "하원·상원 총선 (다음 정기)",
+      "label_en": "Congressional election",
+      "date": "2027-10-24",
+      "date_note": "대선과 같은 날로 위키 2027 페이지가 적음. 하원·상원 改選분.",
+      "status": "outside_year",
+      "system_id": "arg-deputies",
+      "level": "national",
+      "chamber": "deputies",
+      "contested_ko": "하원·상원 해당 회차 改選분 (대선과 동시)",
+      "notes": "2026년 의회 회차 아님. 직전 중간선거는 2025-10-26.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "phl-2028-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2028-05-08",
+      "date_note": "위키 2028 대선 페이지가 본선을 2028-05-08로 적음. 하원·상원 일부·지방과 동시가 관례.",
+      "status": "outside_year",
+      "system_id": "phl-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령·부통령 각 1인",
+      "notes": "2026년 대선 회차 아님. 현직은 헌법상 재선 불가.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election"
+      ],
+      "iso3": "PHL"
+    },
+    {
+      "id": "phl-2028-congress",
+      "type": "general",
+      "label_ko": "하원·상원 총선 (다음 정기, 대선 동시)",
+      "label_en": "Congressional general",
+      "date": "2028-05-08",
+      "date_note": "대선과 같은 날. 하원 전원 + 상원 12/24가 관례.",
+      "status": "outside_year",
+      "system_id": "phl-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 전원 + 상원 12석",
+      "notes": "2026년 전국 의회 회차 아님. 직전 중간선거 2025-05-12.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election",
+        "https://en.wikipedia.org/wiki/Elections_in_the_Philippines"
+      ],
+      "iso3": "PHL"
     },
     {
       "id": "usa-2028-presidential",
@@ -2154,8 +2888,26 @@
         "https://www.archives.gov/electoral-college/about",
         "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
       ],
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
+    },
+    {
+      "id": "can-2029-federal",
+      "type": "general",
+      "label_ko": "연방 하원 총선 (다음 정기)",
+      "label_en": "Next federal election",
+      "date": "2029-10-15",
+      "date_note": "Canada Elections Act 법정 최후(2029-10-15). 총리가 그 전에 의회를 해산하면 앞당겨질 수 있음.",
+      "status": "outside_year",
+      "system_id": "can-commons",
+      "level": "national",
+      "chamber": "house_of_commons",
+      "contested_ko": "하원 343석 전원",
+      "notes": "2026년 연방 총선 회차 아님. 직전 총선 2025-04-28.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/46th_Canadian_federal_election",
+        "https://www.elections.ca/home.aspx"
+      ],
+      "iso3": "CAN"
     },
     {
       "id": "kor-2026-presidential",
@@ -2173,8 +2925,7 @@
         "https://www.nec.go.kr/site/eng/03/10301020000002020070601.jsp",
         "https://en.wikipedia.org/wiki/2030_South_Korean_presidential_election"
       ],
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
     },
     {
       "id": "fra-2026-senate",
@@ -2191,21 +2942,44 @@
       "level": "national",
       "chamber": "senate",
       "contested_ko": "상원 간선 (해당 series 改選분)",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
     },
     {
-      "id": "nga-2026-national",
-      "type": "general",
-      "label_ko": "전국 대선·총선",
+      "id": "nga-2027-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
       "date": "2027-02",
+      "date_note": "직전 본선 2023-02. 다음 주기 2027년 2월 계열. INEC 일자 공고 전.",
       "status": "outside_year",
-      "notes": "2026년 회차 아님. 제도상 전국 선거가 없는 것이 아니라 올해가 아니다.",
-      "date_note": "다음 대선 주기 2027년. INEC 일자 공고 전. 직전 본선은 2023-02.",
+      "system_id": "nga-president",
       "level": "national",
-      "contested_ko": "대통령 + 연방의회",
-      "iso3": "NGA",
-      "date_end": null
+      "chamber": "없음",
+      "contested_ko": "대통령 1인",
+      "notes": "2026년 대선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+      ],
+      "iso3": "NGA"
+    },
+    {
+      "id": "nga-2027-national-assembly",
+      "type": "general",
+      "label_ko": "상원·하원 총선 (다음 정기)",
+      "label_en": "National Assembly election",
+      "date": "2027-02",
+      "date_note": "대선과 같은 주기. INEC 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "nga-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 360석 + 상원 109석",
+      "notes": "2026년 의회 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/National_Assembly_(Nigeria)",
+        "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+      ],
+      "iso3": "NGA"
     },
     {
       "id": "pol-2027-sejm-senate",
@@ -2236,8 +3010,26 @@
         "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election",
         "https://en.wikipedia.org/wiki/2023_Polish_parliamentary_election"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
+    },
+    {
+      "id": "ita-2027-general",
+      "type": "general",
+      "label_ko": "하원·상원 총선 (다음 정기)",
+      "label_en": "Next general election",
+      "date": "2027-12",
+      "date_note": "법정 최후 2027-12-22. 조기 해산 시 앞당겨질 수 있음. 정확한 일요일은 공고 전.",
+      "status": "outside_year",
+      "system_id": "ita-chamber",
+      "level": "national",
+      "chamber": "chamber",
+      "contested_ko": "하원 400석 + 선출 상원 200석",
+      "notes": "2026년 총선 회차 아님. 직전 총선 2022-09-25.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election",
+        "https://dait.interno.gov.it/elezioni"
+      ],
+      "iso3": "ITA"
     },
     {
       "id": "twn-2028-ly",
@@ -2264,8 +3056,7 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Next_Taiwanese_legislative_election"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
     },
     {
       "id": "twn-2028-presidential",
@@ -2284,8 +3075,26 @@
         "https://en.wikipedia.org/wiki/2028_Taiwanese_presidential_election",
         "https://focustaiwan.tw/politics/202303100014"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
+    },
+    {
+      "id": "mys-2028-general",
+      "type": "general",
+      "label_ko": "하원(Dewan Rakyat) 총선 (다음 정기)",
+      "label_en": "Next general election",
+      "date": "2028-02",
+      "date_note": "위키 Next Malaysian general election: on or before February 2028. 정확한 일자는 총리 요청·선관위 공고 전.",
+      "status": "outside_year",
+      "system_id": "mys-dewan-rakyat",
+      "level": "national",
+      "chamber": "dewan_rakyat",
+      "contested_ko": "하원 222석 전원",
+      "notes": "2026년 연방 총선 회차 아님. 직전 총선 2022-11-19.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Malaysian_general_election",
+        "https://en.wikipedia.org/wiki/Dewan_Rakyat"
+      ],
+      "iso3": "MYS"
     },
     {
       "id": "kor-2028-general",
@@ -2302,8 +3111,63 @@
       "sources": [
         "https://en.wikipedia.org/wiki/List_of_members_of_the_National_Assembly_(South_Korea),_2024%E2%80%932028"
       ],
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
+    },
+    {
+      "id": "tur-2028-parliamentary",
+      "type": "general",
+      "label_ko": "대국민의회 총선 (다음 정기)",
+      "label_en": "Parliamentary election",
+      "date": "2028-05",
+      "date_note": "법정 최후 2028-05-07. 대선 1차와 같은 총선 해. YSK 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "tur-assembly",
+      "level": "national",
+      "chamber": "assembly",
+      "contested_ko": "대국민의회 600석 전원",
+      "notes": "2026년 총선 회차 아님. 직전 2023-05-14.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Turkish_parliamentary_election",
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "tur-2028-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2028-05",
+      "date_note": "법정 최후 2028-05-14(1차). 의회 선거와 같은 총선 해. YSK 일자 공고 전. 조기선거 시 앞당겨질 수 있음.",
+      "status": "outside_year",
+      "system_id": "tur-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님. 직전 2023-05.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Turkish_presidential_election"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "aus-2028-federal",
+      "type": "general",
+      "label_ko": "연방 하원·반수 상원 총선 (다음 정기)",
+      "label_en": "Next federal election",
+      "date": "2028-05",
+      "date_note": "하원+반수 상원 법정 최후 2028-05-20. 하원만은 2028-09-23까지 가능. 조기 해산 시 앞당겨질 수 있음.",
+      "status": "outside_year",
+      "system_id": "aus-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 150석 전원 + 상원 76석 중 약 절반",
+      "notes": "2026년 연방 총선 회차 아님. 직전 총선 2025-05-03.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Australian_federal_election",
+        "https://www.aec.gov.au/elections/"
+      ],
+      "iso3": "AUS"
     },
     {
       "id": "irn-2026-national",
@@ -2315,8 +3179,7 @@
       "date_note": "2024 조기 대선 다음 4년 주기 계열. 확정 일요일은 공고 전. 후보는 수호자평의회 사전심사.",
       "level": "national",
       "contested_ko": "대통령 또는 마줄리스 (회차 공고 전)",
-      "iso3": "IRN",
-      "date_end": null
+      "iso3": "IRN"
     },
     {
       "id": "jpn-2026-sangiin-regular",
@@ -2333,8 +3196,26 @@
       "system_id": "jpn-sangiin",
       "level": "national",
       "contested_ko": "참의원 절반 改選",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "idn-2029-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2029-02",
+      "date_note": "2024-02-14 본선 다음 5년 주기. 취임은 관례상 10월. KPU 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "idn-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령·부통령 1조 (1차 과반 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님. 전국 선거 제도가 없는 것이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2024_Indonesian_general_election",
+        "https://www.kpu.go.id/"
+      ],
+      "iso3": "IDN"
     },
     {
       "id": "deu-2026-bundestag",
@@ -2351,21 +3232,26 @@
       "chamber": "bundestag",
       "contested_ko": "연방하원 630석 전원",
       "notes": "2026년 연방 총선 회차 아님.",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
-      "id": "idn-2026-national",
+      "id": "idn-2029-dpr",
       "type": "general",
-      "label_ko": "전국 총·대선",
+      "label_ko": "하원(DPR)·지방대표이사회(DPD) 총선 (다음 정기)",
+      "label_en": "DPR and DPD election",
       "date": "2029-02",
+      "date_note": "대선과 같은 전국 투표일 주기. KPU 일자 공고 전.",
       "status": "outside_year",
-      "notes": "2026년 회차 아님. 제도상 전국 선거가 없는 것이 아니라 올해가 아니다.",
-      "date_note": "다음 전국 주기 2029년. KPU 일자 공고 전. 직전 본선은 2024-02-14.",
+      "system_id": "idn-dpr",
       "level": "national",
-      "contested_ko": "대통령 + 국회",
-      "iso3": "IDN",
-      "date_end": null
+      "chamber": "dpr",
+      "contested_ko": "DPR 580석 + DPD 해당 회차",
+      "notes": "2026년 의회 회차 아님. 2024는 대선·DPR·DPD·지방의회가 같은 날.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Indonesia",
+        "https://www.kpu.go.id/"
+      ],
+      "iso3": "IDN"
     },
     {
       "id": "ind-2026-lok-sabha",
@@ -2382,8 +3268,7 @@
       "sources": [
         "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
       ],
-      "iso3": "IND",
-      "date_end": null
+      "iso3": "IND"
     },
     {
       "id": "pol-2029-local",
@@ -2402,8 +3287,7 @@
         "https://wybory.gov.pl/index/",
         "https://adwokatlancutbozek.pl/kiedy-wybory-samorzadowe-nastepny-termin-to-2029-a-nie-2028-rok"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "zaf-2026-national",
@@ -2414,10 +3298,10 @@
       "notes": "2026년 전국 총선 회차 아님. 2026-11-04는 지방정부선거.",
       "date_note": "2024 총선 다음 5년 주기. 정확한 일자는 IEC 공고 전.",
       "level": "national",
-      "chamber": "없음",
+      "chamber": "national_assembly",
       "contested_ko": "국민의회 의석 전원",
-      "iso3": "ZAF",
-      "date_end": null
+      "system_id": "zaf-na",
+      "iso3": "ZAF"
     },
     {
       "id": "gbr-2026-westminster",
@@ -2436,8 +3320,62 @@
       "level": "national",
       "chamber": "commons",
       "contested_ko": "하원 650석 전원",
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
+    },
+    {
+      "id": "chl-2029-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2029-11",
+      "date_note": "2025-11-16 1차·2025-12-14 결선 다음 4년 주기. 1차는 보통 11월. SERVEL 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "chl-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election",
+        "https://www.servel.cl/"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "chl-2029-congress",
+      "type": "general",
+      "label_ko": "하원·상원 총선 (다음 정기)",
+      "label_en": "Congressional election",
+      "date": "2029-11",
+      "date_note": "2025년처럼 대선 1차와 같은 날이 관례. SERVEL 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "chl-deputies",
+      "level": "national",
+      "chamber": "deputies",
+      "contested_ko": "하원 전원 + 상원 해당 회차 改選분",
+      "notes": "2026년 의회 회차 아님. 2025는 하원 155석 전원·상원 23/50.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "tha-2030-general",
+      "type": "general",
+      "label_ko": "하원 총선 (다음 정기)",
+      "label_en": "Next House election",
+      "date": "2030-02",
+      "date_note": "2026-02-08 다음 4년 주기 통상 시기. 해산 시 앞당겨질 수 있음. 선관위 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "tha-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 500석 전원",
+      "notes": "2026년 이후 다음 하원 회차.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
     },
     {
       "id": "rus-2026-presidential",
@@ -2453,8 +3391,25 @@
       "level": "national",
       "chamber": "없음",
       "contested_ko": "대통령 1인",
-      "iso3": "RUS",
-      "date_end": null
+      "iso3": "RUS"
+    },
+    {
+      "id": "col-2030-congress",
+      "type": "general",
+      "label_ko": "상원·하원 총선 (다음 정기)",
+      "label_en": "Next congressional elections",
+      "date": "2030-03",
+      "date_note": "4년 주기. 2026-03-08 다음. 정확한 일요일은 공고 전.",
+      "status": "outside_year",
+      "system_id": "col-chamber",
+      "level": "national",
+      "chamber": "chamber",
+      "contested_ko": "상원 + 하원 다음 임기",
+      "notes": "2026년 이후 다음 의회 회차.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election"
+      ],
+      "iso3": "COL"
     },
     {
       "id": "pol-2030-presidential",
@@ -2473,18 +3428,81 @@
         "https://wybory.gov.pl/index/",
         "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
-      "id": "tur-2026-akp-chp-leadership",
-      "type": "party_leadership",
-      "label_ko": "AKP·CHP 당대표/전당대회",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "YSK·당 공고 전",
-      "iso3": "TUR",
-      "date_end": null
+      "id": "col-2030-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Next presidential election",
+      "date": "2030-05",
+      "date_note": "4년 주기. 2026-05-31 다음 1차의 통상 시기. 공고 전.",
+      "status": "outside_year",
+      "system_id": "col-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "2026년 이후 다음 대선 회차.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ],
+      "iso3": "COL"
+    },
+    {
+      "id": "mex-2030-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2030-06",
+      "date_note": "2024-06-02 대선 다음 6년 주기. 연방 선거일은 보통 6월 첫째 일요일. INE 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "mex-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (단임 6년, 재선 없음)",
+      "notes": "2026년 대선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2024_Mexican_general_election",
+        "https://www.ine.mx/"
+      ],
+      "iso3": "MEX"
+    },
+    {
+      "id": "mex-2030-senate",
+      "type": "general",
+      "label_ko": "상원 선거 (다음 정기)",
+      "label_en": "Senate election",
+      "date": "2030-06",
+      "date_note": "상원 임기 6년. 2024와 같이 대선과 같은 주기. INE 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "mex-senate",
+      "level": "national",
+      "chamber": "senate",
+      "contested_ko": "상원 128석 전원",
+      "notes": "2026년 상원 회차 아님. 2027 중간선거는 하원만.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Senate_of_the_Republic_(Mexico)",
+        "https://www.ine.mx/"
+      ],
+      "iso3": "MEX"
+    },
+    {
+      "id": "vnm-2031-na",
+      "type": "general",
+      "label_ko": "국회 선거 (다음 정기)",
+      "label_en": "Next National Assembly election",
+      "date": "2031-03",
+      "date_note": "5년 주기. 2026-03-15 다음 통상 시기. 공고 전.",
+      "status": "outside_year",
+      "system_id": "vnm-na",
+      "level": "national",
+      "chamber": "national_assembly",
+      "contested_ko": "국회 대의원 다음 임기",
+      "notes": "2026년 이후 다음 국회 회차.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Vietnamese_legislative_election"
+      ],
+      "iso3": "VNM"
     },
     {
       "id": "zaf-2026-party-leadership",
@@ -2493,8 +3511,22 @@
       "date": "불명",
       "status": "tentative",
       "notes": "Party notices not yet captured.",
-      "iso3": "ZAF",
-      "date_end": null
+      "iso3": "ZAF"
+    },
+    {
+      "id": "nga-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "APC·PDP 지도부·전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "APC·PDP 당권",
+      "notes": "당 공고를 확인하지 못함. 야권 재편은 유동적.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Nigeria"
+      ],
+      "iso3": "NGA"
     },
     {
       "id": "ind-2026-party-leadership-bjp-inc",
@@ -2505,8 +3537,7 @@
       "notes": "2026 공개 정기 당대표 교체 일정 미확정",
       "level": "party",
       "contested_ko": "BJP·INC 전국 당대표 전당대회",
-      "iso3": "IND",
-      "date_end": null
+      "iso3": "IND"
     },
     {
       "id": "bra-2026-pl-ticket",
@@ -2523,8 +3554,7 @@
           "status": "reported_pref"
         }
       ],
-      "iso3": "BRA",
-      "date_end": null
+      "iso3": "BRA"
     },
     {
       "id": "deu-2026-spd-leadership",
@@ -2537,8 +3567,7 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "SPD 당대표 교체 경선",
-      "iso3": "DEU",
-      "date_end": null
+      "iso3": "DEU"
     },
     {
       "id": "kor-2026-na-vacancy-gangneung",
@@ -2554,8 +3583,149 @@
       "sources": [
         "https://www.nec.go.kr/"
       ],
-      "iso3": "KOR",
-      "date_end": null
+      "iso3": "KOR"
+    },
+    {
+      "id": "idn-2026-gerindra-leadership",
+      "type": "party_leadership",
+      "party_id": "gerindra",
+      "party_abbr": "Gerindra",
+      "label_ko": "게린드라 당권 경선",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "게린드라 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gerindra_Party"
+      ],
+      "iso3": "IDN"
+    },
+    {
+      "id": "chl-2026-republicanos-leadership",
+      "type": "party_leadership",
+      "party_id": "republicanos",
+      "party_abbr": "PRCh",
+      "label_ko": "공화당 당권 경선",
+      "label_en": "Republican Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "공화당 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "tur-2026-chp-leadership",
+      "type": "party_leadership",
+      "party_id": "chp",
+      "party_abbr": "CHP",
+      "label_ko": "공화인민당 당대표/전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "CHP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인. 직전 확인된 전당은 2023-11-04·05.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/38th_Republican_People%27s_Party_Ordinary_Convention"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "chl-2026-fa-leadership",
+      "type": "party_leadership",
+      "party_id": "fa",
+      "party_abbr": "FA",
+      "label_ko": "광역전선(FA) 당권 경선",
+      "label_en": "Broad Front leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "광역전선 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "mys-2026-bn-leadership",
+      "type": "party_leadership",
+      "party_id": "bn",
+      "party_abbr": "BN",
+      "label_ko": "국민전선(BN)/UMNO 당권 경선",
+      "label_en": "BN/UMNO leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "BN/UMNO 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Malaysian_general_election"
+      ],
+      "iso3": "MYS"
+    },
+    {
+      "id": "mex-2026-pan-leadership",
+      "type": "party_leadership",
+      "party_id": "pan",
+      "party_abbr": "PAN",
+      "label_ko": "국민행동당(PAN) 당대표 선거",
+      "label_en": "PAN leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PAN 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://www.ine.mx/"
+      ],
+      "iso3": "MEX"
+    },
+    {
+      "id": "aus-2026-alp-leadership",
+      "type": "party_leadership",
+      "party_id": "alp",
+      "party_abbr": "ALP",
+      "label_ko": "노동당 당대표 선거",
+      "label_en": "Labor leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "노동당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Australian_federal_election"
+      ],
+      "iso3": "AUS"
+    },
+    {
+      "id": "ita-2026-lega-leadership",
+      "type": "party_leadership",
+      "party_id": "lega",
+      "party_abbr": "Lega",
+      "label_ko": "동맹(Lega) 당대표 선거",
+      "label_en": "Lega leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "동맹 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
     },
     {
       "id": "fra-2026-renaissance-leadership",
@@ -2568,28 +3738,234 @@
       "level": "party",
       "chamber": "없음",
       "contested_ko": "르네상스(여) 당대표/전당",
-      "iso3": "FRA",
-      "date_end": null
+      "iso3": "FRA"
     },
     {
-      "id": "idn-2026-party-leadership",
+      "id": "mex-2026-morena-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 전당대회·지도부 선출",
+      "party_id": "morena",
+      "party_abbr": "MORENA",
+      "label_ko": "모레나 당대표 선거",
+      "label_en": "Morena leadership",
       "date": "불명",
       "status": "tentative",
-      "notes": "Party notice not yet captured; verify directly from party sites.",
-      "iso3": "IDN",
-      "date_end": null
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "모레나 당대표 1인",
+      "notes": "2026년 당권 경선 일자를 INE·당 공고에서 확인하지 못함.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Morena_(political_party)"
+      ],
+      "iso3": "MEX"
     },
     {
-      "id": "nga-2026-party-leadership",
+      "id": "ita-2026-pd-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 지도부·전당대회",
+      "party_id": "pd",
+      "party_abbr": "PD",
+      "label_ko": "민주당 당대표 선거",
+      "label_en": "PD leadership",
       "date": "불명",
       "status": "tentative",
-      "notes": "Opposition alignment is fluid; verify party notices and legal status directly.",
-      "iso3": "NGA",
-      "date_end": null
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "민주당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
+    },
+    {
+      "id": "can-2026-cpc-leadership",
+      "type": "party_leadership",
+      "party_id": "cpc",
+      "party_abbr": "CPC",
+      "label_ko": "보수당 당대표 선거",
+      "label_en": "Conservative Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "보수당 당대표 1인",
+      "notes": "2026년 당대표 경선 일자를 공식·위키 페이지에서 확인하지 못함.",
+      "sources": [
+        "https://www.conservative.ca/"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "can-2026-ndp-leadership",
+      "type": "party_leadership",
+      "party_id": "ndp",
+      "party_abbr": "NDP",
+      "label_ko": "신민주당 당대표 선거",
+      "label_en": "NDP leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "신민주당 당대표 1인",
+      "notes": "2026년 당대표 경선 일자 미확인.",
+      "sources": [
+        "https://www.ndp.ca/"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "ita-2026-fdi-leadership",
+      "type": "party_leadership",
+      "party_id": "fdi",
+      "party_abbr": "FdI",
+      "label_ko": "이탈리아의 형제들 당대표 선거",
+      "label_en": "FdI leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "FdI 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Italian_general_election"
+      ],
+      "iso3": "ITA"
+    },
+    {
+      "id": "tha-2026-pp-leadership",
+      "type": "party_leadership",
+      "party_id": "pp",
+      "party_abbr": "PP",
+      "label_ko": "인민당 당대표 선거",
+      "label_en": "People's Party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "인민당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
+    },
+    {
+      "id": "arg-2026-lla-leadership",
+      "type": "party_leadership",
+      "party_id": "lla",
+      "party_abbr": "LLA",
+      "label_ko": "자유전진(LLA) 당권 경선",
+      "label_en": "LLA leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "LLA 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "arg-2026-local",
+      "type": "local",
+      "label_ko": "전국 동시 지방선거",
+      "label_en": "Nationwide local elections",
+      "date": "불명",
+      "status": "tentative",
+      "system_id": "arg-deputies",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "주·시 선거 (전국 동시 여부 미확인)",
+      "notes": "2026년 전국 동시 지방 회차를 확인하지 못함. 주별로 날이 다를 수 있음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Argentina"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "chl-2026-local",
+      "type": "local",
+      "label_ko": "전국 지방선거",
+      "label_en": "Nationwide local elections",
+      "date": "불명",
+      "status": "tentative",
+      "system_id": "chl-deputies",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "시장·시의원 등",
+      "notes": "2026년 전국 동시 지방 회차를 SERVEL 첫 화면에서 확인하지 못함.",
+      "sources": [
+        "https://www.servel.cl/"
+      ],
+      "iso3": "CHL"
+    },
+    {
+      "id": "tur-2026-akp-leadership",
+      "type": "party_leadership",
+      "party_id": "akp",
+      "party_abbr": "AKP",
+      "label_ko": "정의개발당 당대표/전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "AKP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+      ],
+      "iso3": "TUR"
+    },
+    {
+      "id": "arg-2026-fp-leadership",
+      "type": "party_leadership",
+      "party_id": "fp",
+      "party_abbr": "FP",
+      "label_ko": "조국힘(Fuerza Patria) 당권 경선",
+      "label_en": "Fuerza Patria leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "조국힘 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인. 2025 중간선거의 제1야당 계열 명칭.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2025_Argentine_legislative_election"
+      ],
+      "iso3": "ARG"
+    },
+    {
+      "id": "col-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "주요 정당 당권 경선",
+      "label_en": "Major-party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "주요 정당 당권",
+      "notes": "2026년 당권 경선 일자를 확인하지 못함. 대진·후보는 다른 세션.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+      ],
+      "iso3": "COL"
+    },
+    {
+      "id": "phl-2026-party-leadership",
+      "type": "party_leadership",
+      "label_ko": "주요 정당 당권 경선",
+      "label_en": "Major-party leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "주요 정당 당권",
+      "notes": "2026년 전국 당권 경선 일자 미확인. 대진은 다른 세션.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election"
+      ],
+      "iso3": "PHL"
     },
     {
       "id": "ind-2026-state-pack",
@@ -2600,18 +3976,7 @@
       "notes": "ECI calendar cross-check todo",
       "level": "subnational",
       "contested_ko": "주요 주의회 선거 묶음",
-      "iso3": "IND",
-      "date_end": null
-    },
-    {
-      "id": "tur-2026-national",
-      "type": "general",
-      "label_ko": "총·대선",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "발표 전 — YSK 확인 필요",
-      "iso3": "TUR",
-      "date_end": null
+      "iso3": "IND"
     },
     {
       "id": "irn-2026-leadership-review",
@@ -2620,8 +3985,7 @@
       "date": "불명",
       "status": "ongoing",
       "notes": "Use iran_leadership_extracted.json and direct public-source checks; do not infer names or events.",
-      "iso3": "IRN",
-      "date_end": null
+      "iso3": "IRN"
     },
     {
       "id": "rus-2026-ur-congress",
@@ -2631,8 +3995,42 @@
       "date": "불명",
       "status": "tentative",
       "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo",
-      "iso3": "RUS",
-      "date_end": null
+      "iso3": "RUS"
+    },
+    {
+      "id": "idn-2026-pdip-leadership",
+      "type": "party_leadership",
+      "party_id": "pdip",
+      "party_abbr": "PDI-P",
+      "label_ko": "투쟁민주당 당권 경선",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PDI-P 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://www.kpu.go.id/"
+      ],
+      "iso3": "IDN"
+    },
+    {
+      "id": "tha-2026-bjt-leadership",
+      "type": "party_leadership",
+      "party_id": "bjt",
+      "party_abbr": "BJT",
+      "label_ko": "품자이타이당 당대표 선거",
+      "label_en": "Bhumjaithai leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "품자이타이당 당대표 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+      ],
+      "iso3": "THA"
     },
     {
       "id": "usa-2026-fl20-special",
@@ -2650,8 +4048,7 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (FL-20)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "usa-2026-tx23-special",
@@ -2669,8 +4066,41 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (TX-23)",
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
+    },
+    {
+      "id": "mys-2026-ph-leadership",
+      "type": "party_leadership",
+      "party_id": "ph",
+      "party_abbr": "PH",
+      "label_ko": "희망연대(PH) 주축 당권 경선",
+      "label_en": "Pakatan Harapan leadership",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PH 주축 정당 당권",
+      "notes": "2026년 당권 경선 일자 미확인. 연정 이름이지 단일 당이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pakatan_Harapan"
+      ],
+      "iso3": "MYS"
+    },
+    {
+      "id": "chn-presidential-popular",
+      "type": "presidential",
+      "label_ko": "국가주석 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "국가주석은 전국인민대표대회가 선출한다. 유권자 직선 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_China"
+      ],
+      "iso3": "CHN"
     },
     {
       "id": "jpn-2026-national-by-apr",
@@ -2688,8 +4118,7 @@
       "chamber": "shugiin",
       "contested_ko": "국정 재보궐 (4월 통일창, 미실시)",
       "system_id": "jpn-shugiin",
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "gbr-presidential",
@@ -2705,8 +4134,7 @@
       "sources": [
         "https://www.gov.uk/government/how-government-works"
       ],
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "jpn-presidential",
@@ -2722,8 +4150,109 @@
       "sources": [
         "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
       ],
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "can-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "can-commons",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "의원내각제. 국가원수는 군주·총독. 총리는 하원에서 나온다. 대통령 직선 제도 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Canada"
+      ],
+      "iso3": "CAN"
+    },
+    {
+      "id": "ita-presidential-popular",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "ita-chamber",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "대통령은 양원 합동 + 지역 특별선거인이 뽑는다. 유권자 직선 제도 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Italy"
+      ],
+      "iso3": "ITA"
+    },
+    {
+      "id": "aus-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "aus-house",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "의원내각제. 국가원수는 군주·총독. 총리는 하원. 대통령 직선 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Australia"
+      ],
+      "iso3": "AUS"
+    },
+    {
+      "id": "tha-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "tha-house",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "입헌군주제. 총리는 의회에서 나온다. 대통령 직선 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Thailand"
+      ],
+      "iso3": "THA"
+    },
+    {
+      "id": "mys-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "mys-dewan-rakyat",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "입헌군주제. 총리는 하원에서 나온다. 대통령 직선 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Malaysia"
+      ],
+      "iso3": "MYS"
+    },
+    {
+      "id": "vnm-presidential-popular",
+      "type": "presidential",
+      "label_ko": "대통령 직선",
+      "label_en": "Popular presidential election",
+      "date": "없음",
+      "status": "없음",
+      "system_id": "vnm-na",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "국가주석은 국회가 선출한다. 유권자 직선 제도 없음.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Vietnamese_legislative_election"
+      ],
+      "iso3": "VNM"
     },
     {
       "id": "usa-party-leadership-national",
@@ -2739,8 +4268,7 @@
       "sources": [
         "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
       ],
-      "iso3": "USA",
-      "date_end": null
+      "iso3": "USA"
     },
     {
       "id": "pol-2026-pis-leadership",
@@ -2758,8 +4286,7 @@
       "sources": [
         "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition"
       ],
-      "iso3": "POL",
-      "date_end": null
+      "iso3": "POL"
     },
     {
       "id": "gbr-2026-con-leadership",
@@ -2775,8 +4302,7 @@
       "sources": [
         "https://www.conservatives.com/"
       ],
-      "iso3": "GBR",
-      "date_end": null
+      "iso3": "GBR"
     },
     {
       "id": "twn-2026-ly-by",
@@ -2793,8 +4319,7 @@
       "sources": [
         "https://www.cec.gov.tw/"
       ],
-      "iso3": "TWN",
-      "date_end": null
+      "iso3": "TWN"
     },
     {
       "id": "jpn-2026-cdp-leader",
@@ -2812,8 +4337,7 @@
       "sources": [
         "https://cdp-japan.jp/"
       ],
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
     },
     {
       "id": "jpn-2026-ldp-president",
@@ -2829,8 +4353,23 @@
       "sources": [
         "https://www.jimin.jp/"
       ],
-      "iso3": "JPN",
-      "date_end": null
+      "iso3": "JPN"
+    },
+    {
+      "id": "chn-national-competitive",
+      "type": "general",
+      "label_ko": "전국 경쟁 총·대선",
+      "label_en": "Competitive national elections",
+      "date": "없음",
+      "status": "없음",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "일당 체제. 전국 단위 복수 정당 경쟁 총선·대선 제도가 없다. 전국인민대표대회는 간선·당 지도 하 선출이며 이 보드의 경쟁 선거로 올리지 않는다.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_China"
+      ],
+      "iso3": "CHN"
     },
     {
       "id": "are-2026-national",
@@ -2844,8 +4383,7 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Politics_of_the_United_Arab_Emirates"
       ],
-      "iso3": "ARE",
-      "date_end": null
+      "iso3": "ARE"
     },
     {
       "id": "sau-2026-national",
@@ -2859,8 +4397,7 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Politics_of_Saudi_Arabia"
       ],
-      "iso3": "SAU",
-      "date_end": null
+      "iso3": "SAU"
     }
   ],
   "world_national_highlights": [
@@ -3241,7 +4778,57 @@
     }
   ],
   "world_by_month": {
+    "2025-03": [
+      {
+        "id": "can-2025-lpc-leadership",
+        "type": "party_leadership",
+        "party_id": "lpc",
+        "party_abbr": "LPC",
+        "label_ko": "자유당 당대표 선거 (현 여당 수장)",
+        "label_en": "Liberal Party leadership",
+        "date": "2025-03-09",
+        "date_end": "2025-03-09",
+        "date_start": "2025-02-26",
+        "status": "completed",
+        "level": "party",
+        "chamber": "없음",
+        "contested_ko": "자유당 당대표 1인",
+        "electorate_ko": "당원 순위선택투표",
+        "carry_forward_incumbent": true,
+        "board_include_years": [
+          2026
+        ],
+        "notes": "트뤼도 사임 후 후임 당대표. 2026 보드: 현 여당 수장. 2026년 정기 당대표 선거 공고는 못 찾음.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Canada_leadership_election"
+        ],
+        "iso3": "CAN"
+      }
+    ],
     "2025-05": [
+      {
+        "id": "aus-2025-liberal-leadership",
+        "type": "party_leadership",
+        "party_id": "liberal",
+        "party_abbr": "LP",
+        "label_ko": "자유당 당대표 선거 (현 야당 수장 계열)",
+        "label_en": "Liberal leadership",
+        "date": "2025-05-13",
+        "status": "completed",
+        "level": "party",
+        "chamber": "없음",
+        "contested_ko": "자유당 당대표 1인",
+        "electorate_ko": "당 소속 연방의원 투표",
+        "carry_forward_incumbent": true,
+        "board_include_years": [
+          2026
+        ],
+        "notes": "2025 총선 패배 직후. 이후 추가 교체가 있는지는 이 작업에서 확인하지 않음(대진 세션).",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2025_Liberal_Party_of_Australia_leadership_election"
+        ],
+        "iso3": "AUS"
+      },
       {
         "id": "pol-2025-presidential",
         "type": "presidential",
@@ -3268,8 +4855,7 @@
           "https://wybory.gov.pl/index/",
           "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
       }
     ],
     "2025-07": [
@@ -3292,7 +4878,6 @@
         "chamber": "sangiin",
         "contested_ko": "참의원 절반 改選",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "General"
       }
     ],
@@ -3326,7 +4911,6 @@
         "chamber": "없음",
         "contested_ko": "국민의힘 당대표 1인",
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "Party leadership"
       }
     ],
@@ -3357,7 +4941,6 @@
         "contested_ko": "자민당 총재 1인 (국회의원 + 당원 표)",
         "electorate_ko": "국회의원표와 당원표 동수",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Party leadership"
       },
       {
@@ -3387,11 +4970,30 @@
         "contested_ko": "국민당 당주석 1인",
         "electorate_ko": "당원 투표",
         "iso3": "TWN",
-        "date_end": null,
         "label_en": "Party leadership"
       }
     ],
     "2026-01": [
+      {
+        "id": "vnm-2026-cpv-congress",
+        "type": "party_leadership",
+        "party_id": "cpv",
+        "party_abbr": "CPV",
+        "label_ko": "공산당 제14차 전당대회",
+        "label_en": "CPV 14th National Congress",
+        "date": "2026-01-19",
+        "date_end": "2026-01-23",
+        "status": "completed",
+        "level": "party",
+        "chamber": "없음",
+        "contested_ko": "공산당 중앙 지도부 (전당대회)",
+        "electorate_ko": "전당대회 당대표",
+        "notes": "당권·노선 대회. 복수 정당 당권 경선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/14th_National_Congress_of_the_Communist_Party_of_Vietnam"
+        ],
+        "iso3": "VNM"
+      },
       {
         "id": "jpn-2026-gov-fukui",
         "type": "local",
@@ -3406,7 +5008,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -3427,7 +5028,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (TX-18)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       }
     ],
@@ -3448,8 +5048,23 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (NJ-11)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
+      },
+      {
+        "id": "tha-2026-referendum",
+        "type": "referendum",
+        "label_ko": "개헌 국민투표 (2017 헌법 대체 여부)",
+        "label_en": "Constitutional referendum",
+        "date": "2026-02-08",
+        "status": "completed",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "2017 헌법을 새 헌법으로 바꿀지",
+        "notes": "하원 총선과 같은 날. 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+        ],
+        "iso3": "THA"
       },
       {
         "id": "jpn-2026-gov-nagasaki",
@@ -3466,7 +5081,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "House of Representatives"
       },
       {
@@ -3484,7 +5098,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "House of Representatives"
       },
       {
@@ -3502,7 +5115,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "House of Representatives"
       },
       {
@@ -3521,15 +5133,7 @@
         "level": "national",
         "contested_ko": "중의원 정수 전원 (소선거구+비례)",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "House of Representatives"
-      },
-      {
-        "date": "2026-02-08",
-        "iso3": "THA",
-        "type": "general",
-        "label_en": "House + constitutional ref",
-        "label_ko": "태국 총선·개헌"
       },
       {
         "date": "2026-02-08",
@@ -3537,6 +5141,23 @@
         "type": "presidential",
         "label_en": "President 2nd round",
         "label_ko": "포르투갈 대선 결선"
+      },
+      {
+        "id": "tha-2026-general",
+        "type": "general",
+        "label_ko": "하원 총선",
+        "label_en": "House of Representatives",
+        "date": "2026-02-08",
+        "status": "completed",
+        "system_id": "tha-house",
+        "level": "national",
+        "chamber": "house",
+        "contested_ko": "하원 500석 전원",
+        "notes": "의회 해산 후 조기 총선. 같은 날 개헌 국민투표(tha-2026-referendum).",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+        ],
+        "iso3": "THA"
       },
       {
         "id": "deu-2026-cdu-parteitag-38",
@@ -3581,8 +5202,25 @@
         "chamber": "landtag",
         "contested_ko": "해당 주 주의회 의석 전원",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "Baden-Württemberg Landtag"
+      },
+      {
+        "id": "col-2026-congress",
+        "type": "general",
+        "label_ko": "상원·하원 총선",
+        "label_en": "Congressional elections",
+        "date": "2026-03-08",
+        "status": "completed",
+        "system_id": "col-chamber",
+        "level": "national",
+        "chamber": "chamber",
+        "contested_ko": "상원 + 하원 (2026–2030 임기)",
+        "notes": "위키 2026 의회선거 페이지: 상원 103(전국 100+원주민 2+대선 차점 1 예약), 하원 183. 다른 위키 요약(Elections in Colombia)은 상원 102·하원 162로 적어 병기.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Congress_of_Colombia"
+        ],
+        "iso3": "COL"
       },
       {
         "date": "2026-03-08",
@@ -3613,8 +5251,7 @@
           "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition",
           "https://wiadomosci.gazeta.pl/polityka/7,198012,32648397,wybory-na-przewodniczacego-ko-bezkonkurencyjnie-wygrywa-donald.html"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
       },
       {
         "id": "jpn-2026-gov-ishikawa",
@@ -3630,15 +5267,7 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
-      },
-      {
-        "date": "2026-03-08",
-        "iso3": "COL",
-        "type": "general",
-        "label_en": "Congress",
-        "label_ko": "콜롬비아 총선"
       },
       {
         "id": "usa-2026-ga14-special-general",
@@ -3656,8 +5285,25 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (GA-14)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
+      },
+      {
+        "id": "vnm-2026-na",
+        "type": "general",
+        "label_ko": "국회(제16대) 선거",
+        "label_en": "National Assembly election",
+        "date": "2026-03-15",
+        "status": "completed",
+        "system_id": "vnm-na",
+        "level": "national",
+        "chamber": "national_assembly",
+        "contested_ko": "국회 대의원 (제16대)",
+        "notes": "일당 체제. 후보는 공산당 주도의 조국전선 사전 추천. 복수 정당 경쟁 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Vietnamese_legislative_election",
+          "https://en.wikipedia.org/wiki/Elections_in_Vietnam"
+        ],
+        "iso3": "VNM"
       },
       {
         "id": "fra-2026-municipal-r1",
@@ -3672,7 +5318,6 @@
         "chamber": "없음",
         "contested_ko": "코뮌 의회·단체장",
         "iso3": "FRA",
-        "date_end": null,
         "label_en": "Municipal 1st"
       },
       {
@@ -3690,8 +5335,24 @@
         "chamber": "rajya_sabha",
         "contested_ko": "라지야 사바 해당 회차 간선분",
         "iso3": "IND",
-        "date_end": null,
         "label_en": "Rajya Sabha rolls"
+      },
+      {
+        "id": "aus-2026-sa",
+        "type": "local",
+        "label_ko": "사우스오스트레일리아 주의회",
+        "label_en": "South Australian state election",
+        "date": "2026-03-21",
+        "status": "completed",
+        "system_id": "aus-local",
+        "level": "subnational",
+        "chamber": "없음",
+        "contested_ko": "주의회 하원 47석 전원 + 상원 일부",
+        "notes": "연방 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_South_Australian_state_election"
+        ],
+        "iso3": "AUS"
       },
       {
         "id": "deu-2026-rlp-landtag",
@@ -3707,7 +5368,6 @@
         "chamber": "landtag",
         "contested_ko": "해당 주 주의회 의석 전원",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "Rhineland-Palatinate Landtag"
       },
       {
@@ -3723,8 +5383,24 @@
         "chamber": "없음",
         "contested_ko": "코뮌 의회·단체장",
         "iso3": "FRA",
-        "date_end": null,
         "label_en": "Municipal 2nd"
+      },
+      {
+        "id": "ita-2026-constitutional-referendum",
+        "type": "referendum",
+        "label_ko": "헌법개정 국민투표 (사법 개혁)",
+        "label_en": "Constitutional referendum",
+        "date": "2026-03-22",
+        "date_end": "2026-03-23",
+        "status": "completed",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "헌법 개정안 찬반 (사법부 조직)",
+        "notes": "일회성 국민투표. 하원·상원 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Italian_constitutional_referendum"
+        ],
+        "iso3": "ITA"
       }
     ],
     "2026-04": [
@@ -3742,7 +5418,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -3763,7 +5438,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (GA-14)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -3791,7 +5465,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (NJ-11)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       }
     ],
@@ -3811,7 +5484,6 @@
         "chamber": "holyrood",
         "contested_ko": "스코틀랜드 의회 의석 전원",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "Locals + Scotland + Senedd"
       },
       {
@@ -3829,7 +5501,6 @@
         "chamber": "senedd",
         "contested_ko": "웨일스 세네드 의석 전원",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "Locals + Scotland + Senedd"
       },
       {
@@ -3847,7 +5518,6 @@
         "system_id": "gbr-england-local",
         "chamber": "없음",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "Locals + Scotland + Senedd"
       },
       {
@@ -3865,15 +5535,26 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
-        "date": "2026-05-31",
-        "iso3": "COL",
+        "id": "col-2026-presidential",
         "type": "presidential",
-        "label_en": "President 1st",
-        "label_ko": "콜롬비아 대선 1차"
+        "label_ko": "대통령 선거 1차",
+        "label_en": "Presidential first round",
+        "date": "2026-05-31",
+        "first_round_date": "2026-05-31",
+        "runoff_date": "2026-06-21",
+        "status": "completed",
+        "system_id": "col-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+        "notes": "1차 과반 미달로 결선 2026-06-21. 현직 재선 금지.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+        ],
+        "iso3": "COL"
       }
     ],
     "2026-06": [
@@ -3895,7 +5576,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (CA-01)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -3914,7 +5594,6 @@
         "chamber": "national_assembly",
         "contested_ko": "국회의원 재보궐 (지방선거 동시)",
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "Nationwide local + NA by-elections"
       },
       {
@@ -3942,7 +5621,6 @@
         "chamber": "없음",
         "contested_ko": "광역단체장 17곳 + 기초단체장 226곳 등 동시",
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "Nationwide local + NA by-elections"
       },
       {
@@ -3964,7 +5642,6 @@
           "https://korea.assembly.go.kr/"
         ],
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "Speaker election"
       },
       {
@@ -3983,7 +5660,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (CA-14)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4000,8 +5676,24 @@
         "chamber": "rajya_sabha",
         "contested_ko": "라지야 사바 해당 회차 간선분",
         "iso3": "IND",
-        "date_end": null,
         "label_en": "Rajya Sabha rolls"
+      },
+      {
+        "id": "col-2026-presidential-r2",
+        "type": "presidential",
+        "label_ko": "대통령 선거 결선",
+        "label_en": "Presidential runoff",
+        "date": "2026-06-21",
+        "status": "completed",
+        "system_id": "col-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (결선)",
+        "notes": "col-2026-presidential 1차의 결선.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+        ],
+        "iso3": "COL"
       }
     ],
     "2026-07": [
@@ -4035,8 +5727,24 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
+      },
+      {
+        "id": "mys-2026-johor",
+        "type": "local",
+        "label_ko": "조호르 주의회",
+        "label_en": "Johor state election",
+        "date": "2026-07-11",
+        "status": "completed",
+        "system_id": "mys-local",
+        "level": "subnational",
+        "chamber": "없음",
+        "contested_ko": "조호르 주의회 56석 전원",
+        "notes": "연방 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Johor_state_election"
+        ],
+        "iso3": "MYS"
       },
       {
         "id": "gbr-2026-labour-leadership",
@@ -4061,7 +5769,6 @@
         "chamber": "없음",
         "contested_ko": "노동당 당대표 특별당대회",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "Labour leadership special conference"
       },
       {
@@ -4082,8 +5789,7 @@
           "https://www.dpp.org.tw/en/media/contents/127",
           "https://www.taiwannews.com.tw/news/6404222"
         ],
-        "iso3": "TWN",
-        "date_end": null
+        "iso3": "TWN"
       },
       {
         "id": "gbr-2026-pm-succession",
@@ -4100,7 +5806,6 @@
         "chamber": "없음",
         "contested_ko": "총리 교체(노동당·내각)",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "PM succession Burnham"
       },
       {
@@ -4119,7 +5824,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (GA-13)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       }
     ],
@@ -4171,7 +5875,6 @@
           "https://agenciabrasil.ebc.com.br/en/politica/noticia/2026-08/workers-party-officially-nominates-lula-presidential-candidate"
         ],
         "iso3": "BRA",
-        "date_end": null,
         "label_en": "PT national convention (Lula ticket)"
       },
       {
@@ -4190,7 +5893,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (CA-01)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4208,7 +5910,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -4226,8 +5927,7 @@
         "sources": [
           "https://www.tendringdc.gov.uk/news/date-set-for-clacton-constituency-by-election"
         ],
-        "iso3": "GBR",
-        "date_end": null
+        "iso3": "GBR"
       },
       {
         "id": "kor-2026-dpk-convention",
@@ -4284,7 +5984,6 @@
         "contested_ko": "더불어민주당 당대표·최고위원",
         "electorate_ko": "대의원·권리당원 70% + 국민여론조사 30%",
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "DPK convention"
       },
       {
@@ -4302,7 +6001,6 @@
           "https://www.timesofisrael.com/likud-postpones-primaries-to-august-4-as-netanyahu-fights-for-control-of-party-slate/"
         ],
         "iso3": "ISR",
-        "date_end": null,
         "label_en": "Likud primaries (tentative)"
       },
       {
@@ -4322,7 +6020,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (CA-14)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4342,7 +6039,6 @@
         "level": "national",
         "contested_ko": "연방하원 잔여임기 1석 (GA-13)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4360,7 +6056,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       }
     ],
@@ -4380,7 +6075,6 @@
         "chamber": "landtag",
         "contested_ko": "해당 주 주의회 의석 전원",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "Saxony-Anhalt Landtag"
       },
       {
@@ -4395,7 +6089,6 @@
           "cec_il"
         ],
         "iso3": "ISR",
-        "date_end": null,
         "label_en": "General"
       },
       {
@@ -4434,8 +6127,24 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
+      },
+      {
+        "id": "phl-2026-barmm",
+        "type": "local",
+        "label_ko": "방사모로 의회 선거",
+        "label_en": "Bangsamoro Parliament",
+        "date": "2026-09-14",
+        "status": "completed",
+        "system_id": "phl-local",
+        "level": "subnational",
+        "chamber": "없음",
+        "contested_ko": "방사모로 의회 80석 중 78석",
+        "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election"
+        ],
+        "iso3": "PHL"
       },
       {
         "date": "2026-09-18",
@@ -4467,7 +6176,6 @@
         "chamber": "duma",
         "contested_ko": "국가두마 450석 전원",
         "iso3": "RUS",
-        "date_end": null,
         "label_en": "State Duma decree day"
       },
       {
@@ -4491,7 +6199,6 @@
         "chamber": "없음",
         "contested_ko": "단일투표일 지방 수장·주의회",
         "iso3": "RUS",
-        "date_end": null,
         "label_en": "State Duma decree day"
       },
       {
@@ -4509,7 +6216,6 @@
         "chamber": "landtag",
         "contested_ko": "해당 주 주의회 의석 전원",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "Berlin + Mecklenburg-Vorpommern Landtage"
       },
       {
@@ -4526,7 +6232,6 @@
         "chamber": "landtag",
         "contested_ko": "해당 주 주의회 의석 전원",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "Berlin + Mecklenburg-Vorpommern Landtage"
       },
       {
@@ -4544,8 +6249,7 @@
         "sources": [
           "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
       },
       {
         "id": "fra-2026-senate",
@@ -4563,7 +6267,6 @@
         "chamber": "senate",
         "contested_ko": "상원 간선 (해당 series 改選분)",
         "iso3": "FRA",
-        "date_end": null,
         "label_en": "Senate series 2"
       }
     ],
@@ -4587,9 +6290,29 @@
           "invest_lens_elections"
         ],
         "market_significance_invest_lens": 3,
+        "system_id": "bra-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 + 연방의회 + 주지사 (1차)",
         "iso3": "BRA",
-        "date_end": null,
         "label_en": "President + Congress + governors R1"
+      },
+      {
+        "id": "can-2026-quebec",
+        "type": "local",
+        "label_ko": "퀘벡 주의회 총선",
+        "label_en": "Quebec general election",
+        "date": "2026-10-05",
+        "status": "scheduled",
+        "system_id": "can-local",
+        "level": "subnational",
+        "chamber": "없음",
+        "contested_ko": "퀘벡 주의회 127석 전원",
+        "notes": "2026-08-27 의회 해산 고시. 연방 총선이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Quebec_general_election"
+        ],
+        "iso3": "CAN"
       },
       {
         "id": "gbr-2026-holborn-st-pancras-by",
@@ -4607,8 +6330,7 @@
           "https://en.wikipedia.org/wiki/2026_Holborn_and_St_Pancras_by-election",
           "https://elections.democracyclub.org.uk/elections/parl.holborn-and-st-pancras.by.2026-10-08/"
         ],
-        "iso3": "GBR",
-        "date_end": null
+        "iso3": "GBR"
       },
       {
         "id": "fra-2026-rn-congres-19",
@@ -4656,7 +6378,6 @@
         "contested_ko": "국정 재보궐 (10월 통일창)",
         "system_id": "jpn-shugiin",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4670,8 +6391,11 @@
           "wiki_bra_2026",
           "tse"
         ],
+        "system_id": "bra-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령·주지사 결선 (해당 시)",
         "iso3": "BRA",
-        "date_end": null,
         "label_en": "President/gubernatorial runoff if needed"
       },
       {
@@ -4690,7 +6414,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -4707,7 +6430,6 @@
         "chamber": "없음",
         "contested_ko": "후쿠시마현의회 보궐 3선거구",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "By-election"
       },
       {
@@ -4722,7 +6444,6 @@
           "cec_il"
         ],
         "iso3": "ISR",
-        "date_end": null,
         "label_en": "Knesset 26th"
       }
     ],
@@ -4745,7 +6466,6 @@
         "level": "national",
         "contested_ko": "해당 주 연방상원 잔여임기 1석",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "House + Senate midterms"
       },
       {
@@ -4766,7 +6486,6 @@
         "level": "national",
         "contested_ko": "해당 주 연방상원 잔여임기 1석",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "House + Senate midterms"
       },
       {
@@ -4786,7 +6505,6 @@
         "chamber": "없음",
         "contested_ko": "주지사 36개 주 + 공고된 자치령",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "House + Senate midterms"
       },
       {
@@ -4806,7 +6524,6 @@
         "chamber": "house",
         "contested_ko": "연방하원 435석 전원 + 상원 Class 1 정기改選(약 33석)",
         "iso3": "USA",
-        "date_end": null,
         "label_en": "House + Senate midterms"
       },
       {
@@ -4823,8 +6540,8 @@
         "level": "subnational",
         "chamber": "없음",
         "contested_ko": "지방정부 의원·단체장",
+        "system_id": "zaf-local",
         "iso3": "ZAF",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -4858,8 +6575,7 @@
           "https://www.cna.com.tw/news/aipl/202608200078.aspx",
           "https://en.wikipedia.org/wiki/2026_Taiwanese_local_elections"
         ],
-        "iso3": "TWN",
-        "date_end": null
+        "iso3": "TWN"
       },
       {
         "date": "2026-11-28",
@@ -4883,7 +6599,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       }
     ],
@@ -4910,7 +6625,6 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       },
       {
@@ -4928,24 +6642,46 @@
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "Local"
       }
     ],
     "2027-02": [
       {
-        "id": "nga-2026-national",
-        "type": "general",
-        "label_ko": "전국 대선·총선",
+        "id": "nga-2027-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
         "date": "2027-02",
+        "date_note": "직전 본선 2023-02. 다음 주기 2027년 2월 계열. INEC 일자 공고 전.",
         "status": "outside_year",
-        "notes": "2026년 회차 아님. 제도상 전국 선거가 없는 것이 아니라 올해가 아니다.",
-        "date_note": "다음 대선 주기 2027년. INEC 일자 공고 전. 직전 본선은 2023-02.",
+        "system_id": "nga-president",
         "level": "national",
-        "contested_ko": "대통령 + 연방의회",
-        "iso3": "NGA",
-        "date_end": null,
-        "label_en": "General"
+        "chamber": "없음",
+        "contested_ko": "대통령 1인",
+        "notes": "2026년 대선 회차 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+        ],
+        "iso3": "NGA"
+      },
+      {
+        "id": "nga-2027-national-assembly",
+        "type": "general",
+        "label_ko": "상원·하원 총선 (다음 정기)",
+        "label_en": "National Assembly election",
+        "date": "2027-02",
+        "date_note": "대선과 같은 주기. INEC 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "nga-house",
+        "level": "national",
+        "chamber": "house",
+        "contested_ko": "하원 360석 + 상원 109석",
+        "notes": "2026년 의회 회차 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/National_Assembly_(Nigeria)",
+          "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+        ],
+        "iso3": "NGA"
       }
     ],
     "2027-04": [
@@ -4968,11 +6704,47 @@
         "first_round_date": "2027-04-11",
         "runoff_date": "2027-04-25",
         "iso3": "FRA",
-        "date_end": null,
         "label_en": "Presidential"
       }
     ],
     "2027-06": [
+      {
+        "id": "mex-2027-state",
+        "type": "local",
+        "label_ko": "주지사 등 지방선거 (하원 중간과 동시)",
+        "label_en": "State elections",
+        "date": "2027-06-06",
+        "date_note": "위키 2027 하원 페이지가 주지사 등 주 선거와 동시라고 적음. 대상 주 전수는 이 수집에서 올리지 않음.",
+        "status": "outside_year",
+        "system_id": "mex-local",
+        "level": "subnational",
+        "chamber": "없음",
+        "contested_ko": "주지사 등 해당 주 공직 (하원 중간과 같은 날)",
+        "notes": "전국 대선이 아님. 주 목록은 공고를 전수하지 않아 합산하지 않음.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election"
+        ],
+        "iso3": "MEX"
+      },
+      {
+        "id": "mex-2027-deputies",
+        "type": "general",
+        "label_ko": "하원(Diputados) 중간선거",
+        "label_en": "Chamber of Deputies",
+        "date": "2027-06-06",
+        "date_note": "2027년 중간선거. 하원 500석 전원. 상원·대선은 이 날이 아님.",
+        "status": "outside_year",
+        "system_id": "mex-deputies",
+        "level": "national",
+        "chamber": "deputies",
+        "contested_ko": "하원 500석 전원",
+        "notes": "2026년 회차 아님. 같은 날 주지사 등 지방 선거가 겹친다고 위키 2027 페이지가 적음.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2027_Mexican_legislative_election",
+          "https://www.ine.mx/"
+        ],
+        "iso3": "MEX"
+      },
       {
         "id": "fra-2027-assemblee",
         "type": "general",
@@ -4990,7 +6762,6 @@
         "contested_ko": "국민의회 의석 전원",
         "date_note": "2026년 회차 아님. 대선 직후 실시 가정(Invest Lens).",
         "iso3": "FRA",
-        "date_end": null,
         "label_en": "General"
       }
     ],
@@ -5012,8 +6783,43 @@
         "chamber": "shugiin",
         "contested_ko": "중의원 정수 전원 (Invest Lens 추정, 비정본)",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "General"
+      },
+      {
+        "id": "arg-2027-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2027-10-24",
+        "date_note": "위키 2027 총선 페이지가 본선을 2027-10-24로 적음. 결선이 있으면 그 다음.",
+        "status": "outside_year",
+        "system_id": "arg-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령·부통령 1조 (1차 미달 시 결선)",
+        "notes": "2026년 대선 회차 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+        ],
+        "iso3": "ARG"
+      },
+      {
+        "id": "arg-2027-congress",
+        "type": "general",
+        "label_ko": "하원·상원 총선 (다음 정기)",
+        "label_en": "Congressional election",
+        "date": "2027-10-24",
+        "date_note": "대선과 같은 날로 위키 2027 페이지가 적음. 하원·상원 改選분.",
+        "status": "outside_year",
+        "system_id": "arg-deputies",
+        "level": "national",
+        "chamber": "deputies",
+        "contested_ko": "하원·상원 해당 회차 改選분 (대선과 동시)",
+        "notes": "2026년 의회 회차 아님. 직전 중간선거는 2025-10-26.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2027_Argentine_general_election"
+        ],
+        "iso3": "ARG"
       },
       {
         "id": "pol-2027-sejm-senate",
@@ -5044,8 +6850,28 @@
           "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election",
           "https://en.wikipedia.org/wiki/2023_Polish_parliamentary_election"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
+      }
+    ],
+    "2027-12": [
+      {
+        "id": "ita-2027-general",
+        "type": "general",
+        "label_ko": "하원·상원 총선 (다음 정기)",
+        "label_en": "Next general election",
+        "date": "2027-12",
+        "date_note": "법정 최후 2027-12-22. 조기 해산 시 앞당겨질 수 있음. 정확한 일요일은 공고 전.",
+        "status": "outside_year",
+        "system_id": "ita-chamber",
+        "level": "national",
+        "chamber": "chamber",
+        "contested_ko": "하원 400석 + 선출 상원 200석",
+        "notes": "2026년 총선 회차 아님. 직전 총선 2022-09-25.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Next_Italian_general_election",
+          "https://dait.interno.gov.it/elezioni"
+        ],
+        "iso3": "ITA"
       }
     ],
     "2028-01": [
@@ -5074,8 +6900,7 @@
         "sources": [
           "https://en.wikipedia.org/wiki/Next_Taiwanese_legislative_election"
         ],
-        "iso3": "TWN",
-        "date_end": null
+        "iso3": "TWN"
       },
       {
         "id": "twn-2028-presidential",
@@ -5094,8 +6919,28 @@
           "https://en.wikipedia.org/wiki/2028_Taiwanese_presidential_election",
           "https://focustaiwan.tw/politics/202303100014"
         ],
-        "iso3": "TWN",
-        "date_end": null
+        "iso3": "TWN"
+      }
+    ],
+    "2028-02": [
+      {
+        "id": "mys-2028-general",
+        "type": "general",
+        "label_ko": "하원(Dewan Rakyat) 총선 (다음 정기)",
+        "label_en": "Next general election",
+        "date": "2028-02",
+        "date_note": "위키 Next Malaysian general election: on or before February 2028. 정확한 일자는 총리 요청·선관위 공고 전.",
+        "status": "outside_year",
+        "system_id": "mys-dewan-rakyat",
+        "level": "national",
+        "chamber": "dewan_rakyat",
+        "contested_ko": "하원 222석 전원",
+        "notes": "2026년 연방 총선 회차 아님. 직전 총선 2022-11-19.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Next_Malaysian_general_election",
+          "https://en.wikipedia.org/wiki/Dewan_Rakyat"
+        ],
+        "iso3": "MYS"
       }
     ],
     "2028-04": [
@@ -5115,8 +6960,102 @@
           "https://en.wikipedia.org/wiki/List_of_members_of_the_National_Assembly_(South_Korea),_2024%E2%80%932028"
         ],
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "General"
+      }
+    ],
+    "2028-05": [
+      {
+        "id": "phl-2028-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2028-05-08",
+        "date_note": "위키 2028 대선 페이지가 본선을 2028-05-08로 적음. 하원·상원 일부·지방과 동시가 관례.",
+        "status": "outside_year",
+        "system_id": "phl-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령·부통령 각 1인",
+        "notes": "2026년 대선 회차 아님. 현직은 헌법상 재선 불가.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election"
+        ],
+        "iso3": "PHL"
+      },
+      {
+        "id": "phl-2028-congress",
+        "type": "general",
+        "label_ko": "하원·상원 총선 (다음 정기, 대선 동시)",
+        "label_en": "Congressional general",
+        "date": "2028-05-08",
+        "date_note": "대선과 같은 날. 하원 전원 + 상원 12/24가 관례.",
+        "status": "outside_year",
+        "system_id": "phl-house",
+        "level": "national",
+        "chamber": "house",
+        "contested_ko": "하원 전원 + 상원 12석",
+        "notes": "2026년 전국 의회 회차 아님. 직전 중간선거 2025-05-12.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2028_Philippine_presidential_election",
+          "https://en.wikipedia.org/wiki/Elections_in_the_Philippines"
+        ],
+        "iso3": "PHL"
+      },
+      {
+        "id": "tur-2028-parliamentary",
+        "type": "general",
+        "label_ko": "대국민의회 총선 (다음 정기)",
+        "label_en": "Parliamentary election",
+        "date": "2028-05",
+        "date_note": "법정 최후 2028-05-07. 대선 1차와 같은 총선 해. YSK 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "tur-assembly",
+        "level": "national",
+        "chamber": "assembly",
+        "contested_ko": "대국민의회 600석 전원",
+        "notes": "2026년 총선 회차 아님. 직전 2023-05-14.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Next_Turkish_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+        ],
+        "iso3": "TUR"
+      },
+      {
+        "id": "tur-2028-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2028-05",
+        "date_note": "법정 최후 2028-05-14(1차). 의회 선거와 같은 총선 해. YSK 일자 공고 전. 조기선거 시 앞당겨질 수 있음.",
+        "status": "outside_year",
+        "system_id": "tur-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+        "notes": "2026년 대선 회차 아님. 직전 2023-05.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Next_Turkish_presidential_election"
+        ],
+        "iso3": "TUR"
+      },
+      {
+        "id": "aus-2028-federal",
+        "type": "general",
+        "label_ko": "연방 하원·반수 상원 총선 (다음 정기)",
+        "label_en": "Next federal election",
+        "date": "2028-05",
+        "date_note": "하원+반수 상원 법정 최후 2028-05-20. 하원만은 2028-09-23까지 가능. 조기 해산 시 앞당겨질 수 있음.",
+        "status": "outside_year",
+        "system_id": "aus-house",
+        "level": "national",
+        "chamber": "house",
+        "contested_ko": "하원 150석 전원 + 상원 76석 중 약 절반",
+        "notes": "2026년 연방 총선 회차 아님. 직전 총선 2025-05-03.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Next_Australian_federal_election",
+          "https://www.aec.gov.au/elections/"
+        ],
+        "iso3": "AUS"
       }
     ],
     "2028-07": [
@@ -5131,7 +7070,6 @@
         "level": "national",
         "contested_ko": "대통령 또는 마줄리스 (회차 공고 전)",
         "iso3": "IRN",
-        "date_end": null,
         "label_en": "General"
       },
       {
@@ -5150,7 +7088,6 @@
         "level": "national",
         "contested_ko": "참의원 절반 改選",
         "iso3": "JPN",
-        "date_end": null,
         "label_en": "General"
       }
     ],
@@ -5172,11 +7109,29 @@
           "https://www.archives.gov/electoral-college/about",
           "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
         ],
-        "iso3": "USA",
-        "date_end": null
+        "iso3": "USA"
       }
     ],
     "2029-02": [
+      {
+        "id": "idn-2029-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2029-02",
+        "date_note": "2024-02-14 본선 다음 5년 주기. 취임은 관례상 10월. KPU 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "idn-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령·부통령 1조 (1차 과반 미달 시 결선)",
+        "notes": "2026년 대선 회차 아님. 전국 선거 제도가 없는 것이 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2024_Indonesian_general_election",
+          "https://www.kpu.go.id/"
+        ],
+        "iso3": "IDN"
+      },
       {
         "id": "deu-2026-bundestag",
         "type": "general",
@@ -5193,22 +7148,26 @@
         "contested_ko": "연방하원 630석 전원",
         "notes": "2026년 연방 총선 회차 아님.",
         "iso3": "DEU",
-        "date_end": null,
         "label_en": "General"
       },
       {
-        "id": "idn-2026-national",
+        "id": "idn-2029-dpr",
         "type": "general",
-        "label_ko": "전국 총·대선",
+        "label_ko": "하원(DPR)·지방대표이사회(DPD) 총선 (다음 정기)",
+        "label_en": "DPR and DPD election",
         "date": "2029-02",
+        "date_note": "대선과 같은 전국 투표일 주기. KPU 일자 공고 전.",
         "status": "outside_year",
-        "notes": "2026년 회차 아님. 제도상 전국 선거가 없는 것이 아니라 올해가 아니다.",
-        "date_note": "다음 전국 주기 2029년. KPU 일자 공고 전. 직전 본선은 2024-02-14.",
+        "system_id": "idn-dpr",
         "level": "national",
-        "contested_ko": "대통령 + 국회",
-        "iso3": "IDN",
-        "date_end": null,
-        "label_en": "General"
+        "chamber": "dpr",
+        "contested_ko": "DPR 580석 + DPD 해당 회차",
+        "notes": "2026년 의회 회차 아님. 2024는 대선·DPR·DPD·지방의회가 같은 날.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Elections_in_Indonesia",
+          "https://www.kpu.go.id/"
+        ],
+        "iso3": "IDN"
       }
     ],
     "2029-04": [
@@ -5228,7 +7187,6 @@
           "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
         ],
         "iso3": "IND",
-        "date_end": null,
         "label_en": "General"
       },
       {
@@ -5248,8 +7206,7 @@
           "https://wybory.gov.pl/index/",
           "https://adwokatlancutbozek.pl/kiedy-wybory-samorzadowe-nastepny-termin-to-2029-a-nie-2028-rok"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
       }
     ],
     "2029-05": [
@@ -5262,10 +7219,10 @@
         "notes": "2026년 전국 총선 회차 아님. 2026-11-04는 지방정부선거.",
         "date_note": "2024 총선 다음 5년 주기. 정확한 일자는 IEC 공고 전.",
         "level": "national",
-        "chamber": "없음",
+        "chamber": "national_assembly",
         "contested_ko": "국민의회 의석 전원",
+        "system_id": "zaf-na",
         "iso3": "ZAF",
-        "date_end": null,
         "label_en": "General"
       }
     ],
@@ -5288,8 +7245,87 @@
         "chamber": "commons",
         "contested_ko": "하원 650석 전원",
         "iso3": "GBR",
-        "date_end": null,
         "label_en": "General"
+      }
+    ],
+    "2029-10": [
+      {
+        "id": "can-2029-federal",
+        "type": "general",
+        "label_ko": "연방 하원 총선 (다음 정기)",
+        "label_en": "Next federal election",
+        "date": "2029-10-15",
+        "date_note": "Canada Elections Act 법정 최후(2029-10-15). 총리가 그 전에 의회를 해산하면 앞당겨질 수 있음.",
+        "status": "outside_year",
+        "system_id": "can-commons",
+        "level": "national",
+        "chamber": "house_of_commons",
+        "contested_ko": "하원 343석 전원",
+        "notes": "2026년 연방 총선 회차 아님. 직전 총선 2025-04-28.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/46th_Canadian_federal_election",
+          "https://www.elections.ca/home.aspx"
+        ],
+        "iso3": "CAN"
+      }
+    ],
+    "2029-11": [
+      {
+        "id": "chl-2029-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2029-11",
+        "date_note": "2025-11-16 1차·2025-12-14 결선 다음 4년 주기. 1차는 보통 11월. SERVEL 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "chl-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+        "notes": "2026년 대선 회차 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2025_Chilean_general_election",
+          "https://www.servel.cl/"
+        ],
+        "iso3": "CHL"
+      },
+      {
+        "id": "chl-2029-congress",
+        "type": "general",
+        "label_ko": "하원·상원 총선 (다음 정기)",
+        "label_en": "Congressional election",
+        "date": "2029-11",
+        "date_note": "2025년처럼 대선 1차와 같은 날이 관례. SERVEL 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "chl-deputies",
+        "level": "national",
+        "chamber": "deputies",
+        "contested_ko": "하원 전원 + 상원 해당 회차 改選분",
+        "notes": "2026년 의회 회차 아님. 2025는 하원 155석 전원·상원 23/50.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2025_Chilean_general_election"
+        ],
+        "iso3": "CHL"
+      }
+    ],
+    "2030-02": [
+      {
+        "id": "tha-2030-general",
+        "type": "general",
+        "label_ko": "하원 총선 (다음 정기)",
+        "label_en": "Next House election",
+        "date": "2030-02",
+        "date_note": "2026-02-08 다음 4년 주기 통상 시기. 해산 시 앞당겨질 수 있음. 선관위 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "tha-house",
+        "level": "national",
+        "chamber": "house",
+        "contested_ko": "하원 500석 전원",
+        "notes": "2026년 이후 다음 하원 회차.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Thai_general_election"
+        ],
+        "iso3": "THA"
       }
     ],
     "2030-03": [
@@ -5310,7 +7346,6 @@
           "https://en.wikipedia.org/wiki/2030_South_Korean_presidential_election"
         ],
         "iso3": "KOR",
-        "date_end": null,
         "label_en": "Presidential"
       },
       {
@@ -5328,8 +7363,25 @@
         "chamber": "없음",
         "contested_ko": "대통령 1인",
         "iso3": "RUS",
-        "date_end": null,
         "label_en": "Presidential"
+      },
+      {
+        "id": "col-2030-congress",
+        "type": "general",
+        "label_ko": "상원·하원 총선 (다음 정기)",
+        "label_en": "Next congressional elections",
+        "date": "2030-03",
+        "date_note": "4년 주기. 2026-03-08 다음. 정확한 일요일은 공고 전.",
+        "status": "outside_year",
+        "system_id": "col-chamber",
+        "level": "national",
+        "chamber": "chamber",
+        "contested_ko": "상원 + 하원 다음 임기",
+        "notes": "2026년 이후 다음 의회 회차.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election"
+        ],
+        "iso3": "COL"
       }
     ],
     "2030-05": [
@@ -5350,8 +7402,85 @@
           "https://wybory.gov.pl/index/",
           "https://en.wikipedia.org/wiki/2025_Polish_presidential_election"
         ],
-        "iso3": "POL",
-        "date_end": null
+        "iso3": "POL"
+      },
+      {
+        "id": "col-2030-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Next presidential election",
+        "date": "2030-05",
+        "date_note": "4년 주기. 2026-05-31 다음 1차의 통상 시기. 공고 전.",
+        "status": "outside_year",
+        "system_id": "col-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+        "notes": "2026년 이후 다음 대선 회차.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Colombian_presidential_election"
+        ],
+        "iso3": "COL"
+      }
+    ],
+    "2030-06": [
+      {
+        "id": "mex-2030-presidential",
+        "type": "presidential",
+        "label_ko": "대통령 선거 (다음 정기)",
+        "label_en": "Presidential election",
+        "date": "2030-06",
+        "date_note": "2024-06-02 대선 다음 6년 주기. 연방 선거일은 보통 6월 첫째 일요일. INE 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "mex-president",
+        "level": "national",
+        "chamber": "없음",
+        "contested_ko": "대통령 1인 (단임 6년, 재선 없음)",
+        "notes": "2026년 대선 회차 아님.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2024_Mexican_general_election",
+          "https://www.ine.mx/"
+        ],
+        "iso3": "MEX"
+      },
+      {
+        "id": "mex-2030-senate",
+        "type": "general",
+        "label_ko": "상원 선거 (다음 정기)",
+        "label_en": "Senate election",
+        "date": "2030-06",
+        "date_note": "상원 임기 6년. 2024와 같이 대선과 같은 주기. INE 일자 공고 전.",
+        "status": "outside_year",
+        "system_id": "mex-senate",
+        "level": "national",
+        "chamber": "senate",
+        "contested_ko": "상원 128석 전원",
+        "notes": "2026년 상원 회차 아님. 2027 중간선거는 하원만.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/Senate_of_the_Republic_(Mexico)",
+          "https://www.ine.mx/"
+        ],
+        "iso3": "MEX"
+      }
+    ],
+    "2031-03": [
+      {
+        "id": "vnm-2031-na",
+        "type": "general",
+        "label_ko": "국회 선거 (다음 정기)",
+        "label_en": "Next National Assembly election",
+        "date": "2031-03",
+        "date_note": "5년 주기. 2026-03-15 다음 통상 시기. 공고 전.",
+        "status": "outside_year",
+        "system_id": "vnm-na",
+        "level": "national",
+        "chamber": "national_assembly",
+        "contested_ko": "국회 대의원 다음 임기",
+        "notes": "2026년 이후 다음 국회 회차.",
+        "sources": [
+          "https://en.wikipedia.org/wiki/2026_Vietnamese_legislative_election"
+        ],
+        "iso3": "VNM"
       }
     ]
   },

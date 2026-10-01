@@ -6,7 +6,9 @@ name: Refresh FOMC/Beige Book collection
 # directly (statement pages + Beige Book National Summary, both public
 # HTML, no key) and build_us_macro_quality_from_collect.py reassembles the
 # document the panel reads. build_fomc_statement_diff.py adds a word-level
-# redline against the previous meeting's statement. All three are
+# redline against the previous meeting's statement; build_fomc_sep.py collects
+# the projection tables (rate decision itself is parsed from the statement text);
+# build_fomc_minutes.py collects the minutes (named votes + participant-count wording). All three are
 # idempotent -- only meetings/editions not already collected get fetched --
 # so this is a small diff after each real FOMC meeting, not a full re-scrape.
 
@@ -36,7 +38,7 @@ jobs:
         run: pip install pytest beautifulsoup4
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_fomc_collect.py tests/test_fomc_statement_diff.py -v
+        run: python -m pytest tests/test_fomc_collect.py tests/test_fomc_statement_diff.py tests/test_fomc_decision_sep.py tests/test_fomc_minutes.py tests/test_us_macro_quality_from_collect.py -v
       - name: Collect statements + Beige Book
         working-directory: New for anti/scripts/macro_monitor
         # A meeting the parser flags (a compound/qualified dissent it can't
@@ -45,12 +47,28 @@ jobs:
         # block every other meeting's data from refreshing on schedule.
         # It still shows up in the job log for a human to look at.
         run: python build_fomc_collect.py || true
-      - name: Assemble us_macro_quality_v1.json
-        working-directory: New for anti/scripts/macro_monitor
-        run: python build_us_macro_quality_from_collect.py
+      # Statement text and SEP are collected BEFORE assembling: the panel's
+      # rate decision is parsed out of the cached statement text, and the SEP
+      # card reads config/fomc_sep_v1.json -- assembling first would publish
+      # the previous meeting's decision until the next day's run.
       - name: Build statement wording diff
         working-directory: New for anti/scripts/macro_monitor
         run: python build_fomc_statement_diff.py || true
+      - name: Collect SEP projections (Mar/Jun/Sep/Dec meetings)
+        working-directory: New for anti/scripts/macro_monitor
+        # A page not up yet is skipped quietly; one this parser can't read
+        # exits 1 and shows in the log, without blocking the assemble step.
+        run: python build_fomc_sep.py || true
+      - name: Collect minutes (named votes + participant-count wording)
+        working-directory: New for anti/scripts/macro_monitor
+        # Minutes appear three weeks after a decision, at 14:00 ET on a date
+        # the Fed prints on its calendar page; the daily run below this cron
+        # slot picks them up the same day. A 404 (not out yet) is skipped
+        # quietly, a page this parser can't read exits 1 and shows in the log.
+        run: python build_fomc_minutes.py || true
+      - name: Assemble us_macro_quality_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_us_macro_quality_from_collect.py
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
@@ -58,6 +76,8 @@ jobs:
           git add "New for anti/scripts/macro_monitor/config/fomc_meetings_v1.json" \
                   "New for anti/scripts/macro_monitor/config/beige_book_v1.json" \
                   "New for anti/scripts/macro_monitor/config/fomc_statement_text_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/fomc_sep_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/fomc_minutes_v1.json" \
                   "New for anti/public/data/us_macro_quality_v1.json" \
                   "New for anti/public/data/fomc_statement_diff_v1.json"
           git commit -m "chore: refresh FOMC/Beige Book collection" || exit 0

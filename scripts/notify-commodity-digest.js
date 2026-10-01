@@ -17,22 +17,44 @@ const {
   requireEnv, supabaseGet, supabaseUpsert, fetchJson,
 } = require('./lib/sync-utils');
 
+// DRY_RUN=1: read Supabase and the reports file, print what each favorite
+// would receive (counts only -- no addresses), send nothing, record nothing.
+// For checking the Supabase wiring without mailing anyone.
+const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-const RESEND_API_KEY = requireEnv('RESEND_API_KEY');
+const RESEND_API_KEY = DRY_RUN ? process.env.RESEND_API_KEY : requireEnv('RESEND_API_KEY');
 const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
 const REPORTS_JSON = path.join(__dirname, '..', 'New for anti', 'public', 'data', 'commodity_reports_v1.json');
 const WINDOW_DAYS = 8; // a little over a week, so a cadence slip never silently drops a report
+const MAX_PER_COMMODITY = 8; // newest first; keeps one busy board from swamping the mail
 const SITE_URL = 'https://chokemonitor.com/';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// When a report became news for the digest. A dated report counts from its
+// publication date. A list-page report has no date (ANRPC, VRA, CONAB, USGS)
+// and a GAIN page may only have its month; those count from when the
+// pipeline first saw them (first_seen_at), and a month-only one must also be
+// from the last ~6 weeks so an old report newly linked is not mailed as new.
+function newsTime(item) {
+  const first = item.first_seen_at ? new Date(item.first_seen_at).getTime() : NaN;
+  if (item.published_at && item.published_precision !== 'month') return new Date(item.published_at).getTime();
+  if (item.published_at && item.published_precision === 'month') {
+    const month = new Date(item.published_at).getTime();
+    return Date.now() - month > 45 * 86_400_000 ? NaN : first;
+  }
+  return first;
+}
+
 function loadRecentReports() {
   const data = JSON.parse(fs.readFileSync(REPORTS_JSON, 'utf8'));
   const cutoff = Date.now() - WINDOW_DAYS * 86_400_000;
-  const items = (data.items || []).filter((item) => item.published_at && new Date(item.published_at).getTime() >= cutoff);
+  const items = (data.items || [])
+    .filter((item) => newsTime(item) >= cutoff)
+    .sort((a, b) => newsTime(b) - newsTime(a));
   return { items, labels: data.commodity_labels || {} };
 }
 
@@ -77,7 +99,7 @@ function sendDigestEmail(email, groups) {
   const html = `
     <div style="font-family:-apple-system,sans-serif;max-width:560px;">
       <h2 style="margin:0 0 4px;">이번 주 즐겨찾기 원자재 리포트</h2>
-      <p style="color:#4a5a61;margin:0 0 12px;">최근 ${WINDOW_DAYS}일 내 발행된, 아직 안 보내드린 리포트입니다.</p>
+      <p style="color:#4a5a61;margin:0 0 12px;">최근 ${WINDOW_DAYS}일 내 발행되었거나 새로 확인된, 아직 안 보내드린 리포트입니다.</p>
       ${sections}
       <p style="margin-top:24px;"><a href="${SITE_URL}">ChokePoint Monitor에서 전체 보기 →</a></p>
     </div>`;
@@ -131,9 +153,20 @@ async function run() {
       if (!digestByUser.has(userId)) digestByUser.set(userId, new Map());
       const byCommodity = digestByUser.get(userId);
       if (!byCommodity.has(matchedKey)) byCommodity.set(matchedKey, []);
+      if (byCommodity.get(matchedKey).length >= MAX_PER_COMMODITY) continue;
       byCommodity.get(matchedKey).push(item);
-      sentInserts.push({ user_id: userId, report_id: item.id });
     }
+  }
+
+  if (DRY_RUN) {
+    const favCount = {};
+    for (const keys of favoritesByUser.values()) for (const k of keys) favCount[k] = (favCount[k] || 0) + 1;
+    const recentCount = {};
+    for (const item of items) for (const c of item.commodities) recentCount[c] = (recentCount[c] || 0) + 1;
+    console.log(`[dry-run] Supabase reachable: ${favorites.length} commodity favorites from ${favoritesByUser.size} user(s).`);
+    console.log(`[dry-run] favorites by commodity: ${JSON.stringify(favCount)}`);
+    console.log(`[dry-run] reports new in the last ${WINDOW_DAYS} days by commodity: ${JSON.stringify(recentCount)}`);
+    console.log(`[dry-run] already-sent log rows: ${sentIds.size}; users with a source turned off: ${disabledSourcesByUser.size}`);
   }
 
   if (!digestByUser.size) {
@@ -145,13 +178,27 @@ async function run() {
   let sent = 0;
   for (const [userId, byCommodity] of digestByUser) {
     const email = emails.get(userId);
+    // No address, no mail -- and no sent-log row, so the report is still
+    // mailed if the address turns up within the window.
     if (!email) continue;
     const groups = [...byCommodity.entries()].map(([key, groupItems]) => ({
       label: labels[key] || key,
       items: groupItems,
     }));
+    if (DRY_RUN) {
+      const summary = groups.map((g) => `${g.label} ${g.items.length}`).join(', ');
+      console.log(`[dry-run] user ${userId.slice(0, 8)}… would get: ${summary}`);
+      continue;
+    }
     await sendDigestEmail(email, groups);
+    for (const groupItems of byCommodity.values()) {
+      for (const item of groupItems) sentInserts.push({ user_id: userId, report_id: item.id });
+    }
     sent += 1;
+  }
+  if (DRY_RUN) {
+    console.log('[dry-run] nothing sent, nothing recorded.');
+    return;
   }
   console.log(`Sent ${sent} weekly commodity digest(s).`);
 

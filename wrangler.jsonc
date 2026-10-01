@@ -47,19 +47,18 @@
       "id": "35315eb44cfc4cd480c25794c0623c04"
     }
   ],
-  // Every 6 hours the Worker's scheduled() handler tops up API_CACHE so
-  // visitors never pay for a cold UN Comtrade query. warmComtradeCache()
-  // skips any commodity whose KV entry is still fresh, so this frequency
-  // does not mean four full re-fetches a day: oil/gas (48h TTL) and
-  // gold/silver/copper (24h TTL) end up refreshed several times a day,
-  // while the weekly-TTL commodities (most metals, all agri) are still
-  // re-fetched roughly once a week -- just whichever of the four daily
-  // ticks first finds them stale, not always the same time of day. The
-  // real win from four ticks instead of one: after a change that
-  // invalidates every cache key at once (a new HS code, a new reporter
-  // list), the 8-per-run budget below clears the backlog in about a day
-  // instead of three or four.
+  // The Worker's scheduled() handler tops up API_CACHE so visitors never pay
+  // for a cold UN Comtrade query. warmComtradeCache() skips any commodity
+  // whose KV entry is still fresh, so each commodity is re-fetched once per
+  // its own TTL (COMTRADE_TTL in _worker.js), whichever tick first finds it
+  // stale -- not once per tick.
   "triggers": {
-    "crons": ["0 */6 * * *"]
+    // Hourly since 2026-09-24. A tick that finds everything cached costs one
+    // KV listing and no upstream call, so the steady-state Comtrade spend is
+    // unchanged; what the extra ticks buy is catch-up. Walking the annual
+    // year forward (2023 -> 2024 -> 2025) needs every commodity cached for the
+    // next year first, and at 8 fetches per tick four ticks a day made each
+    // step take a day or more.
+    "crons": ["0 * * * *"]
   }
 }

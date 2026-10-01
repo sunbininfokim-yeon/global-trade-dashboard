@@ -1,9 +1,10 @@
 {
   "schema_version": "external-venues-v1",
-  "fetched_at": "2026-09-19T15:15:36.733323+00:00",
+  "fetched_at": "2026-09-25T23:58:10.434437+00:00",
   "fx": {
     "usdkrw": 1400.0,
-    "usdhkd": 7.8
+    "usdhkd": 7.8,
+    "usdhkd_applies_to": []
   },
   "disclaimer_ko": "HK·US 레버/인버스=스왑 합성, 코인=퍼프 OI. 국내 cash LETF 회전율 식에 합산 금지. 다만 헷지 데스크→KR 현물/선물 간접 압력(spillover)은 Distortion·Spillover 탭에서 반드시 표시. 투자 권유 아님.",
   "hedge_channel_ko": "홍콩/미국 레버 펀드·옵션 레짐 변화 → 스왑 상대(한국·글로벌 기관) 헷지 요청 → 국내 현물·선물·국내 LETF에 압력이 붙을 수 있음 (유튜브 wag-the-dog reverse 계열).",
@@ -14,116 +15,106 @@
         "name": "CSOP SK Hynix Daily Max (2x)",
         "underlying": "000660",
         "venue": "hk",
-        "L": 2.0,
+        "L": null,
+        "L_ceiling": 2,
         "L_flexible": true,
         "structure": "swap",
         "direction": "long",
-        "aum_native": 4290892800.0,
-        "aum_currency": "HKD",
-        "aum_usd": 550114461.5384616,
-        "notional_exposure_usd": 1100228923.0769231,
-        "trading_value_native": 4703501684.0,
-        "trading_value_usd": 603013036.4102564,
+        "aum_usd": null,
+        "aum_as_of": null,
+        "notional_exposure_usd": null,
+        "trading_value_usd": 345918457.62830853,
+        "trading_value_coverage_complete": true,
+        "valued_listing_count": 1,
+        "expected_listing_count": 1,
+        "tv_over_kr_cash_tv": 0.08523467427786449,
+        "observed_on": "2026-09-23",
+        "stale": false,
+        "data_age_calendar_days": 1,
         "kr_spot_impact": "indirect_swap",
-        "yahoo": {
-          "symbol": "7709.HK",
-          "name": "XL2CSOPHYNIX",
-          "aum": 4290892800.0,
-          "currency": "HKD",
-          "nav": 4.9777,
-          "previous_close": 39.5,
-          "volume": 119075992,
-          "average_volume": 185116179,
-          "last_bar": {
-            "close": 39.5,
-            "volume": 119075992.0,
-            "as_of": "2026-09-17"
-          },
-          "source": "Yahoo Finance (yfinance)",
-          "quality": "observed"
-        },
         "quality": "observed",
-        "source": "Yahoo Finance (yfinance)"
+        "source": "overseas_letf_board_v1 (issuer + Yahoo listings)",
+        "missing_reason": null
       },
       {
         "ticker": "7747.HK",
         "name": "CSOP Samsung Electronics Daily Max (2x)",
         "underlying": "005930",
         "venue": "hk",
-        "L": 2.0,
+        "L": null,
+        "L_ceiling": 2,
         "L_flexible": true,
         "structure": "swap",
         "direction": "long",
-        "aum_native": null,
-        "aum_currency": "HKD",
         "aum_usd": null,
+        "aum_as_of": null,
         "notional_exposure_usd": null,
-        "trading_value_native": 381651991.3956299,
-        "trading_value_usd": 48929742.48661922,
+        "trading_value_usd": 83392174.3389271,
+        "trading_value_coverage_complete": true,
+        "valued_listing_count": 1,
+        "expected_listing_count": 1,
+        "tv_over_kr_cash_tv": 0.01900104771246794,
+        "observed_on": "2026-09-23",
+        "stale": false,
+        "data_age_calendar_days": 1,
         "kr_spot_impact": "indirect_swap",
-        "yahoo": {
-          "symbol": "7747.HK",
-          "name": "XL2CSOPSMSN",
-          "aum": null,
-          "currency": "HKD",
-          "nav": null,
-          "previous_close": 68.94,
-          "volume": 5536002,
-          "average_volume": 17839388,
-          "last_bar": {
-            "close": 68.94000244140625,
-            "volume": 5536002.0,
-            "as_of": "2026-09-17"
-          },
-          "source": "Yahoo Finance (yfinance)",
-          "quality": "partial"
-        },
-        "quality": "partial",
-        "source": "Yahoo Finance (yfinance)"
+        "quality": "observed",
+        "source": "overseas_letf_board_v1 (issuer + Yahoo listings)",
+        "missing_reason": null
       },
       {
         "ticker": "7347.HK",
         "name": "CSOP Samsung Electronics Daily Max (-2x)",
         "underlying": "005930",
         "venue": "hk",
-        "L": -2.0,
+        "L": null,
+        "L_ceiling": -2,
         "L_flexible": true,
         "structure": "swap",
         "direction": "inverse",
-        "aum_native": 10014400.0,
-        "aum_currency": "HKD",
-        "aum_usd": 1283897.435897436,
-        "notional_exposure_usd": 2567794.871794872,
-        "trading_value_native": 23944515.856655538,
-        "trading_value_usd": 3069809.7252122485,
+        "aum_usd": null,
+        "aum_as_of": null,
+        "notional_exposure_usd": null,
+        "trading_value_usd": 5439963.128904406,
+        "trading_value_coverage_complete": true,
+        "valued_listing_count": 2,
+        "expected_listing_count": 2,
+        "tv_over_kr_cash_tv": 0.001239504783102036,
+        "observed_on": "2026-09-23",
+        "stale": false,
+        "data_age_calendar_days": 1,
         "kr_spot_impact": "indirect_swap",
-        "yahoo": {
-          "symbol": "7347.HK",
-          "name": "XI2CSOPSMSN",
-          "aum": 10014400.0,
-          "currency": "HKD",
-          "nav": 0.144,
-          "previous_close": 0.734,
-          "volume": 32621955,
-          "average_volume": 173404154,
-          "last_bar": {
-            "close": 0.734000027179718,
-            "volume": 32621955.0,
-            "as_of": "2026-09-17"
-          },
-          "source": "Yahoo Finance (yfinance)",
-          "quality": "observed"
-        },
         "quality": "observed",
-        "source": "Yahoo Finance (yfinance)"
+        "source": "overseas_letf_board_v1 (issuer + Yahoo listings)",
+        "missing_reason": null
       }
     ],
-    "notional_exposure_usd_sum": 1102796717.948718,
+    "notional_exposure_usd_sum": null,
     "direction_split": {
-      "long_notional_usd": 1100228923.08,
-      "inverse_notional_usd": 2567794.87
+      "long_notional_usd": 0.0,
+      "inverse_notional_usd": 0.0
     },
-    "source": "Yahoo Finance"
+    "tv_over_kr_cash_tv_by_underlying": {
+      "000660": {
+        "as_of": "2026-09-23",
+        "ratio": 0.08523467427786449,
+        "tickers": [
+          "7709.HK"
+        ],
+        "excluded_other_date": []
+      },
+      "005930": {
+        "as_of": "2026-09-23",
+        "ratio": 0.020240552495569976,
+        "tickers": [
+          "7747.HK",
+          "7347.HK"
+        ],
+        "excluded_other_date": []
+      }
+    },
+    "source": "overseas_letf_board_v1 (build_overseas_letf.py)",
+    "note_ko": "AUM·배율은 운용사가 기준일과 함께 공개한 값만 사용한다. CSOP는 2026-08-03부터 가변 목표라 목표 미공개 구간에서는 노셔널이 비어 있다. 거래대금 비율은 그 세 가지 가정 없이 관측된다."
   },
   "crypto": {
     "products": [
@@ -158,7 +149,7 @@
         "quality": "error"
       }
     ],
-    "open_interest_notional_usd_sum": 0.0,
+    "open_interest_notional_usd_sum": null,
     "open_interest_notional_usd_single_stock_kr": 0.0,
     "open_interest_notional_usd_regime_proxy": 0.0,
     "quote_volume_24h_usd_sum": 0.0,
@@ -182,14 +173,14 @@
           "name": "Direxion Daily Semiconductor Bu",
           "aum": 19311783936.0,
           "currency": "USD",
-          "nav": 114.87,
-          "previous_close": 114.82,
-          "volume": 44207841,
-          "average_volume": 62993836,
+          "nav": 146.519,
+          "previous_close": 146.33,
+          "volume": 55809520,
+          "average_volume": 63551671,
           "last_bar": {
-            "close": 123.66999816894531,
-            "volume": 44748100.0,
-            "as_of": "2026-09-18"
+            "close": 151.4499969482422,
+            "volume": 55809520.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -214,14 +205,14 @@
           "name": "Direxion Daily Semiconductor Be",
           "aum": 1403304960.0,
           "currency": "USD",
-          "nav": 44.97,
-          "previous_close": 44.99,
-          "volume": 53830335,
-          "average_volume": 60925649,
+          "nav": 33.59,
+          "previous_close": 33.63,
+          "volume": 68085237,
+          "average_volume": 61599741,
           "last_bar": {
-            "close": 41.4900016784668,
-            "volume": 54498800.0,
-            "as_of": "2026-09-18"
+            "close": 32.43000030517578,
+            "volume": 68085237.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -246,14 +237,14 @@
           "name": "Direxion Daily South Korea Bull",
           "aum": 1527001984.0,
           "currency": "USD",
-          "nav": 20.408,
-          "previous_close": 20.41,
-          "volume": 22072832,
-          "average_volume": 30064925,
+          "nav": 20.118,
+          "previous_close": 20.14,
+          "volume": 15683798,
+          "average_volume": 29520092,
           "last_bar": {
-            "close": 20.040000915527344,
-            "volume": 22353400.0,
-            "as_of": "2026-09-18"
+            "close": 21.59000015258789,
+            "volume": 15683798.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -278,14 +269,14 @@
           "name": "Direxion Daily Technology Bull ",
           "aum": 5934523904.0,
           "currency": "USD",
-          "nav": 206.642,
-          "previous_close": 206.87,
-          "volume": 449087,
-          "average_volume": 675080,
+          "nav": 229.245,
+          "previous_close": 229.23,
+          "volume": 404483,
+          "average_volume": 639646,
           "last_bar": {
-            "close": 211.39999389648438,
-            "volume": 454900.0,
-            "as_of": "2026-09-18"
+            "close": 234.5,
+            "volume": 404483.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -310,14 +301,14 @@
           "name": "Direxion Technology Bear 3X ETF",
           "aum": 65672536.0,
           "currency": "USD",
-          "nav": 59.388,
-          "previous_close": 59.34,
-          "volume": 335836,
-          "average_volume": 539959,
+          "nav": 52.608,
+          "previous_close": 52.7,
+          "volume": 598930,
+          "average_volume": 496715,
           "last_bar": {
-            "close": 57.939998626708984,
-            "volume": 336700.0,
-            "as_of": "2026-09-18"
+            "close": 51.400001525878906,
+            "volume": 598930.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -342,14 +333,14 @@
           "name": "ProShares UltraPro QQQ",
           "aum": 36114247680.0,
           "currency": "USD",
-          "nav": 71.414,
-          "previous_close": 71.38,
-          "volume": 40210470,
-          "average_volume": 58379242,
+          "nav": 78.6662,
+          "previous_close": 78.58,
+          "volume": 57366620,
+          "average_volume": 56619187,
           "last_bar": {
-            "close": 72.63999938964844,
-            "volume": 40624600.0,
-            "as_of": "2026-09-18"
+            "close": 79.5999984741211,
+            "volume": 57366620.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -374,14 +365,14 @@
           "name": "ProShares UltraPro Short QQQ",
           "aum": 1935680000.0,
           "currency": "USD",
-          "nav": 38.5186,
-          "previous_close": 38.53,
-          "volume": 32234996,
-          "average_volume": 51165447,
+          "nav": 34.1344,
+          "previous_close": 34.18,
+          "volume": 47966060,
+          "average_volume": 50306722,
           "last_bar": {
-            "close": 37.869998931884766,
-            "volume": 32475600.0,
-            "as_of": "2026-09-18"
+            "close": 33.75,
+            "volume": 47966060.0,
+            "as_of": "2026-09-25"
           },
           "source": "Yahoo Finance (yfinance)",
           "quality": "observed"
@@ -399,14 +390,5 @@
     "source": "Yahoo Finance",
     "note_ko": "SOXL/SOXS·KORU·TQQQ/SQQQ 등. 옵션 보드(us_regime)와 함께 Global Spillover에서 읽음."
   },
-  "by_underlying_usd": {
-    "000660": {
-      "hk_usd": 1100228923.0769231,
-      "crypto_usd": 0.0
-    },
-    "005930": {
-      "hk_usd": 2567794.871794872,
-      "crypto_usd": 0.0
-    }
-  }
+  "by_underlying_usd": {}
 }

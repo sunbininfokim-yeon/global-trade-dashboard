@@ -15,7 +15,16 @@ from commodity_reports.build import (  # noqa: E402
     apply_series_commodity_fallback,
     build_commodity_reports,
 )
-from commodity_reports.feeds import RawReport, parse_fas_gain_cards, parse_feed, parse_html_list  # noqa: E402
+from commodity_reports.feeds import (  # noqa: E402
+    RawReport,
+    add_pdf_summaries,
+    fetch_fas_gain_pages,
+    gain_links,
+    parse_fas_gain_cards,
+    parse_fas_gain_page,
+    parse_feed,
+    parse_html_list,
+)
 from commodity_reports.score import ReportScorer, append_label, load_learned_multipliers  # noqa: E402
 from commodity_reports.tag import CommodityTagger, CountryTagger, tag_report  # noqa: E402
 
@@ -40,6 +49,33 @@ class CommodityTagTests(unittest.TestCase):
         hits = self.tagger.tag("Malaysia palm oil exports rise in July")
         self.assertIn("palm_oil", hits)
         self.assertNotIn("oil", hits)
+
+    def test_natural_rubber_has_its_own_window(self):
+        self.assertIn("rubber", self.tagger.tag("Thailand natural rubber exports fell 6 percent in August"))
+        self.assertIn("rubber", self.tagger.tag("ANRPC: global NR production forecast at 14.9 million tonnes; rubber demand"))
+        self.assertIn("rubber", self.tagger.tag("Harga karet alam naik, ekspor meningkat"))
+
+    def test_crude_steel_and_crude_palm_oil_are_not_crude_oil(self):
+        # worldsteel's monthly release and MPOB's CPO notices landed on the
+        # crude oil board on the first live build (2026-09-26).
+        self.assertNotIn("oil", self.tagger.tag("August 2026 crude steel production"))
+        hits = self.tagger.tag("Crude palm oil exports rose 5% in August")
+        self.assertIn("palm_oil", hits)
+        self.assertNotIn("oil", hits)
+        self.assertIn("oil", self.tagger.tag("Crude oil stocks fell 3 million barrels"))
+
+    def test_unambiguous_rubber_names_need_no_market_term(self):
+        # VRA headlines name the crop ("cao su") without an English market word.
+        self.assertIn("rubber", self.tagger.tag("VRA mời tham gia hội nghị doanh nhân cao su Việt Nam"))
+        self.assertNotIn("rubber", self.tagger.tag("Kinh tế Việt Nam giữ đà tích cực trước biến động lãi suất"))
+
+    def test_rss_the_feed_is_not_rss_the_rubber_grade(self):
+        # Every feed calls itself RSS; only the numbered grade means rubber.
+        self.assertNotIn("rubber", self.tagger.tag("Subscribe to our RSS feed for market prices"))
+        self.assertIn("rubber", self.tagger.tag("RSS3 prices at the Bangkok market rose"))
+
+    def test_rubber_stamp_is_not_rubber(self):
+        self.assertNotIn("rubber", self.tagger.tag("Parliament gives rubber-stamp approval to the budget"))
 
     def test_lead_the_verb_is_not_lead_the_metal(self):
         self.assertNotIn("lead", self.tagger.tag("Ministers lead the grain corridor talks"))
@@ -257,6 +293,400 @@ class FeedParseTests(unittest.TestCase):
         urls = [i.url for i in items]
         self.assertEqual(len(urls), len(set(u.split("?", 1)[0] for u in urls)))
         self.assertEqual(sum(1 for u in urls if "saudi-arabia" in u), 1)
+
+
+class NonLatinCaseTests(unittest.TestCase):
+    def test_capitalized_vietnamese_country_names_match(self):
+        tagger = CountryTagger.from_config(cfg("countries.json"))
+        self.assertEqual(tagger.tag("Xuất khẩu cao su của Thái Lan tăng"), ["THA"])
+        self.assertIn("VNM", tagger.tag("Ngành cao su Việt Nam"))
+
+
+class HtmlListTitleTests(unittest.TestCase):
+    def test_slug_title_is_decoded_and_capitalized(self):
+        source = {"id": "int_anrpc", "html": {"base": "https://www.anrpc.org",
+                                               "item_href_re": "/newsla/[^\"'#?]+"}}
+        body = '<a href="/newsla/anrpc-releases-monthly-nr-statistical-report%2C-june-2026"><img/></a>'
+        items = parse_html_list(body, source)
+        self.assertEqual(items[0].title, "Anrpc releases monthly nr statistical report, june 2026")
+
+
+class LongAnchorTests(unittest.TestCase):
+    def test_a_card_wrapped_in_its_link_is_still_found(self):
+        source = {"id": "int_wgc_press", "html": {"base": "https://www.gold.org",
+                  "item_href_re": "(?:https://www\\.gold\\.org)?/news-and-events/press-releases/[a-z0-9-]{10,}"}}
+        teaser = "<div class='card'><img src='x.jpg'/><p>" + ("lorem ipsum " * 60) + "</p></div>"
+        body = f'<a href="/news-and-events/press-releases/world-gold-council-launches-standard">{teaser}</a>'
+        items = parse_html_list(body, source)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].title, "World gold council launches standard")
+
+
+class PdfSummaryTests(unittest.TestCase):
+    def test_pdf_items_get_their_opening_text_and_known_ones_are_skipped(self):
+        source = {"id": "int_ilzsg", "html": {"base": "https://www.ilzsg.org",
+                                                "item_href_re": "[^\"']+\\.pdf"}}
+        body = ('<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20August%202026.pdf">x</a>'
+                '<a href="/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20Press%20Release%20July%202026.pdf">x</a>')
+        items = parse_html_list(body, source)
+        self.assertEqual(items[0].title, "ILZSG Press Release August 2026")
+        fetched = []
+
+        def fetch(url):
+            fetched.append(url)
+            return b"%PDF"
+
+        n = add_pdf_summaries(items, fetch_pdf=fetch, extract=lambda b: "World  refined zinc\nsurplus of 45kt",
+                              skip_urls={items[1].url})
+        self.assertEqual(n, 1)
+        self.assertEqual(items[0].summary, "World refined zinc surplus of 45kt")
+        self.assertEqual(items[1].summary, "")
+        self.assertEqual(len(fetched), 1)
+
+
+class FasGainPagesTests(unittest.TestCase):
+    """GAIN via FAS commodity/country pages, since /data/search is blocked."""
+
+    def setUp(self):
+        import json as _json
+
+        self.store = _json.loads((FIXTURES / "us_fas_gain_reports.pages.json").read_text(encoding="utf-8"))
+        self.source = {
+            "id": "us_fas_gain_reports", "agency": "USDA FAS GAIN", "kind": "fas_gain_pages",
+            "scope_hint": "global",
+            "html": {
+                "base": "https://www.fas.usda.gov",
+                "list_urls": ["/data/commodities/coffee", "/regions/brazil", "/regions/nowhere"],
+                "max_age_days": 150,
+                "exclude_slug_re": "(exporter-guide|fairs-)",
+                "slug_commodities": {"grain-and-feed": ["wheat", "corn", "rice"]},
+            },
+        }
+
+    def fetch(self, url):
+        if url not in self.store:
+            raise FileNotFoundError(url)
+        return self.store[url]
+
+    def test_links_carry_year_and_month_and_drop_query_strings(self):
+        links = gain_links(self.store["https://www.fas.usda.gov/data/commodities/coffee"])
+        self.assertIn(("/data/gain/2026/08/vietnam-coffee-annual", 2026, 8), links)
+        self.assertIn(("/data/gain/2026/08/brazil-oilseeds-and-products-update", 2026, 8), links)
+
+    def test_reads_reports_skips_marketing_and_old_and_survives_a_dead_list_page(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        res = fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)
+        self.assertTrue(res["ok"])
+        urls = [i.url for i in res["items"]]
+        # Same report linked from two list pages is read once.
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertEqual(len(urls), 3)
+        self.assertFalse(any("exporter-guide" in u for u in urls))
+        self.assertFalse(any("2025/01" in u for u in urls))
+
+    def test_page_date_used_when_inside_the_url_month_else_month_precision(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        items = {i.title: i for i in fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)["items"]}
+        brazil = items["Brazil: Oilseeds and Products Update"]
+        self.assertEqual(brazil.published_at, "2026-08-31T15:00:00+00:00")
+        self.assertEqual(brazil.date_precision, "day")
+        self.assertIn("soybean production", brazil.summary)
+        grain = items["Brazil: Grain and Feed Update"]
+        self.assertEqual(grain.published_at, "2026-08-01T00:00:00+00:00")
+        self.assertEqual(grain.date_precision, "month")
+        # "Grain and Feed Update" names no crop; the slug prior supplies them.
+        self.assertEqual(grain.commodity_hint, ["wheat", "corn", "rice"])
+
+    def test_a_time_outside_the_url_month_is_not_trusted(self):
+        body = '<meta property="og:title" content="X: Y" /><time datetime="2019-01-02T00:00:00Z">'
+        item = parse_fas_gain_page(body, "https://x/data/gain/2026/08/x-y", 2026, 8, self.source)
+        self.assertEqual(item.date_precision, "month")
+        self.assertTrue(item.published_at.startswith("2026-08-01"))
+
+
+class GainReuseAndBlockTests(FasGainPagesTests):
+    def test_known_pages_are_not_fetched_again(self):
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        first = fetch_fas_gain_pages(self.source, fetch=self.fetch, max_items=40, now=now)["items"]
+        fetched = []
+
+        def counting(url):
+            fetched.append(url)
+            return self.fetch(url)
+
+        res = fetch_fas_gain_pages(self.source, fetch=counting, max_items=40, now=now, known=first)
+        self.assertEqual(len(res["items"]), len(first))
+        self.assertFalse(any("/data/gain/" in u for u in fetched))
+
+    def test_a_blocked_site_stops_after_five_list_pages(self):
+        calls = []
+
+        def blocked(url):
+            calls.append(url)
+            raise OSError("403")
+
+        source = dict(self.source, html=dict(self.source["html"], list_urls=[f"/regions/r{i}" for i in range(40)]))
+        res = fetch_fas_gain_pages(source, fetch=blocked, max_items=40)
+        self.assertFalse(res["ok"])
+        self.assertEqual(len(calls), 5)
+
+
+class CarryOverTests(unittest.TestCase):
+    def test_failed_source_keeps_its_last_reports(self):
+        from commodity_reports import build as build_mod
+
+        sources = [{"id": "src_a", "agency": "A", "kind": "rss", "url": "https://a.example/feed"}]
+        previous = {"items": [
+            {"source_id": "src_a", "url": "https://a.example/1", "title": {"original": "Fresh"},
+             "summary": "", "published_at": "2026-09-20T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/2", "title": {"original": "Stale"},
+             "summary": "", "published_at": "2026-06-01T00:00:00+00:00"},
+            {"source_id": "gone", "url": "https://b.example/1", "title": {"original": "Removed source"},
+             "summary": "", "published_at": "2026-09-20T00:00:00+00:00"},
+        ]}
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        carried = build_mod.previous_raws(previous, sources, now)
+        self.assertEqual([r.title for r in carried["src_a"]], ["Fresh"])
+        self.assertNotIn("gone", carried)
+        # A source with its own longer window (GAIN: 150 days) carries its
+        # older reports too.
+        long_src = [{"id": "src_a", "agency": "A", "kind": "fas_gain_pages", "url": "u", "html": {"max_age_days": 150}}]
+        self.assertEqual(sorted(r.title for r in build_mod.previous_raws(previous, long_src, now)["src_a"]),
+                         ["Fresh", "Stale"])
+
+        orig = build_mod.fetch_source
+        build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": False, "items": [],
+                                                   "count": 0, "error": "HTTPError: 403"}
+        try:
+            raw, status = build_mod._collect_live(sources, ua="t", timeout=1, max_per=10, carried=carried)
+        finally:
+            build_mod.fetch_source = orig
+        self.assertEqual([r.title for r in raw], ["Fresh"])
+        self.assertEqual(status[0]["carried_over"], 1)
+        self.assertFalse(status[0]["ok"])
+
+
+class SourcePriorNeedsAMarketStoryTests(unittest.TestCase):
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def tagged(self, title, summary=""):
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=["rubber"])
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        return t.commodities
+
+    def test_event_news_from_a_rubber_body_is_not_a_rubber_report(self):
+        self.assertEqual(self.tagged(
+            "Dr. suttipong angthong secretary general of the association of natural rubber producing "
+            "countries anrpc took center stage as a distinguished speaker at the prestigious world "
+            "elastomer technology and engineering forum wetef held in shanghai"), [])
+        self.assertEqual(self.tagged("Anrpc strengthens global engagement at irgce 2026"), [])
+
+    def test_market_news_and_named_reports_still_land(self):
+        self.assertEqual(self.tagged("Anrpc releases monthly nr statistical report july 2026"), ["rubber"])
+        self.assertEqual(self.tagged("Thailand to cut exports under new AETS quota"), ["rubber"])
+        tin = tag_report(title="Tin to be traded on Indonesia's new commodity exchange", summary="",
+                         commodity_tagger=self.commodity, country_tagger=self.country, commodity_hint=["tin"])
+        self.assertEqual(tin.commodities, ["tin"])
+
+
+class EventHeadlineTests(unittest.TestCase):
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def score(self, title, summary=""):
+        raw = RawReport(source_id="int_anrpc", agency="ANRPC", agency_ko="ANRPC", url="https://x/1",
+                        title=title, summary=summary, published_at=None, commodity_hint=["rubber"])
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=["rubber"])
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        return self.scorer.score(raw, t, now=NOW)
+
+    def test_forum_and_meeting_headlines_are_dropped(self):
+        self.assertIsNone(self.score("Sustainable natural rubber forum: aligning priorities for resilient supply chain"))
+        self.assertIsNone(self.score("PEFC International and ANRPC convene to advance sustainability standards in the global natural rubber sector"))
+        self.assertIsNone(self.score("VRA mời tham gia hội nghị và họp mặt doanh nhân cao su Việt Nam năm 2026"))
+        # Slug-derived headline, diacritics gone.
+        self.assertIsNone(self.score("Vra moi tham gia hoi nghi va hop mat doanh nhan cao su viet nam nam 2026"))
+
+    def test_reports_and_figures_survive(self):
+        self.assertIsNotNone(self.score("ANRPC releases Monthly NR Statistical Report July 2026"))
+        self.assertIsNotNone(self.score("Natural rubber exports at the forum's host country fell 12%"))
+
+
+class RelevanceByCommodityTests(unittest.TestCase):
+    """EIA, crops, metals: only market stories, only the right window."""
+
+    def setUp(self):
+        self.commodity = CommodityTagger.from_config(cfg("commodities.json"))
+        self.country = CountryTagger.from_config(cfg("countries.json"))
+        self.scorer = ReportScorer(cfg("series_catalog.json"))
+
+    def run_one(self, title, summary="", **raw_kw):
+        raw = RawReport(source_id="s", agency="A", agency_ko="A", url="https://x/" + title[:20],
+                        title=title, summary=summary, published_at=None, **raw_kw)
+        t = tag_report(title=title, summary=summary, commodity_tagger=self.commodity,
+                       country_tagger=self.country, commodity_hint=raw.commodity_hint,
+                       commodity_text=raw.commodity_from)
+        apply_series_commodity_fallback(t, self.scorer, title, summary)
+        item = self.scorer.score(raw, t, now=NOW)
+        return item.commodities if item else None
+
+    def test_eia_electricity_is_not_crude_and_oil_market_news_is(self):
+        self.assertIsNone(self.run_one("EIA forecasts strongest four-year growth in U.S. electricity demand since 2000"))
+        self.assertIn("oil", self.run_one("EIA increases global oil production forecast after the opening of the Strait of Hormuz"))
+        self.assertEqual(sorted(self.run_one("EIA releases latest Short-Term Energy Outlook amid Middle East conflict")),
+                         ["gas", "oil", "thermal_coal"])
+        self.assertNotIn("oil", self.commodity.tag("Malaysia palm oil production rose 4% in August"))
+        self.assertNotIn("oil", self.commodity.tag("Brazil: Biofuels Annual -- ethanol blending and renewable diesel capacity"))
+
+    def test_multi_commodity_series_reach_every_window_they_cover(self):
+        # EIA's STEO revises oil, gas and coal even when the headline names oil only.
+        got = self.run_one("Short-Term Energy Outlook: EIA expects lower crude oil prices")
+        self.assertEqual(sorted(got), ["gas", "oil", "thermal_coal"])
+        # An oil story that cites the STEO in its body is still an oil story.
+        self.assertEqual(self.run_one("United States on track for record crude oil production in 2026",
+                                      "In our latest Short-Term Energy Outlook we forecast 13.9 million b/d."),
+                         ["oil"])
+        # A single-commodity EIA story stays on its own window.
+        self.assertEqual(self.run_one("EIA expects highest natural gas inventories in a decade heading into winter"), ["gas"])
+
+    def test_housekeeping_notices_are_dropped(self):
+        for title in ("USDA Crop Progress report delayed until 5pm ET",
+                      "NASS suspends pecan estimates for December and January",
+                      "USDA NASS to Re-Survey Operators with Previously Unharvested Corn and Soybeans",
+                      "Aviso de pauta 2013 3o levantamento da safra de cafe 2026",
+                      "MPOB(T/P)39/26 – Kerja-Kerja Penyelenggaraan Am Ladang Sawit",
+                      "International Aluminium Institute Appoints Jonathan Grant as New Secretary General",
+                      "IAI has new a Secretary General",
+                      "NASS Reinstates Select Data Collection Programs and Reports"):
+            self.assertIsNone(self.run_one(title, market_only=True), title)
+        self.assertEqual(self.run_one("Produção de café é estimada em 67,6 milhões de sacas", market_only=True), ["coffee"])
+
+    def test_a_publisher_name_in_the_body_is_not_its_supply_series(self):
+        # MPOB_SUPPLY_DEMAND used to match on "mpob", so every MPOB post was
+        # a series item and skipped the event filter.
+        self.assertIsNone(self.run_one("Persidangan Kebangsaan Pekebun Kecil Sawit (PKPKS) 2026",
+                                       "Anjuran MPOB di Kuala Lumpur.", market_only=True))
+
+    def test_market_only_board_keeps_market_news_only(self):
+        self.assertIsNone(self.run_one("Aluminium cans lead global beverage recycling", market_only=True))
+        self.assertEqual(self.run_one("Gulf aluminium output collapses by 40% as global supply crisis deepens",
+                                      market_only=True), ["aluminum"])
+
+    def test_title_only_feed_ignores_crops_mentioned_in_passing(self):
+        self.assertIsNone(self.run_one("Rewiring the Egg Supply Chain in Austria",
+                                       "Feed made from imported soybean meal is a large share of costs.",
+                                       market_only=True, commodity_from="title"))
+
+
+class FirstSeenTests(unittest.TestCase):
+    def test_first_seen_is_set_then_kept_across_builds(self):
+        import json as _json
+        import tempfile
+
+        doc = build_commodity_reports(fetch_live=False, fixture_dir=FIXTURES, per_bucket=8, now=NOW)
+        self.assertTrue(all(i["first_seen_at"] == NOW.isoformat() for i in doc["items"]))
+        # A later live build reads the previous file; with nothing fetched the
+        # items it republishes (none here) would keep their first_seen_at.
+        # Exercise the carry directly through a fixture rebuild that names
+        # the previous file.
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
+            _json.dump(doc, fh)
+        from commodity_reports import build as build_mod
+
+        later = datetime(2026, 8, 20, tzinfo=timezone.utc)
+        orig = build_mod._collect_live
+        raw_fixture, _ = build_mod._collect_fixtures(
+            [s for s in build_mod.load_json(build_mod.CONFIG / "sources.json")["sources"] if s.get("enabled", True)],
+            FIXTURES, 40, NOW)
+        build_mod._collect_live = lambda *a, **k: (raw_fixture, [])
+        try:
+            doc2 = build_commodity_reports(fetch_live=True, per_bucket=8, now=later, previous_path=fh.name)
+        finally:
+            build_mod._collect_live = orig
+        firsts = {i["id"]: i["first_seen_at"] for i in doc2["items"]}
+        shared = set(firsts) & {i["id"] for i in doc["items"]}
+        self.assertTrue(shared)
+        self.assertTrue(all(firsts[i] == NOW.isoformat() for i in shared))
+
+
+class ArchiveTests(unittest.TestCase):
+    """The board keeps what scrolled off a feed, up to ARCHIVE_DAYS."""
+
+    def test_scrolled_off_reports_stay_and_old_ones_go(self):
+        from commodity_reports import build as build_mod
+
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        sources = [{"id": "src_a", "agency": "A", "kind": "rss", "url": "https://a.example/feed"}]
+        previous = {"items": [
+            {"source_id": "src_a", "url": "https://a.example/old-but-recent", "title": {"original": "Recent"},
+             "summary": "", "published_at": "2026-09-01T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/too-old", "title": {"original": "Too old"},
+             "summary": "", "published_at": "2026-05-01T00:00:00+00:00"},
+            {"source_id": "src_a", "url": "https://a.example/undated", "title": {"original": "Undated"},
+             "summary": "", "published_at": None, "first_seen_at": "2026-06-01T00:00:00+00:00"},
+        ]}
+        carried = build_mod.previous_raws(previous, sources, now)
+        self.assertEqual([r.title for r in carried["src_a"]], ["Recent"])
+
+        fresh = RawReport(source_id="src_a", agency="A", agency_ko="A", url="https://a.example/new",
+                          title="New", summary="", published_at="2026-09-25T00:00:00+00:00")
+        orig = build_mod.fetch_source
+        build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": True, "items": [fresh],
+                                                   "count": 1, "error": None}
+        try:
+            raw, status = build_mod._collect_live(sources, ua="t", timeout=1, max_per=10, carried=carried)
+        finally:
+            build_mod.fetch_source = orig
+        self.assertEqual(sorted(r.title for r in raw), ["New", "Recent"])
+        self.assertEqual(status[0]["archived"], 1)
+
+    def test_news_time_uses_month_end_and_first_seen(self):
+        from commodity_reports.build import news_time
+
+        now = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        self.assertEqual(news_time("2026-07-01T00:00:00+00:00", "month", None, now).date().isoformat(), "2026-07-31")
+        self.assertEqual(news_time(None, None, "2026-09-20T00:00:00+00:00", now).date().isoformat(), "2026-09-20")
+        self.assertEqual(news_time(None, None, None, now), now)
+
+
+class CommodityScopeTests(unittest.TestCase):
+    """commodity_scope: a narrow source is never filed under anything else."""
+
+    def test_grain_exchange_macro_column_is_not_an_oil_report(self):
+        from commodity_reports import build as build_mod
+
+        def raw(url, title):
+            return RawReport(source_id="ar_bcr", agency="BCR", agency_ko="BCR", url=url, title=title,
+                             summary="", published_at="2026-09-25T00:00:00+00:00", lang="es",
+                             default_country="ARG", commodity_scope=["soybeans", "corn", "wheat"])
+
+        items = [
+            raw("https://bcr.example/macro", "Reservas internacionales y petróleo marcan la agenda económica y financiera"),
+            raw("https://bcr.example/maiz", "Maíz en racha: más de un millón de toneladas de maíz exportadas por semana"),
+        ]
+
+        def fake_fetch(s, **kw):
+            ok = s["id"] == "ar_bcr"
+            return {"source_id": s["id"], "ok": ok, "items": items if ok else [],
+                    "count": len(items) if ok else 0, "error": None if ok else "skipped"}
+
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = fake_fetch
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: fake_fetch(s)
+        try:
+            doc = build_commodity_reports(fetch_live=True, now=datetime(2026, 9, 26, tzinfo=timezone.utc))
+        finally:
+            build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+        bcr = {it["url"]: it["commodities"] for it in doc["items"] if it["source_id"] == "ar_bcr"}
+        self.assertNotIn("https://bcr.example/macro", bcr)
+        self.assertEqual(bcr.get("https://bcr.example/maiz"), ["corn"])
 
 
 class BuildTests(unittest.TestCase):

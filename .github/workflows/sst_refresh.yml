@@ -16,6 +16,9 @@ on:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # build_sst_regions.py pulls ten regions one after another, each with a
+    # 600s urlopen timeout. Cap the job well below the 6h default.
+    timeout-minutes: 90
     permissions:
       contents: write
     steps:
@@ -28,13 +31,23 @@ jobs:
         working-directory: "New for anti/scripts"
         run: python3 build_sst.py
 
+      # 해역 클릭 시 뜨는 월별 추이(sst_regions_v1.json). 2026-08-07 수동 생성 이후
+      # 이 파일을 돌리는 워크플로가 없어 7월에서 멈춰 있었다.
+      # 여기서 실패해도 위 격자는 커밋되도록 계속 진행하고, 맨 끝에서 잡을 빨간불로 만든다.
+      - name: Rebuild monthly region series
+        id: regions
+        continue-on-error: true
+        working-directory: "New for anti/scripts"
+        run: python3 build_sst_regions.py
+
       - name: Commit if the grid moved
         run: |
           f="New for anti/public/data/sst_anomaly_v1.json"
-          if git diff --quiet -- "$f"; then exit 0; fi
+          r="New for anti/public/data/sst_regions_v1.json"
+          if git diff --quiet -- "$f" "$r"; then exit 0; fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"
+          git add "$f" "$r"
           git commit -m "chore: refresh SST anomaly grid (NOAA OISST)"
           # Non-fast-forward race: a bare push drops this refresh when another
           # scheduled job lands a commit on main first. Rebase and retry.
@@ -44,3 +57,9 @@ jobs:
             git pull --rebase --autostash
           done
           git push
+
+      - name: Fail if the region series did not rebuild
+        if: steps.regions.outcome == 'failure'
+        run: |
+          echo "::error::build_sst_regions.py failed -- sst_regions_v1.json was not refreshed"
+          exit 1

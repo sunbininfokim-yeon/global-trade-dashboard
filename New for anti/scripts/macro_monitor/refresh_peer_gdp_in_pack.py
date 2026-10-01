@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Graft real GDP growth (gdp_yoy) onto the deployed macro pack.
+
+Does not rebuild macro_monitor_v1.json or touch any other indicator --
+overlays onto the gdp_yoy indicator that already exists in every country's
+pack (currently fixture_synth/demo), the same graft-not-rebuild shape as
+the other *_in_pack.py refreshers. A country whose fetch came back empty or
+errored keeps its previous card untouched.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+
+from macro_monitor.engine import _official_observations_to_monthly  # noqa: E402
+from macro_monitor.series import format_value  # noqa: E402
+
+PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
+SNAPSHOT = ROOT / "config" / "peer_gdp_v1.json"
+
+
+def _axis_from_indicator(ind: dict) -> dict[str, list[str]] | None:
+    history = ind.get("history") or {}
+    if not all(k in history and history[k].get("dates") for k in ("5y", "10y")):
+        return None
+    return {k: list(history[k]["dates"]) for k in ("5y", "10y")}
+
+
+def main() -> int:
+    pack = json.loads(PACK.read_text(encoding="utf-8"))
+    snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    retrieved_at = snapshot.get("retrieved_at")
+    source_url_tpl = "https://api.worldbank.org/v2/country/{iso3}/indicator/NY.GDP.MKTP.KD.ZG"
+
+    refreshed: list[str] = []
+    skipped: list[str] = []
+    for country in pack.get("countries") or []:
+        iso3 = country.get("iso3")
+        row = (snapshot.get("countries") or {}).get(iso3) or {}
+        observations = row.get("observations") or []
+        if not observations:
+            skipped.append(f"{iso3}:{row.get('status', 'no-data')}")
+            continue
+
+        ind = next((i for i in country.get("indicators") or [] if i.get("id") == "gdp_yoy"), None)
+        if ind is None:
+            skipped.append(f"{iso3}:no-indicator")
+            continue
+
+        axes = _axis_from_indicator(ind)
+        if axes is None:
+            skipped.append(f"{iso3}:no-axis")
+            continue
+
+        latest = observations[-1]
+        history: dict[str, dict] = {}
+        for window, dates in axes.items():
+            values = _official_observations_to_monthly(observations, dates, hold_after_latest=False)
+            history[window] = {"dates": dates, "values": values}
+
+        ind["history"] = history
+        ind["value"] = latest["value"]
+        ind["display"] = format_value(latest["value"], ind.get("format") or "pct1")
+        ind["change_1m_pct"] = None
+        ind["change_1y_pct"] = None
+        ind["asof"] = latest["date"]
+        ind["observed_at"] = latest["date"]
+        ind["retrieved_at"] = retrieved_at
+        ind["source"] = "World Bank NY.GDP.MKTP.KD.ZG"
+        ind["source_urls"] = [source_url_tpl.format(iso3=iso3)]
+        ind["quality"] = "engine"
+        ind["data_status"] = "official_snapshot"
+        ind["note_ko"] = "세계은행 실질GDP 성장률 연간 실측치만 표시합니다. 전망치는 포함하지 않습니다."
+        refreshed.append(iso3)
+
+    PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    print(f"refreshed gdp_yoy for {len(refreshed)} countries: {', '.join(refreshed)}")
+    if skipped:
+        print(f"skipped {len(skipped)}: {', '.join(skipped)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
