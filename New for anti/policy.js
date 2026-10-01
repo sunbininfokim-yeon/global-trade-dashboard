@@ -338,13 +338,12 @@
 
   // Shows next to the search box -- but only for a query the user actually
   // submitted (Enter, the magnifying-glass button, or picking a dropdown
-  // row), not for the live-as-you-type preview below. Swaps the
-  // magnifying-glass button itself out for the spinner in the same slot.
+  // row), not for the live-as-you-type preview below. The magnifying-glass
+  // button itself stays visible; the spinner occupies its own slot to its
+  // left (see .policy-search-spinner).
   function setSearchSpinner(visible) {
     const spinner = host?.querySelector('[data-search-spinner]');
-    const submit = host?.querySelector('[data-search-submit]');
     if (spinner) spinner.hidden = !visible;
-    if (submit) submit.hidden = visible;
   }
 
   async function runSearch(value) {
@@ -1511,7 +1510,7 @@
     const token = ++renderToken;
     host.classList.add('policy-surface');
     host.dataset.policyTarget = target;
-    host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}</div>`;
+    host.innerHTML = `<div class="policy-loading"><span class="mm-cpi-spinner" aria-hidden="true"></span>${esc('정책 데이터를 불러오는 중')}</div>`;
 
     subscribeToAuth();
 
