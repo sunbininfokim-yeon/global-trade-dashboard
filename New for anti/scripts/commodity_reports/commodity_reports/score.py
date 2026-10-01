@@ -100,11 +100,14 @@ class ScoredReport:
     title_ko: Optional[str] = None
     date_precision: str = "day"
     board: Optional[str] = None
+    title_en: Optional[str] = None
+    control: Optional[Dict[str, Any]] = None
 
     def to_item(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko},
+            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko,
+                      **({"en": self.title_en} if self.title_en else {})},
             "summary": self.summary or None,
             "url": self.url,
             "published_at": self.published_at,
@@ -121,6 +124,7 @@ class ScoredReport:
             "importance": round(self.importance, 3),
             "reasons": self.reasons,
             **({"board": self.board} if self.board else {}),
+            **({"control": self.control} if self.control else {}),
         }
 
 

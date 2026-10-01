@@ -9,7 +9,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .feeds import RawReport, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .gemini import GeminiAnnotator
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
 
@@ -277,7 +278,62 @@ def build_index(
     return index
 
 
-BOARD_LIMIT = 60
+BOARD_LIMIT = 200
+
+
+def annotate_raws(raw: List[RawReport], sources: Dict[str, Dict[str, Any]],
+                  previous: Optional[Dict[str, Any]], annotator: GeminiAnnotator) -> Dict[str, Dict[str, Any]]:
+    """report id -> {"en", "ko", "control"?, "fresh"} for opted-in reports.
+
+    Reused from the previous build when the same URL still carries the same
+    headline; only new or re-titled headlines are sent.
+    """
+    prev: Dict[str, Dict[str, Any]] = {}
+    for it in (previous or {}).get("items") or []:
+        title = it.get("title") or {}
+        if title.get("en"):
+            prev[it.get("url") or ""] = {
+                "original": title.get("original"), "en": title["en"], "ko": title.get("ko"),
+                "control": {k: v for k, v in (it.get("control") or {}).items()
+                            if k in ("measure", "items", "targets")} or None,
+            }
+    notes: Dict[str, Dict[str, Any]] = {}
+    ask: List[Dict[str, Any]] = []
+    for r in raw:
+        src = sources.get(r.source_id) or {}
+        if not (src.get("translate") or r.board):
+            continue
+        rid = report_id(r)
+        if rid in notes:
+            continue
+        hit = prev.get(r.url)
+        if hit and hit["original"] == r.title and (hit["control"] or not r.board):
+            notes[rid] = {"en": hit["en"], "ko": hit["ko"], "fresh": False,
+                          **({"control": hit["control"]} if hit["control"] else {})}
+            continue
+        ask.append({"key": rid, "title": r.title, "lang": r.lang, "control": bool(r.board)})
+    for rid, res in annotator.annotate(ask).items():
+        notes[rid] = {**res, "fresh": True}
+    return notes
+
+
+def control_record(src: Dict[str, Any], note: Dict[str, Any]) -> Dict[str, Any]:
+    """The export-controls window's fields for one board item.
+
+    issuer / issuer_body come from the source catalog (who published it);
+    measure / items / targets are Gemini's reading of the headline, null
+    until one has been made.
+    """
+    reading = note.get("control") or {}
+    return {
+        "issuer": src.get("issuer") or src.get("default_country"),
+        "issuer_body": src.get("issuer_body") or src.get("agency"),
+        "issuer_body_ko": src.get("agency_ko") or src.get("agency"),
+        "measure": reading.get("measure"),
+        "items": reading.get("items") or [],
+        "targets": reading.get("targets") or [],
+        "extracted_by": "gemini" if reading else None,
+    }
 
 
 def build_boards(reports: List[ScoredReport], *, limit: int = BOARD_LIMIT) -> Dict[str, List[str]]:
@@ -300,6 +356,7 @@ def build_commodity_reports(
     max_items: int = 5000,
     translate: bool = False,
     translate_limit: int = 60,
+    annotator: Optional[GeminiAnnotator] = None,
     now: Optional[datetime] = None,
     previous_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
@@ -335,10 +392,24 @@ def build_commodity_reports(
         raw, feed_status = [], [{"source_id": "_", "ok": False, "count": 0,
                                  "error": "no_fetch", "mode": "none"}]
 
+    # English (and Korean) headlines for sources that opt in, and a control
+    # reading for export-control boards -- before tagging, so the English is
+    # what the taggers see. Off without GEMINI_API_KEY.
+    annotator = annotator or GeminiAnnotator()
+    by_src = {s["id"]: s for s in sources}
+    notes = annotate_raws(raw, by_src, previous, annotator)
+    gemini_status = {
+        "enabled": annotator.enabled, "model": annotator.model_used, "calls": annotator.calls,
+        "annotated": sum(1 for n in notes.values() if n.get("fresh")),
+        "reused": sum(1 for n in notes.values() if not n.get("fresh")),
+        "error": annotator.error,
+    }
+
     scored: List[ScoredReport] = []
     for r in raw:
+        note = notes.get(report_id(r)) or {}
         tagged = tag_report(
-            title=r.title,
+            title=f"{r.title}\n{note['en']}" if note.get("en") else r.title,
             summary=r.summary,
             commodity_tagger=commodity_tagger,
             country_tagger=country_tagger,
@@ -362,6 +433,11 @@ def build_commodity_reports(
         # nothing here pretending to be one.
         if item is None:
             continue
+        if note.get("en"):
+            item.title_en = note["en"]
+            item.title_ko = item.title_ko or note.get("ko")
+        if r.board:
+            item.control = control_record(by_src.get(r.source_id) or {}, note)
         scored.append(item)
 
     # The board is the last ARCHIVE_DAYS (or a source's own longer window).
@@ -454,6 +530,7 @@ def build_commodity_reports(
             "buckets": bucket_count,
         },
         "feed_status": feed_status,
+        "translation": gemini_status,
         # Named lists fed by a source regardless of commodity: board -> ids,
         # newest first. "cn_export_controls": MOFCOM's export-control bureau.
         "boards": boards,

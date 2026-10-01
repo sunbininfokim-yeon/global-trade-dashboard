@@ -30,6 +30,11 @@ jobs:
         working-directory: New for anti/scripts/commodity_reports
         # --print-stats lists every feed that failed, which is the only place a
         # publisher that moved or started returning 403 becomes visible.
+        # Gemini translates headlines of sources marked "translate" (MOFCOM's
+        # export-control bureau) before tagging; without the key the build
+        # runs on the originals. Same AI Studio key sync-congress uses.
+        env:
+          GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
         run: python build_reports.py build --print-stats
       - name: Commit
         run: |

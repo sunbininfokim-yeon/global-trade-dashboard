@@ -4,30 +4,59 @@
  ],
  "targets": [
   {
-   "group": "mofcom",
-   "id": "aqygzj_home_articles",
-   "url": "https://aqygzj.mofcom.gov.cn/",
+   "group": "sanctions",
+   "id": "ofac_recent_actions",
+   "url": "https://ofac.treasury.gov/recent-actions",
    "variants": true,
    "link_text": true,
-   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/[a-z]+/art/\\d{4}/art_[0-9a-f]+\\.html",
-   "samples": 40
+   "link_re": "ofac\\.treasury\\.gov/recent-actions/\\d{8}",
+   "samples": 8
   },
   {
-   "group": "mofcom",
-   "id": "aqygzj_home_sections",
-   "url": "https://aqygzj.mofcom.gov.cn/",
-   "link_text": true,
-   "link_re": "aqygzj\\.mofcom\\.gov\\.cn/[a-z]+/(?:[a-z]+/)?index\\.html",
-   "samples": 40
+   "group": "sanctions",
+   "id": "ofac_rss_guess",
+   "url": "https://ofac.treasury.gov/recent-actions/rss.xml",
+   "variants": true,
+   "show_body": 300
   },
   {
-   "group": "mofcom",
-   "id": "mofcom_blgg",
-   "url": "https://www.mofcom.gov.cn/zcfb/blgg/index.html",
+   "group": "sanctions",
+   "id": "fr_bis",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=industry-and-security-bureau",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "fr_ofac",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=foreign-assets-control-office",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "bis_news",
+   "url": "https://www.bis.gov/news-updates",
    "variants": true,
    "link_text": true,
-   "link_re": "mofcom\\.gov\\.cn/[^\\\"' ]*art_[0-9a-f]+\\.html",
-   "samples": 30
+   "link_re": "bis\\.gov/(?:press-release|news-updates)/[a-z0-9-]+",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "eu_sanctions_news",
+   "url": "https://finance.ec.europa.eu/eu-and-world/sanctions-restrictive-measures_en",
+   "variants": true,
+   "link_text": true,
+   "link_re": "europa\\.eu/[^\\\"' ]*sanction[^\\\"' ]*",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "meti_export_control_en",
+   "url": "https://www.meti.go.jp/policy/anpo/englishpage.html",
+   "variants": true,
+   "link_text": true,
+   "link_re": "meti\\.go\\.jp/[^\\\"' ]+",
+   "samples": 10
   },
   {
    "group": "prod",

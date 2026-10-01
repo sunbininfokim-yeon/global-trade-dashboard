@@ -599,15 +599,27 @@ async function handleCommodityReports(request, env) {
     }
 
     // A named board (pipeline "boards"): a list fed by its sources whatever
-    // the commodity -- cn_export_controls is MOFCOM's export-control bureau.
+    // the commodity. export_controls is every regulator's notices (MOFCOM's
+    // export-control bureau today); ?issuer=CHN narrows it to one country's
+    // regulators, ?measure=entity_list to one kind of measure.
     const board = (url.searchParams.get('board') || '').trim();
     if (board) {
+        const issuer = (url.searchParams.get('issuer') || '').trim().toUpperCase();
+        const measure = (url.searchParams.get('measure') || '').trim();
         const byId = new Map((doc.items || []).map((it) => [it.id, it]));
-        const known = ((doc.boards || {})[board] || []).filter((id) => byId.has(id));
+        const known = ((doc.boards || {})[board] || []).filter((id) => {
+            const it = byId.get(id);
+            if (!it) return false;
+            if (issuer && (it.control?.issuer || '').toUpperCase() !== issuer) return false;
+            if (measure && it.control?.measure !== measure) return false;
+            return true;
+        });
         const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
         return jsonWithCache({
             generated_at: doc.generated_at,
             board,
+            issuer: issuer || null,
+            measure: measure || null,
             total: known.length,
             offset,
             count: items.length,

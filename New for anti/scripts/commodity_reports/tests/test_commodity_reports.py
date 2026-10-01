@@ -737,7 +737,7 @@ class ExportControlBoardTests(unittest.TestCase):
             build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
 
         by_id = {it["id"]: it for it in doc["items"]}
-        board = [by_id[i] for i in doc["boards"]["cn_export_controls"]]
+        board = [by_id[i] for i in doc["boards"]["export_controls"]]
         titles = [it["title"]["original"] for it in board]
         self.assertEqual(len(titles), 3, titles)
         self.assertIn("商务部新闻发言人就将14家欧盟实体列入出口管制管控名单答记者问", titles)
@@ -752,6 +752,154 @@ class ExportControlBoardTests(unittest.TestCase):
         # A notice naming rare earths also lands on that commodity's China window.
         rare = [it for it in board if "稀土" in it["title"]["original"]][0]
         self.assertIn(rare["id"], doc["index"]["rare_earths"]["CHN"])
+
+
+class GeminiAnnotatorTests(unittest.TestCase):
+    """Optional translation: answers when it can, never breaks the build."""
+
+    def _payload(self, rows):
+        import json as _json
+        return {"candidates": [{"content": {"parts": [{"text": _json.dumps(rows, ensure_ascii=False)}]}}]}
+
+    def test_falls_through_a_retired_model_and_parses(self):
+        import urllib.error
+        from commodity_reports.gemini import GeminiAnnotator
+        seen = []
+
+        def post(url, body, key, timeout):
+            seen.append(url.split("/models/")[1].split(":")[0])
+            if len(seen) == 1:
+                raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+            return self._payload([{"key": "a", "en": "Gallium export controls", "ko": "갈륨 수출통제",
+                                   "measure": "export_restriction", "items": ["Gallium", "germanium"],
+                                   "targets": ["usa"]}])
+
+        ann = GeminiAnnotator("k", models=["gone-model", "live-model"], post=post)
+        out = ann.annotate([{"key": "a", "title": "关于对镓锗实施出口管制", "lang": "zh", "control": True}])
+        self.assertEqual(seen, ["gone-model", "live-model"])
+        self.assertEqual(ann.model_used, "live-model")
+        self.assertEqual(out["a"]["en"], "Gallium export controls")
+        self.assertEqual(out["a"]["control"], {"measure": "export_restriction",
+                                               "items": ["gallium", "germanium"], "targets": ["USA"]})
+
+    def test_no_key_or_quota_error_means_no_translation(self):
+        import urllib.error
+        from commodity_reports.gemini import GeminiAnnotator
+        self.assertEqual(GeminiAnnotator("").annotate([{"key": "a", "title": "x", "control": False}]), {})
+
+        def post(url, body, key, timeout):
+            raise urllib.error.HTTPError(url, 429, "RESOURCE_EXHAUSTED", {}, None)
+
+        ann = GeminiAnnotator("k", models=["m"], post=post)
+        self.assertEqual(ann.annotate([{"key": "a", "title": "x", "control": False}]), {})
+        self.assertEqual(ann.error, "HTTP 429 on m")
+
+
+class ExportControlTranslationTests(unittest.TestCase):
+    """English before tagging: what the Chinese alias list misses still lands."""
+
+    HTML = """
+      <a href="https://aqygzj.mofcom.gov.cn/qdml/art/2026/art_bbbb0000000000000000000000000001.html">关于对钕铁硼永磁材料相关物项实施出口管制的公告</a>
+      <a href="https://aqygzj.mofcom.gov.cn/qdml/art/2026/art_bbbb0000000000000000000000000002.html">关于对镓、锗相关物项实施出口管制的公告</a>"""
+
+    def _build(self, annotator, previous=None):
+        from commodity_reports import build as build_mod
+        from commodity_reports.feeds import parse_html_list
+
+        def fake_fetch(s, **kw):
+            if s["id"] != "cn_mofcom_aqygzj":
+                return {"source_id": s["id"], "ok": False, "items": [], "count": 0, "error": "skipped"}
+            items = parse_html_list(self.HTML, s)
+            return {"source_id": s["id"], "ok": True, "items": items, "count": len(items), "error": None}
+
+        import json as _json
+        import tempfile
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = fake_fetch
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: fake_fetch(s)
+        with tempfile.TemporaryDirectory() as tmp:
+            prev_path = Path(tmp) / "prev.json"
+            if previous is not None:
+                prev_path.write_text(_json.dumps(previous, ensure_ascii=False), encoding="utf-8")
+            try:
+                return build_commodity_reports(
+                    fetch_live=True, now=datetime(2026, 10, 1, tzinfo=timezone.utc), annotator=annotator,
+                    previous_path=prev_path,
+                )
+            finally:
+                build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+
+    def test_translation_tags_and_reads_the_measure(self):
+        from commodity_reports.gemini import GeminiAnnotator
+        answers = {
+            "钕铁硼": {"en": "Announcement on export controls on NdFeB (neodymium-iron-boron) permanent magnet items",
+                     "ko": "네오디뮴 영구자석 품목 수출통제 공고", "measure": "export_restriction",
+                     "items": ["ndfeb permanent magnets"], "targets": []},
+            "镓": {"en": "Announcement on export controls on gallium and germanium items",
+                   "ko": "갈륨·게르마늄 품목 수출통제 공고", "measure": "export_restriction",
+                   "items": ["gallium", "germanium"], "targets": []},
+        }
+        calls = []
+
+        def post(url, body, key, timeout):
+            import json as _json
+            listing = body["contents"][0]["parts"][0]["text"].split("Items:\n", 1)[1]
+            items = _json.loads(listing)
+            calls.append(len(items))
+            rows = []
+            for it in items:
+                hit = next(v for k, v in answers.items() if k in it["title"])
+                rows.append({"key": it["key"], **hit})
+            return {"candidates": [{"content": {"parts": [{"text": _json.dumps(rows, ensure_ascii=False)}]}}]}
+
+        doc = self._build(GeminiAnnotator("k", models=["m"], post=post))
+        by_id = {it["id"]: it for it in doc["items"]}
+        board = [by_id[i] for i in doc["boards"]["export_controls"]]
+        self.assertEqual(len(board), 2)
+        magnet = next(it for it in board if "钕铁硼" in it["title"]["original"])
+        gallium = next(it for it in board if "镓" in it["title"]["original"])
+        # The Chinese title names no tracked commodity; its English does.
+        self.assertEqual(magnet["commodities"], ["rare_earths"])
+        self.assertTrue(magnet["title"]["en"].startswith("Announcement on export controls"))
+        self.assertEqual(magnet["title"]["ko"], "네오디뮴 영구자석 품목 수출통제 공고")
+        # Not a dashboard commodity -- kept for the export-controls window anyway.
+        self.assertEqual(gallium["commodities"], [])
+        self.assertEqual(gallium["control"]["items"], ["gallium", "germanium"])
+        self.assertEqual(gallium["control"]["measure"], "export_restriction")
+        self.assertEqual(gallium["control"]["issuer"], "CHN")
+        self.assertEqual(gallium["control"]["extracted_by"], "gemini")
+        self.assertEqual(doc["translation"]["annotated"], 2)
+        self.assertEqual(calls, [2])
+
+    def test_without_a_key_the_board_still_fills_untranslated(self):
+        from commodity_reports.gemini import GeminiAnnotator
+        doc = self._build(GeminiAnnotator(""))
+        by_id = {it["id"]: it for it in doc["items"]}
+        board = [by_id[i] for i in doc["boards"]["export_controls"]]
+        self.assertEqual(len(board), 2)
+        for it in board:
+            self.assertNotIn("en", it["title"])
+            self.assertIsNone(it["control"]["measure"])
+            self.assertEqual(it["control"]["issuer"], "CHN")
+        self.assertFalse(doc["translation"]["enabled"])
+
+    def test_previous_translation_is_reused_not_resent(self):
+        from commodity_reports.gemini import GeminiAnnotator
+        first = self._build(GeminiAnnotator(""))
+        for it in first["items"]:
+            if it["source_id"] == "cn_mofcom_aqygzj":
+                it["title"]["en"] = "cached " + it["id"]
+                it["title"]["ko"] = "캐시"
+                it["control"] = {"measure": "other", "items": ["x"], "targets": []}
+
+        def post(url, body, key, timeout):
+            raise AssertionError("a cached headline was sent again")
+
+        doc = self._build(GeminiAnnotator("k", models=["m"], post=post), previous=first)
+        board = [it for it in doc["items"] if it["source_id"] == "cn_mofcom_aqygzj"]
+        self.assertEqual(len(board), 2)
+        self.assertTrue(all(it["title"]["en"].startswith("cached ") for it in board))
+        self.assertEqual(doc["translation"]["reused"], 2)
 
 
 class CommodityScopeTests(unittest.TestCase):

@@ -991,10 +991,10 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const slot = document.getElementById('reports-slot');
     if (!slot || !commodity) return;
     const iso3 = countryName ? countryCode(countryName) : null;
-    const boardName = REPORT_BOARDS_BY_COUNTRY[iso3] || null;
+    const boardSpec = REPORT_BOARDS_BY_COUNTRY[iso3] || null;
     const [win, board] = await Promise.all([
         loadCommodityReports(commodity, iso3),
-        boardName ? loadReportBoard(boardName) : Promise.resolve(null),
+        boardSpec ? loadReportBoard(boardSpec) : Promise.resolve(null),
     ]);
     const { items, label } = win;
 
@@ -1004,7 +1004,7 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     if (!live || currentCommodity !== commodity) return;
     if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
     const boardItems = board?.items || [];
-    renderReportBoard(boardName, boardItems);
+    renderReportBoard(boardSpec, boardItems);
     if (!items.length && boardItems.length) {
         // China with no report on this commodity still has its export-control
         // notices: show the panel for them alone.
@@ -1039,22 +1039,32 @@ const renderCommodityReports = async (commodity, countryName = null) => {
 // bureau posts entity-list additions, countermeasures and control-list
 // notices that name no traded commodity, so they would never reach a
 // commodity window -- but they are the news for anyone trading with China.
-const REPORT_BOARDS_BY_COUNTRY = { CHN: 'cn_export_controls' };
-const REPORT_BOARD_META = {
-    cn_export_controls: {
+// The pipeline's export_controls board is every regulator's notices; a
+// country's screen shows its own regulators' (control.issuer).
+const REPORT_BOARDS_BY_COUNTRY = {
+    CHN: {
+        board: 'export_controls', issuer: 'CHN',
         title: '중국 수출통제 공고 (원문)',
-        note: '상무부 산업안전·수출입통제국 발표 · 중국어 원문 · 제목을 누르면 원문으로 이동',
+        note: '상무부 산업안전·수출입통제국 발표 · 중국어 원문(번역은 Gemini) · 제목을 누르면 원문으로 이동',
     },
+};
+// control.measure (pipeline gemini.MEASURES) in Korean.
+const CONTROL_MEASURE_KO = {
+    entity_list: '통제명단', export_restriction: '수출통제', export_ban: '수출금지',
+    sanctions: '제재', countermeasure: '반제재', list_adjustment: '목록조정',
+    suspension: '유예·해제', enforcement: '단속', dialogue: '대화·협의', guidance: '안내',
 };
 const REPORT_BOARD_SHOWN = 3;
 const REPORT_BOARD_FETCH = 30;
 const reportBoardCache = new Map();
 
-const loadReportBoard = async (board) => {
-    if (reportBoardCache.has(board)) return reportBoardCache.get(board);
+const loadReportBoard = async ({ board, issuer }) => {
+    const key = `${board}|${issuer || ''}`;
+    if (reportBoardCache.has(key)) return reportBoardCache.get(key);
     let out = null;
     try {
         const q = new URLSearchParams({ board, limit: String(REPORT_BOARD_FETCH) });
+        if (issuer) q.set('issuer', issuer);
         const res = await fetch(`/api/commodity-reports?${q}`);
         if (res.ok) {
             const doc = await res.json();
@@ -1066,18 +1076,18 @@ const loadReportBoard = async (board) => {
     if (out === null) {
         const doc = await loadCommodityReportSnapshot();
         const byId = new Map((doc?.items || []).map((it) => [it.id, it]));
-        const all = (doc?.boards?.[board] || []).map((id) => byId.get(id)).filter(Boolean);
+        const all = (doc?.boards?.[board] || []).map((id) => byId.get(id))
+            .filter((it) => it && (!issuer || (it.control?.issuer || '').toUpperCase() === issuer));
         out = { items: all.slice(0, REPORT_BOARD_FETCH), total: all.length };
     }
-    reportBoardCache.set(board, out);
+    reportBoardCache.set(key, out);
     return out;
 };
 
-const renderReportBoard = (board, items) => {
+const renderReportBoard = (meta, items) => {
     const host = document.getElementById('ctl-board-slot');
     if (!host) return;
-    const meta = REPORT_BOARD_META[board];
-    if (!board || !meta || !items.length) {
+    if (!meta || !items.length) {
         host.innerHTML = '';
         return;
     }
@@ -1087,12 +1097,21 @@ const renderReportBoard = (board, items) => {
     const row = (it) => {
         const href = safeReportHref(it.url);
         const title = escapeFeedText(it.title?.original || '');
+        const lang = escapeFeedText(it.title?.original_lang || '');
+        const ko = it.title?.ko ? escapeFeedText(it.title.ko) : '';
         const date = reportDate(it.published_at, it.published_precision);
+        const measure = CONTROL_MEASURE_KO[it.control?.measure];
         return `<li class="ctlb-item">
-            ${href
-                ? `<a class="ctlb-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer" lang="zh">${title}</a>`
-                : `<span class="ctlb-title" lang="zh">${title}</span>`}
-            ${date ? `<span class="ctlb-date">${date}</span>` : ''}
+            <div class="ctlb-text">
+                ${href
+                    ? `<a class="ctlb-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer" lang="${lang}">${title}</a>`
+                    : `<span class="ctlb-title" lang="${lang}">${title}</span>`}
+                ${ko ? `<span class="ctlb-ko">${ko}</span>` : ''}
+            </div>
+            <div class="ctlb-side">
+                ${measure ? `<span class="ctlb-measure">${escapeFeedText(measure)}</span>` : ''}
+                ${date ? `<span class="ctlb-date">${date}</span>` : ''}
+            </div>
         </li>`;
     };
     const rest = items.slice(REPORT_BOARD_SHOWN);
