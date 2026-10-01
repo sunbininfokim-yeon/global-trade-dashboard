@@ -85,10 +85,16 @@ jobs:
                     "New for anti/public/data/fed_qe_qt_history_v1.json" \
                     "New for anti/public/data/fed_balance_sheet_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
-            git commit -m "chore: refresh public series (USA/JPN/KOR/ZAF/HKG/SGP/TWN/RUS)" || { echo "nothing changed"; exit 0; }
+            git commit -m "chore: refresh macro public series" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi
-            echo "push raced (attempt $attempt); recomputing on the latest main"
+            # A refresh takes ~20 min and other collectors push to main meanwhile, so a plain retry
+            # raced again every time (2026-10-01: three full recomputes, nothing landed). Most of
+            # those pushes touch other files: rebase onto them and push. Only when the same data
+            # files changed upstream (a real conflict) is the refresh recomputed on the new main.
             git fetch origin main
+            if git rebase origin/main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "push raced with a change to the same files (attempt $attempt); recomputing on the latest main"
             git reset --hard origin/main
           done
           exit 1
