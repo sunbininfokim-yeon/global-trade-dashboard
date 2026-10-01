@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-01T05:26:39.375422+00:00",
+  "generated_at": "2026-10-01T10:27:43.350823+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 30,
-    "sources_failed": 2,
-    "raw_items": 487,
-    "scored": 97,
-    "published": 83,
+    "sources_ok": 34,
+    "sources_failed": 0,
+    "raw_items": 541,
+    "scored": 131,
+    "published": 117,
     "commodities": 24,
-    "buckets": 62
+    "buckets": 67
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -114,11 +114,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
+      "ok": true,
+      "count": 36,
+      "error": null,
       "mode": "live",
-      "carried_over": 23
+      "note": "45 list pages, 38 reports linked, 13 read, 23 already known"
     },
     {
       "source_id": "my_mpob",
@@ -212,11 +212,26 @@
       "mode": "live"
     },
     {
-      "source_id": "int_ita_tin",
+      "source_id": "us_ofac_recent_actions",
       "ok": true,
       "count": 10,
       "error": null,
       "mode": "live"
+    },
+    {
+      "source_id": "us_bis_press",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_ita_tin",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live",
+      "archived": 1
     },
     {
       "source_id": "int_wgc_press",
@@ -258,22 +273,52 @@
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 11,
-    "reused": 0,
+    "annotated": 31,
+    "reused": 10,
     "error": null
   },
   "boards": {
     "export_controls": [
+      "500ccb61f23619e0",
+      "59d7681e3c02b816",
+      "92a445d0e0c3f58b",
+      "846a4ec9ba0dc965",
+      "f7562e94f83254d4",
+      "f65c47c507570e77",
       "882a7745e1a1f1d0",
+      "b8820250e3d215f2",
+      "de8f050cc8e8f84d",
+      "e2977ea6c39eb0c0",
+      "87a09ee6b6bed0cf",
       "62948d40ba0908de",
       "51fd0b97a38800e4",
       "12b1ebd663809d68",
       "272dad20d1638da6",
       "05101536483c310c",
+      "743d54b554614f5d",
+      "d11faa07145529f8",
       "4098432089e3ba07",
       "12695f26b9990433",
       "fe480e0d2cd7dfc1",
-      "573a0facb6a8f6f9"
+      "573a0facb6a8f6f9",
+      "aad561e1acbfd247",
+      "0ff5c8d32bd5098a",
+      "3f466d7d7fb95662",
+      "a6a93bf576e818d7",
+      "8282a933f6033dc6",
+      "fa2d7a7de6299572",
+      "a2f5ad5e9e350af7",
+      "080a2847506ffdcd",
+      "4bfc82d61884bc0d",
+      "efd709eb0543c71a",
+      "718eff70c7ab23a5",
+      "fe6f911206762648",
+      "9a71ebf2eb9400bb",
+      "6a8a112d727bcdf9",
+      "9c1d75394c30af85",
+      "678e0775462a9bfb",
+      "d0ff09727ffe6e90",
+      "bfa1782decee57c7"
     ]
   },
   "commodity_labels": {
@@ -666,6 +711,9 @@
       ],
       "KEN": [
         "d6be49771c7e2707"
+      ],
+      "KAZ": [
+        "901d32f93671371c"
       ]
     },
     "sugar": {
@@ -727,6 +775,9 @@
       "CHN": [
         "6e3880b1a989890a"
       ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
       "IND": [
         "6269fa1eda293c5a"
       ],
@@ -747,6 +798,9 @@
       "BGD": [
         "9a2e551991dc06e6"
       ],
+      "KAZ": [
+        "901d32f93671371c"
+      ],
       "BRA": [
         "e65bffd316bf9313",
         "90caf018877f574b"
@@ -766,6 +820,9 @@
       ],
       "KEN": [
         "3ff8c2dd8b700c92"
+      ],
+      "KAZ": [
+        "901d32f93671371c"
       ],
       "ESP": [
         "b736550c463bc772"
@@ -798,6 +855,21 @@
         "0ac19de06b45b2cf"
       ]
     },
+    "gold": {
+      "USA": [
+        "45b970c626da923e"
+      ],
+      "IDN": [
+        "6d3e7543b7514565"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ],
+      "_global": [
+        "f5072178b1b60a30",
+        "7aa1d9ea8f7acd29"
+      ]
+    },
     "thermal_coal": {
       "USA": [
         "f8aa4f64781b6480"
@@ -808,6 +880,7 @@
     },
     "rubber": {
       "_global": [
+        "0ae7470a5aa9f5a7",
         "58c936b97029a384",
         "30a98869d9f0a4f3"
       ]
@@ -871,18 +944,6 @@
         "959d91c46a9a7514"
       ]
     },
-    "gold": {
-      "IDN": [
-        "6d3e7543b7514565"
-      ],
-      "CAN": [
-        "929e1ee5c8475871"
-      ],
-      "_global": [
-        "f5072178b1b60a30",
-        "7aa1d9ea8f7acd29"
-      ]
-    },
     "coffee": {
       "CHN": [
         "8566a0485af28101",
@@ -938,7 +999,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.389,
+      "importance": 6.361,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -971,7 +1032,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.955,
+      "importance": 4.934,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1004,7 +1065,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.449,
+      "importance": 4.43,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1036,7 +1097,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.127,
+      "importance": 4.115,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1069,7 +1130,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.109,
+      "importance": 4.095,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1102,7 +1163,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.069,
+      "importance": 4.058,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1135,7 +1196,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.914,
+      "importance": 3.897,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1164,7 +1225,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.717,
+      "importance": 3.704,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1195,7 +1256,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.708,
+      "importance": 3.696,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1228,7 +1289,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.516,
+      "importance": 3.506,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1260,7 +1321,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.516,
+      "importance": 3.506,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1292,7 +1353,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.475,
+      "importance": 3.468,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1301,6 +1362,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.452,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1325,7 +1417,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.466,
+      "importance": 3.452,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1357,7 +1449,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.466,
+      "importance": 3.452,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1388,7 +1480,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.418,
+      "importance": 3.408,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1421,7 +1513,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.377,
+      "importance": 3.366,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1453,7 +1545,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.161,
+      "importance": 3.153,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1484,7 +1576,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.75,
+      "importance": 2.739,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1515,7 +1607,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.554,
+      "importance": 2.55,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1523,6 +1615,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "45b970c626da923e",
+      "title": {
+        "original": "HPE dan HR Emas Turun 3,5% Periode I Oktober 2026, Ini Penyebabnya",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Kemendag menetapkan HPE dan HR emas turun 3,5% di awal Oktober 2026, dipengaruhi pasar global dan nilai tukar. Berlaku 1-14 Oktober 2026.Logam mulia Emasku yang diproduksi oleh PT Hartadinata Abadi Tbk. (HRTA)./dok. HRTABisnis.com, JAKARTA — Kementerian Perdagangan (Kemendag) telah menetapkan Harga Patokan Ekspor (HPE) dan Harga Referensi (HR) komoditas emas untuk periode pertama Oktober 2026. Pada periode ini, HPE emas turun 3,5% menjadi US$139.409,07 per kilogram dari US$144.469,49 per kilogram pada periode kedua September 2026. Selain itu, HR emas juga turun menjadi US$4.336,11 per troy…",
+      "url": "https://www.kemendag.go.id/berita/pojok-media/hpe-dan-hr-emas-turun-35-periode-i-oktober-2026-ini-penyebabnya",
+      "published_at": "2026-10-01T05:56:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.51,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "f8aa4f64781b6480",
@@ -1547,7 +1670,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.489,
+      "importance": 2.478,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1580,13 +1703,42 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.476,
+      "importance": 2.469,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0ae7470a5aa9f5a7",
+      "title": {
+        "original": "Anrpc releases monthly nr statistical report august 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report-august-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
+      "commodities": [
+        "rubber"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
+      "reasons": [
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
+      ],
+      "agency_url": "https://www.anrpc.org/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "58c936b97029a384",
@@ -1670,7 +1822,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.31,
+      "importance": 2.307,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1702,7 +1854,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.245,
+      "importance": 2.237,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1733,7 +1885,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.245,
+      "importance": 2.236,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1764,7 +1916,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.771,
+      "importance": 1.766,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1795,7 +1947,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.742,
+      "importance": 1.736,
       "reasons": [
         "series:EIA_STEO"
       ],
@@ -1825,7 +1977,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.729,
+      "importance": 1.725,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1855,7 +2007,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.696,
+      "importance": 1.692,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1886,12 +2038,92 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.688,
+      "importance": 1.68,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
+    },
+    {
+      "id": "743d54b554614f5d",
+      "title": {
+        "original": "Robert Bosch GmbH (Bosch) To Pay $36 Million Penalty to BIS for Violations Pertaining to Shipments to Huawei",
+        "original_lang": "en",
+        "ko": "로베르트 보쉬, 화웨이 선적 관련 위반으로 BIS에 3,600만 달러 벌금 납부",
+        "en": "Robert Bosch GmbH (Bosch) To Pay $36 Million Penalty to BIS for Violations Pertaining to Shipments to Huawei"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/robert-bosch-gmbh-bosch-pay-36-million-penalty-bis-violations-pertaining-shipments-huawei",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.663,
+      "reasons": [
+        "has_figure",
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "d11faa07145529f8",
+      "title": {
+        "original": "Applied Materials to Pay $252 Million Penalty to BIS for Illegally Exporting Semiconductor Manufacturing Equipment",
+        "original_lang": "en",
+        "ko": "어플라이드 머티어리얼즈, 반도체 제조 장비 불법 수출로 BIS에 2억 5,200만 달러 벌금 납부",
+        "en": "Applied Materials to Pay $252 Million Penalty to BIS for Illegally Exporting Semiconductor Manufacturing Equipment"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/applied-materials-pay-252-million-penalty-bis-illegally-exporting-semiconductor-manufacturing-equipment",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.663,
+      "reasons": [
+        "has_figure",
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "d6be49771c7e2707",
@@ -1916,7 +2148,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.654,
+      "importance": 1.648,
       "reasons": [
         "country_in_text"
       ],
@@ -1947,7 +2179,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.619,
+      "importance": 1.615,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1955,6 +2187,39 @@
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "901d32f93671371c",
+      "title": {
+        "original": "Kazakhstan: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The 2026 spring planting season in Kazakhstan was characterized by effective government coordination and investment, diversified cropping favoring high-margin...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/07/kazakhstan-grain-and-feed-update",
+      "published_at": "2026-07-14T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "KAZ"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 1.613,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -2008,7 +2273,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.552,
+      "importance": 1.547,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -2039,7 +2304,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.546,
+      "importance": 1.545,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2070,12 +2335,54 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.523,
+      "importance": 1.518,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "500ccb61f23619e0",
+      "title": {
+        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
+        "original_lang": "en",
+        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
+        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260930",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "LBY"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.513,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "LBY"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "3cac3e995aa9e757",
@@ -2100,12 +2407,53 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.488,
+      "importance": 1.482,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "59d7681e3c02b816",
+      "title": {
+        "original": "Counter Narcotics, Counter Terrorism, Iran-related, and Non-Proliferation Designations",
+        "original_lang": "en",
+        "ko": "마약 퇴치, 대테러, 이란 관련 및 비확산 지정",
+        "en": "Counter Narcotics, Counter Terrorism, Iran-related, and Non-Proliferation Designations"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260929",
+      "published_at": "2026-09-29T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "IRN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.482,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "IRN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "feec825500717296",
@@ -2128,7 +2476,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.471,
+      "importance": 1.465,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -2304,6 +2652,47 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "846a4ec9ba0dc965",
+      "title": {
+        "original": "Issuance of Amended Venezuela General Licenses",
+        "original_lang": "en",
+        "ko": "개정 베네수엘라 일반 면허 발급",
+        "en": "Issuance of Amended Venezuela General Licenses"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260928",
+      "published_at": "2026-09-28T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "VEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.451,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "6d3e7543b7514565",
       "title": {
         "original": "HPE dan HR Emas Turun di Periode I Oktober 2026",
@@ -2326,7 +2715,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.417,
+      "importance": 1.411,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -2355,7 +2744,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.39,
+      "importance": 1.387,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2386,12 +2775,138 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.363,
+      "importance": 1.359,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "aad561e1acbfd247",
+      "title": {
+        "original": "Department of Commerce Eases Export Controls for UAE",
+        "original_lang": "en",
+        "ko": "상무부, 아랍에미리트(UAE)에 대한 수출 통제 완화",
+        "en": "Department of Commerce Eases Export Controls for UAE"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-eases-export-controls-uae",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "ARE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.351,
+      "reasons": [
+        "country_in_text",
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "ARE"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "0ff5c8d32bd5098a",
+      "title": {
+        "original": "Department of Commerce Revises License Review Policy for Semiconductors Exported to China",
+        "original_lang": "en",
+        "ko": "상무부, 중국으로 수출되는 반도체에 대한 허가 심사 정책 개정",
+        "en": "Department of Commerce Revises License Review Policy for Semiconductors Exported to China"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-revises-license-review-policy-semiconductors-exported-china",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.351,
+      "reasons": [
+        "country_in_text",
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "CHN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "3f466d7d7fb95662",
+      "title": {
+        "original": "Department of Commerce Closes Export Controls Loophole for Foreign-Owned Semiconductor Fabs in China",
+        "original_lang": "en",
+        "ko": "상무부, 중국 내 외국인 소유 반도체 팹에 대한 수출 통제 허점 폐쇄",
+        "en": "Department of Commerce Closes Export Controls Loophole for Foreign-Owned Semiconductor Fabs in China"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-closes-export-controls-loophole-foreign-owned-semiconductor-fabs-china",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.351,
+      "reasons": [
+        "country_in_text",
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "CHN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "0260f9aa0131b0b8",
@@ -2414,10 +2929,51 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.35,
+      "importance": 1.344,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "f65c47c507570e77",
+      "title": {
+        "original": "Democratic Republic of the Congo-related Designations Removals",
+        "original_lang": "en",
+        "ko": "콩고민주공화국 관련 지정 해제",
+        "en": "Democratic Republic of the Congo-related Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260923",
+      "published_at": "2026-09-23T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.314,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "COD"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -2442,7 +2998,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.317,
+      "importance": 1.314,
       "reasons": [
         "country_in_text"
       ],
@@ -2471,7 +3027,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.313,
+      "importance": 1.312,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2502,7 +3058,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.31,
+      "importance": 1.305,
       "reasons": [
         "country_in_text"
       ],
@@ -2530,7 +3086,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.304,
+      "importance": 1.301,
       "reasons": [
         "has_figure"
       ],
@@ -2560,7 +3116,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.292,
+      "importance": 1.289,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2591,7 +3147,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.29,
+      "importance": 1.288,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2622,7 +3178,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.241,
+      "importance": 1.238,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2781,6 +3337,49 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "b8820250e3d215f2",
+      "title": {
+        "original": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions",
+        "original_lang": "en",
+        "ko": "에티오피아 사태 관련 비상사태 종료; 에티오피아 관련 지정 해제; 개정 러시아 관련 일반 면허 및 관련 자주 묻는 질문(FAQ) 발행",
+        "en": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260918",
+      "published_at": "2026-09-18T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "ETH",
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.197,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "ETH",
+          "RUS"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "c4debe37366d175b",
       "title": {
         "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
@@ -2801,10 +3400,53 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.191,
+      "importance": 1.186,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "de8f050cc8e8f84d",
+      "title": {
+        "original": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals",
+        "original_lang": "en",
+        "ko": "이란 관련 지정; 쿠바 지정; 벨라루스 관련 지정 해제",
+        "en": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260917",
+      "published_at": "2026-09-17T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "IRN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.176,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "CUB",
+          "IRN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "755265be684d892e",
@@ -2829,10 +3471,53 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.16,
+      "importance": 1.156,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "e2977ea6c39eb0c0",
+      "title": {
+        "original": "Russia-related Designations Removals; Counter Narcotics Designation Removal; Issuance of Amended Venezuela General License and Frequently Asked Question",
+        "original_lang": "en",
+        "ko": "러시아 관련 지정 해제; 마약 퇴치 지정 해제; 개정 베네수엘라 일반 면허 및 자주 묻는 질문 발행",
+        "en": "Russia-related Designations Removals; Counter Narcotics Designation Removal; Issuance of Amended Venezuela General License and Frequently Asked Question"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260916",
+      "published_at": "2026-09-16T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "VEN",
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.155,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "RUS",
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "b8100702b4d10bff",
@@ -2855,9 +3540,121 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.147,
+      "importance": 1.143,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "92a445d0e0c3f58b",
+      "title": {
+        "original": "Publication of Regulatory Amendments; Publication of Cuba Sanctions Regulations; Issuance of New and Amended Cuba-related Frequently Asked Questions; Publication of Cuba-related OFAC Alert",
+        "original_lang": "en",
+        "ko": "규제 개정안 공표; 쿠바 제재 규정 공표; 신규 및 개정 쿠바 관련 자주 묻는 질문(FAQ) 발행; 쿠바 관련 OFAC 경보 공표",
+        "en": "Publication of Regulatory Amendments; Publication of Cuba Sanctions Regulations; Issuance of New and Amended Cuba-related Frequently Asked Questions; Publication of Cuba-related OFAC Alert"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260929_33",
+      "published_at": "2026-09-29T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.14,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "CUB"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "87a09ee6b6bed0cf",
+      "title": {
+        "original": "Iran-related Designation; Issuance of Amended Venezuela-related General License and Frequently Asked Question",
+        "original_lang": "en",
+        "ko": "이란 관련 지정; 개정 베네수엘라 관련 일반 면허 및 자주 묻는 질문 발행",
+        "en": "Iran-related Designation; Issuance of Amended Venezuela-related General License and Frequently Asked Question"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260914",
+      "published_at": "2026-09-14T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "VEN",
+        "IRN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.116,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "IRN",
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "62ac4be598c099c2",
+      "title": {
+        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
+      "published_at": "2026-08-14T07:26:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.086,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2883,39 +3680,9 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.09,
+      "importance": 1.086,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "62ac4be598c099c2",
-      "title": {
-        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
-      "published_at": "2026-08-14T07:26:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.088,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2940,7 +3707,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.078,
+      "importance": 1.074,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -2954,6 +3721,597 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "a6a93bf576e818d7",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Container Manufacturing Ltd.",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 컨테이너 매뉴팩처링과 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Container Manufacturing Ltd."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-container-manufacturing-ltd.",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "8282a933f6033dc6",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Plexon, Inc.",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 플렉손과 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Plexon, Inc."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-plexon-inc.",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "fa2d7a7de6299572",
+      "title": {
+        "original": "Department of Commerce Streamlines Export Controls for Sound Suppressors",
+        "original_lang": "en",
+        "ko": "상무부, 소음기에 대한 수출 통제 간소화",
+        "en": "Department of Commerce Streamlines Export Controls for Sound Suppressors"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-streamlines-export-controls-sound-suppressors",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "a2f5ad5e9e350af7",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Coastal PVA Technology, Inc.",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 코스탈 PVA 테크놀로지와 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Coastal PVA Technology, Inc."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-coastal-pva-technology-inc.",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "080a2847506ffdcd",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Solventum Corporation Order",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 솔벤툼 코퍼레이션과 행정 집행 합의 명령 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Solventum Corporation Order"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-solventum-corporation-order",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "4bfc82d61884bc0d",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Teledyne FLIR LLC and its affiliates, FLIR Optoelectronic Technology (Shanghai) Co. Ltd. and Teledyne FLIR Commercial Systems Inc.",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 텔레다인 플리어 및 계열사인 FLIR 광전자 기술 상하이 및 텔레다인 플리어 커머셜 시스템즈와 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Teledyne FLIR LLC and its affiliates, FLIR Optoelectronic Technology (Shanghai) Co. Ltd. and Teledyne FLIR Commercial Systems Inc."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-teledyne-flir-llc-its-affiliates-flir-optoelectronic",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "efd709eb0543c71a",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Vizicom ICT",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 비지콤 ICT와 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Vizicom ICT"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-vizicom-ict",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "718eff70c7ab23a5",
+      "title": {
+        "original": "BIS Imposes Administrative Penalty on Exyte Management GmbH",
+        "original_lang": "en",
+        "ko": "BIS, 엑시트 매니지먼트에 행정 벌금 부과",
+        "en": "BIS Imposes Administrative Penalty on Exyte Management GmbH"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-imposes-administrative-penalty-exyte-management-gmbh",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "fe6f911206762648",
+      "title": {
+        "original": "BIS Reaches Administrative Enforcement Settlement with Luminultra Technologies, Inc.",
+        "original_lang": "en",
+        "ko": "미 상무부 산업안보국(BIS), 루미늘트라 테크놀로지와 행정 집행 합의 도달",
+        "en": "BIS Reaches Administrative Enforcement Settlement with Luminultra Technologies, Inc."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-reaches-administrative-enforcement-settlement-luminultra-technologies-inc.",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "9a71ebf2eb9400bb",
+      "title": {
+        "original": "BIS Imposes Administrative Penalty on Hallewell Ventures Ltd.",
+        "original_lang": "en",
+        "ko": "BIS, 할레웰 벤처스에 행정 벌금 부과",
+        "en": "BIS Imposes Administrative Penalty on Hallewell Ventures Ltd."
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/bis-imposes-administrative-penalty-hallewell-ventures-ltd",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "enforcement",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "6a8a112d727bcdf9",
+      "title": {
+        "original": "Department of Commerce Rescinds Biden-Era Firearms Rule, Restoring Common Sense to Export Controls on Civilian Firearms",
+        "original_lang": "en",
+        "ko": "상무부, 바이든 행정부 시절의 총기 규정 철회 및 민간 총기 수출 통제의 상식 복원",
+        "en": "Department of Commerce Rescinds Biden-Era Firearms Rule, Restoring Common Sense to Export Controls on Civilian Firearms"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-rescinds-biden-era-firearms-rule-restoring-common-sense-export-controls-civilian",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "9c1d75394c30af85",
+      "title": {
+        "original": "Department of Commerce Expands Entity List to Cover Affiliates of Listed Entities",
+        "original_lang": "en",
+        "ko": "상무부, 블랙리스트 등재 기업의 계열사까지 포괄하도록 수출통제대상목록(Entity List) 확대",
+        "en": "Department of Commerce Expands Entity List to Cover Affiliates of Listed Entities"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-expands-entity-list-cover-affiliates-listed-entities",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "entity_list",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "678e0775462a9bfb",
+      "title": {
+        "original": "Statement of Licensing Policy for Export, Reexport, and Transfer (In-Country) Applications Related to Belavia – Belarusian Airlines",
+        "original_lang": "en",
+        "ko": "벨라비아 벨라루스 항공 관련 수출, 재수출 및 국내 이전 허가 신청에 대한 라이선스 정책 성명",
+        "en": "Statement of Licensing Policy for Export, Reexport, and Transfer (In-Country) Applications Related to Belavia – Belarusian Airlines"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/statement-licensing-policy-export-reexport-transfer-country-applications-related-belavia-belarusian",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "BLR"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "d0ff09727ffe6e90",
+      "title": {
+        "original": "Commerce Eases Export Controls on Syria",
+        "original_lang": "en",
+        "ko": "상무부, 시리아에 대한 수출 통제 완화",
+        "en": "Commerce Eases Export Controls on Syria"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/commerce-eases-export-controls-syria",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "SYR"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "bfa1782decee57c7",
+      "title": {
+        "original": "Department of Commerce Adds 407 Product Categories to Steel and Aluminum Tariffs",
+        "original_lang": "en",
+        "ko": "상무부, 철강 및 알루미늄 관세 품목에 407개 제품 카테고리 추가",
+        "en": "Department of Commerce Adds 407 Product Categories to Steel and Aluminum Tariffs"
+      },
+      "summary": null,
+      "url": "https://www.bis.gov/press-release/department-commerce-adds-407-product-categories-steel-aluminum-tariffs",
+      "published_at": null,
+      "agency": "U.S. Commerce, Bureau of Industry and Security",
+      "agency_ko": "미국 상무부 산업안보국(BIS)",
+      "source_id": "us_bis_press",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "no_date"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "BIS",
+        "issuer_body_ko": "미국 상무부 산업안보국(BIS)",
+        "measure": "countermeasure",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.bis.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "21c3dd4f0cf93fd0",
@@ -3017,6 +4375,43 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "f7562e94f83254d4",
+      "title": {
+        "original": "Publication of Regulatory Amendments; Publication of Report for Licensing Activities Undertaken Pursuant to the Trade Sanctions Reform and Export Enhancement Act (TSRA)",
+        "original_lang": "en",
+        "ko": "규제 개정안 공표; 무역제재개혁 및 수출확대법(TSRA)에 따라 수행된 허가 활동 보고서 공표",
+        "en": "Publication of Regulatory Amendments; Publication of Report for Licensing Activities Undertaken Pursuant to the Trade Sanctions Reform and Export Enhancement Act (TSRA)"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260924",
+      "published_at": "2026-09-24T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.03,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "636939b535053039",
       "title": {
         "original": "Petroleum Marketing Monthly",
@@ -3039,7 +4434,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.02,
+      "importance": 1.017,
       "reasons": [
         "country_in_text"
       ],
@@ -3069,7 +4464,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.013,
+      "importance": 1.011,
       "reasons": [
         "country_in_text"
       ],
@@ -3101,7 +4496,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.997,
+      "importance": 0.994,
       "reasons": [
         "country_in_text"
       ],
@@ -3213,7 +4608,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.816,
+      "importance": 0.814,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -3241,7 +4636,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.808,
+      "importance": 0.806,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -3269,7 +4664,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.758,
+      "importance": 0.756,
       "reasons": [
         "country_in_text"
       ],
@@ -3311,7 +4706,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.643,
+      "importance": 0.642,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -3421,7 +4816,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.613,
+      "importance": 0.612,
       "reasons": [
         "country_in_text"
       ],
@@ -3450,7 +4845,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.541,
+      "importance": 0.54,
       "reasons": [],
       "board": "export_controls",
       "control": {
