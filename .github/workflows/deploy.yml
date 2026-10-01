@@ -15,7 +15,7 @@ on:
   # Bot data commits do not trigger push workflows. Only trusted main runs
   # may trigger deployment; never execute a PR checkout with deploy secrets.
   workflow_run:
-    workflows: ['Overseas LETF daily', 'Natural gas storage daily', 'Weekly Yield Forecasts (Australia, Vietnam, South Africa, Ethiopia, Uganda)']
+    workflows: ['Overseas LETF daily', 'Natural gas storage daily', 'Refresh KR/JP policy boards', 'Refresh USA public series', 'Weekly Yield Forecasts (Australia, Vietnam, South Africa, Ethiopia, Uganda)']
     types: [completed]
     branches: [main]
 

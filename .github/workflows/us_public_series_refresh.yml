@@ -1,0 +1,50 @@
+name: Refresh USA public series
+
+# 미국 매크로 카드 중 fixture_synth 로 남아 있던 것을 공개 관측값으로 채운다(us_public_series.py).
+# FRED CSV(키 없음)에서 가져오는 것: M2, 비농업고용, 실질 GDP(YoY·QoQ), GDPNow, 클리블랜드 절사평균 CPI,
+# 수출입 물가, 재할인창구(1차 신용). FIMA 레포는 연준 H.4.1 릴리스 표1에서 직접(h41_fima.py).
+# 갱신 주기가 제각각(주간·월간·분기, GDPNow 는 통계가 나올 때마다)이라 매일 한 번 돌리고,
+# 값이 바뀐 날만 커밋한다(retrieved_at 은 값이 바뀔 때만 움직인다).
+#
+# 이 파일(macro_monitor_v1.json)은 다른 갱신기도 쓰기 때문에 push 가 겹칠 수 있다. 겹치면 내 커밋을
+# 버리고 최신 main 위에서 다시 계산한다 -- 값은 네트워크에서 다시 받으니 잃는 것이 없다.
+
+on:
+  schedule:
+    - cron: '40 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-us-public:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest beautifulsoup4
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_us_public_series.py -v
+      - name: Refresh, commit, push (recompute on top of main if the push races)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          refresh() {
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py) || true
+          }
+          for attempt in 1 2 3; do
+            refresh
+            git add "New for anti/scripts/macro_monitor/config/fima_repo_v1.json" \
+                    "New for anti/public/data/macro_monitor_v1.json"
+            git commit -m "chore: refresh USA public series" || { echo "nothing changed"; exit 0; }
+            if git push; then exit 0; fi
+            echo "push raced (attempt $attempt); recomputing on the latest main"
+            git fetch origin main
+            git reset --hard origin/main
+          done
+          exit 1

@@ -128,6 +128,12 @@ const totalVolumeEl = document.getElementById('total-volume');
 const topExporterEl = document.getElementById('top-exporter');
 const currentViewTitle = document.getElementById('current-view-title');
 const currentViewDesc = document.getElementById('current-view-desc');
+const mapSourceNoteEl = document.getElementById('map-source-note');
+// Data-source attribution (e.g. UN Comtrade period/route count) used to be
+// crammed into currentViewDesc alongside the commodity blurb, making the
+// subtitle line a run-on sentence. It now lives in its own corner-of-map
+// footnote so the subtitle stays a short interaction hint.
+const setMapSourceNote = (text) => { if (mapSourceNoteEl) mapSourceNoteEl.textContent = text || ''; };
 const mapContainer = document.getElementById('map');
 const chartView = document.getElementById('chart-view');
 const navLinks = document.querySelectorAll('.dropdown a');
@@ -343,12 +349,17 @@ const signalSlotHtml = (slot) => {
     // hasn't answered -- "로딩 중", never "연동 예정", since that reads as
     // "this will never work" -- or (b) declared with no feed behind it at
     // all, which is the only case 연동 예정 (or a custom slot.pending label)
-    // still applies to.
+    // still applies to. Only (a) is actually in flight, so only it gets the
+    // spinner -- 연동 예정 isn't loading anything, it just doesn't exist yet.
+    const pendingLabel = slot.pending || (slot.value ? '불러오는 중' : '연동 예정');
+    const pendingLoading = !slot.pending && !!slot.value;
     const body = shown
         ? `<span class="signal-slot-value">${finEsc(shown)}${
               slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || (slot.value ? '불러오는 중' : '연동 예정'))}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(pendingLabel)}${
+              pendingLoading ? '<span class="signal-slot-spinner" aria-hidden="true"></span>' : ''
+          }</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
@@ -745,30 +756,31 @@ const deckgl = new DeckGL({
     controller: true,
     views: [new MapView({ id: 'map', repeat: true })], // Flat equirectangular, as the mockup
     layers: [],
-    onViewStateChange: ({ viewState, interactionState }) => {
-        currentViewState = viewState;
-        // Avoid stomping climate MapView while interacting on other screens only
-        if (currentCommodity === 'climate') {
-            // Still track; controller needs viewState updates for pan/zoom
-            deckgl.setProps({ viewState });
-            return;
-        }
-        deckgl.setProps({ viewState: currentViewState });
-
-        // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
-        // Zooming is deliberately excluded: scrolling to resize the globe should
-        // not stop the spin, and rotationStep preserves whatever zoom the user
-        // lands on. Debounced -- this fires once per interaction frame, so
-        // re-arm a single timer instead of queueing one per frame.
-        if (interactionState.isDragging) {
-            stopRotation();
-            clearTimeout(resumeRotationTimer);
-            resumeRotationTimer = setTimeout(() => {
-                if (currentCommodity === 'home') startRotation();
-            }, 2000);
-        }
-    }
+    onViewStateChange: (params) => defaultDeckViewStateChange(params),
 });
+function defaultDeckViewStateChange({ viewState, interactionState }) {
+    currentViewState = viewState;
+    // Avoid stomping climate MapView while interacting on other screens only
+    if (currentCommodity === 'climate') {
+        // Still track; controller needs viewState updates for pan/zoom
+        deckgl.setProps({ viewState });
+        return;
+    }
+    deckgl.setProps({ viewState: currentViewState });
+
+    // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
+    // Zooming is deliberately excluded: scrolling to resize the globe should
+    // not stop the spin, and rotationStep preserves whatever zoom the user
+    // lands on. Debounced -- this fires once per interaction frame, so
+    // re-arm a single timer instead of queueing one per frame.
+    if (interactionState?.isDragging) {
+        stopRotation();
+        clearTimeout(resumeRotationTimer);
+        resumeRotationTimer = setTimeout(() => {
+            if (currentCommodity === 'home') startRotation();
+        }, 2000);
+    }
+}
 
 // The home and climate maps draw once, so a basemap that arrives after that
 // first paint would sit invisible until the next interaction. Redraw on arrival.
@@ -832,13 +844,17 @@ function comtradePeriodLabel(arcs) {
     if (!first || !first.period) return '';
     const parts = String(first.period).split(',').sort();
     const fmt = (v) => (v.length === 6 ? `${v.slice(0, 4)}년 ${Number(v.slice(4))}월` : `${v}년`);
+    if (first.blendFrom) return `${fmt(parts[0])} 연간 · 미신고국 ${first.blendFrom}년`;
     if (parts.length === 1) return first.freq === 'M' ? fmt(parts[0]) : `${fmt(parts[0])} 연간`;
     return `${fmt(parts[0])}~${fmt(parts[parts.length - 1])}`;
 }
 
 function comtradeSourceText(arcs) {
     const when = comtradePeriodLabel(arcs);
-    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트)`;
+    const blendFrom = arcs?.[0]?.blendFrom;
+    const older = blendFrom ? arcs.filter((a) => a.dataYear === blendFrom).length : 0;
+    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트${older
+        ? `, 그중 ${older}개는 양쪽 모두 ${arcs[0].period}년 미신고라 ${blendFrom}년 값` : ''})`;
 }
 
 // Static ISO3 fallback for the reporter/partner names Comtrade uses most.
@@ -883,7 +899,7 @@ const countryCode = (name) => {
  * score. That weighting needs World Bank WGI data this page does not carry, so
  * the card reports what it can actually measure and says which half that is.
  */
-const concentrationHtml = (arcs, partnerOf, dirKo) => {
+const concentrationHtml = (arcs, partnerOf, dirKo, basisKo = '') => {
     const byPartner = new Map();
     for (const a of arcs) {
         if (!(a.volume > 0)) continue;
@@ -914,6 +930,7 @@ const concentrationHtml = (arcs, partnerOf, dirKo) => {
                 <strong>${dirKo} 집중도</strong>
                 <span class="dep-band dep-${band.cls}">${band.ko}</span>
             </div>
+            ${basisKo ? `<p class="dep-note">${basisKo}</p>` : ''}
             <div class="dep-metrics">
                 <div class="dep-m"><span class="dep-k">CR3</span>
                     <span class="dep-v">${(cr3 * 100).toFixed(1)}%</span></div>
@@ -921,7 +938,7 @@ const concentrationHtml = (arcs, partnerOf, dirKo) => {
                     <span class="dep-v">${hhi.toFixed(3)}</span></div>
             </div>
             <p class="dep-top">${top3}</p>
-            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 공급국의 정치적 신뢰도는
+            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 상대국의 정치적 신뢰도는
                 반영하지 않은 순수 집중도다.</p>
         </div>`;
 };
@@ -1215,7 +1232,14 @@ const loadClimateRegistry = () => {
             CLIMATE_COUNTRIES = countries;
             CLIMATE_TRADE_POLICY = policy;
             console.log(`[Climate] registry: ${Object.keys(countries).length} countries`);
-            return doc;
+            return loadExportControls().then(() => {
+                if (!exportControlsDoc) return doc;
+                const byIso = agriControlsByIso();
+                for (const [name, cfg] of Object.entries(countries)) {
+                    CLIMATE_TRADE_POLICY[name] = policyFromControls(byIso.get(cfg.iso));
+                }
+                return doc;
+            });
         })
         .catch((err) => {
             // An empty climate map is a visible, honest failure. Falling back to
@@ -1687,7 +1711,7 @@ const sstColor = (anomaly) => {
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        // Kept low. Against a 1971-2000 baseline most of the ocean now reads
+        // Kept low. Against the 1991-2020 baseline much of the ocean still reads
         // warm, so a bold ramp turns the whole map orange and buries the land
         // and trade-status fills the screen is actually for. This is a wash
         // under the coastlines; the tooltip carries the number.
@@ -2076,6 +2100,7 @@ let currentElectionMapOnClick = null;
 // climate's equivalent path already had this same guard
 // (handleClimateDeckClick's lastClimatePickAt); this one never got it.
 let lastElectionsPickAt = 0;
+let electionsGestureConsumed = false;
 const tryElectionsMapPick = (clientX, clientY) => {
     if (currentCommodity !== 'elections' || !currentElectionMapOnClick || !deckgl?.pickObject) return;
     const xy = climateCanvasLocalXY(clientX, clientY);
@@ -2093,18 +2118,28 @@ const ensureElectionsMapPointerFallback = () => {
     mapContainer.addEventListener('pointerdown', (e) => {
         if (currentCommodity !== 'elections') return;
         if (e.button !== 0) return;
-        electionsPointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+        // e.timeStamp, not performance.now(): the first frames after entering
+        // 정치 can block the main thread long enough that handler-time dt
+        // exceeded 600ms for a plain quick click, and it was dropped.
+        electionsPointerDown = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+        electionsGestureConsumed = false;
     }, true);
     const onPointerLikeClick = (e) => {
         if (currentCommodity !== 'elections') return;
         if (e.button != null && e.button !== 0) return;
         if (!electionsPointerDown) {
-            if (e.type === 'click') tryElectionsMapPick(e.clientX, e.clientY);
+            // click after a pointerup that already handled (or rejected as a
+            // drag) this gesture: skip. Picking again here resolved against the
+            // post-click layout -- the left pane had closed and the canvas
+            // shifted, so the same client point landed on another country.
+            if (e.type === 'click' && !electionsGestureConsumed) tryElectionsMapPick(e.clientX, e.clientY);
+            electionsGestureConsumed = false;
             return;
         }
+        electionsGestureConsumed = true;
         const dx = e.clientX - electionsPointerDown.x;
         const dy = e.clientY - electionsPointerDown.y;
-        const dt = performance.now() - electionsPointerDown.t;
+        const dt = e.timeStamp - electionsPointerDown.t;
         electionsPointerDown = null;
         if (dt > 600 || Math.hypot(dx, dy) > 8) return;
         tryElectionsMapPick(e.clientX, e.clientY);
@@ -3787,7 +3822,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else if (mode === 'reference') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.classList.add('world-mini');
@@ -3804,7 +3839,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -3821,6 +3856,57 @@ const renderEnsoBars = (series) => {
             const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
             return `<span style="height:${h}px;background:${col}" title="${s.label}: ${s.oni}"></span>`;
         }).join('')}
+    </div>`;
+};
+
+/**
+ * Every agricultural export measure in export_controls_v1.json, by country:
+ * what is controlled, how, since when, and where it was checked. Lifted
+ * measures stay listed (greyed) for a while -- a ban that ended last month
+ * is exactly what a reader looking at this year's flows needs to know.
+ */
+const LEVEL_SHORT_KO = { prohibited: '금지', restricted: '제한', watch: '검토', lifted: '최근 해제' };
+const MEASURE_TYPE_KO = {
+    ban: '수출 금지', quota: '쿼터', duty: '수출세', licensing: '허가제',
+    state_trading: '국영 단일창구', levy: '부담금', min_price: '최저수출가',
+};
+
+const agriControlsCardHtml = () => {
+    const byIso = agriControlsByIso();
+    if (!byIso.size) return '';
+    const rank = (c) => exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
+    const cropsOf = (c) => c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
+        .filter((v, i, a) => a.indexOf(v) === i).join('·');
+    // One line per country (strongest measure first); the full measure,
+    // dates and source open on click, so the weather above stays in view.
+    const rows = [...byIso.entries()]
+        .sort(([, a], [, b]) => Math.max(...b.map(rank)) - Math.max(...a.map(rank)))
+        .map(([iso, list]) => {
+            const sorted = [...list].sort((a, b) => rank(b) - rank(a));
+            const name = resolveCountry(list[0].country)?.label || list[0].country;
+            const chips = sorted.map((c) => `<span class="ac-chip ctl-${c.level}">${cropsOf(c)} · ${LEVEL_SHORT_KO[c.level] || c.level}</span>`).join('');
+            const items = sorted.map((c) => {
+                const lv = [LEVEL_SHORT_KO[c.level] || c.level, MEASURE_TYPE_KO[c.measure_type]]
+                    .filter(Boolean).join(' · ');
+                const when = c.level === 'lifted'
+                    ? `${c.since || ''}~${c.lifted_at || ''} 해제`
+                    : `${c.since || ''}~${c.until ? ` ${c.until}` : ''}`;
+                return `<li class="ac-item ac-${c.level}">
+                    <div class="ac-top"><b>${cropsOf(c)}</b><span class="ac-lv ctl-${c.level}">${lv}</span></div>
+                    <div class="ac-measure">${c.measure_ko}</div>
+                    <div class="ac-src">${when} · ${c.source || ''}${c.url ? ` <a href="${c.url}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}
+                        ${c.verified_at ? ` · 확인 ${c.verified_at}` : ''}</div>
+                </li>`;
+            }).join('');
+            return `<details class="ac-country">
+                <summary><span class="ac-name">${name}<span class="ac-iso">${iso}</span></span><span class="ac-chips">${chips}</span></summary>
+                <ul>${items}</ul>
+            </details>`;
+        }).join('');
+    return `<div class="climate-card ag-controls">
+        <h3>주요 농산물 수출국 · 수출통제 <span class="src-tag">${exportControlsDoc?.as_of || ''} 수기 정리</span></h3>
+        <div class="climate-sub" style="margin-bottom:6px;">국가를 누르면 상세 규제(조치·기간·원문)가 펼쳐집니다.</div>
+        ${rows}
     </div>`;
 };
 
@@ -3842,6 +3928,7 @@ const renderClimateWorldLeft = async () => {
         : null;
 
     forecastCountryTitle.textContent = '전역 기후 모니터';
+    await loadExportControls();
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             <div class="climate-card">
@@ -3927,6 +4014,7 @@ const renderClimateWorldLeft = async () => {
                 · 산지 기상 갱신: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 자동 갱신)
                 ${g?.note ? `<br/>${g.note}` : ''}
             </p>
+            ${agriControlsCardHtml()}
         </div>`;
 };
 
@@ -4528,13 +4616,15 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
  * visible unless both are stated.
  *
  * Cadences are the GitHub Actions schedules in .github/workflows, so this
- * matches what actually runs rather than an intention.
+ * matches what actually runs rather than an intention. Days are KST: the
+ * Friday-evening UTC crons (yield_forecast, climate_global_refresh,
+ * sst_refresh) all land early Saturday in Korea.
  */
 const REFRESH_CADENCE = {
-    forecast: { ko: '주 1회 (월요일)', detail: '국가별 yield_forecast 워크플로' },
+    forecast: { ko: '주 1회 (토요일)', detail: '국가별 yield_forecast 워크플로' },
     climate: { ko: '주 1회', detail: 'NASA POWER 일별 관측을 매 실행 시 재수집' },
-    indices: { ko: '주 1회 (월요일)', detail: 'NOAA CPC ONI · NOAA PSL DMI' },
-    sst: { ko: '주 1회 (화요일)', detail: 'NOAA OISST v2.1 격자' },
+    indices: { ko: '주 1회 (토요일)', detail: 'NOAA CPC ONI · NOAA PSL DMI' },
+    sst: { ko: '주 1회 (토요일)', detail: 'NOAA OISST v2.1 격자 · 해역별 월별 추이' },
 };
 
 const fmtAge = (iso) => {
@@ -5007,6 +5097,47 @@ const CONTROL_ALIASES = {
     sugar: ['sugar'],
     coffee: ['coffee'],
     palm_oil: ['palm_oil', 'palm'],
+    rubber: ['rubber'],
+};
+
+// Korean names for the commodity tags used in export_controls_v1.json.
+const CONTROL_COMMODITY_KO = {
+    wheat: '밀', corn: '옥수수', barley: '보리', soybeans: '대두', sugar: '설탕', rice: '쌀',
+    palm_oil: '팜유', cocoa: '코코아', rapeseed: '유채', sunflower_oil: '해바라기유',
+    sunflower_seed: '해바라기씨', sunflower: '해바라기', fertilizer: '비료', urea: '요소',
+    phosphate: '인산비료', coffee: '커피', rubber: '천연고무',
+};
+
+/**
+ * The crop monitor's trade status per country, derived from
+ * export_controls_v1.json -- the same file the trade map colours from.
+ * It used to come from a hand "seed" in climate_registry_v1.json that had
+ * drifted: Argentina corn and China corn/wheat as export-prohibited (they
+ * are an export tax and nothing, respectively), Indonesian palm oil as
+ * banned (a three-week ban in 2022; now levy + DMO + state single gate).
+ */
+const agriControlsByIso = () => {
+    const out = new Map();
+    for (const c of exportControlsDoc?.controls || []) {
+        if (c.category !== 'agri' || !c.iso) continue;
+        if (!out.has(c.iso)) out.set(c.iso, []);
+        out.get(c.iso).push(c);
+    }
+    return out;
+};
+const policyFromControls = (list) => {
+    const live = (list || []).filter((c) => c.level !== 'lifted');
+    const crops = (c) => c.commodities.map((x) => CONTROL_COMMODITY_KO[x] || x)
+        .filter((v, i, a) => a.indexOf(v) === i).join('·');
+    const note = live.length
+        ? live.map((c) => `${crops(c)}: ${c.measure_ko}`).join(' / ')
+        : ((list || []).length ? `최근 해제 — ${list.map((c) => `${crops(c)} ${c.lifted_at || ''}`).join(', ')}` : '확인된 농산물 수출통제 없음');
+    return {
+        restricted: live.some((c) => c.level === 'restricted' || c.level === 'watch'),
+        prohibitedCrops: live.filter((c) => c.level === 'prohibited').flatMap((c) => c.commodities),
+        note,
+        fromControls: true,
+    };
 };
 
 /** Controls affecting `commodity`, keyed by resolved country. */
@@ -5014,6 +5145,8 @@ const controlsFor = (commodity) => {
     const out = new Map();
     const terms = CONTROL_ALIASES[commodity] || [commodity];
     for (const c of exportControlsDoc?.controls || []) {
+        // "최근 해제" is listed for context, never painted as a live control.
+        if (c.level === 'lifted') continue;
         if (!(c.commodities || []).some((x) => terms.includes(x))) continue;
         const key = resolveCountry(c.country)?.key || c.country;
         const rank = exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
@@ -5116,6 +5249,46 @@ const electionModalHostEl = document.getElementById('elections-modal-host');
 // enough that a path segment would just add another disambiguation case.
 const isUsStateCode = (segment) => /^[A-Za-z]{2}$/.test(segment || '');
 
+// The 정치 map owns every interaction prop it depends on, instead of
+// inheriting whatever the previous view left on the shared deckgl instance /
+// #map container ("정치 들어오고 바로 국가 클릭하면 안돼, F5 해야 됨",
+// 2026-09-28). Reproduced leftovers, each of which broke the first visit
+// until a reload reset them:
+//  - pointer-events:none on #map from 선박/정책/튜토리얼/금융/마이페이지
+//    (togglePanels only restores display) -> clicks hit the pane underneath;
+//  - climate's onViewStateChange (early-returns outside climate) and macro's
+//    -> drag froze; climate's pickingRadius:18, macro's getTooltip.
+// onClick is deliberately null: ensureElectionsMapPointerFallback is the one
+// click path, so a single gesture can't open two things (the native prop and
+// the fallback each firing once opened a second, wrong country after the
+// layout shift -- e.g. USA then TUR).
+const electionsViewStateChange = (params) => {
+    // Views that don't install their own handler (home/trade) inherit this
+    // one after a 정치 visit -- hand them back the constructor's behaviour.
+    if (currentCommodity !== 'elections') return defaultDeckViewStateChange(params);
+    const { viewState } = params;
+    currentViewState = viewState;
+    deckgl.setProps({ viewState });
+};
+const applyElectionMapProps = (layers) => {
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
+        mapContainer.style.pointerEvents = 'auto';
+    }
+    deckgl.setProps({
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
+        viewState: currentViewState,
+        controller: { dragRotate: false, touchRotate: false },
+        onViewStateChange: electionsViewStateChange,
+        onClick: null,
+        onHover: null,
+        getTooltip: null,
+        pickingRadius: 0,
+        getCursor: ({ isDragging, isHovering }) => (isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab'),
+        layers,
+    });
+};
+
 const electionHost = () => ({
     deckgl,
     layers: { GeoJsonLayer },
@@ -5155,26 +5328,12 @@ const electionHost = () => ({
         // actually under the cursor -- the original miss doesn't apply to it.
         // Reverified with repeat:true: 10/10 clicks landed, dragging works,
         // antimeridian wraparound is back as a side benefit.
-        deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: true })],
-            viewState: currentViewState,
-            controller: { dragRotate: false, touchRotate: false },
-            onClick,
-            onHover: null,
-            layers,
-        });
+        applyElectionMapProps(layers);
     },
     setElectionMap(layers, onClick, viewState) {
         if (viewState) currentViewState = viewState;
         currentElectionMapOnClick = onClick;
-        deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: true })],
-            viewState: currentViewState,
-            controller: { dragRotate: false, touchRotate: false },
-            onClick,
-            onHover: null,
-            layers,
-        });
+        applyElectionMapProps(layers);
     },
     setPanels({ timeline = false, country = false, left = true, right = false }) {
         togglePanels({ macro: false, countryStats: false, news: false, forecast: false, climateRight: false, left, right, chart: false, map: true });
@@ -5185,6 +5344,7 @@ const electionHost = () => ({
     setHeader(title, description) {
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
+        setMapSourceNote('');
     },
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
     // view from the URL path on render, so writing that path before the view
@@ -5582,6 +5742,7 @@ const setView = (target) => {
         
         currentViewTitle.textContent = '작황 모니터';
         currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
+        setMapSourceNote('');
         topExporterEl.textContent = 'Status coloring';
         hideCommodityFavStar(); // 작황 모니터는 개별 원자재가 아니라 집계 화면이라 즐겨찾기 대상이 아님
 
@@ -5619,7 +5780,8 @@ const setView = (target) => {
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
             currentViewDesc.textContent = "📡 UN Comtrade 최신 무역 통계 로딩 중...";
-            
+            setMapSourceNote('');
+
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
@@ -5631,25 +5793,29 @@ const setView = (target) => {
             window.fetchComtradeArcs(target).then(arcs => {
                 // Check if user hasn't navigated away
                 if (currentCommodity !== target) return;
-                
+
                 if (arcs.length > 0) {
                     data.arcs = arcs; // Cache for future clicks
-                    currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(arcs)} · 국가 클릭 → 수출 대상 순위`;
+                    currentViewDesc.textContent = '국가 클릭 → 수출 대상 순위';
+                    setMapSourceNote(comtradeSourceText(arcs));
                     renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
-                    currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
+                    currentViewDesc.textContent = "UN Comtrade 데이터 로딩 실패 — 재시도 필요";
+                    setMapSourceNote('');
                 }
             }).catch(err => {
                 if (currentCommodity !== target) return;
-                currentViewDesc.textContent = data.desc + " (API 연결 오류: " + err.message + ")";
+                currentViewDesc.textContent = "API 연결 오류: " + err.message;
+                setMapSourceNote('');
                 console.error('[Comtrade] Lazy load error:', err);
             });
         } else {
             // Already have data (cached from previous click or hardcoded)
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-            currentViewDesc.textContent = data.desc + ` ${comtradeSourceText(data.arcs)} · 국가 클릭 → 수출 대상 순위`;
+            currentViewDesc.textContent = '국가 클릭 → 수출 대상 순위';
+            setMapSourceNote(comtradeSourceText(data.arcs));
             renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
@@ -5662,6 +5828,7 @@ const setView = (target) => {
         const categoryName = targetLink ? targetLink.textContent : target;
         currentViewTitle.textContent = `데이터 준비 중: ${categoryName}`;
         currentViewDesc.textContent = "API 연동 및 백엔드 파이프라인 구축 후 제공됩니다.";
+        setMapSourceNote('');
         
         // Update placeholder text
         chartView.innerHTML = `

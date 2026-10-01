@@ -3,11 +3,12 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
+const PolicySearchTerms = require('./policy-search-terms.js');
 const PolicyEvidence = require('../../New for anti/policy-evidence.js');
 const fixture = require('../fixtures/clarity-119-hr-3633.json');
-const source = fs.readFileSync(require.resolve('../../_worker.js'), 'utf8').replace(/^import PolicyEvidence[^\n]*\n/, '').replace('export default {', 'globalThis.worker = {');
+const source = fs.readFileSync(require.resolve('../../_worker.js'), 'utf8').replace(/^import [^\n]*\n/gm, '').replace('export default {', 'globalThis.worker = {');
 function worker(fetch) {
-  const context = vm.createContext({ PolicyEvidence, fetch, Request, Response, URL, URLSearchParams, Headers, console, setTimeout, clearTimeout });
+  const context = vm.createContext({ PolicyEvidence, PolicySearchTerms, fetch, Request, Response, URL, URLSearchParams, Headers, console, setTimeout, clearTimeout });
   vm.runInContext(source, context);
   return context.worker;
 }
@@ -128,4 +129,44 @@ test('usBillList filters bills by every JEC source id, not just the requested on
   });
   const response = await w.fetch(new Request('https://test/api/us/congress/bills?committee_id=119-joint-jsec00'), env, {});
   assert.equal(response.status, 200);
+});
+
+test('condition search includes full and partial matches across types, with no embedding dependency', async()=>{
+ const calls=[];
+ const w=worker(async url=>{
+  const u=new URL(url);calls.push(u);
+  assert.ok(u.searchParams.get('and').startsWith('(or('));
+  if(u.pathname.endsWith('/bills'))return Response.json([
+   {bill_id:'119-hr-1',title:'Nickel batteries',summary:'Export controls apply',current_stage:'introduced'},
+   {bill_id:'119-hr-2',title:'Nickel battery production',summary:'Domestic subsidies'},
+   {bill_id:'119-hr-3',title:'Unrelated legislation',summary:'Schools'},
+  ]);
+  if(u.pathname.endsWith('/public_laws'))return Response.json([{public_law_id:'118-1',law_title:'Nickel batteries and export restrictions',govinfo_url:'https://www.govinfo.gov/test'}]);
+  return Response.json([]);
+ });
+ const response=await w.fetch(new Request('https://test/api/us/search?q='+encodeURIComponent('니켈, 수출통제, 배터리')),env,{});
+ assert.equal(response.status,200);const data=await response.json();
+ assert.equal(data.search_mode,'conditions');assert.equal(data.semantic_available,false);
+ assert.deepEqual(data.items.map(i=>i.matched_condition_count),[3,3,2]);
+ assert.equal(data.items[2].condition_matches.find(m=>m.term==='수출통제').matched,false);
+ assert.ok(data.items.some(i=>i.type==='public_law'));
+ assert.equal(calls.length,16);assert.ok(calls.some(u=>u.searchParams.get('and').includes('),or(')));
+});
+test('too many conditions return an actionable 400 without API calls',async()=>{
+ const w=worker(async()=>{throw Error('must not call');});
+ const r=await w.fetch(new Request('https://test/api/us/search?q=a,b,c,d,e,f'),env,{});
+ assert.equal(r.status,400);assert.match((await r.json()).error,/5개/);
+});
+test('source failure is not misrepresented as no matches',async()=>{
+ const w=worker(async()=>new Response('failed',{status:500}));
+ const r=await w.fetch(new Request('https://test/api/us/search?q=nickel,battery'),env,{});
+ assert.equal(r.status,503);
+});
+test('semantic provider failure preserves evidence-based results and marks degraded mode',async()=>{
+ const w=worker(async url=>{
+  if(new URL(url).hostname==='embedding.test')return new Response('failed',{status:503});
+  return Response.json(new URL(url).pathname.endsWith('/bills')?[{bill_id:'119-hr-1',title:'Nickel batteries'}]:[]);
+ });
+ const r=await w.fetch(new Request('https://test/api/us/search?q=nickel,battery'),{...env,POLICY_EMBEDDING_PROXY_URL:'https://embedding.test',POLICY_EMBEDDING_PROXY_TOKEN:'test'},{});
+ const data=await r.json();assert.equal(data.items[0].matched_condition_count,2);assert.equal(data.semantic_available,false);
 });

@@ -157,7 +157,7 @@ KR LETF AUM **0.0조** ($0.0bn) · 일거래 **0.377조** · 노셔널 $0.0bn
 | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 0.000 | 0.110 |
 | 0194T0 | ACE SK하이닉스단일종목레버리지 | 2.0 | 0.000 | 0.000 |
 
-HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 9.09% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
+HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 8.52% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
 
 ## Ranked leverage ETFs (click / open detail)
 

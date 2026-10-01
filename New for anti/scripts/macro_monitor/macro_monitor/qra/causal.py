@@ -195,6 +195,8 @@ def build_causal_pack(event: Dict[str, Any]) -> Dict[str, Any]:
 
     return {
         "flags": flags,
+        "bill_stance": bill,
+        "coupon_stance": coupon,
         "edges": edges,
         "summary_ko": " · ".join(summary_ko_parts) if summary_ko_parts else "파싱 데이터 부족",
         "limitations_ko": (
