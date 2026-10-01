@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-01T06:28:59.197856+00:00",
+  "generated_at": "2026-10-01T15:38:21.500099+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 29,
-    "sources_failed": 1,
-    "raw_items": 473,
-    "scored": 87,
-    "published": 74,
-    "commodities": 24,
-    "buckets": 63
+    "sources_ok": 30,
+    "sources_failed": 0,
+    "raw_items": 486,
+    "scored": 94,
+    "published": 80,
+    "commodities": 25,
+    "buckets": 67
   },
   "feed_status": [
     {
@@ -74,7 +74,7 @@
       "count": 10,
       "error": null,
       "mode": "live",
-      "archived": 2
+      "archived": 3
     },
     {
       "source_id": "br_conab",
@@ -107,9 +107,9 @@
     },
     {
       "source_id": "us_usgs_news",
-      "ok": false,
-      "count": 0,
-      "error": "TimeoutError: The read operation timed out",
+      "ok": true,
+      "count": 11,
+      "error": null,
       "mode": "live"
     },
     {
@@ -118,7 +118,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 38 reports linked, 11 read, 25 already known"
+      "note": "45 list pages, 39 reports linked, 13 read, 23 already known"
     },
     {
       "source_id": "my_mpob",
@@ -202,7 +202,8 @@
       "ok": true,
       "count": 10,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 1
     },
     {
       "source_id": "int_wgc_press",
@@ -676,29 +677,10 @@
         "6269fa1eda293c5a"
       ]
     },
-    "oil": {
-      "USA": [
-        "cfe32235018b6add",
-        "636939b535053039"
-      ],
-      "_global": [
-        "0260f9aa0131b0b8",
-        "7376f1ff6d49470e",
-        "735b13587e14b5a5"
-      ]
-    },
-    "soybeans": {
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
-      ]
-    },
     "rice": {
+      "JPN": [
+        "615a576a6c5f72ee"
+      ],
       "THA": [
         "eb8f3491f8c46070"
       ],
@@ -714,6 +696,31 @@
       "BRA": [
         "e65bffd316bf9313",
         "90caf018877f574b"
+      ]
+    },
+    "oil": {
+      "USA": [
+        "cfe32235018b6add",
+        "636939b535053039"
+      ],
+      "_global": [
+        "0260f9aa0131b0b8",
+        "7376f1ff6d49470e",
+        "735b13587e14b5a5"
+      ]
+    },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "corn": {
@@ -739,6 +746,16 @@
         "a0f50331005b9402"
       ]
     },
+    "thermal_coal": {
+      "USA": [
+        "4dc6df4935897046",
+        "98845f2fb8d7060a",
+        "f8aa4f64781b6480"
+      ],
+      "_global": [
+        "7376f1ff6d49470e"
+      ]
+    },
     "iron_ore": {
       "_global": [
         "5576156cceda0a41",
@@ -755,6 +772,7 @@
     },
     "palm_oil": {
       "IDN": [
+        "c15a313674037476",
         "2469120340370df4",
         "3038b0ed9276919c"
       ],
@@ -777,18 +795,14 @@
         "7aa1d9ea8f7acd29"
       ]
     },
-    "thermal_coal": {
-      "USA": [
-        "f8aa4f64781b6480"
-      ],
-      "_global": [
-        "7376f1ff6d49470e"
-      ]
-    },
     "rubber": {
       "_global": [
+        "0ae7470a5aa9f5a7",
         "58c936b97029a384",
         "30a98869d9f0a4f3"
+      ],
+      "IDN": [
+        "c15a313674037476"
       ]
     },
     "lithium": {
@@ -827,8 +841,8 @@
         "7376f1ff6d49470e"
       ],
       "USA": [
-        "de49cf7992871dbf",
         "5a1967d788350658",
+        "de49cf7992871dbf",
         "181e4ee82214496a"
       ],
       "CAN": [
@@ -848,6 +862,11 @@
     "lead": {
       "_global": [
         "959d91c46a9a7514"
+      ]
+    },
+    "cocoa": {
+      "IDN": [
+        "c15a313674037476"
       ]
     },
     "coffee": {
@@ -905,7 +924,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.383,
+      "importance": 6.333,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -937,7 +956,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.951,
+      "importance": 4.914,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -969,7 +988,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.445,
+      "importance": 4.411,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1000,7 +1019,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.124,
+      "importance": 4.102,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1032,7 +1051,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.106,
+      "importance": 4.081,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1064,7 +1083,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.067,
+      "importance": 4.046,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1072,6 +1091,36 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "615a576a6c5f72ee",
+      "title": {
+        "original": "Japan: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Japan’s rice production in marketing year (MY) 2026/27 continues to rebound from a slump in MY 2024/25, with the latest forecast edging out last year's official...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/japan-grain-and-feed-update",
+      "published_at": "2026-09-30T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "JPN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.962,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "598ef301ee60a6fd",
@@ -1096,7 +1145,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.911,
+      "importance": 3.88,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1124,7 +1173,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.714,
+      "importance": 3.689,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1154,7 +1203,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.706,
+      "importance": 3.683,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1186,7 +1235,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.514,
+      "importance": 3.495,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1217,7 +1266,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.514,
+      "importance": 3.495,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1248,7 +1297,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.474,
+      "importance": 3.46,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1256,6 +1305,36 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.437,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1280,7 +1359,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.463,
+      "importance": 3.437,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1311,7 +1390,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.463,
+      "importance": 3.437,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1341,7 +1420,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.416,
+      "importance": 3.398,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1373,7 +1452,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.375,
+      "importance": 3.355,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1404,13 +1483,44 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.159,
+      "importance": 3.144,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "4dc6df4935897046",
+      "title": {
+        "original": "Quarterly Coal Report—Second Quarter 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) U.S. coal production during the second quarter of 2026 totaled 125.4 million short tons (MMst), which was 4.9% lower than the previous quarter and 2.2% lower than the second quarter of 2025. Second-quarter 2026 U.S. coal exports (26.8 MMst) increased 13.3% from the first-quarter 2026 level and increased 19.2% from the second-quarter 2025 level. U.S. coal imports in the second quarter of 2026 totaled 0.7 MMst. All data for 2024 and previous years are final. All data for 2025 and 2026 are preliminary.",
+      "url": "http://www.eia.gov/coal/production/quarterly/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.848,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "5576156cceda0a41",
@@ -1434,7 +1544,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.748,
+      "importance": 2.728,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1464,7 +1574,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.553,
+      "importance": 2.546,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1495,7 +1605,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.519,
+      "importance": 2.498,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1525,7 +1635,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.486,
+      "importance": 2.468,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1534,35 +1644,32 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "6269fa1eda293c5a",
+      "id": "0ae7470a5aa9f5a7",
       "title": {
-        "original": "India: Oilseeds and Products Update",
+        "original": "Anrpc releases monthly nr statistical report august 2026",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
-      "published_at": "2026-09-03T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
+      "summary": null,
+      "url": "https://www.anrpc.org/newsla/anrpc-releases-monthly-nr-statistical-report-august-2026",
+      "published_at": null,
+      "agency": "Association of Natural Rubber Producing Countries",
+      "agency_ko": "천연고무생산국협회(ANRPC)",
+      "source_id": "int_anrpc",
       "commodities": [
-        "soybeans",
-        "cotton"
+        "rubber"
       ],
-      "countries": [
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.475,
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "ANRPC_MONTHLY_NR",
+      "series_label_ko": "ANRPC 월간 천연고무 통계",
+      "importance": 2.468,
       "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
+        "series:ANRPC_MONTHLY_NR",
+        "no_date"
       ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "58c936b97029a384",
@@ -1621,6 +1728,37 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "6269fa1eda293c5a",
+      "title": {
+        "original": "India: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
+      "published_at": "2026-09-03T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.461,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "088f09f9aa8eb7c7",
       "title": {
         "original": "Ukraine: Grain and Feed Quarterly",
@@ -1644,7 +1782,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.31,
+      "importance": 2.303,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1675,7 +1813,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.244,
+      "importance": 2.228,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1705,7 +1843,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.243,
+      "importance": 2.227,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1735,7 +1873,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.77,
+      "importance": 1.762,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1765,7 +1903,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.741,
+      "importance": 1.73,
       "reasons": [
         "series:EIA_STEO"
       ],
@@ -1794,12 +1932,70 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.728,
+      "importance": 1.72,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 29, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.709,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "98845f2fb8d7060a",
+      "title": {
+        "original": "Quarterly Coal Distribution Report—Second Quarter 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) The <em>Quarterly Coal Distribution Report</em> (QCDR) provides detailed U.S. domestic coal distribution data (excluding waste coal and imports) for second-quarter 2026 by coal-origin state, coal-destination state, mode of transportation, and consuming sector. Quarterly coal distribution data for all quarters are preliminary and will be updated in the corresponding <em>Annual Coal Distribution Report</em>.",
+      "url": "http://www.eia.gov/coal/distribution/quarterly/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.709,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "5f087a520744649c",
@@ -1823,7 +2019,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.696,
+      "importance": 1.688,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1853,7 +2049,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.686,
+      "importance": 1.673,
       "reasons": [
         "country_in_text"
       ],
@@ -1882,7 +2078,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.653,
+      "importance": 1.642,
       "reasons": [
         "country_in_text"
       ],
@@ -1912,7 +2108,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.618,
+      "importance": 1.612,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1949,36 +2145,6 @@
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
-      "id": "25541b98e1af190a",
-      "title": {
-        "original": "Canadian LNG project signs third international offtake deal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
-      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
-      "published_at": "2026-09-15T23:07:23+00:00",
-      "agency": "Natural Resources Canada",
-      "agency_ko": "캐나다 천연자원부",
-      "source_id": "ca_nrcan",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.551,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "0ac19de06b45b2cf",
       "title": {
         "original": "Malaysia: Oilseeds and Products Update",
@@ -2001,12 +2167,42 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.545,
+      "importance": 1.544,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "25541b98e1af190a",
+      "title": {
+        "original": "Canadian LNG project signs third international offtake deal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
+      "published_at": "2026-09-15T23:07:23+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.541,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "b736550c463bc772",
@@ -2031,7 +2227,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.522,
+      "importance": 1.513,
       "reasons": [
         "country_in_text"
       ],
@@ -2060,7 +2256,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.487,
+      "importance": 1.477,
       "reasons": [
         "country_in_text"
       ],
@@ -2087,9 +2283,38 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.47,
+      "importance": 1.459,
       "reasons": [],
       "first_seen_at": "2026-10-01T00:27:57.508531+00:00"
+    },
+    {
+      "id": "c15a313674037476",
+      "title": {
+        "original": "HR CPO dan HPE Biji Kakao Naik, HPE Getah Pinus Turun, HPE Produk Kulit Tetap, HPE Produk Kayu Bervariasi pada Oktober 2026",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Jakarta, 1 Oktober 2026 – Harga Referensi (HR) komoditas minyak kelapa sawit (Crude Palm Oil/CPO) untuk penetapan Bea Keluar (BK) dan tarif Badan Layanan Umum Badan Pengelola Dana Perkebunan (BLU BPDP), atau dikenal sebagai Pungutan Ekspor (PE), untuk periode 1–31 Oktober 2026, ditetapkan sebesar USD 1.042,15 per metrik ton (MT). Nilai tersebut naik USD 34,64 atau 3,44 persen dari HR CPO periode 1–30 September 2026 yang sebesar USD 1.007,51 per MT.“Terjadi kenaikan HR CPO periode Oktober 2026 dibandingkan periode September 2026. Mengacu pada Peraturan Menteri Keuangan (PMK) yang berlaku…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/hr-cpo-dan-hpe-biji-kakao-naik-hpe-getah-pinus-turun-hpe-produk-kulit-tetap-hpe-produk-kayu-bervariasi-pada-oktober-2026",
+      "published_at": "2026-10-01T14:15:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "cocoa",
+        "palm_oil",
+        "rubber"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.438,
+      "reasons": [],
+      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "6d3e7543b7514565",
@@ -2114,7 +2339,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.416,
+      "importance": 1.405,
       "reasons": [],
       "first_seen_at": "2026-10-01T00:27:57.508531+00:00"
     },
@@ -2142,7 +2367,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.39,
+      "importance": 1.384,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2172,7 +2397,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.363,
+      "importance": 1.355,
       "reasons": [
         "country_in_text"
       ],
@@ -2199,8 +2424,37 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.349,
+      "importance": 1.338,
       "reasons": [],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "d4de362acb2f5bd7",
+      "title": {
+        "original": "June 2026 crude steel production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 155.7 million tonnes (Mt) in June 2026, a 1.7% increase compared to June 2025. The post June 2026 crude steel production appeared first on worldsteel.org .",
+      "url": "https://worldsteel.org/media/press-releases/2026/june-2026-crude-steel-production/",
+      "published_at": "2026-07-23T06:13:35+00:00",
+      "agency": "World Steel Association",
+      "agency_ko": "세계철강협회",
+      "source_id": "int_worldsteel",
+      "commodities": [
+        "iron_ore",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "WORLDSTEEL_CRUDE_STEEL",
+      "series_label_ko": "세계철강협회 월간 조강 생산",
+      "importance": 1.31,
+      "reasons": [
+        "series:WORLDSTEEL_CRUDE_STEEL",
+        "has_figure"
+      ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2226,65 +2480,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.316,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "d4de362acb2f5bd7",
-      "title": {
-        "original": "June 2026 crude steel production",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "World crude steel production for the 70 countries reporting to worldsteel was 155.7 million tonnes (Mt) in June 2026, a 1.7% increase compared to June 2025. The post June 2026 crude steel production appeared first on worldsteel.org .",
-      "url": "https://worldsteel.org/media/press-releases/2026/june-2026-crude-steel-production/",
-      "published_at": "2026-07-23T06:13:35+00:00",
-      "agency": "World Steel Association",
-      "agency_ko": "세계철강협회",
-      "source_id": "int_worldsteel",
-      "commodities": [
-        "iron_ore",
-        "met_coal"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "WORLDSTEEL_CRUDE_STEEL",
-      "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.313,
-      "reasons": [
-        "series:WORLDSTEEL_CRUDE_STEEL",
-        "has_figure"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-09-17T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.309,
+      "importance": 1.31,
       "reasons": [
         "country_in_text"
       ],
@@ -2311,39 +2507,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.303,
+      "importance": 1.297,
       "reasons": [
         "has_figure"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "9a22d2cdf0982434",
-      "title": {
-        "original": "Canada attracts a $2 billion mining investment in Sudbury’s Craig Mine",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Today, the Government of Canada welcomed a major milestone at Glencore Canada Corporation’s Craig Mine in Ontario with the completion of the Onaping Depth Project shaft, providing first access to nickel ore and marking an important step toward first production from the Onaping Depth Zone later this year.",
-      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-attracts-a-2-billion-mining-investment-in-sudburys-craig-mine.html",
-      "published_at": "2026-08-27T21:27:00+00:00",
-      "agency": "Natural Resources Canada",
-      "agency_ko": "캐나다 천연자원부",
-      "source_id": "ca_nrcan",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.291,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2370,7 +2536,37 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.29,
+      "importance": 1.286,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "9a22d2cdf0982434",
+      "title": {
+        "original": "Canada attracts a $2 billion mining investment in Sudbury’s Craig Mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Today, the Government of Canada welcomed a major milestone at Glencore Canada Corporation’s Craig Mine in Ontario with the completion of the Onaping Depth Project shaft, providing first access to nickel ore and marking an important step toward first production from the Onaping Depth Zone later this year.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/08/canada-attracts-a-2-billion-mining-investment-in-sudburys-craig-mine.html",
+      "published_at": "2026-08-27T21:27:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.285,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2400,7 +2596,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.241,
+      "importance": 1.235,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2573,7 +2769,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.19,
+      "importance": 1.181,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2600,7 +2796,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.159,
+      "importance": 1.152,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2625,34 +2821,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.146,
-      "reasons": [],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "62f11e17ce23601c",
-      "title": {
-        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
-      "published_at": "2026-09-07T15:45:14+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.089,
+      "importance": 1.139,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2679,10 +2848,37 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.088,
+      "importance": 1.084,
       "reasons": [
         "country_in_text"
       ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "62f11e17ce23601c",
+      "title": {
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.083,
+      "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2767,7 +2963,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.019,
+      "importance": 1.014,
       "reasons": [
         "country_in_text"
       ],
@@ -2796,7 +2992,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.012,
+      "importance": 1.008,
       "reasons": [
         "country_in_text"
       ],
@@ -2827,7 +3023,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.997,
+      "importance": 0.991,
       "reasons": [
         "country_in_text"
       ],
@@ -2935,7 +3131,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.816,
+      "importance": 0.811,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2962,7 +3158,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.807,
+      "importance": 0.805,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
@@ -2989,7 +3185,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.643,
+      "importance": 0.64,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
@@ -3016,7 +3212,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.613,
+      "importance": 0.611,
       "reasons": [
         "country_in_text"
       ],
@@ -3044,7 +3240,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.494,
+      "importance": 0.493,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     }
