@@ -25,7 +25,7 @@ let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
 let MM_STATEMENT_DIFF_PROMISE = null;  // FOMC statement wording diffs; loaded only for USA
-let MM_CB_PROMISE = null;       // KOR/JPN policy-board panel (cb_policy_v1.json)
+let MM_CB_PROMISE = null;       // KOR/JPN/GBR/EMU policy-board panel (cb_policy_v1.json)
 let MM_FOMC_OPEN = false;       // U.S. policy panel: is the meeting-detail fold under the rate decision open
 
 const mmFetch = async (iso3) => {
@@ -65,8 +65,9 @@ const mmStatementDiffFetch = async () => {
     return MM_STATEMENT_DIFF_PROMISE;
 };
 
-// cb_policy_v1.json: the Bank of Korea and Bank of Japan policy-board panels
-// (build_cb_policy.py) -- one file for both, fetched once, read for KOR / JPN only.
+// cb_policy_v1.json: the policy-board panels of the Bank of Korea, Bank of Japan,
+// Bank of England and ECB (build_cb_policy.py) -- one file, fetched once, read for
+// KOR / JPN / GBR / EMU only.
 const mmCbPolicyFetch = async () => {
     if (!MM_CB_PROMISE) {
         MM_CB_PROMISE = fetch('/public/data/cb_policy_v1.json', { cache: 'no-cache' })
@@ -626,6 +627,63 @@ const mmBarSeries = (dates, values, opts = {}) => {
         </svg>
         <div class="mm-tip-box" style="display:none"></div>
     </div>`;
+};
+
+// Bars or a line. A price, a yield or an index is a continuous level -- a line is honest. A growth
+// rate, an inflation print or a flow (trade balance, jobs added, exports in won) is one number per
+// release period: a line between two months draws values that were never measured, and the sign
+// of a change matters more than its slope. So the discrete releases get bars, in every country,
+// unless the engine already gave the indicator its own panel (stack, components, fiscal pair).
+//
+// Rates that are themselves levels (unemployment rate, output gap, breakeven inflation, a nowcast
+// that is revised daily) stay lines: they are states, not changes.
+const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployment', 'youth_unemployment', 'inactivity_rate',
+    'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
+const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
+    'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw',
+    'semi_export_krw', 'nodx_sgd', 'export_il', 'export_hk', 'export_tw', 'foreign_equity_flow_za',
+    'load_shedding_hours', 'auto_loans']);
+// An amount that is drawn as bars (exports) also shows its growth: the same monthly history, this month
+// against the same month a year earlier, as a line under the bars. Nothing extra is stored -- the rate is
+// computed from the amount series, so it can never disagree with it. The card opts in with `yoy_line`.
+const mmYoyPanel = (ind, win) => {
+    const h = (ind.history || {})['10y'];
+    if (!ind.yoy_line || !h || !Array.isArray(h.values) || !Array.isArray(h.dates)) return '';
+    // "the same month a year earlier" is looked up by date, not by position: a month the source did not
+    // publish (or that had no exchange rate) is a hole in the series, and counting 12 steps back would
+    // then compare the wrong months.
+    const byMonth = new Map();
+    h.dates.forEach((d, i) => { if (Number.isFinite(h.values[i])) byMonth.set(String(d).slice(0, 7), h.values[i]); });
+    const prior = (d) => { const y = Number(String(d).slice(0, 4)); return `${y - 1}${String(d).slice(4, 7)}`; };
+    const rows = h.dates.map((d, i) => {
+        const v = h.values[i];
+        const p = byMonth.get(prior(d));
+        return { d, y: Number.isFinite(v) && Number.isFinite(p) && p !== 0 ? (v / p - 1) * 100 : null };
+    }).filter((r) => r.y !== null);
+    // A quarterly amount (Taiwan's exports are a balance-of-payments quarter) compares a quarter with the
+    // same quarter a year earlier, and five years is 20 of them, not 60.
+    const gaps = h.dates.slice(1).map((d, i) => Date.parse(d) - Date.parse(h.dates[i])).sort((a, b) => a - b);
+    const quarterly = gaps.length > 0 && gaps[Math.floor(gaps.length / 2)] > 45 * 864e5;
+    const shown = win === '10y' ? rows : rows.slice(quarterly ? -20 : -60);
+    if (shown.length < (quarterly ? 4 : 6)) return '';
+    const same = quarterly ? '전년 동기' : '전년 동월';
+    return `
+        <p class="mm-view-title">${same} 대비 성장률 (%)</p>
+        ${mmLineChart(shown.map((r) => r.d), shown.map((r) => r.y), { unit: '%', label: `${ind.label_ko} ${same} 대비` })}
+        <p class="fin-note">위 금액을 ${quarterly ? '1년 전 같은 분기와' : '12개월 전 같은 달과'} 비교한 변화율입니다(같은 시계열에서 계산).</p>`;
+};
+
+const mmUseBars = (ind) => {
+    const ct = ind.chart_type;
+    if (ct === 'bar') return true;
+    if (ct && ct !== 'line' && ct !== 'line+components') return false;      // status, stack, fiscal_dual_line: their own panels
+    // (line+components is GDP: its history is a growth rate, its breakdown has a separate view)
+    if (MM_LEVEL_IDS.has(ind.id)) return false;
+    if (MM_FLOW_IDS.has(ind.id)) return true;
+    const pct = ind.unit === '%' || ind.unit === 'pct';
+    if (!pct) return false;
+    // a growth rate of anything (M2 YoY, household credit YoY) is a per-period change too
+    return ind.category === 'inflation' || ind.category === 'growth' || /_(yoy|qoq|mom)(_[a-z]{2})?$/.test(ind.id);
 };
 
 // Same fetch and computation as app.js's openChartModal (the 원자재/금융 home
@@ -1505,7 +1563,7 @@ const mmChartDrawer = () => {
                 secondaryLabel: fiscal.secondary_label_ko || '비율',
                 secondaryUnit: fiscal.secondary_unit || '%',
             });
-        } else if (ind.chart_type === 'bar') {
+        } else if (mmUseBars(ind)) {
             body = mmBarSeries(hist.dates || [], hist.values || [], {
                 unit: src.unit === 'pct' ? '%' : (src.unit || ''),
                 label: src.label_ko || ind.label_ko,
@@ -1526,6 +1584,7 @@ const mmChartDrawer = () => {
         // A series that is not a plain observed print says so under the chart
         // (QRA: announced quarterly estimates, not outturns).
         if (ind.history_note_ko) body += `<p class="fin-note">${finEsc(ind.history_note_ko)}</p>`;
+        body += mmYoyPanel(ind, MM_CHART.window);
     }
 
     // With a mode selected the header has to follow it. The label carries the
@@ -1913,9 +1972,12 @@ const mmFomcMinutesHtml = (policy) => {
 // Same shape as the FOMC panel: the rate decision is the head, and the meeting's
 // detail (named vote, redline, forecasts, calendar, members) opens under it.
 // Everything comes from the bank's own release (build_cb_policy.py); the redline
-// is a comparison of wording, not a hawk/dove score. The two banks differ in what
-// they publish, and the panel says so instead of filling the gap: the BOJ names
-// who voted for and against, the BOK names only the dissenters.
+// is a comparison of wording, not a hawk/dove score. The banks differ in what
+// they publish, and the panel says so instead of filling the gap: the BOJ and the
+// BoE name who voted for and against, the BOK names only the dissenters, and the
+// ECB publishes no votes at all -- only how far members agreed.
+const MM_CB_ISO = ['KOR', 'JPN', 'GBR', 'EMU'];
+const MM_CB_QUANT_KO = { all: '전원', 'almost all': '거의 전원', most: '대부분', many: '다수', some: '일부', 'a large majority of': '압도적 다수', 'a majority of': '과반' };
 const MM_CB_ACTION_KO = { raise: '인상', lower: '인하', maintain: '동결' };
 const MM_CB_DIR_KO = { higher: '인상 선호', lower: '인하 선호', hold: '동결 선호' };
 const MM_CB_FOR_SOURCE_KO = {
@@ -1923,6 +1985,8 @@ const MM_CB_FOR_SOURCE_KO = {
     unanimous_all_present: '만장일치 — 출석 위원 전원',
     minutes_attendance: '의사록 출석자에서 반대 위원을 뺀 명단 (결정문은 반대 위원만 실명)',
     roster_inferred: '현재 위원 명단에서 반대 위원을 뺀 추정 (의사록 공개 전)',
+    minutes_vote_paragraph: '의사록의 표결 문단에 실명으로 기재 (인원수는 요약의 표결 수와 대조)',
+    member_views: '의사록의 위원별 견해(표결 그룹)에 실명으로 기재',
 };
 const mmCbPct = (v) => (Number.isFinite(v) ? `${Number(v).toFixed(2)}%` : '—');
 const mmCbMove = (d) => {
@@ -1932,8 +1996,36 @@ const mmCbMove = (d) => {
         : `${MM_CB_ACTION_KO[d.action]} ${d.change_bp > 0 ? '+' : ''}${d.change_bp}bp → ${mmCbPct(d.rate_pct)}`;
 };
 
+// The ECB publishes no votes. The account of a meeting says how far members agreed with the
+// proposal ("all members agreed", "almost all members supported") and, where members held
+// another view, gives it its own paragraph -- both are shown as written.
+const mmCbConsensusHtml = (cb) => {
+    const v = cb.votes;
+    const ag = v.agreement;
+    const notes = v.notes || [];
+    const hist = (v.history || []).map((h) => {
+        const q = h.quantifier ? (MM_CB_QUANT_KO[h.quantifier] || h.quantifier) : '문장 없음';
+        return `<span>${finEsc(String(h.meeting_date).slice(2))} · ${finEsc(q + (h.notes ? ` · 다른 견해 ${h.notes}건` : ''))}</span>`;
+    }).join('');
+    return `
+    <div class="mm-quality-card">
+        <span class="mm-quality-label">표결 · ${finEsc(v.meeting_date)} 회의 요약</span>
+        <strong>표결 비공개 — 합의 기록만</strong>
+        <p class="mm-quality-muted">${finEsc(v.note_ko || '')}</p>
+        ${ag ? `<details class="mm-quality-details" open><summary>합의 문장 · ${finEsc(MM_CB_QUANT_KO[ag.quantifier] || ag.quantifier)} (원문)</summary>
+            <p class="mm-cb-para">${finEsc(ag.sentence)}</p></details>`
+            : '<p class="mm-quality-muted">이 회의 요약에서 합의 문장을 찾지 못했습니다.</p>'}
+        ${notes.length ? `<details class="mm-quality-details"><summary>다른 견해를 적은 문단 ${notes.length}건 (원문)</summary>
+            ${notes.map((n) => `<p class="mm-cb-para">${finEsc(n.text)}</p>`).join('')}</details>`
+            : '<p class="mm-quality-muted">다른 견해를 적은 문단은 없습니다.</p>'}
+        ${hist ? `<div class="mm-quality-names">${hist}</div>` : ''}
+        ${v.account_url ? `<a class="mm-quality-link" href="${finEsc(v.account_url)}" target="_blank" rel="noopener noreferrer">회의 요약 원문 ↗</a>` : ''}
+    </div>`;
+};
+
 const mmCbVotesHtml = (cb) => {
     const v = cb.votes;
+    if (v && v.kind === 'consensus_only') return mmCbConsensusHtml(cb);
     if (!v) {
         return `<div class="mm-quality-card"><span class="mm-quality-label">공개 표결</span>
             <p class="mm-quality-muted">이 회의의 결정문에는 표결 문장이 없습니다.</p></div>`;
@@ -1968,6 +2060,10 @@ const mmCbVotesHtml = (cb) => {
             : '<p class="mm-quality-muted">찬성 위원 명단은 확인되지 않았습니다.</p>'}
         ${(v.absent || []).length ? `<p class="mm-quality-muted">결석 ${v.absent.map(finEsc).join(', ')}</p>` : ''}
         ${v.source === 'minutes' ? '<p class="mm-quality-muted">결정문에 표결 문장이 없는 회의라 의사록 심의결과의 기재로 채웠습니다.</p>' : ''}
+        ${(v.earlier_steps || []).length ? `<details class="mm-quality-details"><summary>이 회의는 표결을 두 번 했습니다 — 앞선 표결 (원문)</summary>
+            ${v.earlier_steps.map((t) => `<p class="mm-cb-para">${finEsc(t)}</p>`).join('')}</details>` : ''}
+        ${(v.notes || []).length ? `<details class="mm-quality-details"><summary>표결에 붙은 설명 (원문)</summary>
+            ${v.notes.map((t) => `<p class="mm-cb-para">${finEsc(t)}</p>`).join('')}</details>` : ''}
         ${hist ? `<div class="mm-quality-names">${hist}</div>` : ''}
         ${cb.vote_history_note_ko ? `<p class="mm-quality-muted">${finEsc(cb.vote_history_note_ko)}</p>` : ''}
     </div>`;
@@ -1978,7 +2074,9 @@ const mmCbScheduleHtml = (cb) => {
     const statusKo = { released: '공개됨', scheduled: '공개 예정', expected: '공개 예상' };
     const basisKo = (r) => (r.basis === 'boj_calendar' ? '일본은행 공식 일정'
         : (r.basis === 'bok_board' ? '한국은행 게시일'
-            : (String(r.basis).startsWith('recent_lag') ? '최근 공개 간격 기준 예상일이며 실제 게시 후 확정됩니다' : '성명서 기재')));
+            : (r.basis === 'boe_page' ? '영란은행 페이지 게시일'
+                : (r.basis === 'ecb_account' ? 'ECB 회의 요약 페이지 기준' + (r.status === 'released' ? '' : ' (직전 요약 페이지가 예고한 날짜)')
+                    : (String(r.basis).startsWith('recent_lag') ? '최근 공개 간격 기준 예상일이며 실제 게시 후 확정됩니다' : '성명서 기재')))));
     const rows = (cb.releases || []).map((r) => `
         <li><b>${finEsc(String(r.meeting_date).slice(2))}</b> 회의 ${finEsc(r.kind_ko)} · ${finEsc(r.date)}
             <span class="mm-cb-badge mm-cb-${finEsc(r.status)}">${finEsc(statusKo[r.status] || r.status)}</span>
@@ -2006,9 +2104,53 @@ const mmCbRosterHtml = (cb) => {
     </div>`;
 };
 
+// Bank of England Monetary Policy Report: the forecast summary (Table 3.A / 3.B) as the Bank prints it --
+// a central projection, or scenarios where the MPC published scenarios -- and the annual tables of Annex 1.
+const mmCbProjFmt = (v) => (Number.isFinite(v) ? Number(v).toFixed(1) : '—');
+const mmCbProjCell = (c) => {
+    if (!c || !Number.isFinite(c.value)) return '<td class="mm-sep-na">—</td>';
+    let sub = '';
+    if (Number.isFinite(c.prior)) {
+        const diff = Math.round((c.value - c.prior) * 10) / 10;
+        const mark = diff > 0 ? `<b class="mm-sep-up">▲${diff.toFixed(1)}</b>` : (diff < 0 ? `<b class="mm-sep-down">▼${Math.abs(diff).toFixed(1)}</b>` : '<b>—</b>');
+        sub = `<small>직전 ${mmCbProjFmt(c.prior)} ${mark}</small>`;
+    }
+    return `<td>${mmCbProjFmt(c.value)}${sub}</td>`;
+};
+const mmCbProjTable = (t) => (t.blocks || []).map((b) => `
+    ${b.name ? `<p class="mm-quality-muted"><b>${finEsc(b.name)}</b></p>` : ''}
+    <div class="mm-sep-scroll"><table class="mm-sep-table">
+        <thead><tr><th></th>${(t.columns || []).map((c) => `<th>${finEsc(c)}</th>`).join('')}</tr></thead>
+        <tbody>${b.rows.map((r) => `<tr><th>${finEsc(r.label_ko || r.label_en)}${r.label_ko ? `<small>${finEsc(r.label_en)}</small>` : ''}</th>${r.values.map(mmCbProjCell).join('')}</tr>`).join('')}</tbody>
+    </table></div>`).join('');
+
+const mmCbProjectionHtml = (o) => {
+    const t = o.summary;
+    if (!t) return '';
+    const scenarios = (t.blocks || []).filter((b) => b.name).map((b) => b.name);
+    const defs = [];
+    (t.general_en || []).forEach((g) => defs.push(`<li>${finEsc(g)}</li>`));
+    ((t.blocks || [])[0] || { rows: [] }).rows.forEach((r) => { if (r.definition_en) defs.push(`<li><b>${finEsc(r.label_en)}</b> ${finEsc(r.definition_en)}</li>`); });
+    const link = (u, txt) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">${txt} ↗</a>`;
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">경제·물가 전망 · ${finEsc(o.meeting_date)} ${finEsc(o.title || '통화정책보고서')}${o.forecast_round ? ' (이번 회의와 함께 발표)' : ''}</span>
+        <details class="mm-quality-details" open><summary>${finEsc(t.title)}</summary>
+            ${mmCbProjTable(t)}
+            <p class="mm-quality-muted">MPC 전망을 보고서에 실린 그대로 옮겼습니다. 분기는 그 시점의 전년 동기 대비입니다.${scenarios.length > 1 ? ` 이 보고서는 시나리오(${finEsc(scenarios.join(' · '))})를 함께 냈습니다.` : ''}${t.prior_note_en ? ` 작은 글씨는 직전 보고서의 같은 시점 전망입니다(원문 각주: "${finEsc(t.prior_note_en)}")` : ''} · ${link(o.source_url, '보고서 원문')}</p>
+            ${defs.length ? `<details class="mm-cb-more"><summary>지표 정의 (원문 각주)</summary><ul class="mm-minutes-list">${defs.join('')}</ul></details>` : ''}
+        </details>
+        ${(o.annual || []).length ? `<details class="mm-quality-details"><summary>연도별 중심 전망 (부록 1 · ${(o.annual || []).length}개 표)</summary>
+            ${o.annual.map((a) => `<p class="mm-quality-muted"><b>${finEsc(a.title)}</b></p>${mmCbProjTable(a)}`).join('')}</details>` : ''}
+        ${o.previous ? `<details class="mm-quality-details"><summary>직전 보고서 · ${finEsc(o.previous.meeting_date)} ${finEsc(o.previous.title || '')}</summary>
+            ${mmCbProjTable(o.previous.summary)}<p class="mm-quality-muted">${link(o.previous.source_url, '원문')}</p></details>` : ''}
+    </div>`;
+};
+
 const mmCbOutlookHtml = (cb) => {
     const o = cb.outlook;
     if (!o) return '';
+    if (o.kind === 'projection_blocks') return mmCbProjectionHtml(o);
     if (o.kind === 'forecast_table') {
         const vars = [['real_gdp', '실질 GDP'], ['cpi', '소비자물가(신선식품 제외)'], ['core_cpi', '참고: 근원(식품·에너지 제외)']];
         const cell = (c, prior) => {
@@ -2056,12 +2198,12 @@ const mmCbOutlookHtml = (cb) => {
                 return `<th>${finEsc(y)}${fc && fc.forecast ? '<small>전망</small>' : ''}</th>`;
             }).join('');
             tableHtml = `
-            <details class="mm-quality-details" open><summary>한국은행 경제전망 · ${finEsc(tb.meeting_date)} 발표</summary>
+            <details class="mm-quality-details" open><summary>${tb.title_ko ? `${finEsc(tb.title_ko)} · ${finEsc(tb.meeting_date)}` : `한국은행 경제전망 · ${finEsc(tb.meeting_date)} 발표`}</summary>
                 <div class="mm-sep-scroll"><table class="mm-sep-table">
                     <thead><tr><th></th>${heads}</tr></thead>
                     <tbody>${tb.rows.map((row) => `<tr><th>${finEsc(row.label_ko)}<small>${finEsc(row.unit)}</small></th>${years.map((y, i) => cell(row, i)).join('')}</tr>`).join('')}</tbody>
                 </table></div>
-                <p class="mm-quality-muted">전년 대비 %(경상수지 억 달러, 취업자수 증감 만 명). 작은 글씨는 직전 전망${tb.prior_made_in ? `(${finEsc(tb.prior_made_in)}월)` : ''} 값과 그 대비 변화입니다. 발표 자료의 표를 열·괄호 개수로 짝지어 읽었고, 개수가 맞지 않는 행은 싣지 않았습니다 · <a class="mm-quality-link" href="${finEsc(tb.source_url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a></p>
+                <p class="mm-quality-muted">${tb.note_ko ? finEsc(tb.note_ko) : `전년 대비 %(경상수지 억 달러, 취업자수 증감 만 명). 작은 글씨는 직전 전망${tb.prior_made_in ? `(${finEsc(tb.prior_made_in)}월)` : ''} 값과 그 대비 변화입니다. 발표 자료의 표를 열·괄호 개수로 짝지어 읽었고, 개수가 맞지 않는 행은 싣지 않았습니다`} · <a class="mm-quality-link" href="${finEsc(tb.source_url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a></p>
             </details>`;
         }
         const hasSentences = Array.isArray(o.sentences) && o.sentences.length;
@@ -2070,9 +2212,9 @@ const mmCbOutlookHtml = (cb) => {
         <div class="mm-quality-card mm-quality-wide">
             <span class="mm-quality-label">성장·물가 전망 · ${finEsc(o.meeting_date)}${o.forecast_round ? ' (정기 경제전망 회의)' : ''}</span>
             ${tableHtml}
-            ${hasSentences ? `<details class="mm-quality-details" ${tableHtml ? '' : 'open'}><summary>이번 결정문의 전망 서술 ${o.sentences.length}문장</summary>
+            ${hasSentences ? `<details class="mm-quality-details" ${tableHtml ? '' : 'open'}><summary>${finEsc(o.sentences_label_ko || '이번 결정문의 전망 서술')} ${o.sentences.length}${finEsc(o.sentences_unit_ko || '문장')}</summary>
                 <ul class="mm-minutes-list">${o.sentences.map((t) => `<li>${finEsc(t)}</li>`).join('')}</ul>
-                <p class="mm-quality-muted">결정문 문장을 그대로 옮겼습니다.</p>
+                <p class="mm-quality-muted">${finEsc(o.sentences_note_ko || '결정문 문장을 그대로 옮겼습니다.')}</p>
             </details>` : ''}
         </div>`;
     }
@@ -2102,15 +2244,47 @@ const mmCbGroupedBlocks = (blocks) => MM_CB_GROUPS.map(([key, label]) => {
         <ul class="mm-minutes-list">${rows.map(mmCbBlock).join('')}</ul></details>`;
 }).join('');
 
+// Bank of England: every member's own account of their vote, grouped by how they voted
+// (published from the November 2025 meeting).
+const mmCbMemberViewsHtml = (cb) => {
+    const mv = cb.member_views;
+    if (!mv || !(mv.groups || []).length) return '';
+    const total = mv.groups.reduce((n, g) => n + g.members.length, 0);
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">위원별 견해 · ${finEsc(mv.meeting_date)}</span>
+        <strong>${total}명이 각자 쓴 표결 사유</strong>
+        <p class="mm-quality-muted">위원이 자기 표결의 이유를 직접 쓴 글입니다(2025-11 회의부터 공개). 표결 그룹별로, 원문(영어) 그대로 옮겼으며 요약·평가가 아닙니다.</p>
+        ${mv.groups.map((g) => `<details class="mm-minutes-group"><summary>${finEsc(g.label)} · ${g.members.length}명</summary>
+            <ul class="mm-minutes-list">${g.members.map((m) => `<li><b>${finEsc(m.name)}</b>${m.paragraphs.map((t) => `<p class="mm-cb-para">${finEsc(t)}</p>`).join('')}</li>`).join('')}</ul></details>`).join('')}
+    </div>`;
+};
+
 const mmCbMinutesHtml = (cb) => {
     const mi = cb.minutes;
     if (!mi) return '';
     const link = (mi.page_url || mi.source_url)
         ? ` · <a class="mm-quality-link" href="${finEsc(mi.page_url || mi.source_url)}" target="_blank" rel="noopener noreferrer">의사록 원문 ↗</a>` : '';
-    const head = `<strong>${finEsc(mi.meeting_date)} 회의 의사록${mi.released_on ? ` · ${finEsc(mi.released_on)} 공개` : ''}</strong>
-        <p class="mm-quality-muted">위원 이름은 밝히지 않고 "일부 위원" 같은 수 표현으로만 옮깁니다. 아래는 원문 그대로이며 요약·평가가 아닙니다${link}</p>`;
+    const isSections = mi.kind === 'sections';
+    const headNote = isSections
+        ? (cb.iso3 === 'EMU'
+            ? 'ECB 정책이사회의 논의를 위원 이름 없이 서술한 회의 요약(account)입니다. 회의 약 4주 뒤 공개되며, 아래는 원문(영어) 그대로이고 요약·평가가 아닙니다'
+            : '위원회의 논의를 서술한 의사록입니다. 위원 개인의 견해는 따로 실립니다. 아래는 원문(영어) 그대로이고 요약·평가가 아닙니다')
+        : '위원 이름은 밝히지 않고 "일부 위원" 같은 수 표현으로만 옮깁니다. 아래는 원문 그대로이며 요약·평가가 아닙니다';
+    const head = `<strong>${finEsc(mi.meeting_date)} ${cb.iso3 === 'EMU' ? '회의 요약(Account)' : '회의 의사록'}${mi.released_on ? ` · ${finEsc(mi.released_on)} 공개` : ''}</strong>
+        <p class="mm-quality-muted">${finEsc(headNote)}${link}</p>`;
     let body = '';
-    if (cb.iso3 === 'KOR') {
+    if (isSections) {
+        const para = (p) => (typeof p === 'string' ? p : `${p.n != null ? `${p.n}. ` : ''}${p.text}`);
+        body = (mi.sections || []).map((sec) => `
+            <details class="mm-minutes-group"><summary>${finEsc(sec.heading || sec.part || '개요')} · ${(sec.paragraphs || []).length}단락</summary>
+                ${(sec.paragraphs || []).map((p) => `<p class="mm-cb-para">${finEsc(para(p))}</p>`).join('')}</details>`).join('');
+        if ((mi.present || []).length) {
+            body += `<details class="mm-quality-details"><summary>참석 위원 · ${mi.present.length}명</summary>
+                <p>${mi.present.map(finEsc).join(' · ')}</p>
+                ${mi.treasury_representative ? `<p class="mm-quality-muted">재무부 대표 ${finEsc(mi.treasury_representative)} 배석</p>` : ''}</details>`;
+        }
+    } else if (cb.iso3 === 'KOR') {
         const op = mi.opinions || {};
         const members = op.members || [];
         const stanceRows = ['raise', 'hold', 'lower'].map((k) => {
@@ -2145,7 +2319,7 @@ const mmCbMinutesHtml = (cb) => {
     }
     return `
     <div class="mm-quality-card mm-quality-wide">
-        <span class="mm-quality-label">의사록</span>
+        <span class="mm-quality-label">${cb.iso3 === 'EMU' ? '회의 요약(Account)' : '의사록'}</span>
         ${head}
         ${body}
     </div>`;
@@ -2175,7 +2349,7 @@ const mmCbDiffsHtml = (cb) => (cb.statement_diffs || []).map((d) => `
         <strong>${finEsc(d.previous_meeting)} → ${finEsc(d.current_meeting)} · ${Number(d.changed_word_count || 0)}단어 변경</strong>
         <details class="mm-quality-details"><summary>문구 비교 보기</summary>
             <p class="mm-quality-redline">${mmRedline(d.segments || [])}</p></details>
-        <p class="mm-quality-muted">${finEsc(d.kind === 'bank_view' ? '전망보고서 요약끼리 비교합니다.' : '직전 같은 형식의 문서와 비교합니다(회의마다 성명서 구성이 달라 형식이 같은 회의끼리만 비교).')} 원문: <a class="mm-quality-link" href="${finEsc(d.current_source_url)}" target="_blank" rel="noopener noreferrer">최근 ↗</a> · <a class="mm-quality-link" href="${finEsc(d.previous_source_url)}" target="_blank" rel="noopener noreferrer">직전 ↗</a></p>
+        <p class="mm-quality-muted">${finEsc(d.kind === 'bank_view' ? '전망보고서 요약끼리 비교합니다.' : ((cb.iso3 === 'GBR' || cb.iso3 === 'EMU') ? '직전 회의의 같은 문서와 비교합니다.' : '직전 같은 형식의 문서와 비교합니다(회의마다 성명서 구성이 달라 형식이 같은 회의끼리만 비교).'))} 원문: <a class="mm-quality-link" href="${finEsc(d.current_source_url)}" target="_blank" rel="noopener noreferrer">최근 ↗</a> · <a class="mm-quality-link" href="${finEsc(d.previous_source_url)}" target="_blank" rel="noopener noreferrer">직전 ↗</a></p>
     </div>`).join('');
 
 const mmCbPolicyPanel = (cb) => {
@@ -2190,14 +2364,18 @@ const mmCbPolicyPanel = (cb) => {
     const against = v ? (v.against || []) : [];
     const releaseNote = (cb.releases || []).filter((r) => r.status !== 'released').slice(0, 2)
         .map((r) => `${String(r.meeting_date).slice(2)}회의 ${r.kind_ko} ${r.date} ${r.status === 'expected' ? '공개 예상' : '공개 예정'}`);
+    const consensus = v && v.kind === 'consensus_only';
     const summary = [
-        v ? (against.length ? `반대 ${against.length}명 (${against.map((a) => a.name).join(', ')})` : '반대 없음') : null,
+        consensus ? (v.agreement ? `표결 비공개 · 합의 표현 "${MM_CB_QUANT_KO[v.agreement.quantifier] || v.agreement.quantifier}"` : '표결 비공개')
+            : (v ? (against.length ? `반대 ${against.length}명 (${against.map((a) => a.name).join(', ')})` : '반대 없음') : null),
         d.majority ? `표결 ${d.majority}` : null,
         ...releaseNote,
         cb.schedule && cb.schedule.next_meeting_date ? `다음 회의 ${cb.schedule.next_meeting_date}` : null,
     ].filter(Boolean).join(' · ');
-    const prior = Number.isFinite(d.prior_rate_pct)
-        ? (d.action === 'maintain' ? '직전 회의와 같은 수준' : `직전 ${mmCbPct(d.prior_rate_pct)}`) : '직전 수준 미확인';
+    const also = d.also
+        ? ` · 재대출(MRO) ${mmCbPct(d.also.mro_pct)} · 한계대출(MLF) ${mmCbPct(d.also.mlf_pct)}${d.also.effective_date ? ` · ${d.also.effective_date} 적용` : ''}` : '';
+    const prior = (Number.isFinite(d.prior_rate_pct)
+        ? (d.action === 'maintain' ? '직전 회의와 같은 수준' : `직전 ${mmCbPct(d.prior_rate_pct)}`) : '직전 수준 미확인') + also;
     return `
     <section class="mm-quality" aria-label="${finEsc(cb.bank_ko)} 정책 결정">
         <div class="mm-quality-head">
@@ -2223,6 +2401,7 @@ const mmCbPolicyPanel = (cb) => {
                     <div class="mm-fomc-detail-grid">
                         ${mmCbVotesHtml(cb)}
                         ${mmCbScheduleHtml(cb)}
+                        ${mmCbMemberViewsHtml(cb)}
                         ${mmCbMinutesHtml(cb)}
                         ${mmCbOpinionsHtml(cb)}
                         ${mmCbOutlookHtml(cb)}
@@ -2232,9 +2411,12 @@ const mmCbPolicyPanel = (cb) => {
                 </div>
             </div>
         </div>
-        <p class="mm-quality-foot">${finEsc(cb.iso3 === 'KOR'
-            ? '한국은행 결정문은 반대 위원만 실명으로 밝힙니다. 찬성 명단은 의사록 출석자에서 반대 위원을 뺀 것입니다.'
-            : '일본은행 성명서는 찬성·반대 위원 실명과 반대 사유를 그대로 싣습니다. 원문은 영어입니다.')} 문구 비교와 전망 수치는 공식 문서를 옮긴 것이며 다음 결정을 예측하지 않습니다.</p>
+        <p class="mm-quality-foot">${finEsc({
+            KOR: '한국은행 결정문은 반대 위원만 실명으로 밝힙니다. 찬성 명단은 의사록 출석자에서 반대 위원을 뺀 것입니다.',
+            JPN: '일본은행 성명서는 찬성·반대 위원 실명과 반대 사유를 그대로 싣습니다. 원문은 영어입니다.',
+            GBR: '영란은행 의사록은 표결 문단에 찬성·반대 위원 실명과 반대 위원이 원한 금리를 싣고, 2025-11 회의부터 위원별 사유도 싣습니다. 원문은 영어입니다.',
+            EMU: 'ECB는 위원별 표결을 공개하지 않습니다. 결정과 성명은 당일, 회의 요약(account)은 약 4주 뒤 공개되며 아래는 그 원문입니다. 원문은 영어입니다.',
+        }[cb.iso3] || '')} 문구 비교와 전망 수치는 공식 문서를 옮긴 것이며 다음 결정을 예측하지 않습니다.</p>
     </section>`;
 };
 
@@ -2333,14 +2515,32 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
     </section>`;
 };
 
+// Source and licence footnotes (config/source_notices_v1.json). Some licences
+// (Singapore ODL, Indonesia BPS) make the attribution a condition of use, so
+// these print as plain text under the cards, not behind a fold.
+const mmSourceNotices = (notices) => {
+    const rows = (notices || []).filter((n) => n && n.text);
+    if (!rows.length) return '';
+    return `<div class="mm-source-notices">${rows.map((n) => `<p>${finEsc(n.text)}${
+        /^https:\/\//.test(n.url || '') ? ` <a href="${finEsc(n.url)}" target="_blank" rel="noopener noreferrer">↗</a>` : ''}</p>`).join('')}</div>`;
+};
+
+// Cards without an observed source carry hidden: true (apply_hidden_flags.py,
+// recomputed on every refresh, so a card that gets real data reappears by
+// itself). A tab whose cards are all hidden is disabled like an absent one.
+const mmShown = (x) => x && !x.hidden;
+const mmVisibleCats = (c) => (c.active_categories || [])
+    .filter((id) => ((c.categories || {})[id] || []).some(mmShown));
+
 const mmOverlay = () => {
     if (!MM_COUNTRY) return '';
     const c = MM_COUNTRY.country;
     const tabs = (MM_INDEX.ui && MM_INDEX.ui.category_tabs) || [];
-    const active = (c.active_categories || []).includes(MM_TAB) ? MM_TAB
-        : (c.active_categories || [])[0] || 'liquidity';
+    const visibleCats = mmVisibleCats(c);
+    const active = visibleCats.includes(MM_TAB) ? MM_TAB : visibleCats[0] || 'liquidity';
     MM_TAB = active;
-    const chips = (c.categories || {})[active] || [];
+    const chips = ((c.categories || {})[active] || []).filter(mmShown);
+    const headlines = (c.headlines || []).filter(mmShown);
     const tabMeta = tabs.find((t) => t.id === active) || {};
     const lim = c.limitations || {};
 
@@ -2356,9 +2556,9 @@ const mmOverlay = () => {
             <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
         </div>
 
-        ${(c.headlines || []).length ? `
+        ${headlines.length ? `
         <div class="mm-headlines">
-            ${c.headlines.map((h) => `
+            ${headlines.map((h) => `
                 <button class="mm-headline" data-mm-tab="${finEsc(h.category)}"
                         title="${finEsc(mmStatus(h.data_status).label)}">
                     <span class="mm-headline-label">
@@ -2369,12 +2569,12 @@ const mmOverlay = () => {
         </div>` : ''}
 
         ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality, MM_COUNTRY.statementDiff) : ''}
-        ${(c.iso3 === 'KOR' || c.iso3 === 'JPN') ? mmCbPolicyPanel(MM_COUNTRY.cbPolicy) : ''}
+        ${MM_CB_ISO.includes(c.iso3) ? mmCbPolicyPanel(MM_COUNTRY.cbPolicy) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
                 const on = t.id === active;
-                const has = (c.active_categories || []).includes(t.id);
+                const has = visibleCats.includes(t.id);
                 return `<button class="mm-tab ${on ? 'on' : ''}" data-mm-tab="${finEsc(t.id)}"
                         ${has ? '' : 'disabled'} role="tab">${finEsc(t.label_ko)}</button>`;
             }).join('')}
@@ -2413,6 +2613,7 @@ const mmOverlay = () => {
                 </div>`).join('')}
         </details>` : ''}
 
+        ${mmSourceNotices(c.source_notices)}
         <p class="mm-disclaimer">${finEsc(MM_COUNTRY.disclaimer_ko || MM_INDEX.disclaimer_ko || '')}</p>
     </div>`;
 };
@@ -2497,7 +2698,7 @@ const mmOpenCountry = async (iso3) => {
         // the country pack -- fetched alongside it, not blocking it, since a
         // slow or missing document snapshot should never delay the ordinary
         // indicator overlay every other country also needs.
-        const isCb = iso3 === 'KOR' || iso3 === 'JPN';
+        const isCb = MM_CB_ISO.includes(iso3);
         const [countryPayload, quality, statementDiff, cbDoc] = await Promise.all([
             mmFetch(iso3),
             iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
@@ -2508,7 +2709,7 @@ const mmOpenCountry = async (iso3) => {
         if (quality) MM_COUNTRY.quality = quality;
         if (statementDiff) MM_COUNTRY.statementDiff = statementDiff;
         if (cbDoc && cbDoc[iso3]) MM_COUNTRY.cbPolicy = cbDoc[iso3];
-        MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
+        MM_TAB = mmVisibleCats(MM_COUNTRY.country)[0] || 'liquidity';
         MM_CHART = null;
     } catch (err) {
         if (host) host.innerHTML = `<div class="mm-overlay"><p class="fin-p">${finEsc(err.message)}</p>
