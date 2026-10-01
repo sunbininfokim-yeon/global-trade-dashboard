@@ -19,15 +19,16 @@
       2022,
       2023,
       2024,
-      2025
+      2025,
+      2026
     ]
   },
   "trained_years": [
     1994,
-    2025
+    2026
   ],
-  "n_seasons": 32,
-  "detrended_residual_cv": 0.1525087055186813,
+  "n_seasons": 33,
+  "detrended_residual_cv": 0.14924337218431116,
   "anomaly": {
     "window_years": 20,
     "minimum_prior_years": 10,
@@ -83,69 +84,69 @@
   "trend": {
     "form": "log_linear",
     "log_poly_coef": [
-      0.024750094901063342,
-      -42.32462029350817
+      0.024535078928776783,
+      -41.893621168997974
     ]
   },
   "scaler": {
     "mean": [
-      -0.03695311974400997,
-      0.11863294671263347,
-      0.11750917066701912,
-      -0.34754726945595327
+      -0.008530857052380844,
+      0.13405476217109108,
+      0.1314313675853176,
+      -0.3581327025190201
     ],
     "scale": [
-      1.1164876971789994,
-      0.9953667780454984,
-      1.0074907513070348,
-      0.8571464434656083
+      1.11113504773276,
+      0.9840440944906323,
+      0.9952293105306982,
+      0.8461808512299465
     ]
   },
   "ridge": {
     "alpha": 24.244620170823307,
     "coef": [
-      -0.010016356945914589,
-      -0.03438281848906017,
-      -0.032888010033411144,
-      -0.0013286329026121243
+      -0.010251778348926889,
+      -0.03428135629566716,
+      -0.032721138176944595,
+      -0.0014368311155040238
     ],
-    "intercept": 1.3766915191982443e-14
+    "intercept": -1.4054481697609942e-14
   },
   "top_effects": [
     {
       "feature": "hsu_flower_z20",
-      "effect_pct_per_sd": -3.38
+      "effect_pct_per_sd": -3.37
     },
     {
       "feature": "heat_dry_stress_z20",
-      "effect_pct_per_sd": -3.24
+      "effect_pct_per_sd": -3.22
     },
     {
       "feature": "rain_growing_z20",
-      "effect_pct_per_sd": -1.0
+      "effect_pct_per_sd": -1.02
     },
     {
       "feature": "frost_sep_z20",
-      "effect_pct_per_sd": -0.13
+      "effect_pct_per_sd": -0.14
     }
   ],
   "uncertainty": {
     "basis": "absolute errors from forward-chaining predictions",
-    "absolute_error_q68_kg_ha": 341.24679680046484,
+    "absolute_error_q68_kg_ha": 341.246796800463,
     "absolute_error_q95_kg_ha": 674.1537521887399,
-    "n_forward_errors": 14
+    "n_forward_errors": 15
   },
   "validation": {
     "weather": {
-      "rmse": 330.0529977150127,
-      "mae": 266.41656897404835,
-      "baseline_rmse": 346.20048627356226,
-      "skill_vs_trend": 0.046642015822560334,
-      "recent_rmse": 320.24366023451216,
-      "recent_baseline_rmse": 367.9904339069389,
-      "recent_skill_vs_trend": 0.12975004041681537,
-      "detrended_r2": 0.06533497964706614,
-      "recent_trend_bias": 85.96847922405843,
+      "rmse": 318.96159105496025,
+      "mae": 250.0263477710145,
+      "baseline_rmse": 337.42618182249237,
+      "skill_vs_trend": 0.05472186736607676,
+      "recent_rmse": 305.8046407848189,
+      "recent_baseline_rmse": 348.71647849992115,
+      "recent_skill_vs_trend": 0.12305652402690215,
+      "detrended_r2": 0.07705426922211,
+      "recent_trend_bias": 136.80058021525412,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -166,19 +167,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil": {
-      "rmse": 324.1565216622728,
-      "mae": 260.24447390077046,
-      "baseline_rmse": 346.20048627356226,
-      "skill_vs_trend": 0.06367398511933542,
-      "recent_rmse": 326.92245722248106,
-      "recent_baseline_rmse": 367.9904339069389,
-      "recent_skill_vs_trend": 0.11160066376845956,
-      "detrended_r2": 0.09843269561899881,
-      "recent_trend_bias": 85.96847922405843,
+      "rmse": 313.558289871973,
+      "mae": 248.54706422953817,
+      "baseline_rmse": 337.42618182249237,
+      "skill_vs_trend": 0.07073515108283868,
+      "recent_rmse": 308.999463034776,
+      "recent_baseline_rmse": 348.71647849992115,
+      "recent_skill_vs_trend": 0.11389486277217653,
+      "detrended_r2": 0.10805934118935767,
+      "recent_trend_bias": 136.80058021525412,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -202,19 +204,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil_drivers": {
-      "rmse": 338.613587104056,
-      "mae": 265.5399162348201,
-      "baseline_rmse": 346.20048627356226,
-      "skill_vs_trend": 0.021914755958809318,
-      "recent_rmse": 335.5292770830508,
-      "recent_baseline_rmse": 367.9904339069389,
-      "recent_skill_vs_trend": 0.08821195833611595,
-      "detrended_r2": 0.01622136326317347,
-      "recent_trend_bias": 85.96847922405843,
+      "rmse": 327.29629436242925,
+      "mae": 250.49499810148802,
+      "baseline_rmse": 337.42618182249237,
+      "skill_vs_trend": 0.03002104758246671,
+      "recent_rmse": 317.91225187727804,
+      "recent_baseline_rmse": 348.71647849992115,
+      "recent_skill_vs_trend": 0.08833602230429172,
+      "detrended_r2": 0.02818955229978981,
+      "recent_trend_bias": 136.80058021525412,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -239,7 +242,8 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     }
   }
