@@ -2,9 +2,10 @@
   "schema": "usa_live_polls_v1",
   "cycle": 2026,
   "as_of": "2026-10-01",
-  "fetched_at": "2026-10-01T22:49:09.565172+00:00",
+  "fetched_at": "2026-10-01T23:14:55.076532+00:00",
   "source_status": "ok",
   "default_window_days": 7,
+  "history_file": "usa_election_poll_history_2026.json",
   "stale_after_hours": 48,
   "source": {
     "name": "VoteHub",
@@ -18,6 +19,7 @@
     "기관별 최신 1회. 최소 2개 독립 기관, 전체 채택 조사 과반에서 앞선 같은 후보만 색 표시.",
     "LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.",
     "색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.",
+    "선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.",
     "선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다."
   ],
   "coverage": {
@@ -49,7 +51,8 @@
     ],
     "race_count": 72,
     "accepted_observations": 13,
-    "excluded_observations": 518
+    "excluded_observations": 518,
+    "displayed_observations": 13
   },
   "watchlist": {
     "reviewed_on": "2026-10-02",
@@ -119,7 +122,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NY:governor": {
       "state": "NY",
@@ -217,7 +221,8 @@
           "latest_field_end": "2026-09-20"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TN:senate": {
       "state": "TN",
@@ -267,7 +272,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TN:governor": {
       "state": "TN",
@@ -317,7 +323,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:GA:senate": {
       "state": "GA",
@@ -380,7 +387,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:GA:governor": {
       "state": "GA",
@@ -437,7 +445,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:senate": {
       "state": "FL",
@@ -500,7 +509,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:governor": {
       "state": "FL",
@@ -563,7 +573,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:PA:senate": {
       "state": "PA",
@@ -613,7 +624,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:PA:governor": {
       "state": "PA",
@@ -713,7 +725,8 @@
           "latest_field_end": "2026-09-22"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MI:senate": {
       "state": "MI",
@@ -921,7 +934,8 @@
           "latest_field_end": "2026-09-22"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MI:governor": {
       "state": "MI",
@@ -1112,7 +1126,8 @@
           "latest_field_end": "2026-09-22"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:WI:senate": {
       "state": "WI",
@@ -1162,7 +1177,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:WI:governor": {
       "state": "WI",
@@ -1267,7 +1283,8 @@
           "latest_field_end": "2026-09-23"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AZ:senate": {
       "state": "AZ",
@@ -1317,7 +1334,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AZ:governor": {
       "state": "AZ",
@@ -1367,7 +1385,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NV:senate": {
       "state": "NV",
@@ -1417,7 +1436,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NV:governor": {
       "state": "NV",
@@ -1529,7 +1549,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NC:senate": {
       "state": "NC",
@@ -1623,7 +1644,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NC:governor": {
       "state": "NC",
@@ -1673,7 +1695,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NY:house:10": {
       "state": "NY",
@@ -1723,7 +1746,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NC:house:01": {
       "state": "NC",
@@ -1780,7 +1804,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:PA:house:07": {
       "state": "PA",
@@ -1885,7 +1910,8 @@
           "latest_field_end": "2026-09-20"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:PA:house:10": {
       "state": "PA",
@@ -1990,7 +2016,8 @@
           "latest_field_end": "2026-09-20"
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AZ:house:06": {
       "state": "AZ",
@@ -2047,7 +2074,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:CA:house:22": {
       "state": "CA",
@@ -2104,7 +2132,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:CO:house:08": {
       "state": "CO",
@@ -2161,7 +2190,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:house:14": {
       "state": "FL",
@@ -2218,7 +2248,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:house:22": {
       "state": "FL",
@@ -2275,7 +2306,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:house:25": {
       "state": "FL",
@@ -2332,7 +2364,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:IA:house:01": {
       "state": "IA",
@@ -2389,7 +2422,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:IA:house:03": {
       "state": "IA",
@@ -2446,7 +2480,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MI:house:07": {
       "state": "MI",
@@ -2503,7 +2538,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MI:house:10": {
       "state": "MI",
@@ -2560,7 +2596,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NC:house:11": {
       "state": "NC",
@@ -2617,7 +2654,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NY:house:17": {
       "state": "NY",
@@ -2674,7 +2712,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:OH:house:07": {
       "state": "OH",
@@ -2731,7 +2770,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:OH:house:09": {
       "state": "OH",
@@ -2788,7 +2828,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:PA:house:08": {
       "state": "PA",
@@ -2845,7 +2886,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TX:house:15": {
       "state": "TX",
@@ -2902,7 +2944,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TX:house:34": {
       "state": "TX",
@@ -2959,7 +3002,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:VA:house:02": {
       "state": "VA",
@@ -3016,7 +3060,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:WA:house:03": {
       "state": "WA",
@@ -3073,7 +3118,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:WI:house:03": {
       "state": "WI",
@@ -3130,7 +3176,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AZ:house:01": {
       "state": "AZ",
@@ -3187,7 +3234,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:CA:house:13": {
       "state": "CA",
@@ -3244,7 +3292,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:CA:house:48": {
       "state": "CA",
@@ -3301,7 +3350,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NE:house:02": {
       "state": "NE",
@@ -3358,7 +3408,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NJ:house:07": {
       "state": "NJ",
@@ -3415,7 +3466,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NM:house:02": {
       "state": "NM",
@@ -3472,7 +3524,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NV:house:03": {
       "state": "NV",
@@ -3529,7 +3582,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NY:house:03": {
       "state": "NY",
@@ -3586,7 +3640,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NY:house:04": {
       "state": "NY",
@@ -3643,7 +3698,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:OH:house:01": {
       "state": "OH",
@@ -3700,7 +3756,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TX:house:28": {
       "state": "TX",
@@ -3757,7 +3814,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:CO:house:05": {
       "state": "CO",
@@ -3814,7 +3872,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:house:13": {
       "state": "FL",
@@ -3871,7 +3930,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:FL:house:27": {
       "state": "FL",
@@ -3928,7 +3988,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:IA:house:02": {
       "state": "IA",
@@ -3985,7 +4046,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MI:house:04": {
       "state": "MI",
@@ -4042,7 +4104,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:MT:house:01": {
       "state": "MT",
@@ -4099,7 +4162,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TX:house:35": {
       "state": "TX",
@@ -4156,7 +4220,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:VA:house:01": {
       "state": "VA",
@@ -4213,7 +4278,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:WI:house:01": {
       "state": "WI",
@@ -4270,7 +4336,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AK:senate": {
       "state": "AK",
@@ -4327,7 +4394,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:IA:senate": {
       "state": "IA",
@@ -4384,7 +4452,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:ME:senate": {
       "state": "ME",
@@ -4441,7 +4510,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:NH:senate": {
       "state": "NH",
@@ -4498,7 +4568,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:OH:senate": {
       "state": "OH",
@@ -4555,7 +4626,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:TX:senate": {
       "state": "TX",
@@ -4612,7 +4684,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:AK:governor": {
       "state": "AK",
@@ -4669,7 +4742,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     },
     "USA:OH:governor": {
       "state": "OH",
@@ -4726,7 +4800,8 @@
           "latest_field_end": null
         }
       },
-      "result": null
+      "result": null,
+      "phase": "pre_election"
     }
   },
   "review_queue": [
@@ -7842,5 +7917,6 @@
   "results_collection": {
     "status": "official_source_review_required",
     "note_ko": "주별 인증 결과 자동 수집기는 아직 미연결. 공식 출처를 검토한 결과 파일이 들어오면 자동 우선 표시."
-  }
+  },
+  "lifecycle_checked_as_of": "2026-10-01"
 }

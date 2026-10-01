@@ -4,6 +4,8 @@
 
 이 문서 아래의 2026-09-11 내용은 초기 **수기 검증 자료**의 당시 상태입니다. 별도 최신 출력 `public/data/usa_election_live_polls_v1.json`은 VoteHub 공개 API로 매번 갱신하며, `usa_election_live_polls_status_v1.json`에 성공/실패를 기록합니다. 신규 관측은 `verification=selected_source_aggregator_import`로 표기합니다. 기관·원문 도메인·본선 대진·날짜·모집단·표본 검사 후에만 수용합니다. 현재 7일 기본, 14일 선택입니다. 기관별 최신 한 건을 세고 독립 기관 2곳 이상에서 같은 후보가 과반 우세일 때만 `poll_lead`를 냅니다. 공식 인증 결과는 별도 수기 검토 파일을 통해서만 우선합니다.
 
+선거 전에는 `races[race_id].observations[]`에 해당 본선의 채택된 조사를 누적해 보여줄 수 있습니다. 7/14일 우세 집계는 그중 해당 기간의 기관별 최신 조사만 씁니다. 선거일 다음 날(UTC 날짜 기준)부터 `phase=awaiting_certified_result`가 되고 **화면용** `observations[]`는 빈 배열, `windows[7|14].status=election_closed`가 됩니다. 인증된 결과가 들어오면 `phase=certified_result`와 `result`를 표시합니다. 과거 조사 기록은 `public/data/usa_election_poll_history_2026.json`에 감사용으로 남습니다. Git 커밋 이력과 원출처도 존재하므로 전체 저장소에서 조사 흔적을 물리적으로 삭제하는 기능은 아닙니다. API 실패 시에도 선거가 끝난 레이스의 화면용 목록은 닫고 source health를 오류로 표시합니다.
+
 사용자가 제공한 `references/2026-10-01-cursor.md`는 Cook 경합 전망을 설명하는 참고 메모이지 여론조사 원문이 아닙니다. 이 중 공식 Cook 목록과 대조한 55개 경쟁 선거 ID를 `config/usa_polls/watchlist_2026.json`으로 선별했고, 수집 우선순위로만 붙였습니다. 총 24개 주 72개 감시 슬롯 중 60개는 본선 후보 대진이 미검증이라 자동 수치 채택을 보류합니다. Cook 등급을 `poll_lead`나 승자 색으로 바꾸지 마세요. Cook 출처의 변경 감시/자동 라이선스 API 수집은 없습니다. 자세한 출처 경계는 `references/README.md`를 보세요.
 
 초기 수기 자료의 10개 주/22개 슬롯 및 관측 건수는 아래의 역사적 스냅샷이며 현재 자동 수집의 커버리지와 다릅니다. 2026-10-01 UTC 실제 API 갱신은 72개 슬롯에서 채택 관측 13건, 7일 `poll_lead` 0건, 14일 `poll_lead` 2건(MI 상원·주지사)입니다. 이후 숫자는 매일 달라집니다.

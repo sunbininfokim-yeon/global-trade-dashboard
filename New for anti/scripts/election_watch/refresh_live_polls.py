@@ -4,7 +4,8 @@ import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 from election_watch.polls import read, atomic
-from election_watch.live_polls import apply_watchlist, build_live, fetch_polls, validated_results
+from election_watch.live_polls import (apply_watchlist, build_live, close_finished_races,
+                                      fetch_polls, poll_history, validated_results)
 
 ROOT = Path(__file__).resolve().parent
 
@@ -23,8 +24,11 @@ def main():
         policy = apply_watchlist(read(args.policy), read(args.watchlist))
         rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
+        history = poll_history(rows, policy, args.as_of)
         if args.input:
             board['source_status'] = 'replay'
+        archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')
+        atomic(archive_path, history)
         atomic(args.output, board)
         atomic(health, {'checked_at': checked, 'status': board['source_status'], 'as_of': args.as_of})
         print(board['coverage'])
@@ -37,13 +41,11 @@ def main():
             existing = read(args.output)
             policy = apply_watchlist(read(args.policy), read(args.watchlist))
             confirmed = validated_results(read(args.results), policy, args.as_of)
-            changed = False
-            for rid, race in existing.get('races', {}).items():
-                result = confirmed.get(rid)
-                if race.get('result') != result:
-                    race['result'] = result
-                    changed = True
+            changed = close_finished_races(existing, policy, confirmed, args.as_of)
             if changed:
+                existing['coverage']['displayed_observations'] = sum(
+                    len(r.get('observations', [])) for r in existing.get('races', {}).values())
+                existing['source_status'] = 'error_stale'
                 atomic(args.output, existing)
         except (OSError, ValueError, KeyError, TypeError):
             pass

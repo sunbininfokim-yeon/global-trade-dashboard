@@ -225,6 +225,56 @@ def validated_results(data, policy, as_of):
     return output
 
 
+def poll_history(rows, policy, as_of):
+    """Keep accepted source observations separate from the active map signal."""
+    accepted, _ = normalize(rows, policy, as_of)
+    by_race = defaultdict(list)
+    for row in accepted:
+        by_race[row['race_id']].append(row)
+    return {'schema': 'usa_poll_history_v1', 'cycle': policy['cycle'], 'as_of': as_of,
+            'note_ko': '감사·출처 확인용 기록. 선거 종료 후 지도 우세 신호로 사용하지 않습니다.',
+            'race_count': len(by_race), 'observation_count': len(accepted),
+            'races': {rid: {'contest_id': policy['races'][rid]['contest_id'],
+                            'election_date': policy['races'][rid]['election_date'],
+                            'observations': sorted(items, key=lambda p: (p['field_end'], p['id']), reverse=True)}
+                      for rid, items in sorted(by_race.items())}}
+
+
+def close_finished_races(board, policy, confirmed, as_of):
+    """Clear poll display after election day, including when transport fails."""
+    changed = False
+    day = date.fromisoformat(as_of)
+    for rid, item in board.get('races', {}).items():
+        race = policy['races'].get(rid)
+        if not race:
+            continue
+        result = confirmed.get(rid)
+        phase = ('certified_result' if result else
+                 'awaiting_certified_result' if day > date.fromisoformat(race['election_date']) else
+                 'pre_election')
+        if item.get('result') != result:
+            item['result'] = result
+            changed = True
+        if item.get('phase') != phase:
+            item['phase'] = phase
+            changed = True
+        if phase != 'pre_election':
+            if item.get('observations'):
+                item['observations'] = []
+                changed = True
+            for days in (7, 14):
+                window = item.get('windows', {}).get(str(days))
+                if window and window.get('status') != 'election_closed':
+                    window.update({'status': 'election_closed', 'party': None, 'leader': None,
+                                   'lead_counts': {}, 'tie_count': 0, 'pollster_count': 0,
+                                   'included_ids': [], 'conflicting_pollsters': [],
+                                   'latest_field_end': None, 'population': None})
+                    changed = True
+    if changed:
+        board['lifecycle_checked_as_of'] = as_of
+    return changed
+
+
 def build_live(rows, policy, results, as_of, fetched_at, source_url):
     require(policy['schema'] == 'usa_live_poll_policy_v1', 'policy schema')
     accepted, rejected = normalize(rows, policy, as_of)
@@ -235,14 +285,16 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
         races[rid] = {**deepcopy(race), 'race_id': rid, 'observations': observations,
                       'windows': {str(days): summarize(observations, race, as_of, days) for days in (7, 14)},
                       'result': confirmed.get(rid)}
-    return {'schema': 'usa_live_polls_v1', 'cycle': policy['cycle'], 'as_of': as_of,
+    board = {'schema': 'usa_live_polls_v1', 'cycle': policy['cycle'], 'as_of': as_of,
             'fetched_at': fetched_at, 'source_status': 'ok', 'default_window_days': 7,
+            'history_file': f'usa_election_poll_history_{policy["cycle"]}.json',
             'stale_after_hours': 48, 'source': {'name': 'VoteHub', 'url': 'https://votehub.com/polls/api/',
                 'request_url': source_url, 'license': 'CC BY 4.0', 'modified': '선정·정규화·기관별 최신 조사 집계'},
             'rules_ko': ['최근 7일 기본·14일 선택. 조사 종료일 기준(UTC), 오늘 포함.',
                 '기관별 최신 1회. 최소 2개 독립 기관, 전체 채택 조사 과반에서 앞선 같은 후보만 색 표시.',
                 'LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.',
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
+                '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',
                 '선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다.'],
             'coverage': {'selected_states': policy['states'], 'race_count': len(races),
                          'accepted_observations': len(accepted), 'excluded_observations': len(rejected)},
@@ -250,3 +302,6 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
             'races': races, 'review_queue': rejected,
             'results_collection': {'status': 'official_source_review_required',
                 'note_ko': '주별 인증 결과 자동 수집기는 아직 미연결. 공식 출처를 검토한 결과 파일이 들어오면 자동 우선 표시.'}}
+    close_finished_races(board, policy, confirmed, as_of)
+    board['coverage']['displayed_observations'] = sum(len(r['observations']) for r in board['races'].values())
+    return board
