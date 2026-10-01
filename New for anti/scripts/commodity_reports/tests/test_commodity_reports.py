@@ -656,6 +656,55 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(news_time(None, None, None, now), now)
 
 
+class BrowserRetryTests(unittest.TestCase):
+    """MOFCOM resets the first connection and serves the next."""
+
+    def _patched(self, outcomes):
+        from commodity_reports import feeds
+        calls = []
+
+        def once(url, **kw):
+            calls.append(kw["browser"])
+            out = outcomes.pop(0)
+            if isinstance(out, BaseException):
+                raise out
+            return out
+
+        orig = feeds._fetch_text_once
+        feeds._fetch_text_once = once
+        self.addCleanup(setattr, feeds, "_fetch_text_once", orig)
+        return feeds, calls
+
+    def test_reset_then_page(self):
+        import urllib.error
+        feeds, calls = self._patched([urllib.error.URLError(ConnectionResetError(104, "reset")), "<html>ok</html>"])
+        self.assertEqual(feeds.fetch_text("https://x", user_agent="t", browser=True, pause=0), "<html>ok</html>")
+        self.assertEqual(calls, [True, True])
+
+    def test_gives_up_after_retries_and_http_errors_are_final(self):
+        import urllib.error
+        feeds, calls = self._patched([OSError("reset")] * feeds_retries())
+        with self.assertRaises(OSError):
+            feeds.fetch_text("https://x", user_agent="t", browser=True, pause=0)
+        self.assertEqual(len(calls), feeds_retries())
+
+        feeds, calls = self._patched([urllib.error.HTTPError("https://x", 403, "Forbidden", {}, None)])
+        with self.assertRaises(urllib.error.HTTPError):
+            feeds.fetch_text("https://x", user_agent="t", browser=True, pause=0)
+        self.assertEqual(len(calls), 1)
+
+    def test_other_sources_are_tried_once(self):
+        feeds, calls = self._patched([OSError("reset")])
+        with self.assertRaises(OSError):
+            feeds.fetch_text("https://x", user_agent="t", pause=0)
+        self.assertEqual(calls, [False])
+
+
+def feeds_retries():
+    from commodity_reports import feeds
+    return feeds.BROWSER_RETRIES
+
+
 class CommodityScopeTests(unittest.TestCase):
     """commodity_scope: a narrow source is never filed under anything else."""
 

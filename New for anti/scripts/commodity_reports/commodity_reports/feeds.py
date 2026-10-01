@@ -16,6 +16,7 @@ import hashlib
 import re
 import ssl
 import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -76,9 +77,11 @@ def strip_html(doc: str) -> str:
 # Some ministries drop or reset a connection that does not look like a
 # browser's (MOFCOM's English site resets ours and serves Chrome's). A source
 # opts in with "headers": "browser"; everyone else keeps the honest UA.
-# The Sec-Fetch-* and Upgrade-Insecure-Requests lines are what MOFCOM checks:
-# with the User-Agent and Accept lines alone it reset all 14 builds, and the
-# same urllib request with these added got 200 (feed probe, 2026-10-01).
+# MOFCOM also cuts the first connection from a new client and serves the
+# next one: in both 2026-10-01 probes the first request to each of its hosts
+# was reset or timed out and the requests right after it got 200, whatever
+# the headers. A single try is what failed all 14 builds -- so a browser-
+# headers source is retried (BROWSER_RETRIES, a short pause between).
 BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -94,7 +97,26 @@ BROWSER_HEADERS = {
 }
 
 
-def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0, browser: bool = False) -> str:
+BROWSER_RETRIES = 3
+
+
+def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0, browser: bool = False,
+               pause: float = 2.0) -> str:
+    if not browser:
+        return _fetch_text_once(url, user_agent=user_agent, timeout=timeout, browser=False)
+    for attempt in range(1, BROWSER_RETRIES + 1):
+        try:
+            return _fetch_text_once(url, user_agent=user_agent, timeout=timeout, browser=True)
+        except urllib.error.HTTPError:
+            raise  # the server answered; asking again will not change it
+        except (urllib.error.URLError, OSError):
+            if attempt == BROWSER_RETRIES:
+                raise
+            time.sleep(pause)
+    raise AssertionError("unreachable")
+
+
+def _fetch_text_once(url: str, *, user_agent: str, timeout: float, browser: bool) -> str:
     headers = dict(BROWSER_HEADERS) if browser else {
         "User-Agent": user_agent,
         "Accept": "application/rss+xml, application/atom+xml, application/xml, "
