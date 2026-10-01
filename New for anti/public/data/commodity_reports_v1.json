@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-01T15:38:21.500099+00:00",
+  "generated_at": "2026-10-01T21:20:21.925400+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 30,
-    "sources_failed": 0,
-    "raw_items": 486,
-    "scored": 94,
-    "published": 80,
+    "sources_ok": 29,
+    "sources_failed": 1,
+    "raw_items": 458,
+    "scored": 95,
+    "published": 82,
     "commodities": 25,
-    "buckets": 67
+    "buckets": 69
   },
   "feed_status": [
     {
@@ -36,7 +36,7 @@
     {
       "source_id": "us_nass_todays_reports",
       "ok": true,
-      "count": 2,
+      "count": 3,
       "error": null,
       "mode": "live"
     },
@@ -74,7 +74,7 @@
       "count": 10,
       "error": null,
       "mode": "live",
-      "archived": 3
+      "archived": 2
     },
     {
       "source_id": "br_conab",
@@ -118,7 +118,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 39 reports linked, 13 read, 23 already known"
+      "note": "45 list pages, 39 reports linked, 11 read, 25 already known"
     },
     {
       "source_id": "my_mpob",
@@ -139,7 +139,8 @@
       "ok": true,
       "count": 9,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 1
     },
     {
       "source_id": "int_iai",
@@ -164,10 +165,11 @@
     },
     {
       "source_id": "id_bpdp",
-      "ok": true,
-      "count": 30,
-      "error": null,
-      "mode": "live"
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno 111] Connection refused>",
+      "mode": "live",
+      "carried_over": 1
     },
     {
       "source_id": "ca_nrcan",
@@ -675,6 +677,9 @@
       ],
       "IND": [
         "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "c6333ba481073b9b"
       ]
     },
     "rice": {
@@ -700,8 +705,9 @@
     },
     "oil": {
       "USA": [
+        "636939b535053039",
         "cfe32235018b6add",
-        "636939b535053039"
+        "0466c9487c9388ef"
       ],
       "_global": [
         "0260f9aa0131b0b8",
@@ -713,11 +719,11 @@
       "CHN": [
         "6e3880b1a989890a"
       ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
       "IND": [
         "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "0466c9487c9388ef"
       ],
       "ARG": [
         "21c3dd4f0cf93fd0"
@@ -731,6 +737,9 @@
       ],
       "MEX": [
         "e08bde069abdfd83"
+      ],
+      "USA": [
+        "c4f72a7b34d56733"
       ],
       "UKR": [
         "088f09f9aa8eb7c7"
@@ -924,7 +933,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.333,
+      "importance": 6.302,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -956,7 +965,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.914,
+      "importance": 4.891,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -988,7 +997,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.411,
+      "importance": 4.39,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1019,7 +1028,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.102,
+      "importance": 4.089,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1051,7 +1060,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.081,
+      "importance": 4.065,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1083,7 +1092,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.046,
+      "importance": 4.033,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1115,7 +1124,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.962,
+      "importance": 3.942,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1145,7 +1154,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.88,
+      "importance": 3.86,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1173,7 +1182,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.689,
+      "importance": 3.674,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1203,7 +1212,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.683,
+      "importance": 3.669,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1235,7 +1244,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.495,
+      "importance": 3.483,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1266,7 +1275,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.495,
+      "importance": 3.483,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1297,7 +1306,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.46,
+      "importance": 3.451,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1305,36 +1314,6 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.437,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1359,7 +1338,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.437,
+      "importance": 3.422,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1390,7 +1369,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.437,
+      "importance": 3.422,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1420,7 +1399,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.398,
+      "importance": 3.387,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1452,7 +1431,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.355,
+      "importance": 3.343,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1483,7 +1462,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.144,
+      "importance": 3.135,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1514,7 +1493,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.848,
+      "importance": 2.833,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1544,7 +1523,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.728,
+      "importance": 2.715,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1574,7 +1553,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.546,
+      "importance": 2.541,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1605,43 +1584,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.498,
+      "importance": 2.486,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "first_seen_at": "2026-10-01T06:28:59.197856+00:00"
-    },
-    {
-      "id": "f8aa4f64781b6480",
-      "title": {
-        "original": "Electric Power Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
-      "url": "http://www.eia.gov/electricity/monthly/",
-      "published_at": "2026-09-24T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.468,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0ae7470a5aa9f5a7",
@@ -1728,6 +1676,37 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-09-24T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.457,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "6269fa1eda293c5a",
       "title": {
         "original": "India: Oilseeds and Products Update",
@@ -1751,12 +1730,73 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.461,
+      "importance": 2.453,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0466c9487c9388ef",
+      "title": {
+        "original": "Fats & Oils",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Soybeans crushed for crude oil was 6.29 million tons (210 million bushels) in August 2026...",
+      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/cafo1026.pdf",
+      "published_at": null,
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_todays_reports",
+      "commodities": [
+        "oil",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.338,
+      "reasons": [
+        "has_figure",
+        "no_date"
+      ],
+      "first_seen_at": "2026-10-01T21:20:21.925400+00:00"
+    },
+    {
+      "id": "c4f72a7b34d56733",
+      "title": {
+        "original": "Grain Crushings",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Highlights. July 2026 contained 31 days. August 2026 contained 31 days. Total corn consumed for alcohol and other uses was 528 million bushels in August 2026....",
+      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/cagc1026.pdf",
+      "published_at": null,
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_todays_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.338,
+      "reasons": [
+        "has_figure",
+        "no_date"
+      ],
+      "first_seen_at": "2026-10-01T21:20:21.925400+00:00"
     },
     {
       "id": "088f09f9aa8eb7c7",
@@ -1782,7 +1822,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.303,
+      "importance": 2.299,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1813,7 +1853,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.228,
+      "importance": 2.219,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1843,7 +1883,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.227,
+      "importance": 2.217,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1873,7 +1913,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.762,
+      "importance": 1.756,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1903,7 +1943,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.73,
+      "importance": 1.724,
       "reasons": [
         "series:EIA_STEO"
       ],
@@ -1932,7 +1972,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.72,
+      "importance": 1.714,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1962,7 +2002,36 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.709,
+      "importance": 1.7,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "636939b535053039",
+      "title": {
+        "original": "Petroleum Marketing Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) The October 2026 <em>Petroleum Marketing Monthly</em>, with data through July 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
+      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.7,
       "reasons": [
         "country_in_text"
       ],
@@ -1991,7 +2060,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.709,
+      "importance": 1.7,
       "reasons": [
         "country_in_text"
       ],
@@ -2019,7 +2088,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.688,
+      "importance": 1.684,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2049,7 +2118,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.673,
+      "importance": 1.664,
       "reasons": [
         "country_in_text"
       ],
@@ -2078,7 +2147,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.642,
+      "importance": 1.636,
       "reasons": [
         "country_in_text"
       ],
@@ -2108,13 +2177,42 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.612,
+      "importance": 1.608,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c6333ba481073b9b",
+      "title": {
+        "original": "Cotton System",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Extra long staple cotton consumed on the cotton system was 76,000 pounds in August 2026...",
+      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/cact1026.pdf",
+      "published_at": null,
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_todays_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.559,
+      "reasons": [
+        "no_date"
+      ],
+      "first_seen_at": "2026-10-01T21:20:21.925400+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -2167,7 +2265,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.544,
+      "importance": 1.543,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2197,7 +2295,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.541,
+      "importance": 1.535,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -2227,7 +2325,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.513,
+      "importance": 1.507,
       "reasons": [
         "country_in_text"
       ],
@@ -2256,7 +2354,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.477,
+      "importance": 1.471,
       "reasons": [
         "country_in_text"
       ],
@@ -2283,7 +2381,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.459,
+      "importance": 1.451,
       "reasons": [],
       "first_seen_at": "2026-10-01T00:27:57.508531+00:00"
     },
@@ -2312,7 +2410,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.438,
+      "importance": 1.431,
       "reasons": [],
       "first_seen_at": "2026-10-01T15:38:21.500099+00:00"
     },
@@ -2339,7 +2437,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.405,
+      "importance": 1.398,
       "reasons": [],
       "first_seen_at": "2026-10-01T00:27:57.508531+00:00"
     },
@@ -2367,7 +2465,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.384,
+      "importance": 1.381,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2397,7 +2495,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.355,
+      "importance": 1.35,
       "reasons": [
         "country_in_text"
       ],
@@ -2424,7 +2522,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.338,
+      "importance": 1.332,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2450,7 +2548,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.31,
+      "importance": 1.309,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2480,7 +2578,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.31,
+      "importance": 1.306,
       "reasons": [
         "country_in_text"
       ],
@@ -2507,7 +2605,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.297,
+      "importance": 1.293,
       "reasons": [
         "has_figure"
       ],
@@ -2536,7 +2634,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.286,
+      "importance": 1.283,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2566,7 +2664,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.285,
+      "importance": 1.282,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2596,7 +2694,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.235,
+      "importance": 1.232,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2769,7 +2867,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.181,
+      "importance": 1.176,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2796,7 +2894,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.152,
+      "importance": 1.148,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2821,7 +2919,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.139,
+      "importance": 1.134,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2848,7 +2946,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.084,
+      "importance": 1.082,
       "reasons": [
         "country_in_text"
       ],
@@ -2877,7 +2975,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.083,
+      "importance": 1.079,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -2941,35 +3039,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "636939b535053039",
-      "title": {
-        "original": "Petroleum Marketing Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Tue, 01 Sep 2026) The September 2026 <em>Petroleum Marketing Monthly</em>, with data through June 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
-      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
-      "published_at": "2026-09-01T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.014,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "16f99349c6e2ef80",
       "title": {
         "original": "Indonesian government allows PT Timah to buy tin ore from local miners",
@@ -2992,7 +3061,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.008,
+      "importance": 1.006,
       "reasons": [
         "country_in_text"
       ],
@@ -3023,7 +3092,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.991,
+      "importance": 0.988,
       "reasons": [
         "country_in_text"
       ],
@@ -3131,7 +3200,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.811,
+      "importance": 0.809,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
@@ -3158,7 +3227,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.805,
+      "importance": 0.803,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
@@ -3185,7 +3254,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.64,
+      "importance": 0.638,
       "reasons": [],
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
@@ -3212,7 +3281,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.611,
+      "importance": 0.61,
       "reasons": [
         "country_in_text"
       ],
