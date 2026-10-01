@@ -234,12 +234,14 @@ const SIGNAL_PAGES = [
     },
     {
         // IMF monthly commodity prices: published with a lag, so every slot on
-        // this page shows the month it is quoting.
+        // this page shows the month it is quoting. Wheat/corn/soybeans/sugar
+        // display Yahoo futures' own quoting units (cents/bushel, cents/lb)
+        // rather than converting to USD/tonne -- no unit math to keep in sync.
         key: 'E', name: '농산물',
         slots: [
-            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
-            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
-            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
+            { label: '밀', value: 'WHEAT', fmt: 'cents2', unit: '/bu', symbol: 'ZW=F' },
+            { label: '옥수수', value: 'CORN', fmt: 'cents2', unit: '/bu', symbol: 'ZC=F' },
+            { label: '대두', value: 'SOYBEANS', fmt: 'cents2', unit: '/bu', symbol: 'ZS=F' },
             { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
         ]
     }
