@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-10-01T00:28:27.312651+00:00",
+  "generated_at": "2026-10-01T05:45:19.548681+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,18 +75,19 @@
   "stats": {
     "sources_ok": 35,
     "sources_failed": 3,
-    "raw_items": 810,
-    "scored_items": 73,
+    "raw_items": 811,
+    "scored_items": 78,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 10,
-      "mena": 4,
+      "commodity_specialist": 8,
+      "west": 2,
       "india": 2,
       "china": 2,
+      "mena": 3,
       "russia": 2,
-      "west": 1,
+      "japan": 2,
       "turkey": 1,
-      "japan": 2
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 154,
+      "elapsed_ms": 214,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 467,
+      "elapsed_ms": 372,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 124,
+      "elapsed_ms": 152,
       "error": null,
       "mode": "live"
     },
@@ -119,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 844,
+      "elapsed_ms": 1200,
       "error": null,
       "mode": "live"
     },
@@ -127,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 176,
+      "elapsed_ms": 200,
       "error": null,
       "mode": "live"
     },
@@ -135,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2320,
+      "elapsed_ms": 3003,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 638,
+      "elapsed_ms": 806,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 324,
+      "elapsed_ms": 406,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 86,
+      "elapsed_ms": 186,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 111,
+      "elapsed_ms": 115,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 377,
+      "elapsed_ms": 768,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 154,
+      "elapsed_ms": 1237,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 114,
+      "elapsed_ms": 433,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1252,
+      "elapsed_ms": 1013,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 647,
+      "elapsed_ms": 535,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 398,
+      "elapsed_ms": 407,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 763,
+      "elapsed_ms": 693,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 476,
+      "elapsed_ms": 508,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 36,
+      "elapsed_ms": 262,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 210,
+      "elapsed_ms": 721,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 91,
+      "elapsed_ms": 166,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 91,
+      "elapsed_ms": 140,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 107,
+      "elapsed_ms": 259,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 776,
+      "elapsed_ms": 179,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 119,
+      "elapsed_ms": 354,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 929,
+      "elapsed_ms": 1235,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 798,
+      "elapsed_ms": 1294,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1217,
+      "elapsed_ms": 1555,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1360,
+      "elapsed_ms": 1871,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 224,
+      "elapsed_ms": 348,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 235,
+      "elapsed_ms": 553,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 97,
+      "elapsed_ms": 136,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 138,
+      "elapsed_ms": 513,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 125,
+      "elapsed_ms": 299,
       "error": null,
       "mode": "live"
     },
@@ -367,15 +368,15 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 387,
+      "elapsed_ms": 732,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "bbc_business",
       "ok": true,
-      "count": 38,
-      "elapsed_ms": 252,
+      "count": 39,
+      "elapsed_ms": 199,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 416,
+      "elapsed_ms": 535,
       "error": null,
       "mode": "live"
     },
@@ -391,54 +392,52 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 272,
+      "elapsed_ms": 700,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
     {
-      "id": "9fec9c3790d03e57",
-      "published_at": "2026-09-30T13:30:00+00:00",
+      "id": "a2d544f65bc70597",
+      "published_at": "2026-10-01T05:17:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/OPEC-Expected-to-Keep-Oil-Production-Quotas-Unchanged.html",
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Brent-Tumbles-to-96-as-Gulf-Oil-Flows-Bounce-Back.html",
       "category": "commodity",
       "commodities": [
-        "oil",
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "OPEC+ Expected to Keep Oil Production Quotas Unchanged",
+        "original": "Brent Tumbles to $96 as Gulf Oil Flows Bounce Back",
         "original_lang": "en",
-        "ko": "석유수출국기구 (OPEC) + 가 석유 생산 할당량을 변경하지 않을 것으로 예상됨"
+        "ko": "걸프 오일 흐름이 반송됨에 따라 브렌트가 $ 96로 텀블링"
       },
-      "summary": "The key OPEC+ producers are set to leave their current crude oil output quotas unchanged for November at a meeting this weekend, anonymous sources familiar with the plans told Reuters on Wednesday. The Gulf producers in OPEC+ have been producing and exporting much lower volumes s",
+      "summary": "Crude oil prices moved markedly lower on Wednesday and stayed there earlier today, after booking a solid jump for September. The decline came in response to reports from JP Morgan, Goldman, and Kpler, suggesting oil flows out of the Persian Gulf had virtually returned to pre-war ",
       "scores": {
         "commodity": 3.0,
-        "diplomacy": 3.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.737,
-        "importance": 4.535,
-        "final": 5.249
+        "freshness": 0.987,
+        "importance": 3.751,
+        "final": 4.342
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g1",
-        "commodity:oil:2",
-        "commodity:shipping:1",
-        "diplomacy:3"
+        "commodity:oil:3",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS"
+      "country_hint": "USA"
     },
     {
       "id": "43590df211fd86bb",
@@ -466,9 +465,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.909,
-        "importance": 3.255,
-        "final": 3.767
+        "freshness": 0.785,
+        "importance": 2.811,
+        "final": 3.253
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -509,9 +508,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.758,
-        "importance": 3.095,
-        "final": 3.583
+        "freshness": 0.655,
+        "importance": 2.673,
+        "final": 3.094
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -525,6 +524,133 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "RUS"
+    },
+    {
+      "id": "0ad32f2b9eed6cb0",
+      "published_at": "2026-10-01T04:53:44+00:00",
+      "source": {
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.bloomberg.com/news/articles/2026-10-01/india-oil-refiners-change-tactics-and-hire-ships-to-cross-hormuz",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "India Oil Refiners Change Tactics and Hire Ships to Cross Hormuz",
+        "original_lang": "en",
+        "ko": "인도 석유 정제사는 전술을 바꾸고 호르무즈를 건너기 위해 선박을 고용합니다"
+      },
+      "summary": "Indian oil refiners are hiring tankers to sail through the Strait of Hormuz to pick up crude from within the Persian Gulf, a change of tactics to help them cut costs and secure their supply chains.",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 0.55,
+        "freshness": 0.977,
+        "importance": 3.695,
+        "final": 2.947
+      },
+      "rank_reasons": [
+        "region:west*0.55",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "IND"
+    },
+    {
+      "id": "95ad99e2d9bdbf7c",
+      "published_at": "2026-10-01T02:17:06+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/commodities/oil-prices-steady-as-investors-assess-us-iran-peace-talks-supply-outlook-126100100084_1.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Oil prices steady as investors assess US-Iran peace talks, supply outlook",
+        "original_lang": "en",
+        "ko": "투자자들이 미국-이란 평화 회담, 공급 전망을 평가할 때 유가는 안정적이다."
+      },
+      "summary": "Brent was near $98 a barrel after rising about 14% in September, while investors weighed stalled US-Iran peace talks and signs of a recovery in West Asia oil exports",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.908,
+        "importance": 2.596,
+        "final": 2.946
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:2",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "IND"
+    },
+    {
+      "id": "a3dc7159790e1de9",
+      "published_at": "2026-10-01T01:44:09+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/asia/east-asia/article/3369401/trump-touts-us200-billion-south-korean-energy-deal-ahead-us-midterms?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Trump touts US$200 billion South Korean energy deal ahead of US midterms",
+        "original_lang": "en",
+        "ko": "트럼프, 미국 중간선거 앞두고 한국 에너지 거래 $ 2000억 선전"
+      },
+      "summary": "US President Donald Trump has announced US$200 billion in energy investments from South Korea, including US$54 billion towards a long-discussed liquefied natural gas project in Alaska and more than US$100 billion in planned longer-term nuclear power investments. Besides the Alask",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.895,
+        "importance": 2.371,
+        "final": 2.637
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:gas:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "KOR"
     },
     {
       "id": "ffeaafe0f0d5e541",
@@ -549,9 +675,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.895,
-        "importance": 2.237,
-        "final": 2.639
+        "freshness": 0.773,
+        "importance": 1.932,
+        "final": 2.279
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -590,9 +716,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.908,
-        "importance": 2.09,
-        "final": 2.419
+        "freshness": 0.785,
+        "importance": 1.804,
+        "final": 2.089
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -631,9 +757,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.79,
-        "importance": 2.087,
-        "final": 2.415
+        "freshness": 0.683,
+        "importance": 1.802,
+        "final": 2.086
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -674,9 +800,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.987,
-        "importance": 2.061,
-        "final": 2.386
+        "freshness": 0.852,
+        "importance": 1.78,
+        "final": 2.06
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -692,91 +818,43 @@
       "country_hint": "CHN"
     },
     {
-      "id": "3a597016fcda3179",
-      "published_at": "2026-09-30T03:08:09+00:00",
+      "id": "ea898bc69215e237",
+      "published_at": "2026-10-01T05:17:17+00:00",
       "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
+        "id": "the_hindu",
+        "name": "The Hindu",
         "region": "india",
         "slant": null
       },
-      "url": "https://www.business-standard.com/markets/commodities/oil-prices-edge-higher-after-trump-denies-sanctions-relief-to-iran-126093000094_1.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil"
-      ],
+      "url": "https://www.thehindu.com/news/national/tamil-nadu/stealing-of-candidates-by-clean-force-caused-byelection-alleges-kanimozhi/article71529959.ece",
+      "category": "election",
+      "commodities": [],
       "title": {
-        "original": "Oil prices edge higher after Trump denies sanctions relief to Iran",
+        "original": "‘Stealing’ of candidates by ‘clean’ force caused byelection, alleges Kanimozhi",
         "original_lang": "en",
-        "ko": "트럼프, 이란에 대한 제재 완화 거부 후 유가 상승"
+        "ko": "Kanimozhi는 선거로 인한 ’깨끗한‘ 힘에 의한 후보자의 ’훔치기' 라고 주장합니다."
       },
-      "summary": "Brent crude futures rose $1.14, or 1.11%, to $103.73 a barrel by 0131 GMT. US West Texas Intermediate ‌crude 34 cents, or 0.38%, to $89.72",
+      "summary": "‘You took pity on the candidate and voted for her in the election; but she defected to the ruling party; if you vote for the AIADMK again, there may be another by-election,’ said Kanimozhi",
       "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 2.0,
         "region_weight": 1.3,
-        "freshness": 0.553,
-        "importance": 2.092,
-        "final": 2.374
+        "freshness": 0.987,
+        "importance": 1.524,
+        "final": 1.73
       },
       "rank_reasons": [
         "region:india*1.30",
-        "category:commodity_diplomacy",
+        "category:election",
         "tier:A*1.00/g2",
-        "commodity:oil:3",
-        "diplomacy:1",
-        "bridge:1"
+        "election:by_election:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
-      "country_hint": "IND"
-    },
-    {
-      "id": "5dbb6443031778c1",
-      "published_at": "2026-09-30T05:44:15+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/commodities/gold-silver-prices-rebound-as-crude-oil-prices-fall-on-supply-boost-126093000340_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "gold",
-        "silver"
-      ],
-      "title": {
-        "original": "Gold, silver prices rebound as crude oil prices fall on supply boost",
-        "original_lang": "en",
-        "ko": "원유 가격이 공급 부스트로 하락함에 따라 금, 은 가격이 반등"
-      },
-      "summary": "Gold and silver futures opened higher on MCX and Comex as easing crude oil prices and shifting US rate expectations provided some support to bullion",
-      "scores": {
-        "commodity": 5.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.594,
-        "importance": 1.84,
-        "final": 2.089
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:gold:2",
-        "commodity:silver:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
+      "country_hint": "IND",
+      "election_type": "by_election"
     },
     {
       "id": "b38ac6bae325ddea",
@@ -803,9 +881,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.836,
-        "importance": 1.713,
-        "final": 1.983
+        "freshness": 0.722,
+        "importance": 1.479,
+        "final": 1.712
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -817,6 +895,90 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "d5f1b892e8d9efce",
+      "published_at": "2026-10-01T05:35:00+00:00",
+      "source": {
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://www.interfax.ru/business/1119565",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Нефть Brent подешевела до $96,69 за баррель",
+        "original_lang": "ru",
+        "ko": "브렌트유는 배럴당 96.69 달러로 하락했다."
+      },
+      "summary": "Цены на нефть снижаются утром в четверг после роста накануне, вызванного отсутствием прогресса в американо-иранских переговорах.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.995,
+        "importance": 1.529,
+        "final": 1.701
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "7bc871eb3bca9a15",
+      "published_at": "2026-10-01T05:19:03+00:00",
+      "source": {
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.bloomberg.com/news/videos/2026-10-01/mitchell-hormuz-oil-exports-up-with-shuttle-tankers-use-video",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Mitchell: Hormuz Oil Exports Up With Shuttle Tankers Use",
+        "original_lang": "en",
+        "ko": "미첼: 셔틀 유조선 사용으로 호르무즈 오일 수출 증가"
+      },
+      "summary": "Oil steadied after gaining early on October 1st on uncertainty over the Middle East flow recovery can be sustained. Crude rose for a third month in September, as Washington and Tehran failed to make headway toward a lasting peace agreement that would fully reopen the Strait of Ho",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 0.55,
+        "freshness": 0.988,
+        "importance": 2.063,
+        "final": 1.645
+      },
+      "rank_reasons": [
+        "region:west*0.55",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
       "country_hint": "USA"
     },
     {
@@ -845,9 +1007,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.909,
-        "importance": 1.505,
-        "final": 1.742
+        "freshness": 0.785,
+        "importance": 1.299,
+        "final": 1.504
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -862,47 +1024,45 @@
       "country_hint": "USA"
     },
     {
-      "id": "04177fcca19374e2",
-      "published_at": "2026-09-30T10:31:12+00:00",
+      "id": "ef95180240f32802",
+      "published_at": "2026-10-01T01:32:00+00:00",
       "source": {
-        "id": "ship_and_bunker",
-        "name": "Ship & Bunker",
-        "region": "commodity_specialist",
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
         "slant": null
       },
-      "url": "https://shipandbunker.com/news/emea/340846-two-more-vessels-reportedly-hit-in-strait-of-hormuz",
+      "url": "https://www.japantimes.co.jp/news/2026/10/01/world/trump-200-billion-south-korea-investment/",
       "category": "commodity",
       "commodities": [
-        "shipping",
         "gas"
       ],
       "title": {
-        "original": "Two More Vessels Reportedly Hit in Strait of Hormuz",
+        "original": "Trump unveils $200 billion South Korean investment in U.S. projects",
         "original_lang": "en",
-        "ko": "호르무즈 해협에서 두 척의 선박이 더 충돌한 것으로 알려졌습니다."
+        "ko": "트럼프, 미국 프로젝트에 2000억 달러 ($) 규모의 한국 투자 발표"
       },
-      "summary": "An LNG tanker and two other tankers were reportedly struck by unknown projectiles in the Strait of Hormuz.",
+      "summary": "Trump said the investment will include the construction of nuclear power plants, an LNG pipeline in Alaska and a power generation facility in Texas.",
       "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
+        "commodity": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.679,
-        "importance": 1.417,
-        "final": 1.641
+        "region_weight": 1.25,
+        "freshness": 0.89,
+        "importance": 1.334,
+        "final": 1.484
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:japan*1.25",
         "category:commodity",
-        "tier:A*1.00/g3",
+        "tier:A*1.00/g1",
         "commodity:gas:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
+      "info_grade": "1",
+      "country_hint": "JPN"
     },
     {
       "id": "25058c941406c95e",
@@ -927,9 +1087,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.839,
-        "importance": 1.468,
-        "final": 1.633
+        "freshness": 0.724,
+        "importance": 1.267,
+        "final": 1.41
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -942,49 +1102,6 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "CHN"
-    },
-    {
-      "id": "6e2b9cc0f258418d",
-      "published_at": "2026-09-30T10:01:38+00:00",
-      "source": {
-        "id": "ship_and_bunker",
-        "name": "Ship & Bunker",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://shipandbunker.com/news/emea/881419-ukmto-reports-crude-tanker-struck-in-strait-of-hormuz",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "UKMTO Reports Crude Tanker Struck in Strait of Hormuz",
-        "original_lang": "en",
-        "ko": "UKMTO, 호르무즈 해협에서 조잡한 유조선이 충돌했다고 보고"
-      },
-      "summary": "The vessel was hit by an unknown projectile on the port side.",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.67,
-        "importance": 1.398,
-        "final": 1.618
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
     },
     {
       "id": "71dae2a8a672fde2",
@@ -1012,9 +1129,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.943,
-        "importance": 1.449,
-        "final": 1.612
+        "freshness": 0.815,
+        "importance": 1.251,
+        "final": 1.392
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -1027,168 +1144,6 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "426dd5e28d245372",
-      "published_at": "2026-09-30T21:02:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1119508",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Основная партия в правящей в Словакии коалиции отказалась от идеи проведения досрочных выборов",
-        "original_lang": "ru",
-        "ko": "슬로바키아 여당 연합의 주요 정당은 조기 선거를 실시하겠다는 생각을 포기했습니다."
-      },
-      "summary": "Участники встречи основной входящей в правящую коалицию в Словакии партии \"Смер\", утверждают, что досрочных парламентских выборов после отставки вице-премьера Томаша Тарабы в стране не будет.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 2.0,
-        "region_weight": 1.25,
-        "freshness": 0.909,
-        "importance": 1.403,
-        "final": 1.561
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
-    },
-    {
-      "id": "8e9450a211fe31a6",
-      "published_at": "2026-09-30T09:17:16+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/week-asia/economics/article/3369338/southeast-asia-faces-sleeper-food-crisis-hormuz-fertiliser-bottleneck?utm_source=rss_feed",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Southeast Asia faces ‘sleeper’ food crisis from Hormuz fertiliser bottleneck",
-        "original_lang": "en",
-        "ko": "동남아시아는 호르무즈 비료 병목 현상으로 인한 ‘잠자는’ 식량 위기에 직면해 있습니다."
-      },
-      "summary": "A hunger crisis could creep up on Southeast Asia if the region does not guard against export restrictions amid a fertiliser shortfall, International Chamber of Commerce (ICC) Secretary General John Denton has warned. On the sidelines of the Future of Trade Forum in Singapore on W",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.656,
-        "importance": 1.267,
-        "final": 1.41
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "7d76667608a3e89a",
-      "published_at": "2026-09-30T04:00:25+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/562f2988-0c04-4669-b0b7-2c16d3821926?syn-25a6b1a6=1",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "White House holds crunch talks on diesel export ban as midterms near",
-        "original_lang": "en",
-        "ko": "백악관, 디젤 수출 금지에 대한 위기 회담 개최"
-      },
-      "summary": "Trump at centre of lobbying fight between Big Oil and top Republicans warning of voter anger at high fuel prices",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.566,
-        "importance": 1.563,
-        "final": 1.247
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g1",
-        "commodity:oil:1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "d2b6b6b180348e87",
-      "published_at": "2026-09-30T09:52:00+00:00",
-      "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.dailysabah.com/business/energy/russia-extends-diesel-export-ban-amid-global-supply-crunch",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Russia extends diesel export ban amid global supply crunch",
-        "original_lang": "en",
-        "ko": "러시아, 글로벌 공급 위기 속에서 디젤 수출 금지 확대"
-      },
-      "summary": "Russia extended its ban on diesel exports until the end of October, the government said ⁠on Wednesday, adding ⁠further strain to a global energy market already rocked by ongoing ​c...",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.667,
-        "importance": 1.067,
-        "final": 1.211
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:diplomacy",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
       "country_hint": "RUS"
     },
     {
@@ -1232,6 +1187,45 @@
       "election_type": "cabinet_reshuffle"
     },
     {
+      "id": "d2b6b6b180348e87",
+      "published_at": "2026-09-30T09:52:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/business/energy/russia-extends-diesel-export-ban-amid-global-supply-crunch",
+      "category": "diplomacy",
+      "commodities": [],
+      "title": {
+        "original": "Russia extends diesel export ban amid global supply crunch",
+        "original_lang": "en",
+        "ko": "러시아, 글로벌 공급 위기 속에서 디젤 수출 금지 확대"
+      },
+      "summary": "Russia extended its ban on diesel exports until the end of October, the government said ⁠on Wednesday, adding ⁠further strain to a global energy market already rocked by ongoing ​c...",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.576,
+        "importance": 0.921,
+        "final": 1.045
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:diplomacy",
+        "tier:A*1.00/g1",
+        "diplomacy:1",
+        "bridge:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS"
+    },
+    {
       "id": "a21e0de7b732eff0",
       "published_at": "2026-09-30T17:05:47+00:00",
       "source": {
@@ -1256,9 +1250,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.815,
-        "importance": 0.802,
-        "final": 0.946
+        "freshness": 0.704,
+        "importance": 0.692,
+        "final": 0.817
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1297,9 +1291,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.786,
-        "importance": 0.773,
-        "final": 0.913
+        "freshness": 0.679,
+        "importance": 0.668,
+        "final": 0.788
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1314,83 +1308,84 @@
       "country_hint": "RUS"
     },
     {
-      "id": "4880c0d7bdb7bee2",
-      "published_at": "2026-09-30T17:29:14+00:00",
+      "id": "9e488ba9567e659d",
+      "published_at": "2026-10-01T05:23:12+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
       },
-      "url": "https://www.arabnews.com/football/swiss-fa-withdraws-support-for-fifa-chief-infantino-3003935",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Swiss FA withdraws support for FIFA chief Infantino",
-        "original_lang": "en",
-        "ko": "스위스 FA, FIFA 수석 인판티노에 대한 지원 철회"
-      },
-      "summary": "The Swiss Football Association has announced it will not support Gianni Infantino in the next FIFA presidential election. This decision adds to the growing list of European associations retracting support, prompted by Infantino’s controversial proposal to form a commercial subsid",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.4,
-        "freshness": 0.824,
-        "importance": 0.654,
-        "final": 0.772
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:election",
-        "tier:B*0.72/g1",
-        "election:presidential:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
-      "election_type": "presidential"
-    },
-    {
-      "id": "a00278c44a19493a",
-      "published_at": "2026-08-07T13:28:52+00:00",
-      "source": {
-        "id": "nhk_business",
-        "name": "NHK (Business)",
-        "region": "japan",
-        "slant": null
-      },
-      "url": "http://www3.nhk.or.jp/news/html/20260807/k10015199711000.html",
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5591912",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "soybeans"
       ],
       "title": {
-        "original": "石油元売りに新交付金案 原油の代替調達促す 経産省会合で",
-        "original_lang": "ja",
-        "ko": "경제산업성 회의에서 원유 생산자에게 새로운 보조금으로 원유를 대체할 것을 촉구했습니다."
+        "original": "中聯停工沙拉油供應吃緊 政院拍板今起大豆油、豆粕免稅6個月",
+        "original_lang": "zh-TW",
+        "ko": "지금부터 6개월간 대두유, 대두식사세 면제"
       },
-      "summary": "原油の調達先を多角化するため、石油元売り会社がホルムズ海峡をはじめリスクの高いルートを避けて調達する場合、会社に対して交付金を支給するという案が7日に開かれた経済産業省の会合で新たに示されました。",
+      "summary": "有鑒於中東情勢不穩定，行政院穩定物價小組日前拍板，將關鍵原物料稅負減徵措施延長6個月至明年3月底。此外，有鑒於中聯油脂公司停工，國內供需尚待補足，10月1日起，新增調降國...…",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.35,
-        "importance": 0.386,
-        "final": 0.43
+        "freshness": 0.99,
+        "importance": 0.393,
+        "final": 0.438
       },
       "rank_reasons": [
-        "region:japan*1.25",
+        "region:taiwan*1.25",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2"
+        "tier:B*0.72/g3",
+        "commodity:soybeans:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "JPN"
+      "country_hint": "TWN"
+    },
+    {
+      "id": "b2f6fa944f474e7e",
+      "published_at": "2026-10-01T05:16:09+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://sports.ltn.com.tw/news/breakingnews/5591924",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "亞運前線》恭喜！吳融政輕艇激流標竿男子單人C艇奪銀",
+        "original_lang": "zh-TW",
+        "ko": "아시안 게임 최전방 \"축하합니다! 우룽정 카약 래프팅 벤치마크 남성용 솔로 C-보트 실버 발작"
+      },
+      "summary": "台灣好手吳融政今天在名古屋亞運輕艇激流標竿男子單人C艇決賽，划出113秒09，罰秒6秒，最終以119秒09的成績，拿下一面銀牌，台灣代表團目前累積3金、11銀、27...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.987,
+        "importance": 0.392,
+        "final": 0.436
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }

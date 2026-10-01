@@ -48,7 +48,7 @@ def main() -> int:
             failures.append(f"{spec_id}: {exc}")
 
     result = ups.apply_all(usa, patches, retrieved_at=retrieved)
-    if result["changed"] or result["removed"]:
+    if result["changed"] or result["removed"] or result["summary_changed"]:
         PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     print(f"USA public series: {len(patches)} fetched, changed {result['changed'] or 'none'}, removed {result['removed'] or 'none'}")
     for sid, p in patches.items():
