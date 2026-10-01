@@ -1,7 +1,7 @@
 {
   "schema_version": "qra-engine-v1",
   "engine_version": "0.3.0",
-  "generated_at": "2026-09-24T15:08:11Z",
+  "generated_at": "2026-10-01T00:23:40Z",
   "from_year": 2020,
   "source": {
     "kind": "treasury_archives_plus_pdf_tables",
@@ -29,9 +29,34 @@
     "tga": {
       "source": "fiscaldata.dts.operating_cash_balance",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance",
-      "asof": "2026-09-22",
-      "latest_bn": 957.409,
+      "asof": "2026-09-29",
+      "latest_bn": 936.6,
       "series": [
+        {
+          "date": "2026-09-29",
+          "tga_mn": 936600.0,
+          "tga_bn": 936.6
+        },
+        {
+          "date": "2026-09-28",
+          "tga_mn": 959572.0,
+          "tga_bn": 959.572
+        },
+        {
+          "date": "2026-09-25",
+          "tga_mn": 945290.0,
+          "tga_bn": 945.29
+        },
+        {
+          "date": "2026-09-24",
+          "tga_mn": 924627.0,
+          "tga_bn": 924.627
+        },
+        {
+          "date": "2026-09-23",
+          "tga_mn": 947317.0,
+          "tga_bn": 947.317
+        },
         {
           "date": "2026-09-22",
           "tga_mn": 957409.0,
@@ -306,34 +331,9 @@
           "date": "2026-07-07",
           "tga_mn": 784964.0,
           "tga_bn": 784.964
-        },
-        {
-          "date": "2026-07-06",
-          "tga_mn": 783107.0,
-          "tga_bn": 783.107
-        },
-        {
-          "date": "2026-07-03",
-          "tga_mn": 776843.0,
-          "tga_bn": 776.843
-        },
-        {
-          "date": "2026-07-02",
-          "tga_mn": 770587.0,
-          "tga_bn": 770.587
-        },
-        {
-          "date": "2026-07-01",
-          "tga_mn": 807359.0,
-          "tga_bn": 807.359
-        },
-        {
-          "date": "2026-06-30",
-          "tga_mn": 919145.0,
-          "tga_bn": 919.145
         }
       ],
-      "fetched_at": "2026-09-24T15:08:08Z"
+      "fetched_at": "2026-10-01T00:23:37Z"
     },
     "customs": {
       "source": "fiscaldata.mts.mts_table_3.Customs Duties",
@@ -486,23 +486,23 @@
           "fytd_usd": 77036909944.89
         }
       ],
-      "fetched_at": "2026-09-24T15:08:08Z",
+      "fetched_at": "2026-10-01T00:23:37Z",
       "note_ko": "음수 월 = 관세 환급이 수입을 상회(순유출)."
     },
     "debt_transactions": {
       "source": "fiscaldata.dts.public_debt_transactions",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/public-debt-transactions",
-      "asof": "2026-09-22",
-      "latest_bn": -26.732,
+      "asof": "2026-09-29",
+      "latest_bn": -18.263,
       "components": [
         {
           "id": "bills",
           "label_ko": "T-Bills",
           "kind": "bill",
-          "issues_mn": 267975.0,
-          "redemptions_mn": 294707.0,
-          "net_mn": -26732.0,
-          "value": -26.732,
+          "issues_mn": 267420.0,
+          "redemptions_mn": 285683.0,
+          "net_mn": -18263.0,
+          "value": -18.263,
           "unit": "bn_usd"
         },
         {
@@ -530,9 +530,9 @@
         {
           "kind": "bill",
           "label_ko": "T-Bills",
-          "issues_bn": 267.975,
-          "redemptions_bn": 294.707,
-          "net_bn": -26.732
+          "issues_bn": 267.42,
+          "redemptions_bn": 285.683,
+          "net_bn": -18.263
         },
         {
           "kind": "coupon",
@@ -550,29 +550,29 @@
         }
       ],
       "note_ko": "당일 시중성(Marketable) 발행−상환 순증($B). Bills=무이표, Notes/Bonds=이표.",
-      "fetched_at": "2026-09-24T15:08:09Z"
+      "fetched_at": "2026-10-01T00:23:38Z"
     },
     "debt_outstanding": {
       "source": "fiscaldata.od.debt_to_penny",
-      "asof": "2026-09-22",
-      "latest_tn": 40.098,
-      "public_tn": 32.376,
-      "intragov_tn": 7.722,
+      "asof": "2026-09-29",
+      "latest_tn": 40.097,
+      "public_tn": 32.368,
+      "intragov_tn": 7.729,
       "components": [
         {
           "id": "public",
           "label_ko": "시중 보유",
-          "value": 32.376,
+          "value": 32.368,
           "unit": "tn_usd"
         },
         {
           "id": "intragov",
           "label_ko": "정부내 보유",
-          "value": 7.722,
+          "value": 7.729,
           "unit": "tn_usd"
         }
       ],
-      "fetched_at": "2026-09-24T15:08:10Z"
+      "fetched_at": "2026-10-01T00:23:39Z"
     },
     "mts": {
       "source": "fiscaldata.mts.mts_table_2",
@@ -843,14 +843,14 @@
         }
       ],
       "note_ko": "월간 On-Budget. 적자는 음수. Fiscal Data MTS Table 2.",
-      "fetched_at": "2026-09-24T15:08:11Z"
+      "fetched_at": "2026-10-01T00:23:40Z"
     }
   },
   "tga_vs_qra": {
-    "tga_actual_bn": 957.409,
+    "tga_actual_bn": 936.6,
     "qra_end_cash_bn": 950.0,
-    "gap_bn": 7.409,
-    "tga_asof": "2026-09-22"
+    "gap_bn": -13.4,
+    "tga_asof": "2026-09-29"
   },
   "latest": {
     "id": "2026-Q3",

@@ -5148,6 +5148,20 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     line-height: 1.35;
 }
 
+/* Only the "불러오는 중" case (a wired feed still in flight) gets this --
+   same rotating-ring look as .mm-cpi-spinner, reuses its @keyframes. */
+.signal-slot-spinner {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-left: 5px;
+    vertical-align: -1px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(148, 163, 184, 0.25);
+    border-top-color: #38bdf8;
+    animation: mm-cpi-spin 0.8s linear infinite;
+}
+
 .signal-slot-unit {
     font-size: 11px;
     font-weight: 500;
@@ -5419,7 +5433,7 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 .policy-search-input {
     width: 240px;
-    padding: 7px 12px;
+    padding: 7px 26px 7px 12px;
     border: 1px solid rgba(148, 163, 184, 0.24);
     border-radius: 999px;
     background: rgba(15, 23, 42, 0.6);
@@ -5434,6 +5448,43 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     outline: none;
     border-color: #38bdf8;
     width: 300px;
+}
+
+/* Magnifying-glass submit button and its loading spinner share the same
+   slot in the pill's right padding -- setSearchSpinner() toggles which of
+   the two is shown, so submitting never shifts the layout. */
+.policy-search-submit {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    margin-top: -9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.policy-search-submit:hover { color: #38bdf8; }
+
+/* Same rotating-ring look as .mm-cpi-spinner (reuses its @keyframes). */
+.policy-search-spinner {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 11px;
+    height: 11px;
+    margin-top: -5.5px;
+    border-radius: 50%;
+    border: 2px solid rgba(148, 163, 184, 0.25);
+    border-top-color: #38bdf8;
+    animation: mm-cpi-spin 0.8s linear infinite;
+    pointer-events: none;
 }
 
 .policy-search-results {
@@ -6421,7 +6472,14 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     color: var(--text-primary);
     font-size: 15px;
     line-height: 1.65;
+    /* Korean wraps between any two syllables by default ("신 / 고하지").
+       Break at spaces only; overflow-wrap still rescues a token too long
+       for its column. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
+.tut-wrap p, .tut-wrap li { text-wrap: pretty; }
+.tut-wrap h3, .tut-wrap h4 { text-wrap: balance; }
 .tut-wrap [data-hue="amber"]  { --tut-hue: #fbbf24; }
 .tut-wrap [data-hue="sky"]    { --tut-hue: #38bdf8; }
 .tut-wrap [data-hue="violet"] { --tut-hue: #a78bfa; }
@@ -6567,6 +6625,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     display: grid; place-items: center; pointer-events: none;
     font-size: 12px; font-weight: 700; color: #0f111a; background: var(--tut-hue);
 }
+/* Label on its own line, description underneath: in a three-column cell an
+   inline label left the description starting mid-line and ragged. */
+.tut-facts p > b:last-of-type::after, .tut-strip p > b::after { content: ""; display: block; height: 2px; }
 .tut-facts b.tut-key { color: var(--tut-hue); font-weight: 700; margin-right: 4px; }
 
 .tut-steps { list-style: none; margin: 0; padding: 0; counter-reset: tut; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
@@ -6674,3 +6735,12 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .mm-cb-list small { display: block; margin-top: 2px; color: #94a3b8; font-size: 10px; }
 .mm-cb-para { margin: 6px 0 0; color: #94a3b8; font-size: 10.5px; line-height: 1.65; }
 .mm-sep-table th small { display: block; margin-top: 1px; color: #64748b; font-size: 9px; font-weight: 400; }
+
+/* Condition-search sections retain document-type grouping within match tiers. */
+.policy-search-match-note { font-size: 12px; line-height: 1.6; color: #94a3b8; padding: 8px 12px; margin: 0; }
+.policy-search-match-section { margin: 12px 0; }
+.policy-search-match-section > h3 { font-size: 14px; padding: 8px 12px; margin: 0; color: #e2e8f0; }
+.policy-search-match-section + .policy-search-match-section { border-top: 1px solid #334155; padding-top: 8px; }
+.policy-search-match-section .policy-search-result { align-items: flex-start; }
+.policy-search-match-section .policy-search-result-meta { color: #aebbd0; }
+.policy-search-match-section .policy-search-result-meta strong { color: #d8e6ff; }

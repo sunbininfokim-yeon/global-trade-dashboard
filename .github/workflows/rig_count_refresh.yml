@@ -1,0 +1,94 @@
+name: Rig count refresh
+
+# Baker Hughes has no API (see scripts/rig_count/build_rig_count_v1.py's own
+# docstring): refreshing rig_count_v1.json starts with a human re-exporting
+# the North America and Worldwide reports from rigcount.bakerhughes.com,
+# committing them under New for anti/scripts/rig_count/raw/, and pointing
+# NAM_PREFERRED / WW_PREFERRED at the new filenames if they changed. This
+# workflow does the rest of it: rebuild, sanity-check, and open a PR with
+# whatever changed -- so from there it is Run workflow -> review the diff ->
+# merge, not another Claude Code session.
+#
+# It opens a PR instead of committing straight to main on purpose. A commit
+# pushed with GITHUB_TOKEN does not fire this repo's other push-triggered
+# workflows (GitHub suppresses workflows triggering themselves in a loop), so
+# deploy.yml would never see it -- the exact gap deploy.yml's own header
+# describes for 2026-08-19. A human merging the PR is a normal push and
+# deploys as usual.
+
+on:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/rig_count/build_rig_count_v1.py'
+      - 'New for anti/scripts/rig_count/raw/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install openpyxl
+        run: pip install openpyxl
+      - name: Rebuild (fails loudly on a broken export -- see build())
+        working-directory: "New for anti/scripts/rig_count"
+        run: python3 build_rig_count_v1.py --out /tmp/rig_count_v1.json --print-stats
+
+  refresh:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install openpyxl
+        run: pip install openpyxl
+
+      - name: Rebuild rig_count_v1.json from raw/
+        working-directory: "New for anti/scripts/rig_count"
+        run: python3 build_rig_count_v1.py --print-stats
+
+      - name: Check whether anything beyond generated_at changed
+        id: diff
+        run: |
+          out="New for anti/public/data/rig_count_v1.json"
+          if git diff --quiet -- "$out"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "no diff -- raw/ already matches what's committed"
+            exit 0
+          fi
+          if ! git diff -- "$out" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then
+            git checkout -- "$out"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "only generated_at moved -- nothing to publish"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open a PR with the refreshed file
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          branch="claude/rig-count-refresh-$(date +%Y%m%d-%H%M%S)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add "New for anti/public/data/rig_count_v1.json"
+          git commit -m "data(rig): refresh rig_count_v1.json from raw/ exports" \
+            -m "Rebuilt by the Rig count refresh workflow (workflow_dispatch) from the Baker Hughes workbooks currently committed under New for anti/scripts/rig_count/raw/. No script logic changed."
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "data(rig): refresh rig_count_v1.json" \
+            --body "Rebuilt by the [Rig count refresh](../actions/workflows/rig_count_refresh.yml) workflow from the workbooks currently committed under \`New for anti/scripts/rig_count/raw/\`. Review the diff, then merge -- merging to \`main\` is what deploys it (see \`deploy.yml\`)."

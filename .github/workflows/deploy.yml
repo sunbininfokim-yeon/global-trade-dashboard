@@ -14,22 +14,104 @@ on:
   workflow_dispatch:
   # Bot data commits do not trigger push workflows. Only trusted main runs
   # may trigger deployment; never execute a PR checkout with deploy secrets.
+  #
+  # Every workflow that commits to main has to be listed here, or its data
+  # sits in git and never reaches Cloudflare. Until 2026-09-24 only the two
+  # overseas LETF / gas storage jobs were, so the hourly ticker, the 4h
+  # report feeds and the weekly yield forecasts went live only when one of
+  # those two (or a human merge) happened to deploy. The list is checked on
+  # every PR by tools/ops/check_deploy_chain.py -- add a new collector here
+  # in the same PR that adds it, spelled exactly as its `name:`.
   workflow_run:
-    workflows: ['Overseas LETF daily', 'Natural gas storage daily', 'Refresh KR/JP policy boards', 'Refresh public series (USA/JPN/KOR)']
+    workflows:
+      - 'Climate registry'
+      - 'Commodity News Ticker'
+      - 'Commodity Reports Intel'
+      - 'Fetch ICRISAT Data'
+      - 'Fetch ICRISAT India yield snapshot (one-shot)'
+      - 'Macro Liquidity Intel'
+      - 'Market microstructure backfill'
+      - 'Market microstructure daily'
+      - 'Monthly Canada Yield Forecast'
+      - 'Monthly USA EOP roster'
+      - 'Natural gas storage daily'
+      - 'Official Reports Intel'
+      - 'Overseas LETF daily'
+      - 'Refresh FOMC/Beige Book collection'
+      - 'Refresh Fed SOMA Treasury maturity buckets'
+      - 'Refresh Japan growth diagnostics'
+      - 'Refresh KR/JP policy boards'
+      - 'Refresh SST anomaly grid'
+      - 'Refresh T-bill auction sizes (QRA maturity tab)'
+      - 'Refresh Treasury QRA (refunding windows)'
+      - 'Refresh macro public series'
+      - 'Refresh global climate indices'
+      - 'Refresh macro live overlay (TGA, yields, FX, indices)'
+      - 'Refresh peer real GDP growth (World Bank, annual)'
+      - 'Refresh producing-region weather'
+      - 'Refresh sovereign debt and interest actuals'
+      - 'US election finance backend'
+      - 'USA standing committee roster'
+      - 'Update Global Trade Live Data'
+      - 'Update Shipping Capacity Snapshot'
+      - 'Weekly Argentina Yield Forecast'
+      - 'Weekly Brazil Yield Forecast'
+      - 'Weekly China Yield Forecast'
+      - 'Weekly India Yield Forecast'
+      - 'Weekly Russia Winter-Wheat Yield Forecast'
+      - 'Weekly US Yield Forecast'
+      - 'Weekly Yield Forecasts (Australia, Vietnam, South Africa, Ethiopia, Uganda)'
     types: [completed]
     branches: [main]
 
-concurrency:
-  group: production-worker-deploy
-  cancel-in-progress: false
-
 jobs:
-  deploy:
+  # Most collector runs find nothing new and commit nothing (`|| exit 0`).
+  # workflow_run fires either way, so without this every hourly ticker tick
+  # would redeploy an identical Worker. If main is still at the commit the
+  # collector started from, it pushed nothing.
+  #
+  # This is its own job, outside the deploy concurrency group, on purpose:
+  # GitHub keeps only the newest *waiting* run in a group and cancels older
+  # waiting ones. If no-op runs queued there too, one could replace a real
+  # data deploy that was waiting its turn, then skip -- and that data would
+  # not ship until some later commit.
+  gate:
     if: >-
       github.event_name != 'workflow_run' ||
       (github.event.workflow_run.head_repository.full_name == github.repository &&
        github.event.workflow_run.event != 'pull_request' &&
        github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    outputs:
+      ship: ${{ steps.gate.outputs.ship }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Skip if the collector committed nothing
+        id: gate
+        env:
+          EVENT: ${{ github.event_name }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_NAME: ${{ github.event.workflow_run.name }}
+        run: |
+          if [ "$EVENT" = workflow_run ] && [ "$(git rev-parse HEAD)" = "$RUN_SHA" ]; then
+            echo "main is still at $RUN_SHA -- '$RUN_NAME' committed nothing, skipping deploy"
+            echo "ship=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ship=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: gate
+    if: needs.gate.outputs.ship == 'true'
+    # One deploy at a time. While one runs, GitHub keeps only the newest
+    # waiting deploy and cancels older waiting ones -- fine here, since every
+    # deploy ships whatever main is by then, so a burst of collector commits
+    # (the Friday yield batch) goes out as one or two deploys.
+    concurrency:
+      group: production-worker-deploy
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

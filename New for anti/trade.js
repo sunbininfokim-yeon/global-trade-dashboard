@@ -247,8 +247,11 @@ const focusTradeCountry = (countryName) => {
  * actually pulls. Neither is visible in trade data.
  *
  * EIA reports these weekly, so the card carries the week-on-week change; a
- * level alone does not say whether a buffer is filling or draining.
+ * level alone does not say whether a buffer is filling or draining. Three
+ * years of weekly points is long enough to place the current level against
+ * a couple of full seasonal drawdown/refill cycles, not just the last one.
  */
+const EIA_STOCKS_WEEKS = 156;
 const EIA_STOCKS = [
     { id: 'spr', label_ko: '미국 전략비축유 (SPR)', series: 'WCSSTUS1',
       route: 'petroleum/stoc/wstk/data/' },
@@ -263,7 +266,7 @@ const loadEiaStocks = async () => {
     for (const s of EIA_STOCKS) {
         try {
             const r = await fetch(
-                `/api/macro?source=eia&route=${encodeURIComponent(s.route)}&seriesId=${s.series}`);
+                `/api/macro?source=eia&route=${encodeURIComponent(s.route)}&seriesId=${s.series}&length=${EIA_STOCKS_WEEKS}`);
             if (!r.ok) continue;
             const j = await r.json();
             const rows = j?.response?.data || j?.data || [];
@@ -273,7 +276,7 @@ const loadEiaStocks = async () => {
             if (!Number.isFinite(latest)) continue;
             // rows arrive newest-first from EIA; the sparkline wants
             // oldest-first, so reverse after taking the most recent weeks.
-            const history = rows.slice(0, 26)
+            const history = rows.slice(0, EIA_STOCKS_WEEKS)
                 .map((row) => ({ period: row.period, value: Number(row.value) }))
                 .filter((row) => Number.isFinite(row.value))
                 .reverse();
@@ -460,16 +463,22 @@ const renderEmergencyStocks = async () => {
     // previous call already left behind instead of stacking a duplicate.
     host.querySelector('.stock-card')?.remove();
     const weeks = stocks[0]?.history?.length || 0;
+    // 156 weekly points reads as "156주" if spelled out literally -- round to
+    // years once there's enough of them to actually span some, and only fall
+    // back to a week count for a series EIA hasn't reported that far back for.
+    const span = weeks >= 104 ? `${Math.round(weeks / 52)}년` : `${weeks}주`;
     host.insertAdjacentHTML('beforeend', `
         <div class="stock-card">
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
+                const stockSpan = s.history.length >= 104
+                    ? `${Math.round(s.history.length / 52)}년` : `${s.history.length}주`;
                 const chart = sparkChartHtml({
                     points: s.history.map((h) => ({ label: h.period, value: h.value / 1000 })),
                     unit: 'M bbl',
                     formatValue: (v) => v.toFixed(1),
-                    ariaLabel: `최근 ${s.history.length}주 추이`,
+                    ariaLabel: `최근 ${stockSpan} 추이`,
                 });
                 return `<div class="stock-item">
                     <div class="stock-row${chart ? ' is-clickable' : ''}"
@@ -483,7 +492,7 @@ const renderEmergencyStocks = async () => {
                     ${chart}
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${weeks}주 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${span} 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
         </div>`);
     wireSparkCharts(host);
 };
@@ -1188,7 +1197,7 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     row.classList.toggle('is-expanded');
 });
 
-// SPR / Cushing rows open their 12-week sparkline underneath.
+// SPR / Cushing rows open their 3-year weekly sparkline underneath.
 const toggleStockRow = (row) => {
     row.classList.toggle('is-open');
     row.closest('.stock-item')?.classList.toggle('is-open');

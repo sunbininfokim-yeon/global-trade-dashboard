@@ -2,37 +2,38 @@
   "model_family": "sklearn GradientBoostingRegressor (XGBoost-like nonlinear challenger; not XGBoost)",
   "selection_protocol": "feature set and hyperparameters selected on forward folds through 2014; 2015-2024 opened once after selection",
   "selected": {
-    "feature_set": "rain_heat",
+    "feature_set": "phase_water",
     "features": [
+      "rain_short_rains_mm_z",
       "rain_long_rains_mm_z",
-      "hot28_edd_c_days_z"
+      "rain_jun_jul_mm_z"
     ],
     "params": {
       "max_depth": 1,
-      "n_estimators": 60,
-      "learning_rate": 0.05
+      "n_estimators": 30,
+      "learning_rate": 0.03
     },
     "development": {
       "n_folds": 11,
-      "rmse_kg_ha": 80.87650259654005,
-      "baseline_rmse_kg_ha": 88.18237125627117,
-      "skill_vs_trend": 0.08284953733551992,
-      "detrended_r2": -1.2929116792954
+      "rmse_kg_ha": 95.33386561764092,
+      "baseline_rmse_kg_ha": 88.18237125627454,
+      "skill_vs_trend": -0.08109891194219321,
+      "detrended_r2": -2.185935711625219
     }
   },
   "holdout_2015_2024": {
     "n_folds": 10,
-    "rmse_kg_ha": 38.555516536870535,
-    "baseline_rmse_kg_ha": 20.654021189094276,
-    "skill_vs_trend": -0.8667317218222181,
-    "detrended_r2": -3.3467325941696027
+    "rmse_kg_ha": 26.77399328143343,
+    "baseline_rmse_kg_ha": 20.654021189093015,
+    "skill_vs_trend": -0.296308986822007,
+    "detrended_r2": -1.0961201467622268
   },
   "ridge_holdout_2015_2024": {
     "n_folds": 10,
-    "rmse_kg_ha": 21.453534812756473,
-    "baseline_rmse_kg_ha": 20.654021189094276,
-    "skill_vs_trend": -0.03870982877098794,
-    "detrended_r2": -0.3458218990123654
+    "rmse_kg_ha": 20.640520992513032,
+    "baseline_rmse_kg_ha": 20.654021189093015,
+    "skill_vs_trend": 0.0006536352633893516,
+    "detrended_r2": -0.24575082228304046
   },
   "adoption_rule": "holdout skill >=10% and RMSE at least 5% below Ridge",
   "adopted": false,
