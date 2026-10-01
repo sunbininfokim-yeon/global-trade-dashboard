@@ -35,12 +35,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: us-election-polls
-          path: New for anti/public/data/usa_election_live_polls*.json
+          path: |
+            New for anti/public/data/usa_election_live_polls*.json
+            New for anti/public/data/usa_election_poll_history_2026.json
       - name: Publish data and source health
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- 'New for anti/public/data/usa_election_live_polls_v1.json' 'New for anti/public/data/usa_election_live_polls_status_v1.json'
+          git add -- 'New for anti/public/data/usa_election_live_polls_v1.json' 'New for anti/public/data/usa_election_live_polls_status_v1.json' 'New for anti/public/data/usa_election_poll_history_2026.json'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: refresh US election polls and source health'
           for attempt in 1 2 3; do

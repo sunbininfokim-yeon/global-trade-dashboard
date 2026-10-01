@@ -4,7 +4,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from election_watch.live_polls import apply_watchlist, normalize, summarize, validated_results, build_live
+from election_watch.live_polls import (apply_watchlist, normalize, summarize,
+                                      validated_results, build_live, poll_history)
 ROOT=Path(__file__).resolve().parents[1]
 POLICY=json.loads((ROOT/'config/usa_polls/live_2026.json').read_text())
 WATCHLIST=json.loads((ROOT/'config/usa_polls/watchlist_2026.json').read_text())
@@ -79,6 +80,29 @@ class LivePollTests(unittest.TestCase):
         b=build_live([poll()],POLICY,result,DAY,DAY,'test')
         self.assertEqual(a['races'][RID]['windows']['7']['status'],'poll_lead')
         self.assertEqual(b['races'][RID]['windows']['7']['status'],'insufficient_pollsters')
+    def test_poll_list_accumulates_until_election_then_clears_from_live_board(self):
+        results={'schema':'usa_confirmed_results_v1','results':[]}
+        rows=[poll(),second()]
+        before=build_live(rows,POLICY,results,'2026-11-03',DAY,'test')
+        self.assertEqual(before['races'][RID]['phase'],'pre_election')
+        self.assertEqual(len(before['races'][RID]['observations']),2)
+        after=build_live(rows,POLICY,results,'2026-11-04',DAY,'test')
+        closed=after['races'][RID]
+        self.assertEqual(closed['phase'],'awaiting_certified_result')
+        self.assertEqual(closed['observations'],[])
+        self.assertEqual(closed['windows']['7']['status'],'election_closed')
+        self.assertIsNone(closed['windows']['14']['party'])
+        self.assertEqual(len(poll_history(rows,POLICY,'2026-11-04')['races'][RID]['observations']),2)
+    def test_official_result_keeps_poll_display_closed(self):
+        result={'race_id':RID,'contest_id':POLICY['races'][RID]['contest_id'],'status':'certified',
+                'winner':'Kathy Hochul','party':'DEM','certified_on':'2026-12-01',
+                'reviewed_on':'2026-12-02','source_url':'https://elections.ny.gov/certified-results',
+                'evidence_note':'SYNTHETIC TEST ONLY'}
+        board=build_live([poll()],POLICY,{'schema':'usa_confirmed_results_v1','results':[result]},
+                         '2026-12-03',DAY,'test')
+        self.assertEqual(board['races'][RID]['phase'],'certified_result')
+        self.assertEqual(board['races'][RID]['observations'],[])
+        self.assertEqual(board['races'][RID]['result']['winner'],'Kathy Hochul')
     def test_certified_result_guards(self):
         r={'race_id':RID,'contest_id':POLICY['races'][RID]['contest_id'],'status':'certified','winner':'Kathy Hochul',
            'party':'DEM','certified_on':'2026-12-01','reviewed_on':'2026-12-02',
@@ -96,5 +120,20 @@ class LivePollTests(unittest.TestCase):
             with patch('sys.argv',['refresh','--output',str(path)]),patch.object(refresh_live_polls,'fetch_polls',side_effect=ValueError('bad schema')):
                 self.assertEqual(refresh_live_polls.main(),1)
             self.assertEqual(path.read_text(),'{"last_good":true}')
+            self.assertEqual(json.loads((Path(d)/'usa_election_live_polls_status_v1.json').read_text())['status'],'error')
+    def test_failed_refresh_still_closes_election_poll_display(self):
+        import refresh_live_polls
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'board.json'
+            existing=build_live([poll()],POLICY,{'schema':'usa_confirmed_results_v1','results':[]},
+                                DAY,DAY,'test')
+            path.write_text(json.dumps(existing))
+            with patch('sys.argv',['refresh','--output',str(path),'--as-of','2026-11-04']),\
+                 patch.object(refresh_live_polls,'fetch_polls',side_effect=ValueError('offline')):
+                self.assertEqual(refresh_live_polls.main(),1)
+            updated=json.loads(path.read_text())
+            self.assertEqual(updated['races'][RID]['observations'],[])
+            self.assertEqual(updated['races'][RID]['windows']['7']['status'],'election_closed')
+            self.assertEqual(updated['source_status'],'error_stale')
             self.assertEqual(json.loads((Path(d)/'usa_election_live_polls_status_v1.json').read_text())['status'],'error')
 if __name__=='__main__':unittest.main()
