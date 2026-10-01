@@ -246,7 +246,7 @@ def _recency_sort_key(report: ScoredReport) -> tuple:
 
 
 def build_index(
-    reports: List[ScoredReport], *, per_bucket: int
+    reports: List[ScoredReport], *, per_bucket: int, skip_sources: Iterable[str] = ()
 ) -> Dict[str, Dict[str, List[str]]]:
     """commodity -> country (or _global) -> report ids, newest first.
 
@@ -263,8 +263,11 @@ def build_index(
     the notice's series carries slightly more weight.
     """
     by_id = {r.id: r for r in reports}
+    skip = set(skip_sources)
     index: Dict[str, Dict[str, List[str]]] = {}
     for r in sorted(reports, key=lambda x: -x.importance):
+        if r.source_id in skip:
+            continue
         buckets = r.countries if r.scope == "country" else [GLOBAL_BUCKET]
         for commodity in r.commodities:
             per_commodity = index.setdefault(commodity, {})
@@ -463,7 +466,11 @@ def build_commodity_reports(
 
         apply_korean_titles(reports, limit=translate_limit)
 
-    index = build_index(reports, per_bucket=per_bucket)
+    # board_only sources (OFAC, BIS) feed their board and nothing else until
+    # the export-controls window that shows them exists -- an Iran tanker
+    # designation would otherwise start appearing on the oil board.
+    board_only = {s["id"] for s in sources if s.get("board_only")}
+    index = build_index(reports, per_bucket=per_bucket, skip_sources=board_only)
 
     # Only ship the reports some window actually references. Everything else
     # is weight in a file the browser downloads on the static fallback path.

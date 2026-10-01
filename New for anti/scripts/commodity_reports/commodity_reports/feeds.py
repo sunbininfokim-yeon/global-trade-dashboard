@@ -315,6 +315,9 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     # Keep only headlines matching this (a ministry homepage also links its
     # contact page, party-branch news and white papers).
     title_keep = re.compile(cfg["title_re"]) if cfg.get("title_re") else None
+    # A date the URL itself carries (OFAC: /recent-actions/20260930), with
+    # groups year, month, day.
+    url_date = re.compile(cfg["date_from_url_re"]) if cfg.get("date_from_url_re") else None
 
     def anchors():
         # The anchor's text is whatever sits before its </a>. Card layouts
@@ -358,7 +361,8 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
             continue
         seen.add(key)
         published = None
-        dm = _LIST_DATE_RE.search(tail) if tail else None
+        dm = url_date.search(full) if url_date else None
+        dm = dm or (_LIST_DATE_RE.search(tail) if tail else None)
         if dm:
             try:
                 published = datetime(int(dm.group(1)), int(dm.group(2)), int(dm.group(3)),

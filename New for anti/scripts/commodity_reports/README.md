@@ -105,10 +105,13 @@ GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다�
 
 ### 수출통제 보드 (`boards.export_controls`) — 수출통제 창용 계약
 
-품목과 상관없이 규제 기관 발표를 한곳에 모으는 목록이다. 지금은 중국 상무부
-산업안전·수출입통제국(`cn_mofcom_aqygzj`)만 들어가 있다. OFAC·BIS 같은 소스는
-`sources.json`에 `"board": "export_controls"`와 `"issuer": "<ISO3>"`만 달면
-같은 목록에 합류한다.
+품목과 상관없이 규제 기관 발표를 한곳에 모으는 목록이다. 지금 들어가는 소스는 세 곳이다.
+
+- 중국 상무부 산업안전·수출입통제국(`cn_mofcom_aqygzj`, 중국어 원문 + Gemini 번역): 중국 화면 박스에 표시
+- 미국 OFAC(`us_ofac_recent_actions`)과 BIS(`us_bis_press`): `board_only`. 이 목록에만 쌓이고 품목 창에는 안 뜬다. 수출통제 창이 생기면 거기서 보여 준다.
+
+새 규제 기관은 `sources.json`에 `"board": "export_controls"`와 `"issuer": "<ISO3>"`만 달면
+합류한다. 품목 창에 섞지 않으려면 `"board_only": true`도 단다.
 
 ```
 GET /api/commodity-reports?board=export_controls                  # 전체, 최신순
@@ -224,7 +227,8 @@ WGC·Silver Institute처럼 "이 출처 글은 기본적으로 X"라는 사전�
 - 출처 옵션 `market_only: true`: 시장 용어(생산·가격·재고·교역·정책·비축 매입 등)가 없는 글은 버립니다. PR성 게시판(MPOB·BPDP·IAI·Cochilco·NRCan·Cobalt·VRA·ESDM·MOFCOM·WGC·Silver·ITA·EU AGRI·NASS·CONAB)에 겁니다.
 - 출처 옵션 `commodity_from: "title"`: 품목은 제목에서만 판단합니다(EU DG AGRI — 본문에 사료 대두가 스쳐 나오는 달걀 기사).
 - 출처 옵션 `translate: true`: 빌드 때 Gemini(`GEMINI_API_KEY`, 워크플로는 `AI_STUDIO_API_KEY` 시크릿)로 제목을 영어·한국어로 번역하고, 원문과 영어를 같이 태깅합니다. 모델은 `GEMINI_TRANSLATE_MODEL`로 지정하거나, 지정하지 않으면 `gemini-flash-lite-latest` → `gemini-flash-latest` → `gemini-2.5-flash` 순서로 첫 응답을 씁니다.
-- 출처 옵션 `board` / `issuer`: 품목 창과 별개인 목록(현재 `export_controls`)에 넣습니다. 위 "수출통제 보드" 참고.
+- 출처 옵션 `board` / `issuer` / `board_only`: 품목 창과 별개인 목록(현재 `export_controls`)에 넣습니다. `board_only`이면 그 목록에만 넣습니다. 위 "수출통제 보드" 참고.
+- html_list 옵션: `min_title_chars`(기본 12), `slug_fallback`(기본 true), `title_re`(이 정규식에 맞는 제목만 남김), `date_window`(링크 뒤 N자 안의 날짜 읽기), `date_from_url_re`(URL 속 날짜, 그룹 연·월·일).
 - 출처 옵션 `commodity_scope: [...]`: 이 출처는 목록 안 품목으로만 분류됩니다. 목록 밖 품목만 잡힌 글은 버립니다(로사리오 곡물거래소 — 거시 칼럼에 "petróleo"가 한 번 나와 원유 보고서로 잡혔던 건, 2026-09-27).
 - 제목 기준 행정 공지 필터 `ADMIN_TERMS`: 보고서 지연, 추정 중단, 재조사, 입찰(T/P), 보도 예고, 인사, 협약. 시리즈 이름이 붙어 있어도 버리고, 제목에 수치가 있으면 남깁니다.
 

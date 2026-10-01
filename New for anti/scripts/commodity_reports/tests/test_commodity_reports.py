@@ -902,6 +902,42 @@ class ExportControlTranslationTests(unittest.TestCase):
         self.assertEqual(doc["translation"]["reused"], 2)
 
 
+class BoardOnlySourceTests(unittest.TestCase):
+    """OFAC/BIS feed the export-controls board and no commodity window yet."""
+
+    def test_ofac_action_stays_off_the_oil_board(self):
+        from commodity_reports import build as build_mod
+        from commodity_reports.feeds import parse_html_list
+        html = """<a href="/recent-actions/20260930">Iran-related Designations; Shadow Fleet Crude Oil Tankers Identified</a>
+                  <a href="/recent-actions/20260929_33">Publication of Cuba Sanctions Regulations</a>"""
+
+        def fake_fetch(s, **kw):
+            if s["id"] != "us_ofac_recent_actions":
+                return {"source_id": s["id"], "ok": False, "items": [], "count": 0, "error": "skipped"}
+            items = parse_html_list(html, s)
+            return {"source_id": s["id"], "ok": True, "items": items, "count": len(items), "error": None}
+
+        from commodity_reports.gemini import GeminiAnnotator
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = fake_fetch
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: fake_fetch(s)
+        try:
+            doc = build_commodity_reports(fetch_live=True, now=datetime(2026, 10, 1, tzinfo=timezone.utc),
+                                          annotator=GeminiAnnotator(""))
+        finally:
+            build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+        by_id = {it["id"]: it for it in doc["items"]}
+        board = [by_id[i] for i in doc["boards"]["export_controls"]]
+        self.assertEqual(len(board), 2)
+        tanker = next(it for it in board if "Tankers" in it["title"]["original"])
+        self.assertEqual(tanker["published_at"][:10], "2026-09-30")
+        self.assertEqual(tanker["control"]["issuer"], "USA")
+        self.assertEqual(tanker["agency_url"], "https://ofac.treasury.gov/")
+        self.assertIn("oil", tanker["commodities"])  # tagged, but...
+        indexed = {rid for b in doc["index"].values() for ids in b.values() for rid in ids}
+        self.assertNotIn(tanker["id"], indexed)       # ...on no commodity window
+
+
 class CommodityScopeTests(unittest.TestCase):
     """commodity_scope: a narrow source is never filed under anything else."""
 
