@@ -80,7 +80,11 @@ def fill_chart(chart: dict, departments: list[dict]) -> int:
         if minister.get("note_ko"):
             ministry["note_ko"] = minister["note_ko"]
         pgs = row.get("party_group_secretary") or {}
+        for stale in ("party_secretary_ko", "party_secretary_en", "party_secretary_zh", "party_secretary_status"):
+            ministry.pop(stale, None)
         ministry["same_as_minister"] = bool(pgs.get("same_as_minister"))
+        if pgs.get("status") == "unknown":
+            ministry["party_secretary_status"] = "unknown"
         if pgs.get("title_ko"):
             ministry["party_title_ko"] = pgs["title_ko"]
         if pgs.get("organ"):
@@ -127,6 +131,9 @@ def main() -> None:
         + board_text[review_end + 1:]
     )
     board_text = replace_json_value(board_text, "party_state", leadership, party_state, 8)
+    if "cmc" in party_state:
+        raise SystemExit("party_state unexpectedly has a cmc key; cmc splice would hit it")
+    board_text = replace_json_value(board_text, "cmc", leadership, extract["cmc"], 8)
     BOARD.write_text(board_text, encoding="utf-8")
 
     chart = json.loads(CHART.read_text(encoding="utf-8"))
