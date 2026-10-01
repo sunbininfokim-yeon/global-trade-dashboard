@@ -918,6 +918,7 @@
       <span class="shipping-kpi-label">${escapeHtml(card.publisher || '기관')} · ${escapeHtml(GEOGRAPHY_LABELS[card.geography_scope] || card.geography_scope || '')}</span>
       <strong>${finite(card.value) ? formatOfficialValue(card.value, card.unit) : '미보고'}</strong>
       <small>${escapeHtml(card.display_label_ko || card.label_ko || '')}</small>
+      ${card.year_ago ? `<small>1년 전(${escapeHtml(card.year_ago.period)}) ${formatOfficialValue(card.year_ago.value, card.unit)}${finite(card.year_ago.change_pct) ? ` → ${Number(card.year_ago.change_pct) > 0 ? '+' : ''}${formatPct(card.year_ago.change_pct, 0)}` : ''}</small>` : ''}
       <small>${escapeHtml(card.period_start || '')} ~ ${escapeHtml(card.period_end || '')} · 발표 ${escapeHtml(card.source_published_at || '—')}</small>
       ${card.license ? `<small>라이선스 ${escapeHtml(card.license)}</small>` : ''}
       <small>${sourceStatusBadge(card.source_status)} ${sourceLink(card.source_url)}</small>

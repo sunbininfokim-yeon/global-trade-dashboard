@@ -144,6 +144,20 @@ class OfficialCargoTests(unittest.TestCase):
         self.assertEqual(statement["evidence_class"], "official_statement")
         self.assertEqual(len(parse_imo_links(html)), 1)  # Hormuz page rules ignore statements
 
+    def test_year_ago_comparison_matches_scope_and_commodity_only(self):
+        html = fixture_html().replace("1Q26", "2Q25")  # periods: 2Q25 and 2Q26
+        result = collect_official_cargo(fetch=True, now=NOW, fetcher=lambda url: html if url == EIA_URL else IMO_FIXTURE)
+        cards = {card["cargo_category"]: card for card in result["chokepoints"]["hormuz"]["reference_cards"]}
+        self.assertEqual(cards["total_oil"]["year_ago"], {"period": "2Q25", "value": 14_900_000, "change_pct": -67.1})
+        self.assertEqual(cards["lng"]["year_ago"]["value"], 7.4)  # native unit, own series
+        suez_lng = next(card for card in result["chokepoints"]["suez"]["reference_cards"] if card["cargo_category"] == "lng")
+        self.assertEqual(suez_lng["year_ago"]["period"], "2Q25")
+        self.assertEqual(suez_lng["geography_scope"], "suez_canal")
+
+    def test_no_year_ago_row_means_no_comparison(self):
+        result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
+        self.assertTrue(all(card["year_ago"] is None for card in result["chokepoints"]["hormuz"]["reference_cards"]))
+
     def test_wrong_source_redirect_links_are_not_accepted(self):
         with self.assertRaises(ValueError):
             parse_imo_links('<a href="https://unknown.example/test">Advisories</a>')

@@ -209,6 +209,22 @@ def parse_eia(html: str, retrieved_at: str) -> dict[str, Any]:
             "source_published_at": published, "content_sha256": hashlib.sha256(html.encode()).hexdigest()}
 
 
+def year_ago_comparison(card: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Same publisher, frequency, scope and commodity, one year earlier."""
+    start = date.fromisoformat(card["period_start"])
+    target = start.replace(year=start.year - 1).isoformat()
+    prior = next((row for row in rows if row["period_start"] == target
+                  and all(row.get(key) == card.get(key) for key in ("publisher", "frequency", "geography_scope", "cargo_category", "unit"))), None)
+    if prior is None or prior.get("value") is None or card.get("value") is None:
+        return None
+    return {
+        "period": prior["period"],
+        "value": prior["value"],
+        # A zero base has no meaningful percentage; keep both values instead.
+        "change_pct": round((card["value"] / prior["value"] - 1) * 100, 1) if prior["value"] > 0 else None,
+    }
+
+
 def parse_imo_links(html: str, base_url: str = IMO_URL, include_statements: bool = False) -> list[dict[str, str]]:
     parsed = OfficialHTML()
     parsed.feed(html)
@@ -300,6 +316,7 @@ def collect_official_cargo(
                 card["source_status"] = eia["status"]
                 card["period_end_age_days"] = max(0, (now.date() - date.fromisoformat(card["period_end"])).days)
                 card["display_label_ko"] = f"{card['label_ko']} · {card['period']} 일평균"
+                card["year_ago"] = year_ago_comparison(card, eia_rows)
                 cards.append(card)
         supplementary = []
         if iea_rows:
@@ -307,6 +324,7 @@ def collect_official_cargo(
             card["source_status"] = iea["status"]
             card["period_end_age_days"] = max(0, (now.date() - date.fromisoformat(card["period_end"])).days)
             card["display_label_ko"] = f"IEA 석유 전체 · {card['period']} 월평균"
+            card["year_ago"] = year_ago_comparison(card, iea_rows)
             supplementary.append(card)
         points[point_id] = {
             "status": "references_available" if cards or supplementary else "official_reference_unavailable",
