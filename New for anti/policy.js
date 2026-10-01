@@ -446,15 +446,17 @@
   // not by current_stage alone.
   const stageRail = (bill) => {
     const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
     const steps = stageFlow.map((step, i) => {
+      const failed = setback?.step_id === step.id;
       const observed = step.state === 'observed';
       const evidence = step.evidence.at(-1);
-      const title = evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
-      return `<li class="policy-stage-step${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
+      const title = failed ? `${step.label} · ${setback.date || '날짜 미확인'} · ${setback.label}. ${setback.note}` : evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
+      return `<li class="policy-stage-step${failed ? ' is-failed' : ''}${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${failed ? esc(setback.label) : observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
     const alert = lifecycle.procedural_alert;
     return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
-      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(alert.label)} — 법안 통과 여부와 별도입니다.</p>` : ''}
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(setback ? `${CHAMBER_LABELS[alert.chamber]} ${setback.label} — ${setback.note}` : alert.label + ' — 법안 통과 여부와 별도입니다.')}</p>` : ''}
       <p class="policy-notice">${esc(lifecycle.note)}</p>
       ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
@@ -525,6 +527,7 @@
       // wipe whatever the visitor has typed into the search box.
       paintFavButton(button, !on);
     } catch (err) {
+      window.alert('즐겨찾기를 저장하지 못했습니다. 로그인 상태와 인터넷 연결을 확인한 뒤 다시 시도해주세요.');
       console.error('Failed to toggle favorite:', err);
     } finally {
       button.disabled = false;
@@ -826,6 +829,7 @@
   // row keyed by that same id.
   function favoriteBillCardHtml(bill, notifyEnabled) {
     const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
     const currentLabel = lifecycle.current.label;
     const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
@@ -845,6 +849,7 @@
         <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
         ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
       </div>
+      ${setback ? `<p class="policy-notice policy-procedural-alert">${esc(`${CHAMBER_LABELS[lifecycle.procedural_alert.chamber]} ${setback.label}`)}</p>` : ''}
       <div class="policy-fav-bill-actions">
         <label class="policy-fav-bill-notify">
           <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
@@ -1592,3 +1597,4 @@
     committeeSlug,
   };
 })();
+

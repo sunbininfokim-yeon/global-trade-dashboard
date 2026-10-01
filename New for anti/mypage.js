@@ -70,7 +70,7 @@
             container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
             return;
         }
-        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
+        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div><p class="mypage-empty">저장됨 · 상세정보 불러오는 중…</p></div>`).join('');
         // One request per favorited bill -- fine at favorites-list scale;
         // revisit with a batch endpoint if this list grows large.
         bills.forEach(async (f) => {
@@ -80,7 +80,8 @@
                 if (token !== renderToken || !card) return;
                 card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill, f.notify_enabled);
             } catch (err) {
-                if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
+                if (token !== renderToken || !card) return;
+                card.innerHTML = `<div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div><p class="mypage-empty">즐겨찾기는 저장돼 있습니다. 법안 상세정보를 불러오지 못했습니다.</p>`;
             }
         });
         bindFavoriteBillCardActions(container);
@@ -485,6 +486,14 @@
         surface.classList.remove('hidden');
         surface.innerHTML = shellHtml();
 
+        // Subscribe before the signed-out return; initial session recovery and
+        // login must also refresh a page opened before authentication finishes.
+        if (!authSubscribed && window.Auth?.onChange) {
+            authSubscribed = true;
+            window.Auth.onChange(() => {
+                if (host) render('mypage', host);
+            });
+        }
         const user = window.Auth?.currentUser?.();
         surface.querySelector('#mypage-identity').textContent = user
             ? user.email
@@ -504,14 +513,6 @@
         });
         setActiveTab('favorites');
 
-        // A login/logout elsewhere while this screen is open should not
-        // leave a stale signed-out (or wrong account's) view up.
-        if (!authSubscribed) {
-            authSubscribed = true;
-            window.Auth?.onChange?.(() => {
-                if (host === surface) render(_target, surface);
-            });
-        }
     }
 
     let authSubscribed = false;
@@ -525,3 +526,4 @@
 
     window.MyPage = { render, unmount };
 })();
+
