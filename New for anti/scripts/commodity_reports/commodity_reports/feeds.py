@@ -73,9 +73,12 @@ def strip_html(doc: str) -> str:
     return _WS_RE.sub(" ", unescape(doc)).strip()
 
 
-# Some ministries drop or reset a connection whose User-Agent is not a
+# Some ministries drop or reset a connection that does not look like a
 # browser's (MOFCOM's English site resets ours and serves Chrome's). A source
 # opts in with "headers": "browser"; everyone else keeps the honest UA.
+# The Sec-Fetch-* and Upgrade-Insecure-Requests lines are what MOFCOM checks:
+# with the User-Agent and Accept lines alone it reset all 14 builds, and the
+# same urllib request with these added got 200 (feed probe, 2026-10-01).
 BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -83,6 +86,11 @@ BROWSER_HEADERS = {
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
 }
 
 
