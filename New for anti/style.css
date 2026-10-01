@@ -4036,6 +4036,8 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
     color: #7dd3fc; font-weight: 600;
     letter-spacing: .01em;
 }
+a.rpt-agency { text-decoration: none; }
+a.rpt-agency:hover, a.rpt-agency:focus-visible { text-decoration: underline; }
 .rpt-series {
     color: #cbd5e1; padding: 0 5px; border-radius: 999px;
     background: rgba(148,163,184,.12); border: 1px solid rgba(148,163,184,.18);
@@ -4069,6 +4071,41 @@ a.rpt-title:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offs
 .rpt-more:hover { color: #94a3b8; }
 .rpt-more:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
 .rpt-note { font-size: 9.5px; color: #64748b; margin-top: 8px; }
+/* China's export-control notices (trade.js renderReportBoard): Chinese
+   originals from MOFCOM's export-control bureau, above the reports list. */
+.ctlb-card {
+    margin: 0 0 12px; padding: 10px 11px;
+    border: 1px solid rgba(248,113,113,.28); border-radius: 8px;
+    background: rgba(248,113,113,.06);
+}
+.ctlb-head {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+    margin-bottom: 6px;
+}
+.ctlb-label { font-size: 11.5px; font-weight: 700; color: #fecaca; }
+.ctlb-agency {
+    margin-left: auto; font-size: 9.5px; font-weight: 600; color: #7dd3fc;
+    text-decoration: none;
+}
+a.ctlb-agency:hover, a.ctlb-agency:focus-visible { text-decoration: underline; }
+.ctlb-list { list-style: none; margin: 0; padding: 0; }
+.ctlb-item {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ctlb-item:last-child { border-bottom: none; }
+.ctlb-title {
+    flex: 1; min-width: 0; font-size: 11.5px; line-height: 1.5; color: #e2e8f0;
+    text-decoration: none; overflow-wrap: anywhere;
+}
+a.ctlb-title:hover, a.ctlb-title:focus-visible { color: #38bdf8; text-decoration: underline; }
+.ctlb-date { flex: none; font-size: 9.5px; color: #64748b; font-variant-numeric: tabular-nums; }
+.ctlb-toggle {
+    margin-top: 4px; padding: 0; border: 0; background: none; cursor: pointer;
+    font-size: 10px; color: #94a3b8;
+}
+.ctlb-toggle:hover { color: #e2e8f0; }
+.ctlb-note { font-size: 9.5px; color: #64748b; margin: 6px 0 0; }
 /* Pages of the reports window, cut to the reader's screen height (trade.js
    paginateReports). */
 .rpt-pager {

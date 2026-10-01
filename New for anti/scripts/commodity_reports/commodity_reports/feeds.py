@@ -61,6 +61,11 @@ class RawReport:
     # grain exchange's macro column that says "petróleo" once is not an oil
     # report (BCR, 2026-09-27). Empty means no restriction.
     commodity_scope: List[str] = field(default_factory=list)
+    # board: a named list the source also feeds, independent of commodity
+    # windows (MOFCOM's export-control bureau -> "cn_export_controls"). A
+    # board item is kept even when it names no commodity this dashboard
+    # tracks -- an entity-list addition is the news, whatever it ships.
+    board: Optional[str] = None
     weight: float = 1.0
     # Priors from the source catalog, used only where the text itself is silent.
     default_country: Optional[str] = None
@@ -111,9 +116,36 @@ def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0, browser: boo
             raise  # the server answered; asking again will not change it
         except (urllib.error.URLError, OSError):
             if attempt == BROWSER_RETRIES:
+                # Last resort: a Chrome TLS handshake. MOFCOM's export-control
+                # bureau has failed urllib's handshake outright on some runs
+                # (SSLV3_ALERT_HANDSHAKE_FAILURE) while curl_cffi got 200 on
+                # every probe. Optional -- without the package, the error stands.
+                text = _fetch_impersonated(url, timeout=timeout)
+                if text is not None:
+                    return text
                 raise
             time.sleep(pause)
     raise AssertionError("unreachable")
+
+
+def _fetch_impersonated(url: str, *, timeout: float) -> Optional[str]:
+    try:
+        from curl_cffi import requests as creq  # type: ignore
+    except ImportError:
+        return None
+    try:
+        r = creq.get(url, impersonate="chrome", timeout=timeout, allow_redirects=True)
+    except Exception:  # noqa: BLE001 -- the urllib error is the one reported
+        return None
+    if r.status_code != 200:
+        return None
+    raw = r.content
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return raw.decode("utf-8", errors="replace")
 
 
 def _fetch_text_once(url: str, *, user_agent: str, timeout: float, browser: bool) -> str:
@@ -186,6 +218,7 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         market_only=bool(source.get("market_only")),
         commodity_from=source.get("commodity_from", "text"),
         commodity_scope=list(source.get("commodity_scope") or []),
+        board=source.get("board") or None,
         **kw,
     )
 
@@ -256,6 +289,9 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     return items
 
 
+_LIST_DATE_RE = re.compile(r"(20\d{2})[-./年](\d{1,2})[-./月](\d{1,2})")
+
+
 def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     """Link harvest for publishers with no feed (WASDE, OPEC press room…).
 
@@ -269,6 +305,16 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     href_re = cfg.get("item_href_re") or r"[^\"']+"
     max_items = int(cfg.get("max_items") or 20)
     pattern = re.compile(rf"href=[\"']({href_re})[\"'][^>]*>", re.I | re.S)
+    # Chinese headlines run short ("关于对稀土实施出口管制的公告" is 14
+    # characters), and a hash slug (MOFCOM's art_5f65b9c9…) is no title.
+    min_chars = int(cfg.get("min_title_chars") or 12)
+    slug_fallback = cfg.get("slug_fallback", True)
+    # List pages that print the date beside each link (MOFCOM: the row's
+    # <span>2026-09-28</span>) -- looked for between this anchor and the next.
+    date_window = int(cfg.get("date_window") or 0)
+    # Keep only headlines matching this (a ministry homepage also links its
+    # contact page, party-branch news and white papers).
+    title_keep = re.compile(cfg["title_re"]) if cfg.get("title_re") else None
 
     def anchors():
         # The anchor's text is whatever sits before its </a>. Card layouts
@@ -278,11 +324,16 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         for m in pattern.finditer(body):
             end = body.find("</a>", m.end(), m.end() + 4000)
             inner = body[m.end():end] if end != -1 else ""
-            yield m.group(1), inner
+            tail = ""
+            if date_window and end != -1:
+                tail = body[end:end + date_window]
+                nxt = tail.find("<a ", 4)
+                tail = tail[:nxt] if nxt != -1 else tail
+            yield m.group(1), inner, tail
 
     items: List[RawReport] = []
     seen = set()
-    for href, inner in anchors():
+    for href, inner, tail in anchors():
         full = urljoin(base, href)
         key = full.split("?", 1)[0].rstrip("/").lower()
         if key in seen:
@@ -290,7 +341,9 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         title = strip_html(inner)
         if len(title) > 200:
             title = ""
-        if len(title) < 12:
+        if len(title) < min_chars and not slug_fallback:
+            continue
+        if len(title) < min_chars:
             # Icon-only or "read more" links: fall back to the slug, which for
             # these publishers is a readable title -- once its %-escapes are
             # decoded (ANRPC's "report%2C june 2026") and its first letter
@@ -299,11 +352,21 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
             slug = re.sub(r"\.(?:html?|php|aspx?|pdf)$|\.\d+\.html?$", "", slug, flags=re.I)
             title = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", slug)).strip(" .")
             title = title[:1].upper() + title[1:]
-        if len(title) < 12:
+        if len(title) < min_chars:
+            continue
+        if title_keep and not title_keep.search(title):
             continue
         seen.add(key)
+        published = None
+        dm = _LIST_DATE_RE.search(tail) if tail else None
+        if dm:
+            try:
+                published = datetime(int(dm.group(1)), int(dm.group(2)), int(dm.group(3)),
+                                     tzinfo=timezone.utc).isoformat()
+            except ValueError:
+                published = None
         items.append(
-            _raw_from(source, title=title, url=full, summary="", published_at=None)
+            _raw_from(source, title=title, url=full, summary="", published_at=published)
         )
         if len(items) >= max_items:
             break

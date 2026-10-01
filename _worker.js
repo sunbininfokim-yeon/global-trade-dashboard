@@ -598,6 +598,23 @@ async function handleCommodityReports(request, env) {
         );
     }
 
+    // A named board (pipeline "boards"): a list fed by its sources whatever
+    // the commodity -- cn_export_controls is MOFCOM's export-control bureau.
+    const board = (url.searchParams.get('board') || '').trim();
+    if (board) {
+        const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+        const known = ((doc.boards || {})[board] || []).filter((id) => byId.has(id));
+        const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            board,
+            total: known.length,
+            offset,
+            count: items.length,
+            items,
+        });
+    }
+
     // No commodity named: hand back the board itself, so a caller can see
     // which windows have anything at all without guessing keys.
     if (!commodity) {

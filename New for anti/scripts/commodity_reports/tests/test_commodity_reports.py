@@ -705,6 +705,55 @@ def feeds_retries():
     return feeds.BROWSER_RETRIES
 
 
+class ExportControlBoardTests(unittest.TestCase):
+    """MOFCOM's export-control bureau: Chinese originals on their own board."""
+
+    HTML = """
+    <ul>
+      <li><a href="https://aqygzj.mofcom.gov.cn/gywm/art/2014/art_10cb9b9b10ef40678ca0e7b533428487.html">联系方式</a></li>
+      <li><a href="https://aqygzj.mofcom.gov.cn/gzdt/art/2026/art_5f65b9c9ea0a497f86578fd282dd0eee.html">中韩出口管制对话机制第三次会议及政企交流活动在陕西西安举行</a><span>2026-09-24</span></li>
+      <li><a href="http://aqygzj.mofcom.gov.cn/gzdt/art/2024/art_fef437d2cf714402bcc7afa73daf9ba6.html">安全与管制局党支部受邀参加中央和国家机关“四强”党支部建设经验交流会</a></li>
+      <li><a href="https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_90f295b25fce4401b72ddf1b9adac31f.html">商务部新闻发言人就将14家欧盟实体列入出口管制管控名单答记者问</a></li>
+      <li><a href="https://aqygzj.mofcom.gov.cn/qdml/art/2026/art_aaaa0000000000000000000000000001.html">关于对稀土相关物项实施出口管制的公告</a></li>
+      <li><a href="https://aqygzj.mofcom.gov.cn/zsyd/art/2023/art_88bb651d465d42a4afd455d943788a1a.html">中国的出口管制（白皮书）</a></li>
+    </ul>"""
+
+    def test_board_keeps_export_control_notices_in_chinese(self):
+        from commodity_reports import build as build_mod
+        from commodity_reports.feeds import parse_html_list
+
+        def fake_fetch(s, **kw):
+            if s["id"] != "cn_mofcom_aqygzj":
+                return {"source_id": s["id"], "ok": False, "items": [], "count": 0, "error": "skipped"}
+            items = parse_html_list(self.HTML, s)
+            return {"source_id": s["id"], "ok": True, "items": items, "count": len(items), "error": None}
+
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = fake_fetch
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: fake_fetch(s)
+        try:
+            doc = build_commodity_reports(fetch_live=True, now=datetime(2026, 10, 1, tzinfo=timezone.utc))
+        finally:
+            build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+
+        by_id = {it["id"]: it for it in doc["items"]}
+        board = [by_id[i] for i in doc["boards"]["cn_export_controls"]]
+        titles = [it["title"]["original"] for it in board]
+        self.assertEqual(len(titles), 3, titles)
+        self.assertIn("商务部新闻发言人就将14家欧盟实体列入出口管制管控名单答记者问", titles)
+        # Contact page, party-branch news and the knowledge section stay out.
+        self.assertFalse(any("联系方式" in t or "党支部" in t or "白皮书" in t for t in titles))
+        # Dated row first; its date read off the list.
+        self.assertEqual(board[0]["published_at"][:10], "2026-09-24")
+        for it in board:
+            self.assertIsNone(it["title"]["ko"])
+            self.assertEqual(it["agency_url"], "https://aqygzj.mofcom.gov.cn/")
+            self.assertTrue(it["url"].startswith("http"))
+        # A notice naming rare earths also lands on that commodity's China window.
+        rare = [it for it in board if "稀土" in it["title"]["original"]][0]
+        self.assertIn(rare["id"], doc["index"]["rare_earths"]["CHN"])
+
+
 class CommodityScopeTests(unittest.TestCase):
     """commodity_scope: a narrow source is never filed under anything else."""
 
