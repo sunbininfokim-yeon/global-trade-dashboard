@@ -33,7 +33,8 @@ from shipping_capacity.portwatch import PORTWATCH_PORTS_QUERY_URL, _iso_date
 
 CONTRACT_VERSION = "hormuz-bypass-v1"
 USER_AGENT = "Chokemonitor/1.0 public-reference-collector"
-HISTORY_DAYS = 300
+# Two years, so the screen can lay last year under this year month by month.
+HISTORY_DAYS = 730
 COMPARED_POINTS = (
     ("hormuz", "호르무즈 해협"),
     ("bab_el_mandeb", "바브엘만데브 해협"),
@@ -195,13 +196,15 @@ def collect_hormuz_bypass(
         try:
             url = yanbu_query_url(port_ids, now.date() - timedelta(days=HISTORY_DAYS))
             rows = parse_yanbu_rows(json.loads(fetcher(url).decode("utf-8")))
-            source.update({"rows": rows, "status": "fetched", "retrieved_at": timestamp, "error_code": None})
+            # Cache the summary, not 730 raw rows: it is all the screen reads.
+            source.update({"summary": summarize_yanbu(rows, now.date()), "row_count": len(rows),
+                           "status": "fetched", "retrieved_at": timestamp, "error_code": None})
         except Exception as exc:  # noqa: BLE001 -- keep the last good copy
-            source.update({"status": "cached_fallback" if source.get("rows") else "unavailable", "error_code": type(exc).__name__})
+            source.update({"status": "cached_fallback" if source.get("summary") else "unavailable", "error_code": type(exc).__name__})
     else:
         source["status"] = "cached_offline" if source.get("retrieved_at") else "not_fetched"
-    source.setdefault("rows", [])
-    yanbu = summarize_yanbu(source["rows"], now.date()) if source["rows"] else {
+    source.pop("rows", None)
+    yanbu = source.get("summary") or {
         "monthly": [], "latest_date": None, "recent_7d_mean_tonnes_per_day": None,
         "prior_28d_mean_tonnes_per_day": None, "change_pct": None,
     }

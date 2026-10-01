@@ -283,13 +283,62 @@
     ['tanker', '탱커']
   ];
 
-  // The all-vessel view compares the published 7-day and prior-28-day means
-  // by type. A selected type gets its own observed 35-record daily series;
-  // if the data contract has not supplied it, the UI explicitly says so.
+  // Daily PortWatch series by ship type as lines: all three types together, or
+  // one type alone. A dashed line is the same weekday 52 weeks earlier, which
+  // the engine aligns (`metric_histories.<type>.year_ago`); the UI only draws.
+  const CHOKEPOINT_RANGES = [['90', '3개월'], ['180', '6개월']];
+
+  // Axis and tooltip in tonnes at the scale of the data: a 50K t/day strait
+  // must not print every tick as "0.1M".
+  const lineChartOptions = (formatValue, { legend = true, formatTick = formatValue } = {}) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 320 },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: legend
+        ? { position: 'bottom', labels: { color: INK.secondary, boxWidth: 22, boxHeight: 2, padding: 14, font: { size: 11 } } }
+        : { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.96)',
+        borderColor: 'rgba(148, 163, 184, 0.25)',
+        borderWidth: 1,
+        padding: 10,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${finite(ctx.parsed.y) ? formatValue(ctx.parsed.y) : '자료 없음'}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true, maxRotation: 0 } },
+      y: { beginAtZero: true, grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: value => formatTick(value) } }
+    }
+  });
+
+  const solidLine = (label, data, color) => ({
+    label, data, borderColor: color, backgroundColor: 'transparent',
+    borderWidth: 2, pointRadius: 0, pointHitRadius: 6, tension: 0.2, spanGaps: false
+  });
+  const dashedLine = (label, data, color) => ({
+    label, data, borderColor: `${color}99`, backgroundColor: 'transparent',
+    borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, pointHitRadius: 6, tension: 0.2, spanGaps: false
+  });
+
+  const typeSeries = (point, key, days) => {
+    const metric = point.live?.metric_histories?.[key] || {};
+    const history = asArray(metric.history);
+    const priorValues = asArray(metric.year_ago?.values);
+    const rows = history.map((row, index) => ({
+      date: row.date,
+      value: finite(row?.value) ? Number(row.value) : null,
+      prior: priorValues.length === history.length && finite(priorValues[index]) ? Number(priorValues[index]) : null
+    })).slice(-days);
+    return { rows, hasPrior: rows.some(row => row.prior !== null) };
+  };
+
   const renderObservedTypeComparison = point => {
     const available = CHOKEPOINT_METRIC_TABS.filter(([key]) => point.live?.metrics?.[key]);
     if (!available.length) return '';
-    const initial = available.some(([key]) => key === point.metricKey) ? point.metricKey : available[0][0];
     return `
       <section class="shipping-observed-type-comparison" aria-label="선종별 추정 교역량 비교">
         <div class="shipping-observed-type-head">
@@ -297,14 +346,13 @@
             <span>SHIP TYPE COMPARISON</span>
             <h3>선종별 추정 교역량</h3>
           </div>
-          <small>전체: 선종별 비교 · 선종 선택: 최근 35개 관측일</small>
+          <small>실선 올해 · 점선 52주 전 같은 요일</small>
         </div>
         <div class="shipping-observed-type-controls" role="tablist" aria-label="선종 선택">
-          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === initial}">${label}</button>`).join('')}
+          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === 'all'}">${label}</button>`).join('')}
         </div>
-        <div class="shipping-observed-window-controls" role="group" aria-label="비교 기간 선택">
-          <button type="button" data-chokepoint-window="recent" aria-pressed="true">최근 7일</button>
-          <button type="button" data-chokepoint-window="prior" aria-pressed="false">직전 28일</button>
+        <div class="shipping-observed-window-controls" role="group" aria-label="그래프 기간 선택">
+          ${CHOKEPOINT_RANGES.map(([days, label]) => `<button type="button" data-chokepoint-range="${days}" aria-pressed="${days === '90'}">${label}</button>`).join('')}
         </div>
         <div class="shipping-observed-type-result" data-chokepoint-type-result></div>
       </section>`;
@@ -313,10 +361,10 @@
   const bindObservedTypeComparison = (scope, point) => {
     const result = scope.querySelector('[data-chokepoint-type-result]');
     const metricButtons = [...scope.querySelectorAll('[data-chokepoint-metric]')];
-    const windowButtons = [...scope.querySelectorAll('[data-chokepoint-window]')];
+    const rangeButtons = [...scope.querySelectorAll('[data-chokepoint-range]')];
     if (!result || !metricButtons.length) return;
     let metricKey = 'all';
-    let windowKey = 'recent';
+    let days = 90;
     let observedChart = null;
 
     const destroyChart = () => {
@@ -326,113 +374,60 @@
       observedChart = null;
     };
 
-    const standardOptions = () => ({
-      ...chartOptions({ unit: 'M t/일', legend: true }),
-      scales: {
-        x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true } },
-        y: { grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: value => `${formatNumber(value, 1)}M` } }
-      }
-    });
-
     const update = () => {
+      metricButtons.forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokepointMetric === metricKey)));
+      rangeButtons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.chokepointRange) === days)));
+      destroyChart();
+      // "전체" draws the three ship types; the all-vessel total stays a summary
+      // figure so that one large line does not flatten the others.
+      const keys = metricKey === 'all'
+        ? CHOKEPOINT_METRIC_TABS.map(([key]) => key).filter(key => key !== 'all' && point.live?.metric_histories?.[key])
+        : [metricKey];
+      const series = keys.map(key => ({ key, ...typeSeries(point, key, days) })).filter(item => item.rows.length);
+      const dates = series[0]?.rows.map(row => row.date) || [];
       const metric = point.live?.metrics?.[metricKey] || {};
       const recent = Number(metric.current_7d_mean_estimated_trade_tonnes);
       const prior = Number(metric.prior_28d_mean_estimated_trade_tonnes);
-      const isRecent = windowKey === 'recent';
-      const selectedValue = isRecent ? recent : prior;
-      const compareValue = isRecent ? prior : recent;
-      const change = Number(metric.change_pct);
       const remaining = Number(metric.remaining_trade_volume_ratio);
-
-      metricButtons.forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokepointMetric === metricKey)));
-      windowButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.chokepointWindow === windowKey)));
-      destroyChart();
-      const comparedTypes = CHOKEPOINT_METRIC_TABS
-        .filter(([key]) => key !== 'all' && point.live?.metrics?.[key]);
-
-      if (metricKey === 'all') {
-        result.innerHTML = `
-          <div class="shipping-chart-wrap"><canvas id="shipping-observed-type-chart"></canvas></div>
-          <p class="shipping-note">막대는 PortWatch의 선종별 일평균 추정 교역량입니다. 컨테이너·벌크·탱커를 누르면 해당 선종의 일별 관측선으로 전환됩니다.</p>
-          <div class="shipping-observed-value">
-            <span>${isRecent ? '최근 7일 전체 일평균' : '직전 28일 전체 기준선'}</span>
-            <strong>${formatTonnes(selectedValue)}/일</strong>
-            <small>${isRecent ? `기준선 대비 ${formatPct(change, 1)}` : `최근 7일은 ${formatPct(change, 1)}`}</small>
-          </div>`;
-        observedChart = createChart(result, 'shipping-observed-type-chart', {
-          type: 'bar',
-          data: {
-            labels: comparedTypes.map(([key, label]) => label),
-            datasets: [
-              {
-                label: '최근 7일 일평균',
-                data: comparedTypes.map(([key]) => Number(point.live.metrics[key].current_7d_mean_estimated_trade_tonnes || 0) / 1e6),
-                backgroundColor: comparedTypes.map(([key]) => SHIP_TYPE_COLORS[key] || SHIP_TYPE_COLORS.other),
-                borderRadius: 5
-              },
-              {
-                label: '직전 28일 기준선',
-                data: comparedTypes.map(([key]) => Number(point.live.metrics[key].prior_28d_mean_estimated_trade_tonnes || 0) / 1e6),
-                backgroundColor: comparedTypes.map(([key]) => `${SHIP_TYPE_COLORS[key] || SHIP_TYPE_COLORS.other}66`),
-                borderRadius: 5
-              }
-            ]
-          },
-          options: standardOptions()
-        });
-        return;
-      }
-
-      // Current snapshots may still carry the old single representative
-      // history. It is safe only when its declared metric key matches the tab;
-      // never reuse an all-vessel line as a container/bulk/tanker line.
-      const publishedHistory = asArray(point.live?.metric_histories?.[metricKey]?.history);
-      const legacyMatchingHistory = point.live?.history_metric_key === metricKey
-        ? asArray(point.live?.history)
-        : [];
-      const history = (publishedHistory.length ? publishedHistory : legacyMatchingHistory)
-        .filter(row => finite(row?.value))
-        .slice(-35)
-        .map(row => ({ date: row.date, value: Number(row.value) }));
+      const anyPrior = series.some(item => item.hasPrior);
       result.innerHTML = `
-        ${history.length ? '<div class="shipping-chart-wrap"><canvas id="shipping-observed-type-chart"></canvas></div>' : '<div class="shipping-callout warning"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
+        ${series.length
+          ? '<div class="shipping-chart-wrap" style="grid-column:1 / -1"><canvas id="shipping-observed-type-chart"></canvas></div>'
+          : '<div class="shipping-callout warning" style="grid-column:1 / -1"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
+        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">PortWatch AIS 기반 선종별 일별 추정 교역량(톤)입니다. 선종 기준이라 원유·LNG 같은 품목으로 나눌 수 없습니다. 품목별 공식 수치는 아래 EIA 그래프를 보세요.${anyPrior ? '' : ' 52주 전 자료가 없어 점선은 그리지 않았습니다.'}</p>
         <div class="shipping-observed-value">
-          <span>${isRecent ? '최근 7일 일평균' : '직전 28일 기준선'}</span>
-          <strong>${formatTonnes(selectedValue)}/일</strong>
-          <small>${isRecent ? `기준선 대비 ${formatPct(change, 1)}` : `최근 7일은 ${formatPct(change, 1)}`}</small>
+          <span>${metricKey === 'all' ? '전체 선종 최근 7일 일평균' : `${escapeHtml(SHIP_TYPE_LABELS[metricKey] || metricKey)} 최근 7일 일평균`}</span>
+          <strong>${formatTonnes(recent)}/일</strong>
+          <small>직전 28일 대비 ${formatPct(metric.change_pct, 1)}</small>
+          ${finite(point.live?.metric_histories?.[metricKey]?.year_ago?.change_pct)
+            ? `<small>52주 전 같은 7일 대비 ${formatPct(point.live.metric_histories[metricKey].year_ago.change_pct, 1)}</small>` : ''}
         </div>
         <div class="shipping-observed-compare">
-          <span>${isRecent ? '직전 28일 기준선' : '최근 7일 일평균'}</span>
-          <b>${formatTonnes(compareValue)}/일</b>
-          ${isRecent && finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
+          <span>직전 28일 기준선</span>
+          <b>${formatTonnes(prior)}/일</b>
+          ${finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
         </div>`;
-      if (history.length) {
-        observedChart = createChart(result, 'shipping-observed-type-chart', {
-          type: 'line',
-          data: {
-            labels: history.map(row => String(row.date).slice(5)),
-            datasets: [{
-              label: `${SHIP_TYPE_LABELS[metricKey] || metricKey} 추정 교역량 (t/일)`,
-              data: history.map(row => row.value / 1e6),
-              borderColor: SHIP_TYPE_COLORS[metricKey] || SHIP_TYPE_COLORS.other,
-              backgroundColor: 'rgba(56, 189, 248, 0.10)',
-              borderWidth: 2,
-              pointRadius: 0,
-              fill: true,
-              tension: 0.25
-            }]
-          },
-          options: standardOptions()
-        });
-      }
+      if (!series.length) return;
+      const datasets = [];
+      series.forEach(item => {
+        const color = SHIP_TYPE_COLORS[item.key] || SHIP_TYPE_COLORS.other;
+        const label = SHIP_TYPE_LABELS[item.key] || item.key;
+        datasets.push(solidLine(label, item.rows.map(row => row.value), color));
+        if (item.hasPrior) datasets.push(dashedLine(`${label} 52주 전`, item.rows.map(row => row.prior), color));
+      });
+      observedChart = createChart(result, 'shipping-observed-type-chart', {
+        type: 'line',
+        data: { labels: dates.map(date => String(date).slice(5)), datasets },
+        options: lineChartOptions(value => `${formatTonnes(value)}/일`, { formatTick: formatTonnes })
+      });
     };
 
     metricButtons.forEach(button => button.addEventListener('click', () => {
       metricKey = button.dataset.chokepointMetric;
       update();
     }));
-    windowButtons.forEach(button => button.addEventListener('click', () => {
-      windowKey = button.dataset.chokepointWindow;
+    rangeButtons.forEach(button => button.addEventListener('click', () => {
+      days = Number(button.dataset.chokepointRange);
       update();
     }));
     update();
@@ -938,18 +933,60 @@
   ];
   const FREQUENCY_LABELS = { quarterly: '분기', monthly: '월' };
 
-  // One chart per publisher/frequency/unit, never on a date axis: these are
-  // period means, not daily observations, so bars rather than a line.
-  const eiaOilSeries = rows => {
-    const oil = rows.filter(row => row.publisher === 'EIA' && row.frequency === 'quarterly'
-      && row.unit === 'barrels_per_day' && OIL_SERIES.some(([key]) => key === row.cargo_category));
-    const periods = [...new Map(oil.map(row => [row.period_start, row.period])).entries()]
-      .sort(([a], [b]) => String(a).localeCompare(String(b)));
-    return { periods, oil };
+  const LNG_COLOR = '#f472b6';
+  const QUARTER_LABELS = ['1분기', '2분기', '3분기', '4분기'];
+  const MONTH_LABELS = Array.from({ length: 12 }, (_, index) => `${index + 1}월`);
+
+  // One chart per publisher/frequency/unit. Period means sit on a calendar
+  // axis (quarter or month) with the latest year solid and the year before
+  // dashed; a period nobody published stays a gap, never a zero. This is a
+  // separate chart from the daily AIS lines, so the two are never mixed.
+  const eiaQuarterly = rows => {
+    const eia = rows.filter(row => row.publisher === 'EIA' && row.frequency === 'quarterly');
+    return {
+      oil: eia.filter(row => row.unit === 'barrels_per_day' && OIL_SERIES.some(([key]) => key === row.cargo_category)),
+      lng: eia.filter(row => row.cargo_category === 'lng' && row.unit === 'billion_cubic_feet_per_day')
+    };
   };
 
+  const periodSlot = (start, frequency) => {
+    const month = Number(String(start).slice(5, 7));
+    return frequency === 'quarterly' ? Math.floor((month - 1) / 3) : month - 1;
+  };
+
+  const overlayChartData = (seriesList, frequency, scale = 1) => {
+    const labels = frequency === 'quarterly' ? QUARTER_LABELS : MONTH_LABELS;
+    const years = [...new Set(seriesList.flatMap(item => item.points)
+      .filter(point => finite(point.value)).map(point => String(point.period_start).slice(0, 4)))].sort();
+    const current = years[years.length - 1] || null;
+    const prior = years.length > 1 ? years[years.length - 2] : null;
+    const valuesFor = (points, year) => labels.map((_, index) => {
+      const hit = points.find(point => String(point.period_start).slice(0, 4) === year && periodSlot(point.period_start, frequency) === index);
+      return hit && finite(hit.value) ? Number(hit.value) / scale : null;
+    });
+    const datasets = seriesList.flatMap(item => [
+      current && { ...solidLine(`${item.label} ${current}`, valuesFor(item.points, current), item.color), borderWidth: item.width || 2, pointRadius: 3 },
+      prior && { ...dashedLine(`${item.label} ${prior}`, valuesFor(item.points, prior), item.color), pointRadius: 2 }
+    ].filter(Boolean));
+    return { labels, datasets, current, prior };
+  };
+
+  const overlayChart = (mount, canvasId, seriesList, frequency, { scale = 1, formatValue, formatTick }) => {
+    const { labels, datasets } = overlayChartData(seriesList, frequency, scale);
+    if (!datasets.some(dataset => dataset.data.some(value => value !== null))) return null;
+    return createChart(mount, canvasId, {
+      type: 'line',
+      data: { labels, datasets },
+      options: lineChartOptions(formatValue, { formatTick })
+    });
+  };
+
+  const formatManBarrels = value => `${formatNumber(value, 0)}만 배럴/일`;
+  const formatBcf = value => `${formatNumber(value, 1)} 십억 입방피트/일`;
+
   const otherSeriesTable = rows => {
-    const others = rows.filter(row => !(row.publisher === 'EIA' && row.frequency === 'quarterly' && row.unit === 'barrels_per_day'));
+    // EIA quarterly oil and LNG are drawn above; the table keeps the rest.
+    const others = rows.filter(row => !(row.publisher === 'EIA' && row.frequency === 'quarterly'));
     if (!others.length) return '';
     const body = [...others]
       .sort((a, b) => `${a.publisher}${a.cargo_category}${a.period_start}`.localeCompare(`${b.publisher}${b.cargo_category}${b.period_start}`))
@@ -981,7 +1018,8 @@
     const cards = asArray(official.reference_cards);
     const supplementary = asArray(official.supplementary_reference_cards);
     const rows = asArray(official.reported_series);
-    const { periods } = eiaOilSeries(rows);
+    const { oil, lng } = eiaQuarterly(rows);
+    const hasLng = lng.some(row => finite(row.value));
     const breakdownNote = official.commodity_breakdown_status === 'latest_sca_commodity_tonnes_not_connected'
       ? '<p class="shipping-note">수에즈운하청(SCA)의 최신 품목별 톤 통계는 아직 연결되지 않았습니다. 위 일별 그래프는 선종별 추정 교역량이며 품목별 실제 통계가 아닙니다.</p>'
       : '';
@@ -991,9 +1029,12 @@
         <p class="shipping-panel-kicker" style="margin-top:18px">월간 보조 참고 · 분기 구성비와 섞지 않음</p>
         <div class="shipping-kpi-grid">${supplementary.map(officialCard).join('')}</div>
         ${cardNotes(supplementary)}` : ''}
-      ${periods.length ? `
-        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기별 석유 일평균 · 백만 배럴/일</p>
+      ${oil.length ? `
+        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · 석유 전체 = 원유+콘덴세이트 + 석유제품 · 실선 올해, 점선 전년</p>
         <div class="shipping-chart-wrap"><canvas id="shipping-official-series-chart"></canvas></div>` : ''}
+      ${hasLng ? `
+        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · LNG (십억 입방피트/일 · 석유와 단위가 달라 따로 그림)</p>
+        <div class="shipping-chart-wrap" style="min-height:220px"><canvas id="shipping-official-lng-chart"></canvas></div>` : ''}
       ${otherSeriesTable(rows)}
       ${definitionRows([
         ['일별 원유 통과량', '산출하지 않음 · 검증된 일별 품목 자료 없음'],
@@ -1216,14 +1257,14 @@
         ['수집 상태', sourceStatusBadge(portSource.status)]
       ])}
       <p class="shipping-note">${escapeHtml(yanbu.warning_ko || '')}</p>
-      <p class="shipping-note">${escapeHtml(asArray(yanbu.ports).map(port => port.portname).join(' + '))} 합계 · 흐린 막대는 관측일이 모자란 달 ${sourceLink(portSource.source_url, 'PortWatch ↗')}</p>`
+      <p class="shipping-note">${escapeHtml(asArray(yanbu.ports).map(port => port.portname).join(' + '))} 합계 · 실선 올해, 점선 전년${asArray(yanbu.monthly).some(row => row.partial_month) ? ` · 관측일이 모자란 달: ${escapeHtml(asArray(yanbu.monthly).filter(row => row.partial_month).map(row => `${row.month}(${row.days_observed}일)`).join(', '))}` : ''} ${sourceLink(portSource.source_url, 'PortWatch ↗')}</p>`
       : '<div class="shipping-callout warning">얀부항 PortWatch 자료를 아직 받지 못했습니다.</div>';
 
     const comparison = bypass.official_crude_comparison || {};
     const hasComparison = asArray(comparison.series).some(series => asArray(series.points).length);
     const comparisonBody = hasComparison ? `
       <div class="shipping-chart-wrap"><canvas id="shipping-bypass-eia-chart"></canvas></div>
-      <p class="shipping-note">단위 백만 배럴/일 · EIA 분기 일평균 · 원유+콘덴세이트. ${escapeHtml(comparison.warning_ko || '')}</p>`
+      <p class="shipping-note">EIA 분기 일평균 · 원유+콘덴세이트 · 실선 올해, 점선 전년. ${escapeHtml(comparison.warning_ko || '')}</p>`
       : '<div class="shipping-callout warning">EIA 해협별 원유 자료를 아직 받지 못했습니다.</div>';
 
     return `
@@ -1240,45 +1281,16 @@
   };
 
   const drawBypassCharts = (mount, bypass) => {
-    const charts = [];
     const monthly = asArray(bypass?.yanbu_port_activity?.monthly);
-    if (monthly.length) {
-      charts.push(createChart(mount, 'shipping-bypass-yanbu-chart', {
-        type: 'bar',
-        data: {
-          labels: monthly.map(row => row.month),
-          datasets: [{
-            label: '탱커 수출 추정 (천 톤/일)',
-            data: monthly.map(row => finite(row.tanker_export_tonnes_per_day) ? Number(row.tanker_export_tonnes_per_day) / 1000 : null),
-            backgroundColor: monthly.map(row => row.partial_month ? '#818cf866' : '#818cf8'),
-            borderRadius: 4
-          }]
-        },
-        options: chartOptions({ unit: '천 톤/일' })
-      }));
-    }
+    const yanbu = overlayChart(mount, 'shipping-bypass-yanbu-chart', [{
+      label: '얀부 탱커 수출 추정', color: '#818cf8',
+      points: monthly.map(row => ({ period_start: `${row.month}-01`, value: row.tanker_export_tonnes_per_day }))
+    }], 'monthly', { formatValue: value => `${formatTonnes(value)}/일`, formatTick: formatTonnes });
     const series = asArray(bypass?.official_crude_comparison?.series).filter(row => asArray(row.points).length);
-    if (series.length) {
-      const periods = [...new Map(series.flatMap(row => row.points.map(item => [item.period_start, item.period]))).entries()]
-        .sort(([a], [b]) => String(a).localeCompare(String(b)));
-      charts.push(createChart(mount, 'shipping-bypass-eia-chart', {
-        type: 'bar',
-        data: {
-          labels: periods.map(([, label]) => label),
-          datasets: series.map(row => ({
-            label: row.label_ko,
-            data: periods.map(([start]) => {
-              const item = row.points.find(entry => entry.period_start === start);
-              return item && finite(item.value) ? Number(item.value) / 1e6 : null;
-            }),
-            backgroundColor: BYPASS_COLORS[row.chokepoint_id] || SHIP_TYPE_COLORS.other,
-            borderRadius: 4
-          }))
-        },
-        options: chartOptions({ unit: '백만 배럴/일', legend: true })
-      }));
-    }
-    return charts.filter(Boolean);
+    const crude = overlayChart(mount, 'shipping-bypass-eia-chart', series.map(row => ({
+      label: row.label_ko, color: BYPASS_COLORS[row.chokepoint_id] || SHIP_TYPE_COLORS.other, points: row.points
+    })), 'quarterly', { scale: 1e4, formatValue: formatManBarrels, formatTick: value => `${formatNumber(value, 0)}만` });
+    return [yanbu, crude].filter(Boolean);
   };
 
   let officialCharts = [];
@@ -1293,27 +1305,16 @@
       ${renderBypass(point.bypass, point)}
       ${renderReconstruction(point.reconstruction)}
     </div>`;
-    const { periods, oil } = eiaOilSeries(asArray(point.officialCargo?.reported_series));
-    if (periods.length) {
-      const chart = createChart(mount, 'shipping-official-series-chart', {
-        type: 'bar',
-        data: {
-          labels: periods.map(([, label]) => label),
-          datasets: OIL_SERIES.map(([key, label, color]) => ({
-            label,
-            data: periods.map(([start]) => {
-              const row = oil.find(item => item.cargo_category === key && item.period_start === start);
-              return row && finite(row.value) ? Number(row.value) / 1e6 : null;
-            }),
-            backgroundColor: color,
-            borderRadius: 4
-          }))
-        },
-        options: chartOptions({ unit: '백만 배럴/일', legend: true })
-      });
-      if (chart) officialCharts.push(chart);
-    }
-    officialCharts.push(...drawBypassCharts(mount, point.bypass));
+    const { oil, lng } = eiaQuarterly(asArray(point.officialCargo?.reported_series));
+    officialCharts.push(...[
+      overlayChart(mount, 'shipping-official-series-chart', OIL_SERIES.map(([key, label, color]) => ({
+        label, color, width: key === 'total_oil' ? 3 : 2,
+        points: oil.filter(row => row.cargo_category === key)
+      })), 'quarterly', { scale: 1e4, formatValue: formatManBarrels, formatTick: value => `${formatNumber(value, 0)}만` }),
+      overlayChart(mount, 'shipping-official-lng-chart', [{ label: 'LNG', color: LNG_COLOR, points: lng }], 'quarterly',
+        { formatValue: formatBcf, formatTick: value => formatNumber(value, 1) }),
+      ...drawBypassCharts(mount, point.bypass)
+    ].filter(Boolean));
     bindPopovers(mount);
   };
 
@@ -1345,7 +1346,10 @@
         ${definitionRows([
           [display.residual_label_ko || '잔존 추정 교역량', formatPct(remainingPct, 0)],
           ['최근 7일 추정 교역량', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-          ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`]
+          ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
+          ['52주 전 같은 7일 대비', finite(point.live?.metric_histories?.[point.metricKey]?.year_ago?.change_pct)
+            ? `${Number(point.live.metric_histories[point.metricKey].year_ago.change_pct) > 0 ? '+' : ''}${formatPct(point.live.metric_histories[point.metricKey].year_ago.change_pct, 0)}`
+            : '—']
         ])}
         <p class="shipping-note">기준일 ${formatDate(display.latest_date || point.live.latest_date)}${isStale ? ` · ${formatNumber(display.stale_days, 0)}일 경과` : ''}</p>
       </article>`;
@@ -1433,7 +1437,17 @@
             ${definitionRows([
               ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
               ['최근 7일 평균', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-              ['기준선 대비', shortfallPct === null ? '—' : `${formatPct(-shortfallPct, 1)} (잔존 ${formatPct((point.remaining || 0) * 100, 0)})`]
+              // Signed change, not the floored shortfall: a rise inside an
+              // already collapsed baseline must not read as "0%, 100% left".
+              ['직전 28일 대비', finite(point.metric.change_pct)
+                ? `${Number(point.metric.change_pct) > 0 ? '+' : ''}${formatPct(point.metric.change_pct, 1)}${shortfallPct > 0 ? ` (잔존 ${formatPct((point.remaining || 0) * 100, 0)})` : ''}`
+                : '—'],
+              ['52주 전 같은 7일 대비', (() => {
+                const yearAgo = point.live?.metric_histories?.[point.metricKey]?.year_ago;
+                return finite(yearAgo?.change_pct)
+                  ? `${Number(yearAgo.change_pct) > 0 ? '+' : ''}${formatPct(yearAgo.change_pct, 1)} (${formatTonnes(yearAgo.year_ago_7d_mean)}/일 → ${formatTonnes(yearAgo.recent_7d_mean)}/일)`
+                  : '비교 자료 없음';
+              })()]
             ])}
             <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명이 제공되지 않았습니다.')}</p>
             <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>
