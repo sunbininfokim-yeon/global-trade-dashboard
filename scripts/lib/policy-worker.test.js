@@ -41,6 +41,42 @@ test('explicit Congress scopes lookup and no exact hit never returns an unrelate
   const response = await w.fetch(new Request('https://test/api/us/search?q=119-hr-99999'), env, {});
   assert.deepEqual((await response.json()).items, []);
 });
+test('generic titles and short titles survive provider failure; unrelated substring titles are excluded',async()=>{
+ const w=worker(async url=>{
+  const u=new URL(url);
+  if(u.hostname==='embedding.test')return new Response('unavailable',{status:503});
+  if(!u.pathname.endsWith('/bills'))return Response.json([]);
+  return Response.json([
+   {bill_id:'119-s-100',title:'GENIUS Act',summary:'Stablecoin rules',congress_number:119},
+   {bill_id:'119-hr-101',title:'Payment Stablecoin Framework',summary:'This bill is known as the GENIUS Act.',congress_number:119},
+   {bill_id:'119-hr-102',title:'STABLE GENIUS Act',summary:'Tax matters'},
+   {bill_id:'119-hr-103',title:'STABLEGENIUS Act',summary:'Schools'},
+   {bill_id:'119-hr-104',title:'Digital Payment Market Framework',summary:'<p><strong>Digital Payment Market Framework or the GENIUS Act of 2026</strong></p><p>Payment rules.</p>'},
+  ]);
+ });
+ const r=await w.fetch(new Request('https://test/api/us/search?q=GENIUS%20Act'),{...env,POLICY_EMBEDDING_PROXY_URL:'https://embedding.test',POLICY_EMBEDDING_PROXY_TOKEN:'test'},{});
+ const data=await r.json();assert.equal(r.status,200);assert.equal(data.semantic_available,false);
+ assert.equal(data.items[0].id,'119-s-100');assert.equal(data.items[0].match_type,'exact_title');
+ assert.ok(data.items.some(x=>x.id==='119-hr-101'&&x.match_type==='summary_phrase'));
+ assert.ok(data.items.some(x=>x.id==='119-hr-104'&&x.relevance_rank===4&&x.match_type==='exact_summary_title'));
+ assert.ok(!data.items.some(x=>x.id==='119-hr-103'));
+ assert.ok(data.items.every(x=>x.summary===undefined));
+});
+test('single Korean topics use documented English aliases and include historical public laws',async()=>{
+ const w=worker(async url=>{
+  const u=new URL(url);assert.ok(!u.searchParams.toString().includes('embedding'));
+  if(u.pathname.endsWith('/bills'))return Response.json([{bill_id:'119-s-1',title:'Digital Asset Consumer Protection',summary:'Cryptocurrency trading'}]);
+  if(u.pathname.endsWith('/public_laws'))return Response.json([{public_law_id:'118-2',law_title:'Cryptocurrency Reporting Act',enacted_date:'2024-01-01'}]);
+  return Response.json([]);
+ });
+ const r=await w.fetch(new Request('https://test/api/us/search?q='+encodeURIComponent('암호화폐')),env,{});
+ const data=await r.json();assert.equal(r.status,200);assert.ok(data.items.some(x=>x.type==='public_law'));assert.ok(data.items.some(x=>x.type==='bill'));
+});
+test('no lexical evidence during provider outage reports unavailable rather than a false empty result',async()=>{
+ const w=worker(async()=>Response.json([]));
+ const r=await w.fetch(new Request('https://test/api/us/search?q=unknown'),env,{});
+ assert.equal(r.status,503);
+});
 test('bill detail sends lifecycle, committee dates and sources, without raw payload or embedding', async () => {
   const w = worker(async url => Response.json(new URL(url).pathname.endsWith('/bill_relations') ? [] : [{ ...structuredClone(fixture), embedding: [1], raw_source: { private: 'hidden' } }]));
   const response = await w.fetch(new Request('https://test/api/us/congress/bills/119-hr-3633'), env, {});

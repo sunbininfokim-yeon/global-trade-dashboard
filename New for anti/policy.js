@@ -272,7 +272,7 @@
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
     const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
     const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
-    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
+    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
@@ -326,7 +326,8 @@
     const date = item => Date.parse(item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '') || 0;
     const time = date(b) - date(a);
     const similarity = Number(b.similarity_score || 0) - Number(a.similarity_score || 0);
-    return order === 'latest' ? time || count || similarity : count || similarity || time;
+    const name = Number(b.relevance_rank || 0) - Number(a.relevance_rank || 0);
+    return order === 'latest' ? time || count || name || similarity : count || name || similarity || time;
   }
 
   function renderSearchResults(body) {
@@ -1443,7 +1444,7 @@
       const wrapper = sortButton.closest('.policy-condition-search');
       const lists = wrapper.querySelectorAll('.policy-search-group-rows');
       const order = sortButton.dataset.searchOrder;
-      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, relevance_rank: row.dataset.relevanceRank, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
       lists.forEach(list => [...list.querySelectorAll('[data-condition-row]')].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row)));
       wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
       return;
@@ -1597,4 +1598,3 @@
     committeeSlug,
   };
 })();
-
