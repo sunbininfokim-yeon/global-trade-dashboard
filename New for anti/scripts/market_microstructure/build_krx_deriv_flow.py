@@ -41,6 +41,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import gzip
 import json
 import sys
@@ -79,6 +80,67 @@ def _read_hive(base: Path) -> list[dict[str, Any]]:
                 except json.JSONDecodeError:
                     # One bad line must not void a month of observations.
                     continue
+    return rows
+
+
+# Raw 15007 exports Cursor drops at data/raw/krx_15007/<date>/<product>_<side>.csv.
+# The column names are KRX's own; values are 백만원.
+RAW_INVESTOR_COLUMNS = {"foreign": "외국인합계", "institution": "기관합계",
+                        "retail": "개인", "other_corp": "기타법인", "market_total": "전체"}
+
+
+def _read_raw_side(path: Path, day: str) -> dict[str, float] | None:
+    """One raw 15007 BUY or SELL export -> {investor: 백만원} for ``day``."""
+    try:
+        rows = list(csv.reader(path.read_text(encoding="utf-8-sig").splitlines()))
+    except (OSError, UnicodeDecodeError):
+        return None
+    header_index = next((i for i, r in enumerate(rows) if any(c.strip() == "일자" for c in r)), None)
+    if header_index is None:
+        return None
+    header = [c.replace(" ", "").strip() for c in rows[header_index]]
+    for row in rows[header_index + 1:]:
+        cells = dict(zip(header, row))
+        if (cells.get("일자") or "").strip().replace("/", "-") != day:
+            continue
+        out: dict[str, float] = {}
+        for inv, col in RAW_INVESTOR_COLUMNS.items():
+            text = (cells.get(col) or "").replace(",", "").strip()
+            try:
+                out[inv] = float(text)
+            except ValueError:
+                # A blank cell is an unavailable observation, not zero.
+                return None
+        return out
+    return None
+
+
+def _read_raw_15007(base: Path) -> list[dict[str, Any]]:
+    """Hive-shaped rows from the raw per-day 15007 exports.
+
+    Cursor publishes the raw CSVs every day but rebuilds the normalized hive
+    less often (it stopped at 2026-09-21 while the raw folder ran to 09-30).
+    These rows only fill (date, product) pairs the hive does not carry; the
+    hive stays authoritative wherever it has the day.
+    """
+    rows: list[dict[str, Any]] = []
+    if not base.is_dir():
+        return rows
+    for day_dir in sorted(base.iterdir()):
+        day = day_dir.name
+        if not day_dir.is_dir() or len(day) != 10:
+            continue
+        for product in PRODUCTS:
+            buy = _read_raw_side(day_dir / f"{product}_buy.csv", day)
+            sell = _read_raw_side(day_dir / f"{product}_sell.csv", day)
+            if buy is None or sell is None:
+                continue
+            row: dict[str, Any] = {"date": day, "product": product, "quality": "observed",
+                                   "collected_at": "", "origin": "raw_15007_csv"}
+            for inv in (*INVESTORS, "market_total"):
+                b, s = buy[inv] * 1_000_000, sell[inv] * 1_000_000
+                row[f"{inv}_buy_krw"], row[f"{inv}_sell_krw"], row[f"{inv}_net_krw"] = b, s, b - s
+            rows.append(row)
     return rows
 
 
@@ -292,6 +354,10 @@ def build(source: Path) -> tuple[dict[str, Any], dict[str, Any]]:
         raise FileNotFoundError(f"missing KRX 15007 hive: {flow_dir}")
 
     flow_rows = _read_hive(flow_dir)
+    have = {(r.get("date"), r.get("product")) for r in flow_rows}
+    raw_rows = [r for r in _read_raw_15007(source / "data" / "raw" / "krx_15007")
+                if (r["date"], r["product"]) not in have]
+    flow_rows += raw_rows
     fut_dir = normalized / "kospi200_futures_oi"
     opt_dir = normalized / "kospi200_option_oi"
     prog_dir = normalized / "kospi_program"
@@ -308,7 +374,7 @@ def build(source: Path) -> tuple[dict[str, Any], dict[str, Any]]:
                    | set(fut)
                    | {r["date"] for r in opt_rows if r.get("session") == "regular" and r.get("date")})
 
-    stats = {"flow_rows_read": len(flow_rows), "dates": len(dates), "inconsistent_cells": 0,
+    stats = {"flow_rows_read": len(flow_rows), "raw_csv_rows": len(raw_rows), "dates": len(dates), "inconsistent_cells": 0,
              "partial_rows": 0, "missing_product_days": 0, "program_inconsistent": 0}
     flow, partial_days = _build_flow(flow_rows, dates, stats)
     front = _build_front(fut, dates)

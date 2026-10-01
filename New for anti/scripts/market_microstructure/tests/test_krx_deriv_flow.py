@@ -181,6 +181,32 @@ class TestKrxDerivFlow(unittest.TestCase):
         self.assertEqual(stalled["dates"], merged["dates"])
         self.assertEqual(stalled["flow"]["futures"]["foreign_net"], [40, -25, 0])
 
+    def test_raw_csv_fills_days_the_hive_has_not_caught_up_to(self):
+        write_hive(self.norm / "krx_15007_k200_investor", [
+            flow_row("2026-09-21", p, foreign=(100, 60)) for p in ("futures", "options_call", "options_put")
+        ])
+        header = "﻿일자,기관 합계,기타법인,개인,외국인 합계,전체\n"
+        for day, foreign_buy in (("2026-09-21", 999), ("2026-09-22", 40)):
+            d = self.root / "data" / "raw" / "krx_15007" / day
+            d.mkdir(parents=True)
+            for p in ("futures", "options_call", "options_put"):
+                (d / f"{p}_buy.csv").write_text(header + f"{day},10,1,5,{foreign_buy},{foreign_buy + 16}\n", encoding="utf-8")
+                (d / f"{p}_sell.csv").write_text(header + f"{day},4,2,3,25,34\n", encoding="utf-8")
+        # A blank cell is no observation, not zero.
+        (d / "options_put_sell.csv").write_text(header + "2026-09-22,4,2,,25,34\n", encoding="utf-8")
+        payload, stats = build(self.root)
+        self.assertEqual(payload["dates"], ["2026-09-21", "2026-09-22"])
+        self.assertEqual(stats["raw_csv_rows"], 2)
+        fut = payload["flow"]["futures"]
+        # The hive keeps 09-21; the raw export only adds 09-22.
+        self.assertEqual(fut["foreign_net"], [40, 15])
+        self.assertEqual(fut["institution_net"], [-40, 6])
+        self.assertEqual(fut["retail_net"][1], 2)
+        self.assertEqual(fut["other_corp_net"][1], -1)
+        self.assertEqual(fut["market_total_buy"][1], 56)
+        self.assertEqual(payload["flow"]["options_put"]["foreign_net"], [40, None])
+        self.assertEqual(payload["last_dates"]["flow"], "2026-09-22")
+
     def test_missing_hive_raises(self):
         with self.assertRaises(FileNotFoundError):
             build(self.root)
