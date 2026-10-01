@@ -3334,9 +3334,9 @@ async function usSearch(env, f) {
 // verified only against stored title/summary, never inferred from cosine scores.
 const CONDITION_SOURCES = [
     {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
-    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,federal_register_url'},
-    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,federal_register_url'},
-    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,govinfo_url,congress_url'},
+    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,publication_date,signed_date,federal_register_url'},
+    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,publication_date,federal_register_url'},
+    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
 ];
 async function usConditionSearch(env,f){
     const candidates=new Map();let candidateLimited=false,semanticAvailable=false;

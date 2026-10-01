@@ -267,26 +267,27 @@
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
-    const conditionLabel = opts.preview && matches.length ? `<span class="policy-search-result-meta">${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</span>` : matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치${item.match_level === 'partial' ? ' · 일부 조건 일치' : ' · 전체 조건 일치'}</strong></span>
-      <span class="policy-search-result-meta">${matches.map(m => `${esc(m.term)}: ${m.matched ? '확인' : '미확인'}`).join(' · ')}</span>
-      ${!opts.compact ? matches.filter(m => m.matched).map(m => `<span class="policy-search-result-meta">${esc(m.term)} 근거 (${m.field === 'title' ? '제목' : '요약'}): ${esc(m.snippet)}</span>`).join('') : ''}` : '';
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
+    const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
+    const matchAttrs = matches.length ? ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-search-date="${esc(searchDate)}"` : '';
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
           ${conditionLabel}
+          ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
     if (item.type === 'regulation' || item.type === 'public_law') {
       return /^https:\/\//i.test(item.source_url || '')
-        ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
-        : `<div class="policy-search-result is-inert">${body}</div>`;
+        ? `<a class="policy-search-result"${matchAttrs} href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
+        : `<div class="policy-search-result is-inert"${matchAttrs}>${body}</div>`;
     }
     const tag = view ? 'button' : 'div';
     const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
-    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}${matchAttrs}>${body}</${tag}>`;
   };
 
   const searchGroupBlock = (group, opts = {}) => `
@@ -311,26 +312,19 @@
     if (body.search_mode !== 'conditions') return items.length
       ? groupSearchItems(items).map(g => searchGroupBlock(g, opts)).join('')
       : empty('검색 결과가 없습니다');
-    const total = body.conditions?.length || items[0]?.total_condition_count || 0;
-    const counts = Array.from({ length: total }, (_, i) => total - i);
-    const sorted = [...items].sort((a,b) => b.matched_condition_count - a.matched_condition_count);
-    const note = '<p class="policy-search-match-note">제목·요약에서 확인된 표현 기준입니다. 미확인은 원문에 없다는 뜻이 아닙니다.</p>';
-    const limits = body.candidate_limited || body.result_limited ? '<p class="policy-search-match-note">검색된 후보·표시 결과 기준이며, 전체 자료 수가 아닙니다.</p>' : '';
-    const degraded = body.semantic_available === false ? '<p class="policy-search-match-note">현재 단어·유사 표현 검색 결과만 표시합니다.</p>' : '';
-    const preview = sorted.length ? sorted.slice(0,3).map(item => searchResultRow(item, {compact:true, preview:true})).join('') : empty('확인된 조건 일치 결과가 없습니다');
+    const sorted = [...items].sort((a,b) => searchOrderCompare(a,b,'matches'));
     return `<div class="policy-condition-search">
-      <div class="policy-search-preview">${preview}${items.length > 3 ? `<span class="policy-search-preview-count">${esc(items.length)}건 중 상위 3건</span>` : ''}</div>
-      <details class="policy-search-details"><summary>세부 사항 확인 <span>조건별 결과 보기</span></summary>
-        <div class="policy-search-details-body">${note}${limits}${degraded}
-          ${counts.map(count => {
-            const subset = sorted.filter(i => i.matched_condition_count === count);
-            return `<details class="policy-search-count-group"><summary>${count === total ? `${esc(total)}개 모두 일치` : `${esc(total)}개 중 ${esc(count)}개 일치`} <span>${subset.length}건</span></summary>
-              <div class="policy-search-count-results">${subset.length ? groupSearchItems(subset).map(g => searchGroupBlock(g, opts)).join('') : empty('검색된 후보 중 이 조건 수에 해당하는 결과가 없습니다')}</div>
-            </details>`;
-          }).join('')}
-        </div>
-      </details>
+      ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">일치 많은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
+      <div class="policy-search-group-rows">${sorted.length ? sorted.map(item => searchResultRow(item, opts)).join('') : empty('확인된 조건 일치 결과가 없습니다')}</div>
+      ${!opts.compact ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
     </div>`;
+  }
+
+  function searchOrderCompare(a, b, order) {
+    const count = Number(b.matched_condition_count || 0) - Number(a.matched_condition_count || 0);
+    const date = item => Date.parse(item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '') || 0;
+    const time = date(b) - date(a);
+    return order === 'latest' ? time || count : count || time;
   }
 
   function renderSearchResults(body) {
@@ -1427,6 +1421,16 @@
   }
 
   function onClick(event) {
+    const sortButton = event.target.closest('[data-search-order]');
+    if (sortButton && host.contains(sortButton)) {
+      const wrapper = sortButton.closest('.policy-condition-search');
+      const list = wrapper.querySelector('.policy-search-group-rows');
+      const order = sortButton.dataset.searchOrder;
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, latest_action_date: row.dataset.searchDate });
+      [...list.children].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row));
+      wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
+      return;
+    }
     const searchWrap = host.querySelector('[data-search]');
     if (searchWrap && !searchWrap.contains(event.target)) {
       searchToken += 1; // drop any in-flight dropdown fetch now that it's dismissed
