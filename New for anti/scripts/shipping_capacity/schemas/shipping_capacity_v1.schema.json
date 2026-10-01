@@ -5,6 +5,79 @@
   "type": "object",
   "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "ui_delivery_contract", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
+    "official_cargo_monitor": {
+      "type": "object",
+      "required": ["contract_version", "generated_at", "status", "api_keys_required", "collection_policy", "sources", "chokepoints"],
+      "properties": {
+        "contract_version": {"const": "official-chokepoint-cargo-v1"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "status": {"enum": ["available", "cached", "unavailable"]},
+        "api_keys_required": {"type": "array", "maxItems": 0},
+        "sources": {
+          "type": "object",
+          "required": ["eia", "imo", "iea"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["status", "api_key_required", "source_url"],
+            "properties": {
+              "status": {"enum": ["fetched", "cached_fallback", "unavailable", "cached_offline", "not_fetched"]},
+              "api_key_required": {"const": false}
+            }
+          }
+        },
+        "chokepoints": {
+          "type": "object",
+          "required": ["hormuz", "suez"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["reference_cards", "supplementary_reference_cards", "reference_comparison_policy", "reported_series", "daily_chart", "daily_crude_barrels", "transit_assessment", "commodity_breakdown_status"],
+            "properties": {
+              "reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "warning_ko"]}},
+              "supplementary_reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "license", "attribution", "warning_ko"], "properties": {"publisher": {"const": "IEA"}, "frequency": {"const": "monthly"}, "cargo_category": {"const": "total_oil"}, "unit": {"const": "barrels_per_day"}, "value": {"type": "number", "minimum": 0}, "license": {"const": "CC BY 4.0"}}}},
+              "reference_comparison_policy": {"const": "group_by_publisher_period_scope_and_commodity_never_mix_composition"},
+              "reported_series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["cargo_category", "period_start", "period_end", "frequency", "statistic", "value", "unit", "geography_scope", "publisher", "source_url", "source_published_at", "retrieved_at", "evidence_class", "warning_ko"],
+                  "properties": {
+                    "cargo_category": {"enum": ["total_oil", "crude_condensate", "petroleum_products", "lng"]},
+                    "period_start": {"type": "string", "format": "date"},
+                    "period_end": {"type": "string", "format": "date"},
+                    "frequency": {"enum": ["quarterly", "monthly"]},
+                    "statistic": {"const": "period_daily_mean"},
+                    "value": {"type": ["number", "null"], "minimum": 0},
+                    "unit": {"enum": ["barrels_per_day", "billion_cubic_feet_per_day"]},
+                    "evidence_class": {"const": "institution_estimate"},
+                    "source_url": {"type": "string", "format": "uri"},
+                    "source_published_at": {"type": "string", "format": "date"},
+                    "retrieved_at": {"type": "string", "format": "date-time"}
+                  }
+                }
+              },
+              "daily_chart": {
+                "type": "object",
+                "required": ["source_path", "unit", "classification", "ship_type_keys", "warning_ko"],
+                "properties": {
+                  "unit": {"const": "estimated_trade_tonnes_per_day"},
+                  "classification": {"const": "ship_type_not_commodity"}
+                }
+              },
+              "daily_crude_barrels": {
+                "type": "object",
+                "required": ["status", "value", "unit"],
+                "properties": {"value": {"type": "null"}}
+              },
+              "transit_assessment": {
+                "type": "object",
+                "required": ["status", "success_probability", "insurance_availability", "advisory_references", "warning_ko"],
+                "properties": {"success_probability": {"type": "null"}}
+              }
+            }
+          }
+        }
+      }
+    },
     "schema_version": {"const": "shipping-capacity-v1"},
     "artifact_type": {"const": "screen_snapshot"},
     "bundle_id": {"type": "string", "minLength": 20, "maxLength": 20},

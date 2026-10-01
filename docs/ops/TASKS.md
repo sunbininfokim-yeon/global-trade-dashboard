@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| SHIPPING-CARGO-20261001 | 공식 호르무즈·수에즈 화물 참고 자동 수집 | codex | `New for anti/scripts/shipping_capacity/**` 모델·스키마·테스트, shipping bundle 데이터 | `codex/chokepoint-cargo-official-pipeline` | **review** | 실제 EIA 48개·IEA 월간 1개·IMO 경보 링크 수집, 98개 테스트·스키마 4종 통과. 미포착 역산은 질량수지/수입측 검증 연구이며 수치 미산출. UI·workflow·배포 제외. 원격 job은 GitHub Billing/한도 안내로 시작 차단. UI 인계는 `OFFICIAL_CARGO_CLAUDE_HANDOFF.md`. |
 | T01 | UI 기후 뷰 공용화 | claude | `app.js` 등 | `claude/ui-climate-generic` | **review** | PR #2. **main 머지 전 배포 안 됨** |
 | T02 | ops 문서·터미널 스크립트 | cursor | `docs/ops/**`, `tools/ops/**` | `cursor/optimize-audit` | **review** | 소유권 핸드오프 + AUDIT 포함 |
 | T07 | 전체 점검·최적화 1차 | cursor | app/ticker/assets/cron/audit | `cursor/optimize-audit` | **review** | 4개국 연결, 티커, icrisat ignore, audit 스크립트. 보고서 `docs/ops/AUDIT_2026-08-04.md` |

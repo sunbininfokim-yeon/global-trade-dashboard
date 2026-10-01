@@ -291,6 +291,8 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
         "generated_at": snapshot["generated_at"],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
     }
+    if "official_cargo_monitor" in snapshot:
+        screen["official_cargo_monitor"] = snapshot["official_cargo_monitor"]
     diagnostics = {
         "schema_version": "shipping-capacity-diagnostics-v1",
         "artifact_type": "model_diagnostics",
@@ -337,6 +339,8 @@ def golden_contract_failures(
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
+    if screen.get("official_cargo_monitor") != diagnostics.get("official_cargo_monitor"):
+        failures.append("official_cargo_monitor_screen_diagnostics_mismatch")
     bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
     if None in bundle_id_values or len(bundle_id_values) != 1:
         failures.append("bundle_id_mismatch")
