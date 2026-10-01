@@ -109,8 +109,9 @@ const stateIndex = (country) => new Map(
     (country?.ui_ready?.state_drilldown?.states || []).map((state) => [state.map_feature_code, state]),
 );
 
-export const renderCountryMap = async ({ host, country, selectedStateId = null, onStateOpen }) => {
+export const renderCountryMap = async ({ host, country, selectedStateId = null, isStale = null, onStateOpen }) => {
     const geo = withRelocatedExclaves(await loadAdmin1(country.iso3), country.iso3);
+    if (isStale?.()) return;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
     const layer = new host.layers.GeoJsonLayer({
         id: `elections-country-${country.iso3}`,

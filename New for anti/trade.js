@@ -247,8 +247,11 @@ const focusTradeCountry = (countryName) => {
  * actually pulls. Neither is visible in trade data.
  *
  * EIA reports these weekly, so the card carries the week-on-week change; a
- * level alone does not say whether a buffer is filling or draining.
+ * level alone does not say whether a buffer is filling or draining. Three
+ * years of weekly points is long enough to place the current level against
+ * a couple of full seasonal drawdown/refill cycles, not just the last one.
  */
+const EIA_STOCKS_WEEKS = 156;
 const EIA_STOCKS = [
     { id: 'spr', label_ko: '미국 전략비축유 (SPR)', series: 'WCSSTUS1',
       route: 'petroleum/stoc/wstk/data/' },
@@ -263,7 +266,7 @@ const loadEiaStocks = async () => {
     for (const s of EIA_STOCKS) {
         try {
             const r = await fetch(
-                `/api/macro?source=eia&route=${encodeURIComponent(s.route)}&seriesId=${s.series}`);
+                `/api/macro?source=eia&route=${encodeURIComponent(s.route)}&seriesId=${s.series}&length=${EIA_STOCKS_WEEKS}`);
             if (!r.ok) continue;
             const j = await r.json();
             const rows = j?.response?.data || j?.data || [];
@@ -273,7 +276,7 @@ const loadEiaStocks = async () => {
             if (!Number.isFinite(latest)) continue;
             // rows arrive newest-first from EIA; the sparkline wants
             // oldest-first, so reverse after taking the most recent weeks.
-            const history = rows.slice(0, 26)
+            const history = rows.slice(0, EIA_STOCKS_WEEKS)
                 .map((row) => ({ period: row.period, value: Number(row.value) }))
                 .filter((row) => Number.isFinite(row.value))
                 .reverse();
@@ -460,16 +463,22 @@ const renderEmergencyStocks = async () => {
     // previous call already left behind instead of stacking a duplicate.
     host.querySelector('.stock-card')?.remove();
     const weeks = stocks[0]?.history?.length || 0;
+    // 156 weekly points reads as "156주" if spelled out literally -- round to
+    // years once there's enough of them to actually span some, and only fall
+    // back to a week count for a series EIA hasn't reported that far back for.
+    const span = weeks >= 104 ? `${Math.round(weeks / 52)}년` : `${weeks}주`;
     host.insertAdjacentHTML('beforeend', `
         <div class="stock-card">
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
+                const stockSpan = s.history.length >= 104
+                    ? `${Math.round(s.history.length / 52)}년` : `${s.history.length}주`;
                 const chart = sparkChartHtml({
                     points: s.history.map((h) => ({ label: h.period, value: h.value / 1000 })),
                     unit: 'M bbl',
                     formatValue: (v) => v.toFixed(1),
-                    ariaLabel: `최근 ${s.history.length}주 추이`,
+                    ariaLabel: `최근 ${stockSpan} 추이`,
                 });
                 return `<div class="stock-item">
                     <div class="stock-row${chart ? ' is-clickable' : ''}"
@@ -483,7 +492,7 @@ const renderEmergencyStocks = async () => {
                     ${chart}
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${weeks}주 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${span} 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
         </div>`);
     wireSparkCharts(host);
 };
@@ -687,7 +696,7 @@ const loadCommodityReportSnapshot = async () => {
  * subtly different ranking: the country's own reports first, then the world
  * balance sheets every country on that commodity inherits.
  */
-const reportsFromSnapshot = (doc, commodity, iso3, limit) => {
+const reportsFromSnapshot = (doc, commodity, iso3) => {
     const buckets = doc?.index?.[commodity];
     if (!buckets) return [];
     const byId = new Map((doc.items || []).map((it) => [it.id, it]));
@@ -696,44 +705,80 @@ const reportsFromSnapshot = (doc, commodity, iso3, limit) => {
     if (iso3) push(buckets[iso3]);
     push(buckets._global);
     if (!iso3) Object.entries(buckets).forEach(([b, rows]) => { if (b !== '_global') push(rows); });
-    return ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    return ids.map((id) => byId.get(id)).filter(Boolean);
 };
 
-const loadCommodityReports = async (commodity, iso3, limit = 6) => {
-    const key = `${commodity}|${iso3 || ''}`;
-    if (commodityReportCache.has(key)) return commodityReportCache.get(key);
+// A window keeps everything inside the pipeline's archive horizon -- no fixed
+// count -- so the panel fetches it a chunk at a time and asks for the next
+// chunk when the reader pages past the last one it has.
+const REPORTS_CHUNK = 60;
 
-    let window_ = null;
+/** One chunk of a window: { items, label, total } (total = the whole window). */
+const fetchReportsChunk = async (commodity, iso3, offset, limit = REPORTS_CHUNK) => {
     try {
-        const q = new URLSearchParams({ commodity, limit: String(limit) });
+        const q = new URLSearchParams({ commodity, limit: String(limit), offset: String(offset) });
         if (iso3) q.set('country', iso3);
         const res = await fetch(`/api/commodity-reports?${q}`);
         if (res.ok) {
             const doc = await res.json();
-            window_ = { items: doc.items || [], label: doc.commodity_label || commodity };
+            const items = doc.items || [];
+            // A Worker from before `total` existed answers one capped page.
+            const total = Number.isFinite(doc.total) ? doc.total : offset + items.length;
+            return { items, label: doc.commodity_label || commodity, total };
         }
     } catch (err) {
         console.warn('[commodity-reports] api unavailable, falling back to snapshot', err);
     }
-    if (window_ === null) {
-        const doc = await loadCommodityReportSnapshot();
-        window_ = {
-            items: reportsFromSnapshot(doc, commodity, iso3, limit),
-            label: doc?.commodity_labels?.[commodity] || commodity,
-        };
-    }
+    const doc = await loadCommodityReportSnapshot();
+    const all = reportsFromSnapshot(doc, commodity, iso3);
+    return {
+        items: all.slice(offset, offset + limit),
+        label: doc?.commodity_labels?.[commodity] || commodity,
+        total: all.length,
+    };
+};
+
+const loadCommodityReports = async (commodity, iso3) => {
+    const key = `${commodity}|${iso3 || ''}`;
+    if (commodityReportCache.has(key)) return commodityReportCache.get(key);
+    const first = await fetchReportsChunk(commodity, iso3, 0);
+    // `breaks`: where each later chunk starts. Pages never straddle one, so
+    // fetching a chunk adds pages after the last instead of re-cutting it.
+    const window_ = { commodity, iso3, ...first, breaks: [], loading: null };
     commodityReportCache.set(key, window_);
     return window_;
+};
+
+/** Append the window's next chunk in place; resolves once it has landed. */
+const loadMoreReports = (window_) => {
+    if (window_.items.length >= window_.total) return Promise.resolve();
+    if (!window_.loading) {
+        window_.loading = fetchReportsChunk(window_.commodity, window_.iso3, window_.items.length)
+            .then((next) => {
+                const seen = new Set(window_.items.map((it) => it.id));
+                const fresh = next.items.filter((it) => !seen.has(it.id));
+                if (fresh.length) window_.breaks.push(window_.items.length);
+                window_.items.push(...fresh);
+                // An empty chunk means the snapshot moved under us; stop asking.
+                window_.total = fresh.length ? Math.max(next.total, window_.items.length) : window_.items.length;
+            })
+            .finally(() => { window_.loading = null; });
+    }
+    return window_.loading;
 };
 
 // "2026-08-12T16:00:00+00:00" -> "2026.08.12". Some of these feeds (NASS's
 // ASB/news syndication) return a rolling archive years deep, not just this
 // week -- dropping the year made a 2020 notice and a 2026 one look identical.
 // A dateless list-page row shows nothing rather than a fabricated today.
-const reportDate = (iso) => {
+// A GAIN page that carries no date is placed by the /YYYY/MM/ in its URL
+// (published_precision "month"); printing its day would invent one.
+const reportDate = (iso, precision) => {
     if (!iso) return '';
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return '';
+    const ym = `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    if (precision === 'month') return ym;
     return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 };
 
@@ -745,7 +790,7 @@ const reportRowHtml = (item) => {
     const title = escapeFeedText(item.title?.ko || item.title?.original || '');
     const agency = escapeFeedText(item.agency_ko || item.agency || '');
     const summary = String(item.summary || '').trim();
-    const date = reportDate(item.published_at);
+    const date = reportDate(item.published_at, item.published_precision);
     // A world balance sheet sitting on a country's board should say so --
     // otherwise "world wheat production at a record" reads as a claim about
     // the country whose window it is on.
@@ -784,11 +829,166 @@ const reportRowHtml = (item) => {
  * section (not stacked under the trade ranking) so a busy day's reports don't
  * push the ranking below the fold.
  */
+// Paging state for the reports panel: which window is on screen, its rows,
+// and the page being read. Rebuilt whenever renderCommodityReports runs.
+let reportsPager = null;
+
+// Space the heading, the pager and the source note take around the list.
+const REPORTS_CHROME_PX = 96;
+const REPORTS_MIN_LIST_PX = 220;
+const REPORTS_MAX_PER_PAGE = 10;
+
+/**
+ * Split the rows into pages that fit the panel as the reader's screen has it.
+ *
+ * Rows differ in height (one-line headline vs. headline + two-line summary),
+ * so a fixed "N per page" either leaves a gap or pushes the pager below the
+ * fold. The rows are laid out once, off screen, at the panel's real width,
+ * and each page takes as many as fit the height left in the right pane.
+ */
+const paginateReports = (slot, items, breaks = []) => {
+    const pane = document.getElementById('right-pane');
+    const top = pane ? slot.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop : 0;
+    const paneH = pane ? pane.clientHeight : window.innerHeight;
+    const avail = Math.max(REPORTS_MIN_LIST_PX, paneH - top - REPORTS_CHROME_PX);
+
+    const probe = document.createElement('ul');
+    probe.className = 'rpt-list';
+    probe.style.cssText = `position:absolute;visibility:hidden;left:-9999px;top:0;width:${slot.clientWidth || 300}px;`;
+    probe.innerHTML = items.map(reportRowHtml).join('');
+    slot.appendChild(probe);
+    const heights = [...probe.children].map((li) => li.getBoundingClientRect().height || 72);
+    probe.remove();
+
+    const pages = [];
+    const cut = new Set(breaks);
+    let cur = [];
+    let used = 0;
+    items.forEach((_, i) => {
+        const h = heights[i];
+        if (cur.length && (cut.has(i) || used + h > avail || cur.length >= REPORTS_MAX_PER_PAGE)) {
+            pages.push(cur);
+            cur = [];
+            used = 0;
+        }
+        cur.push(i);
+        used += h;
+    });
+    if (cur.length) pages.push(cur);
+    return pages;
+};
+
+// "‹ 1 2 3 4 … 9 ›": every page when there are few, else the first, the last
+// and the two around the current one. `hasMore` means the window holds more
+// than has been fetched: "›" stays live on the last page and fetches it.
+const reportsPagerHtml = (count, current, hasMore = false) => {
+    if (count <= 1 && !hasMore) return '';
+    const shown = new Set([0, count - 1, current - 1, current, current + 1]);
+    const parts = [];
+    let gap = false;
+    for (let p = 0; p < count; p += 1) {
+        if (count <= 7 || shown.has(p)) {
+            parts.push(`<button type="button" class="rpt-page${p === current ? ' is-on' : ''}" data-page="${p}"
+                ${p === current ? 'aria-current="page"' : ''} aria-label="${p + 1}페이지">${p + 1}</button>`);
+            gap = false;
+        } else if (!gap) {
+            parts.push('<span class="rpt-page-gap">…</span>');
+            gap = true;
+        }
+    }
+    if (hasMore) parts.push('<span class="rpt-page-gap" title="이전 보고서가 더 있습니다">…</span>');
+    return `<nav class="rpt-pager" aria-label="보고서 페이지">
+        <button type="button" class="rpt-page rpt-page-step" data-page="${current - 1}" ${current === 0 ? 'disabled' : ''} aria-label="이전 페이지">‹</button>
+        ${parts.join('')}
+        <button type="button" class="rpt-page rpt-page-step" data-page="${current + 1}" ${current === count - 1 && !hasMore ? 'disabled' : ''} aria-label="다음 페이지">›</button>
+    </nav>`;
+};
+
+const paintReportsPage = () => {
+    const live = document.getElementById('reports-slot');
+    if (!live || !reportsPager) return;
+    const { win, label, who } = reportsPager;
+    const { items, total } = win;
+    const hasMore = items.length < total;
+    const pages = paginateReports(live, items, win.breaks);
+    // Keep the reader on the same reports after a resize re-cuts the pages.
+    const anchor = reportsPager.firstShown ?? 0;
+    let page = pages.findIndex((idx) => idx.includes(anchor));
+    if (page < 0) page = 0;
+    reportsPager.page = page;
+    reportsPager.firstShown = pages[page][0];
+    const rows = pages[page].map((i) => reportRowHtml(items[i])).join('');
+    live.innerHTML = `
+        <div class="rpt-card">
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
+            <ul class="rpt-list">${rows}</ul>
+            ${reportsPagerHtml(pages.length, page, hasMore)}
+            <p class="rpt-note">공식 기관 발표 · 최근 12주 총 ${total}건 · 제목을 누르면 발간처 원문으로 이동</p>
+        </div>`;
+
+    live.querySelectorAll('.rpt-more').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const body = btn.previousElementSibling;
+            const opened = body?.classList.toggle('is-clamped') === false;
+            btn.setAttribute('aria-expanded', String(opened));
+            btn.textContent = opened ? '요약 접기' : '요약 더보기';
+        });
+    });
+    live.querySelectorAll('.rpt-page[data-page]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+            const target = Number(btn.dataset.page);
+            if (!Number.isInteger(target) || target < 0) return;
+            if (target >= pages.length) {
+                // Past the last fetched page: pull the next chunk, then open
+                // on its first report.
+                if (!hasMore) return;
+                const pager = reportsPager;
+                const from = items.length;
+                btn.disabled = true;
+                btn.textContent = '…';
+                try {
+                    await loadMoreReports(win);
+                } catch (err) {
+                    console.warn('[commodity-reports] next chunk failed', err);
+                }
+                if (reportsPager !== pager) return;
+                if (win.items.length > from) pager.firstShown = from;
+                paintReportsPage();
+            } else {
+                reportsPager.firstShown = pages[target][0];
+                paintReportsPage();
+            }
+            live.querySelector('.rpt-card')?.scrollIntoView({ block: 'nearest' });
+        });
+    });
+};
+
+let reportsResizeTimer = null;
+window.addEventListener('resize', () => {
+    clearTimeout(reportsResizeTimer);
+    reportsResizeTimer = setTimeout(paintReportsPage, 150);
+});
+
+/**
+ * Fill the standalone reports panel (right pane, #commodity-reports-panel).
+ * `countryName` null means the world view.
+ *
+ * Renders into a slot the panel HTML already reserved rather than appending,
+ * so a slow fetch can never land between other cards -- the ordering bug the
+ * rig-count cards had to be chained to avoid. The panel is its own right-pane
+ * section (not stacked under the trade ranking) so a busy day's reports don't
+ * push the ranking below the fold.
+ *
+ * The window carries every report of the last 12 weeks; the panel shows as
+ * many as fit the reader's screen, pages through the rest (1 2 3 4 …), and
+ * fetches further chunks when the reader pages past what it has.
+ */
 const renderCommodityReports = async (commodity, countryName = null) => {
     const slot = document.getElementById('reports-slot');
     if (!slot || !commodity) return;
     const iso3 = countryName ? countryCode(countryName) : null;
-    const { items, label } = await loadCommodityReports(commodity, iso3);
+    const win = await loadCommodityReports(commodity, iso3);
+    const { items, label } = win;
 
     // The panel may have been rebuilt, the commodity switched, or the focus
     // moved to another country while this was in flight.
@@ -797,6 +997,7 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
     if (!items.length) {
         live.innerHTML = '';
+        reportsPager = null;
         panelHide(commodityReportsPanelEl);
         // Stage 2, no RSS for this commodity+country -- no right dashboard at
         // all, not just an empty reports card (world view already has none).
@@ -810,21 +1011,8 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     if (countryName) setRightDashboardVisible(true);
     panelShow(commodityReportsPanelEl);
     const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
-    live.innerHTML = `
-        <div class="rpt-card">
-            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
-            <ul class="rpt-list">${items.map(reportRowHtml).join('')}</ul>
-            <p class="rpt-note">공식 기관 발표 · 제목을 누르면 발간처 원문으로 이동</p>
-        </div>`;
-
-    live.querySelectorAll('.rpt-more').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const body = btn.previousElementSibling;
-            const opened = body?.classList.toggle('is-clamped') === false;
-            btn.setAttribute('aria-expanded', String(opened));
-            btn.textContent = opened ? '요약 접기' : '요약 더보기';
-        });
-    });
+    reportsPager = { win, label, who, page: 0, firstShown: 0 };
+    paintReportsPage();
 };
 
 // NOTICE FOR ANY BRANCH MERGING HERE FROM A STALE BASE: this function and
@@ -1009,7 +1197,7 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     row.classList.toggle('is-expanded');
 });
 
-// SPR / Cushing rows open their 12-week sparkline underneath.
+// SPR / Cushing rows open their 3-year weekly sparkline underneath.
 const toggleStockRow = (row) => {
     row.classList.toggle('is-open');
     row.closest('.stock-item')?.classList.toggle('is-open');

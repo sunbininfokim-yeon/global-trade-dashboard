@@ -1,4 +1,4 @@
-# Investor × price levels (KOSPI) — 2026-09-24
+# Investor × price levels (KOSPI) — 2026-09-26
 
 무조건 실측 공개 데이터. demo/시드/합성/프록시 숫자 금지. 실패=missing.
 
