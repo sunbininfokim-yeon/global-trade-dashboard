@@ -26,6 +26,7 @@ running month dated by its last observation (`monthly_last`).
 from __future__ import annotations
 
 import csv
+import http.client
 import io
 import json
 import time
@@ -79,10 +80,10 @@ def _get(url: str, *, data: bytes | None = None, headers: dict[str, str] | None 
             req = urllib.request.Request(url, data=data, headers={"User-Agent": UA, **(headers or {})})
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read()
-        except (urllib.error.URLError, TimeoutError) as exc:
-            last = exc
+        except (urllib.error.URLError, TimeoutError, http.client.IncompleteRead, ConnectionError) as exc:
+            last = exc                               # IncompleteRead: a large CSV cut short mid-transfer
             time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"{url.split('?')[0][:90]}: {last}")
+    raise RuntimeError(f"{url.split('?')[0][:90]}: {type(last).__name__}")
 
 
 def _num(s: Any) -> float | None:
@@ -195,9 +196,12 @@ def read_bcb(code: int, start: str = "01/01/2014") -> Points:
                        f"&dataInicial=01/01/{y0}&dataFinal=31/12/{y1}")
             try:
                 rows = json.loads(raw)
-                break
+                if isinstance(rows, list):
+                    break
+                rows = None                          # an error object, not observations: ask again
             except ValueError:
-                time.sleep(3 * (attempt + 1))
+                pass
+            time.sleep(3 * (attempt + 1))
         if rows is None:
             raise RuntimeError(f"BCB SGS {code} {y0}-{y1}: not JSON after retries")
         for o in rows:
@@ -367,7 +371,7 @@ def read_tesouro_prefixado_10y() -> Points:
     maturity is nearest to ten years, on the last base date of each month (Tesouro Direto buy rate)."""
     url = ("https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/"
            "796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv")
-    text = _get(url, timeout=300).decode("latin-1")
+    text = _get(url, timeout=300, tries=4).decode("latin-1")
     by_day: dict[str, list[tuple[date, float]]] = {}
     for row in csv.reader(io.StringIO(text), delimiter=";"):
         if len(row) < 4 or row[0] != "Tesouro Prefixado com Juros Semestrais":
@@ -380,7 +384,7 @@ def read_tesouro_prefixado_10y() -> Points:
     last: dict[str, tuple[str, float]] = {}
     for day in sorted(by_day):
         base = date.fromisoformat(day)
-        target = base.replace(year=base.year + 10)
+        target = base + timedelta(days=3652)            # ten years on (Feb 29 has no replace(year+10))
         mat, v = min(by_day[day], key=lambda x: abs((x[0] - target).days))
         if abs((mat - target).days) <= 730:
             last[day[:7]] = (day, v)
