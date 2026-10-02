@@ -1,0 +1,97 @@
+name: Weekly Yield Forecasts (Australia, Vietnam, South Africa, Ethiopia, Uganda)
+
+# These five had no refresh and sat at their early-August values. All read
+# NASA POWER. South Africa, Ethiopia and Uganda were built on Earth Engine
+# (CHIRPS + ERA5-Land), which needs a Google credential CI does not hold, so
+# they now use POWER too (CLIMATE_SOURCE=power, the default; "gee" switches
+# back locally). A failing country fails the job but the others still commit.
+# Left out: Indonesia (every crop publishes the trend only, so a rerun changes
+# nothing but the timestamp) and Thailand (its weather adjustment carries a
+# fixed intercept bias; add it once the model is retrained).
+on:
+  schedule:
+    # Sat 04:02 KST (Fri 19:02 UTC) -- after the rest of the Friday batch,
+    # in the free slot between sst_refresh (18:18/18:40) and update_data (19:24).
+    - cron: '2 19 * * 5'
+  workflow_dispatch:
+
+concurrency:
+  group: yield-forecast-more-countries
+  cancel-in-progress: false
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn requests openpyxl
+
+      - name: Australia
+        id: australia
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m australia.run_forecast
+
+      - name: Vietnam
+        id: vietnam
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m vietnam.run_forecast
+
+      - name: South Africa
+        id: south_africa
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m south_africa.run_forecast
+
+      - name: Ethiopia
+        id: ethiopia
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m ethiopia.run_forecast
+
+      - name: Uganda
+        id: uganda
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m uganda.run_forecast
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          M="New for anti/scripts/yield_model"
+          git add "New for anti/public/data/"{australia,vietnam,south_africa,ethiopia,uganda}_yield_forecast.json \
+                  "$M"/{south_africa,ethiopia,uganda}/training "$M"/{south_africa,ethiopia,uganda}/models
+          git commit -m "chore: weekly yield forecast refresh (AU, VN, ZA, ET, UG)" || exit 0
+          # Other Friday jobs commit to main too; rebase onto theirs and retry
+          # rather than dropping the week's refresh on a rejected push.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
+
+      - name: Fail if any country failed
+        if: >-
+          steps.australia.outcome == 'failure' || steps.vietnam.outcome == 'failure' ||
+          steps.south_africa.outcome == 'failure' || steps.ethiopia.outcome == 'failure' ||
+          steps.uganda.outcome == 'failure'
+        run: |
+          echo "australia=${{ steps.australia.outcome }} vietnam=${{ steps.vietnam.outcome }}"
+          echo "south_africa=${{ steps.south_africa.outcome }} ethiopia=${{ steps.ethiopia.outcome }} uganda=${{ steps.uganda.outcome }}"
+          exit 1

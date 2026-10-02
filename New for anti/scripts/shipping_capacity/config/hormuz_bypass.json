@@ -1,0 +1,117 @@
+{
+  "status": "manual_source_cited_log",
+  "reviewed_at": "2026-10-01",
+  "review_max_age_days": 45,
+  "recent_event_window_days": 60,
+  "route": {
+    "label_ko": "호르무즈 우회로 · 사우디 동서 파이프라인 → 홍해",
+    "note_ko": "페르시아만 유전의 원유가 동서 파이프라인으로 홍해 얀부에 와서 선적된다. 아시아행은 남쪽 바브엘만데브를, 유럽행은 북쪽 수에즈 운하·SUMED를 지난다. UAE의 우회로(ADCOP → 푸자이라)는 오만만으로 나가므로 홍해와 무관하다. 파이프라인 정격 용량은 실제 유량이 아니라 적지 않는다.",
+    "segments": [
+      {"id": "gulf_fields", "label_ko": "페르시아만 유전 (아브카이크)", "type": "origin"},
+      {"id": "east_west_pipeline", "label_ko": "동서 원유 파이프라인", "type": "pipeline"},
+      {"id": "yanbu", "label_ko": "얀부 선적 (홍해)", "type": "port"},
+      {"id": "south_exit", "label_ko": "남쪽 출구: 바브엘만데브 → 아시아", "type": "chokepoint", "chokepoint_id": "bab_el_mandeb"},
+      {"id": "north_exit", "label_ko": "북쪽 출구: 수에즈 운하·SUMED → 유럽", "type": "chokepoint", "chokepoint_id": "suez"}
+    ],
+    "context_facts": [
+      {
+        "label_ko": "사우디는 호르무즈 봉쇄 대안으로 얀부 선적을 약 100만 배럴/일에서 490만 배럴/일로 늘렸다(보도).",
+        "evidence_class": "press_report",
+        "sources": [
+          {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+        ]
+      }
+    ]
+  },
+  "yanbu_ports": [
+    {"portid": "port570", "portname": "Yanbu (King Fahd Port)"},
+    {"portid": "port1408", "portname": "Yanbu (Yanbu city)"}
+  ],
+  "threat_events": [
+    {
+      "date": "2026-07", "date_precision": "month",
+      "event_ko": "후티 반군, 사우디아라비아 해상 전면 봉쇄 선언",
+      "location_ko": "홍해·바브엘만데브",
+      "affects": ["yanbu", "south_exit"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Council on Foreign Relations", "url": "https://www.cfr.org/articles/another-hormuz-the-red-seas-threat-to-the-global-economy"},
+        {"publisher": "Euronews", "published_at": "2026-08-24", "url": "https://www.euronews.com/2026/08/24/houthis-claim-strike-on-saudi-tanker-in-latest-red-sea-escalation"}
+      ]
+    },
+    {
+      "date": "2026-07-22", "date_precision": "day",
+      "event_ko": "유조선 2척(Encelia·Layla)에 드론·순항·탄도미사일 공격",
+      "location_ko": "홍해",
+      "affects": ["south_exit"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+      ]
+    },
+    {
+      "date": "2026-07-23", "date_precision": "day",
+      "event_ko": "IMO 사무총장, 홍해 상선 공격 재개를 규탄하는 성명",
+      "location_ko": "홍해",
+      "affects": ["south_exit"],
+      "evidence_class": "official_statement",
+      "sources": [
+        {"publisher": "IMO", "url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/statement-on-recent-attacks-in-the-red-sea.aspx"}
+      ]
+    },
+    {
+      "date": "2026-07-28", "date_precision": "day",
+      "event_ko": "사우디 유조선 Ghazal에 탄도미사일 공격(명중 안 됨)",
+      "location_ko": "홍해",
+      "affects": ["yanbu"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+      ]
+    },
+    {
+      "date": "2026-08-11", "date_precision": "day",
+      "event_ko": "이집트 화물선 Tihamah 탄도미사일 피격, 선원 4명 사망",
+      "location_ko": "바브엘만데브 해협",
+      "affects": ["south_exit"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"},
+        {"publisher": "IMO", "url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/statement-on-deadly-ship-attack-in-the-red-sea.aspx"}
+      ]
+    },
+    {
+      "date": "2026-08-24", "date_precision": "day",
+      "event_ko": "얀부 서쪽 63해리에서 사우디 유조선 탄도미사일 피격·화재 (UKMTO 피격 확인 보도)",
+      "location_ko": "얀부 앞바다",
+      "affects": ["yanbu"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Euronews", "published_at": "2026-08-24", "url": "https://www.euronews.com/2026/08/24/houthis-claim-strike-on-saudi-tanker-in-latest-red-sea-escalation"},
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+      ]
+    },
+    {
+      "date": "2026-09", "date_precision": "month",
+      "event_ko": "후티 반군, 모카항과 페림섬·하니시 제도 장악",
+      "location_ko": "바브엘만데브 해협",
+      "affects": ["south_exit"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Council on Foreign Relations", "url": "https://www.cfr.org/articles/another-hormuz-the-red-seas-threat-to-the-global-economy"},
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+      ]
+    },
+    {
+      "date": "2026-09", "date_precision": "month",
+      "event_ko": "동서 원유 파이프라인 드론 공격, 일시 가동 중단",
+      "location_ko": "사우디 동서 파이프라인",
+      "affects": ["east_west_pipeline"],
+      "evidence_class": "press_report",
+      "sources": [
+        {"publisher": "Council on Foreign Relations", "url": "https://www.cfr.org/articles/another-hormuz-the-red-seas-threat-to-the-global-economy"},
+        {"publisher": "Africa Center for Strategic Studies", "published_at": "2026-09-22", "url": "https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"}
+      ]
+    }
+  ]
+}

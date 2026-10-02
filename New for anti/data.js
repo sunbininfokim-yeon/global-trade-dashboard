@@ -249,7 +249,16 @@
             { symbol: "UK10Y", name: "UK10Y" },
             { symbol: "^SOX", name: "SOX" },
             { symbol: "^KS11", name: "KOSPI" },
-            { symbol: "KRW=X", name: "KRW_USD" }
+            { symbol: "KRW=X", name: "KRW_USD" },
+            // Wheat/corn/soybeans/sugar: IMF's monthly PWHEAMTUSDM/PMAIZMTUSDM/
+            // PSOYBUSDM/PSUGAISAUSDM (fetched above into macroData already)
+            // lag real-world prices by weeks, so overwrite with Yahoo futures
+            // when available -- displayed in Yahoo's own quoting units
+            // (cents/bushel for wheat/corn/soybeans, cents/lb for sugar).
+            { symbol: "ZW=F", name: "WHEAT" },
+            { symbol: "ZC=F", name: "CORN" },
+            { symbol: "ZS=F", name: "SOYBEANS" },
+            { symbol: "SB=F", name: "SUGAR" }
         ];
 
         const fetchCnbcQuote = async (symbol) => {
@@ -300,7 +309,7 @@
             }
         }));
     } catch(e) {
-        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD/WHEAT/CORN/SOYBEANS/SUGAR):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.

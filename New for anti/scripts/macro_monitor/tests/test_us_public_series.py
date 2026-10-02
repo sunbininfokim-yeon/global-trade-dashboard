@@ -188,7 +188,7 @@ class Apply(unittest.TestCase):
         for p in again.values():
             p["retrieved_at"] = "T2"
         r = ups.apply_all(usa, again, retrieved_at="T2")
-        self.assertEqual(r, {"changed": [], "removed": []})
+        self.assertEqual((r["changed"], r["removed"], r["summary_changed"]), ([], [], False))
         self.assertEqual(usa, snapshot)
 
     def test_a_series_not_fetched_leaves_its_card(self):
@@ -217,6 +217,49 @@ HTML_NOW = """<html><body><table>
 </table></body></html>"""
 HTML_2020 = HTML_NOW.replace("Wednesday Sep 23, 2026", "Wednesday Mar 25, 2020").replace(
     "<td>Foreign official</td><td>0</td><td>- 1</td><td>0</td><td>0</td>", "<td>Foreign official</td><td>1,000</td><td>+ 5</td><td>+ 9</td><td>60,000</td>")
+
+
+class AutoLoans(unittest.TestCase):
+    def test_millions_become_trillions_and_the_card_carries_a_growth_line(self):
+        pts = ups.series_for("auto_loans", lambda sid: [("2026-03-01", 1559740.62), ("2026-06-01", 1574750.49)])
+        self.assertAlmostEqual(pts[-1][1], 1.57475049)
+        patch = ups.build_patch(ups.SPECS["auto_loans"], pts, retrieved_at="t")
+        self.assertEqual((patch["display"], patch["reference_period"], patch["asof"]), ("$1.57T", "2026Q2", "2026-06-30"))
+        self.assertTrue(patch["yoy_line"])
+
+    def test_a_card_missing_from_the_pack_is_added_once_with_its_chip(self):
+        usa = {"indicators": [], "categories": {"growth": [{"id": "nfp"}]}, "headlines": []}
+        patch = ups.build_patch(ups.SPECS["auto_loans"], [("2026-06-01", 1.57)], retrieved_at="t")
+        ups.apply_all(usa, {"auto_loans": patch}, retrieved_at="t")
+        ups.apply_all(usa, {"auto_loans": patch}, retrieved_at="t")
+        self.assertEqual([i["id"] for i in usa["indicators"]], ["auto_loans"])
+        self.assertEqual([c["id"] for c in usa["categories"]["growth"]], ["nfp", "auto_loans"])
+        self.assertEqual(usa["categories"]["growth"][1]["display"], "$1.57T")
+
+    def test_no_patch_no_card(self):
+        usa = {"indicators": [], "categories": {"growth": []}, "headlines": []}
+        ups.apply_all(usa, {}, retrieved_at="t")
+        self.assertEqual(usa["indicators"], [])
+
+
+class RemoveIndicator(unittest.TestCase):
+    def country(self):
+        return {"indicators": [{"id": "export_yoy_vn", "label_ko": "수출 YoY"}, {"id": "gdp_yoy"}],
+                "categories": {"growth": [{"id": "export_yoy_vn"}, {"id": "gdp_yoy"}], "liquidity": [{"id": "m2_yoy"}]},
+                "headlines": [{"id": "export_yoy_vn"}]}
+
+    def test_drops_the_indicator_its_chip_and_its_headline(self):
+        c = self.country()
+        self.assertTrue(ups.remove_indicator(c, "export_yoy_vn"))
+        self.assertEqual([i["id"] for i in c["indicators"]], ["gdp_yoy"])
+        self.assertEqual([ch["id"] for ch in c["categories"]["growth"]], ["gdp_yoy"])
+        self.assertEqual([ch["id"] for ch in c["categories"]["liquidity"]], ["m2_yoy"])   # untouched category
+        self.assertEqual(c["headlines"], [])
+
+    def test_an_id_already_gone_is_a_no_op(self):
+        c = self.country()
+        ups.remove_indicator(c, "export_yoy_vn")
+        self.assertFalse(ups.remove_indicator(c, "export_yoy_vn"))
 
 
 class H41(unittest.TestCase):

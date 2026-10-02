@@ -234,12 +234,14 @@ const SIGNAL_PAGES = [
     },
     {
         // IMF monthly commodity prices: published with a lag, so every slot on
-        // this page shows the month it is quoting.
+        // this page shows the month it is quoting. Wheat/corn/soybeans/sugar
+        // display Yahoo futures' own quoting units (cents/bushel, cents/lb)
+        // rather than converting to USD/tonne -- no unit math to keep in sync.
         key: 'E', name: '농산물',
         slots: [
-            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
-            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
-            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
+            { label: '밀', value: 'WHEAT', fmt: 'cents2', unit: '/bu', symbol: 'ZW=F' },
+            { label: '옥수수', value: 'CORN', fmt: 'cents2', unit: '/bu', symbol: 'ZC=F' },
+            { label: '대두', value: 'SOYBEANS', fmt: 'cents2', unit: '/bu', symbol: 'ZS=F' },
             { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
         ]
     }
@@ -287,6 +289,15 @@ const signalAsOf = (raw) => {
     if (/^\d{8}$/.test(s)) return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
     if (/^\d{6}$/.test(s)) return `${s.slice(0, 4)}-${s.slice(4, 6)}`;
     return s.split(' ')[0];
+};
+
+// "기준일:25.10.01" for the rotating signal panel's footer -- shorter than
+// spelling out "as of 2026-10-01" in a tile this small.
+const signalAsOfKo = (iso) => {
+    const m = String(iso || '').match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
+    if (!m) return iso;
+    const yy = m[1].slice(2);
+    return m[3] ? `${yy}.${m[2]}.${m[3]}` : `${yy}.${m[2]}`;
 };
 
 const signalFormat = (fmt, raw) => {
@@ -365,7 +376,7 @@ const signalSlotHtml = (slot) => {
     // still has a chart behind it. A slot that has a feed and simply hasn't
     // answered yet gets no footnote -- claiming it is chart-only would be wrong.
     const foot = shown
-        ? (asOf ? `as of ${finEsc(asOf)}` : (slot.note ? finEsc(slot.note) : ''))
+        ? (asOf ? `기준일:${finEsc(signalAsOfKo(asOf))}` : (slot.note ? finEsc(slot.note) : ''))
         : (!slot.value && slot.symbol ? '차트만 제공' : '');
 
     // Only a slot showing a real number gets a line; a sparkline over a
@@ -1714,7 +1725,7 @@ const sstColor = (anomaly) => {
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        // Kept low. Against a 1971-2000 baseline most of the ocean now reads
+        // Kept low. Against the 1991-2020 baseline much of the ocean still reads
         // warm, so a bold ramp turns the whole map orange and buries the land
         // and trade-status fills the screen is actually for. This is a wash
         // under the coastlines; the tooltip carries the number.
@@ -3825,7 +3836,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else if (mode === 'reference') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.classList.add('world-mini');
@@ -3842,7 +3853,7 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
             <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
-            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
+            <div class="mini-leg-note">1991–2020 평년 대비</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';

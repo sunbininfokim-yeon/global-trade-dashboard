@@ -36,6 +36,8 @@ jobs:
 
       - name: Fetch official White House pages and rebuild board
         working-directory: New for anti/scripts/election_watch
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
         run: bash ci/run_usa_eop_monthly.sh
 
       - name: Commit extracted roster and public board
@@ -48,6 +50,7 @@ jobs:
             "New for anti/scripts/election_watch/config/extracted/usa_wh_office_status.json" \
             "New for anti/scripts/election_watch/config/extracted/tier12_executives.json" \
             "New for anti/scripts/election_watch/config/extracted/usa_eop_refresh_report_v1.json" \
+            "New for anti/scripts/election_watch/config/extracted/usa_congress_officers.json" \
             "New for anti/public/data/elections_board_v1.json" \
             "New for anti/public/data/elections_ui_manifest_v1.json"
           git commit -m "chore: monthly USA White House / EOP roster refresh" || exit 0

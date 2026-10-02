@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=101">
+    <link rel="stylesheet" href="style.css?v=102">
 </head>
 <body>
     <div id="app">
@@ -427,14 +427,14 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=19"></script>
-    <script src="shipping.js?v=19"></script>
+    <script src="data.js?v=21"></script>
+    <script src="shipping.js?v=21"></script>
     <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
          and window.auth-container are ready by the time app.js's other
          renderers run. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="auth-config.js?v=1"></script>
-    <script src="auth.js?v=11"></script>
+    <script src="auth.js?v=12"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and
@@ -451,20 +451,21 @@
          valuation view dies. index.html is served no-store (see serveAsset in
          _worker.js), so these query strings are what actually pins the group
          to one build. -->
-    <script src="macro.js?v=15"></script>
+    <script src="macro.js?v=16"></script>
     <script src="market-microstructure.js?v=krx-deriv-flow-3"></script>
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
-    <script src="policy-evidence.js?v=1"></script>
-    <script src="policy.js?v=26"></script>
+    <script src="policy-evidence.js?v=2"></script>
+    <script src="policy.js?v=28"></script>
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
-    <script src="mypage.js?v=5"></script>
+    <script src="mypage.js?v=6"></script>
     <script src="tutorial.js?v=8"></script>
-    <script src="app.js?v=133"></script>
+    <script src="app.js?v=135"></script>
     <script src="gas-storage.js?v=2"></script>
     <script src="trade.js?v=export-controls-board-2"></script>
     <script src="trade-monthly.js?v=5"></script>
-    <script type="module" src="js/elections/index.js?v=5"></script>
+    <script type="module" src="js/elections/index.js?v=6"></script>
 </body>
 </html>
+

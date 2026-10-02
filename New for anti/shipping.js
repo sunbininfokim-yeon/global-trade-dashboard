@@ -283,13 +283,62 @@
     ['tanker', '탱커']
   ];
 
-  // The all-vessel view compares the published 7-day and prior-28-day means
-  // by type. A selected type gets its own observed 35-record daily series;
-  // if the data contract has not supplied it, the UI explicitly says so.
+  // Daily PortWatch series by ship type as lines: all three types together, or
+  // one type alone. A dashed line is the same weekday 52 weeks earlier, which
+  // the engine aligns (`metric_histories.<type>.year_ago`); the UI only draws.
+  const CHOKEPOINT_RANGES = [['90', '3개월'], ['180', '6개월']];
+
+  // Axis and tooltip in tonnes at the scale of the data: a 50K t/day strait
+  // must not print every tick as "0.1M".
+  const lineChartOptions = (formatValue, { legend = true, formatTick = formatValue } = {}) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 320 },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: legend
+        ? { position: 'bottom', labels: { color: INK.secondary, boxWidth: 22, boxHeight: 2, padding: 14, font: { size: 11 } } }
+        : { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.96)',
+        borderColor: 'rgba(148, 163, 184, 0.25)',
+        borderWidth: 1,
+        padding: 10,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${finite(ctx.parsed.y) ? formatValue(ctx.parsed.y) : '자료 없음'}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true, maxRotation: 0 } },
+      y: { beginAtZero: true, grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: value => formatTick(value) } }
+    }
+  });
+
+  const solidLine = (label, data, color) => ({
+    label, data, borderColor: color, backgroundColor: 'transparent',
+    borderWidth: 2, pointRadius: 0, pointHitRadius: 6, tension: 0.2, spanGaps: false
+  });
+  const dashedLine = (label, data, color) => ({
+    label, data, borderColor: `${color}99`, backgroundColor: 'transparent',
+    borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, pointHitRadius: 6, tension: 0.2, spanGaps: false
+  });
+
+  const typeSeries = (point, key, days) => {
+    const metric = point.live?.metric_histories?.[key] || {};
+    const history = asArray(metric.history);
+    const priorValues = asArray(metric.year_ago?.values);
+    const rows = history.map((row, index) => ({
+      date: row.date,
+      value: finite(row?.value) ? Number(row.value) : null,
+      prior: priorValues.length === history.length && finite(priorValues[index]) ? Number(priorValues[index]) : null
+    })).slice(-days);
+    return { rows, hasPrior: rows.some(row => row.prior !== null) };
+  };
+
   const renderObservedTypeComparison = point => {
     const available = CHOKEPOINT_METRIC_TABS.filter(([key]) => point.live?.metrics?.[key]);
     if (!available.length) return '';
-    const initial = available.some(([key]) => key === point.metricKey) ? point.metricKey : available[0][0];
     return `
       <section class="shipping-observed-type-comparison" aria-label="선종별 추정 교역량 비교">
         <div class="shipping-observed-type-head">
@@ -297,14 +346,13 @@
             <span>SHIP TYPE COMPARISON</span>
             <h3>선종별 추정 교역량</h3>
           </div>
-          <small>전체: 선종별 비교 · 선종 선택: 최근 35개 관측일</small>
+          <small>실선 올해 · 점선 52주 전 같은 요일</small>
         </div>
         <div class="shipping-observed-type-controls" role="tablist" aria-label="선종 선택">
-          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === initial}">${label}</button>`).join('')}
+          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === 'all'}">${label}</button>`).join('')}
         </div>
-        <div class="shipping-observed-window-controls" role="group" aria-label="비교 기간 선택">
-          <button type="button" data-chokepoint-window="recent" aria-pressed="true">최근 7일</button>
-          <button type="button" data-chokepoint-window="prior" aria-pressed="false">직전 28일</button>
+        <div class="shipping-observed-window-controls" role="group" aria-label="그래프 기간 선택">
+          ${CHOKEPOINT_RANGES.map(([days, label]) => `<button type="button" data-chokepoint-range="${days}" aria-pressed="${days === '90'}">${label}</button>`).join('')}
         </div>
         <div class="shipping-observed-type-result" data-chokepoint-type-result></div>
       </section>`;
@@ -313,10 +361,10 @@
   const bindObservedTypeComparison = (scope, point) => {
     const result = scope.querySelector('[data-chokepoint-type-result]');
     const metricButtons = [...scope.querySelectorAll('[data-chokepoint-metric]')];
-    const windowButtons = [...scope.querySelectorAll('[data-chokepoint-window]')];
+    const rangeButtons = [...scope.querySelectorAll('[data-chokepoint-range]')];
     if (!result || !metricButtons.length) return;
     let metricKey = 'all';
-    let windowKey = 'recent';
+    let days = 90;
     let observedChart = null;
 
     const destroyChart = () => {
@@ -326,113 +374,60 @@
       observedChart = null;
     };
 
-    const standardOptions = () => ({
-      ...chartOptions({ unit: 'M t/일', legend: true }),
-      scales: {
-        x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true } },
-        y: { grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: value => `${formatNumber(value, 1)}M` } }
-      }
-    });
-
     const update = () => {
+      metricButtons.forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokepointMetric === metricKey)));
+      rangeButtons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.chokepointRange) === days)));
+      destroyChart();
+      // "전체" draws the three ship types; the all-vessel total stays a summary
+      // figure so that one large line does not flatten the others.
+      const keys = metricKey === 'all'
+        ? CHOKEPOINT_METRIC_TABS.map(([key]) => key).filter(key => key !== 'all' && point.live?.metric_histories?.[key])
+        : [metricKey];
+      const series = keys.map(key => ({ key, ...typeSeries(point, key, days) })).filter(item => item.rows.length);
+      const dates = series[0]?.rows.map(row => row.date) || [];
       const metric = point.live?.metrics?.[metricKey] || {};
       const recent = Number(metric.current_7d_mean_estimated_trade_tonnes);
       const prior = Number(metric.prior_28d_mean_estimated_trade_tonnes);
-      const isRecent = windowKey === 'recent';
-      const selectedValue = isRecent ? recent : prior;
-      const compareValue = isRecent ? prior : recent;
-      const change = Number(metric.change_pct);
       const remaining = Number(metric.remaining_trade_volume_ratio);
-
-      metricButtons.forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokepointMetric === metricKey)));
-      windowButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.chokepointWindow === windowKey)));
-      destroyChart();
-      const comparedTypes = CHOKEPOINT_METRIC_TABS
-        .filter(([key]) => key !== 'all' && point.live?.metrics?.[key]);
-
-      if (metricKey === 'all') {
-        result.innerHTML = `
-          <div class="shipping-chart-wrap"><canvas id="shipping-observed-type-chart"></canvas></div>
-          <p class="shipping-note">막대는 PortWatch의 선종별 일평균 추정 교역량입니다. 컨테이너·벌크·탱커를 누르면 해당 선종의 일별 관측선으로 전환됩니다.</p>
-          <div class="shipping-observed-value">
-            <span>${isRecent ? '최근 7일 전체 일평균' : '직전 28일 전체 기준선'}</span>
-            <strong>${formatTonnes(selectedValue)}/일</strong>
-            <small>${isRecent ? `기준선 대비 ${formatPct(change, 1)}` : `최근 7일은 ${formatPct(change, 1)}`}</small>
-          </div>`;
-        observedChart = createChart(result, 'shipping-observed-type-chart', {
-          type: 'bar',
-          data: {
-            labels: comparedTypes.map(([key, label]) => label),
-            datasets: [
-              {
-                label: '최근 7일 일평균',
-                data: comparedTypes.map(([key]) => Number(point.live.metrics[key].current_7d_mean_estimated_trade_tonnes || 0) / 1e6),
-                backgroundColor: comparedTypes.map(([key]) => SHIP_TYPE_COLORS[key] || SHIP_TYPE_COLORS.other),
-                borderRadius: 5
-              },
-              {
-                label: '직전 28일 기준선',
-                data: comparedTypes.map(([key]) => Number(point.live.metrics[key].prior_28d_mean_estimated_trade_tonnes || 0) / 1e6),
-                backgroundColor: comparedTypes.map(([key]) => `${SHIP_TYPE_COLORS[key] || SHIP_TYPE_COLORS.other}66`),
-                borderRadius: 5
-              }
-            ]
-          },
-          options: standardOptions()
-        });
-        return;
-      }
-
-      // Current snapshots may still carry the old single representative
-      // history. It is safe only when its declared metric key matches the tab;
-      // never reuse an all-vessel line as a container/bulk/tanker line.
-      const publishedHistory = asArray(point.live?.metric_histories?.[metricKey]?.history);
-      const legacyMatchingHistory = point.live?.history_metric_key === metricKey
-        ? asArray(point.live?.history)
-        : [];
-      const history = (publishedHistory.length ? publishedHistory : legacyMatchingHistory)
-        .filter(row => finite(row?.value))
-        .slice(-35)
-        .map(row => ({ date: row.date, value: Number(row.value) }));
+      const anyPrior = series.some(item => item.hasPrior);
       result.innerHTML = `
-        ${history.length ? '<div class="shipping-chart-wrap"><canvas id="shipping-observed-type-chart"></canvas></div>' : '<div class="shipping-callout warning"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
+        ${series.length
+          ? '<div class="shipping-chart-wrap" style="grid-column:1 / -1"><canvas id="shipping-observed-type-chart"></canvas></div>'
+          : '<div class="shipping-callout warning" style="grid-column:1 / -1"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
+        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">PortWatch AIS 기반 선종별 일별 추정 교역량(톤)입니다. 선종 기준이라 원유·LNG 같은 품목으로 나눌 수 없습니다. 품목별 공식 수치는 아래 EIA 그래프를 보세요.${anyPrior ? '' : ' 52주 전 자료가 없어 점선은 그리지 않았습니다.'}</p>
         <div class="shipping-observed-value">
-          <span>${isRecent ? '최근 7일 일평균' : '직전 28일 기준선'}</span>
-          <strong>${formatTonnes(selectedValue)}/일</strong>
-          <small>${isRecent ? `기준선 대비 ${formatPct(change, 1)}` : `최근 7일은 ${formatPct(change, 1)}`}</small>
+          <span>${metricKey === 'all' ? '전체 선종 최근 7일 일평균' : `${escapeHtml(SHIP_TYPE_LABELS[metricKey] || metricKey)} 최근 7일 일평균`}</span>
+          <strong>${formatTonnes(recent)}/일</strong>
+          <small>직전 28일 대비 ${formatPct(metric.change_pct, 1)}</small>
+          ${finite(point.live?.metric_histories?.[metricKey]?.year_ago?.change_pct)
+            ? `<small>52주 전 같은 7일 대비 ${formatPct(point.live.metric_histories[metricKey].year_ago.change_pct, 1)}</small>` : ''}
         </div>
         <div class="shipping-observed-compare">
-          <span>${isRecent ? '직전 28일 기준선' : '최근 7일 일평균'}</span>
-          <b>${formatTonnes(compareValue)}/일</b>
-          ${isRecent && finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
+          <span>직전 28일 기준선</span>
+          <b>${formatTonnes(prior)}/일</b>
+          ${finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
         </div>`;
-      if (history.length) {
-        observedChart = createChart(result, 'shipping-observed-type-chart', {
-          type: 'line',
-          data: {
-            labels: history.map(row => String(row.date).slice(5)),
-            datasets: [{
-              label: `${SHIP_TYPE_LABELS[metricKey] || metricKey} 추정 교역량 (t/일)`,
-              data: history.map(row => row.value / 1e6),
-              borderColor: SHIP_TYPE_COLORS[metricKey] || SHIP_TYPE_COLORS.other,
-              backgroundColor: 'rgba(56, 189, 248, 0.10)',
-              borderWidth: 2,
-              pointRadius: 0,
-              fill: true,
-              tension: 0.25
-            }]
-          },
-          options: standardOptions()
-        });
-      }
+      if (!series.length) return;
+      const datasets = [];
+      series.forEach(item => {
+        const color = SHIP_TYPE_COLORS[item.key] || SHIP_TYPE_COLORS.other;
+        const label = SHIP_TYPE_LABELS[item.key] || item.key;
+        datasets.push(solidLine(label, item.rows.map(row => row.value), color));
+        if (item.hasPrior) datasets.push(dashedLine(`${label} 52주 전`, item.rows.map(row => row.prior), color));
+      });
+      observedChart = createChart(result, 'shipping-observed-type-chart', {
+        type: 'line',
+        data: { labels: dates.map(date => String(date).slice(5)), datasets },
+        options: lineChartOptions(value => `${formatTonnes(value)}/일`, { formatTick: formatTonnes })
+      });
     };
 
     metricButtons.forEach(button => button.addEventListener('click', () => {
       metricKey = button.dataset.chokepointMetric;
       update();
     }));
-    windowButtons.forEach(button => button.addEventListener('click', () => {
-      windowKey = button.dataset.chokepointWindow;
+    rangeButtons.forEach(button => button.addEventListener('click', () => {
+      days = Number(button.dataset.chokepointRange);
       update();
     }));
     update();
@@ -575,7 +570,13 @@
         ? Number(display.remaining_trade_volume_ratio)
         : finite(metric.remaining_trade_volume_ratio)
           ? Number(metric.remaining_trade_volume_ratio) : null;
-      return { ...point, live, display, metricKey, metric, shortfall, remaining };
+      // Render-only: the official reference block and the reconstruction
+      // ledger stay exactly as the engine published them.
+      const officialCargo = payload.official_cargo_monitor?.chokepoints?.[point.id] || null;
+      const reconstruction = point.id === 'hormuz' ? (payload.hormuz_reconstruction || null) : null;
+      // The Red Sea bypass touches Hormuz (origin) and both Red Sea exits.
+      const bypass = ['hormuz', 'bab_el_mandeb', 'suez'].includes(point.id) ? (payload.hormuz_bypass_monitor || null) : null;
+      return { ...point, live, display, metricKey, metric, shortfall, remaining, officialCargo, reconstruction, bypass };
     });
 
     return {
@@ -864,6 +865,459 @@
     draw();
   };
 
+  // ------------------------------------------- official cargo & reconstruction
+  //
+  // Render-only. official_cargo.py and hormuz_reconstruction.py own every
+  // number: nothing here converts barrels, mixes publishers or periods,
+  // computes a transit probability, or fills a missing value.
+
+  const safeUrl = url => (/^https:\/\//i.test(String(url || '')) ? String(url) : '');
+  const sourceLink = (url, label = '원문 ↗') => safeUrl(url)
+    ? `<a class="shipping-source-link" href="${escapeHtml(safeUrl(url))}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`
+    : '';
+
+  const SOURCE_STATUS = {
+    fetched: ['최신 수집', 'observed'],
+    cached_fallback: ['직전 정상값 유지', 'estimated'],
+    cached_offline: ['저장본', 'neutral'],
+    unavailable: ['수집 실패', 'neutral'],
+    not_fetched: ['미수집', 'neutral'],
+    reference_link_only: ['링크만 제공', 'neutral']
+  };
+  const sourceStatusBadge = status => {
+    const [label, tier] = SOURCE_STATUS[status] || ['상태 미상', 'neutral'];
+    return badge(label, tier, String(status || ''));
+  };
+
+  // SUMED must stay in the title: EIA's Suez oil figure includes the pipeline.
+  const GEOGRAPHY_LABELS = {
+    strait_of_hormuz: '호르무즈 해협',
+    suez_canal_and_sumed_pipeline: '수에즈+SUMED',
+    suez_canal: '수에즈 운하 단독',
+    strait_of_bab_el_mandeb: '바브엘만데브 해협'
+  };
+
+  // Display scaling only (4,900,000 b/d → 490만 배럴/일); LNG keeps its unit.
+  const formatOfficialValue = (value, unit) => {
+    if (!finite(value)) return '—';
+    const number = Number(value);
+    if (unit === 'barrels_per_day') {
+      return number >= 1e4 ? `${formatNumber(number / 1e4, 0)}만 배럴/일` : `${formatNumber(number)} 배럴/일`;
+    }
+    if (unit === 'billion_cubic_feet_per_day') return `${formatNumber(number, 1)} 십억 입방피트/일`;
+    return `${formatNumber(number, 1)} ${escapeHtml(unit || '')}`;
+  };
+
+  const officialCard = card => `
+    <article class="shipping-kpi">
+      <span class="shipping-kpi-label">${escapeHtml(card.publisher || '기관')} · ${escapeHtml(GEOGRAPHY_LABELS[card.geography_scope] || card.geography_scope || '')}</span>
+      <strong>${finite(card.value) ? formatOfficialValue(card.value, card.unit) : '미보고'}</strong>
+      <small>${escapeHtml(card.display_label_ko || card.label_ko || '')}</small>
+      ${card.year_ago ? `<small>1년 전(${escapeHtml(card.year_ago.period)}) ${formatOfficialValue(card.year_ago.value, card.unit)}${finite(card.year_ago.change_pct) ? ` → ${Number(card.year_ago.change_pct) > 0 ? '+' : ''}${formatPct(card.year_ago.change_pct, 0)}` : ''}</small>` : ''}
+      <small>${escapeHtml(card.period_start || '')} ~ ${escapeHtml(card.period_end || '')} · 발표 ${escapeHtml(card.source_published_at || '—')}</small>
+      ${card.license ? `<small>라이선스 ${escapeHtml(card.license)}</small>` : ''}
+      <small>${sourceStatusBadge(card.source_status)} ${sourceLink(card.source_url)}</small>
+    </article>`;
+
+  const cardNotes = cards => {
+    const warnings = [...new Set(cards.map(card => card.warning_ko).filter(Boolean))];
+    const attributions = [...new Set(cards.map(card => card.attribution).filter(Boolean))];
+    return `${warnings.map(text => `<p class="shipping-note">${escapeHtml(text)}</p>`).join('')}
+      ${attributions.map(text => `<p class="shipping-note" style="overflow-wrap:anywhere">${escapeHtml(text)}</p>`).join('')}`;
+  };
+
+  const OIL_SERIES = [
+    ['total_oil', '석유 전체', '#38bdf8'],
+    ['crude_condensate', '원유+콘덴세이트', '#818cf8'],
+    ['petroleum_products', '석유제품', '#fbbf24']
+  ];
+  const FREQUENCY_LABELS = { quarterly: '분기', monthly: '월' };
+
+  const LNG_COLOR = '#f472b6';
+  const QUARTER_LABELS = ['1분기', '2분기', '3분기', '4분기'];
+  const MONTH_LABELS = Array.from({ length: 12 }, (_, index) => `${index + 1}월`);
+
+  // One chart per publisher/frequency/unit. Period means sit on a calendar
+  // axis (quarter or month) with the latest year solid and the year before
+  // dashed; a period nobody published stays a gap, never a zero. This is a
+  // separate chart from the daily AIS lines, so the two are never mixed.
+  const eiaQuarterly = rows => {
+    const eia = rows.filter(row => row.publisher === 'EIA' && row.frequency === 'quarterly');
+    return {
+      oil: eia.filter(row => row.unit === 'barrels_per_day' && OIL_SERIES.some(([key]) => key === row.cargo_category)),
+      lng: eia.filter(row => row.cargo_category === 'lng' && row.unit === 'billion_cubic_feet_per_day')
+    };
+  };
+
+  const periodSlot = (start, frequency) => {
+    const month = Number(String(start).slice(5, 7));
+    return frequency === 'quarterly' ? Math.floor((month - 1) / 3) : month - 1;
+  };
+
+  const overlayChartData = (seriesList, frequency, scale = 1) => {
+    const labels = frequency === 'quarterly' ? QUARTER_LABELS : MONTH_LABELS;
+    const years = [...new Set(seriesList.flatMap(item => item.points)
+      .filter(point => finite(point.value)).map(point => String(point.period_start).slice(0, 4)))].sort();
+    const current = years[years.length - 1] || null;
+    const prior = years.length > 1 ? years[years.length - 2] : null;
+    const valuesFor = (points, year) => labels.map((_, index) => {
+      const hit = points.find(point => String(point.period_start).slice(0, 4) === year && periodSlot(point.period_start, frequency) === index);
+      return hit && finite(hit.value) ? Number(hit.value) / scale : null;
+    });
+    const datasets = seriesList.flatMap(item => [
+      current && { ...solidLine(`${item.label} ${current}`, valuesFor(item.points, current), item.color), borderWidth: item.width || 2, pointRadius: 3 },
+      prior && { ...dashedLine(`${item.label} ${prior}`, valuesFor(item.points, prior), item.color), pointRadius: 2 }
+    ].filter(Boolean));
+    return { labels, datasets, current, prior };
+  };
+
+  const overlayChart = (mount, canvasId, seriesList, frequency, { scale = 1, formatValue, formatTick }) => {
+    const { labels, datasets } = overlayChartData(seriesList, frequency, scale);
+    if (!datasets.some(dataset => dataset.data.some(value => value !== null))) return null;
+    return createChart(mount, canvasId, {
+      type: 'line',
+      data: { labels, datasets },
+      options: lineChartOptions(formatValue, { formatTick })
+    });
+  };
+
+  const formatManBarrels = value => `${formatNumber(value, 0)}만 배럴/일`;
+  const formatBcf = value => `${formatNumber(value, 1)} 십억 입방피트/일`;
+
+  const otherSeriesTable = rows => {
+    // EIA quarterly oil and LNG are drawn above; the table keeps the rest.
+    const others = rows.filter(row => !(row.publisher === 'EIA' && row.frequency === 'quarterly'));
+    if (!others.length) return '';
+    const body = [...others]
+      .sort((a, b) => `${a.publisher}${a.cargo_category}${a.period_start}`.localeCompare(`${b.publisher}${b.cargo_category}${b.period_start}`))
+      .map(row => `<tr>
+        <td>${escapeHtml(row.publisher)} · ${escapeHtml(FREQUENCY_LABELS[row.frequency] || row.frequency || '')}</td>
+        <td>${escapeHtml(GEOGRAPHY_LABELS[row.geography_scope] || row.geography_scope || '')}</td>
+        <td>${escapeHtml(row.label_ko || row.cargo_category || '')}</td>
+        <td>${escapeHtml(row.period || '')}</td>
+        <td style="text-align:right">${formatOfficialValue(row.value, row.unit)}</td>
+      </tr>`).join('');
+    return table(['기관 · 주기', '범위', '품목', '기간', { label: '기간 일평균', align: 'right' }], body)
+      .replace('class="shipping-table"', 'class="shipping-table compact-table"');
+  };
+
+  const renderTransitAssessment = assessment => {
+    const refs = asArray(assessment?.advisory_references);
+    return `
+      ${definitionRows([
+        ['통항 성공확률', '산출하지 않음'],
+        ['보험 인수 가능 여부', '확인 불가'],
+        ['경보 출처 상태', sourceStatusBadge(assessment?.advisory_source_status)]
+      ])}
+      ${refs.length ? definitionRows(refs.map(ref => [ref.title || '공식 경보', sourceLink(ref.source_url)])) : '<p class="shipping-note">연결된 공식 경보 원문이 없습니다.</p>'}
+      ${assessment?.warning_ko ? `<p class="shipping-note">${escapeHtml(assessment.warning_ko)}</p>` : ''}`;
+  };
+
+  const renderOfficialCargo = (official, point) => {
+    if (!official) return '';
+    const cards = asArray(official.reference_cards);
+    const supplementary = asArray(official.supplementary_reference_cards);
+    const rows = asArray(official.reported_series);
+    const { oil, lng } = eiaQuarterly(rows);
+    const hasLng = lng.some(row => finite(row.value));
+    const breakdownNote = official.commodity_breakdown_status === 'latest_sca_commodity_tonnes_not_connected'
+      ? '<p class="shipping-note">수에즈운하청(SCA)의 최신 품목별 톤 통계는 아직 연결되지 않았습니다. 위 일별 그래프는 선종별 추정 교역량이며 품목별 실제 통계가 아닙니다.</p>'
+      : '';
+    const referenceBody = cards.length || supplementary.length ? `
+      ${cards.length ? `<div class="shipping-kpi-grid">${cards.map(officialCard).join('')}</div>${cardNotes(cards)}` : ''}
+      ${supplementary.length ? `
+        <p class="shipping-panel-kicker" style="margin-top:18px">월간 보조 참고 · 분기 구성비와 섞지 않음</p>
+        <div class="shipping-kpi-grid">${supplementary.map(officialCard).join('')}</div>
+        ${cardNotes(supplementary)}` : ''}
+      ${oil.length ? `
+        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · 석유 전체 = 원유+콘덴세이트 + 석유제품 · 실선 올해, 점선 전년</p>
+        <div class="shipping-chart-wrap"><canvas id="shipping-official-series-chart"></canvas></div>` : ''}
+      ${hasLng ? `
+        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · LNG (십억 입방피트/일 · 석유와 단위가 달라 따로 그림)</p>
+        <div class="shipping-chart-wrap" style="min-height:220px"><canvas id="shipping-official-lng-chart"></canvas></div>` : ''}
+      ${otherSeriesTable(rows)}
+      ${definitionRows([
+        ['일별 원유 통과량', '산출하지 않음 · 검증된 일별 품목 자료 없음'],
+        ['일별 그래프', '위 선종별 AIS 기반 추정 교역량(톤) · 원유·제품 명세 아님']
+      ])}
+      ${breakdownNote}`
+      : `<div class="shipping-callout warning"><strong>공식 화물 참고 자료 미수집.</strong> 위 일별 추정 교역량과 시뮬레이터는 그대로 동작합니다.</div>${breakdownNote}`;
+    // Wide column first: the detail grid's narrow left third is sized for the
+    // mini map and squeezes four reference cards into ~120px each.
+    return `
+      <div class="shipping-grid wide-first">
+        ${panel('OFFICIAL CARGO REFERENCE', `${point.name_ko} 공식 화물 참고`, referenceBody, badge('기관 기간 평균', 'estimated', '특정 날짜의 실측값이 아님'))}
+        ${panel('TRANSIT CONDITIONS', '통항 여건 확인', renderTransitAssessment(official.transit_assessment), badge('경보 원문', 'neutral'))}
+      </div>`;
+  };
+
+  const TERM_STATUS = {
+    qualified: ['자료 충족', 'observed'],
+    unqualified_input: ['후보 있음 · 불충족', 'estimated'],
+    missing_no_free_source: ['무료 자료 없음', 'neutral']
+  };
+  const INPUT_STATUS_LABELS = {
+    reported: '보고됨', not_reported: '미보고', no_row: '행 없음', available: '수집됨', rejected: '사용 금지'
+  };
+
+  const renderLedger = mass => {
+    const rows = asArray(mass?.terms).map(term => {
+      const [label, tier] = TERM_STATUS[term.status] || ['상태 미상', 'neutral'];
+      const sign = term.sign === 1 ? '+' : term.sign === -1 ? '−' : '대조';
+      const candidates = asArray(term.candidates);
+      return `<tr>
+        <td><strong>${escapeHtml(term.label_ko)}</strong><br><small>${escapeHtml(term.required_ko || '')}</small></td>
+        <td style="text-align:center">${sign}</td>
+        <td>${badge(label, tier)}</td>
+        <td>${candidates.length ? candidates.map(candidate => `<div><strong>${escapeHtml(candidate.source)}</strong> · ${escapeHtml(INPUT_STATUS_LABELS[candidate.input_status] || candidate.input_status || '')}<br><small>${escapeHtml(asArray(candidate.reason_labels_ko).join(' · '))}</small></div>`).join('') : '<small>무료 공개 후보 없음</small>'}</td>
+        <td><small>${escapeHtml(term.unlock_ko || '')}</small></td>
+      </tr>`;
+    }).join('');
+    return table(['항목', { label: '부호', align: 'center' }, '상태', '무료 후보 · 불충족 사유', '필요한 자료'], rows);
+  };
+
+  const ROUTE_TIER = { hormuz_only_seaborne: 'observed', bypass_capable: 'neutral', outside_strait: 'neutral' };
+
+  const renderProducerExports = exports => {
+    const months = asArray(exports?.months);
+    if (!months.length) return '<div class="shipping-callout warning">JODI 산유국 원유 수출 자료를 아직 수집하지 못했습니다.</div>';
+    const cell = point => point?.status === 'reported' ? formatNumber(point.value, 0)
+      : point?.status === 'not_reported' ? '<small>미보고</small>' : '—';
+    const rows = asArray(exports.producers).map(producer => `<tr>
+      <td><strong>${escapeHtml(producer.name_ko)}</strong></td>
+      <td>${badge(producer.route_class_label_ko, ROUTE_TIER[producer.route_class] || 'neutral', producer.route_note_ko)}</td>
+      ${months.map(month => `<td style="text-align:right">${cell(asArray(producer.series).find(point => point.period === month))}</td>`).join('')}
+    </tr>`).join('');
+    const group = exports.hormuz_only_group || {};
+    const groupRow = `<tr class="selected-row">
+      <td colspan="2"><strong>${escapeHtml(group.label_ko || '')}</strong></td>
+      ${months.map(month => {
+        const entry = asArray(group.by_month).find(item => item.period === month) || {};
+        return `<td style="text-align:right">${finite(entry.value) ? formatNumber(entry.value, 0)
+          : `<small title="${escapeHtml(asArray(entry.missing_members).join(', '))} 미보고">미산출</small>`}</td>`;
+      }).join('')}
+    </tr>`;
+    return `${table(['산유국', '수출로', ...months.map(month => ({ label: month, align: 'right' }))], rows + groupRow)}
+      <p class="shipping-note">단위 천 배럴/일(월평균) · JODI CRUDEOIL 총수출. ${escapeHtml(exports.warning_ko || '')}</p>
+      <p class="shipping-note">${escapeHtml(group.warning_ko || '')}</p>`;
+  };
+
+  const renderImporterReceipts = receipts => {
+    const months = asArray(receipts?.months);
+    const importers = asArray(receipts?.importers);
+    const withRows = importers.filter(importer => asArray(importer.origins).length);
+    const without = importers.filter(importer => !asArray(importer.origins).length);
+    if (!withRows.length) return '<div class="shipping-callout warning">수입국 월간 원유 수입 행을 아직 받지 못했습니다.</div>';
+    const rows = withRows.map(importer => asArray(importer.origins).map((origin, index) => `<tr>
+      <td>${index === 0 ? `<strong>${escapeHtml(importer.name_ko)}</strong>` : ''}</td>
+      <td>${escapeHtml(origin.name_ko)}</td>
+      <td>${badge(origin.route_class_label_ko, ROUTE_TIER[origin.route_class] || 'neutral')}</td>
+      ${months.map(month => {
+        const point = asArray(origin.series).find(item => item.period === month);
+        return `<td style="text-align:right">${finite(point?.value) ? formatNumber(point.value / 1000, 0) : '—'}</td>`;
+      }).join('')}
+    </tr>`).join('')).join('');
+    return `${table(['수입국', '원산지', '수출로', ...months.map(month => ({ label: month, align: 'right' }))], rows)}
+      <p class="shipping-note">단위 천 톤(순중량, 세관 월 기준) · UN Comtrade HS 2709. ${escapeHtml(receipts.warning_ko || '')}</p>
+      ${without.length ? `<p class="shipping-note">${escapeHtml(without.map(importer => importer.name_ko).join('·'))}: 이 기간 월간 행 없음(미보고 또는 공개 지연).</p>` : ''}`;
+  };
+
+  const renderSarCoverage = sar => {
+    if (!sar || !asArray(sar.acquisitions).length) {
+      return '<div class="shipping-callout warning">Sentinel-1 촬영 메타데이터를 아직 받지 못했습니다.</div>';
+    }
+    const byDate = new Map(asArray(sar.acquisitions).map(row => [row.date, row]));
+    const start = new Date(`${sar.window_start}T00:00:00Z`);
+    const end = new Date(`${sar.window_end}T00:00:00Z`);
+    const days = [];
+    for (let day = new Date(start); day <= end && days.length < 62; day.setUTCDate(day.getUTCDate() + 1)) {
+      days.push(day.toISOString().slice(0, 10));
+    }
+    const strip = days.map(day => {
+      const row = byDate.get(day);
+      const coverage = row ? Number(row.bbox_coverage_fraction) : 0;
+      const title = row ? `${day} · 해협 상자 ${formatPct(coverage * 100, 0)} 촬영 · ${row.scene_count}장면` : `${day} · 촬영 없음`;
+      return `<span title="${escapeHtml(title)}" style="height:18px;border-radius:3px;background:${row ? `rgba(56,189,248,${(0.25 + 0.75 * coverage).toFixed(2)})` : 'rgba(148,163,184,0.10)'}"></span>`;
+    }).join('');
+    return `
+      <div role="img" aria-label="일별 Sentinel-1 촬영 커버리지" style="display:grid;grid-template-columns:repeat(${days.length},minmax(0,1fr));gap:2px;margin-bottom:12px">${strip}</div>
+      ${definitionRows([
+        ['관측 기간', `${escapeHtml(sar.window_start)} ~ ${escapeHtml(sar.window_end)}`],
+        ['촬영일', `${formatNumber(sar.acquisition_dates)}일`],
+        [`해협 상자 ${formatPct(Number(sar.full_coverage_threshold) * 100, 0)} 이상 촬영`, `${formatNumber(sar.full_coverage_dates)}일`],
+        ['최대 촬영 공백', finite(sar.max_gap_days) ? `${formatNumber(sar.max_gap_days)}일` : '—'],
+        ['최근 촬영일', escapeHtml(sar.latest_acquisition_date || '—')],
+        ['선박 탐지·AIS 대조', '하지 않음']
+      ])}
+      <p class="shipping-note">${escapeHtml(sar.warning_ko || '')}</p>`;
+  };
+
+  const renderIdentifiability = recon => {
+    const ident = recon.identifiability || {};
+    return `
+      <div class="shipping-formula-block"><span>설명용 식 · 계산하지 않음</span><strong>${escapeHtml(ident.formula || '')}</strong></div>
+      ${definitionRows(asArray(ident.terms).map(term => [term.label_ko, `<span title="${escapeHtml(term.note_ko || '')}">${escapeHtml(term.note_ko || term.status || '')}</span>`]))}
+      <p class="shipping-panel-kicker" style="margin-top:14px">쓰지 않는 지름길</p>
+      ${definitionRows(asArray(recon.rejected_shortcuts).map(item => [item.label_ko, escapeHtml(item.reason_ko || '')]))}`;
+  };
+
+  const RECON_SOURCE_LABELS = { jodi: 'JODI-Oil', comtrade: 'UN Comtrade', sentinel1: 'Copernicus Sentinel-1' };
+
+  const renderReconstruction = recon => {
+    if (!recon) return '';
+    const headline = recon.headline || {};
+    const mass = recon.mass_balance || {};
+    const computed = headline.status === 'computed_monthly_unexplained_range' && finite(headline.value);
+    const blocking = asArray(headline.blocking_terms).length;
+    const total = asArray(mass.terms).length;
+    const headlineHtml = computed
+      ? `<div class="shipping-callout info"><strong>${escapeHtml(headline.display_ko)}</strong> · ${escapeHtml(mass.period?.period || '')} · ${formatNumber(Number(headline.value) / 1e6, 1)}백만 배럴${headline.range ? ` (범위 ${formatNumber(Number(headline.range.low) / 1e6, 1)}–${formatNumber(Number(headline.range.high) / 1e6, 1)})` : ''}. ${escapeHtml(headline.warning_ko || '')}</div>`
+      : `<div class="shipping-callout warning"><strong>${escapeHtml(headline.display_ko || '미포착 화물량: 자료 부족으로 미산출')}</strong> · ${escapeHtml(mass.period?.period || '기간 미정')} 월 원장 기준, 질량수지 ${formatNumber(total)}개 항 중 ${formatNumber(blocking)}개가 같은 경계·기간·품목의 배럴 자료로 채워지지 않았습니다. 빈 항을 0이나 추정 배수로 채우지 않습니다.</div>`;
+    const sources = Object.entries(recon.sources || {}).map(([id, source]) => `
+      <span>${escapeHtml(RECON_SOURCE_LABELS[id] || id)} ${sourceStatusBadge(source.status)} ${sourceLink(source.source_url, '출처')} ${sourceLink(source.terms_url, '이용조건')}</span>`).join(' · ');
+    const attributions = Object.values(recon.sources || {}).map(source => source.attribution).filter(Boolean);
+    return `
+      ${panel('UNOBSERVED FLOW', '미포착 화물 역산 · 오만만 질량수지', `
+        ${headlineHtml}
+        <div class="shipping-formula-block" style="margin-top:14px"><span>${escapeHtml(mass.boundary?.label_ko || '')} · 기간 누적 배럴</span><strong>${escapeHtml(mass.equation_ko || '')}</strong></div>
+        ${renderLedger(mass)}
+        ${asArray(mass.rules_ko).map(rule => `<p class="shipping-note">${escapeHtml(rule)}</p>`).join('')}`,
+        `<div class="shipping-panel-tools">${popover('recon-why', '왜 숫자가 없나', '식별 조건과 쓰지 않는 지름길', renderIdentifiability(recon))}${badge('식별 원장', 'neutral')}</div>`)}
+      <div class="shipping-grid two-columns">
+        ${panel('PRODUCER EXPORTS · JODI', '산유국 원유 수출 (월간 외부 검증)', renderProducerExports(recon.producer_exports), badge('국가 보고', 'observed'))}
+        ${panel('SAR COVERAGE', 'Sentinel-1 촬영 커버리지', renderSarCoverage(recon.sar_coverage), badge('메타데이터', 'neutral'))}
+      </div>
+      ${panel('IMPORTER RECEIPTS · COMTRADE', '수입국 원유 수령 (지연 확인)', renderImporterReceipts(recon.importer_receipts), badge('세관 월 기준', 'observed'))}
+      <p class="shipping-note">${sources}</p>
+      ${attributions.map(text => `<p class="shipping-note" style="overflow-wrap:anywhere">${escapeHtml(text)}</p>`).join('')}`;
+  };
+
+  // Red Sea bypass of Hormuz. Threat events are a manual, source-cited log
+  // whose status the engine expires; Yanbu figures are AIS estimates.
+  const THREAT_STATUS = {
+    recent_events_reported: ['최근 위협 보도', 'estimated'],
+    no_recent_events_in_log: ['최근 기록 없음', 'neutral'],
+    log_review_stale: ['기록 검토 필요', 'neutral']
+  };
+  const BYPASS_COLORS = { hormuz: '#f87171', bab_el_mandeb: '#fbbf24', suez: '#38bdf8' };
+
+  const threatenedSegments = bypass => {
+    if (bypass?.threat?.status !== 'recent_events_reported') return new Set();
+    return new Set(asArray(bypass.threat.events).flatMap(event => asArray(event.affects)));
+  };
+
+  const bypassThreatensPoint = point => {
+    const hit = threatenedSegments(point.bypass);
+    return asArray(point.bypass?.route?.segments).some(segment => segment.chokepoint_id === point.id && hit.has(segment.id));
+  };
+
+  const renderBypass = (bypass, point) => {
+    if (!bypass) return '';
+    const route = bypass.route || {};
+    const threat = bypass.threat || {};
+    const events = asArray(threat.events);
+    const hit = threatenedSegments(bypass);
+    const segmentBadge = segment => {
+      const threatened = hit.has(segment.id);
+      const here = segment.chokepoint_id === point.id;
+      return `<span class="shipping-badge ${threatened ? 'estimated' : here ? 'observed' : 'neutral'}">${escapeHtml(segment.label_ko)}${threatened ? ' · 위협 보도' : ''}</span>`;
+    };
+    const segments = asArray(route.segments);
+    const arrow = '<span aria-hidden="true" style="color:#64748b">→</span>';
+    const chain = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px">
+      ${segments.filter(segment => segment.type !== 'chokepoint').map(segmentBadge).join(arrow)}
+      ${arrow}
+      ${segments.filter(segment => segment.type === 'chokepoint').map(segmentBadge).join('<span style="color:#64748b">또는</span>')}
+    </div>`;
+    const facts = asArray(route.context_facts).map(fact => `<p class="shipping-note">${escapeHtml(fact.label_ko)} ${asArray(fact.sources).map(source => sourceLink(source.url, `${source.publisher}${source.published_at ? ` ${source.published_at}` : ''} ↗`)).join(' ')}</p>`).join('');
+    const first = events[0];
+    const [statusLabel, statusTier] = THREAT_STATUS[threat.status] || ['상태 미상', 'neutral'];
+    const statusHtml = threat.status === 'recent_events_reported'
+      ? `<div class="shipping-callout warning"><strong>홍해 우회로에 대한 후티 반군의 봉쇄 위협이 보도되고 있습니다.</strong> ${first ? `${escapeHtml(first.date)} ${escapeHtml(first.event_ko)} 이후` : ''} 얀부 앞바다와 바브엘만데브에서 공격이 이어졌습니다(최근 기록 ${escapeHtml(threat.latest_event_date || '—')}, 기록 검토 ${escapeHtml(threat.reviewed_at || '—')}). 아래는 출처가 달린 수기 기록이며 실시간 경보가 아닙니다. 최신 상황은 통항 여건 확인의 공식 경보 원문을 보세요.</div>`
+      : threat.status === 'log_review_stale'
+        ? `<div class="shipping-callout info"><strong>위협 기록 검토 필요.</strong> 마지막 검토(${escapeHtml(threat.reviewed_at || '—')}) 후 ${formatNumber(threat.days_since_review)}일이 지나 현재 위협 여부를 표시하지 않습니다.</div>`
+        : `<div class="shipping-callout info">최근 ${formatNumber(threat.recent_event_window_days)}일 안에 기록된 사건이 없습니다(검토 ${escapeHtml(threat.reviewed_at || '—')}).</div>`;
+    const timeline = events.length ? table(['날짜', '사건', '위치', '근거', '출처'], [...events].reverse().map(event => `<tr>
+      <td>${escapeHtml(event.date)}${event.date_precision === 'month' ? '<br><small>월 단위</small>' : ''}</td>
+      <td>${escapeHtml(event.event_ko)}</td>
+      <td>${escapeHtml(event.location_ko || '')}</td>
+      <td>${badge(event.evidence_label_ko || event.evidence_class, event.evidence_class === 'official_statement' ? 'observed' : 'neutral')}</td>
+      <td>${asArray(event.sources).map(source => sourceLink(source.url, `${source.publisher} ↗`)).join('<br>')}</td>
+    </tr>`).join('')) : '';
+
+    const yanbu = bypass.yanbu_port_activity || {};
+    const portSource = bypass.sources?.portwatch_ports || {};
+    const yanbuBody = asArray(yanbu.monthly).length ? `
+      <div class="shipping-chart-wrap"><canvas id="shipping-bypass-yanbu-chart"></canvas></div>
+      ${definitionRows([
+        ['최근 7일 평균', finite(yanbu.recent_7d_mean_tonnes_per_day) ? `${formatTonnes(yanbu.recent_7d_mean_tonnes_per_day)}/일` : '—'],
+        ['직전 28일 평균', finite(yanbu.prior_28d_mean_tonnes_per_day) ? `${formatTonnes(yanbu.prior_28d_mean_tonnes_per_day)}/일` : '—'],
+        ['변화', finite(yanbu.change_pct) ? formatPct(yanbu.change_pct, 1) : '—'],
+        ['기준일', escapeHtml(yanbu.latest_date || '—')],
+        ['수집 상태', sourceStatusBadge(portSource.status)]
+      ])}
+      <p class="shipping-note">${escapeHtml(yanbu.warning_ko || '')}</p>
+      <p class="shipping-note">${escapeHtml(asArray(yanbu.ports).map(port => port.portname).join(' + '))} 합계 · 실선 올해, 점선 전년${asArray(yanbu.monthly).some(row => row.partial_month) ? ` · 관측일이 모자란 달: ${escapeHtml(asArray(yanbu.monthly).filter(row => row.partial_month).map(row => `${row.month}(${row.days_observed}일)`).join(', '))}` : ''} ${sourceLink(portSource.source_url, 'PortWatch ↗')}</p>`
+      : '<div class="shipping-callout warning">얀부항 PortWatch 자료를 아직 받지 못했습니다.</div>';
+
+    const comparison = bypass.official_crude_comparison || {};
+    const hasComparison = asArray(comparison.series).some(series => asArray(series.points).length);
+    const comparisonBody = hasComparison ? `
+      <div class="shipping-chart-wrap"><canvas id="shipping-bypass-eia-chart"></canvas></div>
+      <p class="shipping-note">EIA 분기 일평균 · 원유+콘덴세이트 · 실선 올해, 점선 전년. ${escapeHtml(comparison.warning_ko || '')}</p>`
+      : '<div class="shipping-callout warning">EIA 해협별 원유 자료를 아직 받지 못했습니다.</div>';
+
+    return `
+      ${panel('HORMUZ BYPASS · RED SEA', escapeHtml(route.label_ko || '호르무즈 우회로'), `
+        ${chain}
+        <p class="shipping-note" style="margin-top:0">${escapeHtml(route.note_ko || '')}</p>
+        ${facts}
+        <div style="margin-top:14px">${statusHtml}</div>
+        ${timeline}`, badge(statusLabel, statusTier))}
+      <div class="shipping-grid two-columns">
+        ${panel('YANBU · PORTWATCH', '얀부항 탱커 선적 (AIS 추정, 월평균)', yanbuBody, badge('AIS 추정', 'estimated'))}
+        ${panel('EIA · CRUDE + CONDENSATE', '해협별 원유 분기 일평균', comparisonBody, badge('기관 분기 평균', 'estimated'))}
+      </div>`;
+  };
+
+  const drawBypassCharts = (mount, bypass) => {
+    const monthly = asArray(bypass?.yanbu_port_activity?.monthly);
+    const yanbu = overlayChart(mount, 'shipping-bypass-yanbu-chart', [{
+      label: '얀부 탱커 수출 추정', color: '#818cf8',
+      points: monthly.map(row => ({ period_start: `${row.month}-01`, value: row.tanker_export_tonnes_per_day }))
+    }], 'monthly', { formatValue: value => `${formatTonnes(value)}/일`, formatTick: formatTonnes });
+    const series = asArray(bypass?.official_crude_comparison?.series).filter(row => asArray(row.points).length);
+    const crude = overlayChart(mount, 'shipping-bypass-eia-chart', series.map(row => ({
+      label: row.label_ko, color: BYPASS_COLORS[row.chokepoint_id] || SHIP_TYPE_COLORS.other, points: row.points
+    })), 'quarterly', { scale: 1e4, formatValue: formatManBarrels, formatTick: value => `${formatNumber(value, 0)}만` });
+    return [yanbu, crude].filter(Boolean);
+  };
+
+  let officialCharts = [];
+  const renderOfficialCargoInto = (mount, point) => {
+    if (!mount) return;
+    officialCharts.forEach(chart => { try { chart.destroy(); } catch (_) { /* already gone */ } });
+    activeCharts = activeCharts.filter(chart => !officialCharts.includes(chart));
+    officialCharts = [];
+    if (!point.officialCargo && !point.reconstruction && !point.bypass) { mount.innerHTML = ''; return; }
+    mount.innerHTML = `<div class="shipping-content" style="margin-top:18px">
+      ${renderOfficialCargo(point.officialCargo, point)}
+      ${renderBypass(point.bypass, point)}
+      ${renderReconstruction(point.reconstruction)}
+    </div>`;
+    const { oil, lng } = eiaQuarterly(asArray(point.officialCargo?.reported_series));
+    officialCharts.push(...[
+      overlayChart(mount, 'shipping-official-series-chart', OIL_SERIES.map(([key, label, color]) => ({
+        label, color, width: key === 'total_oil' ? 3 : 2,
+        points: oil.filter(row => row.cargo_category === key)
+      })), 'quarterly', { scale: 1e4, formatValue: formatManBarrels, formatTick: value => `${formatNumber(value, 0)}만` }),
+      overlayChart(mount, 'shipping-official-lng-chart', [{ label: 'LNG', color: LNG_COLOR, points: lng }], 'quarterly',
+        { formatValue: formatBcf, formatTick: value => formatNumber(value, 1) }),
+      ...drawBypassCharts(mount, point.bypass)
+    ].filter(Boolean));
+    bindPopovers(mount);
+  };
+
   const CORE_CHOKEPOINT_IDS = ['suez', 'bab_el_mandeb', 'hormuz', 'panama', 'malacca'];
 
   const renderChokepoints = (data, root, showAll = false) => {
@@ -886,12 +1340,16 @@
           <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
           ${badge(isStale ? '기준일 경과' : '최근 신호', isStale ? 'neutral' : 'observed')}
         </div>
+        ${bypassThreatensPoint(point) ? `<div style="margin:8px 0 2px">${badge('호르무즈 우회로 · 후티 봉쇄 위협 보도', 'estimated', '출처가 달린 수기 기록 기준. 상세에서 사건과 공식 경보를 확인')}</div>` : ''}
         <strong class="shipping-change ${severity}">${formatPct(shortfallPct, 0)}</strong>
         <p>${escapeHtml(display.headline_label_ko || '추정 교역량 감소율')} · ${escapeHtml(display.basis_label_ko || '최근 7일 기준')}</p>
         ${definitionRows([
           [display.residual_label_ko || '잔존 추정 교역량', formatPct(remainingPct, 0)],
           ['최근 7일 추정 교역량', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-          ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`]
+          ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
+          ['52주 전 같은 7일 대비', finite(point.live?.metric_histories?.[point.metricKey]?.year_ago?.change_pct)
+            ? `${Number(point.live.metric_histories[point.metricKey].year_ago.change_pct) > 0 ? '+' : ''}${formatPct(point.live.metric_histories[point.metricKey].year_ago.change_pct, 0)}`
+            : '—']
         ])}
         <p class="shipping-note">기준일 ${formatDate(display.latest_date || point.live.latest_date)}${isStale ? ` · ${formatNumber(display.stale_days, 0)}일 경과` : ''}</p>
       </article>`;
@@ -979,18 +1437,30 @@
             ${definitionRows([
               ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
               ['최근 7일 평균', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-              ['기준선 대비', shortfallPct === null ? '—' : `${formatPct(-shortfallPct, 1)} (잔존 ${formatPct((point.remaining || 0) * 100, 0)})`]
+              // Signed change, not the floored shortfall: a rise inside an
+              // already collapsed baseline must not read as "0%, 100% left".
+              ['직전 28일 대비', finite(point.metric.change_pct)
+                ? `${Number(point.metric.change_pct) > 0 ? '+' : ''}${formatPct(point.metric.change_pct, 1)}${shortfallPct > 0 ? ` (잔존 ${formatPct((point.remaining || 0) * 100, 0)})` : ''}`
+                : '—'],
+              ['52주 전 같은 7일 대비', (() => {
+                const yearAgo = point.live?.metric_histories?.[point.metricKey]?.year_ago;
+                return finite(yearAgo?.change_pct)
+                  ? `${Number(yearAgo.change_pct) > 0 ? '+' : ''}${formatPct(yearAgo.change_pct, 1)} (${formatTonnes(yearAgo.year_ago_7d_mean)}/일 → ${formatTonnes(yearAgo.recent_7d_mean)}/일)`
+                  : '비교 자료 없음';
+              })()]
             ])}
             <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명이 제공되지 않았습니다.')}</p>
             <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>
             ${renderObservedTypeComparison(point)}`,
             badge('PortWatch 추정', 'observed', '일별 값은 공개된 선종별 이력이 있을 때만 표시'))}
         </div>
+        <div id="shipping-official-cargo"></div>
         <div id="shipping-inline-simulator"></div>`;
 
       detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       renderMiniMap(detail.querySelector('#shipping-minimap'), point);
       bindObservedTypeComparison(detail, point);
+      renderOfficialCargoInto(detail.querySelector('#shipping-official-cargo'), point);
       renderScenarioSimulatorInto(
         data,
         detail.querySelector('#shipping-inline-simulator'),
