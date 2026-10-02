@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pollSignal } from '../data/usa-election-context.js';
 import { financeEvidenceHtml, pollEvidenceHtml } from '../country-explorer/special/usa-election-evidence.js';
-import { selectNationalRaces } from '../country-explorer/special/usa-election-national.js';
+import { selectNationalRaces, summarizeNationalRaces } from '../country-explorer/special/usa-election-national.js';
 
 test('an outdated pre-election board cannot keep a poll colour after election day', () => {
     const board = { schema: 'usa_live_polls_v1', source_status: 'ok',
@@ -43,4 +43,26 @@ test('unsupported governor disclosure is distinct from an observed zero', () => 
     const html = financeEvidenceHtml({ office: 'governor', status: 'unsupported', totals_by_category: {} }, null);
     assert.match(html, /주 공시 미수집/);
     assert.doesNotMatch(html, /관측 없음|\$0/);
+});
+
+test('national party counts use verified poll leads and keep official results separate', () => {
+    const now = Date.parse('2026-10-02T12:00:00Z');
+    const board = { schema: 'usa_live_polls_v1', source_status: 'ok', fetched_at: '2026-10-02T11:00:00Z',
+        stale_after_hours: 48, races: {
+            'USA:MI:governor': { state: 'MI', office: 'governor', schedule_status: 'reported_general_matchup',
+                windows: { '7': { status: 'poll_lead', party: 'DEM' }, '14': { status: 'poll_lead', party: 'REP' } } },
+            'USA:PA:house:07': { state: 'PA', office: 'house', district: '07', schedule_status: 'reported_general_matchup',
+                windows: { '7': { status: 'no_recent_poll' }, '14': { status: 'no_recent_poll' } } },
+            'USA:NC:governor': { state: 'NC', office: 'governor', schedule_status: 'watch_slot_unverified',
+                windows: { '7': { status: 'poll_lead', party: 'REP' } } },
+            'USA:NY:governor': { state: 'NY', office: 'governor', phase: 'certified_result',
+                result: { status: 'certified', party: 'REP', winner: 'Winner' } },
+        } };
+    const seven = summarizeNationalRaces(board, { status: 'ok' }, 7, now);
+    assert.deepEqual(seven.total, { dem: 1, rep: 0, pending: 1, certifiedDem: 0, certifiedRep: 1 });
+    assert.deepEqual(seven.governor, { dem: 1, rep: 0, pending: 0, certifiedDem: 0, certifiedRep: 1 });
+    assert.deepEqual(summarizeNationalRaces(board, { status: 'ok' }, 14, now).total,
+        { dem: 0, rep: 1, pending: 1, certifiedDem: 0, certifiedRep: 1 });
+    assert.deepEqual(summarizeNationalRaces(board, { status: 'stale' }, 7, now).total,
+        { dem: 0, rep: 0, pending: 2, certifiedDem: 0, certifiedRep: 1 });
 });
