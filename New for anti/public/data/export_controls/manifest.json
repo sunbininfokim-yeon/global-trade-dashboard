@@ -1,0 +1,55 @@
+{
+  "schema_version": "export-controls-v2",
+  "as_of": "2026-09",
+  "status": "curated_seed",
+  "note_ko": "수기 정리본이다. 농산물 확인일은 2026-09-24. 인도 쌀 수출금지 해제(2024-10)는 12개월이 지나 삭제했다. 인도 설탕은 DGFT 고시 16/2026-27 사본으로 2026-09-30까지 금지. 러시아 석유제품은 정부 결의 954 원문. 금속·광물 7행은 2026-09-24 원문 링크로 재확인(중국 대미 조치 유예는 2026-11-10·11-27 만료 → review_valid_until). 주간 절차는 New for anti/scripts/export_controls/README.md.",
+  "levels": {
+    "prohibited": {
+      "label_ko": "수출 금지",
+      "rank": 3
+    },
+    "restricted": {
+      "label_ko": "수출 제한 (쿼터·인허가·관세·국영 단일창구)",
+      "rank": 2
+    },
+    "watch": {
+      "label_ko": "통제 논의·검토",
+      "rank": 1
+    },
+    "lifted": {
+      "label_ko": "최근 해제",
+      "rank": 0
+    }
+  },
+  "measure_types": {
+    "ban": "수출 금지",
+    "quota": "쿼터",
+    "duty": "수출세",
+    "licensing": "허가제",
+    "state_trading": "국영 단일창구",
+    "levy": "부담금",
+    "min_price": "최저수출가"
+  },
+  "modules": [
+    {
+      "category": "agri",
+      "label_ko": "농산물",
+      "file": "agri.json"
+    },
+    {
+      "category": "energy",
+      "label_ko": "에너지",
+      "file": "energy.json"
+    },
+    {
+      "category": "minerals",
+      "label_ko": "금속·광물",
+      "file": "minerals.json"
+    }
+  ],
+  "survey": {
+    "cadence": "weekly",
+    "universe": "New for anti/scripts/export_controls/universe.json",
+    "note_ko": "주간 점검은 기록을 남긴다. 이 파일의 행은 원문을 확인한 것만이고, 행이 없음은 통제 없음이 아니다."
+  }
+}

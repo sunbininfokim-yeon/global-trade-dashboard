@@ -18,8 +18,7 @@
 // stopTradeAnim, tradeAnimRaf, tradeAnimPhase, clampGlobeView, currentViewState,
 // worldBaseLayers, worldGeo, worldGeoData, featureIsCountry, featureCountryName,
 // bowedPath, arcWidth, arcAlpha, MAX_RENDERED_ARCS, generateNodeData,
-// TRADE_MAP_VIEW, controlsFor, renderExportControlLegend, CONTROL_FILL,
-// CONTROL_LINE, exportControlsDoc, macroPanelEl, currentViewDesc,
+// TRADE_MAP_VIEW, macroPanelEl, currentViewDesc,
 // concentrationHtml, normCountryName, commodityReportsPanelEl. (ISO3_FALLBACK
 // stays in app.js, used only by its countryCode helper, which this file calls
 // but does not own.)
@@ -220,9 +219,10 @@ const focusTradeCountry = (countryName) => {
         if (topExporterEl) topExporterEl.textContent = partner;
     }
 
-    const ctl = controlsFor(currentCommodity).get(target?.key || countryName);
+    // Export controls come from export-controls.js (window.ExportControls).
+    const ctl = window.ExportControls?.controlsFor(currentCommodity).get(target?.key || countryName);
     if (ctl && newsContentEl) {
-        const lv = exportControlsDoc?.levels?.[ctl.level]?.label_ko || ctl.level;
+        const lv = window.ExportControls.levelLabel(ctl.level);
         newsContentEl.insertAdjacentHTML('afterbegin', `
             <div class="ctl-card ctl-${ctl.level}">
                 <div class="ctl-head"><strong>${lv}</strong>
@@ -789,6 +789,8 @@ const reportRowHtml = (item) => {
     const href = safeReportHref(item.url);
     const title = escapeFeedText(item.title?.ko || item.title?.original || '');
     const agency = escapeFeedText(item.agency_ko || item.agency || '');
+    // The publisher's own site (pipeline: agency_url) -- the title links the report.
+    const agencyHref = item.agency_url ? safeReportHref(item.agency_url) : null;
     const summary = String(item.summary || '').trim();
     const date = reportDate(item.published_at, item.published_precision);
     // A world balance sheet sitting on a country's board should say so --
@@ -811,7 +813,9 @@ const reportRowHtml = (item) => {
         : '';
     return `<li class="rpt-item">
         <div class="rpt-meta">
-            <span class="rpt-agency">${agency}</span>${series}${scopeTag}
+            ${agencyHref
+                ? `<a class="rpt-agency" href="${escapeFeedText(agencyHref)}" target="_blank" rel="noopener noreferrer" title="발간처 사이트로 이동">${agency}</a>`
+                : `<span class="rpt-agency">${agency}</span>`}${series}${scopeTag}
             ${date ? `<span class="rpt-date">${date}</span>` : ''}
         </div>
         ${head}
@@ -987,7 +991,11 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const slot = document.getElementById('reports-slot');
     if (!slot || !commodity) return;
     const iso3 = countryName ? countryCode(countryName) : null;
-    const win = await loadCommodityReports(commodity, iso3);
+    const boardSpec = REPORT_BOARDS_BY_COUNTRY[iso3] || null;
+    const [win, board] = await Promise.all([
+        loadCommodityReports(commodity, iso3),
+        boardSpec ? loadReportBoard(boardSpec) : Promise.resolve(null),
+    ]);
     const { items, label } = win;
 
     // The panel may have been rebuilt, the commodity switched, or the focus
@@ -995,6 +1003,17 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const live = document.getElementById('reports-slot');
     if (!live || currentCommodity !== commodity) return;
     if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
+    const boardItems = board?.items || [];
+    renderReportBoard(boardSpec, boardItems);
+    if (!items.length && boardItems.length) {
+        // China with no report on this commodity still has its export-control
+        // notices: show the panel for them alone.
+        live.innerHTML = '';
+        reportsPager = null;
+        if (countryName) setRightDashboardVisible(true);
+        panelShow(commodityReportsPanelEl);
+        return;
+    }
     if (!items.length) {
         live.innerHTML = '';
         reportsPager = null;
@@ -1013,6 +1032,111 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
     reportsPager = { win, label, who, page: 0, firstShown: 0 };
     paintReportsPage();
+};
+
+// Boards (pipeline "boards"): lists a source feeds whatever the commodity,
+// shown on that country's screen above its reports. MOFCOM's export-control
+// bureau posts entity-list additions, countermeasures and control-list
+// notices that name no traded commodity, so they would never reach a
+// commodity window -- but they are the news for anyone trading with China.
+// The pipeline's export_controls board is every regulator's notices; a
+// country's screen shows its own regulators' (control.issuer).
+const REPORT_BOARDS_BY_COUNTRY = {
+    CHN: {
+        board: 'export_controls', issuer: 'CHN',
+        title: '중국 수출통제 공고 (원문)',
+        note: '상무부 산업안전·수출입통제국 발표 · 중국어 원문(번역은 Gemini) · 제목을 누르면 원문으로 이동',
+    },
+};
+// control.measure (pipeline gemini.MEASURES) in Korean.
+const CONTROL_MEASURE_KO = {
+    entity_list: '통제명단', export_restriction: '수출통제', export_ban: '수출금지',
+    sanctions: '제재', countermeasure: '반제재', list_adjustment: '목록조정',
+    suspension: '유예·해제', enforcement: '단속', dialogue: '대화·협의', guidance: '안내',
+};
+const REPORT_BOARD_SHOWN = 3;
+const REPORT_BOARD_FETCH = 30;
+const reportBoardCache = new Map();
+
+const loadReportBoard = async ({ board, issuer }) => {
+    const key = `${board}|${issuer || ''}`;
+    if (reportBoardCache.has(key)) return reportBoardCache.get(key);
+    let out = null;
+    try {
+        const q = new URLSearchParams({ board, limit: String(REPORT_BOARD_FETCH) });
+        if (issuer) q.set('issuer', issuer);
+        const res = await fetch(`/api/commodity-reports?${q}`);
+        if (res.ok) {
+            const doc = await res.json();
+            if (Array.isArray(doc.items)) out = { items: doc.items, total: doc.total ?? doc.items.length };
+        }
+    } catch (err) {
+        console.warn('[report-board] api unavailable, falling back to snapshot', err);
+    }
+    if (out === null) {
+        const doc = await loadCommodityReportSnapshot();
+        const byId = new Map((doc?.items || []).map((it) => [it.id, it]));
+        const all = (doc?.boards?.[board] || []).map((id) => byId.get(id))
+            .filter((it) => it && (!issuer || (it.control?.issuer || '').toUpperCase() === issuer));
+        out = { items: all.slice(0, REPORT_BOARD_FETCH), total: all.length };
+    }
+    reportBoardCache.set(key, out);
+    return out;
+};
+
+const renderReportBoard = (meta, items) => {
+    const host = document.getElementById('ctl-board-slot');
+    if (!host) return;
+    if (!meta || !items.length) {
+        host.innerHTML = '';
+        return;
+    }
+    const first = items[0];
+    const agency = escapeFeedText(first.agency_ko || first.agency || '');
+    const agencyHref = first.agency_url ? safeReportHref(first.agency_url) : null;
+    const row = (it) => {
+        const href = safeReportHref(it.url);
+        const title = escapeFeedText(it.title?.original || '');
+        const lang = escapeFeedText(it.title?.original_lang || '');
+        const ko = it.title?.ko ? escapeFeedText(it.title.ko) : '';
+        const date = reportDate(it.published_at, it.published_precision);
+        const measure = CONTROL_MEASURE_KO[it.control?.measure];
+        return `<li class="ctlb-item">
+            <div class="ctlb-text">
+                ${href
+                    ? `<a class="ctlb-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer" lang="${lang}">${title}</a>`
+                    : `<span class="ctlb-title" lang="${lang}">${title}</span>`}
+                ${ko ? `<span class="ctlb-ko">${ko}</span>` : ''}
+            </div>
+            <div class="ctlb-side">
+                ${measure ? `<span class="ctlb-measure">${escapeFeedText(measure)}</span>` : ''}
+                ${date ? `<span class="ctlb-date">${date}</span>` : ''}
+            </div>
+        </li>`;
+    };
+    const rest = items.slice(REPORT_BOARD_SHOWN);
+    host.innerHTML = `
+        <div class="ctlb-card">
+            <div class="ctlb-head">
+                <span class="ctlb-label">${escapeFeedText(meta.title)}</span>
+                ${agencyHref
+                    ? `<a class="ctlb-agency" href="${escapeFeedText(agencyHref)}" target="_blank" rel="noopener noreferrer" title="발간처 사이트로 이동">${agency} ↗</a>`
+                    : `<span class="ctlb-agency">${agency}</span>`}
+            </div>
+            <ul class="ctlb-list">${items.slice(0, REPORT_BOARD_SHOWN).map(row).join('')}</ul>
+            ${rest.length ? `<ul class="ctlb-list ctlb-more" hidden>${rest.map(row).join('')}</ul>
+                <button type="button" class="ctlb-toggle" aria-expanded="false">이전 공고 ${rest.length}건 더보기</button>` : ''}
+            <p class="ctlb-note">${escapeFeedText(meta.note)}</p>
+        </div>`;
+    const toggle = host.querySelector('.ctlb-toggle');
+    toggle?.addEventListener('click', () => {
+        const more = host.querySelector('.ctlb-more');
+        const open = more.hidden;
+        more.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? '접기' : `이전 공고 ${rest.length}건 더보기`;
+        paintReportsPage(); // the box changed height; re-fit the report pages below it
+    });
 };
 
 // NOTICE FOR ANY BRANCH MERGING HERE FROM A STALE BASE: this function and
@@ -1353,8 +1477,9 @@ const renderMapLayers = (arcs, opts = {}) => {
     const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-    const tradeControls = controlsFor(currentCommodity);
-    renderExportControlLegend(tradeControls);
+    const EC = window.ExportControls;
+    const tradeControls = EC ? EC.controlsFor(currentCommodity) : new Map();
+    EC?.renderTradeLegend(tradeControls);
 
     const baseLayers = () => [
         ...worldBaseLayers({ id: 'trade' }),
@@ -1385,11 +1510,11 @@ const renderMapLayers = (arcs, opts = {}) => {
             lineWidthMinPixels: 1,
             getFillColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_FILL[c.level] || CONTROL_FILL.watch) : [0, 0, 0, 0];
+                return c ? (EC.FILL[c.level] || EC.FILL.watch) : [0, 0, 0, 0];
             },
             getLineColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_LINE[c.level] || CONTROL_LINE.watch) : [0, 0, 0, 0];
+                return c ? (EC.LINE[c.level] || EC.LINE.watch) : [0, 0, 0, 0];
             },
             updateTriggers: {
                 getFillColor: [currentCommodity, tradeControls.size],

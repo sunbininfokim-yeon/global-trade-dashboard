@@ -598,6 +598,35 @@ async function handleCommodityReports(request, env) {
         );
     }
 
+    // A named board (pipeline "boards"): a list fed by its sources whatever
+    // the commodity. export_controls is every regulator's notices (MOFCOM's
+    // export-control bureau today); ?issuer=CHN narrows it to one country's
+    // regulators, ?measure=entity_list to one kind of measure.
+    const board = (url.searchParams.get('board') || '').trim();
+    if (board) {
+        const issuer = (url.searchParams.get('issuer') || '').trim().toUpperCase();
+        const measure = (url.searchParams.get('measure') || '').trim();
+        const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+        const known = ((doc.boards || {})[board] || []).filter((id) => {
+            const it = byId.get(id);
+            if (!it) return false;
+            if (issuer && (it.control?.issuer || '').toUpperCase() !== issuer) return false;
+            if (measure && it.control?.measure !== measure) return false;
+            return true;
+        });
+        const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            board,
+            issuer: issuer || null,
+            measure: measure || null,
+            total: known.length,
+            offset,
+            count: items.length,
+            items,
+        });
+    }
+
     // No commodity named: hand back the board itself, so a caller can see
     // which windows have anything at all without guessing keys.
     if (!commodity) {
@@ -3090,8 +3119,7 @@ async function handleUsPolicy(request, env) {
             let filter;
             try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!filter.billRef && !filter.conditions && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v4:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v5:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -3263,6 +3291,10 @@ async function usSearch(env, f) {
             law_type: r.law_type, law_number: r.law_number, latest_action_date: r.latest_action_date, match_type: 'exact_bill_number', source_url: PolicyEvidence.billUrl(r.congress_number, r.bill_type, r.bill_number) || r.congress_url,
         })) } };
     }
+    return usHybridSearch(env, f);
+}
+
+async function usSemanticSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
@@ -3283,10 +3315,11 @@ async function usSearch(env, f) {
         .filter((r) => r.source_type === 'regulation')
         .map((r) => r.source_id))];
     const regulationUrls = new Map();
+    const documentDates = new Map();
     if (regulationIds.length) {
         const regRows = await usFetch(env, 'regulations',
-            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
-        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+            `select=regulation_id,federal_register_url,publication_date&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) { regulationUrls.set(reg.regulation_id, reg.federal_register_url); documentDates.set(`regulation:${reg.regulation_id}`, {publication_date: reg.publication_date}); }
     }
     // search_policy_corpus (Supabase RPC, owned separately -- see
     // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
@@ -3306,6 +3339,16 @@ async function usSearch(env, f) {
             + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const b of billRows) billMeta.set(b.bill_id, b);
     }
+    await Promise.all([
+        {type:'executive_order',table:'executive_orders',key:'eo_number',dates:['publication_date','signed_date']},
+        {type:'public_law',table:'public_laws',key:'public_law_id',dates:['enacted_date']},
+    ].map(async source => {
+        const ids=[...new Set((rows || []).filter(r=>r.source_type===source.type).map(r=>r.source_id))];
+        if(!ids.length)return;
+        const query=new URLSearchParams({select:[source.key,...source.dates].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        const metadata=await usFetch(env,source.table,query.toString());
+        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,Object.fromEntries(source.dates.map(key=>[key,row[key]])));
+    }));
     const items = (rows || []).map((r) => {
         const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
         return {
@@ -3313,6 +3356,7 @@ async function usSearch(env, f) {
             id: r.source_id,
             title: r.title,
             similarity_score: r.similarity_score,
+            ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
             source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
             ...(bill ? {
                 congress_number: bill.congress_number,
@@ -3334,10 +3378,49 @@ async function usSearch(env, f) {
 // verified only against stored title/summary, never inferred from cosine scores.
 const CONDITION_SOURCES = [
     {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
-    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,federal_register_url'},
-    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,federal_register_url'},
-    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,govinfo_url,congress_url'},
+    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,publication_date,signed_date,federal_register_url'},
+    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,publication_date,federal_register_url'},
+    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
 ];
+async function usHybridSearch(env, f) {
+    const term=PolicySearchTerms.single(f.query), candidates=new Map();
+    let lexicalAvailable=true,candidateLimited=false;
+    const tasks=term.label ? CONDITION_SOURCES.flatMap(source=>{
+        const title=source.fields[0];
+        return [{source,filter:{[title]:`ilike.${term.label}`}},
+            ...source.fields.map(field=>({source,filter:{and:`(${PolicySearchTerms.clause([field],term)})`}}))];
+    }) : [];
+    const lexical=async()=>{
+        for(let offset=0;offset<tasks.length;offset+=4){
+            const results=await Promise.allSettled(tasks.slice(offset,offset+4).map(async({source,filter})=>{
+                const q=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.desc`,...filter});
+                const rows=await usFetch(env,source.table,q.toString());
+                candidateLimited ||= rows.length===60;
+                for(const row of rows){
+                    const item={...row,type:source.type,id:String(row[source.key]),title:row.title||row.law_title,
+                        summary:row.summary||row.abstract||'',source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+                        ...(source.type==='public_law'?{current_stage:'enacted'}:{})};
+                    const rank=PolicySearchTerms.lexicalRank(item,term);
+                    if(rank)candidates.set(`${item.type}:${item.id}`,{...item,relevance_rank:rank,
+                        match_type:rank===4?(term.aliases.includes(String(item.title).normalize('NFKC').toLowerCase().trim())?'exact_title':'exact_summary_title'):rank===3?'title_phrase':'summary_phrase'});
+                }
+            }));
+            if(results.some(r=>r.status==='rejected'))lexicalAvailable=false;
+        }
+    };
+    const results=await Promise.allSettled([lexical(),hasPolicyEmbeddingProvider(env)?usSemanticSearch(env,f):Promise.reject(new Error('provider unavailable'))]);
+    const semantic=results[1].status==='fulfilled'&&!results[1].value.body.unavailable;
+    if(semantic)for(const item of results[1].value.body.items){
+        const key=`${item.type}:${item.id}`,existing=candidates.get(key);
+        candidates.set(key,existing?{...item,...existing,similarity_score:item.similarity_score}:{...item,relevance_rank:0,match_type:'semantic'});
+    }
+    // A provider outage with no lexical hits is not evidence of an empty corpus.
+    if(!semantic&&!candidates.size){const error=new Error('정책 검색을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.');error.status=503;throw error;}
+    const items=[...candidates.values()].sort((a,b)=>b.relevance_rank-a.relevance_rank||
+        (b.similarity_score||0)-(a.similarity_score||0)||Number(b.congress_number||0)-Number(a.congress_number||0)||String(a.id).localeCompare(String(b.id)));
+    return {ok:true,body:{query:f.query,search_mode:'hybrid',semantic_available:semantic,lexical_available:lexicalAvailable,
+        candidate_limited:candidateLimited,result_limited:items.length>f.limit,items:items.slice(0,f.limit).map(({summary,raw_source,embedding,...item})=>item)}};
+}
 async function usConditionSearch(env,f){
     const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
     const add=(source,row,score=0)=>{

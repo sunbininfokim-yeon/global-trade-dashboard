@@ -4,6 +4,61 @@
  ],
  "targets": [
   {
+   "group": "sanctions",
+   "id": "ofac_recent_actions",
+   "url": "https://ofac.treasury.gov/recent-actions",
+   "variants": true,
+   "link_text": true,
+   "link_re": "ofac\\.treasury\\.gov/recent-actions/\\d{8}",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "ofac_rss_guess",
+   "url": "https://ofac.treasury.gov/recent-actions/rss.xml",
+   "variants": true,
+   "show_body": 300
+  },
+  {
+   "group": "sanctions",
+   "id": "fr_bis",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=industry-and-security-bureau",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "fr_ofac",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=foreign-assets-control-office",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "bis_news",
+   "url": "https://www.bis.gov/news-updates",
+   "variants": true,
+   "link_text": true,
+   "link_re": "bis\\.gov/(?:press-release|news-updates)/[a-z0-9-]+",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "eu_sanctions_news",
+   "url": "https://finance.ec.europa.eu/eu-and-world/sanctions-restrictive-measures_en",
+   "variants": true,
+   "link_text": true,
+   "link_re": "europa\\.eu/[^\\\"' ]*sanction[^\\\"' ]*",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "meti_export_control_en",
+   "url": "https://www.meti.go.jp/policy/anpo/englishpage.html",
+   "variants": true,
+   "link_text": true,
+   "link_re": "meti\\.go\\.jp/[^\\\"' ]+",
+   "samples": 10
+  },
+  {
    "group": "prod",
    "id": "reports_pager_oil_usa_p1",
    "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=0",

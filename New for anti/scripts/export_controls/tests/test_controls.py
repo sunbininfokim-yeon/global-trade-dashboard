@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import unittest
 from datetime import date
 from pathlib import Path
@@ -10,7 +9,8 @@ from pathlib import Path
 from export_controls.universe import (
     AGRI, ENERGY, EXCLUDED_ENTREPOTS, MINERALS, document, load,
 )
-from export_controls.validate import CATALOGUE, validate_document
+from export_controls.catalogue import load as load_catalogue
+from export_controls.validate import validate_document
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,12 +33,12 @@ class UniverseTest(unittest.TestCase):
         self.assertEqual(load(ROOT / "universe.json"), document())
 
     def test_catalogue_passes(self):
-        doc = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+        doc = load_catalogue()
         errors = validate_document(doc, load(ROOT / "universe.json"), today=date(2026, 9, 24))
         self.assertEqual(errors, [])
 
     def test_sugar_and_fuel_are_the_rows_read_this_week(self):
-        doc = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+        doc = load_catalogue()
         by_id = {row["id"]: row for row in doc["controls"]}
         sugar = by_id["ind-sugar"]
         self.assertEqual(sugar["level"], "prohibited")
@@ -51,6 +51,17 @@ class UniverseTest(unittest.TestCase):
         coal = by_id["idn-coal-single-gate"]
         self.assertNotIn("ferroalloys", coal["commodities"])
         self.assertEqual(by_id["idn-ferroalloys-single-gate"]["category"], "minerals")
+
+    def test_rows_sit_in_their_category_module(self):
+        doc = load_catalogue()
+        for row in doc["controls"]:
+            self.assertEqual(doc["module_of"][row["id"]], row["category"], row["id"])
+
+    def test_misfiled_row_is_reported(self):
+        doc = load_catalogue()
+        doc["module_of"] = {**doc["module_of"], "ind-sugar": "energy"}
+        errors = validate_document(doc, load(ROOT / "universe.json"), today=date(2026, 9, 24))
+        self.assertIn("ind-sugar: category agri filed in energy.json", errors)
 
 
 if __name__ == "__main__":

@@ -277,7 +277,7 @@ function queueKeyFilter(value) { return `eq.${value}`; }
 
 async function enqueuePolicyItem(syncResource, sourceKey, payload, options = {}) {
   const existing = (await supabaseGet('policy_ingestion_queue', {
-    select: 'queue_id,status,source_updated_at',
+    select: 'queue_id,status,source_updated_at,priority',
     sync_resource: queueKeyFilter(syncResource), source_key: queueKeyFilter(sourceKey), limit: '1',
   }))?.[0];
   const incoming = options.sourceUpdatedAt ? new Date(options.sourceUpdatedAt).valueOf() : NaN;
@@ -296,6 +296,10 @@ async function enqueuePolicyItem(syncResource, sourceKey, payload, options = {})
       status: 'pending', available_at: new Date().toISOString(), completed_at: null, last_error: null,
     });
     return 'refreshed';
+  }
+  if (existing.status === 'pending' && Number(options.priority || 0) > Number(existing.priority || 0)) {
+    await supabasePatch('policy_ingestion_queue', `queue_id=eq.${existing.queue_id}`, { priority: options.priority });
+    return 'reprioritized';
   }
   return 'unchanged';
 }

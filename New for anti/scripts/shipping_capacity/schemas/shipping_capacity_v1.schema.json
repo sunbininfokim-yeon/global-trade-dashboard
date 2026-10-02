@@ -5,6 +5,232 @@
   "type": "object",
   "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "ui_delivery_contract", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
+    "official_cargo_monitor": {
+      "type": "object",
+      "required": ["contract_version", "generated_at", "status", "api_keys_required", "collection_policy", "sources", "chokepoints"],
+      "properties": {
+        "contract_version": {"const": "official-chokepoint-cargo-v1"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "status": {"enum": ["available", "cached", "unavailable"]},
+        "api_keys_required": {"type": "array", "maxItems": 0},
+        "sources": {
+          "type": "object",
+          "required": ["eia", "imo", "iea"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["status", "api_key_required", "source_url"],
+            "properties": {
+              "status": {"enum": ["fetched", "cached_fallback", "unavailable", "cached_offline", "not_fetched"]},
+              "api_key_required": {"const": false}
+            }
+          }
+        },
+        "chokepoints": {
+          "type": "object",
+          "required": ["hormuz", "suez"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["reference_cards", "supplementary_reference_cards", "reference_comparison_policy", "reported_series", "daily_chart", "daily_crude_barrels", "transit_assessment", "commodity_breakdown_status"],
+            "properties": {
+              "reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "warning_ko"]}},
+              "supplementary_reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "license", "attribution", "warning_ko"], "properties": {"publisher": {"const": "IEA"}, "frequency": {"const": "monthly"}, "cargo_category": {"const": "total_oil"}, "unit": {"const": "barrels_per_day"}, "value": {"type": "number", "minimum": 0}, "license": {"const": "CC BY 4.0"}}}},
+              "reference_comparison_policy": {"const": "group_by_publisher_period_scope_and_commodity_never_mix_composition"},
+              "reported_series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["cargo_category", "period_start", "period_end", "frequency", "statistic", "value", "unit", "geography_scope", "publisher", "source_url", "source_published_at", "retrieved_at", "evidence_class", "warning_ko"],
+                  "properties": {
+                    "cargo_category": {"enum": ["total_oil", "crude_condensate", "petroleum_products", "lng"]},
+                    "period_start": {"type": "string", "format": "date"},
+                    "period_end": {"type": "string", "format": "date"},
+                    "frequency": {"enum": ["quarterly", "monthly"]},
+                    "statistic": {"const": "period_daily_mean"},
+                    "value": {"type": ["number", "null"], "minimum": 0},
+                    "unit": {"enum": ["barrels_per_day", "billion_cubic_feet_per_day"]},
+                    "evidence_class": {"const": "institution_estimate"},
+                    "source_url": {"type": "string", "format": "uri"},
+                    "source_published_at": {"type": "string", "format": "date"},
+                    "retrieved_at": {"type": "string", "format": "date-time"}
+                  }
+                }
+              },
+              "daily_chart": {
+                "type": "object",
+                "required": ["source_path", "unit", "classification", "ship_type_keys", "warning_ko"],
+                "properties": {
+                  "unit": {"const": "estimated_trade_tonnes_per_day"},
+                  "classification": {"const": "ship_type_not_commodity"}
+                }
+              },
+              "daily_crude_barrels": {
+                "type": "object",
+                "required": ["status", "value", "unit"],
+                "properties": {"value": {"type": "null"}}
+              },
+              "transit_assessment": {
+                "type": "object",
+                "required": ["status", "success_probability", "insurance_availability", "advisory_references", "warning_ko"],
+                "properties": {"success_probability": {"type": "null"}}
+              }
+            }
+          }
+        }
+      }
+    },
+    "hormuz_reconstruction": {
+      "type": "object",
+      "required": ["contract_version", "generated_at", "status", "api_keys_required", "method_document", "headline", "mass_balance", "producer_exports", "importer_receipts", "sar_coverage", "identifiability", "rejected_shortcuts", "sources"],
+      "properties": {
+        "contract_version": {"const": "hormuz-reconstruction-v1"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "status": {"enum": ["available", "cached", "unavailable"]},
+        "api_keys_required": {"type": "array", "maxItems": 0},
+        "headline": {
+          "type": "object",
+          "required": ["status", "value", "range", "unit", "display_ko", "blocking_terms", "warning_ko"],
+          "properties": {
+            "status": {"enum": ["not_computed_insufficient_inputs", "computed_monthly_unexplained_range"]},
+            "value": {"type": ["number", "null"]},
+            "range": {"type": ["object", "null"]}
+          },
+          "if": {"properties": {"status": {"const": "not_computed_insufficient_inputs"}}},
+          "then": {"properties": {"value": {"type": "null"}, "range": {"type": "null"}, "blocking_terms": {"type": "array", "minItems": 1}}}
+        },
+        "mass_balance": {
+          "type": "object",
+          "required": ["boundary", "period", "unit", "terms", "result"],
+          "properties": {
+            "unit": {"const": "barrels_cumulative_over_period"},
+            "terms": {
+              "type": "array",
+              "minItems": 7,
+              "maxItems": 7,
+              "items": {
+                "type": "object",
+                "required": ["id", "label_ko", "status", "value", "candidates", "required_ko", "unlock_ko"],
+                "properties": {
+                  "status": {"enum": ["qualified", "unqualified_input", "missing_no_free_source"]},
+                  "candidates": {"type": "array", "items": {"type": "object", "required": ["source", "input_status", "reasons", "reason_labels_ko"]}}
+                },
+                "if": {"properties": {"status": {"not": {"const": "qualified"}}}},
+                "then": {"properties": {"value": {"type": "null"}, "low": {"type": "null"}, "high": {"type": "null"}}}
+              }
+            },
+            "result": {
+              "type": "object",
+              "required": ["status", "missing_terms"],
+              "properties": {"status": {"enum": ["hold_inputs_missing", "hold_negative_residual_boundary_mismatch", "computed"]}}
+            }
+          }
+        },
+        "producer_exports": {
+          "type": "object",
+          "required": ["status", "unit", "months", "producers", "hormuz_only_group", "warning_ko"],
+          "properties": {
+            "unit": {"const": "thousand_barrels_per_day"},
+            "producers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["iso2", "route_class", "series"],
+                "properties": {
+                  "route_class": {"enum": ["hormuz_only_seaborne", "bypass_capable", "outside_strait"]},
+                  "series": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["period", "value", "status"],
+                      "if": {"properties": {"status": {"not": {"const": "reported"}}}},
+                      "then": {"properties": {"value": {"type": "null"}}}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "importer_receipts": {
+          "type": "object",
+          "required": ["status", "unit", "months", "importers", "warning_ko"],
+          "properties": {"unit": {"const": "tonnes_net_weight"}}
+        },
+        "sar_coverage": {
+          "type": "object",
+          "required": ["status", "bbox", "acquisition_dates", "acquisitions", "vessel_detection", "warning_ko"],
+          "properties": {"vessel_detection": {"type": "null"}}
+        },
+        "identifiability": {
+          "type": "object",
+          "required": ["formula", "terms", "result"],
+          "properties": {"result": {"type": "null"}}
+        },
+        "rejected_shortcuts": {"type": "array", "minItems": 1},
+        "sources": {
+          "type": "object",
+          "required": ["jodi", "comtrade", "sentinel1"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["status", "api_key_required", "source_url", "terms_url", "attribution"],
+            "properties": {
+              "status": {"enum": ["fetched", "cached_fallback", "unavailable", "cached_offline", "not_fetched"]},
+              "api_key_required": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "hormuz_bypass_monitor": {
+      "type": "object",
+      "required": ["contract_version", "generated_at", "status", "api_keys_required", "route", "threat", "yanbu_port_activity", "official_crude_comparison", "sources"],
+      "properties": {
+        "contract_version": {"const": "hormuz-bypass-v1"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "status": {"enum": ["available", "cached", "unavailable"]},
+        "api_keys_required": {"type": "array", "maxItems": 0},
+        "route": {"type": "object", "required": ["label_ko", "segments"]},
+        "threat": {
+          "type": "object",
+          "required": ["status", "reviewed_at", "events"],
+          "properties": {
+            "status": {"enum": ["recent_events_reported", "no_recent_events_in_log", "log_review_stale"]},
+            "events": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["date", "date_precision", "event_ko", "evidence_class", "sources"],
+                "properties": {
+                  "evidence_class": {"enum": ["press_report", "official_statement"]},
+                  "sources": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["publisher", "url"]}}
+                }
+              }
+            }
+          }
+        },
+        "yanbu_port_activity": {
+          "type": "object",
+          "required": ["status", "unit", "monthly", "warning_ko"],
+          "properties": {"unit": {"const": "estimated_tanker_export_tonnes_per_day"}}
+        },
+        "official_crude_comparison": {
+          "type": "object",
+          "required": ["publisher", "frequency", "cargo_category", "unit", "series", "diverted_volume"],
+          "properties": {"diverted_volume": {"type": "null"}}
+        },
+        "sources": {
+          "type": "object",
+          "required": ["portwatch_ports"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["status", "api_key_required", "source_url"],
+            "properties": {
+              "status": {"enum": ["fetched", "cached_fallback", "unavailable", "cached_offline", "not_fetched"]},
+              "api_key_required": {"const": false}
+            }
+          }
+        }
+      }
+    },
     "schema_version": {"const": "shipping-capacity-v1"},
     "artifact_type": {"const": "screen_snapshot"},
     "bundle_id": {"type": "string", "minLength": 20, "maxLength": 20},
