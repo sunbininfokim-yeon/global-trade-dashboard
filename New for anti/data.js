@@ -75,6 +75,11 @@
             id: "rubber",
             name_ko: "천연고무",
             aliases: ["rubber", "natural rubber", "천연고무", "고무", "tsr", "rss", "4001"]
+        },
+        "naphtha": {
+            id: "naphtha",
+            name_ko: "납사(경질유)",
+            aliases: ["naphtha", "납사", "나프타", "경질유", "light oils", "271012"]
         }
     };
 
@@ -446,6 +451,14 @@
         gas: {
             hsCode: "2711",
             colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        // Naphtha has no HS heading of its own: it sits in 271012 "light oils
+        // and preparations" with motor gasoline, and only national 8-digit
+        // codes split the two. The map therefore shows light-oil trade, and
+        // the map source note says so (TradeData.naphtha.hsNote).
+        naphtha: {
+            hsCode: "271012",
+            colorScheme: { source: [217, 70, 239], target: [232, 121, 249] }
         },
         thermal_coal: {
             hsCode: "2701",
@@ -905,6 +918,16 @@
                 "Brazil": { production: "10 Mt", import: "12 Mt", consumption: "18 Mt", price: "$260 / ton" },
                 "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
             }
+        },
+        naphtha: {
+            title: "에너지: 납사 (경질유 · HS 271012)",
+            desc: "석유화학 원료 납사 무역 흐름 · HS 271012 경질유 기준(휘발유 포함)",
+            // Shown in the map's source note (app.js comtradeSourceText).
+            hsNote: "HS 271012 경질유 기준(휘발유 포함, 납사 단독 코드 없음)",
+            totalVolume: "—",
+            topExporter: "—",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 271012)
+            news: defaultNews("naphtha")
         },
         oil: {
             title: "에너지: 원유",
