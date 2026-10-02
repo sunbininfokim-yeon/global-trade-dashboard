@@ -75,6 +75,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.print_stats:
         print(doc["stats"])
+        # Counts and the model name only -- no headline text, no key.
+        print("translation:", doc.get("translation"))
+        for name, ids in sorted((doc.get("boards") or {}).items()):
+            print(f"board {name}: {len(ids)}")
         failed = [s for s in doc["feed_status"] if not s.get("ok")]
         if failed:
             print("failed feeds:")
