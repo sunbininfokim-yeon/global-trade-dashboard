@@ -780,7 +780,6 @@ const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,
 const COMTRADE_TTL = {
     "2709": 172800,  // Oil: 48h
     "2711": 172800,  // Gas: 48h
-    "271012": 604800, // Naphtha: light oils (with motor gasoline), weekly
     "2701": 604800,  // Thermal coal: weekly
     "2704": 604800,  // Met coal: weekly
     "7108": 86400,   // Gold: 24h
@@ -2880,7 +2879,6 @@ const FUTURES_UNPRICED = {
     chromium: "거래되는 선물 계약이 없습니다",
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
-    naphtha: "무료로 확인 가능한 실시간 시세가 없습니다 (Platts·Argus 유료 평가가)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
 };
