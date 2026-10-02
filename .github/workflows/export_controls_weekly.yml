@@ -5,7 +5,7 @@ name: Export controls weekly survey
 # boundary (India sugar to 2026-09-30, Russia fuel-product exemptions) would
 # otherwise go a week unseen.
 #
-# Monday 02:00 UTC (11:00 KST). Validates export_controls_v1.json and writes
+# Monday 02:00 UTC (11:00 KST). Validates public/data/export_controls/ (manifest + category modules) and writes
 # that ISO week's record to surveys/weeks.json, even when nothing changed. The
 # catalogue itself is only edited by hand, row by row, after reading the
 # source; this job never touches it, never pushes to main and never edits UI.
@@ -82,7 +82,7 @@ jobs:
               --title "chore(controls): weekly export-control survey" \
               --body-file - <<'EOF'
           ## Summary
-          - Weekly validation of `export_controls_v1.json` and one ISO-week record per run.
+          - Weekly validation of `public/data/export_controls/` (manifest + category modules) and one ISO-week record per run.
           - Unchecked country-commodity pairs are gaps, not a clearance.
           - The catalogue itself changes only in a separate, sourced edit.
 

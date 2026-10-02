@@ -18,8 +18,7 @@
 // stopTradeAnim, tradeAnimRaf, tradeAnimPhase, clampGlobeView, currentViewState,
 // worldBaseLayers, worldGeo, worldGeoData, featureIsCountry, featureCountryName,
 // bowedPath, arcWidth, arcAlpha, MAX_RENDERED_ARCS, generateNodeData,
-// TRADE_MAP_VIEW, controlsFor, renderExportControlLegend, CONTROL_FILL,
-// CONTROL_LINE, exportControlsDoc, macroPanelEl, currentViewDesc,
+// TRADE_MAP_VIEW, macroPanelEl, currentViewDesc,
 // concentrationHtml, normCountryName, commodityReportsPanelEl. (ISO3_FALLBACK
 // stays in app.js, used only by its countryCode helper, which this file calls
 // but does not own.)
@@ -220,9 +219,10 @@ const focusTradeCountry = (countryName) => {
         if (topExporterEl) topExporterEl.textContent = partner;
     }
 
-    const ctl = controlsFor(currentCommodity).get(target?.key || countryName);
+    // Export controls come from export-controls.js (window.ExportControls).
+    const ctl = window.ExportControls?.controlsFor(currentCommodity).get(target?.key || countryName);
     if (ctl && newsContentEl) {
-        const lv = exportControlsDoc?.levels?.[ctl.level]?.label_ko || ctl.level;
+        const lv = window.ExportControls.levelLabel(ctl.level);
         newsContentEl.insertAdjacentHTML('afterbegin', `
             <div class="ctl-card ctl-${ctl.level}">
                 <div class="ctl-head"><strong>${lv}</strong>
@@ -1353,8 +1353,9 @@ const renderMapLayers = (arcs, opts = {}) => {
     const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-    const tradeControls = controlsFor(currentCommodity);
-    renderExportControlLegend(tradeControls);
+    const EC = window.ExportControls;
+    const tradeControls = EC ? EC.controlsFor(currentCommodity) : new Map();
+    EC?.renderTradeLegend(tradeControls);
 
     const baseLayers = () => [
         ...worldBaseLayers({ id: 'trade' }),
@@ -1385,11 +1386,11 @@ const renderMapLayers = (arcs, opts = {}) => {
             lineWidthMinPixels: 1,
             getFillColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_FILL[c.level] || CONTROL_FILL.watch) : [0, 0, 0, 0];
+                return c ? (EC.FILL[c.level] || EC.FILL.watch) : [0, 0, 0, 0];
             },
             getLineColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_LINE[c.level] || CONTROL_LINE.watch) : [0, 0, 0, 0];
+                return c ? (EC.LINE[c.level] || EC.LINE.watch) : [0, 0, 0, 0];
             },
             updateTriggers: {
                 getFillColor: [currentCommodity, tradeControls.size],

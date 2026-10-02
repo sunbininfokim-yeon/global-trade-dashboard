@@ -1,6 +1,15 @@
 # 수출통제 주간 점검
 
-작황 모니터와 무역 지도는 `New for anti/public/data/export_controls_v1.json` 하나만 읽는다. 이 디렉터리는 그 파일을 매주 검사하고, 검사했다는 기록을 GitHub PR로 남기는 쪽이다. 워크플로 파일 설치와 화면 별칭은 Claude가 한다.
+수출통제 모니터(원자재 › 모니터링)와 무역 지도는 `New for anti/public/data/export_controls/` 를 읽는다. 이 디렉터리는 그 카탈로그를 매주 검사하고, 검사했다는 기록을 GitHub PR로 남기는 쪽이다. 워크플로 파일 설치와 화면 별칭은 Claude가 한다.
+
+## 카탈로그 구조 (2026-10-02부터)
+
+하나의 JSON이 아니라 `manifest.json` + 분류별 모듈이다.
+
+- `manifest.json` — `as_of`, `levels`, `measure_types`, `modules`(분류 → 파일), `survey`
+- `agri.json`, `energy.json`, `minerals.json` — 각자 `category` 와 그 분류의 `controls` 만
+
+행은 `category` 와 같은 모듈 파일에 둔다 (`validate` 가 잡는다). 새 분류(예: 귀금속)는 파일 하나와 `modules` 한 줄이면 되고, 검증기는 manifest 의 분류를 그대로 쓴다. 행에는 화면 표시용 `country_ko` 를 넣는다. 읽기는 `export_controls/catalogue.py` 의 `load()` 하나로 통일했다.
 
 ## 주기
 
@@ -12,7 +21,7 @@
 
 이집트(쌀·밀), 미얀마(쌀), 가나(코코아)는 그 품목의 상위 30 밖이거나 다른 그룹에만 있어서 `pinned_outside_role`로 같이 본다.
 
-대시보드에 없는 품목도 슬러그는 둔다. 금, 은, 백금, 팔라듐, 다이아몬드, 석유제품, 우라늄, 면화, 쇠고기, 과일. 화면에 색이 칠해지려면 Claude가 `app.js`의 `CONTROL_ALIASES`와 `CONTROL_COMMODITY_KO`에 슬러그를 넣어야 한다. 농산물 왼쪽 목록은 슬러그를 몰라도 원문을 보여 준다.
+대시보드에 없는 품목도 슬러그는 둔다. 금, 은, 백금, 팔라듐, 다이아몬드, 석유제품, 우라늄, 면화, 쇠고기, 과일. 수출통제 모니터는 슬러그와 상관없이 모든 행을 보여 준다. 품목별 무역 지도에 색이 칠해지려면 Claude가 `export-controls.js`의 `ALIASES`에 슬러그를 넣어야 하고, 한글 이름은 같은 파일의 `COMMODITY_KO`에 있다.
 
 목록 원본은 `universe.py`다. `universe.json`은 그 출력이다.
 

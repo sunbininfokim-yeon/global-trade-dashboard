@@ -18,7 +18,8 @@ from datetime import date
 from pathlib import Path
 
 from .universe import load as load_universe
-from .validate import CATALOGUE, validate_document
+from .catalogue import load as load_catalogue
+from .validate import validate_document
 
 HERE = Path(__file__).resolve().parent
 WEEKS = HERE / "surveys" / "weeks.json"
@@ -123,7 +124,7 @@ def record_week(doc, universe, today=None):
 
 
 def main():
-    doc = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+    doc = load_catalogue()
     universe = load_universe()
     errors = validate_document(doc, universe)
     if errors:

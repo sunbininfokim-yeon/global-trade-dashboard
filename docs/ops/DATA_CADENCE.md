@@ -125,7 +125,7 @@
 > **워크플로가 없는 공개 파일:** 호주·인도네시아·태국·베트남·가나·코트디부아르·
 > 에티오피아·남아공·우간다 수율 예측, `rig_count_v1.json`, `qra_engine_v1.json`,
 > `sst_regions_v1.json`, `race_progress_*`, `russia_export_pulse_v1.json`,
-> `hedge_fund_ust_v1.json`, `export_controls_v1.json`, `usda_gain_outlook_v1.json` 은
+> `hedge_fund_ust_v1.json`, `export_controls/` (manifest + 분류별 모듈), `usda_gain_outlook_v1.json` 은
 > 손으로 한 번 만든 뒤 갱신 경로가 없다 (2026-09-24 기준). 파일 안의
 > `generated_at`/`as_of` 를 보고 판단할 것.
 >
