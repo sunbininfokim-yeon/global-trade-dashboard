@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-10-02T15:45:49.089201+00:00",
+  "generated_at": "2026-10-02T20:41:30.092211+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,18 +75,19 @@
   "stats": {
     "sources_ok": 35,
     "sources_failed": 3,
-    "raw_items": 832,
-    "scored_items": 112,
+    "raw_items": 812,
+    "scored_items": 96,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 9,
-      "china": 2,
-      "india": 2,
+      "commodity_specialist": 8,
       "mena": 4,
+      "china": 2,
+      "west": 1,
       "russia": 2,
       "japan": 2,
-      "west": 1,
-      "turkey": 2
+      "india": 2,
+      "turkey": 2,
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 124,
+      "elapsed_ms": 160,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 185,
+      "elapsed_ms": 486,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 156,
+      "elapsed_ms": 116,
       "error": null,
       "mode": "live"
     },
@@ -119,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1242,
+      "elapsed_ms": 1175,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 20,
-      "elapsed_ms": 329,
+      "count": 0,
+      "elapsed_ms": 269,
       "error": null,
       "mode": "live"
     },
@@ -135,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2447,
+      "elapsed_ms": 3476,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 669,
+      "elapsed_ms": 671,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 319,
+      "elapsed_ms": 333,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 153,
+      "elapsed_ms": 141,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 81,
+      "elapsed_ms": 77,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 735,
+      "elapsed_ms": 660,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 191,
+      "elapsed_ms": 224,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 161,
+      "elapsed_ms": 178,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1532,
+      "elapsed_ms": 1265,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 3613,
+      "elapsed_ms": 953,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 494,
+      "elapsed_ms": 293,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 636,
+      "elapsed_ms": 547,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 745,
+      "elapsed_ms": 584,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 64,
+      "elapsed_ms": 83,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 227,
+      "elapsed_ms": 199,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 108,
+      "elapsed_ms": 90,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 103,
+      "elapsed_ms": 185,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 644,
+      "elapsed_ms": 632,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 664,
+      "elapsed_ms": 424,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 336,
+      "elapsed_ms": 278,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1436,
+      "elapsed_ms": 1122,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1352,
+      "elapsed_ms": 1186,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1108,
+      "elapsed_ms": 1625,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 4232,
+      "elapsed_ms": 1795,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 418,
+      "elapsed_ms": 93,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 533,
+      "elapsed_ms": 650,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 89,
+      "elapsed_ms": 52,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 456,
+      "elapsed_ms": 2812,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 155,
+      "elapsed_ms": 149,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 585,
+      "elapsed_ms": 654,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 161,
+      "elapsed_ms": 449,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 582,
+      "elapsed_ms": 558,
       "error": null,
       "mode": "live"
     },
@@ -391,12 +392,56 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 375,
+      "elapsed_ms": 437,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
+    {
+      "id": "3ee0f62d0e9eb39b",
+      "published_at": "2026-10-02T16:50:45+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Crude-Oil/Dated-Brent-Above-120-Signals-a-Serious-Oil-Squeeze.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Dated Brent Above $120 Signals a Serious Oil Squeeze",
+        "original_lang": "en",
+        "ko": "날짜가 브렌트인 날짜가 $ 120 이상인 경우 심각한 오일 스퀴즈를 나타냄"
+      },
+      "summary": "Physical oil markets tighten sharply as Dated Brent surges above $120 despite ICE Brent slipping toward $101. Friday, October 02, 2026 The European diesel stock release, droned tankers in the Strait of Hormuz, and China reinstating its refined product export ban have all played t",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.899,
+        "importance": 5.789,
+        "final": 6.7
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g1",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN"
+    },
     {
       "id": "3a512263fcfe4474",
       "published_at": "2026-10-02T15:00:00+00:00",
@@ -423,9 +468,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.979,
-        "importance": 5.687,
-        "final": 6.582
+        "freshness": 0.854,
+        "importance": 4.959,
+        "final": 5.74
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -467,9 +512,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.972,
-        "importance": 5.127,
-        "final": 5.935
+        "freshness": 0.848,
+        "importance": 4.471,
+        "final": 5.176
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -484,6 +529,47 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "USA"
+    },
+    {
+      "id": "4f0b668f4b06af77",
+      "published_at": "2026-10-02T16:20:09+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/jordan-king-urges-us-to-help-secure-regional-ceasefire-in-call-with-rubio-3004288",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Jordan king urges US to help secure regional ceasefire in call with Rubio",
+        "original_lang": "en",
+        "ko": "조던 킹 (Jordan King) 은 루비오 (Rubio) 와의 통화에서 지역 휴전을 확보하도록 미국에 촉구합니다."
+      },
+      "summary": "AMMAN: Jordan’s King Abdullah II called for a comprehensive regional ceasefire and urged greater US support for de-escalation efforts during a phone call with Secretary of State Marco Rubio on Friday. The king stressed the need for an agreement that guarantees the security and so",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 2.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.886,
+        "importance": 4.15,
+        "final": 4.897
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "diplomacy:2",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "af5115e2c7d3ebc8",
@@ -511,9 +597,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.864,
-        "importance": 2.956,
-        "final": 3.422
+        "freshness": 0.754,
+        "importance": 2.578,
+        "final": 2.984
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -554,9 +640,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.914,
-        "importance": 2.695,
-        "final": 2.998
+        "freshness": 0.797,
+        "importance": 2.35,
+        "final": 2.615
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -596,9 +682,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.966,
-        "importance": 2.221,
-        "final": 2.571
+        "freshness": 0.842,
+        "importance": 1.937,
+        "final": 2.242
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -637,9 +723,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.99,
-        "importance": 2.191,
-        "final": 2.536
+        "freshness": 0.863,
+        "importance": 1.911,
+        "final": 2.212
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -655,41 +741,41 @@
       "country_hint": "USA"
     },
     {
-      "id": "3885601371135665",
-      "published_at": "2026-10-02T08:00:00+00:00",
+      "id": "cd19d5e38b7cd121",
+      "published_at": "2026-10-02T20:25:19+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "bbc_business",
+        "name": "BBC Business",
+        "region": "west",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/US-Diesel-Export-Ban-Would-Hit-Latin-America-Hardest-Goldman.html",
-      "category": "diplomacy",
+      "url": "https://www.bbc.co.uk/news/articles/ck87zg8jnwngo?at_medium=RSS&at_campaign=rss",
+      "category": "commodity_diplomacy",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "U.S. Diesel Export Ban Would Hit Latin America Hardest: Goldman",
+        "original": "G7 to release 100 million barrels of oil and diesel after Trump export ban threat",
         "original_lang": "en",
-        "ko": "미국 디젤 수출 금지가 라틴 아메리카에 가장 큰 타격을 줄 것임: 골드만"
+        "ko": "트럼프 수출 금지 위협 이후 1억 배럴의 석유와 디젤을 방출하는 G7"
       },
-      "summary": "A potential ban on exports of diesel fuel from the United States would affect Latin America the most, Goldman Sachs has said, despite reports that the pain from such a ban would be the greatest for Europe. U.S. diesel imports cover as much as 50% of the fuel’s consumption across ",
+      "summary": "The coordinated release is aimed at heading off further price spikes and avoiding a ban on US diesel exports.",
       "scores": {
-        "commodity": 0.8,
+        "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.806,
-        "importance": 2.032,
-        "final": 2.352
+        "region_weight": 0.55,
+        "freshness": 0.993,
+        "importance": 2.74,
+        "final": 2.185
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:diplomacy",
+        "region:west*0.55",
+        "category:commodity_diplomacy",
         "tier:A*1.00/g1",
-        "commodity:oil:0.8",
+        "commodity:oil:1",
         "diplomacy:1",
-        "bridge:2"
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -721,9 +807,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.914,
-        "importance": 1.765,
-        "final": 2.043
+        "freshness": 0.797,
+        "importance": 1.539,
+        "final": 1.782
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -739,173 +825,127 @@
       "country_hint": "KOR"
     },
     {
-      "id": "a18822ed15636385",
-      "published_at": "2026-10-02T11:02:00+00:00",
+      "id": "7489274990c6e432",
+      "published_at": "2026-10-02T19:17:00+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/tanker-struck-in-the-strait-of-hormuz-3004312",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Tanker struck in the Strait of Hormuz",
+        "original_lang": "en",
+        "ko": "호르무즈 해협에서 유조선이 충돌했습니다."
+      },
+      "summary": "A tanker was struck in the Strait of Hormuz by an “unknown projectile” while transiting outbound through the waterway, the British military said Friday. The attack caused a “small fire and blackout onboard” but there were no reported casualties, the United Kingdom Maritime Trade ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.962,
+        "importance": 1.477,
+        "final": 1.743
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "GBR"
+    },
+    {
+      "id": "6779fdb14e589cf1",
+      "published_at": "2026-10-02T19:00:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/WTI-Sinks-Nearly-4-as-EU-Weighs-Emergency-Stockpile-Release.html",
+      "url": "https://oilprice.com/Energy/Energy-General/Iranian-Oil-Starts-Flowing-to-Tajikistan-Despite-US-Sanctions-Risk.html",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "WTI Sinks Nearly 4% as EU Weighs Emergency Stockpile Release",
+        "original": "Iranian Oil Starts Flowing to Tajikistan Despite U.S. Sanctions Risk",
         "original_lang": "en",
-        "ko": "WTI는 EU가 비상 비축 방출의 무게를 측정함에 따라 거의 4% 가 가라앉습니다."
+        "ko": "미국의 제재 위험에도 불구하고 이란 석유가 타지키스탄으로 유입되기 시작함"
       },
-      "summary": "Oil prices fell sharply on Friday as Europe moved closer to another emergency stock release under pressure from the Trump administration, with WTI dropping nearly 4% and Brent falling below $100. At 6:54 a.m. ET, WTI was trading at $89.36, down 3.78%, while Brent was trading at $",
+      "summary": "Tajikistan announced that it is now receiving oil and petroleum products from Iran, opening a potential new energy source for a country whose fuel supplies have long been dominated by Russia. The deliveries began in late August, Tajikistan's Energy and Water Resources Ministry to",
       "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
+        "commodity": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.877,
-        "importance": 1.6,
-        "final": 1.852
+        "freshness": 0.954,
+        "importance": 1.466,
+        "final": 1.697
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "bridge:1"
+        "commodity:oil:2",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "USA"
+      "country_hint": "RUS"
     },
     {
-      "id": "b808009a1f95e8d1",
-      "published_at": "2026-10-02T08:02:10+00:00",
+      "id": "c2fbc74493b3dcf5",
+      "published_at": "2026-10-02T19:07:55+00:00",
       "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.ndtv.com/world-news/us-imposes-sanctions-on-irans-rail-auto-sectors-to-raise-economic-pressure-12129227#publisher=newsstand",
+      "url": "https://tass.ru/mezhdunarodnaya-panorama/28177431",
       "category": "commodity",
       "commodities": [
-        "oil",
-        "shipping"
+        "gas"
       ],
       "title": {
-        "original": "US Imposes Sanctions On Iran's Rail, Auto Sectors To Raise Economic Pressure",
-        "original_lang": "en",
-        "ko": "미국은 경제 압박을 높이기 위해 이란의 철도, 자동차 부문에 제재를 가한다."
+        "original": "МИД Украины не получал запросов от Запада о переносе посольств из Киева",
+        "original_lang": "ru",
+        "ko": "우크라이나 외무부는 키예프에서 대사관 이전을 서방으로부터 요청받지 않았습니다."
       },
-      "summary": "The US has imposed a blockade on Iranian oil going through the Strait of Hormuz",
+      "summary": "Газета The Guardian писала, что диппредставительства могут переехать во Львов или в восточную Польшу",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 1.0,
         "diplomacy": 2.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.807,
-        "importance": 1.588,
-        "final": 1.803
+        "region_weight": 1.25,
+        "freshness": 0.958,
+        "importance": 1.356,
+        "final": 1.509
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
+        "commodity:gas:1",
         "diplomacy:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "157d7fda92ea0b60",
-      "published_at": "2026-10-02T14:49:00+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/g7-plans-oil-and-diesel-supply-offers-100-million-barrels-macron-says",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "G7 to release up to 100m barrels of oil and diesel from reserves, Macron says",
-        "original_lang": "en",
-        "ko": "마크롱은 G7이 매장량에서 최대 1억 배럴의 석유와 디젤을 방출한다고 말합니다."
-      },
-      "summary": "G7 to release up to 100m barrels of oil and diesel from reserves, Macron says G7 countries plan to release up to 100 million barrels of crude oil and diesel from strategic reserves over four months to ease global pressure on supplies, French President Emmanuel Macron said. Member",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.974,
-        "importance": 1.465,
-        "final": 1.728
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:2",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "213319393f66834c",
-      "published_at": "2026-10-02T10:00:59+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/singapore-low-sulfur-marine-fuel-arbitrage-arrivals-from-west-could-decline-in-october/",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Singapore low-sulfur marine fuel arbitrage arrivals from West could decline in October",
-        "original_lang": "en",
-        "ko": "서쪽에서 오는 싱가포르 저유황 선박 연료 차익거래는 10월에 감소할 수 있습니다."
-      },
-      "summary": "Singapore’s low sulfur fuel oil arrivals from Western markets could decline in October, as steeper freight rates have rendered arbitrage flows uneconomical. The world’s largest bunkering hub, Singapore, is expected to receive 1.5 million-1.6 million mt of LSFO from the West in Oc",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.853,
-        "importance": 1.412,
-        "final": 1.634
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
+      "country_hint": "RUS"
     },
     {
       "id": "9af3cfc5e33940b0",
@@ -934,9 +974,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.83,
-        "importance": 1.374,
-        "final": 1.529
+        "freshness": 0.724,
+        "importance": 1.199,
+        "final": 1.333
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -952,252 +992,43 @@
       "country_hint": "CHN"
     },
     {
-      "id": "8e7252b20a6c6725",
-      "published_at": "2026-10-02T14:02:47+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/opinion/kazakhstan-needs-greater-resilience-for-its-oil-exports-3004048",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Kazakhstan needs greater resilience for its oil exports",
-        "original_lang": "en",
-        "ko": "카자흐스탄은 석유 수출에 더 큰 탄력성이 필요합니다"
-      },
-      "summary": "Stakeholders representing eight shareholder companies involved in Kazakhstan’s major oil projects are conducting a feasibility study on expanding oil exports westward through the Caspian Sea and Azerbaijan. The timing of this matters. Kazakhstan currently sends more than 80 perce",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.954,
-        "importance": 1.213,
-        "final": 1.431
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "f8e6f0daff2d8e5f",
-      "published_at": "2026-10-02T15:08:04+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/sport/saudi-arabia-wins-gold-in-team-show-jumping-event-at-2026-asian-games-3004276",
-      "category": "commodity",
-      "commodities": [
-        "gold",
-        "silver"
-      ],
-      "title": {
-        "original": "Saudi Arabia wins gold in team show jumping event at 2026 Asian Games",
-        "original_lang": "en",
-        "ko": "사우디아라비아, 2026년 아시안 게임 단체전 점프 종목에서 금메달 획득"
-      },
-      "summary": "DUBAI: Saudi Arabia won gold in the team show jumping event at the 2026 Asian Games in Japan. The victory by Ramzy Al-Dahami, Khaled Al-Mubti, Abdul Rahman Alrajhi and Saad Al-Ajmi on Thursday secured the Kingdom’s first gold medal of the tournament. Saudi athletes have now won 1",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.983,
-        "importance": 1.085,
-        "final": 1.28
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "JPN"
-    },
-    {
-      "id": "a68816211dd8cc8d",
-      "published_at": "2026-10-02T15:32:22+00:00",
-      "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.thehindu.com/news/national/kerala/asian-games-silver-medallist-sreeshankar-targets-gold-in-2028/article71537821.ece",
-      "category": "commodity",
-      "commodities": [
-        "gold",
-        "silver"
-      ],
-      "title": {
-        "original": "Asian Games silver medallist Sreeshankar targets gold in 2028",
-        "original_lang": "en",
-        "ko": "아시안 게임 은메달리스트 스리샨카르, 2028년 금메달 목표"
-      },
-      "summary": "Sreeshankar won the silver medal in long jump at the Asian Games in Japan despite suffering an injury during his fourth attempt",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.994,
-        "importance": 1.097,
-        "final": 1.246
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "JPN"
-    },
-    {
-      "id": "df839c079e16aaab",
-      "published_at": "2026-10-02T15:30:44+00:00",
+      "id": "c7991df5f1c53969",
+      "published_at": "2026-10-02T19:16:32+00:00",
       "source": {
         "id": "rt_ru",
         "name": "RT Russian",
         "region": "russia",
         "slant": null
       },
-      "url": "https://russian.rt.com/sport/news/1689972-pasechnik-chirizano-chellendzher-itog?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "commodity",
-      "commodities": [
-        "rice",
-        "silver"
-      ],
-      "title": {
-        "original": "Пасечник и Чиризано завоевали серебро челленджера в Грузии",
-        "original_lang": "ru",
-        "ko": "조지아에서 양봉가와 치리자노가 챌린저 은메달 획득"
-      },
-      "summary": "Российские фигуристы Елизавета Пасечник и Дарио Чиризано заняли второе место в танцах на льду на челленджере в Батуми (Грузия). Читать далее",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.993,
-        "importance": 1.097,
-        "final": 1.22
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:rice:1",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "a2b2cf83ede22f29",
-      "published_at": "2026-10-02T15:30:42+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.ru/sport/28176955",
-      "category": "commodity",
-      "commodities": [
-        "rice",
-        "silver"
-      ],
-      "title": {
-        "original": "Фигуристы Пасечник и Чиризано выиграли серебро на турнире в Грузии",
-        "original_lang": "ru",
-        "ko": "피겨 스케이팅 선수 파세크닉과 치리자노는 조지아에서 열린 토너먼트에서 은메달을 획득했습니다."
-      },
-      "summary": "",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.993,
-        "importance": 1.097,
-        "final": 1.22
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:rice:1",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "2fec4c8c90e81f3d",
-      "published_at": "2026-10-02T11:31:15+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/10/2/just-one-in-10-germans-thinks-merz-is-up-to-the-job-after-election-wipeout?traffic_source=rss",
-      "category": "election",
+      "url": "https://russian.rt.com/business/news/1690060-analitik-kitai-neft?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "diplomacy",
       "commodities": [],
       "title": {
-        "original": "Support for Merz plunges after CDU’s losses to Germany’s right and left",
-        "original_lang": "en",
-        "ko": "CDU 손실 후 독일의 오른쪽과 왼쪽으로 급락한 메르츠 지원"
+        "original": "Аналитик Фролов: Китай сократил экспорт топлива на фоне падения импорта нефти",
+        "original_lang": "ru",
+        "ko": "애널리스트 프롤로프: 중국, 석유 수입 감소로 연료 수출 감소"
       },
-      "summary": "Chancellor Friedrich Merz hits a record low approval rating after his party suffered defeats in three state elections.",
+      "summary": "Заместитель директора Международного института энергетической политики и дипломатии МГИМО, главный редактор портала «ИнфоТЭК» Александр Фролов связал сокращение октябрьских экспортных партий топлива из Китая с необходимостью обеспечить внутренний рынок при ограниченном доступе к ",
       "scores": {
         "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.5,
-        "region_weight": 1.4,
-        "freshness": 0.889,
-        "importance": 1.029,
-        "final": 1.214
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.962,
+        "importance": 1.077,
+        "final": 1.198
       },
       "rank_reasons": [
-        "region:mena*1.40",
-        "category:election",
+        "region:russia*1.25",
+        "category:diplomacy",
         "tier:A*1.00/g2",
-        "election:governance_poll:1.5"
+        "diplomacy:1",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
-      "country_hint": "DEU",
-      "election_type": "governance_poll"
+      "country_hint": "RUS"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1240,6 +1071,47 @@
       "election_type": "cabinet_reshuffle"
     },
     {
+      "id": "53c7ed02e14a735e",
+      "published_at": "2026-10-02T16:35:02+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/saudi-arabia/pakistan-saudi-arabia-turkiye-to-hold-defense-pact-talks-next-week-amid-houthi-attacks-3004291",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Pakistan, Saudi Arabia, Turkiye to hold defense pact talks next week amid Houthi attacks",
+        "original_lang": "en",
+        "ko": "파키스탄, 사우디아라비아, 튀르키예, 후티의 공격으로 다음 주 방위조약 회담 개최"
+      },
+      "summary": "ISLAMABAD: Pakistan, Saudi Arabia and Turkiye will convene the top committee of their joint defense pact in Riyadh next week to review a surge in Houthi attacks on the Kingdom, Pakistan’s Deputy Prime Minister and Foreign Minister Ishaq Dar said on Friday. The meeting of the Stra",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.892,
+        "importance": 0.91,
+        "final": 1.074
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
       "id": "4a9fac063baeab3d",
       "published_at": "2026-10-02T07:13:00+00:00",
       "source": {
@@ -1265,9 +1137,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.789,
-        "importance": 0.871,
-        "final": 0.969
+        "freshness": 0.688,
+        "importance": 0.759,
+        "final": 0.845
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -1282,47 +1154,124 @@
       "country_hint": "JPN"
     },
     {
-      "id": "cf636caecc849147",
-      "published_at": "2026-09-29T16:46:57+00:00",
+      "id": "2bf10bd004f57312",
+      "published_at": "2026-10-02T18:58:22+00:00",
       "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
+        "id": "the_hindu",
+        "name": "The Hindu",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.ft.com/content/26c54c8c-931c-4d84-9cf3-fd3e9b5e215d?syn-25a6b1a6=1",
+      "url": "https://www.thehindu.com/news/national/tamil-nadu/minority-tvk-government-has-forced-byelection-for-cms-selfish-gain-dmk-president-stalin/article71538122.ece",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "‘Minority’ TVK government has ‘forced’ byelection for CM’s selfish gain: DMK president Stalin",
+        "original_lang": "en",
+        "ko": "‘소수’ TVK 정부는 CM의 이기적 이득을 위해 ’강제’ 선출했습니다: DMK 대통령 스탈린"
+      },
+      "summary": "“Actor Chief Minister” C. Joseph Vijay, after playing a hero in Jananayagan, had turned a villain by imposing a byelection through “horse-trading” and “murder of democracy”, says Stalin",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.3,
+        "freshness": 0.954,
+        "importance": 0.736,
+        "final": 0.835
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:election",
+        "tier:A*1.00/g2",
+        "election:by_election:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "IND",
+      "election_type": "by_election"
+    },
+    {
+      "id": "f8a75ca8f4fc1ff7",
+      "published_at": "2026-10-02T17:23:32+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/530654/PGSA-Three-Emirati-tankers-hit-in-Hormuz-were-on-non-compliance",
       "category": "commodity",
       "commodities": [
-        "oil",
         "shipping"
       ],
       "title": {
-        "original": "Middle Eastern oil exports rise to highest level since Iran war began",
+        "original": "PGSA: Three Emirati tankers hit in Hormuz were on non-compliance list",
         "original_lang": "en",
-        "ko": "중동 석유 수출은 이란 전쟁이 시작된 이후 최고 수준으로 증가합니다."
+        "ko": "PGSA: 호르무즈에서 타격을 받은 아랍에미리트 유조선 3척이 비준수 목록에 올랐습니다."
       },
-      "summary": "Shuttle services through Strait of Hormuz have brought shipments to more than 80% of prewar daily average",
+      "summary": "TEHRAN — Iran’s Persian Gulf Strait Authority (PGSA) says three Emirati tankers struck in the Strait of Hormuz in recent days were already on its non-compliance list.",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.35,
-        "importance": 1.12,
-        "final": 0.893
+        "region_weight": 1.4,
+        "freshness": 0.913,
+        "importance": 0.647,
+        "final": 0.763
       },
       "rank_reasons": [
-        "region:west*0.55",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:1",
+        "tier:B*0.72/g3",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "9edf59b82bf809ee",
+      "published_at": "2026-10-02T18:22:56+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/g7-nations-to-release-100-million-barrels-of-oil-amid-fuel-price-surge-12131779#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "G7 Nations To Release 100 Million Barrels Of Oil Amid Fuel Price Surge",
+        "original_lang": "en",
+        "ko": "G7 국가, 연료 가격 급등 속에서 1억 배럴의 석유 출시 예정"
+      },
+      "summary": "The leaders also said that there would be no ban on diesel exports between them.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.938,
+        "importance": 0.518,
+        "final": 0.588
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1"
+      ],
+      "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "IND"
     },
     {
       "id": "d6ebc4b0ebf18783",
@@ -1349,9 +1298,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.618,
-        "importance": 0.511,
-        "final": 0.58
+        "freshness": 0.539,
+        "importance": 0.446,
+        "final": 0.506
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1363,6 +1312,46 @@
       "country_tier": "B",
       "info_grade": "1",
       "country_hint": "TUR"
+    },
+    {
+      "id": "36c9ef6c63232a19",
+      "published_at": "2026-10-02T19:00:00+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/focus/breakingnews/5593810",
+      "category": "commodity",
+      "commodities": [
+        "gold"
+      ],
+      "title": {
+        "original": "《TAIPEI TIMES》Lin wins second straight boxing gold at Asiad",
+        "original_lang": "zh-TW",
+        "ko": "타이베이 타임스 린, 아시아드에서 2연속 복싱 금메달 획득"
+      },
+      "summary": "Staff writer, with agencies Taiwanese Olympic champion Lin Yu-ting （林郁婷） yesterday won her second c...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.954,
+        "importance": 0.379,
+        "final": 0.422
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:gold:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     },
     {
       "id": "a6b6b791aa891b43",
@@ -1389,9 +1378,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.975,
-        "importance": 0.387,
-        "final": 0.44
+        "freshness": 0.85,
+        "importance": 0.338,
+        "final": 0.383
       },
       "rank_reasons": [
         "region:turkey*1.30",
