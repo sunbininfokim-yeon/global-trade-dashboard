@@ -33,6 +33,11 @@ export const financeEvidence = (race, contract) => {
 
 export const financeEvidenceHtml = (race, contract) => {
     const evidence = financeEvidence(race, contract);
+    if (race?.status === 'unsupported') return `<div class="elections-evidence-finance">
+        <strong>${escapeHtml(evidence.label)}</strong><span>주 공시 미수집</span>
+        <small>금액을 0 또는 지출 없음으로 해석할 수 없습니다.</small></div>`;
+    if (race?.status === 'not_applicable') return `<div class="elections-evidence-finance">
+        <strong>${escapeHtml(evidence.label)}</strong><span>해당 선거 없음</span></div>`;
     return `<div class="elections-evidence-finance">
         <strong>${escapeHtml(evidence.label)}</strong>
         <span>후보 지지 ${escapeHtml(money(evidence.support))}</span>

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pollSignal } from '../data/usa-election-context.js';
-import { pollEvidenceHtml } from '../country-explorer/special/usa-election-evidence.js';
+import { financeEvidenceHtml, pollEvidenceHtml } from '../country-explorer/special/usa-election-evidence.js';
 import { selectNationalRaces } from '../country-explorer/special/usa-election-national.js';
 
 test('an outdated pre-election board cannot keep a poll colour after election day', () => {
@@ -37,4 +37,10 @@ test('the national dashboard excludes unverified watch slots that may not be 202
     assert.deepEqual(selectNationalRaces(board).map((race) => race.race_id),
         ['USA:MI:senate', 'USA:NY:governor']);
     assert.deepEqual(selectNationalRaces(null), []);
+});
+
+test('unsupported governor disclosure is distinct from an observed zero', () => {
+    const html = financeEvidenceHtml({ office: 'governor', status: 'unsupported', totals_by_category: {} }, null);
+    assert.match(html, /주 공시 미수집/);
+    assert.doesNotMatch(html, /관측 없음|\$0/);
 });
