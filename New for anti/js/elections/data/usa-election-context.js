@@ -38,6 +38,16 @@ export const classLabels = {
 
 export const normalizeParty = (party) => party === 'GOP' ? 'REP' : party === 'DFL' ? 'DEM' : party;
 
+// The collector closes the active board on the day after an election. Use noon
+// UTC on that day as the UI fallback so western US polls have also closed.
+// This is deliberately a display cutoff, not a claim of certified results.
+export const raceClosedByDate = (race, now = Date.now()) => {
+    const electionDate = race?.election_date;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(electionDate || '')) return false;
+    const cutoff = Date.parse(`${electionDate}T00:00:00Z`) + 36 * 3600000;
+    return Number.isFinite(cutoff) && now >= cutoff;
+};
+
 export const pollSourceReady = (board, health, now = Date.now()) => {
     if (!board || board.schema !== 'usa_live_polls_v1' || board.source_status !== 'ok' || health?.status !== 'ok') return false;
     const fetched = Date.parse(board.fetched_at);
@@ -50,7 +60,9 @@ export const pollSignal = (race, board, health, days = 7, now = Date.now()) => {
     if (race.phase === 'certified_result' && race.result?.status === 'certified') {
         return { status: 'certified_result', party: normalizeParty(race.result.party), leader: race.result.winner };
     }
-    if (race.phase === 'awaiting_certified_result') return { status: 'awaiting_certified_result', party: null };
+    if (race.phase === 'awaiting_certified_result' || raceClosedByDate(race, now)) {
+        return { status: 'awaiting_certified_result', party: null };
+    }
     if (!pollSourceReady(board, health, now)) return { status: 'stale', party: null };
     const window = race.windows?.[String(days)];
     if (!window) return { status: 'unavailable', party: null };

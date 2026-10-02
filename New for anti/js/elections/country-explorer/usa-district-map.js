@@ -1,5 +1,5 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js';
-import { pollSignal } from '../data/usa-election-context.js';
+import { pollSignal, pollSourceReady } from '../data/usa-election-context.js';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
     : party === 'GOP' ? [220, 38, 38, 225] : [71, 85, 105, 230];
@@ -39,7 +39,8 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
             id: `elections-usa-${stateId}-districts`, data: geo, stroked: true, filled: true, pickable: true, lineWidthMinPixels: 1.2,
             // deck.gl caches accessor results, so the highlight has to be part
             // of the layer's update trigger or the repaint keeps the old fill.
-            updateTriggers: { getFillColor: [highlightDistrict, electionMode, pollBoard?.fetched_at, windowDays],
+            updateTriggers: { getFillColor: [highlightDistrict, electionMode, pollBoard?.fetched_at,
+                pollSourceReady(pollBoard, pollHealth), windowDays, Math.floor(Date.now() / 3600000)],
                 getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
             getLineColor: (feature) => (isHighlighted(feature, highlightDistrict) ? [255, 255, 255, 255] : [226, 232, 240, 205]),
             getLineWidth: (feature) => (isHighlighted(feature, highlightDistrict) ? 3 : 1),

@@ -69,7 +69,8 @@ const statusLabel = {
 
 export const pollEvidenceHtml = (race, board, health, days = 7) => {
     const signal = pollSignal(race, board, health, days);
-    const observations = race?.phase === 'pre_election' ? (race.observations || []) : [];
+    const observations = race?.phase === 'pre_election' && signal.status !== 'awaiting_certified_result'
+        && signal.status !== 'certified_result' ? (race.observations || []) : [];
     const hasPoll = observations.length > 0;
     const name = signal.leader ? ` · ${signal.leader}` : '';
     const party = normalizeParty(signal.party);
