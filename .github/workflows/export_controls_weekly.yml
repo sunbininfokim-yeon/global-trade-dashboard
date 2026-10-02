@@ -6,7 +6,12 @@ name: Export controls weekly survey
 # otherwise go a week unseen.
 #
 # Monday 02:00 UTC (11:00 KST). Validates public/data/export_controls/ (manifest + category modules) and writes
-# that ISO week's record to surveys/weeks.json, even when nothing changed. The
+# that ISO week's record to surveys/weeks.json, even when nothing changed.
+# Since 2026-10-02 it also writes the week's result table
+# (export_controls/report.py -> surveys/reports/<week>.md): deadlines passed
+# or within 21 days, each row's source link, and the last 8 days' export
+# ban/restriction/lift notices from the reports pipeline matched to catalogue
+# rows (update candidates, or new-row drafts). That table is the PR body. The
 # catalogue itself is only edited by hand, row by row, after reading the
 # source; this job never touches it, never pushes to main and never edits UI.
 #
@@ -31,6 +36,7 @@ concurrency:
 env:
   BRANCH: cursor/export-controls-weekly-survey
   WEEKS: New for anti/scripts/export_controls/surveys/weeks.json
+  REPORTS: New for anti/scripts/export_controls/surveys/reports
 
 jobs:
   survey:
@@ -56,7 +62,7 @@ jobs:
 
       # A failed validation fails the job, so a broken catalogue is never
       # recorded as a clean week.
-      - name: Validate and record the week
+      - name: Validate, record the week and write the result table
         working-directory: New for anti/scripts
         run: python3 -m export_controls.survey
 
@@ -64,7 +70,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git add "$WEEKS"
+          git add "$WEEKS" "$REPORTS"
           if git diff --cached --quiet; then
             echo "this ISO week is already recorded"
           else
@@ -75,19 +81,13 @@ jobs:
             exit 0
           fi
           git push -u origin "$BRANCH"
+          # The PR body is always this week's result table.
+          BODY="$REPORTS/latest.md"
+          WEEK="$(date -u +%G-W%V)"
           if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
-            gh pr comment "$BRANCH" --body "Weekly survey record updated on this branch."
+            gh pr edit "$BRANCH" --title "수출통제 주간 점검 $WEEK" --body-file "$BODY"
+            gh pr comment "$BRANCH" --body "$WEEK 결과표로 본문을 갱신했다."
           else
             gh pr create --base main --head "$BRANCH" \
-              --title "chore(controls): weekly export-control survey" \
-              --body-file - <<'EOF'
-          ## Summary
-          - Weekly validation of `public/data/export_controls/` (manifest + category modules) and one ISO-week record per run.
-          - Unchecked country-commodity pairs are gaps, not a clearance.
-          - The catalogue itself changes only in a separate, sourced edit.
-
-          ## Test plan
-          - [ ] `cd "New for anti/scripts" && python3 -m export_controls.validate`
-          - [ ] Open questions in the week record still match what a person has to read
-          EOF
+              --title "수출통제 주간 점검 $WEEK" --body-file "$BODY"
           fi
