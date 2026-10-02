@@ -1,4 +1,5 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js';
+import { pollSignal } from '../data/usa-election-context.js';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
     : party === 'GOP' ? [220, 38, 38, 225] : [71, 85, 105, 230];
@@ -28,7 +29,8 @@ const isHighlighted = (feature, highlightDistrict) => highlightDistrict != null
 // fitView is false when only the highlight changed: setElectionMap treats a
 // viewState as "move the camera there", so re-fitting on every district click
 // would yank the map back to the whole-state framing the user had zoomed out of.
-export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null, fitView = true }) => {
+export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null, fitView = true,
+    electionMode = false, pollBoard = null, pollHealth = null, windowDays = 7 }) => {
     const geo = await loadCongressionalDistricts(stateId);
     if (!geo) return false;
     host.setElectionMap([
@@ -37,13 +39,19 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
             id: `elections-usa-${stateId}-districts`, data: geo, stroked: true, filled: true, pickable: true, lineWidthMinPixels: 1.2,
             // deck.gl caches accessor results, so the highlight has to be part
             // of the layer's update trigger or the repaint keeps the old fill.
-            updateTriggers: { getFillColor: highlightDistrict, getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
+            updateTriggers: { getFillColor: [highlightDistrict, electionMode, pollBoard?.fetched_at, windowDays],
+                getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
             getLineColor: (feature) => (isHighlighted(feature, highlightDistrict) ? [255, 255, 255, 255] : [226, 232, 240, 205]),
             getLineWidth: (feature) => (isHighlighted(feature, highlightDistrict) ? 3 : 1),
             lineWidthUnits: 'pixels',
-            getFillColor: (feature) => (isHighlighted(feature, highlightDistrict)
-                ? [255, 255, 255, 235]
-                : partyColor(feature.properties?.party_abbr)),
+            getFillColor: (feature) => {
+                if (isHighlighted(feature, highlightDistrict)) return [255, 255, 255, 235];
+                if (!electionMode) return partyColor(feature.properties?.party_abbr);
+                const district = String(feature.properties?.district ?? '');
+                const race = pollBoard?.races?.[`USA:${stateId}:house:${district}`];
+                const party = pollSignal(race, pollBoard, pollHealth, windowDays).party;
+                return party === 'DEM' ? partyColor('DEM') : party === 'REP' ? partyColor('GOP') : [71, 85, 105, 230];
+            },
         }),
     ], null, fitView ? viewForGeometry(geo) : null);
     return true;

@@ -816,6 +816,50 @@ body {
 .elections-spac-district-body { display: none; padding: 0 10px 10px; }
 .elections-spac-district.is-open .elections-spac-district-body { display: block; }
 
+/* USA election view: historical state key and separate poll/finance evidence. */
+.elections-map-legend, .elections-window-switch {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    color: #cbd5e1; font-size: 11px;
+}
+.elections-map-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.elections-map-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.elections-map-legend .is-blue { background: #2563eb; }
+.elections-map-legend .is-red { background: #dc2626; }
+.elections-map-legend .is-swing { background: #9333ea; }
+.elections-window-switch button {
+    border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 5px;
+    color: #cbd5e1; background: #0f172a; padding: 3px 9px; cursor: pointer;
+}
+.elections-window-switch button[aria-pressed="true"] { border-color: #38bdf8; color: #e0f2fe; background: #164e63; }
+.elections-national-races { display: grid; gap: 9px; }
+.elections-race-card {
+    border: 1px solid rgba(148, 163, 184, 0.28); border-radius: 8px;
+    background: rgba(15, 23, 42, 0.58); padding: 10px;
+}
+.elections-race-card > button {
+    display: flex; width: 100%; justify-content: space-between; gap: 8px;
+    color: #e2e8f0; background: transparent; border: 0; cursor: pointer;
+    text-align: left; padding: 0 0 8px; font: inherit; font-size: 12px;
+}
+.elections-race-card > button span { color: #94a3b8; }
+.elections-race-card > button:focus-visible { outline: 2px solid #38bdf8; }
+.elections-evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 7px; }
+.elections-evidence-poll, .elections-evidence-finance {
+    display: grid; gap: 5px; align-content: start; min-width: 0;
+    border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 6px;
+    padding: 8px; color: #cbd5e1; font-size: 11px; line-height: 1.4;
+}
+.elections-evidence-poll strong, .elections-evidence-finance strong { color: #e2e8f0; }
+.elections-evidence-poll .is-dem { color: #93c5fd; }
+.elections-evidence-poll .is-gop { color: #fca5a5; }
+.elections-evidence-poll small, .elections-evidence-finance small { color: #94a3b8; }
+.elections-poll-observations { padding-left: 18px; overflow-wrap: anywhere; }
+.elections-poll-observations li { margin: 5px 0; }
+.elections-poll-observations li span { display: block; }
+.elections-national-mode a, .elections-evidence-poll a { color: #7dd3fc; }
+.elections-spac-block > .elections-evidence-poll { margin-top: 8px; }
+.elections-spac-district-body > .elections-evidence-poll { margin-top: 7px; }
+
 /* --- Congress dashboard (하원·상원, one fixed layout per chamber) ---------- */
 .elections-chamber-radio {
     /* Clipped rather than display:none so the chamber tabs stay keyboard
