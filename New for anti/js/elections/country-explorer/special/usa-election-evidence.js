@@ -80,7 +80,7 @@ export const pollEvidenceHtml = (race, board, health, days = 7) => {
     const leads = Object.entries(signal.window?.lead_counts || {});
     const leadCountText = leads.length ? `조사별 우세 횟수: ${leads.map(([candidate, count]) => `${candidate} ${count}회`).join(' · ')}${signal.window?.tie_count ? ` · 동률 ${signal.window.tie_count}회` : ''}` : '';
     const note = race?.schedule_status === 'watch_slot_unverified' && !hasPoll
-        ? '<small>본선 대진 확인 전 · 감시 목록이 조사 존재를 뜻하지 않습니다.</small>' : '';
+        ? '<small>선거 일정·본선 대진 확인 전 감시 슬롯입니다. 이 목록만으로 실제 선거를 뜻하지 않습니다.</small>' : '';
     return `<div class="elections-evidence-poll">
         <strong>여론조사 · 최근 ${days}일</strong>
         <span class="${partyLabel ? (party === 'DEM' ? 'is-dem' : 'is-gop') : ''}">

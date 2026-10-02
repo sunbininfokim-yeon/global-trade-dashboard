@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pollSignal } from '../data/usa-election-context.js';
 import { pollEvidenceHtml } from '../country-explorer/special/usa-election-evidence.js';
+import { selectNationalRaces } from '../country-explorer/special/usa-election-national.js';
 
 test('an outdated pre-election board cannot keep a poll colour after election day', () => {
     const board = { schema: 'usa_live_polls_v1', source_status: 'ok',
@@ -25,4 +26,15 @@ test('a delayed live-board refresh does not expose accumulated polls after the d
     const html = pollEvidenceHtml(race, null, null);
     assert.match(html, /선거 종료 · 공식 결과 대기/);
     assert.doesNotMatch(html, /누적 조사 1건 보기/);
+});
+
+test('the national dashboard excludes unverified watch slots that may not be 2026 elections', () => {
+    const board = { races: {
+        'USA:PA:senate': { race_id: 'USA:PA:senate', state: 'PA', office: 'senate', schedule_status: 'watch_slot_unverified' },
+        'USA:MI:senate': { race_id: 'USA:MI:senate', state: 'MI', office: 'senate', schedule_status: 'reported_general_matchup' },
+        'USA:NY:governor': { race_id: 'USA:NY:governor', state: 'NY', office: 'governor', phase: 'certified_result' },
+    } };
+    assert.deepEqual(selectNationalRaces(board).map((race) => race.race_id),
+        ['USA:MI:senate', 'USA:NY:governor']);
+    assert.deepEqual(selectNationalRaces(null), []);
 });

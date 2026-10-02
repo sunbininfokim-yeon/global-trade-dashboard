@@ -9,21 +9,18 @@ const raceRank = (race, days) => (race.windows?.[String(days)]?.status === 'poll
     + (stateClass2024(race.state) === 'swing' ? 12 : 0)
     + (race.office === 'senate' ? 3 : race.office === 'governor' ? 2 : 1);
 
-const watchRaces = (board, indexes, days) => {
+export const selectNationalRaces = (board, days = 7) => {
     const races = board?.races ? Object.values(board.races).filter((race) =>
-        ['house', 'senate', 'governor'].includes(race.office) && NATIONAL_WATCH_STATES.includes(race.state)) : [];
-    if (races.length) return races.sort((a, b) => raceRank(b, days) - raceRank(a, days)).slice(0, 18);
-    // Polling PR not deployed yet: disclose the missing join rather than
-    // inventing poll rows, but keep independently published finance visible.
-    return NATIONAL_WATCH_STATES.flatMap((state) => (indexes[state]?.races || [])
-        .filter((race) => race.office === 'senate' || race.office === 'governor')
-        .map((race) => ({ ...race, state, race_id: race.race_id }))).slice(0, 18);
+        ['house', 'senate', 'governor'].includes(race.office)
+        && NATIONAL_WATCH_STATES.includes(race.state)
+        && (race.schedule_status === 'reported_general_matchup' || race.phase === 'certified_result')) : [];
+    return races.sort((a, b) => raceRank(b, days) - raceRank(a, days)).slice(0, 18);
 };
 
 export const renderUsaElectionNational = (root, {
     board, health, indexes = {}, contract, days = 7, onBack, onToggle, onWindowChange, onStateOpen,
 }) => {
-    const races = watchRaces(board, indexes, days);
+    const races = selectNationalRaces(board, days);
     const ready = pollSourceReady(board, health);
     const financeById = new Map(Object.entries(indexes).flatMap(([, index]) =>
         (index?.races || []).map((race) => [race.race_id, race])));
@@ -57,9 +54,9 @@ export const renderUsaElectionNational = (root, {
                         ${financeById.has(race.race_id) ? financeEvidenceHtml(financeById.get(race.race_id), contract)
                             : '<div class="elections-evidence-finance"><strong>외부 독립지출</strong><span>자료 연결 대기</span></div>'}
                     </div>
-                </article>`).join('') || '<p class="elections-muted">주목 선거 데이터를 아직 불러오지 못했습니다.</p>'}</div>
+                </article>`).join('') || '<p class="elections-muted">확인된 2026 본선 선거 목록을 아직 불러오지 못했습니다. 감시 슬롯을 실제 선거로 표시하지 않습니다.</p>'}</div>
         </section>
-        <p class="elections-panel-note">대상: NY·TN·FL·TX와 2024 경합주 7곳(조지아 포함). 공개 자료가 없는 선거는 관측 없음으로 표시합니다.</p>`;
+        <p class="elections-panel-note">대상: NY·TN·FL·TX와 2024 경합주 7곳(조지아 포함). 본선 대진이 확인된 선거만 카드에 넣습니다. 감시 슬롯은 선거 확인 전까지 제외합니다.</p>`;
     root.querySelector('[data-election-back]')?.addEventListener('click', onBack);
     root.querySelector('[data-election-mode]')?.addEventListener('click', onToggle);
     root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange(Number(button.dataset.window))));

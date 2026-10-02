@@ -158,9 +158,11 @@ const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, 
             ${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}
         </section>`;
     const view = viewFor(race.office, contract);
+    const unverified = pollRace?.schedule_status === 'watch_slot_unverified';
     return `
         <section class="elections-spac-block">
-            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span>${badgeCaption}${winnerBadge(race, view.categories)}</div>
+            <div class="elections-spac-block-head"><span>${escapeHtml(label)}${unverified ? ' · 2026 선거 미확인' : ''}</span>${badgeCaption}${winnerBadge(race, view.categories)}</div>
+            ${unverified ? '<p class="elections-panel-note">이 주의 해당 직위에 2026 선거가 있는지 검증 전입니다. 공시 금액은 선거자금 기록으로만 읽어주세요.</p>' : ''}
             ${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}
             ${raceBody(race, view)}
         </section>`;
