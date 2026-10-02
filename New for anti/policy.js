@@ -1530,7 +1530,7 @@
     const token = ++renderToken;
     host.classList.add('policy-surface');
     host.dataset.policyTarget = target;
-    host.innerHTML = `<div class="policy-loading"><span class="mm-cpi-spinner" aria-hidden="true"></span>${esc('정책 데이터를 불러오는 중')}</div>`;
+    host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}<span class="mm-cpi-spinner" aria-hidden="true"></span></div>`;
 
     subscribeToAuth();
 
