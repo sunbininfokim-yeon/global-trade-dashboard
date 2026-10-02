@@ -2798,28 +2798,6 @@ body.trade-map-mode .right-pane {
 .climate-status-pill.orange { background: rgba(251,146,60,0.18); color: #fb923c; }
 .climate-status-pill.red { background: rgba(248,113,113,0.18); color: #f87171; }
 .climate-status-pill.green { background: rgba(74,222,128,0.15); color: #4ade80; }
-.climate-trade-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(56, 189, 248, 0.28);
-    background: linear-gradient(120deg, rgba(8, 47, 73, 0.55), rgba(15, 23, 42, 0.9));
-    margin-bottom: 2px;
-}
-.climate-trade-banner .tb-label {
-    font-size: 11px;
-    color: #94a3b8;
-    letter-spacing: 0.04em;
-}
-.climate-trade-banner .tb-note {
-    font-size: 11px;
-    color: #cbd5e1;
-    margin-top: 3px;
-    line-height: 1.4;
-}
 .climate-crop-merge {
     padding: 10px 0;
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -3548,13 +3526,9 @@ body.trade-map-mode .right-pane {
 }
 .dropdown.dropdown-columns .dd-sub:first-of-type { border-top: 0; margin-top: 0; }
 .dropdown.dropdown-columns a { padding: 7.5px 14px; border-radius: 6px; }
-/* 작황 모니터는 「원자재」 클릭 시 열리는 기본 화면이라 눈에 띄게 둔다. */
-.dropdown.dropdown-columns .dd-feature {
-    color: #4ade80;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px 6px 0 0;
-    margin-bottom: 4px;
-}
+/* 모니터링 열: 품목이 아니라 여러 품목을 가로지르는 화면이라 색으로 구분.
+   작황 모니터는 「원자재」 클릭 시 열리는 기본 화면이기도 하다. */
+.dropdown.dropdown-columns .dd-col-monitor a { color: #4ade80; }
 .dropdown.dropdown-columns::-webkit-scrollbar { width: 6px; }
 .dropdown.dropdown-columns::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .25); border-radius: 999px;
@@ -4036,6 +4010,8 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
     color: #7dd3fc; font-weight: 600;
     letter-spacing: .01em;
 }
+a.rpt-agency { text-decoration: none; }
+a.rpt-agency:hover, a.rpt-agency:focus-visible { text-decoration: underline; }
 .rpt-series {
     color: #cbd5e1; padding: 0 5px; border-radius: 999px;
     background: rgba(148,163,184,.12); border: 1px solid rgba(148,163,184,.18);
@@ -4069,6 +4045,48 @@ a.rpt-title:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offs
 .rpt-more:hover { color: #94a3b8; }
 .rpt-more:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
 .rpt-note { font-size: 9.5px; color: #64748b; margin-top: 8px; }
+/* China's export-control notices (trade.js renderReportBoard): Chinese
+   originals from MOFCOM's export-control bureau, above the reports list. */
+.ctlb-card {
+    margin: 0 0 12px; padding: 10px 11px;
+    border: 1px solid rgba(248,113,113,.28); border-radius: 8px;
+    background: rgba(248,113,113,.06);
+}
+.ctlb-head {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+    margin-bottom: 6px;
+}
+.ctlb-label { font-size: 11.5px; font-weight: 700; color: #fecaca; }
+.ctlb-agency {
+    margin-left: auto; font-size: 9.5px; font-weight: 600; color: #7dd3fc;
+    text-decoration: none;
+}
+a.ctlb-agency:hover, a.ctlb-agency:focus-visible { text-decoration: underline; }
+.ctlb-list { list-style: none; margin: 0; padding: 0; }
+.ctlb-item {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ctlb-item:last-child { border-bottom: none; }
+.ctlb-text { flex: 1; min-width: 0; }
+.ctlb-title {
+    display: block; font-size: 11.5px; line-height: 1.5; color: #e2e8f0;
+    text-decoration: none; overflow-wrap: anywhere;
+}
+.ctlb-ko { display: block; font-size: 10px; line-height: 1.45; color: #94a3b8; margin-top: 1px; }
+.ctlb-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ctlb-measure {
+    font-size: 9px; color: #fecaca; padding: 0 5px; border-radius: 999px;
+    border: 1px solid rgba(248,113,113,.35); white-space: nowrap;
+}
+a.ctlb-title:hover, a.ctlb-title:focus-visible { color: #38bdf8; text-decoration: underline; }
+.ctlb-date { flex: none; font-size: 9.5px; color: #64748b; font-variant-numeric: tabular-nums; }
+.ctlb-toggle {
+    margin-top: 4px; padding: 0; border: 0; background: none; cursor: pointer;
+    font-size: 10px; color: #94a3b8;
+}
+.ctlb-toggle:hover { color: #e2e8f0; }
+.ctlb-note { font-size: 9.5px; color: #64748b; margin: 6px 0 0; }
 /* Pages of the reports window, cut to the reader's screen height (trade.js
    paginateReports). */
 .rpt-pager {
@@ -6682,40 +6700,6 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 }
 
 
-/* 작황모니터 · 주요 농산물 수출국 수출통제 목록 */
-.ag-controls .ac-country { border-top: 1px solid rgba(148,163,184,.14); }
-.ag-controls .ac-country summary {
-    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 7px 2px;
-}
-.ag-controls .ac-country summary::-webkit-details-marker { display: none; }
-.ag-controls .ac-country summary::before { content: '▸'; color: #64748b; font-size: 10px; transition: transform .15s; }
-.ag-controls .ac-country[open] summary::before { transform: rotate(90deg); }
-.ag-controls .ac-country summary:hover .ac-name { color: #7dd3fc; }
-.ag-controls .ac-country summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; border-radius: 4px; }
-.ag-controls .ac-country ul { padding-bottom: 8px; }
-.ag-controls .ac-name { font-size: 12.5px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
-.ag-controls .ac-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-left: auto; justify-content: flex-end; }
-.ag-controls .ac-chip { font-size: 9.5px; padding: 1px 6px; border-radius: 999px; background: rgba(148,163,184,.14); color: #cbd5e1; white-space: nowrap; }
-.ag-controls .ac-chip.ctl-prohibited { color: #fecaca; background: rgba(248,113,113,.18); }
-.ag-controls .ac-chip.ctl-restricted { color: #fed7aa; background: rgba(251,146,60,.16); }
-.ag-controls .ac-chip.ctl-watch { color: #fef08a; background: rgba(250,204,21,.14); }
-.ag-controls .ac-chip.ctl-lifted { opacity: .6; }
-.ag-controls .ac-iso { font-size: 10px; color: #64748b; font-weight: 400; margin-left: 4px; }
-.ag-controls ul { list-style: none; margin: 4px 0 0; padding: 0; }
-.ag-controls .ac-item { padding: 6px 8px; margin-top: 4px; border-radius: 6px; background: rgba(15,23,42,.45);
-    border-left: 3px solid rgba(148,163,184,.4); }
-.ag-controls .ac-prohibited { border-left-color: #f87171; }
-.ag-controls .ac-restricted { border-left-color: #fb923c; }
-.ag-controls .ac-watch { border-left-color: #facc15; }
-.ag-controls .ac-lifted { opacity: .62; }
-.ag-controls .ac-top { display: flex; justify-content: space-between; gap: 6px; font-size: 11.5px; color: #e2e8f0; }
-.ag-controls .ac-lv { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: rgba(148,163,184,.14); color: #cbd5e1; white-space: nowrap; }
-.ag-controls .ac-lv.ctl-prohibited { color: #fecaca; background: rgba(248,113,113,.18); }
-.ag-controls .ac-lv.ctl-restricted { color: #fed7aa; background: rgba(251,146,60,.16); }
-.ag-controls .ac-lv.ctl-watch { color: #fef08a; background: rgba(250,204,21,.14); }
-.ag-controls .ac-measure { font-size: 11px; color: #cbd5e1; margin-top: 3px; line-height: 1.45; }
-.ag-controls .ac-src { font-size: 10px; color: #64748b; margin-top: 3px; }
-.ag-controls .ac-src a { color: #7dd3fc; }
 .mm-fomc-toggle { display: flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .mm-fomc-toggle-main { display: block; min-width: 0; }
 .mm-fomc-toggle:hover .mm-fomc-more { color: #ddd6fe; }

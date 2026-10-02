@@ -80,7 +80,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=101">
+    <link rel="stylesheet" href="style.css?v=103">
+    <link rel="stylesheet" href="export-controls.css?v=3">
 </head>
 <body>
     <div id="app">
@@ -89,9 +90,11 @@
             <div class="logo" id="home-logo" style="cursor: pointer;">ChokePoint Monitor</div>
             <nav class="main-menu">
                 <!-- 에너지·금속·농산물을 「원자재」 하나로 묶고, 드롭다운 안에서
-                     3열로 나눴다. 상단 메뉴가 5개에서 3개로 줄어 해운·금융이
+                     열로 나눴다. 상단 메뉴가 5개에서 3개로 줄어 해운·금융이
                      같은 층위로 보이고, 품목을 찾을 때 메뉴를 옮겨 다니지 않아도
-                     세 분류를 한눈에 비교할 수 있다. 열 구성은 기존 각 메뉴와 동일. -->
+                     분류를 한눈에 비교할 수 있다.
+                     2026-10-02: 품목 3열 + 「모니터링」 열. 작황 모니터는 농산물 열에서
+                     옮겨 왔고, 수출통제 모니터는 품목 분류를 가로지르므로 같은 열에 둔다. -->
                 <div class="menu-item" data-nav-default="climate">
                     <span class="menu-parent" role="button" tabindex="0" aria-label="작황 모니터 열기">원자재</span>
                     <div class="dropdown dropdown-columns">
@@ -142,7 +145,6 @@
 
                         <div class="dd-col">
                             <span class="dd-head">농산물</span>
-                            <a href="#" data-target="climate" class="dd-feature">작황 모니터</a>
                             <a href="#" data-target="wheat">밀</a>
                             <a href="#" data-target="corn">옥수수</a>
                             <a href="#" data-target="soybeans">대두</a>
@@ -150,6 +152,12 @@
                             <a href="#" data-target="palm_oil">팜유</a>
                             <a href="#" data-target="rubber">천연고무</a>
                             <a href="#" data-target="coffee">커피</a>
+                        </div>
+
+                        <div class="dd-col dd-col-monitor">
+                            <span class="dd-head">모니터링</span>
+                            <a href="#" data-target="climate">작황 모니터</a>
+                            <a href="#" data-target="export_controls">수출통제 모니터</a>
                         </div>
                     </div>
                 </div>
@@ -270,6 +278,11 @@
                     </div>
                 </div>
 
+                <!-- 수출통제 모니터 (export-controls.js) -->
+                <div class="panel-section hidden" id="export-controls-panel">
+                    <div id="export-controls-content" class="ec-panel"></div>
+                </div>
+
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
 
@@ -313,6 +326,8 @@
                 </div>
                 <!-- Climate map legend (shown only in climate views) -->
                 <div id="climate-map-legend" class="climate-map-legend hidden"></div>
+                <!-- 수출통제 모니터 legend (export-controls.js) -->
+                <div id="export-controls-legend" class="climate-map-legend world-mini hidden"></div>
 
                 <!-- Trade map overlay: scale, flow toggle, interaction hint -->
                 <div id="trade-overlay" class="trade-overlay hidden">
@@ -347,6 +362,7 @@
                      one. The heading lives inside #reports-slot's own markup
                      (trade.js), so this wrapper carries no title of its own. -->
                 <div class="panel-section hidden" id="commodity-reports-panel">
+                    <div id="ctl-board-slot"></div>
                     <div id="reports-slot"></div>
                 </div>
 
@@ -459,9 +475,10 @@
          window.USPolicy (favorited-bill cards), so it loads after both. -->
     <script src="mypage.js?v=6"></script>
     <script src="tutorial.js?v=8"></script>
-    <script src="app.js?v=134"></script>
+    <script src="export-controls.js?v=3"></script>
+    <script src="app.js?v=135"></script>
     <script src="gas-storage.js?v=2"></script>
-    <script src="trade.js?v=spr-3y-1"></script>
+    <script src="trade.js?v=ec-monitor-1"></script>
     <script src="trade-monthly.js?v=5"></script>
     <script type="module" src="js/elections/index.js?v=6"></script>
 </body>

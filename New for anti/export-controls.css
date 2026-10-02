@@ -1,0 +1,138 @@
+/* 수출통제 모니터 (export-controls.js). Level colours match the trade-map
+   overlay in style.css (.ctl-*): prohibited red, restricted orange, watch amber. */
+
+/* The commodity template's trade-volume stats mean nothing here. */
+#commodity-info-panel.ec-mode .stats-container { display: none; }
+
+#export-controls-panel { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+.ec-panel { overflow-y: auto; min-height: 0; padding-right: 2px; }
+
+.ec-filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.ec-filter {
+    font: inherit; font-size: 11.5px; color: #cbd5e1; cursor: pointer;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(148, 163, 184, .1); border: 1px solid rgba(148, 163, 184, .2);
+}
+.ec-filter span { color: #64748b; margin-left: 2px; font-variant-numeric: tabular-nums; }
+.ec-filter:hover { border-color: rgba(125, 211, 252, .5); }
+.ec-filter.is-on { background: rgba(56, 189, 248, .16); border-color: rgba(56, 189, 248, .55); color: #e0f2fe; }
+.ec-filter.is-on span { color: #7dd3fc; }
+.ec-filter:focus-visible, .ec-country:focus-visible, .ec-back:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+
+.ec-country {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font: inherit; text-align: left; cursor: pointer; color: inherit;
+    padding: 8px 2px; background: none; border: 0; border-top: 1px solid rgba(148, 163, 184, .14);
+}
+.ec-country:hover .ec-name { color: #7dd3fc; }
+.ec-name { font-size: 12.5px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+.ec-iso { font-size: 10px; color: #64748b; font-weight: 400; margin-left: 4px; }
+.ec-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-left: auto; justify-content: flex-end; }
+.ec-chip, .ec-lv {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 999px; white-space: nowrap;
+    background: rgba(148, 163, 184, .14); color: #cbd5e1;
+}
+.ec-lv { font-size: 10px; }
+.ec-chip.ctl-prohibited, .ec-lv.ctl-prohibited { color: #fecaca; background: rgba(248, 113, 113, .18); }
+.ec-chip.ctl-restricted, .ec-lv.ctl-restricted { color: #fed7aa; background: rgba(251, 146, 60, .16); }
+.ec-chip.ctl-watch, .ec-lv.ctl-watch { color: #fef08a; background: rgba(250, 204, 21, .14); }
+.ec-chip.ctl-lifted, .ec-lv.ctl-lifted { opacity: .6; }
+
+.ec-back {
+    font: inherit; font-size: 11.5px; color: #7dd3fc; cursor: pointer;
+    background: none; border: 0; padding: 2px 0; margin-bottom: 8px;
+}
+.ec-country-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ec-country-head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.ec-count { font-size: 11px; color: #94a3b8; }
+.ec-cat {
+    margin: 14px 0 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+    color: #94a3b8; text-transform: uppercase;
+}
+.ec-items { list-style: none; margin: 0; padding: 0; }
+.ec-item {
+    padding: 8px 10px; margin-top: 5px; border-radius: 6px;
+    background: rgba(15, 23, 42, .45); border-left: 3px solid rgba(148, 163, 184, .4);
+}
+.ec-item.ec-prohibited { border-left-color: #f87171; }
+.ec-item.ec-restricted { border-left-color: #fb923c; }
+.ec-item.ec-watch { border-left-color: #facc15; }
+.ec-item.ec-lifted { opacity: .62; }
+.ec-top { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: #e2e8f0; }
+.ec-measure { font-size: 11.5px; color: #cbd5e1; margin-top: 4px; line-height: 1.5; }
+.ec-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 10.5px; color: #94a3b8; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.ec-src { font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+.ec-src a { color: #7dd3fc; }
+.ec-recheck { color: #fbbf24; }
+
+.ec-empty { font-size: 12px; color: #94a3b8; line-height: 1.6; padding: 10px 0; }
+.ec-warn { font-size: 11.5px; color: #fca5a5; margin: 10px 0 0; }
+.ec-foot { font-size: 10px; color: #64748b; line-height: 1.55; margin: 14px 0 4px; }
+
+/* Tooltip pills reuse the panel's level colours. */
+#tooltip .ec-lv { margin-left: 8px; }
+
+/* Tabs: 현행 조치 (curated) | 최근 공고 (regulator feed). */
+.ec-tabs { display: flex; gap: 2px; margin-bottom: 10px; border-bottom: 1px solid rgba(148, 163, 184, .18); }
+.ec-tab {
+    font: inherit; font-size: 12.5px; font-weight: 600; color: #94a3b8; cursor: pointer;
+    background: none; border: 0; border-bottom: 2px solid transparent; padding: 7px 10px 8px; margin-bottom: -1px;
+}
+.ec-tab span { font-weight: 400; color: #64748b; margin-left: 2px; font-variant-numeric: tabular-nums; }
+.ec-tab:hover { color: #e2e8f0; }
+.ec-tab.is-on { color: #f1f5f9; border-bottom-color: #38bdf8; }
+.ec-tab:focus-visible, .ec-more:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+.ec-filter-sm { font-size: 10.5px; padding: 3px 8px; }
+
+.ec-sect { margin: 14px 0 0; font-size: 12px; color: #e2e8f0; }
+.ec-cat-n { font-weight: 400; color: #64748b; letter-spacing: 0; text-transform: none; margin-left: 4px; }
+
+/* Notice rows. */
+.ec-notices { list-style: none; margin: 0; padding: 0; }
+.ec-notice { padding: 9px 2px; border-top: 1px solid rgba(148, 163, 184, .14); }
+.ec-n-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 10.5px; color: #94a3b8; }
+.ec-n-date { font-variant-numeric: tabular-nums; color: #cbd5e1; }
+.ec-n-body { color: #94a3b8; text-decoration: none; }
+a.ec-n-body:hover { color: #7dd3fc; text-decoration: underline; }
+.ec-n-measure {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 999px; margin-left: auto;
+    background: rgba(148, 163, 184, .14); color: #cbd5e1; white-space: nowrap;
+}
+.ec-n-measure.m-export_ban, .ec-n-measure.m-entity_list { color: #fecaca; background: rgba(248, 113, 113, .18); }
+.ec-n-measure.m-export_restriction, .ec-n-measure.m-sanctions, .ec-n-measure.m-countermeasure { color: #fed7aa; background: rgba(251, 146, 60, .16); }
+.ec-n-measure.m-list_adjustment, .ec-n-measure.m-enforcement { color: #fef08a; background: rgba(250, 204, 21, .13); }
+.ec-n-measure.m-suspension { color: #bbf7d0; background: rgba(74, 222, 128, .14); }
+.ec-n-title { display: block; margin-top: 4px; font-size: 12px; line-height: 1.5; color: #e2e8f0; text-decoration: none; }
+a.ec-n-title:hover { color: #7dd3fc; }
+.ec-n-go { font-size: 10px; color: #7dd3fc; white-space: nowrap; }
+.ec-n-orig { margin-top: 3px; font-size: 10.5px; line-height: 1.45; color: #64748b; }
+.ec-n-tags { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 4px; font-size: 10.5px; color: #c4b5fd; }
+
+.ec-more {
+    display: block; width: 100%; margin-top: 8px; padding: 7px; cursor: pointer;
+    font: inherit; font-size: 11.5px; color: #7dd3fc;
+    background: rgba(56, 189, 248, .06); border: 1px solid rgba(56, 189, 248, .25); border-radius: 6px;
+}
+.ec-more:hover { background: rgba(56, 189, 248, .12); }
+
+/* "기한 경과": the until date passed; shown apart from live measures. */
+.ec-chip.ctl-expired, .ec-lv.ctl-expired { color: #fde68a; background: rgba(148, 163, 184, .16); border: 1px dashed rgba(251, 191, 36, .5); }
+.ec-item.ec-expired { border-left-color: #fbbf24; border-left-style: dashed; opacity: .8; }
+
+/* 현행 조치: 국가별 | 품목별. */
+.ec-bys { display: inline-flex; margin-bottom: 8px; border: 1px solid rgba(148, 163, 184, .25); border-radius: 7px; overflow: hidden; }
+.ec-by { font: inherit; font-size: 11.5px; color: #94a3b8; cursor: pointer; background: none; border: 0; padding: 4px 12px; }
+.ec-by + .ec-by { border-left: 1px solid rgba(148, 163, 184, .25); }
+.ec-by.is-on { background: rgba(56, 189, 248, .16); color: #e0f2fe; }
+.ec-by:focus-visible, .ec-scope input:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+
+/* What each level means, in a line each. */
+.ec-levelkey { display: grid; gap: 3px; margin: 2px 0 8px; font-size: 10.5px; color: #94a3b8; }
+.ec-levelkey i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.ec-levelkey i.ctl-prohibited { background: #f87171; }
+.ec-levelkey i.ctl-restricted { background: #fb923c; }
+.ec-levelkey i.ctl-watch { background: #facc15; }
+.ec-levelkey i.ctl-expired { background: rgba(148, 163, 184, .5); border: 1px dashed #fbbf24; }
+
+.ec-scope { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 11px; color: #cbd5e1; cursor: pointer; }
+.ec-scope span { color: #64748b; font-size: 10px; }

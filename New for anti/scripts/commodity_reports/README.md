@@ -103,6 +103,40 @@ GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다�
 우측 패널은 60건씩 받아 화면 높이에 맞춰 쪽을 나누고, 마지막 쪽에서 `›`를 누르면
 다음 묶음을 받아 이어 붙인다.
 
+### 수출통제 보드 (`boards.export_controls`) — 수출통제 창용 계약
+
+품목과 상관없이 규제 기관 발표를 한곳에 모으는 목록이다. 지금 들어가는 소스는 세 곳이다.
+
+- 중국 상무부 산업안전·수출입통제국(`cn_mofcom_aqygzj`, 중국어 원문 + Gemini 번역): 중국 화면 박스에 표시
+- 미국 OFAC(`us_ofac_recent_actions`)과 BIS(`us_bis_press`): `board_only`. 이 목록에만 쌓이고 품목 창에는 안 뜬다. 수출통제 창이 생기면 거기서 보여 준다.
+
+새 규제 기관은 `sources.json`에 `"board": "export_controls"`와 `"issuer": "<ISO3>"`만 달면
+합류한다. 품목 창에 섞지 않으려면 `"board_only": true`도 단다.
+
+```
+GET /api/commodity-reports?board=export_controls                  # 전체, 최신순
+GET /api/commodity-reports?board=export_controls&issuer=CHN       # 한 나라의 규제 기관만
+GET /api/commodity-reports?board=export_controls&measure=entity_list
+```
+
+항목에는 일반 보고서 필드에 다음이 더 붙는다.
+
+| 필드 | 뜻 |
+|---|---|
+| `title.original` / `title.original_lang` | 원문 제목(중국어 등) 그대로 |
+| `title.en` / `title.ko` | Gemini 번역 (`translate: true` 소스만; 키가 없거나 실패하면 없음) |
+| `url` | 공고 원문 |
+| `agency_url` | 발간 기관 사이트 |
+| `control.issuer` / `control.issuer_body` | 발표한 나라(ISO3)와 기관 — 소스 카탈로그 값 |
+| `control.measure` | `entity_list` · `export_restriction` · `export_ban` · `sanctions` · `countermeasure` · `list_adjustment` · `suspension` · `enforcement` · `dialogue` · `guidance` · `other` (번역 전엔 null) |
+| `control.items` | 제목에 나온 통제 품목·기술, 소문자 영어 (갈륨처럼 대시보드 추적 품목이 아니어도 그대로) |
+| `control.targets` | 겨냥한 나라 ISO3, EU는 `"EU"` |
+| `control.extracted_by` | `"gemini"` — measure/items/targets는 제목 한 줄을 LLM이 읽은 값이라는 표시 |
+
+`commodities`가 비어 있어도 보드에는 남는다. 제목(영어 번역 포함)에 추적 품목이
+나오면 해당 품목의 국가 창에도 같이 뜬다. 번역은 URL과 제목이 그대로면 다음
+빌드에서 재사용한다(`translation.reused`). 새 제목만 Gemini로 보낸다.
+
 로컬 정적 서버에는 `/api`가 없으므로 404가 정상이다.
 `trade.js`가 `public/data/commodity_reports_v1.json`을 직접 읽어 **같은 순서로** 폴백한다.
 
@@ -192,6 +226,9 @@ WGC·Silver Institute처럼 "이 출처 글은 기본적으로 X"라는 사전�
 - EIA 출처의 "기본 원유" 사전분류를 없앴습니다. 원유는 본문으로 판단합니다(`oil production/demand/prices…`, `OPEC`, `Hormuz`, `gasoline/diesel` 별칭). 식물성 기름 문구(`palm oil`, `soybean oil`…)는 먼저 지우고 봅니다. STEO/AEO는 시리즈로 원유·가스(·석탄)에 붙습니다.
 - 출처 옵션 `market_only: true`: 시장 용어(생산·가격·재고·교역·정책·비축 매입 등)가 없는 글은 버립니다. PR성 게시판(MPOB·BPDP·IAI·Cochilco·NRCan·Cobalt·VRA·ESDM·MOFCOM·WGC·Silver·ITA·EU AGRI·NASS·CONAB)에 겁니다.
 - 출처 옵션 `commodity_from: "title"`: 품목은 제목에서만 판단합니다(EU DG AGRI — 본문에 사료 대두가 스쳐 나오는 달걀 기사).
+- 출처 옵션 `translate: true`: 빌드 때 Gemini(`GEMINI_API_KEY`, 워크플로는 `AI_STUDIO_API_KEY` 시크릿)로 제목을 영어·한국어로 번역하고, 원문과 영어를 같이 태깅합니다. 모델은 `GEMINI_TRANSLATE_MODEL`로 지정하거나, 지정하지 않으면 `gemini-flash-lite-latest` → `gemini-flash-latest` → `gemini-2.5-flash` 순서로 첫 응답을 씁니다.
+- 출처 옵션 `board` / `issuer` / `board_only`: 품목 창과 별개인 목록(현재 `export_controls`)에 넣습니다. `board_only`이면 그 목록에만 넣습니다. 위 "수출통제 보드" 참고.
+- html_list 옵션: `min_title_chars`(기본 12), `slug_fallback`(기본 true), `title_re`(이 정규식에 맞는 제목만 남김), `date_window`(링크 뒤 N자 안의 날짜 읽기), `date_from_url_re`(URL 속 날짜, 그룹 연·월·일).
 - 출처 옵션 `commodity_scope: [...]`: 이 출처는 목록 안 품목으로만 분류됩니다. 목록 밖 품목만 잡힌 글은 버립니다(로사리오 곡물거래소 — 거시 칼럼에 "petróleo"가 한 번 나와 원유 보고서로 잡혔던 건, 2026-09-27).
 - 제목 기준 행정 공지 필터 `ADMIN_TERMS`: 보고서 지연, 추정 중단, 재조사, 입찰(T/P), 보도 예고, 인사, 협약. 시리즈 이름이 붙어 있어도 버리고, 제목에 수치가 있으면 남깁니다.
 
