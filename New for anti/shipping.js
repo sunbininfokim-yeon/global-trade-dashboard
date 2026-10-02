@@ -28,7 +28,7 @@
     shipping_chokepoints: {
       eyebrow: 'CHOKEPOINT MONITOR',
       title: '초크포인트 모니터',
-      desc: 'IMF PortWatch의 최근 7일 추정 교역량을 직전 28일 평균과 비교한 단기 이상 신호입니다. 물리적 봉쇄율이 아닙니다.'
+      desc: 'IMF PortWatch가 AIS로 포착한 최근 7일 추정 교역량을 52주 전 같은 7일과 비교합니다. 물리적 봉쇄율이 아니며, 공식 추정이 있는 해협은 함께 보여줍니다.'
     },
     shipping_scenarios: {
       eyebrow: 'SHOCK SIMULATOR',
@@ -1320,20 +1320,41 @@
 
   const CORE_CHOKEPOINT_IDS = ['suez', 'bab_el_mandeb', 'hormuz', 'panama', 'malacca'];
 
+  // Year-over-year, not a floored shortfall: each chokepoint against its own
+  // same 7 weekdays 52 weeks earlier, so a rise reads as a rise and straits of
+  // very different size share one axis. The engine computes every value
+  // (`chokepoint_trend`); this only draws.
+  const TREND_COLORS = ['#38bdf8', '#f87171', '#fbbf24', '#34d399', '#a78bfa', '#f472b6', '#fb923c', '#94a3b8', '#2dd4bf'];
+  const signedPct = (value, digits = 0) => finite(value) ? `${Number(value) > 0 ? '+' : ''}${formatPct(value, digits)}` : '—';
+  const trendSeverity = yoy => !finite(yoy) ? 'neutral' : yoy <= -25 ? 'negative' : yoy <= -10 ? 'warn' : yoy >= 5 ? 'rise' : 'positive';
+  const TREND_SEVERITY_STYLE = { rise: ' style="color:#38bdf8"' };
+  const AIS_GAP_LABELS = {
+    ais_undercount_likely: 'AIS 미포착 가능성 큼',
+    ais_above_official: 'AIS가 공식 추정보다 큼',
+    consistent: '공식 추정과 방향 일치'
+  };
+
   const renderChokepoints = (data, root, showAll = false) => {
     const allPoints = data.ui.chokepoints;
     const points = showAll
       ? allPoints
       : allPoints.filter(point => CORE_CHOKEPOINT_IDS.includes(point.id));
-    const worst = [...points].filter(p => p.shortfall !== null)
-      .sort((a, b) => (b.shortfall || 0) - (a.shortfall || 0))[0];
+    const trendById = new Map(asArray(data.chokepoint_trend?.points).map(row => [row.chokepoint_id, row]));
+    const trendOf = point => trendById.get(point.id) || {};
+    const ranked = [...points].filter(point => finite(trendOf(point).latest_yoy_pct))
+      .sort((a, b) => trendOf(a).latest_yoy_pct - trendOf(b).latest_yoy_pct);
+    const worst = ranked[0];
+    const best = ranked[ranked.length - 1];
+    const metricLabel = key => key === 'all' ? '전체 선종' : (SHIP_TYPE_LABELS[key] || key);
 
     const cards = points.map(point => {
       const display = point.display || {};
-      const shortfallPct = point.shortfall === null ? null : point.shortfall * 100;
-      const remainingPct = point.remaining === null ? null : point.remaining * 100;
+      const trend = trendOf(point);
+      const yoy = trend.latest_yoy_pct;
+      const gap = trend.official_vs_ais;
+      const latest = trend.official_latest;
       const isStale = Boolean(display.is_stale);
-      const severity = shortfallPct === null ? 'neutral' : shortfallPct >= 25 ? 'negative' : shortfallPct >= 10 ? 'warn' : 'positive';
+      const severity = trendSeverity(yoy);
       return `<article class="shipping-chokepoint-card" data-chokepoint="${escapeHtml(point.id)}"
                        role="button" tabindex="0" aria-expanded="false">
         <div class="shipping-chokepoint-head">
@@ -1341,50 +1362,52 @@
           ${badge(isStale ? '기준일 경과' : '최근 신호', isStale ? 'neutral' : 'observed')}
         </div>
         ${bypassThreatensPoint(point) ? `<div style="margin:8px 0 2px">${badge('호르무즈 우회로 · 후티 봉쇄 위협 보도', 'estimated', '출처가 달린 수기 기록 기준. 상세에서 사건과 공식 경보를 확인')}</div>` : ''}
-        <strong class="shipping-change ${severity}">${formatPct(shortfallPct, 0)}</strong>
-        <p>${escapeHtml(display.headline_label_ko || '추정 교역량 감소율')} · ${escapeHtml(display.basis_label_ko || '최근 7일 기준')}</p>
+        ${gap?.status === 'ais_undercount_likely' ? `<div style="margin:8px 0 2px">${badge('AIS 미포착 가능성 큼', 'estimated', `${gap.period} 공식 추정은 전년 대비 ${signedPct(gap.official_yoy_pct, 1)}, AIS 포착은 ${signedPct(gap.ais_yoy_pct, 1)}`)}</div>` : ''}
+        <strong class="shipping-change ${severity}"${TREND_SEVERITY_STYLE[severity] || ''}>${signedPct(yoy, 0)}</strong>
+        <p>전년 대비 · ${escapeHtml(metricLabel(trend.metric_key || point.metricKey))} AIS 포착 · 최근 7일 vs 52주 전</p>
         ${definitionRows([
-          [display.residual_label_ko || '잔존 추정 교역량', formatPct(remainingPct, 0)],
+          ['최근 7일 vs 직전 28일', signedPct(point.metric.change_pct, 1)],
           ['최근 7일 추정 교역량', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-          ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
-          ['52주 전 같은 7일 대비', finite(point.live?.metric_histories?.[point.metricKey]?.year_ago?.change_pct)
-            ? `${Number(point.live.metric_histories[point.metricKey].year_ago.change_pct) > 0 ? '+' : ''}${formatPct(point.live.metric_histories[point.metricKey].year_ago.change_pct, 0)}`
-            : '—']
+          ...(latest ? [[`공식 최신 · ${latest.publisher} ${latest.period}`, formatOfficialValue(latest.value, latest.unit)]] : []),
+          ...(gap && finite(gap.ais_yoy_pct) ? [[`${gap.period} 전년 대비 · 공식 / AIS`, `${signedPct(gap.official_yoy_pct, 0)} / ${signedPct(gap.ais_yoy_pct, 0)}`]] : [])
         ])}
-        <p class="shipping-note">기준일 ${formatDate(display.latest_date || point.live.latest_date)}${isStale ? ` · ${formatNumber(display.stale_days, 0)}일 경과` : ''}</p>
+        <p class="shipping-note">기준일 ${formatDate(trend.latest_date || display.latest_date || point.live.latest_date)}${isStale ? ` · ${formatNumber(display.stale_days, 0)}일 경과` : ''}</p>
       </article>`;
     }).join('');
 
     const body = `
-      <div class="shipping-callout info"><strong>관측 이상 신호:</strong> PortWatch의 최근 7일 <em>추정 교역량</em>을 직전 28일 평균과 비교합니다. 실제 통항 DWT·물리적 봉쇄율·보험 미확보율 관측값이 아닙니다.</div>
+      <div class="shipping-callout info"><strong>관측 이상 신호:</strong> PortWatch가 <em>AIS로 포착한</em> 통항의 최근 7일을 52주 전 같은 7일과 비교합니다. 0% 위는 증가, 아래는 감소입니다. 위협 해역에서는 선박이 AIS를 꺼 실제보다 크게 줄어 보일 수 있어, 공식 추정이 있는 통로는 함께 보여줍니다.</div>
       ${worst ? `<div class="shipping-kpi-grid">
-        ${kpi('최대 위축 통로', escapeHtml(worst.name_ko), `${formatPct((worst.shortfall || 0) * 100, 0)} 감소`, { featured: true })}
-        ${kpi('잔존 교역량', formatPct((worst.remaining || 0) * 100, 0), escapeHtml(worst.display?.residual_label_ko || '최근 7일 기준'))}
+        ${kpi('최대 위축 통로', escapeHtml(worst.name_ko), `전년 대비 ${signedPct(trendOf(worst).latest_yoy_pct, 0)} · AIS 포착`, { featured: true })}
+        ${best && trendOf(best).latest_yoy_pct > 0 ? kpi('최대 증가 통로', escapeHtml(best.name_ko), `전년 대비 ${signedPct(trendOf(best).latest_yoy_pct, 0)} · AIS 포착`) : kpi('증가 통로', '없음', '전년 대비 증가한 통로 없음')}
         ${kpi('모니터 대상', `${formatNumber(points.length)}개 통로`, showAll ? '전체 PortWatch 공개 신호' : '차단 시 우회·대기 영향 중심')}
       </div>` : ''}
-      ${panel('LIVE SIGNAL', '통로별 추정 교역량 변화', `
-        <div class="shipping-chart-wrap"><canvas id="shipping-chokepoint-chart"></canvas></div>
+      ${panel('LIVE SIGNAL', '통로별 전년 대비 추정 교역량 (7일 이동평균)', `
+        <div class="shipping-chart-wrap tall"><canvas id="shipping-chokepoint-chart"></canvas></div>
+        <p class="shipping-note">선은 AIS 포착 기준 전년 대비(%)입니다. ◆ 표시는 같은 해협의 EIA 공식 분기 추정치의 전년 대비이며, 분기 가운데 날짜에 찍었습니다. 범례를 눌러 통로를 켜고 끌 수 있습니다 — 호르무즈를 끄면 나머지 통로의 움직임이 크게 보입니다.</p>
         <div class="shipping-legend">
-          <span><i style="background:#34d399"></i>정상 범위 · 10% 미만 감소</span>
+          <span><i style="background:#f87171"></i>위험 · 전년 대비 25% 이상 감소</span>
           <span><i style="background:#fbbf24"></i>주의 · 10–25% 감소</span>
-          <span><i style="background:#f87171"></i>위험 · 25% 이상 감소</span>
+          <span><i style="background:#34d399"></i>정상 범위</span>
+          <span><i style="background:#38bdf8"></i>증가 · 5% 이상</span>
         </div>`,
         `<div class="shipping-panel-tools">
           ${popover('choke-def', '용어', '초크포인트 지표 읽는 법', `
             ${definitionRows([
-              ['감소율', '최근 7일 추정 교역량 ÷ 직전 28일 평균 − 1'],
-              ['잔존 추정 교역량', '평소 대비 아직 통과 중인 비율 (감소율 + 잔존 = 100%)'],
-              ['색 구간', '10% 미만 정상 · 10–25% 주의 · 25% 이상 위험']
+              ['전년 대비', '최근 7일 평균 ÷ 52주 전 같은 요일 7일 평균 − 1 (AIS 포착 기준)'],
+              ['최근 7일 vs 직전 28일', '단기 변화. 이미 붕괴한 기준선 안의 등락이라 전년 대비와 함께 봐야 함'],
+              ['AIS 미포착 가능성 큼', '같은 분기 전년 대비로 AIS가 남긴 비율이 공식 추정이 남긴 비율의 절반 미만'],
+              ['색 구간', '25% 이상 감소 위험 · 10–25% 주의 · 5% 이상 증가']
             ])}
-            <p class="shipping-note">색 구간은 이 화면이 정한 표시 기준이며, PortWatch가 제공하는 등급이 아닙니다. 감소율 자체는 계산이 아니라 스냅샷에 기록된 값을 그대로 씁니다.</p>`)}
+            <p class="shipping-note">색 구간은 이 화면이 정한 표시 기준이며 PortWatch 등급이 아닙니다. 모든 값은 엔진이 계산한 스냅샷 값을 그대로 씁니다. 톤과 배럴을 서로 환산하지 않습니다.</p>`)}
           <button type="button" class="shipping-secondary-control" id="shipping-chokepoint-scope-toggle" aria-pressed="${showAll}">
             ${showAll ? '핵심 5개만 보기' : `전체 ${formatNumber(allPoints.length)}개 통로 보기`}
           </button>
-          ${badge('PortWatch 추정', 'estimated')}
+          ${badge('PortWatch AIS 추정', 'estimated')}
         </div>`)}
       <div class="shipping-chokepoint-grid">${cards}</div>
       <div id="shipping-chokepoint-detail"></div>
-      <p class="shipping-note">호르무즈는 탱커, 나머지 통로는 전체 추정 교역량을 대표 지표로 씁니다. 따라서 호르무즈 수치는 “최근 7일 탱커 추정 교역량 감소율”이며 시나리오 봉쇄율과 같은 숫자가 아닙니다.</p>`;
+      <p class="shipping-note">호르무즈는 탱커, 나머지 통로는 전체 추정 교역량을 대표 지표로 씁니다. 전년 대비는 AIS에 포착된 통항 기준이며 시나리오 봉쇄율과 같은 숫자가 아닙니다.</p>`;
 
     root.innerHTML = pageShell('shipping_chokepoints', body, data);
 
@@ -1392,25 +1415,37 @@
       renderChokepoints(data, root, !showAll);
     });
 
-    const charted = points.filter(p => p.shortfall !== null);
-    createChart(root, 'shipping-chokepoint-chart', {
-      type: 'bar',
-      data: {
-        labels: charted.map(p => p.name_ko),
-        datasets: [{
-          label: '추정 교역량 감소율',
-          data: charted.map(p => -(p.shortfall * 100)),
-          backgroundColor: charted.map(p => {
-            const pct = p.shortfall * 100;
-            return pct >= 25 ? '#f87171' : pct >= 10 ? '#fbbf24' : '#34d399';
-          }),
-          borderRadius: 5,
-          borderSkipped: false,
-          barThickness: 30
-        }]
-      },
-      options: chartOptions({ unit: '%' })
+    const trended = points.filter(point => asArray(trendOf(point).dates).length);
+    const labels = asArray(trendOf(trended[0] || {}).dates);
+    const datasets = [];
+    trended.forEach((point, index) => {
+      const trend = trendOf(point);
+      const color = TREND_COLORS[index % TREND_COLORS.length];
+      const byDate = new Map(asArray(trend.dates).map((day, i) => [day, trend.yoy_pct[i]]));
+      const name = `${point.name_ko}${trend.metric_key && trend.metric_key !== 'all' ? ` (AIS ${SHIP_TYPE_LABELS[trend.metric_key] || trend.metric_key})` : ''}`;
+      datasets.push({ ...solidLine(name, labels.map(day => finite(byDate.get(day)) ? Number(byDate.get(day)) : null), color), borderWidth: 2 });
+      const gap = trend.official_vs_ais;
+      const quarter = gap && /^([1-4])Q(\d{2})$/.exec(gap.period || '');
+      if (quarter) {
+        const mid = `20${quarter[2]}-${String(Number(quarter[1]) * 3 - 1).padStart(2, '0')}-15`;
+        const at = labels.indexOf(mid);
+        if (at >= 0) {
+          datasets.push({
+            label: `${point.name_ko} EIA ${gap.period} 공식`, data: labels.map((_, i) => i === at ? gap.official_yoy_pct : null),
+            borderColor: color, backgroundColor: color, showLine: false, pointStyle: 'rectRot', pointRadius: 7, pointHoverRadius: 9
+          });
+        }
+      }
     });
+    if (datasets.length) {
+      const options = lineChartOptions(value => signedPct(value, 1), { formatTick: value => `${value > 0 ? '+' : ''}${formatNumber(value, 0)}%` });
+      options.scales.y.beginAtZero = false;
+      options.scales.y.grid = { color: ctx => ctx.tick?.value === 0 ? 'rgba(248, 250, 252, 0.45)' : GRID_LINE, lineWidth: ctx => ctx.tick?.value === 0 ? 1.5 : 1 };
+      options.scales.x.ticks.callback = function (value) { return String(this.getLabelForValue(value)).slice(5); };
+      // ◆ official points are explained in the note; keep the legend to lines.
+      options.plugins.legend.labels.filter = item => !String(item.text).includes('공식');
+      createChart(root, 'shipping-chokepoint-chart', { type: 'line', data: { labels, datasets }, options });
+    }
 
     // Detail: location on the left third, daily series on the right two.
     const detail = root.querySelector('#shipping-chokepoint-detail');

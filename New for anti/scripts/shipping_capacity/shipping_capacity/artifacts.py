@@ -353,7 +353,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
         "generated_at": snapshot["generated_at"],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
     }
-    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor"):
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
         if key in snapshot:
             screen[key] = snapshot[key]
     diagnostics = {
@@ -402,7 +402,7 @@ def golden_contract_failures(
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
-    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor"):
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
         if screen.get(key) != diagnostics.get(key):
             failures.append(f"{key}_screen_diagnostics_mismatch")
     bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
