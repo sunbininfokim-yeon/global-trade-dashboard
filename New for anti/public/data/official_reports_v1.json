@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-02T14:46:25.346802+00:00",
+  "generated_at": "2026-10-02T20:47:43.012568+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 170,
-    "scored": 170,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 164,
+    "scored": 164,
     "selected": 40,
-    "indicators": 16
+    "indicators": 14
   },
   "feed_status": [
     {
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -219,21 +219,6 @@
       "significance": 2.64
     },
     {
-      "series_id": "US_EXPORT_CONTROL",
-      "label_ko": "수출통제·Entity List",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "title": "Presidential Message on the Beatification of Archbishop Fulton J. Sheen",
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/presidential-message-on-the-beatification-of-archbishop-fulton-j-sheen/",
-      "published_at": "2026-09-24T14:00:00+00:00",
-      "site_slot": "security.trade",
-      "significance": 2.544
-    },
-    {
       "series_id": "US_EIA_ENERGY",
       "label_ko": "EIA 에너지",
       "country": "USA",
@@ -302,20 +287,6 @@
       "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260920.htm",
       "published_at": "2026-09-25T01:00:00+00:00",
       "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "US_EXPORT_CONTROL",
-      "label_ko": "수출통제·Entity List",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan",
-      "url": "http://www.boj.or.jp/en/statistics/bis/ibs/index.htm",
-      "published_at": "2026-09-24T23:50:00+00:00",
-      "site_slot": "security.trade",
       "significance": 2.306
     }
   ],
@@ -910,40 +881,39 @@
       "site_slot": null
     },
     {
-      "id": "96756133af6a7bd9",
-      "published_at": "2026-09-24T14:00:00+00:00",
+      "id": "8282cdb739994bb2",
+      "published_at": "2026-10-02T18:28:12+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/presidential-message-on-the-beatification-of-archbishop-fulton-j-sheen/",
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
       "category": "official_report",
       "commodities": [],
       "domains": [
+        "security",
         "economy",
-        "diplomacy",
-        "security"
+        "diplomacy"
       ],
-      "series_id": "US_EXPORT_CONTROL",
+      "series_id": null,
       "title": {
-        "original": "Presidential Message on the Beatification of Archbishop Fulton J. Sheen",
+        "original": "Presidential Message on National Cybersecurity Awareness Month",
         "original_lang": "en",
-        "ko": "[USA·경제] Presidential Message on the Beatification of Archbishop Fulton J. Sheen"
+        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
       },
-      "summary": "Melania and I join all those celebrating the life and legacy of Archbishop Fulton J. Sheen—the Catholic priest who pioneered the use of media to speak the truth, preach the Gospel, and bring many souls closer to Christ. Today, Archbishop Sheen will become the first-ever American-",
+      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
       "scores": {
-        "significance": 2.544,
-        "final": 2.544
+        "significance": 2.438,
+        "final": 2.438
       },
       "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "series:US_EXPORT_CONTROL"
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "security.trade"
+      "site_slot": null
     },
     {
       "id": "ad4a7b2030e6aad7",
@@ -1264,6 +1234,76 @@
       "site_slot": null
     },
     {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "151d87614848cd23",
       "published_at": "2026-09-25T20:30:00+00:00",
       "source": {
@@ -1509,41 +1549,6 @@
       "site_slot": null
     },
     {
-      "id": "9e15c780144c2929",
-      "published_at": "2026-08-19T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, July 28–29, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "0b6fc03efe6dd90e",
       "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
@@ -1682,41 +1687,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "8961e6ba84e94c6f",
-      "published_at": "2026-09-24T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/bis/ibs/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "US_EXPORT_CONTROL",
-      "title": {
-        "original": "Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:US_EXPORT_CONTROL"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "security.trade"
     }
   ],
   "pending_review": [
@@ -1855,17 +1825,6 @@
     {
       "title": "Minutes of the Meeting of the Court of Directors held on 4 June 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-4-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Money Market Committee meeting – June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/money-markets-committee-minutes-june-2026",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2466,40 +2425,39 @@
       "site_slot": null
     },
     {
-      "id": "96756133af6a7bd9",
-      "published_at": "2026-09-24T14:00:00+00:00",
+      "id": "8282cdb739994bb2",
+      "published_at": "2026-10-02T18:28:12+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/presidential-message-on-the-beatification-of-archbishop-fulton-j-sheen/",
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
       "category": "official_report",
       "commodities": [],
       "domains": [
+        "security",
         "economy",
-        "diplomacy",
-        "security"
+        "diplomacy"
       ],
-      "series_id": "US_EXPORT_CONTROL",
+      "series_id": null,
       "title": {
-        "original": "Presidential Message on the Beatification of Archbishop Fulton J. Sheen",
+        "original": "Presidential Message on National Cybersecurity Awareness Month",
         "original_lang": "en",
-        "ko": "[USA·경제] Presidential Message on the Beatification of Archbishop Fulton J. Sheen"
+        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
       },
-      "summary": "Melania and I join all those celebrating the life and legacy of Archbishop Fulton J. Sheen—the Catholic priest who pioneered the use of media to speak the truth, preach the Gospel, and bring many souls closer to Christ. Today, Archbishop Sheen will become the first-ever American-",
+      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
       "scores": {
-        "significance": 2.544,
-        "final": 2.544
+        "significance": 2.438,
+        "final": 2.438
       },
       "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "series:US_EXPORT_CONTROL"
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "security.trade"
+      "site_slot": null
     },
     {
       "id": "ad4a7b2030e6aad7",
@@ -2820,6 +2778,76 @@
       "site_slot": null
     },
     {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "151d87614848cd23",
       "published_at": "2026-09-25T20:30:00+00:00",
       "source": {
@@ -3065,41 +3093,6 @@
       "site_slot": null
     },
     {
-      "id": "9e15c780144c2929",
-      "published_at": "2026-08-19T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, July 28–29, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "0b6fc03efe6dd90e",
       "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
@@ -3238,41 +3231,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "8961e6ba84e94c6f",
-      "published_at": "2026-09-24T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/bis/ibs/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "US_EXPORT_CONTROL",
-      "title": {
-        "original": "Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:US_EXPORT_CONTROL"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "security.trade"
     }
   ]
 }
