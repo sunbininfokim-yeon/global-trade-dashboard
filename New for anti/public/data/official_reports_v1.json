@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-02T20:47:43.012568+00:00",
+  "generated_at": "2026-10-03T05:23:41.897983+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 164,
-    "scored": 164,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 170,
+    "scored": 170,
     "selected": 40,
-    "indicators": 14
+    "indicators": 13
   },
   "feed_status": [
     {
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -272,20 +272,6 @@
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
       "published_at": "2026-09-25T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan Accounts (September 20)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260920.htm",
-      "published_at": "2026-09-25T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1128,6 +1114,42 @@
       "site_slot": "ticker"
     },
     {
+      "id": "3780d0bddf10fcc1",
+      "published_at": "2026-10-03T03:01:43+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-president-donald-j-trump-announces-medicare-improvement-fund-payments-for-seniors/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors"
+      },
+      "summary": "IMPROVING MEDICARE FOR SENIORS: Today, President Donald J. Trump announced that the federal government will be making one-time payments of $90 per person to help more than 20 million enrollees pay for their Medicare Part B premiums. HISTORIC ACTION TO HELP SENIOR CITIZENS: With t",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "2759417b865677c7",
       "published_at": "2026-09-30T17:10:17+00:00",
       "source": {
@@ -1652,41 +1674,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "660658ed2fd605ac",
-      "published_at": "2026-09-25T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260920.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (September 20)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (September 20)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1814,17 +1801,6 @@
     {
       "title": "Artificial Intelligence Consortium minutes – June 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/june/ai-consortium-minutes-3-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Meeting of the Court of Directors held on 4 June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-4-june-2026",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2672,6 +2648,42 @@
       "site_slot": "ticker"
     },
     {
+      "id": "3780d0bddf10fcc1",
+      "published_at": "2026-10-03T03:01:43+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-president-donald-j-trump-announces-medicare-improvement-fund-payments-for-seniors/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors"
+      },
+      "summary": "IMPROVING MEDICARE FOR SENIORS: Today, President Donald J. Trump announced that the federal government will be making one-time payments of $90 per person to help more than 20 million enrollees pay for their Medicare Part B premiums. HISTORIC ACTION TO HELP SENIOR CITIZENS: With t",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "2759417b865677c7",
       "published_at": "2026-09-30T17:10:17+00:00",
       "source": {
@@ -3183,41 +3195,6 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "660658ed2fd605ac",
-      "published_at": "2026-09-25T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260920.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (September 20)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (September 20)"
       },
       "summary": "",
       "scores": {
