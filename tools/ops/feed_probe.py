@@ -271,6 +271,11 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     for key, res in raw.items():
         res["url"] = url
         report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")))
+        if target.get("find"):
+            # Smoke checks: is each string in the body? (a deployed menu item,
+            # a cache-busting version, a config key)
+            body_text = _text(res.get("body") or b"")
+            report[key]["found"] = {f: (f in body_text) for f in target["find"]}
     if target.get("render"):
         report["render"] = rendered(url, link_re)
     # Feed discovery from the first variant that got a readable page.
@@ -313,6 +318,8 @@ def line(r: Dict[str, Any]) -> str:
                 s += f" body={d['body_head']!r}"
             if d.get("block_hint") is not None and (d.get("status") or 0) >= 400:
                 s += f" server={d.get('server', '')!r} hint={d.get('block_hint')!r}"
+        if d.get("found"):
+            s += f" found={d['found']}"
         if d.get("final"):
             s += f" -> {d['final']}"
         return s
