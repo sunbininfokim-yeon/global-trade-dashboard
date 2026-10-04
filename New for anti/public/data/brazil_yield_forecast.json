@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T04:51:28.813430+00:00",
+  "generated_at": "2026-10-02T20:07:39.099920+00:00",
   "season": 2027,
   "country": "Brazil",
   "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
@@ -14,17 +14,17 @@
       ],
       "season": 2027,
       "unit": "kg/ha",
-      "point": 1949.1,
+      "point": 1949.2,
       "range_68": [
-        1736.6,
-        2161.6
+        1736.7,
+        2161.7
       ],
       "range_95": [
-        1532.6,
-        2365.6
+        1532.8,
+        2365.7
       ],
       "trend": 1605.1,
-      "weather_effect_pct": 21.43,
+      "weather_effect_pct": 21.44,
       "last_actual": {
         "year": 2024,
         "yield": 1591.0,
@@ -73,8 +73,8 @@
         "guide": "Regions/브라질/상파울루/커피/커피_상세분석_및_수식.md",
         "caveat": "The guide's stratified high-/low-yield split is replaced by the autoregressive form from the same guide (§3A). With ~43 seasons, training two stratified models on ~21 rows each would fit noise.",
         "non_weather_drivers": "Biennial bearing is physiological, not meteorological: a heavy crop exhausts the tree and the next year is light regardless of weather. lag1 and lag2 carry that cycle, and they are the model's strongest features -- so much of this model's skill is biological memory, not climate. Replanting rates and the arabica/robusta area mix are also outside any weather feed. Isolating the weather features alone (holding out lag1/lag2) leaves only +1.6% skill, against +8.6% with the lags included: a real climate mechanism exists here (frost, flowering-stage water deficit -- both in the guide and both physically well documented) but at annual, state-level resolution the biennial cycle dominates the variance that mechanism produces. Adding multi-year memory to a model does not by itself guarantee weather wins that competition -- coffee is the clearest example of that in this set.",
-        "weather_through": "2026-09-26",
-        "critical_window_observed": 0.217,
+        "weather_through": "2026-09-27",
+        "critical_window_observed": 0.225,
         "season_complete": false,
         "notes": [
           "lag for 2026 uses this model's own forecast",
