@@ -156,6 +156,9 @@
         // this is the 원유 map. Fuels show in the monitor only.
         oil: ['oil', 'crude'],
         gas: ['gas', 'lng'],
+        // The 경질유 map is HS 271012 -- naphtha and motor gasoline -- so
+        // Russia's gasoline export ban (petroleum_products) belongs on it.
+        light_oils: ['naphtha', 'gasoline', 'petroleum_products'],
         thermal_coal: ['coal', 'thermal_coal'],
         met_coal: ['coal', 'met_coal'],
         wheat: ['wheat'],

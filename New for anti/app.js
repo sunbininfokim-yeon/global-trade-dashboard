@@ -864,7 +864,10 @@ function comtradeSourceText(arcs) {
     const when = comtradePeriodLabel(arcs);
     const blendFrom = arcs?.[0]?.blendFrom;
     const older = blendFrom ? arcs.filter((a) => a.dataYear === blendFrom).length : 0;
-    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''} | ${arcs.length}개 무역 루트${older
+    // A commodity whose HS line is wider than its name (naphtha: 271012 also
+    // carries motor gasoline) says so where the source is named.
+    const scope = window.TradeData?.[currentCommodity]?.hsNote;
+    return `(데이터 출처: UN Comtrade API${when ? ` · ${when}` : ''}${scope ? ` · ${scope}` : ''} | ${arcs.length}개 무역 루트${older
         ? `, 그중 ${older}개는 양쪽 모두 ${arcs[0].period}년 미신고라 ${blendFrom}년 값` : ''})`;
 }
 
