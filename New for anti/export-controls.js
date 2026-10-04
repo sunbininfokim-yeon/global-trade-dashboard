@@ -367,7 +367,7 @@
             </div>
             <div class="ec-src">
                 ${esc(c.source)}${url ? ` <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}
-                · 신뢰도 ${esc(c.confidence || '—')}${c.verified_at ? ` · 확인 ${esc(c.verified_at)}` : ''}
+                ${c.basis === 'reported' ? '· <span class="ec-recheck">보도 기반 · 공식 고시 없음</span> ' : ''}${c.basis === 'official' ? '· 정부 원문 ' : ''}· 신뢰도 ${esc(c.confidence || '—')}${c.verified_at ? ` · 확인 ${esc(c.verified_at)}` : ''}
                 ${c.needs_reconfirm ? ' · <span class="ec-recheck">재확인 필요</span>' : ''}
             </div>
         </li>`;

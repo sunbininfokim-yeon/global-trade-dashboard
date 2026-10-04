@@ -41,8 +41,8 @@ class UniverseTest(unittest.TestCase):
         doc = load_catalogue()
         by_id = {row["id"]: row for row in doc["controls"]}
         sugar = by_id["ind-sugar"]
-        self.assertEqual(sugar["level"], "prohibited")
-        self.assertEqual(sugar["until"], "2026-09-30")
+        self.assertEqual(sugar["level"], "restricted")   # ban ended 2026-09-30, back to licensing
+        self.assertNotIn("until", sugar)
         self.assertIn("17011490", sugar["hs_prefixes"])
         fuel = by_id["rus-fuel-products"]
         self.assertEqual(fuel["until"], "2027-01-31")
