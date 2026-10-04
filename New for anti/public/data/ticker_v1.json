@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-10-03T23:47:00.221633+00:00",
+  "generated_at": "2026-10-04T05:46:02.619894+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,20 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 35,
-    "sources_failed": 3,
-    "raw_items": 832,
-    "scored_items": 84,
+    "sources_ok": 34,
+    "sources_failed": 4,
+    "raw_items": 802,
+    "scored_items": 89,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 6,
-      "mena": 5,
-      "west": 1,
-      "russia": 4,
-      "china": 2,
-      "turkey": 2,
+      "commodity_specialist": 5,
+      "mena": 6,
       "india": 2,
-      "japan": 2
+      "west": 1,
+      "china": 3,
+      "japan": 2,
+      "russia": 3,
+      "turkey": 1,
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 252,
+      "elapsed_ms": 133,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 227,
+      "elapsed_ms": 403,
       "error": null,
       "mode": "live"
     },
@@ -111,23 +112,23 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 237,
+      "elapsed_ms": 111,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tehran_times",
-      "ok": true,
-      "count": 30,
-      "elapsed_ms": 1421,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 18596,
+      "error": "URLError: <urlopen error _ssl.c:993: The handshake operation timed out>",
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 241,
+      "elapsed_ms": 149,
       "error": null,
       "mode": "live"
     },
@@ -135,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3211,
+      "elapsed_ms": 2806,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 797,
+      "elapsed_ms": 746,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 330,
+      "elapsed_ms": 287,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 234,
+      "elapsed_ms": 100,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 103,
+      "elapsed_ms": 99,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 408,
+      "elapsed_ms": 486,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 212,
+      "elapsed_ms": 172,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 254,
+      "elapsed_ms": 449,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 976,
+      "elapsed_ms": 1628,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 454,
+      "elapsed_ms": 610,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 555,
+      "elapsed_ms": 618,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 575,
+      "elapsed_ms": 439,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 846,
+      "elapsed_ms": 339,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 164,
+      "elapsed_ms": 199,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 640,
+      "elapsed_ms": 272,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 126,
+      "elapsed_ms": 71,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 173,
+      "elapsed_ms": 160,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 881,
+      "elapsed_ms": 122,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 240,
+      "elapsed_ms": 598,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 374,
+      "elapsed_ms": 276,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 805,
+      "elapsed_ms": 1236,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1061,
+      "elapsed_ms": 1339,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2290,
+      "elapsed_ms": 1119,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1411,
+      "elapsed_ms": 2044,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 138,
+      "elapsed_ms": 338,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 611,
+      "elapsed_ms": 654,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 110,
+      "elapsed_ms": 115,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 432,
+      "elapsed_ms": 422,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 228,
+      "elapsed_ms": 144,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 653,
+      "elapsed_ms": 997,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 300,
+      "elapsed_ms": 125,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 411,
+      "elapsed_ms": 755,
       "error": null,
       "mode": "live"
     },
@@ -391,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 584,
+      "elapsed_ms": 333,
       "error": null,
       "mode": "live"
     }
@@ -423,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.876,
-        "importance": 4.734,
-        "final": 5.48
+        "freshness": 0.742,
+        "importance": 4.009,
+        "final": 4.64
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -464,9 +465,9 @@
         "diplomacy": 1.0,
         "election": 1.2,
         "region_weight": 1.4,
-        "freshness": 0.97,
-        "importance": 3.625,
-        "final": 4.278
+        "freshness": 0.821,
+        "importance": 3.07,
+        "final": 3.622
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -481,6 +482,89 @@
       "info_grade": "1",
       "country_hint": "USA",
       "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "5f8f509d567d5d55",
+      "published_at": "2026-10-04T02:11:50+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/us-kicks-out-2-members-of-iranian-delegation-for-overstaying-12135546#publisher=newsstand",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US \"Kicks Out\" 2 Members Of Iranian Delegation For Overstaying",
+        "original_lang": "en",
+        "ko": "미국, 이란 대표단 2명 초과 체류 \"퇴출\""
+      },
+      "summary": "A US official said that Secretary of State Marco Rubio \"means business.\"",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.3,
+        "freshness": 0.906,
+        "importance": 2.53,
+        "final": 2.871
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "IND",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "7c0e564ef45b718f",
+      "published_at": "2026-10-04T01:14:53+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/three-commercial-vessels-struck-hormuz-1-oct-ukmto-says",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Three commercial vessels struck in Hormuz since 1 Oct, UKMTO says",
+        "original_lang": "en",
+        "ko": "UKMTO는 10월 1일 이후 호르무즈에서 3척의 상업용 선박이 충돌했다고 밝혔습니다."
+      },
+      "summary": "Three commercial vessels struck in Hormuz since 1 Oct, UKMTO says Attacks on commercial ships witnessed a surge during the past three days, as at least three tankers were struck by unidentified projectiles in and around the Strait of Hormuz, according to United Kingdom Maritime T",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.882,
+        "importance": 2.329,
+        "final": 2.748
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "commodity:shipping:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "GBR"
     },
     {
       "id": "3ee0f62d0e9eb39b",
@@ -508,9 +592,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.424,
-        "importance": 2.728,
-        "final": 3.157
+        "freshness": 0.359,
+        "importance": 2.31,
+        "final": 2.674
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -527,7 +611,7 @@
       "country_hint": "CHN"
     },
     {
-      "id": "13f7f3cb255322c9",
+      "id": "4902b5ab44e3cab7",
       "published_at": "2026-10-03T22:08:13+00:00",
       "source": {
         "id": "arab_news",
@@ -535,11 +619,11 @@
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.arabnews.com/world/iranian-un-delegation-duo-kicked-out-of-us-state-dept-3004480",
+      "url": "https://www.arabnews.com/world/iranian-un-delegation-duo-kicked-out-of-us-state-department-3004480",
       "category": "cabinet_reshuffle",
       "commodities": [],
       "title": {
-        "original": "Iranian UN delegation duo ‘kicked out’ of US: State Dept",
+        "original": "Iranian UN delegation duo ‘kicked out’ of US: State Department",
         "original_lang": "en",
         "ko": "이란 유엔 대표부 듀오, 미 국무부에서 ’퇴출’"
       },
@@ -549,9 +633,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.4,
-        "freshness": 0.956,
-        "importance": 2.669,
-        "final": 3.149
+        "freshness": 0.809,
+        "importance": 2.26,
+        "final": 2.667
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -592,9 +676,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.402,
-        "importance": 2.337,
-        "final": 2.705
+        "freshness": 0.35,
+        "importance": 2.033,
+        "final": 2.353
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -609,47 +693,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
-    },
-    {
-      "id": "8d697263802cde0c",
-      "published_at": "2026-10-03T14:08:58+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/530699/Echoes-from-the-Flames-Putin-on-Iran-and-Gaza",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Echoes from the Flames: Putin on Iran and Gaza",
-        "original_lang": "en",
-        "ko": "불꽃의 메아리: 푸틴의 이란과 가자지구"
-      },
-      "summary": "As war and humanitarian crisis continue to grip the West Asia, Russian President Vladimir Putin has issued a forceful call for diplomacy, praising Iran’s resilience, condemning the martyrdom of Ali Larijani as a grave mistake, and urging a path toward negotiations, the reopening ",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.765,
-        "importance": 2.122,
-        "final": 2.504
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:shipping:1",
-        "diplomacy:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
     },
     {
       "id": "6073d867a789d30b",
@@ -677,9 +720,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.4,
-        "importance": 2.107,
-        "final": 2.439
+        "freshness": 0.35,
+        "importance": 1.845,
+        "final": 2.136
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -720,9 +763,9 @@
         "diplomacy": 3.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.793,
-        "importance": 3.053,
-        "final": 2.434
+        "freshness": 0.671,
+        "importance": 2.585,
+        "final": 2.061
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -735,45 +778,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
-    },
-    {
-      "id": "973c96c2f9667bcd",
-      "published_at": "2026-10-03T21:40:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/russia/1120173",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "В Бразилии начинаются президентские выборы",
-        "original_lang": "ru",
-        "ko": "브라질에서 대통령 선거 시작"
-      },
-      "summary": "В Бразилии в воскресенье состоится первый тур президентских выборов.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 2.0,
-        "region_weight": 1.25,
-        "freshness": 0.943,
-        "importance": 2.08,
-        "final": 2.314
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:presidential:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "presidential"
     },
     {
       "id": "0de584846cd65f63",
@@ -801,9 +805,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.476,
-        "importance": 1.799,
-        "final": 2.083
+        "freshness": 0.403,
+        "importance": 1.524,
+        "final": 1.764
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -845,9 +849,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.761,
-        "importance": 1.59,
-        "final": 1.769
+        "freshness": 0.645,
+        "importance": 1.346,
+        "final": 1.498
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -863,45 +867,47 @@
       "country_hint": "CHN"
     },
     {
-      "id": "ec29f0435dfac1ad",
-      "published_at": "2026-10-03T23:00:00+00:00",
+      "id": "901f3ccbdc459ffc",
+      "published_at": "2026-10-03T22:44:00+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Energy-General/The-Iran-War-Is-Showing-What-ADNOCs-AI-Can-Really-Do.html",
+      "url": "https://www.japantimes.co.jp/news/2026/10/04/world/pressure-iran-trump-us-military/",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "oil",
+        "shipping"
       ],
       "title": {
-        "original": "The Iran War Is Showing What ADNOC’s AI Can Really Do",
+        "original": "Pressure builds on Iran as Trump boosts U.S. military presence",
         "original_lang": "en",
-        "ko": "이란 전쟁은 ADNOC의 AI가 실제로 할 수 있는 일을 보여주고 있습니다."
+        "ko": "트럼프가 미군 주둔을 강화함에 따라 이란에 압박이 가해진다."
       },
-      "summary": "Oil companies have spent years using AI to drill faster, predict equipment failures and squeeze more production from existing fields. The UAE’s state-run oil giant, ADNOC, is now finding out what the same technology can do when the problem isn’t efficiency, but a war that initial",
+      "summary": "Inflation in Iran is almost 90% and oil flows through the Strait of Hormuz are recovering as Iran comes under growing strain.",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
+        "commodity": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.979,
-        "importance": 1.468,
-        "final": 1.699
+        "region_weight": 1.25,
+        "freshness": 0.823,
+        "importance": 1.264,
+        "final": 1.406
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:japan*1.25",
         "category:commodity",
-        "tier:A*1.00/g1",
+        "tier:A*1.00/g3",
         "commodity:oil:1",
-        "bridge:1"
+        "commodity:shipping:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "JPN"
     },
     {
       "id": "87b3b7f3f13d203d",
@@ -929,9 +935,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.922,
-        "importance": 1.386,
-        "final": 1.635
+        "freshness": 0.781,
+        "importance": 1.173,
+        "final": 1.385
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -972,9 +978,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.896,
-        "importance": 1.347,
-        "final": 1.59
+        "freshness": 0.759,
+        "importance": 1.141,
+        "final": 1.346
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -988,6 +994,46 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "SAU"
+    },
+    {
+      "id": "5bceb9135b183558",
+      "published_at": "2026-10-04T05:35:04+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/world/middle-east/article/3369685/trump-burger-hormuz-meet-iranian-team-behind-billboard-war-us?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Trump, burger, Hormuz: meet the Iranian team behind billboard war on US",
+        "original_lang": "en",
+        "ko": "트럼프, 버거, 호르무즈: 미국과의 빌보드 전쟁 배후에서 이란 팀을 만나보세요"
+      },
+      "summary": "Huge billboards on the walls of Tehran mocking US President Donald Trump and depicting American drones under the boot of an Iranian soldier are providing a chronicle of Iran’s war with the United States and Israel. Khaneh-ye Tarrahan, or Designers’ House, produces the billboards ",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.995,
+        "importance": 1.144,
+        "final": 1.273
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
     },
     {
       "id": "0f39fdd64180ac57",
@@ -1014,9 +1060,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.948,
-        "importance": 1.342,
-        "final": 1.493
+        "freshness": 0.802,
+        "importance": 1.136,
+        "final": 1.264
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -1031,163 +1077,82 @@
       "country_hint": "RUS"
     },
     {
-      "id": "886f24e7377ee4e6",
-      "published_at": "2026-10-03T19:42:00+00:00",
+      "id": "23cdd7bbfc546524",
+      "published_at": "2026-10-04T02:57:48+00:00",
       "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://russian.rt.com/world/news/1690388-vuchich-sankcii-pobeda?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://www.aljazeera.com/video/newsfeed/2026/10/4/ballots-reach-remote-indigenous-brazilians-ahead-of-presidential-election?traffic_source=rss",
       "category": "election",
       "commodities": [],
       "title": {
-        "original": "Вучич пообещал не вводить антироссийские санкции в случае победы на выборах",
-        "original_lang": "ru",
-        "ko": "Vucic은 선거에서 승리하면 반 러시아 제재를 가하지 않겠다고 약속했습니다."
+        "original": "Ballots reach remote Indigenous Brazilians ahead of presidential election",
+        "original_lang": "en",
+        "ko": "대통령 선거를 앞두고 브라질 원주민들에게 다가가는 투표용지"
       },
-      "summary": "Подавшего в отставку с поста президента Сербии Александр Вучич пообещал не вводить санкции против России в случае победы возглавляемой им коалиции на парламентских выборах. Читать далее",
+      "summary": "Ballot boxes reach remote Indigenous communities by boat as Brazil votes, with Amazon conservation a key issue.",
       "scores": {
         "commodity": 0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.893,
-        "importance": 1.28,
-        "final": 1.424
+        "region_weight": 1.4,
+        "freshness": 0.925,
+        "importance": 1.02,
+        "final": 1.204
       },
       "rank_reasons": [
-        "region:russia*1.25",
+        "region:mena*1.40",
         "category:election",
-        "tier:A*1.00/g2",
-        "diplomacy:1",
-        "election:general:1"
+        "tier:A*1.00/g1",
+        "election:presidential:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "info_grade": "1",
+      "country_hint": "BRA",
+      "election_type": "presidential"
     },
     {
-      "id": "df126f2ac726f452",
-      "published_at": "2026-10-03T23:38:00+00:00",
+      "id": "5fa7043eca874d03",
+      "published_at": "2026-10-04T03:43:00+00:00",
       "source": {
         "id": "interfax_ru",
         "name": "Interfax",
         "region": "russia",
         "slant": null
       },
-      "url": "https://www.interfax.ru/world/1120179",
-      "category": "diplomacy",
+      "url": "https://www.interfax.ru/world/1120189",
+      "category": "election",
       "commodities": [],
       "title": {
-        "original": "\"Семерка\" и мониторинговый комитет ОПЕК+ обсудят ситуацию на рынке",
+        "original": "Лула да Силва опережает по популярности Болсонару в преддверии выборов в Бразилии",
         "original_lang": "ru",
-        "ko": "G7과 OPEC + 모니터링 위원회는 시장 상황에 대해 논의할 것입니다."
+        "ko": "룰라 다 실바, 브라질 선거를 앞두고 보우소나루의 인기를 이끌다"
       },
-      "summary": "Министры семи стран ОПЕК+, ранее дополнительно к квотам всех участников ограничивавшие добычу нефти, на встрече 4 октября обсудят ситуацию на рынке и исполнение соглашения.",
+      "summary": "Действующий президент Бразилии Луис Инасиу Лула да Силва опережает по популярности своего главного соперника, сенатора Флавиу Болсонару, свидетельствуют результаты опроса компании Datafolha, опубликованного перед первым туром президентских выборов.",
       "scores": {
         "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
+        "diplomacy": 0.0,
+        "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.996,
-        "importance": 1.116,
-        "final": 1.241
+        "freshness": 0.945,
+        "importance": 1.042,
+        "final": 1.159
       },
       "rank_reasons": [
         "region:russia*1.25",
-        "category:diplomacy",
-        "tier:A*1.00/g2",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "6100a67075335a7d",
-      "published_at": "2026-10-02T22:59:19+00:00",
-      "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.aa.com.tr/en/world/rubio-jordans-king-abdullah-discuss-lebanon-syria/4076652",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Rubio, Jordan's King Abdullah discuss Lebanon, Syria",
-        "original_lang": "en",
-        "ko": "요르단의 압둘라 왕 루비오가 시리아 레바논에 대해 이야기하다"
-      },
-      "summary": "US secretary of state thanks Abdullah for 'steadfast role in advancing regional security'",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.3,
-        "freshness": 0.502,
-        "importance": 1.01,
-        "final": 1.147
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "TUR",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "e91e7c2ef0f7c601",
-      "published_at": "2026-10-03T18:53:31+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/us-russia-talks-to-end-ukraine-war-now-involves-a-massive-oil-deal-report-12135373#publisher=newsstand",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "US-Russia Talks To End Ukraine War Now Involves A Massive Oil Deal: Report",
-        "original_lang": "en",
-        "ko": "우크라이나 전쟁을 종식시키기 위한 미국-러시아 회담, 대규모 석유 거래 포함: 보고서"
-      },
-      "summary": "The group pursuing the deal includes US investor and billionaire Todd Boehly",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.873,
-        "importance": 1.004,
-        "final": 1.14
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
+        "category:election",
         "tier:A*1.00/g1",
-        "commodity:oil:1"
+        "election:presidential:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS"
+      "country_hint": "RUS",
+      "election_type": "presidential"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1230,162 +1195,202 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "281b0d1eace0a53b",
-      "published_at": "2026-10-03T00:33:00+00:00",
+      "id": "df126f2ac726f452",
+      "published_at": "2026-10-03T23:38:00+00:00",
       "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.japantimes.co.jp/business/2026/10/03/economy/g7-global-energy-supply-deal/",
+      "url": "https://www.interfax.ru/world/1120179",
       "category": "diplomacy",
       "commodities": [],
       "title": {
-        "original": "G7 agrees on deal to ease global energy supply concerns",
-        "original_lang": "en",
-        "ko": "G7, 글로벌 에너지 공급 우려 완화를 위한 거래 합의"
+        "original": "\"Семерка\" и мониторинговый комитет ОПЕК+ обсудят ситуацию на рынке",
+        "original_lang": "ru",
+        "ko": "G7과 OPEC + 모니터링 위원회는 시장 상황에 대해 논의할 것입니다."
       },
-      "summary": "U.S. President Donald Trump hailed the move and said Washington would not impose a threatened diesel export ban.",
+      "summary": "Министры семи стран ОПЕК+, ранее дополнительно к квотам всех участников ограничивавшие добычу нефти, на встрече 4 октября обсудят ситуацию на рынке и исполнение соглашения.",
       "scores": {
         "commodity": 0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.525,
-        "importance": 0.839,
-        "final": 0.934
+        "freshness": 0.844,
+        "importance": 0.945,
+        "final": 1.051
       },
       "rank_reasons": [
-        "region:japan*1.25",
+        "region:russia*1.25",
         "category:diplomacy",
-        "tier:A*1.00/g1",
+        "tier:A*1.00/g2",
         "diplomacy:1",
         "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "2",
+      "country_hint": "RUS"
     },
     {
-      "id": "8d6db3a8e3ec9e09",
-      "published_at": "2026-10-03T08:00:14+00:00",
+      "id": "76d83baf4bd72a1f",
+      "published_at": "2026-10-03T23:54:27+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
+        "id": "cgtn_world",
+        "name": "CGTN",
         "region": "china",
         "slant": null
       },
-      "url": "https://www.scmp.com/week-asia/politics/article/3369645/saudi-arabia-steps-war-against-yemens-houthis-pakistan-set-play-support-role?utm_source=rss_feed",
+      "url": "https://news.cgtn.com/news/2026-10-04/Lula-campaign-urges-probe-into-US-consular-service-suspension-1QXsbmaec3C/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "Lula campaign urges probe into US consular service suspension",
+        "original_lang": "en",
+        "ko": "룰라 캠페인, 미국 영사 서비스 중단에 대한 조사 촉구"
+      },
+      "summary": "Brazilian President Luiz Inacio Lula da Silva's campaign has asked the country's top electoral court to investigate whether the US decision to suspend consular services ahead of Sunday's presidential election was related to security concerns or constituted election interference, ",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.85,
+        "importance": 0.937,
+        "final": 1.043
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:election",
+        "tier:A*1.00/g1",
+        "election:presidential:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN",
+      "election_type": "presidential"
+    },
+    {
+      "id": "6100a67075335a7d",
+      "published_at": "2026-10-02T22:59:19+00:00",
+      "source": {
+        "id": "aa_world",
+        "name": "Anadolu Agency",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.aa.com.tr/en/world/rubio-jordans-king-abdullah-discuss-lebanon-syria/4076652",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Rubio, Jordan's King Abdullah discuss Lebanon, Syria",
+        "original_lang": "en",
+        "ko": "요르단의 압둘라 왕 루비오가 시리아 레바논에 대해 이야기하다"
+      },
+      "summary": "US secretary of state thanks Abdullah for 'steadfast role in advancing regional security'",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.3,
+        "freshness": 0.425,
+        "importance": 0.855,
+        "final": 0.971
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:cabinet_reshuffle",
+        "tier:B*0.72/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "TUR",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "e91e7c2ef0f7c601",
+      "published_at": "2026-10-03T18:53:31+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/us-russia-talks-to-end-ukraine-war-now-involves-a-massive-oil-deal-report-12135373#publisher=newsstand",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "As Saudi Arabia steps up war against Yemen’s Houthis, Pakistan set to play support role",
+        "original": "US-Russia Talks To End Ukraine War Now Involves A Massive Oil Deal: Report",
         "original_lang": "en",
-        "ko": "사우디아라비아가 예멘의 후티에 대한 전쟁을 강화함에 따라 파키스탄은 지원 역할을 수행하기 시작했습니다."
+        "ko": "우크라이나 전쟁을 종식시키기 위한 미국-러시아 회담, 대규모 석유 거래 포함: 보고서"
       },
-      "summary": "Pakistani troops are expected to take over various defensive functions for Saudi Arabia to enable the Middle East country to fight an all-out war aimed at defeating Yemen’s Iran-backed Houthi rebels. According to defence analysts, Pakistani troops are not expected to participate ",
+      "summary": "The group pursuing the deal includes US investor and billionaire Todd Boehly",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.739,
+        "importance": 0.85,
+        "final": 0.965
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "8c259c3a641ec8f1",
+      "published_at": "2026-10-04T05:09:44+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://sports.ltn.com.tw/news/breakingnews/5595033",
+      "category": "commodity",
+      "commodities": [
+        "copper"
+      ],
+      "title": {
+        "original": "亞運前線》李洋返台獲選手歡迎成「人形立牌」曾雅妮讚他承擔重責不容易",
+        "original_lang": "zh-TW",
+        "ko": "아시안 게임 최전방 \"Li Yang의 대만 복귀는\" 휴머노이드 카드 \"로 환영받았습니다. Zeng Yani는 무거운 책임을 맡은 것에 대해 그를 칭찬했습니다."
+      },
+      "summary": "名古屋亞運今天閉幕，運動部長李洋今天返台，而他在機場成為拍照「人形立牌」，不少選手都和他合照。另外，他也和這次奪下高爾夫女團銅牌的「微笑球后」曾雅妮寒暄，妮妮稱讚他...…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.645,
-        "importance": 0.742,
-        "final": 0.826
+        "freshness": 0.984,
+        "importance": 0.391,
+        "final": 0.435
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:taiwan*1.25",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1"
+        "tier:B*0.72/g3",
+        "commodity:copper:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "09e53d886e3af563",
-      "published_at": "2026-10-03T19:20:54+00:00",
-      "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.thehindu.com/news/national/tamil-nadu/madurantakam-by-election-will-the-aiadmk-bastion-fall-to-tvks-growing-popularity/article71540871.ece",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Madurantakam by-election: Will the AIADMK ‘bastion’ fall to TVK’s growing popularity?",
-        "original_lang": "en",
-        "ko": "마두란타캄 선거: AIADMK ‘요새’ 가 TVK의 인기가 높아질까요?"
-      },
-      "summary": "Maragatham Kumaravel, a former AIADMK leader, now seeks re-election as the TVK’s candidate after resigning as AIADMK MLA barely three weeks after the 2026 result; while some voters are undecided, some say they may not vote for the TVK despite the CM’s popularity",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.3,
-        "freshness": 0.884,
-        "importance": 0.683,
-        "final": 0.775
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:by_election:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "IND",
-      "election_type": "by_election"
-    },
-    {
-      "id": "73a5dcc53b2df8fc",
-      "published_at": "2026-10-03T08:44:00+00:00",
-      "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.dailysabah.com/sports/no-handshakes-no-change-in-result-as-india-beat-pakistan-for-gold/news",
-      "category": "commodity",
-      "commodities": [
-        "gold"
-      ],
-      "title": {
-        "original": "No handshakes, no change in result as India beat Pakistan for gold",
-        "original_lang": "en",
-        "ko": "인도가 파키스탄을 꺾고 금메달을 땄기 때문에 악수도, 결과 변화도 없습니다."
-      },
-      "summary": "Defending champion India extended its T20 dominance over archrival Pakistan with a 19-run victory Saturday to retain the gold medal in the Asian Games men's cricket event, with pla...",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.659,
-        "importance": 0.364,
-        "final": 0.413
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "IND"
+      "country_hint": "TWN"
     }
   ]
 }
