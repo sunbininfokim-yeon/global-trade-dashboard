@@ -113,6 +113,16 @@ GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다�
 새 규제 기관은 `sources.json`에 `"board": "export_controls"`와 `"issuer": "<ISO3>"`만 달면
 합류한다. 품목 창에 섞지 않으려면 `"board_only": true`도 단다.
 
+2026-10-02에 수출국 정부 세 곳을 더했다. 러시아 연방정부 결정문 RSS(`ru_government_docs`),
+인도 대외무역총국(DGFT) 고시 표(`in_dgft_notifications`), 인도네시아 무역부 RSS(`id_kemendag`)다.
+이때 쓰는 옵션 세 가지:
+
+- `title_re` (RSS): 정부 전체 피드에서 이 정규식에 맞는 제목만 남긴다. 러시아는 `вывоз|экспорт`.
+- `board_title_re`: 일반 부처 피드는 품목 보고서로 그대로 두고, 이 정규식에 맞는 제목만 보드에도
+  올린다. 인도네시아는 수출 금지·쿼터·수출세·DMO.
+- `kind: "html_table"` + `table`: 제목이 링크가 아니라 표의 칸에 있는 목록(DGFT: 번호·연도·설명·날짜·PDF).
+  `title_col` / `date_col` / `number_col`(0부터), `date_order`(`dmy` 기본), `title_re`, `max_items`.
+
 ```
 GET /api/commodity-reports?board=export_controls                  # 전체, 최신순
 GET /api/commodity-reports?board=export_controls&issuer=CHN       # 한 나라의 규제 기관만
