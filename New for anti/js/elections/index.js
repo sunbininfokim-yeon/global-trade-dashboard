@@ -1,8 +1,9 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js?v=2';
+import { createCountryExplorer } from './country-explorer/index.js?v=4';
 import { renderTimeline } from './timeline/index.js';
+import { briefKeyFor, openBrief } from './briefs/index.js';
 
 const state = createElectionState();
 let host = null;
@@ -32,8 +33,10 @@ const render = async () => {
     renderTimeline(host.roots.timeline, {
         calendar: bundle.calendar,
         countries: bundle.countries,
-        month: current.month,
-        onMonthChange: (month) => state.set({ month }),
+        // 브리핑을 그릴 수 있는 일정만 버튼이 된다. 창은 지도 위에 열리므로 왼쪽
+        // 일정 목록은 그대로 보인다 -- 누른 줄과 창이 같이 보인다.
+        briefFor: (event) => briefKeyFor(event, bundle),
+        onBriefOpen: (key, event) => openBrief(key, { bundle, modal: explorer.modal, event }),
     });
     await explorer.showWorld();
 };

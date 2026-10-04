@@ -1,0 +1,43 @@
+name: Comtrade probe
+
+# Reads (and warms) the production /api/comtrade proxy: which annual year the
+# map is on, fills the next years' cache so the cron can promote, and measures
+# how much monthly bilateral data Comtrade returns. See tools/ops/comtrade_probe.py.
+#
+# Manual only: every run spends real Comtrade calls through the production
+# Worker, so it should not fire on pushes. It only issues GETs to the public
+# site; the Comtrade key stays in the Worker.
+
+on:
+  workflow_dispatch:
+    inputs:
+      warm:
+        description: "Fill next annual years' cache"
+        type: boolean
+        default: true
+      monthly:
+        description: "Probe monthly bilateral coverage"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comtrade-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe production
+        run: |
+          args=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            [ "${{ inputs.warm }}" = "true" ] || args="$args --no-warm"
+            [ "${{ inputs.monthly }}" = "true" ] || args="$args --no-monthly"
+          fi
+          python3 tools/ops/comtrade_probe.py $args

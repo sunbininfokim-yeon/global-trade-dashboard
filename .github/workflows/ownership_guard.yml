@@ -90,3 +90,8 @@ jobs:
           if [ -f tools/check_locales.py ]; then
             python3 tools/check_locales.py
           fi
+
+      # A collector that commits to main but is missing from deploy.yml's
+      # workflow_run list keeps its data in git and never ships it.
+      - name: Every data collector is chained to deploy
+        run: python3 tools/ops/check_deploy_chain.py

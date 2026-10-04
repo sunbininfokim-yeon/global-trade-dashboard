@@ -22,7 +22,7 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 - 첫 RSS 적재는 설치 시점 기준 8일 안의 보고서만 알림 후보로 만든다. 이후 큐에 들어간 항목은 8일이 지나도 소실되지 않는다. 원문 전문/PDF 대신 제목·600자 요약·URL·태그만 저장한다.
 - `mail_claim`은 `FOR UPDATE SKIP LOCKED`, 5분 lease, 매번 새 token을 쓴다. 한 delivery는 최대 20개 사건이다. Worker 한 번에 최대 5 deliveries, 현재 06시대 최대 30 deliveries다. 이용자/변경량 증가 시 이 용량과 실제 무료 플랜 한도를 재검토해야 한다.
 - 수신자는 `auth.users.email_confirmed_at`이 있는 계정 이메일만 쓴다. 사용자가 자유롭게 수정하는 `profiles.email`은 수신 주소가 아니다.
-- 발송 직전에도 즐겨찾기·수신 설정·현재 인증 이메일을 재확인한다. 수신 설정은 마이페이지에서 정책/원자재별로 독립 저장하며 원자재의 기존 기관 필터를 유지한다.
+- 발송 직전에도 즐겨찾기·수신 설정·현재 인증 이메일을 재확인한다. 채널별 설정은 DB와 Auth API에서 독립 저장하며 원자재의 기존 기관 필터를 유지한다. 최신 main의 계정 일시정지·항목별 알림·기관 필터 UI를 보존하며, 채널별 새 스위치 UI는 이번 배포 준비 범위에서 제외한다.
 - 첫 요청의 전체 payload와 `mailing/<delivery_id>` idempotency key를 고정한다. 템플릿이 바뀌거나 DB 성공 응답을 잃어도 같은 payload/key로 재시도한다. 성공은 수신자마다 즉시 기록한다.
 - 네트워크·408/425/429/5xx는 재시도, 429는 Retry-After 준수. 401/403은 실행을 중단한다. 모호한 발송의 첫 시도 이후 23시간이 지나면 `uncertain`으로 격리한다. Resend의 키 보존 시간이 24시간이므로 그 이후 자동 재발송은 하지 않는다.
 - `state='sent'`/`accepted_at`는 **Resend API 접수 성공**이다. 수신함 도착, 반송, 스팸 분류는 확인하지 않는다. 해당 판정에는 Resend delivery 로그 또는 별도 webhook 연동이 필요하다.
@@ -32,8 +32,8 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 
 1. 준비 단계에서는 기존 발송 workflow를 유지하고 새 발송은 `false`로 둔다. DB 구조 적용·RSS 적재·로컬 검증은 메일을 보내지 않는다. 기존 sender 중지는 새 발송기의 준비를 검증한 다음 승인된 전환 단계에서만 한다. 특히 기존 법안 sender는 새 outbox의 발송 기록을 이해하지 못한다.
 2. 기존 DB의 `profiles`, `user_favorites`, `bills`, `executive_orders`, `commodity_digest_source_prefs`, `commodity_report_notifications`를 확인한다. 사용자/즐겨찾기 마이그레이션과 `20260904_favorite_commodity_kind.sql`, `20260904_commodity_report_notifications.sql`, `20260904_commodity_digest_source_prefs.sql`이 선행돼야 한다. 운영 DB를 초기화하거나 schema.sql 전체를 다시 실행하지 않는다.
-3. `supabase/migrations/20260911010000_mailing_outbox.sql`만 SQL Editor 또는 승인된 DB 연결로 적용한다. SQL은 재실행 가능하며 과거 법안 사건을 소급 생성하지 않는다. 이 파일이 메일링 DDL의 정본이다. `schema.sql`은 정책 모듈 설치본으로, 계정·즐겨찾기·메일링까지 포함한 전체 앱 설치본이 아니다.
-4. PR은 먼저 draft로 검토한다. 이 PR을 main에 반영하면 UI 수신 설정이 배포되고 기존 sender가 제거되므로 준비 단계에서 병합하지 않는다. 전환 승인 시에만 병합하며 SQL이 선행돼야 한다. `commodity-digest.yml`은 매일 archive/상태 확인으로 바뀐다.
+3. 새 DB에는 `20260911010000_mailing_outbox.sql` → 계정/즐겨찾기 알림 컬럼 마이그레이션 → `20260920020000_mailing_bill_lifecycle.sql` → `20261002010000_mailing_bill_event_identity.sql` → `20261002020000_mailing_subscription_preferences.sql` 순서로 적용한다. 이미 최신 함수가 있는 운영 DB에는 초기 메일 SQL만 재실행하지 않는다. SQL은 재실행 가능하며 과거 법안 사건을 소급 생성하지 않는다. 이 파일이 메일링 DDL의 정본이다. `schema.sql`은 정책 모듈 설치본으로, 계정·즐겨찾기·메일링까지 포함한 전체 앱 설치본이 아니다.
+4. 2026-10-04 수정본은 최신 main의 UI·기존 sender·워크플로를 보존한다. PR 병합과 실제 발송 전환은 별개다. 기존 `commodity-digest.yml`과 Congress의 `POLICY_FAVORITES_MAIL_ENABLED`를 확인하고, 전환 승인 뒤 기존 sender를 중단해 실행 중인 발송이 없음을 확인한 다음 Worker를 활성화한다. 기존 sender는 새 outbox를 이해하지 못하므로 두 발송기를 동시에 켜지 않는다.
 5. 로컬에서 기존 JSON을 적재하거나 `Commodity Mailing Archive Recovery`를 실행한다. 로컬 환경 파일은 인자로 로드하며 키 값을 출력하지 않는다.
 
    ```bash
@@ -112,3 +112,14 @@ Resend 키는 Worker 비공개 Secret에 연결했고 URL/관리키를 포함한
 최신 공개 `public/data/commodity_reports_v1.json`(2026-09-20 05:20 UTC)의 37건을
 검증 후 DB에 보관했다. `/api/commodity-reports`는 화면용 windows 구조이므로 importer 입력으로 쓰지 않는다.
 대기열은 pending 1, overdue 0이며 실제 발송은 OFF다. 테스트 메일 1건은 본문을 준비하고 별도 승인을 요청했다.
+
+
+## 2026-10-07 수요일 배포 준비
+
+- 최신 main과 충돌하던 UI·즐겨찾기·incremental 설정은 main을 보존한다. #321의 기본 DDL·서비스와 #443 보강을 함께 검증한다.
+- `npm test`의 설치 테스트는 비어 있는 PGlite에 앱 필수 테이블을 만든 뒤 실제 메일 마이그레이션을 순서대로 적용한다. Supabase 전체 프로젝트·pgvector 스키마 설치를 검증한 것은 아니다.
+- Worker를 ON으로 바꾸기 전 기존 GitHub sender 중단, 실행 중인 sender 0개, 도메인 인증과 서비스 Secret을 확인한다. `MAIL_SEND_ENABLED=true`가 실제 예약 발송을 켜는 설정이다. 이 변경은 별도 승인된 전환 단계에서만 실행한다.
+- 등록된 테스트 계정으로 공급자 접수와 실제 수신함 도착을 확인한다. 단순 `sent` 기록은 수신함 확인이 아니다.
+- 실패 시 Worker OFF로 복귀하고 기록·고정 idempotency key를 보존한다. 불확실한 전송을 수동으로 다시 보내지 않는다.
+- 맥 법안 수집 4시간 주기와 `scripts/sync-mailing-reports-local.js`를 연결한다. 원본 기관 피드를 직접 읽으며 제목·요약·태그·공식 URL을 DB에 보관한다. 원본 PDF 파일 저장과 웹사이트 JSON 배포는 별도다.
+- 원자재 분류는 키워드·보고서 시리즈 사전·기관 문맥 규칙이고, Gemini는 일부 제목 번역/주석을 보조한다. 미분류 항목·발행일 불명은 메일 후보로 강제 전환하지 않는다.

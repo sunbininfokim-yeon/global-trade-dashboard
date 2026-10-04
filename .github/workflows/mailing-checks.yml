@@ -5,7 +5,8 @@ on:
       - 'services/mailing/**'
       - 'scripts/*mail*'
       - 'scripts/notify-*.js'
-      - 'supabase/migrations/20260911010000_mailing_outbox.sql'
+      - 'supabase/migrations/*mailing*.sql'
+      - 'scripts/lib/policy-mailing*.cjs'
       - '.github/workflows/*mail*'
       - 'New for anti/auth.js'
       - 'New for anti/mypage.js'
@@ -28,6 +29,7 @@ jobs:
           cache-dependency-path: services/mailing/package-lock.json
       - run: npm ci
       - run: npm test
+      - run: NODE_PATH="$PWD/node_modules" node --test ../../scripts/lib/policy-mailing-events.test.cjs ../../scripts/lib/policy-mailing-preferences.test.cjs ../../scripts/lib/policy-mailing-archive.test.cjs ../../scripts/lib/policy-mac-resume.test.cjs
       - run: npm run types
       - run: npm run check
       - run: npm run build

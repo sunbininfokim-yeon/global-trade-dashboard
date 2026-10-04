@@ -26,12 +26,48 @@ REJECT_TERMS = [
     "job opening", "vacancy", "internship", "webinar registration",
     "scheduled dates", "correction notice", "obituary", "award winners",
     "national school lunch week", "podcast episode",
+    # Malay/Indonesian board and agency housekeeping (MPOB, BPDP, Kemendag):
+    # procurement, tenders, vacancies, scholarships, audited accounts, hoax
+    # warnings. The palm oil prior would otherwise file them all as palm oil.
+    "pengadaan", "pemenang tender", "sebut harga", "jawatan kosong", "beasiswa",
+    "call for proposal", "laporan keuangan", "hoaks", "penggajian",
+]
+
+# Events, not reports: a forum, a keynote, a seminar is news about the
+# publisher, not about the market. Only the headline is checked (a market
+# report may mention a conference in passing), and a headline that also
+# names a series or carries a figure is kept -- "OPEC Seminar: output cut
+# of 2 mb/d" is still a market story.
+EVENT_TERMS = [
+    "forum", "conference", "seminar", "workshop", "webinar", "symposium", "summit",
+    "convene", "convenes", "concludes", "keynote", "speaker", "invited to speak",
+    "high level dialogue", "courtesy visit", "networking", "gala", "exhibition", "expo",
+    "anniversary", "award", "awards", "ceremony", "signing ceremony",
+    "hội nghị", "họp mặt", "hội thảo", "tọa đàm", "hoi nghi", "hop mat", "hoi thao",
+    "persidangan", "majlis", "kunjungan",
+    "seminário", "congreso", "foro", "penghargaan", "larian", "opini publik",
+]
+
+# Housekeeping, not reports: a release that is late, a series that is
+# suspended, a survey being re-run, a tender, a new secretary general.
+# Headline only, and unlike EVENT_TERMS a series name does not save it --
+# "Crop Progress report delayed until 5pm" names the series and is still a
+# notice about a timetable. A figure in the headline does.
+ADMIN_TERMS = [
+    "report delayed", "release delayed", "delayed until", "delays weekly", "suspends", "suspended",
+    "discontinue", "discontinues", "discontinued", "to review", "re-survey", "resurvey",
+    "to collect", "released on-time", "appoints", "appointed", "secretary general", "reinstates",
+    "aviso de pauta", "pregão", "pregao", "nota oficial", "suscriben acuerdo", "acuerdo de colaboración",
+    "(t/p)", "tender", "lelang", "sebut harga", "call for proposal",
 ]
 
 # A release that carries a number is a release that moved a balance sheet.
 NUMBER_RE = re.compile(
-    r"\b\d{1,3}(?:[.,]\d+)?\s*(?:%|percent|million|billion|mmt|mt|tonnes?|tons?|"
-    r"bushels?|barrels?|bpd|bu/ac|kg/ha|t/ha)\b",
+    # "%" is not a word character, so a trailing \b after it never matched:
+    # "fell 12%" scored as a figure-less headline. The boundary is only for
+    # the word units.
+    r"\b\d{1,3}(?:[.,]\d+)?\s*(?:%|(?:percent|million|billion|mmt|mt|tonnes?|tons?|"
+    r"bushels?|barrels?|bpd|bu/ac|kg/ha|t/ha)\b)",
     re.I,
 )
 REVISION_TERMS = [
@@ -62,14 +98,20 @@ class ScoredReport:
     importance: float
     reasons: List[str] = field(default_factory=list)
     title_ko: Optional[str] = None
+    date_precision: str = "day"
+    board: Optional[str] = None
+    title_en: Optional[str] = None
+    control: Optional[Dict[str, Any]] = None
 
     def to_item(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko},
+            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko,
+                      **({"en": self.title_en} if self.title_en else {})},
             "summary": self.summary or None,
             "url": self.url,
             "published_at": self.published_at,
+            **({"published_precision": self.date_precision} if self.date_precision != "day" else {}),
             "agency": self.agency,
             "agency_ko": self.agency_ko,
             "source_id": self.source_id,
@@ -81,6 +123,8 @@ class ScoredReport:
             "series_label_ko": self.series_label_ko,
             "importance": round(self.importance, 3),
             "reasons": self.reasons,
+            **({"board": self.board} if self.board else {}),
+            **({"control": self.control} if self.control else {}),
         }
 
 
@@ -106,6 +150,11 @@ class ReportScorer:
     ) -> None:
         self.series = series_cfg.get("series", [])
         self.reject_pats = compile_terms(REJECT_TERMS)
+        self.event_pats = compile_terms(EVENT_TERMS)
+        self.admin_pats = compile_terms(ADMIN_TERMS)
+        from .tag import CONTEXT_TERMS
+
+        self.context_pats = compile_terms(CONTEXT_TERMS)
         self.revision_pats = compile_terms(REVISION_TERMS)
         self.half_life_days = half_life_days
         self.learned: Dict[str, float] = {}
@@ -130,12 +179,23 @@ class ReportScorer:
         if any(p.search(text) for p in self.reject_pats):
             return None
         # No commodity, no window to put it on. This is the whole filter: the
-        # dashboard has nowhere to show a report that is about nothing it trades.
-        if not tagged.commodities:
+        # dashboard has nowhere to show a report that is about nothing it trades
+        # -- unless its source feeds a board, which is shown on its own.
+        if not tagged.commodities and not raw.board:
             return None
 
         low = text.lower()
         series = self.match_series(low)
+        title_has_figure = bool(NUMBER_RE.search(raw.title))
+        if not series and not title_has_figure and any(p.search(raw.title) for p in self.event_pats):
+            return None
+        if not title_has_figure and any(p.search(raw.title) for p in self.admin_pats):
+            return None
+        # A PR-heavy board (market_only in sources.json): keep only what reads
+        # as market news -- a production, price, trade or policy term -- or a
+        # named series.
+        if raw.market_only and not series and not any(p.search(text) for p in self.context_pats):
+            return None
         series_weight = float(series.get("base_weight", 1.0)) if series else 1.0
         series_id = series.get("series_id") if series else None
 
@@ -190,6 +250,8 @@ class ReportScorer:
             series_label_ko=series.get("label_ko") if series else None,
             importance=importance,
             reasons=reasons,
+            date_precision=getattr(raw, "date_precision", "day"),
+            board=raw.board,
         )
 
 

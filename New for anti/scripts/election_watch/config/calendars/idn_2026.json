@@ -1,32 +1,99 @@
 {
   "iso3": "IDN",
   "year": 2026,
-  "as_of": "2026-08-09",
+  "as_of": "2026-09-19",
   "region": "southeast_asia",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "공개소스에서 아직 확정되지 않음"
   },
   "notes": [
-    "2026 national-election date is not included in the bundled source pack.",
-    "Refresh from KPU and party notices before adding dated events."
+    "No national presidential or DPR/DPD general in 2026.",
+    "Next nationwide cycle is the 2029 general (president + DPR + DPD). 2024 polling day was 14 Feb; inauguration 20 Oct 2024. KPU has not proclaimed the 2029 polling day in the sources reviewed."
   ],
   "events": [
     {
-      "id": "idn-2026-national",
-      "type": "general",
-      "label_ko": "전국 총·대선",
-      "date": "없음",
-      "status": "없음",
-      "notes": "Bundled light pack identifies the next national cycle as 2029."
+      "id": "idn-2029-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2029-02",
+      "date_note": "2024-02-14 본선 다음 5년 주기. 취임은 관례상 10월. KPU 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "idn-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령·부통령 1조 (1차 과반 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님. 전국 선거 제도가 없는 것이 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2024_Indonesian_general_election",
+        "https://www.kpu.go.id/"
+      ]
     },
     {
-      "id": "idn-2026-party-leadership",
+      "id": "idn-2029-dpr",
+      "type": "general",
+      "label_ko": "하원(DPR)·지방대표이사회(DPD) 총선 (다음 정기)",
+      "label_en": "DPR and DPD election",
+      "date": "2029-02",
+      "date_note": "대선과 같은 전국 투표일 주기. KPU 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "idn-dpr",
+      "level": "national",
+      "chamber": "dpr",
+      "contested_ko": "DPR 580석 + DPD 해당 회차",
+      "notes": "2026년 의회 회차 아님. 2024는 대선·DPR·DPD·지방의회가 같은 날.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Indonesia",
+        "https://www.kpu.go.id/"
+      ]
+    },
+    {
+      "id": "idn-2026-gerindra-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 전당대회·지도부 선출",
+      "party_id": "gerindra",
+      "party_abbr": "Gerindra",
+      "label_ko": "게린드라 당권 경선",
       "date": "불명",
       "status": "tentative",
-      "notes": "Party notice not yet captured; verify directly from party sites."
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "게린드라 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gerindra_Party"
+      ]
+    },
+    {
+      "id": "idn-2026-pdip-leadership",
+      "type": "party_leadership",
+      "party_id": "pdip",
+      "party_abbr": "PDI-P",
+      "label_ko": "투쟁민주당 당권 경선",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "PDI-P 당권 1인",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://www.kpu.go.id/"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "kpu",
+      "org": "KPU",
+      "url": "https://www.kpu.go.id/"
+    },
+    {
+      "id": "wiki_2024",
+      "url": "https://en.wikipedia.org/wiki/2024_Indonesian_general_election"
+    },
+    {
+      "id": "wiki_elections",
+      "url": "https://en.wikipedia.org/wiki/Elections_in_Indonesia"
     }
   ]
 }

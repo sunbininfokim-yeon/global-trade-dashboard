@@ -1,0 +1,116 @@
+# Claude: install as .github/workflows/commodity_trade_bilateral.yml after review.
+# This file is NOT an active workflow. No main push and no direct deployment.
+name: Monthly bilateral trade data
+on:
+  schedule:
+    - cron: '20 3 16-28 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+  pull-requests: write
+concurrency:
+  group: commodity-trade-bilateral-publisher
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      GH_TOKEN: ${{ github.token }}
+      TRADE_GATEWAY_URL: ${{ vars.TRADE_GATEWAY_URL }}
+      TRADE_PIPELINE_TOKEN: ${{ secrets.TRADE_PIPELINE_TOKEN }}
+      COMTRADE_API_KEY: ${{ secrets.COMTRADE_API_KEY }}
+      KOREA_CUSTOMS_SERVICE_KEY: ${{ secrets.KOREA_CUSTOMS_SERVICE_KEY }}
+      TRADE_MODE: ${{ vars.TRADE_ACQUISITION_MODE || 'preview' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data adapter dependencies
+        run: python3 -m pip install -r 'New for anti/scripts/commodity_trade/requirements.txt'
+      - name: Verify data and gateway contracts
+        run: |
+          python3 -m unittest discover -s 'New for anti/scripts/commodity_trade/tests' -v
+          node --test 'New for anti/scripts/commodity_trade/gateway/handler.test.mjs' 'New for anti/scripts/commodity_trade/client/bilateral-loader.test.mjs'
+      - name: Find newest trusted checkpoint, including failed runs
+        id: previous
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const {data} = await github.rest.actions.listArtifactsForRepo({owner, repo, name:'commodity-bilateral-checkpoint-v1', per_page:100});
+            for (const a of data.artifacts.filter(a => !a.expired).sort((a,b) => b.id-a.id)) {
+              if (a.workflow_run?.head_branch !== 'main' || a.workflow_run.head_repository_id !== a.workflow_run.repository_id) continue;
+              const {data: run} = await github.rest.actions.getWorkflowRun({owner, repo, run_id:a.workflow_run.id});
+              if (run.path !== '.github/workflows/commodity_trade_bilateral.yml' || !['schedule','workflow_dispatch'].includes(run.event)) continue;
+              core.setOutput('run_id', a.workflow_run.id); return;
+            }
+      - uses: actions/download-artifact@v4
+        if: steps.previous.outputs.run_id != ''
+        with:
+          name: commodity-bilateral-checkpoint-v1
+          path: ${{ runner.temp }}/trade-state
+          run-id: ${{ steps.previous.outputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Seed first run (normalized observations only; never contains keys)
+        if: steps.previous.outputs.run_id == ''
+        run: |
+          mkdir -p "$RUNNER_TEMP/trade-state"
+          cp 'New for anti/scripts/commodity_trade/deployment/seed_checkpoint.json' "$RUNNER_TEMP/trade-state/checkpoint.json"
+      - name: Backfill known source months fairly across countries
+        run: |
+          python3 'New for anti/scripts/commodity_trade/build_bilateral.py' --fetch --mode "$TRADE_MODE" \
+            --reporters all --hs all --period-strategy observed --months 1 --max-requests 60 --interval 3 \
+            --checkpoint "$RUNNER_TEMP/trade-state/checkpoint.json"
+      - name: Refresh official Saudi bulletin (oil value only; not crude partners)
+        run: |
+          python3 'New for anti/scripts/commodity_trade/build_saudi_bulletin.py'
+      - name: Refresh bounded recent-month partitions
+        run: |
+          python3 'New for anti/scripts/commodity_trade/build_bilateral.py' --fetch --mode "$TRADE_MODE" \
+            --reporters all --hs all --months 3 --max-requests 60 --interval 3 \
+            --checkpoint "$RUNNER_TEMP/trade-state/checkpoint.json"
+      - name: Optional Korea partner refresh
+        if: success() && (env.TRADE_PIPELINE_TOKEN != '' || env.KOREA_CUSTOMS_SERVICE_KEY != '')
+        run: |
+          KOREA_MODE=direct
+          if [ "$TRADE_MODE" = gateway ]; then KOREA_MODE=gateway; fi
+          python3 'New for anti/scripts/commodity_trade/build_bilateral.py' --fetch --mode "$KOREA_MODE" \
+            --source korea_customs --reporters KOR --hs all --hs-version HSK --months 3 --max-requests 60 \
+            --checkpoint "$RUNNER_TEMP/trade-state/checkpoint.json"
+      - name: Preserve progress even if authentication or publication fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commodity-bilateral-checkpoint-v1
+          path: ${{ runner.temp }}/trade-state/checkpoint.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Validate generated public files
+        if: success()
+        run: |
+          python3 'New for anti/scripts/commodity_trade/validate_bilateral_public.py' 'New for anti/public/data/commodity_trade_bilateral_v1'
+          python3 'New for anti/scripts/commodity_trade/monthly_coverage.py'
+          python3 'New for anti/scripts/commodity_trade/validate_release.py'
+      - name: Propose data update for validated merge and existing deployment
+        if: success()
+        run: |
+          BRANCH="automation/commodity-bilateral-${GITHUB_RUN_ID}"
+          git switch -c "$BRANCH"
+          git add -- 'New for anti/public/data/commodity_trade_bilateral_v1' 'New for anti/public/data/commodity_trade_coverage_v1.json'
+          git add -- 'New for anti/public/data/commodity_trade_saudi_bulletin_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'data: refresh bilateral commodity observations'
+          git push origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" --title 'Monthly bilateral commodity data' \
+            --body 'Generated by the bounded data pipeline. Review coverage, source flags and policy uncertainty; no UI or Worker modifications.'
+      # Auto-merge/deploy requires Claude to wire repository-approved checks and
+      # permissions. GITHUB_TOKEN-created PRs may not trigger further workflows;
+      # do not claim unattended deployment until that boundary is verified.

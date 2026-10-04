@@ -94,7 +94,58 @@ python3 build_reports.py build --translate --translate-limit 60
 GET /api/commodity-reports                                  # 어떤 창에 몇 건 있는지
 GET /api/commodity-reports?commodity=soybeans               # 세계 → 나머지
 GET /api/commodity-reports?commodity=soybeans&country=USA   # 그 나라 먼저, 세계는 뒤
+GET /api/commodity-reports?commodity=oil&country=USA&limit=60&offset=60   # 다음 묶음
 ```
+
+창 하나에 고정 개수 상한은 없다(`--per-bucket` 500은 안전판일 뿐). 발표는 피드에서
+밀려나도 `ARCHIVE_DAYS`(84일, 12주) 동안 스냅샷에 남고, 그보다 오래되면 빠진다.
+응답의 `total`이 창 전체 건수, `offset`/`count`가 이번 묶음이다(`limit` 최대 100).
+우측 패널은 60건씩 받아 화면 높이에 맞춰 쪽을 나누고, 마지막 쪽에서 `›`를 누르면
+다음 묶음을 받아 이어 붙인다.
+
+### 수출통제 보드 (`boards.export_controls`) — 수출통제 창용 계약
+
+품목과 상관없이 규제 기관 발표를 한곳에 모으는 목록이다. 지금 들어가는 소스는 세 곳이다.
+
+- 중국 상무부 산업안전·수출입통제국(`cn_mofcom_aqygzj`, 중국어 원문 + Gemini 번역): 중국 화면 박스에 표시
+- 미국 OFAC(`us_ofac_recent_actions`)과 BIS(`us_bis_press`): `board_only`. 이 목록에만 쌓이고 품목 창에는 안 뜬다. 수출통제 창이 생기면 거기서 보여 준다.
+
+새 규제 기관은 `sources.json`에 `"board": "export_controls"`와 `"issuer": "<ISO3>"`만 달면
+합류한다. 품목 창에 섞지 않으려면 `"board_only": true`도 단다.
+
+2026-10-02에 수출국 정부 세 곳을 더했다. 러시아 연방정부 결정문 RSS(`ru_government_docs`),
+인도 대외무역총국(DGFT) 고시 표(`in_dgft_notifications`), 인도네시아 무역부 RSS(`id_kemendag`)다.
+이때 쓰는 옵션 세 가지:
+
+- `title_re` (RSS): 정부 전체 피드에서 이 정규식에 맞는 제목만 남긴다. 러시아는 `вывоз|экспорт`.
+- `board_title_re`: 일반 부처 피드는 품목 보고서로 그대로 두고, 이 정규식에 맞는 제목만 보드에도
+  올린다. 인도네시아는 수출 금지·쿼터·수출세·DMO.
+- `kind: "html_table"` + `table`: 제목이 링크가 아니라 표의 칸에 있는 목록(DGFT: 번호·연도·설명·날짜·PDF).
+  `title_col` / `date_col` / `number_col`(0부터), `date_order`(`dmy` 기본), `title_re`, `max_items`.
+
+```
+GET /api/commodity-reports?board=export_controls                  # 전체, 최신순
+GET /api/commodity-reports?board=export_controls&issuer=CHN       # 한 나라의 규제 기관만
+GET /api/commodity-reports?board=export_controls&measure=entity_list
+```
+
+항목에는 일반 보고서 필드에 다음이 더 붙는다.
+
+| 필드 | 뜻 |
+|---|---|
+| `title.original` / `title.original_lang` | 원문 제목(중국어 등) 그대로 |
+| `title.en` / `title.ko` | Gemini 번역 (`translate: true` 소스만; 키가 없거나 실패하면 없음) |
+| `url` | 공고 원문 |
+| `agency_url` | 발간 기관 사이트 |
+| `control.issuer` / `control.issuer_body` | 발표한 나라(ISO3)와 기관 — 소스 카탈로그 값 |
+| `control.measure` | `entity_list` · `export_restriction` · `export_ban` · `sanctions` · `countermeasure` · `list_adjustment` · `suspension` · `enforcement` · `dialogue` · `guidance` · `other` (번역 전엔 null) |
+| `control.items` | 제목에 나온 통제 품목·기술, 소문자 영어 (갈륨처럼 대시보드 추적 품목이 아니어도 그대로) |
+| `control.targets` | 겨냥한 나라 ISO3, EU는 `"EU"` |
+| `control.extracted_by` | `"gemini"` — measure/items/targets는 제목 한 줄을 LLM이 읽은 값이라는 표시 |
+
+`commodities`가 비어 있어도 보드에는 남는다. 제목(영어 번역 포함)에 추적 품목이
+나오면 해당 품목의 국가 창에도 같이 뜬다. 번역은 URL과 제목이 그대로면 다음
+빌드에서 재사용한다(`translation.reused`). 새 제목만 Gemini로 보낸다.
 
 로컬 정적 서버에는 `/api`가 없으므로 404가 정상이다.
 `trade.js`가 `public/data/commodity_reports_v1.json`을 직접 읽어 **같은 순서로** 폴백한다.
@@ -108,7 +159,7 @@ GET /api/commodity-reports?commodity=soybeans&country=USA   # 그 나라 먼저,
 
 | 파일 | 역할 |
 |------|------|
-| `config/sources.json` | 발간처 레지스트리 (`default_country`, `scope_hint`, `commodity_hint`, `weight`) |
+| `config/sources.json` | 발간처 레지스트리 (`default_country`, `scope_hint`, `commodity_hint`, `commodity_scope`, `weight`) |
 | `config/commodities.json` | 상품 다국어 별칭. **키는 `index.html`의 `data-target` 과 반드시 같아야 한다** |
 | `config/countries.json` | ISO3 별칭 + 형용사형 + 산지(주·지방) |
 | `config/series_catalog.json` | "주요 보고서" 정의 (WASDE, safra, STEO, MOMR…) |
@@ -138,6 +189,69 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 
 **새 종류의 중요 보고서**가 보이면 `config/series_catalog.json` 에 `series_id`를 추가하는 것이
 "학습 정의"의 정본이다.
+
+## 소스 상태 (2026-09-26 갱신 — 모든 대시보드 품목에 출처 연결)
+
+**URL은 추측으로 켜지 않는다.** 세션 환경에서는 발간처 대부분에 접속이 안 되므로,
+후보를 `tools/ops/feed_probe_targets.json` 에 적고 `claude/` 브랜치에 푸시하면
+`.github/workflows/feed_probe.yml` 이 러너에서 받아 본다 (상태코드, RSS 여부, 항목 수,
+최신 날짜, 페이지가 광고하는 피드, 차단 종류 — 브라우저 헤더·Chrome TLS 지문·실제 Chrome).
+
+| 품목 | 새로 붙은 출처 |
+|---|---|
+| 천연고무 (`rubber`, 신규 창) | ANRPC 사무국 뉴스(월간 NR 통계), 베트남고무협회 국내·해외 뉴스 |
+| 팜유 | MPOB RSS, BPDP RSS(수출부담금 규정), 인도네시아 무역부 RSS, GAIN(말레이시아·인니 Oilseeds) |
+| 커피 | CONAB 뉴스 목록(브라질 커피 생산 추정), GAIN(Coffee Annual) |
+| 구리·리튬 | Cochilco RSS |
+| 알루미늄 / 은 / 금 | IAI / Silver Institute / WGC RSS |
+| 철광석·원료탄 | worldsteel RSS (월간 조강 생산만 시리즈로 연결) |
+| 핵심광물 전반 | USGS NMIC 뉴스 목록, NRCan Atom, 중국 상무부 영문 뉴스(수출통제) |
+| 곡물 전반 | FAO 뉴스룸·EU DG AGRI(새 피드 주소), GAIN 복구 |
+
+**GAIN:** `fas.usda.gov/data/search` 는 러너에서 늘 `Access Denied` (헤더·TLS·실제 Chrome
+모두 — 경로 규칙). 품목 페이지(`/data/commodities/<x>`)와 국가 페이지(`/regions/<x>`)에
+최신 GAIN 링크(`/data/gain/YYYY/MM/<slug>`)가 박혀 있고 보고서 페이지도 열리므로
+`fas_gain_pages` 가 그 링크를 모아 각 페이지의 og:title·요약을 읽는다. 페이지에 그 달
+안의 날짜가 없으면 URL의 연·월만 쓰고 `published_precision: "month"` 로 표시한다.
+
+**2차 추가 (같은 날):** 주석 — 국제주석협회 RSS · 납/아연 — ILZSG 월간 보도자료 PDF
+(`pdf_summary`: pypdf로 첫머리를 요약으로 인용) · 코발트 — Cobalt Institute 뉴스 ·
+금 — WGC 보도자료 목록 · 인도네시아 ESDM(석탄·니켈 정책) · 아르헨티나 BCR 주간 보고.
+**OPEC MOMR은 불가:** opec.org는 홈페이지만 열리고 MOMR 페이지·PDF·보도자료가
+러너 IP에서 Cloudflare 방화벽 403 (실제 Chrome 포함). PDF 처리 기능은 이미 있으니
+경로만 열리면 html_list + `pdf_summary`로 붙는다.
+
+**메일(주간 즐겨찾기 다이제스트):** 항목마다 `first_seen_at`(처음 확인 시각)을 남긴다.
+발행일 없는 목록형 출처는 이 시각으로 "이번 주 새 보고서"를 판단한다.
+
+**출처 사전분류(commodity_hint)는 시장 기사에만 (2026-09-26):** ANRPC·ITA·MPOB·BPDP·
+WGC·Silver Institute처럼 "이 출처 글은 기본적으로 X"라는 사전분류는 본문에 시장 용어
+(생산·수출·가격·재고·통계·관세·거래…)가 있을 때만 적용한다. 사무총장 강연, 워크숍,
+회원사 소식, 오피니언, 번역판 뉴스레터가 품목 보고서로 붙던 문제. 시장 용어가 없는
+주요 보고서("Monthly NR Statistical Report")는 series_catalog로 그대로 붙는다.
+기관 이름에 품목명이 든 경우(Association of Natural Rubber Producing Countries)는
+`not_when`으로 품목 판단에서 뺀다.
+
+**품목별 관련성 정리 (2026-09-26, 2차):**
+- EIA 출처의 "기본 원유" 사전분류를 없앴습니다. 원유는 본문으로 판단합니다(`oil production/demand/prices…`, `OPEC`, `Hormuz`, `gasoline/diesel` 별칭). 식물성 기름 문구(`palm oil`, `soybean oil`…)는 먼저 지우고 봅니다. STEO/AEO는 시리즈로 원유·가스(·석탄)에 붙습니다.
+- 출처 옵션 `market_only: true`: 시장 용어(생산·가격·재고·교역·정책·비축 매입 등)가 없는 글은 버립니다. PR성 게시판(MPOB·BPDP·IAI·Cochilco·NRCan·Cobalt·VRA·ESDM·MOFCOM·WGC·Silver·ITA·EU AGRI·NASS·CONAB)에 겁니다.
+- 출처 옵션 `commodity_from: "title"`: 품목은 제목에서만 판단합니다(EU DG AGRI — 본문에 사료 대두가 스쳐 나오는 달걀 기사).
+- 출처 옵션 `translate: true`: 빌드 때 Gemini(`GEMINI_API_KEY`, 워크플로는 `AI_STUDIO_API_KEY` 시크릿)로 제목을 영어·한국어로 번역하고, 원문과 영어를 같이 태깅합니다. 모델은 `GEMINI_TRANSLATE_MODEL`로 지정하거나, 지정하지 않으면 `gemini-flash-lite-latest` → `gemini-flash-latest` → `gemini-2.5-flash` 순서로 첫 응답을 씁니다.
+- 출처 옵션 `board` / `issuer` / `board_only`: 품목 창과 별개인 목록(현재 `export_controls`)에 넣습니다. `board_only`이면 그 목록에만 넣습니다. 위 "수출통제 보드" 참고.
+- html_list 옵션: `min_title_chars`(기본 12), `slug_fallback`(기본 true), `title_re`(이 정규식에 맞는 제목만 남김), `date_window`(링크 뒤 N자 안의 날짜 읽기), `date_from_url_re`(URL 속 날짜, 그룹 연·월·일).
+- 출처 옵션 `commodity_scope: [...]`: 이 출처는 목록 안 품목으로만 분류됩니다. 목록 밖 품목만 잡힌 글은 버립니다(로사리오 곡물거래소 — 거시 칼럼에 "petróleo"가 한 번 나와 원유 보고서로 잡혔던 건, 2026-09-27).
+- 제목 기준 행정 공지 필터 `ADMIN_TERMS`: 보고서 지연, 추정 중단, 재조사, 입찰(T/P), 보도 예고, 인사, 협약. 시리즈 이름이 붙어 있어도 버리고, 제목에 수치가 있으면 남깁니다.
+
+**간헐 차단과 이월:** fas.usda.gov·usda.gov는 같은 날에도 러너에 따라 403을 준다
+(1회차 통과, 2회차 전부 403). 그래서 실패한 출처는 직전 결과 파일에서 그 출처의 보고서
+(45일 이내)를 다시 태깅해 이어 붙이고, `feed_status`에 `carried_over`로 표시한다.
+GAIN은 이미 읽은 보고서 페이지를 다시 받지 않고, 요청 사이에 1초를 쉬며,
+목록 페이지 5개가 연달아 실패하면 그 회차를 멈춘다.
+
+**안 되는 곳 (2026-09-26 확인):** ICSG·ILZSG·INSG·국제주석협회·GAPKI·MPOC·Cecafé
+(JS 챌린지), IEA·말레이시아고무협의회(Cloudflare), Cobalt Institute(Sucuri),
+태국 고무청(RAOT, 러너에서 타임아웃), 인도 고무청(중간 인증서 누락), ICO(RSS 비어 있음),
+USGS `/news/minerals/feed`(빈 채널). 말레이시아 고무청(LGM)은 SPA라 뉴스 API를 찾아야 한다.
 
 ## 소스 상태 (2026-09-02, 첫 라이브 Actions 실행 결과 반영)
 

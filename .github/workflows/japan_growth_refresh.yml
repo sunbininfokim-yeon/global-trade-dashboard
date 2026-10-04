@@ -34,9 +34,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install test deps
+      - name: Install deps
         working-directory: New for anti/scripts/macro_monitor
-        run: pip install pytest
+        # openpyxl parses the ESRI Cabinet Office Excel release
+        # (macro_monitor/japan_growth.py) -- missing here since this
+        # workflow's first version, so every run since 2026-08-24 failed at
+        # test collection (ModuleNotFoundError) before ever reaching the
+        # actual refresh steps.
+        run: pip install pytest openpyxl
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
         run: python -m pytest tests/test_japan_growth.py -v
@@ -53,4 +58,11 @@ jobs:
           git add "New for anti/scripts/macro_monitor/config/japan_growth_v1.json" \
                   "New for anti/public/data/macro_monitor_v1.json"
           git commit -m "chore: refresh Japan growth diagnostics (ESRI/BOJ)" || exit 0
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

@@ -15,13 +15,15 @@ import email.utils
 import hashlib
 import re
 import ssl
+import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from html import unescape
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin
+from urllib.parse import quote, unquote, urljoin
 
 _TAG_RE = re.compile(r"<[^>]+>", re.S)
 _SCRIPT_RE = re.compile(r"<(script|style)[^>]*>.*?</\1>", re.I | re.S)
@@ -45,6 +47,25 @@ class RawReport:
     summary: str
     published_at: Optional[str]
     lang: str = "en"
+    # "month" when only the year and month are known (a GAIN page with no
+    # dated element falls back to the /YYYY/MM/ in its URL). The card then
+    # shows 2026.09, not a day nobody published.
+    date_precision: str = "day"
+    # Source-level relevance switches (config/sources.json): market_only drops
+    # an item whose text has no market term at all (publisher PR boards);
+    # commodity_from "title" tags commodities from the headline only (broad
+    # policy feeds whose bodies mention crops in passing).
+    market_only: bool = False
+    commodity_from: str = "text"
+    # commodity_scope: the only commodities this source may be filed under. A
+    # grain exchange's macro column that says "petróleo" once is not an oil
+    # report (BCR, 2026-09-27). Empty means no restriction.
+    commodity_scope: List[str] = field(default_factory=list)
+    # board: a named list the source also feeds, independent of commodity
+    # windows (MOFCOM's export-control bureau -> "cn_export_controls"). A
+    # board item is kept even when it names no commodity this dashboard
+    # tracks -- an entity-list addition is the news, whatever it ships.
+    board: Optional[str] = None
     weight: float = 1.0
     # Priors from the source catalog, used only where the text itself is silent.
     default_country: Optional[str] = None
@@ -58,17 +79,83 @@ def strip_html(doc: str) -> str:
     return _WS_RE.sub(" ", unescape(doc)).strip()
 
 
-def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0) -> str:
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": user_agent,
-            "Accept": "application/rss+xml, application/atom+xml, application/xml, "
-            "text/xml, text/html, */*",
-            "Accept-Language": "en,pt;q=0.8,es;q=0.8,fr;q=0.6",
-        },
-        method="GET",
-    )
+# Some ministries drop or reset a connection that does not look like a
+# browser's (MOFCOM's English site resets ours and serves Chrome's). A source
+# opts in with "headers": "browser"; everyone else keeps the honest UA.
+# MOFCOM also cuts the first connection from a new client and serves the
+# next one: in both 2026-10-01 probes the first request to each of its hosts
+# was reset or timed out and the requests right after it got 200, whatever
+# the headers. A single try is what failed all 14 builds -- so a browser-
+# headers source is retried (BROWSER_RETRIES, a short pause between).
+BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
+
+
+BROWSER_RETRIES = 3
+
+
+def fetch_text(url: str, *, user_agent: str, timeout: float = 22.0, browser: bool = False,
+               pause: float = 2.0) -> str:
+    if not browser:
+        return _fetch_text_once(url, user_agent=user_agent, timeout=timeout, browser=False)
+    for attempt in range(1, BROWSER_RETRIES + 1):
+        try:
+            return _fetch_text_once(url, user_agent=user_agent, timeout=timeout, browser=True)
+        except urllib.error.HTTPError:
+            raise  # the server answered; asking again will not change it
+        except (urllib.error.URLError, OSError):
+            if attempt == BROWSER_RETRIES:
+                # Last resort: a Chrome TLS handshake. MOFCOM's export-control
+                # bureau has failed urllib's handshake outright on some runs
+                # (SSLV3_ALERT_HANDSHAKE_FAILURE) while curl_cffi got 200 on
+                # every probe. Optional -- without the package, the error stands.
+                text = _fetch_impersonated(url, timeout=timeout)
+                if text is not None:
+                    return text
+                raise
+            time.sleep(pause)
+    raise AssertionError("unreachable")
+
+
+def _fetch_impersonated(url: str, *, timeout: float) -> Optional[str]:
+    try:
+        from curl_cffi import requests as creq  # type: ignore
+    except ImportError:
+        return None
+    try:
+        r = creq.get(url, impersonate="chrome", timeout=timeout, allow_redirects=True)
+    except Exception:  # noqa: BLE001 -- the urllib error is the one reported
+        return None
+    if r.status_code != 200:
+        return None
+    raw = r.content
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return raw.decode("utf-8", errors="replace")
+
+
+def _fetch_text_once(url: str, *, user_agent: str, timeout: float, browser: bool) -> str:
+    headers = dict(BROWSER_HEADERS) if browser else {
+        "User-Agent": user_agent,
+        "Accept": "application/rss+xml, application/atom+xml, application/xml, "
+        "text/xml, text/html, */*",
+        "Accept-Language": "en,pt;q=0.8,es;q=0.8,fr;q=0.6",
+    }
+    req = urllib.request.Request(url, headers=headers, method="GET")
     with urllib.request.urlopen(req, timeout=timeout, context=ssl.create_default_context()) as resp:
         raw = resp.read()
     if raw.startswith(b"\xef\xbb\xbf"):
@@ -118,6 +205,17 @@ def parse_date(raw: str) -> Optional[str]:
         return None
 
 
+def _board_for(source: Dict[str, Any], title: str) -> Optional[str]:
+    """The board an item goes on. A general ministry feed (Indonesia's trade
+    ministry) sets board_title_re so only its export-policy headlines join
+    the board; the rest stay ordinary commodity reports."""
+    board = source.get("board") or None
+    pattern = source.get("board_title_re")
+    if board and pattern and not re.search(pattern, title or ""):
+        return None
+    return board
+
+
 def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
     return RawReport(
         source_id=source["id"],
@@ -128,6 +226,10 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         default_country=source.get("default_country") or None,
         commodity_hint=list(source.get("commodity_hint") or []),
         scope_hint=source.get("scope_hint", "country"),
+        market_only=bool(source.get("market_only")),
+        commodity_from=source.get("commodity_from", "text"),
+        commodity_scope=list(source.get("commodity_scope") or []),
+        board=_board_for(source, kw.get("title", "")),
         **kw,
     )
 
@@ -150,6 +252,9 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     else:
         return []
 
+    # A feed of everything a government publishes keeps only matching
+    # headlines (Russia: export bans, quotas, duties).
+    title_keep = re.compile(source["title_re"]) if source.get("title_re") else None
     items: List[RawReport] = []
     for el in entries[:max_items]:
         title = link = pub = ""
@@ -173,6 +278,8 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
         title = strip_html(title)
         summary = strip_html(max(bodies, key=len) if bodies else "")
         if not title or not link:
+            continue
+        if title_keep and not title_keep.search(title):
             continue
         # Feeds that repeat the headline as the body add nothing to the card.
         if summary.lower().startswith(title.lower()):
@@ -198,6 +305,9 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     return items
 
 
+_LIST_DATE_RE = re.compile(r"(20\d{2})[-./年](\d{1,2})[-./月](\d{1,2})")
+
+
 def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     """Link harvest for publishers with no feed (WASDE, OPEC press room…).
 
@@ -210,29 +320,183 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     base = cfg.get("base") or source.get("url") or ""
     href_re = cfg.get("item_href_re") or r"[^\"']+"
     max_items = int(cfg.get("max_items") or 20)
-    pattern = re.compile(rf"href=[\"']({href_re})[\"'][^>]*>(.{{0,200}}?)</a>", re.I | re.S)
+    pattern = re.compile(rf"href=[\"']({href_re})[\"'][^>]*>", re.I | re.S)
+    # Chinese headlines run short ("关于对稀土实施出口管制的公告" is 14
+    # characters), and a hash slug (MOFCOM's art_5f65b9c9…) is no title.
+    min_chars = int(cfg.get("min_title_chars") or 12)
+    slug_fallback = cfg.get("slug_fallback", True)
+    # List pages that print the date beside each link (MOFCOM: the row's
+    # <span>2026-09-28</span>) -- looked for between this anchor and the next.
+    date_window = int(cfg.get("date_window") or 0)
+    # Keep only headlines matching this (a ministry homepage also links its
+    # contact page, party-branch news and white papers).
+    title_keep = re.compile(cfg["title_re"]) if cfg.get("title_re") else None
+    # A date the URL itself carries (OFAC: /recent-actions/20260930), with
+    # groups year, month, day.
+    url_date = re.compile(cfg["date_from_url_re"]) if cfg.get("date_from_url_re") else None
+
+    def anchors():
+        # The anchor's text is whatever sits before its </a>. Card layouts
+        # (WGC, ILZSG) wrap a whole teaser in the link, so the closing tag can
+        # be kilobytes away; a text that long is not a headline and the slug
+        # stands in for it.
+        for m in pattern.finditer(body):
+            end = body.find("</a>", m.end(), m.end() + 4000)
+            inner = body[m.end():end] if end != -1 else ""
+            tail = ""
+            if date_window and end != -1:
+                tail = body[end:end + date_window]
+                nxt = tail.find("<a ", 4)
+                tail = tail[:nxt] if nxt != -1 else tail
+            yield m.group(1), inner, tail
 
     items: List[RawReport] = []
     seen = set()
-    for href, inner in pattern.findall(body):
+    for href, inner, tail in anchors():
         full = urljoin(base, href)
         key = full.split("?", 1)[0].rstrip("/").lower()
         if key in seen:
             continue
         title = strip_html(inner)
-        if len(title) < 12:
+        if len(title) > 200:
+            title = ""
+        if len(title) < min_chars and not slug_fallback:
+            continue
+        if len(title) < min_chars:
             # Icon-only or "read more" links: fall back to the slug, which for
-            # these publishers is a readable title.
-            title = re.sub(r"[-_]+", " ", full.rsplit("/", 1)[-1].split(".")[0]).strip()
-        if len(title) < 12:
+            # these publishers is a readable title -- once its %-escapes are
+            # decoded (ANRPC's "report%2C june 2026") and its first letter
+            # capitalized.
+            slug = unquote(full.rstrip("/").rsplit("/", 1)[-1])
+            slug = re.sub(r"\.(?:html?|php|aspx?|pdf)$|\.\d+\.html?$", "", slug, flags=re.I)
+            title = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", slug)).strip(" .")
+            title = title[:1].upper() + title[1:]
+        if len(title) < min_chars:
+            continue
+        if title_keep and not title_keep.search(title):
             continue
         seen.add(key)
+        published = None
+        dm = url_date.search(full) if url_date else None
+        dm = dm or (_LIST_DATE_RE.search(tail) if tail else None)
+        if dm:
+            try:
+                published = datetime(int(dm.group(1)), int(dm.group(2)), int(dm.group(3)),
+                                     tzinfo=timezone.utc).isoformat()
+            except ValueError:
+                published = None
         items.append(
-            _raw_from(source, title=title, url=full, summary="", published_at=None)
+            _raw_from(source, title=title, url=full, summary="", published_at=published)
         )
         if len(items) >= max_items:
             break
     return items
+
+
+_DMY_RE = re.compile(r"(\d{1,2})[/.-](\d{1,2})[/.-](20\d{2})")
+
+
+def parse_html_table(body: str, source: Dict[str, Any]) -> List[RawReport]:
+    """Rows of a server-rendered table whose headline sits in its own cell
+    and whose link is a bare "Download" (India's DGFT notifications: number,
+    year, description, date, PDF).
+
+    cfg ("table"): title_col and date_col are 0-based <td> indexes;
+    number_col, when set, prefixes the headline ("Notification 35/2026-27:
+    ..."); date_order "dmy" (default) or "ymd"; title_re keeps matching
+    headlines only; max_items caps the rows read.
+    """
+    cfg = source.get("table") or {}
+    base = cfg.get("base") or source.get("url") or ""
+    title_col = int(cfg.get("title_col", 0))
+    date_col = cfg.get("date_col")
+    number_col = cfg.get("number_col")
+    prefix = cfg.get("number_prefix", "")
+    title_keep = re.compile(cfg["title_re"]) if cfg.get("title_re") else None
+    max_items = int(cfg.get("max_items") or 30)
+    items: List[RawReport] = []
+    seen = set()
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S | re.I):
+        cells = [strip_html(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S | re.I)]
+        if len(cells) <= title_col:
+            continue
+        title = cells[title_col].strip()
+        if not title or (title_keep and not title_keep.search(title)):
+            continue
+        href = re.search(r"href=[\"']([^\"']+)[\"']", row, re.I)
+        if not href:
+            continue
+        # DGFT's PDF names carry spaces ("Notif 39 E.pdf").
+        url = quote(urljoin(base, href.group(1).strip()), safe=":/?&=%#~+,;@!$'()*")
+        if url in seen:
+            continue
+        seen.add(url)
+        if number_col is not None and len(cells) > int(number_col) and cells[int(number_col)]:
+            title = f"{prefix}{cells[int(number_col)]}: {title}"
+        published = None
+        if date_col is not None and len(cells) > int(date_col):
+            raw = cells[int(date_col)]
+            m = _LIST_DATE_RE.search(raw) if cfg.get("date_order") == "ymd" else _DMY_RE.search(raw)
+            if m:
+                y, mo, d = (m.group(1), m.group(2), m.group(3)) if cfg.get("date_order") == "ymd" \
+                    else (m.group(3), m.group(2), m.group(1))
+                try:
+                    published = datetime(int(y), int(mo), int(d), tzinfo=timezone.utc).isoformat()
+                except ValueError:
+                    published = None
+        items.append(_raw_from(source, title=title, url=url, summary="", published_at=published))
+        if len(items) >= max_items:
+            break
+    return items
+
+
+def fetch_bytes(url: str, *, user_agent: str, timeout: float = 30.0, limit: int = 12_000_000) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": user_agent, "Accept": "application/pdf,*/*"})
+    with urllib.request.urlopen(req, timeout=timeout, context=ssl.create_default_context()) as resp:
+        return resp.read(limit)
+
+
+def pdf_text(data: bytes, max_pages: int = 2) -> str:
+    """Text of a PDF's first pages, or "" when pypdf is missing or the file
+    will not parse. The pipeline must build without it; the workflow installs it."""
+    try:
+        import io
+
+        from pypdf import PdfReader  # type: ignore
+    except Exception:  # noqa: BLE001 -- ImportError, or a broken crypto backend
+        return ""
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        return " ".join((page.extract_text() or "") for page in reader.pages[:max_pages])
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def add_pdf_summaries(
+    items: List[RawReport], *, fetch_pdf, extract=pdf_text, max_pdfs: int = 3, skip_urls=()
+) -> int:
+    """Quote the opening of each newest PDF item as its summary.
+
+    Study-group press releases (ILZSG) are PDFs with the month's balance in
+    the first paragraph; the list page only gives a file name. Only the
+    newest few are fetched per run, and reports already summarized in the
+    previous build (skip_urls) are not fetched again.
+    """
+    done = 0
+    for item in items:
+        if done >= max_pdfs:
+            break
+        if item.summary or not item.url.lower().split("?", 1)[0].endswith(".pdf") or item.url in skip_urls:
+            continue
+        try:
+            text = extract(fetch_pdf(item.url))
+        except Exception:  # noqa: BLE001
+            continue
+        done += 1
+        text = _WS_RE.sub(" ", text).strip()
+        if text:
+            item.summary = clip(text)
+    return done
 
 
 _GAIN_CARD_SPLIT_RE = re.compile(r"(?=<time\s+datetime=[\"'])", re.I)
@@ -289,12 +553,172 @@ def parse_fas_gain_cards(body: str, source: Dict[str, Any], max_items: int = 40)
     return items
 
 
+_GAIN_PAGE_LINK_RE = re.compile(
+    r"href=[\"'](?:https?://(?:www\.)?fas\.usda\.gov)?(/data/gain/(\d{4})/(\d{2})/[a-z0-9-]+)[\"'?#]", re.I
+)
+_META_RE = re.compile(r"<meta\s+[^>]*>", re.I)
+_META_KEY_RE = re.compile(r"(?:property|name|itemprop)=[\"']([^\"']+)[\"']", re.I)
+# Quote-paired: a summary like content="Brazil's crop..." must not stop at
+# the apostrophe.
+_META_CONTENT_RE = re.compile(r"content=(?:\"([^\"]*)\"|'([^']*)')", re.I)
+_TIME_RE = re.compile(r"<time[^>]+datetime=[\"']([^\"']+)[\"']", re.I)
+_LD_DATE_RE = re.compile(r"\"datePublished\"\s*:\s*\"([^\"]+)\"")
+_PDF_RE = re.compile(r"href=[\"']([^\"']*/data/gain-report/[^\"']+\.pdf)[\"']", re.I)
+
+
+def _metas(body: str) -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    for tag in _META_RE.findall(body):
+        k = _META_KEY_RE.search(tag)
+        v = _META_CONTENT_RE.search(tag)
+        if k and v and k.group(1).lower() not in out:
+            out[k.group(1).lower()] = unescape(v.group(1) if v.group(1) is not None else v.group(2)).strip()
+    return out
+
+
+def gain_links(list_html: str) -> List[tuple]:
+    """(path, year, month) for every GAIN report a FAS list page links to."""
+    seen, out = set(), []
+    for path, year, month in _GAIN_PAGE_LINK_RE.findall(list_html):
+        if path not in seen:
+            seen.add(path)
+            out.append((path, int(year), int(month)))
+    return out
+
+
+def parse_fas_gain_page(body: str, url: str, year: int, month: int, source: Dict[str, Any]) -> Optional[RawReport]:
+    """One GAIN report page (fas.usda.gov/data/gain/YYYY/MM/slug).
+
+    The page is server-rendered with Open Graph tags: og:title is the report
+    title as FAS lists it ("Malaysia: Oilseeds and Products Update") and the
+    description is the report's own summary paragraph. The date comes from the
+    page when it carries one inside the URL's month; otherwise from the URL.
+    """
+    meta = _metas(body)
+    title = meta.get("og:title") or meta.get("twitter:title") or ""
+    if not title:
+        m = re.search(r"<title[^>]*>(.*?)</title>", body, re.I | re.S)
+        title = strip_html(m.group(1)).split(" | ")[0] if m else ""
+    title = strip_html(title)
+    if not title:
+        return None
+    summary = meta.get("og:description") or meta.get("description") or ""
+    published, precision = None, "month"
+    for raw in [meta.get("article:published_time", "")] + _TIME_RE.findall(body) + _LD_DATE_RE.findall(body):
+        iso = parse_date(raw)
+        if iso and iso[:7] == f"{year:04d}-{month:02d}":
+            published, precision = iso, "day"
+            break
+    if published is None:
+        published = datetime(year, month, 1, tzinfo=timezone.utc).isoformat()
+    item = _raw_from(source, title=title, url=url, summary=clip(strip_html(summary)), published_at=published)
+    item.date_precision = precision
+    return item
+
+
+def fetch_fas_gain_pages(
+    source: Dict[str, Any], *, fetch, max_items: int, now: Optional[datetime] = None,
+    known: Optional[List[RawReport]] = None, pause=None,
+) -> Dict[str, Any]:
+    """GAIN reports gathered from FAS's commodity and country pages.
+
+    fas.usda.gov/data/search -- the only page that lists every GAIN report --
+    answers "Access Denied" to Actions runners (urllib, browser headers, a
+    Chrome TLS fingerprint and a real headless Chrome alike; checked
+    2026-09-26 with tools/ops/feed_probe.py). The commodity pages
+    (/data/commodities/<x>) and country pages (/regions/<x>) are not blocked
+    and each links its latest few GAIN reports, and the report pages
+    themselves are readable, so the list is assembled from those.
+
+    `fetch(url) -> str` is injected so fixture builds and tests run offline.
+    `known` are the reports the last build already read; their pages are not
+    fetched again. `pause()` runs between requests (a delay, live only). Five
+    list pages failing in a row stops the run: that is a block, and asking
+    forty more times only makes it last longer.
+    """
+    pause = pause or (lambda: None)
+    known_by_url = {r.url: r for r in (known or [])}
+    cfg = source.get("html") or {}
+    base = cfg.get("base") or "https://www.fas.usda.gov"
+    now = now or datetime.now(timezone.utc)
+    max_age_days = int(cfg.get("max_age_days") or 150)
+    max_pages = int(cfg.get("max_pages") or max_items)
+    exclude = re.compile(cfg["exclude_slug_re"]) if cfg.get("exclude_slug_re") else None
+    slug_hints: Dict[str, List[str]] = cfg.get("slug_commodities") or {}
+
+    lists_ok, errors, failed_in_row = 0, [], 0
+    found: Dict[str, tuple] = {}
+    for n, path in enumerate(cfg.get("list_urls") or []):
+        if n:
+            pause()
+        try:
+            html = fetch(urljoin(base, path))
+        except Exception as exc:  # noqa: BLE001 -- one dead list page must not sink the rest
+            errors.append(f"{path}: {type(exc).__name__}")
+            failed_in_row += 1
+            if failed_in_row >= 5 and not lists_ok:
+                break
+            continue
+        failed_in_row = 0
+        lists_ok += 1
+        for link, year, month in gain_links(html):
+            slug = link.rsplit("/", 1)[-1]
+            if exclude and exclude.search(slug):
+                continue
+            age = (now - datetime(year, month, 1, tzinfo=timezone.utc)).days
+            if age > max_age_days or age < -31:
+                continue
+            found.setdefault(link, (year, month))
+    if not lists_ok:
+        return {"ok": False, "items": [], "error": "no list page answered: " + "; ".join(errors[:3])}
+
+    newest_first = sorted(found.items(), key=lambda kv: kv[1], reverse=True)[:max_pages]
+    items: List[RawReport] = []
+    reused = 0
+    for link, (year, month) in newest_first:
+        url = urljoin(base, link)
+        if url in known_by_url:
+            items.append(known_by_url[url])
+            reused += 1
+            continue
+        pause()
+        try:
+            body = fetch(url)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{link}: {type(exc).__name__}")
+            continue
+        item = parse_fas_gain_page(body, url, year, month, source)
+        if item is None:
+            continue
+        slug = link.rsplit("/", 1)[-1]
+        hints = [c for key, cs in slug_hints.items() if key in slug for c in cs]
+        if hints:
+            item.commodity_hint = list(dict.fromkeys(hints))
+        items.append(item)
+    return {"ok": True, "items": items, "error": None,
+            "note": f"{lists_ok} list pages, {len(found)} reports linked, {len(items) - reused} read, {reused} already known"
+            + (f"; {len(errors)} failed" if errors else "")}
+
+
 def fetch_source(
-    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int
+    source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int,
+    known: Optional[List[RawReport]] = None,
 ) -> Dict[str, Any]:
     sid = source["id"]
+    if source.get("kind") == "fas_gain_pages":
+        delay = float((source.get("html") or {}).get("delay_sec", 1.0))
+        res = fetch_fas_gain_pages(
+            source,
+            fetch=lambda u: fetch_text(u, user_agent=user_agent, timeout=timeout),
+            max_items=max_items,
+            known=known,
+            pause=lambda: time.sleep(delay),
+        )
+        return {"source_id": sid, "ok": res["ok"], "items": res["items"],
+                "count": len(res["items"]), "error": res["error"], "note": res.get("note")}
     try:
-        body = fetch_text(source["url"], user_agent=user_agent, timeout=timeout)
+        body = fetch_text(source["url"], user_agent=user_agent, timeout=timeout,
+                          browser=source.get("headers") == "browser")
     except Exception as exc:  # noqa: BLE001 -- one dead publisher must not fail the build
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"{type(exc).__name__}: {exc}"}
@@ -310,8 +734,21 @@ def fetch_source(
         items = parse_feed(body, source, max_items=max_items)
     elif kind == "html_list":
         items = parse_html_list(body, source)
+        if (source.get("html") or {}).get("pdf_summary"):
+            known_by_url = {r.url: r for r in (known or []) if r.summary}
+            for it in items:
+                if it.url in known_by_url:
+                    it.summary = known_by_url[it.url].summary
+            add_pdf_summaries(
+                items,
+                fetch_pdf=lambda u: fetch_bytes(u, user_agent=user_agent, timeout=timeout + 10),
+                skip_urls=set(known_by_url),
+            )
     elif kind == "fas_gain_cards":
         items = parse_fas_gain_cards(body, source, max_items=max_items)
+    elif kind == "html_table":
+        items = parse_html_table(body, source)
+
     else:
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"unknown_kind:{kind}"}

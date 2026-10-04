@@ -1,6 +1,14 @@
+import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
+import PolicyEvidence from './New for anti/policy-evidence.js';
+
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
+
+        // Which annual year the map is on, and how far the next one has got.
+        if (url.pathname === '/api/comtrade/status') {
+            return await handleComtradeStatus(env);
+        }
 
         // API Route: UN Comtrade Proxy
         if (url.pathname.startsWith('/api/comtrade')) {
@@ -212,41 +220,178 @@ async function warmComtradeCache(env) {
     }
 
     // One listing instead of a lookup per commodity: KV list returns names
-    // without values, so this stays cheap no matter how large the entries are.
-    const warm = new Set();
+    // (and the small metadata comtradeMeta() writes) without values, so this
+    // stays cheap no matter how large the entries are.
+    const warm = new Map();
     let cursor;
     do {
         const page = await env.API_CACHE.list({ prefix: 'comtrade:A:', cursor }).catch(() => null);
         if (!page) break;
-        for (const k of page.keys) warm.add(k.name);
+        for (const k of page.keys) warm.set(k.name, k.metadata || null);
         cursor = page.list_complete ? null : page.cursor;
     } while (cursor);
 
-    let filled = 0, fresh = 0, failed = 0, deferred = 0;
+    const published = publishedComtradeYear(await readComtradePeriodRecord(env));
+    // The year after the published one, while it can exist at all.
+    const next = published < comtradeYearBounds().fresh ? published + 1 : null;
 
-    // Sequential on purpose: firing these at once risks tripping Comtrade's
-    // rate limiting, and the cron run has no deadline pressure.
-    for (const hs of Object.keys(COMTRADE_TTL)) {
-        const key = comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
-        if (warm.has(key)) { fresh++; continue; }
-        if (filled >= WARM_FETCH_BUDGET) { deferred++; continue; }
+    const keyFor = (hs, year) =>
+        comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
 
-        try {
-            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
-            if (!result.ok) {
-                failed++;
-                console.log(`[warm] ${hs} upstream ${result.status}`);
-                continue;
+    // Entries cached before partial results were marked can still be partial:
+    // cobalt, lithium and manganese 2024 sat in KV with 12 reporters while
+    // every other commodity that year had 49-60. Anything under
+    // SUSPECT_REPORTER_SHARE of its year's median is treated as not cached,
+    // refetched, and kept out of promotion.
+    for (const year of [published, next].filter(Boolean)) {
+        const counts = Object.keys(COMTRADE_TTL)
+            .map((hs) => warm.get(keyFor(hs, year))?.reporters)
+            .filter(Number.isFinite)
+            .sort((a, b) => a - b);
+        if (counts.length < 5) continue;
+        const median = counts[counts.length >> 1];
+        for (const hs of Object.keys(COMTRADE_TTL)) {
+            const key = keyFor(hs, year);
+            const m = warm.get(key);
+            if (Number.isFinite(m?.reporters) && m.reporters < median * SUSPECT_REPORTER_SHARE) {
+                console.log(`[warm] ${hs}/${year} has ${m.reporters} reporters vs median ${median}: refetching`);
+                warm.delete(key);
             }
-            await env.API_CACHE.put(key, JSON.stringify(result.body), { expirationTtl: COMTRADE_TTL[hs] });
-            filled++;
-        } catch (err) {
-            failed++;
-            console.log(`[warm] ${hs} error: ${err.message}`);
         }
     }
 
-    console.log(`[warm] done: ${filled} filled, ${fresh} already warm, ${deferred} deferred, ${failed} failed`);
+    // What visitors are looking at comes first; the next year only gets
+    // whatever budget is left over.
+    const work = [];
+    for (const hs of Object.keys(COMTRADE_TTL)) work.push([hs, published]);
+    if (next) for (const hs of Object.keys(COMTRADE_TTL)) work.push([hs, next]);
+
+    let filled = 0, alreadyWarm = 0, failed = 0, deferred = 0;
+
+    // Sequential on purpose: firing these at once risks tripping Comtrade's
+    // rate limiting, and the cron run has no deadline pressure.
+    for (const [hs, year] of work) {
+        const key = keyFor(hs, year);
+        if (warm.has(key)) { alreadyWarm++; continue; }
+        if (filled >= WARM_FETCH_BUDGET) { deferred++; continue; }
+
+        try {
+            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+            if (!result.ok) {
+                failed++;
+                console.log(`[warm] ${hs}/${year} upstream ${result.status}`);
+                continue;
+            }
+            const metadata = comtradeMeta(result.body);
+            await env.API_CACHE.put(key, JSON.stringify(result.body),
+                { expirationTtl: result.ttl || COMTRADE_TTL[hs], metadata });
+            warm.set(key, metadata);
+            filled++;
+        } catch (err) {
+            failed++;
+            console.log(`[warm] ${hs}/${year} error: ${err.message}`);
+        }
+    }
+
+    console.log(`[warm] ${published} (next ${next ?? '-'}): ${filled} filled, ${alreadyWarm} already warm, ${deferred} deferred, ${failed} failed`);
+
+    if (next) await advanceComtradePeriod(env, warm, keyFor, published, next);
+}
+
+/**
+ * Read-only progress report for the annual year: the published year, and how
+ * many commodities are cached for it and for the next one. Without this the
+ * only way to tell "still warming" from "stuck" was the Workers log.
+ */
+async function handleComtradeStatus(env) {
+    const record = await readComtradePeriodRecord(env);
+    const published = publishedComtradeYear(record);
+    const bounds = comtradeYearBounds();
+    const next = published < bounds.fresh ? published + 1 : null;
+    const keys = new Map();
+    if (env.API_CACHE) {
+        let cursor;
+        do {
+            const page = await env.API_CACHE.list({ prefix: 'comtrade:A:', cursor }).catch(() => null);
+            if (!page) break;
+            for (const k of page.keys) keys.set(k.name, k.metadata || null);
+            cursor = page.list_complete ? null : page.cursor;
+        } while (cursor);
+    }
+    const hsList = Object.keys(COMTRADE_TTL);
+    const keyOf = (hs, year) => comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+    const count = (year) => hsList.filter(hs => keys.has(keyOf(hs, year)) && !keys.get(keyOf(hs, year))?.partial).length;
+    const partial = (year) => hsList.filter(hs => keys.get(keyOf(hs, year))?.partial);
+    const reporters = (year) => hsList.reduce((sum, hs) => {
+        const m = keys.get(comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A'));
+        return sum + (Number.isFinite(m?.reporters) ? m.reporters : 0);
+    }, 0);
+    const body = {
+        published: String(published),
+        record: record || null,
+        floor: String(bounds.floor),
+        commodities: hsList.length,
+        cached: { [published]: count(published) },
+        partial: { [published]: partial(published) },
+        reporters: { [published]: reporters(published) },
+        next: next ? String(next) : null,
+        // What the default map request shows: the next year per country,
+        // the published year only where neither end of a route has filed.
+        display: next && count(next) === hsList.length
+            ? `${next} (미신고국 ${published})` : String(published),
+        next_rule: next ? (next > bounds.mature
+            ? `all cached and reporters >= ${FRESH_YEAR_MIN_COVERAGE * 100}% of ${published}`
+            : 'all cached (complete year)') : null,
+    };
+    if (next) {
+        body.cached[next] = count(next);
+        body.partial[next] = partial(next);
+        body.reporters[next] = reporters(next);
+    }
+    return new Response(JSON.stringify(body), { headers: { ...JSON_HEADERS, 'Cache-Control': 'no-store' } });
+}
+
+// Move the published year forward by one, if the next year is ready. Ready
+// means every commodity for it is already in KV -- so the switch never lands
+// visitors on a cold query -- and, for the year that has only just ended,
+// that enough reporters have filed (see FRESH_YEAR_MIN_COVERAGE).
+async function advanceComtradePeriod(env, warm, keyFor, published, next) {
+    const hsList = Object.keys(COMTRADE_TTL);
+    // A partial entry (some reporter chunks failed) does not count: promoting
+    // on it would publish a year with countries missing from the map.
+    const cold = hsList.filter(hs => !warm.has(keyFor(hs, next)) || warm.get(keyFor(hs, next))?.partial);
+    if (cold.length) {
+        console.log(`[period] ${next} not promoted: ${cold.length}/${hsList.length} commodities not fully cached yet`);
+        return;
+    }
+
+    let coverage = null;
+    if (next > comtradeYearBounds().mature) {
+        // Reporter counts come from KV metadata. A published entry written
+        // before metadata existed has none; leave that commodity out of both
+        // sides rather than count it as zero.
+        let have = 0, had = 0;
+        for (const hs of hsList) {
+            const now = warm.get(keyFor(hs, next));
+            const then = warm.get(keyFor(hs, published));
+            if (!Number.isFinite(now?.reporters) || !Number.isFinite(then?.reporters)) continue;
+            have += now.reporters;
+            had += then.reporters;
+        }
+        if (had === 0) {
+            console.log(`[period] ${next} not promoted: no ${published} reporter counts to compare against`);
+            return;
+        }
+        coverage = Math.round((have / had) * 1000) / 1000;
+        if (coverage < FRESH_YEAR_MIN_COVERAGE) {
+            console.log(`[period] ${next} not promoted: reporter coverage ${coverage} < ${FRESH_YEAR_MIN_COVERAGE} (${have}/${had})`);
+            return;
+        }
+    }
+
+    const record = { period: String(next), previous: String(published), coverage, promotedAt: new Date().toISOString() };
+    await env.API_CACHE.put(COMTRADE_PERIOD_KEY, JSON.stringify(record));
+    console.log(`[period] promoted ${published} -> ${next}` + (coverage === null ? ' (complete year)' : ` (coverage ${coverage})`));
 }
 
 const JSON_HEADERS = {
@@ -436,7 +581,11 @@ async function handleCommodityReports(request, env) {
     const url = new URL(request.url);
     const commodity = (url.searchParams.get('commodity') || '').trim();
     const country = (url.searchParams.get('country') || '').trim().toUpperCase();
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 30);
+    // The panel pages through a window's whole history (everything inside the
+    // pipeline's archive horizon), a chunk at a time: `offset` picks up where
+    // the last chunk ended and `total` tells the panel whether more is left.
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 100);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
 
     const doc = await loadStaticJson(env, url.origin, 'commodity_reports_v1.json');
     if (!doc) {
@@ -447,6 +596,35 @@ async function handleCommodityReports(request, env) {
             }),
             { status: 404, headers: JSON_HEADERS }
         );
+    }
+
+    // A named board (pipeline "boards"): a list fed by its sources whatever
+    // the commodity. export_controls is every regulator's notices (MOFCOM's
+    // export-control bureau today); ?issuer=CHN narrows it to one country's
+    // regulators, ?measure=entity_list to one kind of measure.
+    const board = (url.searchParams.get('board') || '').trim();
+    if (board) {
+        const issuer = (url.searchParams.get('issuer') || '').trim().toUpperCase();
+        const measure = (url.searchParams.get('measure') || '').trim();
+        const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+        const known = ((doc.boards || {})[board] || []).filter((id) => {
+            const it = byId.get(id);
+            if (!it) return false;
+            if (issuer && (it.control?.issuer || '').toUpperCase() !== issuer) return false;
+            if (measure && it.control?.measure !== measure) return false;
+            return true;
+        });
+        const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            board,
+            issuer: issuer || null,
+            measure: measure || null,
+            total: known.length,
+            offset,
+            count: items.length,
+            items,
+        });
     }
 
     // No commodity named: hand back the board itself, so a caller can see
@@ -482,13 +660,16 @@ async function handleCommodityReports(request, env) {
         }
     }
 
-    const items = ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    const known = ids.filter((id) => byId.has(id));
+    const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
     return jsonWithCache({
         generated_at: doc.generated_at,
         commodity,
         commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
         country: country || null,
         country_name: country ? (doc.country_names || {})[country] || null : null,
+        total: known.length,
+        offset,
         count: items.length,
         items,
     });
@@ -534,7 +715,7 @@ async function loadStaticJson(env, origin, filename) {
 //
 // `doFetch` must resolve to { ok, status, statusText, body }, where `body` is
 // the already-parsed JSON to cache.
-async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
+async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch, metaOf) {
     const kv = env.API_CACHE;
 
     if (kv) {
@@ -563,7 +744,9 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
         // Never let a cache write failure take down a request that already has
         // its data -- serve the response and just skip caching this time.
         try {
-            await kv.put(cacheKey, json, { expirationTtl: ttlSeconds });
+            const opts = { expirationTtl: result.ttl || ttlSeconds };
+            if (metaOf) opts.metadata = metaOf(result.body);
+            await kv.put(cacheKey, json, opts);
         } catch (err) {
             console.log(`[cache] put failed for ${cacheKey}: ${err.message}`);
         }
@@ -597,6 +780,7 @@ const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,
 const COMTRADE_TTL = {
     "2709": 172800,  // Oil: 48h
     "2711": 172800,  // Gas: 48h
+    "271012": 604800, // Light oils (naphtha, motor gasoline...): weekly
     "2701": 604800,  // Thermal coal: weekly
     "2704": 604800,  // Met coal: weekly
     "7108": 86400,   // Gold: 24h
@@ -608,6 +792,8 @@ const COMTRADE_TTL = {
     "1005": 1209600, // Corn: 14 days
     "1201": 1209600, // Soybeans: 14 days
     "1701": 1209600, // Sugar: 14 days
+    "1511": 1209600, // Palm oil: 14 days
+    "4001": 1209600, // Natural rubber: 14 days
     "0901": 1209600, // Coffee: 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
@@ -625,7 +811,65 @@ const COMTRADE_TTL = {
     "7110": 604800   // Platinum group
 };
 
-const COMTRADE_PERIOD = "2023";
+// Which annual Comtrade year the trade map shows. Not pinned: this was a
+// literal "2023" until 2026-09, which left the map a year behind once 2024
+// was complete and two behind once 2025 had filled in.
+//
+// The published year lives in KV under COMTRADE_PERIOD_KEY, and only the cron
+// moves it -- one year at a time, and only once every commodity for the next
+// year is already cached (advanceComtradePeriod). So a promotion never sends
+// visitors to a cold UN Comtrade query.
+//
+// Annual data fills in over roughly 18 months: the large reporters file
+// within a few months of year-end, the long tail much later. A year two or
+// more back counts as complete. The year just ended is promoted only once
+// its filing reporters reach FRESH_YEAR_MIN_COVERAGE of the year before on
+// the same commodities -- a year with a third of the reporters missing would
+// read on the map as trade collapsing.
+const COMTRADE_PERIOD_KEY = 'comtrade:period:A';
+const FRESH_YEAR_MIN_COVERAGE = 0.9;
+// Last resort when KV holds no record (first deploy, namespace wiped) or the
+// record has fallen this far behind because the cron stopped. Three years
+// back is complete for every reporter -- and on the first deploy it is 2023,
+// the year the cache is already warm for, so the switch costs visitors nothing
+// while the cron walks the map forward.
+const COMTRADE_FLOOR_LAG = 3;
+
+function comtradeYearBounds(now = new Date()) {
+    const year = now.getUTCFullYear();
+    return {
+        floor: year - COMTRADE_FLOOR_LAG,
+        mature: year - 2, // newest year promoted without a coverage check
+        fresh: year - 1   // newest year that can exist at all
+    };
+}
+
+async function readComtradePeriodRecord(env) {
+    if (!env.API_CACHE) return null;
+    return env.API_CACHE.get(COMTRADE_PERIOD_KEY, { type: 'json', cacheTtl: 300 }).catch(() => null);
+}
+
+function publishedComtradeYear(record, now = new Date()) {
+    const { floor, fresh } = comtradeYearBounds(now);
+    const y = Number(record && record.period);
+    if (!Number.isInteger(y)) return floor;
+    return Math.min(Math.max(y, floor), fresh);
+}
+
+// Distinct reporters with a non-zero row. Stored as KV metadata next to each
+// cached payload so the cron can compare two years' coverage from a key
+// listing alone, without re-reading and parsing every body.
+function comtradeMeta(body) {
+    const reporters = new Set();
+    for (const row of (body && body.data) || []) {
+        if (row.primaryValue > 0) reporters.add(row.reporterCode);
+    }
+    return body && body.partial ? { reporters: reporters.size, partial: true } : { reporters: reporters.size };
+}
+
+// How long a result with missing reporter chunks is kept (see fetchComtrade).
+const COMTRADE_PARTIAL_TTL = 3600;
+const SUSPECT_REPORTER_SHARE = 0.4;
 
 // USDA FAS Export Sales Report: weekly US export sales by destination country.
 // This is US-only -- it answers "who bought from the US this week", not who
@@ -838,7 +1082,9 @@ function comtradeCacheKey(hs, reporters, partners, period, freq) {
 // the limit far away as the country list grows.
 // "period" is carried so monthly rows stay distinguishable (e.g. 202403);
 // on annual queries it is just the year and costs almost nothing.
-const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period"];
+// "cmdCode" keeps multi-HS commodities (cobalt = 8105,2822,283329) apart in
+// a monthly country series, where the three codes are summed per month.
+const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period", "cmdCode"];
 
 function slimComtradeBody(body) {
     const rows = Array.isArray(body?.data) ? body.data : [];
@@ -859,17 +1105,34 @@ function slimComtradeBody(body) {
 // the previous chunk's full response be collected before the next arrives.
 const REPORTER_CHUNK_SIZE = 16;
 
+// Comtrade rate-limits bursts. The 2026-09-24 probe got a 429 on the tenth
+// chunk call in about 35 seconds, and the cron, which fires 8 commodities x 5
+// chunks back to back, was being cut off the same way -- after 18 hours only 6
+// of the 2024 commodities were cached. Chunks are spaced, and a 429 waits and
+// retries instead of ending the commodity.
+const COMTRADE_CHUNK_GAP_MS = 1500;
+const COMTRADE_429_RETRIES = 2;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
     // freq A = annual (period "2023"), M = monthly (period "202403").
     // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
     const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/${freq}/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
 
-    const res = await fetch(comtradeUrl, {
-        headers: {
-            "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
-            "Accept": "application/json"
-        }
-    });
+    let res;
+    for (let attempt = 0; ; attempt++) {
+        res = await fetch(comtradeUrl, {
+            headers: {
+                "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
+                "Accept": "application/json"
+            }
+        });
+        if (res.status !== 429 || attempt >= COMTRADE_429_RETRIES) break;
+        await res.body?.cancel();
+        const after = Number(res.headers.get('Retry-After'));
+        const base = Number(env.COMTRADE_RETRY_BASE_MS ?? 4000);
+        await sleep(Math.min(Number.isFinite(after) && after > 0 ? after * 1000 : base * (attempt + 1), 15000));
+    }
 
     if (!res.ok) {
         return { ok: false, status: res.status, statusText: res.statusText };
@@ -881,16 +1144,22 @@ async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
 async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     const codes = reporters.split(',').filter(Boolean);
     const merged = [];
+    const chunks = Math.ceil(codes.length / REPORTER_CHUNK_SIZE);
+    let failed = 0;
+    let lastFailure = null;
 
     try {
         for (let i = 0; i < codes.length; i += REPORTER_CHUNK_SIZE) {
+            // env override exists for tests only; production uses the constant.
+            if (i > 0) await sleep(Number(env.COMTRADE_CHUNK_GAP_MS ?? COMTRADE_CHUNK_GAP_MS));
             const chunk = codes.slice(i, i + REPORTER_CHUNK_SIZE).join(',');
             const result = await fetchComtradeChunk(env, hs, chunk, partners, period, freq);
 
             // One bad chunk shouldn't discard the countries that did come back.
             if (!result.ok) {
-                if (merged.length === 0) return result;
-                console.log(`[comtrade] ${hs} chunk ${i} failed: ${result.status}`);
+                failed++;
+                lastFailure = result;
+                console.log(`[comtrade] ${hs}/${period} chunk ${i} failed: ${result.status}`);
                 continue;
             }
             for (const row of result.rows) merged.push(row);
@@ -898,12 +1167,103 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     } catch (err) {
         // Catchable failures (bad JSON, network) surface as a labelled 502
         // rather than an opaque 1101 with an empty map behind it.
-        if (merged.length === 0) return { ok: false, status: 502, statusText: err.message };
-        console.log(`[comtrade] ${hs} partial result after error: ${err.message}`);
+        failed = chunks;
+        lastFailure = { ok: false, status: 502, statusText: err.message };
+        console.log(`[comtrade] ${hs}/${period} error after ${merged.length} rows: ${err.message}`);
     }
+    if (merged.length === 0 && failed) return lastFailure;
 
-    return { ok: true, body: { count: merged.length, data: merged } };
+    // period/freq travel with the rows so a consumer never has to remember
+    // what it asked for -- the default year is chosen here, not by the caller.
+    const body = { count: merged.length, period, freq, data: merged };
+    // Some reporters are missing. Still worth showing, but not worth keeping:
+    // cached for the full TTL it would stand in for the complete answer for
+    // up to two weeks (zinc 2024 came back with 49 reporters where every
+    // neighbour had 57-60). It lives an hour and is refetched.
+    if (failed) {
+        body.partial = true;
+        body.missing_chunks = failed;
+        return { ok: true, body, ttl: COMTRADE_PARTIAL_TTL };
+    }
+    return { ok: true, body };
 }
+
+// Newest year per country, for the default map (asked for 2026-09-24).
+//
+// The next year is held back from promotion until 90% of last year's
+// reporters have filed (advanceComtradePeriod); in the meantime the map shows
+// the next year wherever it exists and the published year only where it does
+// not. The unit is the country, not the row: a route whose exporter OR
+// importer filed the next year is taken from the next year only, and falls
+// back to the older year only when neither end has filed yet. Mixing rows
+// instead would double-count -- the same shipment appears once in the
+// exporter's return (X) and once in the importer's (M), and taking one side
+// from 2025 and the other from 2024 would add two different years together.
+function blendComtradeYears(newer, older) {
+    const filed = new Set();
+    for (const r of newer.data || []) {
+        if (r.primaryValue > 0) filed.add(String(r.reporterCode));
+    }
+    const data = [];
+    const routes = { latest: new Set(), fallback: new Set() };
+    const routeOf = (r) => (r.flowCode === 'M'
+        ? [String(r.partnerCode), String(r.reporterCode)]
+        : [String(r.reporterCode), String(r.partnerCode)]);
+    for (const r of newer.data || []) {
+        data.push(r);
+        routes.latest.add(routeOf(r).join('>'));
+    }
+    for (const r of older.data || []) {
+        const [exp, imp] = routeOf(r);
+        if (filed.has(exp) || filed.has(imp)) continue;
+        data.push(r);
+        routes.fallback.add(`${exp}>${imp}`);
+    }
+    return {
+        data,
+        reporters_latest: filed.size,
+        routes_latest: routes.latest.size,
+        routes_fallback: routes.fallback.size,
+    };
+}
+
+// Blended bodies are rebuilt at most daily, so a refetched year shows up soon.
+const COMTRADE_BLEND_TTL = 86400;
+
+async function blendedComtrade(env, hs, published, next) {
+    const kv = env.API_CACHE;
+    if (!kv || !kv.getWithMetadata) return null;
+    const blendKey = `comtrade:blend:${hs}:${next}+${published}:default${DEFAULT_SCOPE_VERSION}`;
+    const hit = await kv.get(blendKey).catch(() => null);
+    if (hit) return { body: hit, cache: 'HIT' };
+
+    const keyFor = (year) => comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, String(year), 'A');
+    const [n, o] = await Promise.all([
+        kv.getWithMetadata(keyFor(next)).catch(() => null),
+        kv.getWithMetadata(keyFor(published)).catch(() => null),
+    ]);
+    // Only blend two complete, cached years; otherwise the caller serves the
+    // published year as before and the cron keeps filling.
+    if (!n?.value || !o?.value || n.metadata?.partial || o.metadata?.partial) return null;
+    let nb, ob;
+    try {
+        nb = JSON.parse(n.value);
+        ob = JSON.parse(o.value);
+    } catch {
+        return null;
+    }
+    const b = blendComtradeYears(nb, ob);
+    const body = JSON.stringify({
+        count: b.data.length, period: String(next), freq: 'A', blend_from: String(published),
+        blend: { reporters_latest: b.reporters_latest, routes_latest: b.routes_latest, routes_fallback: b.routes_fallback },
+        data: b.data,
+    });
+    await kv.put(blendKey, body, { expirationTtl: Math.min(COMTRADE_TTL[hs] || 604800, COMTRADE_BLEND_TTL) }).catch(() => {});
+    return { body, cache: 'MISS' };
+}
+
+const NUMERIC_LIST = /^\d+(,\d+)*$/;
+const PERIOD_SHAPE = { A: /^\d{4}(,\d{4})*$/, M: /^\d{6}(,\d{6})*$/ };
 
 async function handleComtrade(request, env, ctx) {
     const url = new URL(request.url);
@@ -912,14 +1272,69 @@ async function handleComtrade(request, env, ctx) {
     const partners = url.searchParams.get('partners') || DEFAULT_M49_CODES;
     // freq=M returns monthly rows (period must then look like "202403").
     const freq = url.searchParams.get('freq') === 'M' ? 'M' : 'A';
-    const period = url.searchParams.get('period') || (freq === 'M' ? '202403' : COMTRADE_PERIOD);
+    const periodParam = url.searchParams.get('period');
+
+    const bad = (error, hint) => new Response(JSON.stringify(hint ? { error, hint } : { error }),
+        { status: 400, headers: JSON_HEADERS });
+
+    // Every one of these is spliced into the upstream query string, so
+    // anything but digits and commas could append parameters of its own to a
+    // request that carries our subscription key.
+    if (![hs, reporters, partners].every(v => NUMERIC_LIST.test(v))) {
+        return bad("hs, reporters and partners must be comma-separated numeric codes");
+    }
+
+    let period;
+    let next = null;
+    if (periodParam && periodParam !== 'latest') {
+        if (!PERIOD_SHAPE[freq].test(periodParam)) {
+            return bad(`period does not match freq=${freq}`,
+                freq === 'M' ? "monthly periods are YYYYMM[,YYYYMM...]" : "annual periods are YYYY[,YYYY...]");
+        }
+        period = periodParam;
+    } else if (freq === 'A') {
+        const published = publishedComtradeYear(await readComtradePeriodRecord(env));
+        period = String(published);
+        if (published < comtradeYearBounds().fresh) next = published + 1;
+    } else {
+        // Monthly used to fall back to a fixed "202403", which served data two
+        // and a half years stale without saying so. There is no latest-month
+        // resolver yet; until one exists, the caller has to name the months.
+        return bad("period is required when freq=M",
+            "Pass YYYYMM[,YYYYMM...]. There is no default month.");
+    }
 
     if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
 
     const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
 
-    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
-        () => fetchComtrade(env, hs, reporters, partners, period, freq));
+    const defaultScope = reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES;
+    if (next && defaultScope) {
+        const blended = await blendedComtrade(env, hs, Number(period), next);
+        if (blended) {
+            return new Response(blended.body, {
+                headers: {
+                    ...JSON_HEADERS,
+                    'X-Cache': blended.cache,
+                    'X-Comtrade-Period': String(next),
+                    'X-Comtrade-Blend': period,
+                    'X-Comtrade-Freq': 'A',
+                    'Access-Control-Expose-Headers': 'X-Comtrade-Period, X-Comtrade-Blend, X-Comtrade-Freq, X-Cache',
+                },
+            });
+        }
+    }
+
+    const res = await kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
+        () => fetchComtrade(env, hs, reporters, partners, period, freq), comtradeMeta);
+
+    // Also in the headers: entries cached before the body carried `period`
+    // stay readable until they expire, and a HIT returns them verbatim.
+    const headers = new Headers(res.headers);
+    headers.set('X-Comtrade-Period', period);
+    headers.set('X-Comtrade-Freq', freq);
+    headers.set('Access-Control-Expose-Headers', 'X-Comtrade-Period, X-Comtrade-Blend, X-Comtrade-Freq, X-Cache');
+    return new Response(res.body, { status: res.status, headers });
 }
 
 async function handleUsdaNass(request, env, ctx) {
@@ -1049,7 +1464,12 @@ async function handleMacro(request, env, ctx) {
             // enough to tell a seasonal drawdown from a genuine trend.
             // Daily spot prices carry a shorter window for the same reason:
             // the home panel draws a sparkline beside the latest print.
-            const length = freq === 'weekly' ? 52 : 30;
+            // A caller that wants more (e.g. the SPR/Cushing card's 3-year
+            // view) can ask via `length`, capped well under EIA's own
+            // per-request row limit.
+            const defaultLength = freq === 'weekly' ? 52 : 30;
+            const lengthParam = parseInt(url.searchParams.get('length'), 10);
+            const length = Number.isFinite(lengthParam) ? Math.min(Math.max(lengthParam, 1), 500) : defaultLength;
             // A weekly series cannot have new data more than once a week, so
             // an hourly cache TTL was doing nothing but multiplying how often
             // this Worker hits EIA's own API -- and each of those live calls
@@ -2197,6 +2617,19 @@ async function handleDartFinancials(request, env) {
             }
             const latestYear = years[0];
 
+            // The current calendar year's own interim filings (1분기/반기보고서)
+            // land months before its annual report does -- Q1 in May, H1 in
+            // August -- while `years` above only ever picks up a year once its
+            // 사업보고서 is filed the following spring. Left out of the interim
+            // loop below, this year's quarters would never appear even after
+            // they exist on OpenDART (verified live on 003490: as of
+            // 2026-09-27, 2026Q1/Q2 CFO/FCF were missing for exactly this
+            // reason). `years` (and `latestYear`/`factsByYear`, the annual
+            // cards) stay annual-report-only; only the quarterly fetch below
+            // gets this extra, possibly annual-report-less year.
+            const thisYear = now.getUTCFullYear();
+            const quarterlyYears = years.includes(thisYear) ? years : [thisYear, ...years];
+
             // Interim filings, for the quarterly view. Three more calls per
             // year on top of the annual one, so this is the single most
             // expensive part of a cold-cache request -- but the whole body is
@@ -2204,14 +2637,14 @@ async function handleDartFinancials(request, env) {
             // no quarterly points for that year rather than failing the
             // request. Sequential for the same 020 reason as the loop above.
             const factsByPeriod = {};
-            for (const y of years) {
-                factsByPeriod[y] = { FY: factsByYear[y] };
+            for (const y of quarterlyYears) {
+                factsByPeriod[y] = factsByYear[y] ? { FY: factsByYear[y] } : {};
                 for (const code of ['Q1', 'H1', 'Q3']) {
                     const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
                     if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
                 }
             }
-            const quarterly = dartQuarterlySeries(factsByPeriod, years);
+            const quarterly = dartQuarterlySeries(factsByPeriod, quarterlyYears);
 
             // Independent of the facts loop above -- neither blocks the other,
             // and either failing still leaves the filing-derived cards intact.
@@ -2256,9 +2689,12 @@ async function handleDartFinancials(request, env) {
                         facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
                         // Which interim reports actually came back, per year --
                         // a quarterly gap in the UI is explained here rather
-                        // than looking like a rendering bug.
+                        // than looking like a rendering bug. Covers
+                        // quarterlyYears, not just years, so the current
+                        // calendar year's own interims (no annual report yet)
+                        // show up here too instead of being silently absent.
                         interim_reports_fetched: Object.fromEntries(
-                            years.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
+                            quarterlyYears.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
                         quarterly_derivation: 'flows differenced from YTD cumulatives (Q2=H1-Q1, Q3=3Q-H1, Q4=FY-3Q); balances point-in-time',
                         // Reaching here at all required a keyed OpenDART fetch.
                         live_key_present: true,
@@ -2444,6 +2880,9 @@ const FUTURES_UNPRICED = {
     chromium: "거래되는 선물 계약이 없습니다",
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    light_oils: "무료로 확인 가능한 실시간 시세가 없습니다 (납사·휘발유 모두 Platts·Argus 유료 평가가)",
+    palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
+    rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
 };
 
 async function handleFutures(request, env) {
@@ -2615,7 +3054,7 @@ async function handleUsPolicy(request, env) {
 
     try {
         if (path === 'overview') {
-            return await kvCachedJson(env, 'us:overview:v1', US_TTL.overview,
+            return await kvCachedJson(env, 'us:overview:v2', US_TTL.overview,
                 () => usOverview(env));
         }
 
@@ -2629,14 +3068,14 @@ async function handleUsPolicy(request, env) {
 
         if (path === 'congress/bills') {
             const filter = usBillFilter(q);
-            return await kvCachedJson(env, `us:bills:v1:${filter.cacheKey}`, US_TTL.list,
+            return await kvCachedJson(env, `us:bills:v2:${filter.cacheKey}`, US_TTL.list,
                 () => usBillList(env, filter));
         }
 
         let m = path.match(/^congress\/bills\/(.+)$/);
         if (m) {
             const billId = decodeURIComponent(m[1]);
-            return await kvCachedJson(env, `us:bill:v1:${billId}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:bill:v3:${billId}`, US_TTL.detail,
                 () => usBillDetail(env, billId));
         }
 
@@ -2661,7 +3100,7 @@ async function handleUsPolicy(request, env) {
         if (path === 'congress/committees') {
             const id = q.get('committee_id');
             if (!id) return usError('committee_id is required', 400);
-            return await kvCachedJson(env, `us:committee:v1:${id}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:committee:v2:${id}`, US_TTL.detail,
                 () => usCommitteeDetail(env, id));
         }
 
@@ -2679,10 +3118,10 @@ async function handleUsPolicy(request, env) {
         }
 
         if (path === 'search') {
-            const filter = usSearchFilter(q);
+            let filter;
+            try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v2:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v5:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -2719,7 +3158,7 @@ async function usFetch(env, table, query, { count } = {}) {
     const base = env.SUPABASE_URL.replace(/\/+$/, '');
     const headers = {
         apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
         Accept: 'application/json',
     };
     if (count) headers.Prefer = `count=${count}`;
@@ -2749,7 +3188,7 @@ async function usRpc(env, name, args) {
         method: 'POST',
         headers: {
             apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+            ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
@@ -2830,14 +3269,34 @@ async function geminiEmbedQuery(env, text) {
 }
 
 function usSearchFilter(q) {
-    const query = (q.get('q') || '').trim().slice(0, 200);
+    const rawQuery = (q.get('q') || '').trim();
+    const conditions = PolicySearchTerms.parse(rawQuery);
+    const query = rawQuery.slice(0, 200);
     const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
-    return { query, limit, cacheKey: `${query}|${limit}` };
+    const billRef = PolicyEvidence.parseBillQuery(query);
+    return { query, limit, billRef, conditions, cacheKey: `${query}|${limit}` };
 }
 
 // search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
+    if (f.conditions) return usConditionSearch(env, f);
+    if (f.billRef) {
+        const ref = f.billRef;
+        const query = new URLSearchParams({ select: 'bill_id,title,congress_number,bill_type,bill_number,congress_url,current_stage,origin_chamber,law_type,law_number,latest_action_date',
+            bill_type: `eq.${ref.type}`, bill_number: `eq.${ref.number}`, order: 'congress_number.desc', limit: String(f.limit) });
+        if (ref.congress) query.set('congress_number', `eq.${ref.congress}`);
+        const rows = await usFetch(env, 'bills', query.toString());
+        return { ok: true, body: { query: f.query, search_mode: 'bill_number', items: rows.map(r => ({
+            type: 'bill', id: r.bill_id, title: r.title, congress_number: r.congress_number,
+            bill_type: r.bill_type, bill_number: r.bill_number, current_stage: r.current_stage, origin_chamber: r.origin_chamber,
+            law_type: r.law_type, law_number: r.law_number, latest_action_date: r.latest_action_date, match_type: 'exact_bill_number', source_url: PolicyEvidence.billUrl(r.congress_number, r.bill_type, r.bill_number) || r.congress_url,
+        })) } };
+    }
+    return usHybridSearch(env, f);
+}
+
+async function usSemanticSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
@@ -2858,19 +3317,148 @@ async function usSearch(env, f) {
         .filter((r) => r.source_type === 'regulation')
         .map((r) => r.source_id))];
     const regulationUrls = new Map();
+    const documentDates = new Map();
     if (regulationIds.length) {
         const regRows = await usFetch(env, 'regulations',
-            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
-        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+            `select=regulation_id,federal_register_url,publication_date&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) { regulationUrls.set(reg.regulation_id, reg.federal_register_url); documentDates.set(`regulation:${reg.regulation_id}`, {publication_date: reg.publication_date}); }
     }
-    const items = (rows || []).map((r) => ({
-        type: r.source_type,
-        id: r.source_id,
-        title: r.title,
-        similarity_score: r.similarity_score,
-        source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+    // search_policy_corpus (Supabase RPC, owned separately -- see
+    // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
+    // returns source_type/source_id/title/similarity_score: a 'bill' hit
+    // carries no signal for whether it's already a law or still moving
+    // through Congress. The policy UI groups results into enacted/pending
+    // blocks, so that needs law_number/current_stage -- fetched the same way
+    // regulationUrls is above, a follow-up lookup keyed by the RPC's own
+    // result ids rather than a change to the RPC itself.
+    const billIds = [...new Set((rows || [])
+        .filter((r) => r.source_type === 'bill')
+        .map((r) => r.source_id))];
+    const billMeta = new Map();
+    if (billIds.length) {
+        const billRows = await usFetch(env, 'bills',
+            `select=bill_id,congress_number,bill_type,bill_number,origin_chamber,current_stage,law_type,law_number,latest_action_date`
+            + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const b of billRows) billMeta.set(b.bill_id, b);
+    }
+    await Promise.all([
+        {type:'executive_order',table:'executive_orders',key:'eo_number',dates:['publication_date','signed_date']},
+        {type:'public_law',table:'public_laws',key:'public_law_id',dates:['enacted_date']},
+    ].map(async source => {
+        const ids=[...new Set((rows || []).filter(r=>r.source_type===source.type).map(r=>r.source_id))];
+        if(!ids.length)return;
+        const query=new URLSearchParams({select:[source.key,...source.dates].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        const metadata=await usFetch(env,source.table,query.toString());
+        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,Object.fromEntries(source.dates.map(key=>[key,row[key]])));
     }));
+    const items = (rows || []).map((r) => {
+        const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
+        return {
+            type: r.source_type,
+            id: r.source_id,
+            title: r.title,
+            similarity_score: r.similarity_score,
+            ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
+            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            ...(bill ? {
+                congress_number: bill.congress_number,
+                bill_type: bill.bill_type,
+                bill_number: bill.bill_number,
+                origin_chamber: bill.origin_chamber,
+                current_stage: bill.current_stage,
+                law_type: bill.law_type,
+                law_number: bill.law_number,
+                latest_action_date: bill.latest_action_date,
+            } : {}),
+        };
+    });
     return { ok: true, body: { query: f.query, items } };
+}
+
+
+// Candidate discovery uses aliases AND a semantic candidate set. Labels are
+// verified only against stored title/summary, never inferred from cosine scores.
+const CONDITION_SOURCES = [
+    {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
+    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,publication_date,signed_date,federal_register_url'},
+    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,publication_date,federal_register_url'},
+    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
+];
+async function usHybridSearch(env, f) {
+    const term=PolicySearchTerms.single(f.query), candidates=new Map();
+    let lexicalAvailable=true,candidateLimited=false;
+    const tasks=term.label ? CONDITION_SOURCES.flatMap(source=>{
+        const title=source.fields[0];
+        return [{source,filter:{[title]:`ilike.${term.label}`}},
+            ...source.fields.map(field=>({source,filter:{and:`(${PolicySearchTerms.clause([field],term)})`}}))];
+    }) : [];
+    const lexical=async()=>{
+        for(let offset=0;offset<tasks.length;offset+=4){
+            const results=await Promise.allSettled(tasks.slice(offset,offset+4).map(async({source,filter})=>{
+                const q=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.desc`,...filter});
+                const rows=await usFetch(env,source.table,q.toString());
+                candidateLimited ||= rows.length===60;
+                for(const row of rows){
+                    const item={...row,type:source.type,id:String(row[source.key]),title:row.title||row.law_title,
+                        summary:row.summary||row.abstract||'',source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+                        ...(source.type==='public_law'?{current_stage:'enacted'}:{})};
+                    const rank=PolicySearchTerms.lexicalRank(item,term);
+                    if(rank)candidates.set(`${item.type}:${item.id}`,{...item,relevance_rank:rank,
+                        match_type:rank===4?(term.aliases.includes(String(item.title).normalize('NFKC').toLowerCase().trim())?'exact_title':'exact_summary_title'):rank===3?'title_phrase':'summary_phrase'});
+                }
+            }));
+            if(results.some(r=>r.status==='rejected'))lexicalAvailable=false;
+        }
+    };
+    const results=await Promise.allSettled([lexical(),hasPolicyEmbeddingProvider(env)?usSemanticSearch(env,f):Promise.reject(new Error('provider unavailable'))]);
+    const semantic=results[1].status==='fulfilled'&&!results[1].value.body.unavailable;
+    if(semantic)for(const item of results[1].value.body.items){
+        const key=`${item.type}:${item.id}`,existing=candidates.get(key);
+        candidates.set(key,existing?{...item,...existing,similarity_score:item.similarity_score}:{...item,relevance_rank:0,match_type:'semantic'});
+    }
+    // A provider outage with no lexical hits is not evidence of an empty corpus.
+    if(!semantic&&!candidates.size){const error=new Error('정책 검색을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.');error.status=503;throw error;}
+    const items=[...candidates.values()].sort((a,b)=>b.relevance_rank-a.relevance_rank||
+        (b.similarity_score||0)-(a.similarity_score||0)||Number(b.congress_number||0)-Number(a.congress_number||0)||String(a.id).localeCompare(String(b.id)));
+    return {ok:true,body:{query:f.query,search_mode:'hybrid',semantic_available:semantic,lexical_available:lexicalAvailable,
+        candidate_limited:candidateLimited,result_limited:items.length>f.limit,items:items.slice(0,f.limit).map(({summary,raw_source,embedding,...item})=>item)}};
+}
+async function usConditionSearch(env,f){
+    const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
+    const add=(source,row,score=0)=>{
+        const id=String(row[source.key]),key=`${source.type}:${id}`;
+        candidates.set(key,{...row,type:source.type,id,title:row.title||row.law_title,
+            summary:row.summary||row.abstract||'',similarity_score:Math.max(score,candidates.get(key)?.similarity_score||0),
+            source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+            ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
+    };
+    // Search the conjunction separately so many single-condition matches cannot
+    // crowd all-condition documents out of the bounded candidate pool.
+    const jobs=CONDITION_SOURCES.flatMap(source=>[f.conditions,...f.conditions.map(t=>[t])].map(terms=>({source,terms})));
+    for(let offset=0;offset<jobs.length;offset+=4){
+        await Promise.all(jobs.slice(offset,offset+4).map(async({source,terms})=>{
+            const query=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.asc`,and:`(${terms.map(t=>PolicySearchTerms.clause(source.fields,t)).join(',')})`});
+            const rows=await usFetch(env,source.table,query.toString());
+            candidateLimited ||= rows.length===60;
+            for(const row of rows)add(source,row);
+        }));
+    }
+    if(hasPolicyEmbeddingProvider(env)){
+        try{
+            const vector=await geminiEmbedQuery(env,f.conditions.map(t=>t.aliases.find(a=>/^[a-z]/.test(a))||t.label).join(' '));
+            const hits=await usRpc(env,'search_policy_corpus',{p_query_embedding:vector,p_embedding_model:GEMINI_EMBEDDING_MODEL,p_result_limit:50});
+            await Promise.all(CONDITION_SOURCES.map(async source=>{
+                const ids=[...new Set(hits.filter(r=>r.source_type===source.type).map(r=>String(r.source_id)))];
+                if(!ids.length)return;
+                const query=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+                for(const row of await usFetch(env,source.table,query.toString()))add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
+            }));semanticAvailable=true;
+        }catch{ /* Exact evidence search still works; expose degraded retrieval. */ }
+    }
+    const ranked=PolicySearchTerms.rank([...candidates.values()],f.conditions,10000);
+    return {ok:true,body:{query:f.query,search_mode:'conditions',conditions:f.conditions.map(t=>({label:t.label,aliases:t.aliases})),
+        match_basis:'stored_title_summary',semantic_available:semanticAvailable,candidate_limited:candidateLimited,
+        result_limited:ranked.length>f.limit,items:ranked.slice(0,f.limit)}};
 }
 
 // The obvious way to write this is a PostgREST group-by aggregate
@@ -2970,13 +3558,19 @@ async function usCoverage(env) {
 async function usOverview(env) {
     const [
         committees, agencies, policyAreas, cfrTitles,
-        billsPerCommittee, billsPerArea, eosPerAgency, regsPerTitle,
+        billsPerArea, eosPerAgency, regsPerTitle,
         committeeAgencyRows,
     ] = await Promise.all([
         // Top-level bodies only. Subcommittees belong to the committee screen,
         // and mixing them into the grid would bury the standing committees.
-        usFetch(env, 'committees',
-            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order'
+        // committee_directory (docs/policy-jec-crs-handoff-20260921.md) reads
+        // as `committees` but collapses a committee's alias codes (JEC's
+        // three source ids) into one row, with canonical_bill_count already
+        // deduplicated across them and source_committee_ids listing every
+        // code that row stands in for -- both needed below.
+        usFetch(env, 'committee_directory',
+            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order,'
+            + 'canonical_bill_count,source_committee_ids'
             + '&parent_committee_id=is.null&order=chamber.asc,name.asc&limit=500'),
         usFetch(env, 'agencies',
             'select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url'
@@ -2985,7 +3579,6 @@ async function usOverview(env) {
             'select=policy_area_id,name&active=is.true&order=name.asc&limit=200'),
         usFetch(env, 'cfr_titles',
             'select=title_number,title_name,reserved&order=title_number.asc&limit=50'),
-        usCountBy(env, 'bill_committees', 'committee_id'),
         usCountBy(env, 'bills', 'policy_area_id'),
         usCountBy(env, 'executive_order_agencies', 'agency_id'),
         usCountBy(env, 'regulation_cfr_references', 'title_number'),
@@ -3004,6 +3597,16 @@ async function usOverview(env) {
         const list = agencyNamesByCommittee.get(row.committee_id);
         if (list) list.push(name); else agencyNamesByCommittee.set(row.committee_id, [name]);
     }
+    // A jurisdiction row could be filed under any of a committee's alias
+    // codes, not just its canonical one, so this checks every code the
+    // canonical row stands in for and dedupes across them.
+    const agenciesFor = (c) => {
+        const names = new Set();
+        for (const sourceId of c.source_committee_ids?.length ? c.source_committee_ids : [c.committee_id]) {
+            for (const name of agencyNamesByCommittee.get(sourceId) || []) names.add(name);
+        }
+        return [...names];
+    };
 
     return {
         ok: true,
@@ -3017,8 +3620,8 @@ async function usOverview(env) {
                     committee_type: c.committee_type,
                     official_url: c.official_url,
                     jurisdiction_summary: c.jurisdiction_summary,
-                    bill_count: countOf(billsPerCommittee, c.committee_id),
-                    agencies: agencyNamesByCommittee.get(c.committee_id) || [],
+                    bill_count: c.canonical_bill_count ?? 0,
+                    agencies: agenciesFor(c),
                 })),
             },
             executive_overview: {
@@ -3086,11 +3689,29 @@ const BILL_LIST_COLUMNS = 'bill_id,congress_number,bill_type,bill_number,title,s
     + 'introduced_date,current_stage,current_status,latest_action_date,latest_action_text,'
     + 'congress_url,policy_area_id,detail_level';
 
+// A committee_id can be a JEC alias (jhje00/jsec00 -- see
+// docs/policy-jec-crs-handoff-20260921.md) whose bills are filed under any
+// of its three source codes. committee_identity resolves whichever id was
+// requested to its canonical form; committee_directory's source_committee_ids
+// then gives every code a bill list for that committee needs to search
+// across. A non-aliased committee resolves to itself as a one-element array,
+// so this is the same query shape for every committee, not a JEC special case.
+async function resolveCommitteeSourceIds(env, committeeId) {
+    const identityRows = await usFetch(env, 'committee_identity',
+        `select=canonical_committee_id&source_committee_id=eq.${encodeURIComponent(committeeId)}&limit=1`);
+    const canonicalId = identityRows[0]?.canonical_committee_id || committeeId;
+    const dirRows = await usFetch(env, 'committee_directory',
+        `select=source_committee_ids&committee_id=eq.${encodeURIComponent(canonicalId)}&limit=1`);
+    const sourceIds = dirRows[0]?.source_committee_ids;
+    return { canonicalId, sourceIds: sourceIds?.length ? sourceIds : [canonicalId] };
+}
+
 function usBillWhere(f) {
     const parts = [];
     // !inner turns the embed into a join filter, so this narrows bills rather
     // than merely attaching an empty bill_committees array to every row.
-    if (f.committeeId) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeId)}`);
+    if (f.committeeIds?.length === 1) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeIds[0])}`);
+    else if (f.committeeIds?.length) parts.push(`bill_committees.committee_id=in.(${f.committeeIds.map(encodeURIComponent).join(',')})`);
     if (f.policyAreaId) parts.push(`policy_area_id=eq.${encodeURIComponent(f.policyAreaId)}`);
     if (f.stages.length) parts.push(`current_stage=in.(${f.stages.join(',')})`);
     if (f.congress) parts.push(`congress_number=eq.${f.congress}`);
@@ -3098,8 +3719,10 @@ function usBillWhere(f) {
 }
 
 async function usBillList(env, f) {
-    const embed = f.committeeId ? ',bill_committees!inner(committee_id)' : '';
-    const where = usBillWhere(f);
+    const committeeIds = f.committeeId ? (await resolveCommitteeSourceIds(env, f.committeeId)).sourceIds : null;
+    const fIds = { ...f, committeeIds };
+    const embed = committeeIds ? ',bill_committees!inner(committee_id)' : '';
+    const where = usBillWhere(fIds);
     const query = [
         `select=${BILL_LIST_COLUMNS}${embed}`,
         where,
@@ -3111,8 +3734,8 @@ async function usBillList(env, f) {
     // Stage counts drive the tab badges and must ignore the stage filter itself,
     // otherwise every tab would report only its own total.
     const stageQuery = [
-        `select=current_stage,count()${f.committeeId ? ',bill_committees!inner(committee_id)' : ''}`,
-        usBillWhere({ ...f, stages: [] }),
+        `select=current_stage,count()${committeeIds ? ',bill_committees!inner(committee_id)' : ''}`,
+        usBillWhere({ ...fIds, stages: [] }),
     ].filter(Boolean).join('&');
 
     const [page, stageRows] = await Promise.all([
@@ -3158,10 +3781,10 @@ async function usBillDetail(env, billId) {
         usFetch(env, 'bills',
             `select=*,policy_areas(policy_area_id,name),`
             + `bill_summaries(action_date,action_description,version_code,summary_text),`
-            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
-            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_actions(bill_action_id,action_date,action_text,action_code,action_type,chamber,normalized_stage,source_url),`
+            + `bill_votes(vote_id,chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
             + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
-            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_committees(committee_id,activity_names,first_referred_at,last_activity_at,raw_source,committees(name,chamber,official_url)),`
             + `bill_subjects(legislative_subjects(subject_id,name))`
             + `&bill_id=eq.${id}&limit=1`),
         // !bill_relations_target_bill_id_fkey disambiguates from the other FK
@@ -3186,13 +3809,33 @@ async function usBillDetail(env, billId) {
     delete bill.raw_source;
     for (const v of bill.bill_text_versions || []) delete v.raw_source;
 
+    // A referral recorded against a JEC alias code (jhje00/jsec00) would
+    // otherwise show a chip whose data-id the committee grid no longer has a
+    // tile for (committee_directory collapsed it into jjec00) -- resolve
+    // every referred committee_id to its canonical form before building chips.
+    const referredIds = [...new Set((bill.bill_committees || []).map((bc) => bc.committee_id))];
+    const canonicalByReferredId = new Map();
+    if (referredIds.length) {
+        const identityRows = await usFetch(env, 'committee_identity',
+            `select=source_committee_id,canonical_committee_id&source_committee_id=in.(${referredIds.map((rid) => encodeURIComponent(rid)).join(',')})`)
+            .catch((err) => { console.log(`[us] committee_identity lookup unavailable: ${err.message}`); return []; });
+        for (const row of identityRows) canonicalByReferredId.set(row.source_committee_id, row.canonical_committee_id);
+    }
+
     bill.committees = (bill.bill_committees || []).map((bc) => ({
-        committee_id: bc.committee_id,
+        committee_id: canonicalByReferredId.get(bc.committee_id) || bc.committee_id,
+        activity_names: bc.activity_names || [],
+        activities: (bc.raw_source?.activities || []).map(a => ({ name: a.name, date: a.date || null })),
+        first_referred_at: bc.first_referred_at,
+        last_activity_at: bc.last_activity_at,
         name: bc.committees?.name,
         chamber: bc.committees?.chamber,
         official_url: bc.committees?.official_url,
     }));
     delete bill.bill_committees;
+
+    bill.lifecycle = PolicyEvidence.buildLifecycle(bill);
+    bill.congress_url = PolicyEvidence.billUrl(bill.congress_number, bill.bill_type, bill.bill_number) || bill.congress_url;
 
     bill.official_related_bills = shapeRelations(relations, false);
     bill.similar_bills = shapeRelations(relations, true);
@@ -3327,10 +3970,17 @@ async function usRegulationList(env, f) {
 // not in the schema yet, so the screen keeps its "위원장 정보 준비 중"
 // placeholder for those regardless.
 async function usCommitteeDetail(env, committeeId) {
-    const subcommittees = await usFetch(env, 'committees',
+    // committeeId may be a JEC alias code reached through an old link
+    // (jhje00/jsec00) -- resolve it to the canonical id the overview grid
+    // now uses (committee_directory) before looking up subcommittees, or a
+    // stale link would 404 against an id that no longer heads its own row.
+    const identityRows = await usFetch(env, 'committee_identity',
+        `select=canonical_committee_id&source_committee_id=eq.${encodeURIComponent(committeeId)}&limit=1`);
+    const canonicalId = identityRows[0]?.canonical_committee_id || committeeId;
+    const subcommittees = await usFetch(env, 'committee_directory',
         `select=committee_id,name,chamber,official_url`
-        + `&parent_committee_id=eq.${encodeURIComponent(committeeId)}&order=name.asc&limit=100`);
-    return { ok: true, body: { committee_id: committeeId, subcommittees } };
+        + `&canonical_parent_committee_id=eq.${encodeURIComponent(canonicalId)}&order=name.asc&limit=100`);
+    return { ok: true, body: { committee_id: canonicalId, requested_committee_id: committeeId, subcommittees } };
 }
 
 // The CFR title screen: regulations filed under the title, plus the executive

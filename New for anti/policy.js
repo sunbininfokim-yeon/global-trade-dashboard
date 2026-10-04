@@ -18,7 +18,7 @@
     referred: '회부',
     subcommittee: '소위',
     committee_consideration: '위원회 심사',
-    reported: '상임위 통과',
+    reported: '상임위 보고',
     passed_origin_chamber: '본회의 통과',
     second_chamber: '상대원 심사',
     resolving_differences: '양원 조정',
@@ -31,23 +31,13 @@
 
   const CHAMBER_LABELS = { house: '하원', senate: '상원', joint: '합동' };
 
-  // The pipeline a US bill walks, in order. Several schema stages collapse
-  // into one step (a bill sitting in subcommittee has not cleared committee
-  // yet, so both read as 발의·회부), which keeps the rail to seven steps
-  // instead of thirteen.
-  const STAGE_FLOW = [
-    { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-    { label: '상임위 통과', stages: ['reported'] },
-    { label: '본회의 통과', stages: ['passed_origin_chamber'] },
-    { label: '상대원 심사', stages: ['second_chamber'] },
-    { label: '양원 조정', stages: ['resolving_differences'] },
-    { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
-    { label: '법률 제정', stages: ['enacted'] },
-  ];
-
-  // Ends that are not a point on the rail: the bill stopped instead of
-  // advancing, so they hang off the end of whatever it did reach.
-  const TERMINAL_LABELS = { vetoed: '거부', failed: '부결' };
+  // Use the same evidence contract as ingestion and the API.
+  const TERMINAL_LABELS = { vetoed: '거부권 행사', failed: '부결' };
+  function resolveBillStage(bill) {
+    const lifecycle = bill.lifecycle || window.PolicyEvidence.buildLifecycle(bill);
+    const stageFlow = lifecycle.steps;
+    return { lifecycle, stageFlow, currentIndex: stageFlow.findIndex(s => s.id === lifecycle.current.step_id) };
+  }
 
   const esc = (value) => {
     if (value === null || value === undefined) return '';
@@ -65,7 +55,7 @@
   const STAGE_TAB_DEFS = [
     { label: '전체 보기', stages: [] },
     { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-    { label: '상임위 통과/보고', stages: ['reported'] },
+    { label: '상임위 보고', stages: ['reported'] },
     { label: '발의원 본회의 통과', stages: ['passed_origin_chamber'] },
     { label: '상대원 심사', stages: ['second_chamber'] },
     { label: '양원 조정', stages: ['resolving_differences'] },
@@ -218,30 +208,100 @@
   const searchBox = () =>
     `<div class="policy-search" data-search>
        <input type="search" class="policy-search-input" data-search-input autocomplete="off"
-              placeholder="${esc('법안·행정명령 검색 (예: 니켈, 수출통제)')}" value="${esc(state.search.query)}">
+              placeholder="${esc('쉼표로 조건 구분 (예: 니켈, 수출통제, 배터리)')}" value="${esc(state.search.query)}">
+       <button type="button" class="policy-search-submit" data-search-submit aria-label="검색">
+         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+       </button>
+       <span class="policy-search-spinner" data-search-spinner hidden aria-hidden="true"></span>
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
 
-  const SEARCH_TYPE_LABELS = { bill: '법안', executive_order: 'EO', regulation: '규정' };
   const SEARCH_TYPE_VIEWS = { bill: 'bill', executive_order: 'eo' };
 
-  const searchResultRow = (item) => {
+  // search_policy_corpus's source_type ('bill'/'executive_order'/'regulation')
+  // doesn't say whether a bill is already law -- that split is invisible in
+  // the raw type, so a mixed result list used to read as one undifferentiated
+  // pile: no way to tell an enacted law from a bill still in committee from
+  // an EO at a glance. usSearch (_worker.js) enriches bill hits with
+  // law_number/current_stage; searchGroupKey turns that into the four
+  // buckets a reader actually asks about.
+  const SEARCH_GROUPS = [
+    { key: 'pending', cls: 'is-pending', label: '법안', badgeLabel: '법안' },
+    { key: 'enacted', cls: 'is-enacted', label: '법률', badgeLabel: '법률' },
+    { key: 'executive_order', cls: 'is-eo', label: '행정명령', badgeLabel: 'EO' },
+    { key: 'regulation', cls: 'is-regulation', label: '규정', badgeLabel: '규정' },
+  ];
+  const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
+
+  const searchGroupKey = (item) => (item.type === 'public_law' ? 'enacted' : item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
+
+  // Groups in a fixed order, and drops any group with no hits for this query
+  // -- three blocks most of the time, a fourth only when a regulation result
+  // actually turned up, rather than an empty "규정" column every search.
+  function groupSearchItems(items, includeEmpty = false) {
+    const buckets = new Map();
+    for (const item of items) {
+      const key = searchGroupKey(item);
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(item);
+    }
+    return SEARCH_GROUPS
+      .map((def) => ({ ...def, items: buckets.get(def.key) || [] }))
+      .filter((g) => includeEmpty || g.items.length);
+  }
+
+  // Only a bill has anything worth a second line here: an enacted one cites
+  // its public/private law number, a pending one its own bill number and
+  // current stage. EO/regulation rows stay title-only, same as before.
+  const searchResultMeta = (item) => {
+    if (item.type !== 'bill') return '';
+    const cite = billNumberLabel({ ...item, bill_id: item.id });
+    if (item.law_number) {
+      const lawLabel = `${item.law_type === 'private' ? '사법' : '공법'} ${item.law_number}`;
+      return item.latest_action_date ? `${lawLabel} · ${item.latest_action_date}` : lawLabel;
+    }
+    return `${cite} · ${stageLabel(item.current_stage)}`;
+  };
+
+  // opts.compact drops the meta line for the header dropdown, which has no
+  // room for it -- the full search page (viewSearch below) keeps it.
+  const searchResultRow = (item, opts = {}) => {
+    const group = SEARCH_GROUP_BY_KEY.get(searchGroupKey(item));
     const view = SEARCH_TYPE_VIEWS[item.type];
-    const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
-    const body = `<span class="policy-search-result-type">${esc(typeLabel)}</span>
-        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>`;
+    const meta = !opts.compact ? searchResultMeta(item) : '';
+    const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
+    const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
+    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
+    const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
+        <span class="policy-search-result-body">
+          <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
+          ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
+          ${conditionLabel}
+          ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
+        </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
-    if (item.type === 'regulation') {
-      return item.source_url
-        ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
-        : `<div class="policy-search-result is-inert">${body}</div>`;
+    if (item.type === 'regulation' || item.type === 'public_law') {
+      return /^https:\/\//i.test(item.source_url || '')
+        ? `<a class="policy-search-result"${matchAttrs} href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
+        : `<div class="policy-search-result is-inert"${matchAttrs}>${body}</div>`;
     }
     const tag = view ? 'button' : 'div';
     const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
-    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}${matchAttrs}>${body}</${tag}>`;
   };
+
+  const searchGroupBlock = (group, opts = {}) => `
+    <section class="policy-search-group">
+      <div class="policy-search-group-head ${group.cls}">
+        <span class="policy-search-group-dot ${group.cls}" aria-hidden="true"></span>
+        <span class="policy-search-group-label">${esc(group.label)}</span>
+        <span class="policy-search-group-count">${group.items.length}건</span>
+      </div>
+      <div class="policy-search-group-rows">${group.items.length ? group.items.map((item) => searchResultRow(item, opts)).join('') : empty('검색 결과 없음')}</div>
+    </section>`;
 
   function renderSearchMessage(message) {
     const box = host?.querySelector('[data-search-results]');
@@ -250,17 +310,46 @@
     box.hidden = false;
   }
 
+  function searchResultsMarkup(body, opts = {}) {
+    const items = body.items || [];
+    const sorted = [...items].sort((a,b) => searchOrderCompare(a,b,'matches'));
+    const groups = groupSearchItems(sorted, !opts.compact);
+    return `<div class="policy-condition-search">
+      ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
+      <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
+      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
+    </div>`;
+  }
+
+  function searchOrderCompare(a, b, order) {
+    const count = Number(b.matched_condition_count || 0) - Number(a.matched_condition_count || 0);
+    const date = item => Date.parse(item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '') || 0;
+    const time = date(b) - date(a);
+    const similarity = Number(b.similarity_score || 0) - Number(a.similarity_score || 0);
+    const name = Number(b.relevance_rank || 0) - Number(a.relevance_rank || 0);
+    return order === 'latest' ? time || count || name || similarity : count || name || similarity || time;
+  }
+
   function renderSearchResults(body) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;
     if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
-    if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
-    box.innerHTML = body.items.map(searchResultRow).join('');
+    box.innerHTML = searchResultsMarkup(body, { compact: true });
     box.hidden = false;
   }
 
   let searchToken = 0;
   let searchTimer = null;
+
+  // Shows next to the search box -- but only for a query the user actually
+  // submitted (Enter, the magnifying-glass button, or picking a dropdown
+  // row), not for the live-as-you-type preview below. The magnifying-glass
+  // button itself stays visible; the spinner occupies its own slot to its
+  // left (see .policy-search-spinner).
+  function setSearchSpinner(visible) {
+    const spinner = host?.querySelector('[data-search-spinner]');
+    if (spinner) spinner.hidden = !visible;
+  }
 
   async function runSearch(value) {
     const token = ++searchToken;
@@ -268,12 +357,25 @@
       const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(value)}`);
       const body = await res.json().catch(() => null);
       if (token !== searchToken || !host) return;
-      if (!res.ok || !body) return renderSearchMessage('검색 중 오류가 발생했습니다');
+      if (!res.ok || !body) return renderSearchMessage(res.status === 400 && body?.error ? body.error : '검색 중 오류가 발생했습니다');
       renderSearchResults(body);
     } catch {
       if (token !== searchToken || !host) return;
       renderSearchMessage('검색 중 오류가 발생했습니다');
     }
+  }
+
+  // Enter, the magnifying-glass button, and picking a dropdown row all land
+  // here. go() doesn't touch the DOM until its fetch resolves (see go()
+  // below), so the spinner set here just sits next to the box until paint()
+  // swaps the whole header -- including this box -- for the destination.
+  function submitSearch(query) {
+    clearTimeout(searchTimer);
+    searchToken += 1; // drop any in-flight dropdown fetch, this submit takes over
+    setSearchSpinner(true);
+    const box = host.querySelector('[data-search-results]');
+    if (box) box.hidden = true;
+    go('search', query);
   }
 
   // Delegated on `host` (not the input itself) because paint() replaces the
@@ -286,10 +388,11 @@
     const box = host.querySelector('[data-search-results]');
     if (!input.value.trim()) {
       searchToken += 1; // drop any in-flight response for the old query
+      setSearchSpinner(false);
       if (box) box.hidden = true;
       return;
     }
-    searchTimer = setTimeout(() => runSearch(input.value.trim()), 300);
+    searchTimer = setTimeout(() => runSearch(input.value.trim()), 100);
   }
 
   function onSearchKeydown(event) {
@@ -298,11 +401,7 @@
     if (event.key === 'Enter') {
       const query = input.value.trim();
       if (!query) return;
-      clearTimeout(searchTimer);
-      searchToken += 1; // drop any in-flight dropdown fetch, the full page is taking over
-      const box = host.querySelector('[data-search-results]');
-      if (box) box.hidden = true;
-      go('search', query);
+      submitSearch(query);
       return;
     }
     if (event.key !== 'Escape') return;
@@ -310,6 +409,7 @@
     state.search.query = '';
     clearTimeout(searchTimer);
     searchToken += 1;
+    setSearchSpinner(false);
     const box = host.querySelector('[data-search-results]');
     if (box) box.hidden = true;
   }
@@ -342,36 +442,24 @@
 
   // "어디까지 갔나"를 한눈에. How far a bill got is not the same question as
   // what stage it is in now -- a vetoed bill's current_stage is off the rail
-  // entirely -- so reached steps come from the action history's
-  // normalized_stage, with the current stage folded in for bills whose
-  // history has not been backfilled.
+  // entirely -- so this is driven by resolveBillStage's furthest-reached
+  // computation (action history + a chamber's own recorded floor votes),
+  // not by current_stage alone.
   const stageRail = (bill) => {
-    const reached = new Set((bill.bill_actions || []).map((a) => a.normalized_stage).filter(Boolean));
-    if (bill.current_stage) reached.add(bill.current_stage);
-
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
-    let furthest = currentIndex;
-    STAGE_FLOW.forEach((step, i) => {
-      if (step.stages.some((s) => reached.has(s))) furthest = Math.max(furthest, i);
-    });
-
-    const steps = STAGE_FLOW.map((step, i) => {
-      const current = i === currentIndex;
-      const done = !current && i <= furthest;
-      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}">
-                <span class="policy-stage-step-dot" aria-hidden="true"></span>
-                <span class="policy-stage-step-label">${esc(step.label)}</span>
-              </li>`;
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
+    const steps = stageFlow.map((step, i) => {
+      const failed = setback?.step_id === step.id;
+      const observed = step.state === 'observed';
+      const evidence = step.evidence.at(-1);
+      const title = failed ? `${step.label} · ${setback.date || '날짜 미확인'} · ${setback.label}. ${setback.note}` : evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
+      return `<li class="policy-stage-step${failed ? ' is-failed' : ''}${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${failed ? esc(setback.label) : observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
-
-    const terminal = TERMINAL_LABELS[bill.current_stage]
-      ? `<li class="policy-stage-step is-terminal is-current">
-           <span class="policy-stage-step-dot" aria-hidden="true"></span>
-           <span class="policy-stage-step-label">${esc(TERMINAL_LABELS[bill.current_stage])}</span>
-         </li>`
-      : '';
-
-    return `<ol class="policy-stage-rail" aria-label="${esc('입법 단계')}">${steps}${terminal}</ol>`;
+    const alert = lifecycle.procedural_alert;
+    return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(setback ? `${CHAMBER_LABELS[alert.chamber]} ${setback.label} — ${setback.note}` : alert.label + ' — 법안 통과 여부와 별도입니다.')}</p>` : ''}
+      <p class="policy-notice">${esc(lifecycle.note)}</p>
+      ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
 
   /* ------------------------------------------------------------ favorites */
@@ -440,6 +528,7 @@
       // wipe whatever the visitor has typed into the search box.
       paintFavButton(button, !on);
     } catch (err) {
+      window.alert('즐겨찾기를 저장하지 못했습니다. 로그인 상태와 인터넷 연결을 확인한 뒤 다시 시도해주세요.');
       console.error('Failed to toggle favorite:', err);
     } finally {
       button.disabled = false;
@@ -492,9 +581,35 @@
         </button>`).join('')}</div>`
     : empty('목록 준비 중'));
 
-  const committeeTiles = (overview, chamber) => tileGrid(
+  // usOverview only ever returns top-level bodies (parent_committee_id is
+  // null server-side), so committee_type alone says which bucket a row
+  // belongs in -- reliable as of the 2026-09-21 committee hierarchy repair
+  // (docs/policy-committee-repair-20260921.md, PR #342), which corrected the
+  // 53 rows this screen reads and put a DB trigger in front of them so
+  // future syncs can't quietly re-break it. An earlier version of this
+  // classified by matching committee names against a hand-written regex
+  // list; Codex's review of that PR found the regexes didn't match the
+  // DB's actual names at all (e.g. "Aging (Special) Committee" never matched
+  // /special committee on aging/i), so this uses the type field instead.
+  const COMMITTEE_KIND_BY_TYPE = {
+    standing: 'standing',
+    select: 'select',
+    special: 'select',
+    joint: 'joint',
+    commission_or_caucus: 'other',
+    caucus: 'other',
+    other: 'other',
+  };
+
+  // A type this map doesn't recognize (a new one the repair didn't
+  // anticipate, or a row the repair hasn't reached yet) must not silently
+  // read as "standing" -- that was the original bug. It gets its own bucket
+  // instead, so a real gap stays visible rather than being miscounted.
+  const committeeKind = (c) => COMMITTEE_KIND_BY_TYPE[c.committee_type] || 'unknown';
+
+  const committeeTiles = (overview, chamber, kind) => tileGrid(
     (overview?.congress_overview?.committees || [])
-      .filter((c) => c.chamber === chamber)
+      .filter((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind)
       .map((c) => ({
         view: 'committee', id: c.committee_id, full: c.name,
         label: fit(committeeLabel(c.name), c.short_name),
@@ -554,18 +669,33 @@
   /* ---------------------------------------------------------------- views */
 
   // Branch level -- the committees and the CRS policy areas, each a way in.
+  // House/Senate standing committees get their own cards, separate from
+  // each chamber's select/special committees; a card only appears when that
+  // bucket actually has something in it, so a chamber with none in the data
+  // doesn't show an empty box.
   function viewCongress(_id, overview) {
-    const hasJoint = (overview?.congress_overview?.committees || []).some((c) => c.chamber === 'joint');
+    const committees = overview?.congress_overview?.committees || [];
+    const has = (chamber, kind) => committees.some((c) => (chamber == null || c.chamber === chamber) && committeeKind(c) === kind);
     return shell(`
-      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house'))}
-      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate'))}
-      ${hasJoint ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles(overview, 'joint')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'standing'))}
+      ${has('house', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.house})`, committeeTiles(overview, 'house', 'select')) : ''}
+      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'standing'))}
+      ${has('senate', 'select') ? card(`특별·선정위원회 (${CHAMBER_LABELS.senate})`, committeeTiles(overview, 'senate', 'select')) : ''}
+      ${has(null, 'joint') ? card(`합동위원회`, committeeTiles(overview, null, 'joint')) : ''}
+      ${has(null, 'other') ? card(`기타 기구`, committeeTiles(overview, null, 'other')) : ''}
+      ${has(null, 'unknown') ? card(`미확인 유형`, committeeTiles(overview, null, 'unknown')) : ''}
       ${collapsibleCard('crs', 'CRS 정책분야', policyAreaTiles(overview), (overview?.policy_areas || []).length)}
     `);
   }
 
   function viewCommittee(committeeId, overview, extra) {
-    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === committeeId);
+    // extra.detail.committee_id is the canonical id _worker.js resolved
+    // committeeId to (identical to committeeId unless committeeId is an old
+    // alias, e.g. one of JEC's three source codes) -- the overview list only
+    // ever carries the canonical row, so an alias must resolve through this
+    // or every old bookmarked/shared committee link "disappears".
+    const resolvedId = extra?.detail?.committee_id || committeeId;
+    const listed = overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId);
     if (!listed) return shell(empty('위원회를 찾을 수 없습니다'));
 
     const { detail, billPage, card: committeeCard } = extra;
@@ -685,23 +815,33 @@
     return bill.congress_number ? `${bill.congress_number}대 · ${cite}` : cite;
   };
 
-  // Compact card for a favorited bill (My Page favorites list), reusing the
-  // same stage rail and vote data as the full bill detail panel below so the
-  // two views can never disagree about what "next stage" means. There is no
-  // curated short/abbreviated title anywhere in the schema -- bill.title is
-  // the official long title -- so this shows that title as-is rather than
-  // fabricate an abbreviation.
-  function favoriteBillCardHtml(bill) {
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+  // Compact card for a favorited bill (My Page favorites/mailing lists),
+  // reusing the same stage rail and vote data as the full bill detail panel
+  // below so the two views can never disagree about what "next stage" means.
+  // There is no curated short/abbreviated title anywhere in the schema --
+  // bill.title is the official long title -- so this shows that title as-is
+  // rather than fabricate an abbreviation.
+  //
+  // notifyEnabled reflects user_favorites.notify_enabled for this bill (not
+  // part of the `bills` row loadBillById returns), defaulting to true when
+  // omitted so a caller that doesn't track it yet still gets a checked box.
+  // bill.bill_id doubles as the favorite's item_id -- callers only ever load
+  // this card for item_kind 'bill', and loadBillById(item_id) returns the
+  // row keyed by that same id.
+  function favoriteBillCardHtml(bill, notifyEnabled) {
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
+    const setback = window.PolicyEvidence.floorSetback(lifecycle);
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
-    const currentLabel = terminalLabel || (currentIndex >= 0 ? STAGE_FLOW[currentIndex].label : stageLabel(bill.current_stage));
-    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < STAGE_FLOW.length - 1
-      ? STAGE_FLOW[currentIndex + 1].label
+    const currentLabel = lifecycle.current.label;
+    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
+      ? stageFlow[currentIndex + 1].label
       : null;
 
-    const votes = bill.bill_votes || [];
-    const lastVote = votes[votes.length - 1];
-    const voteText = lastVote ? `투표 찬 ${esc(lastVote.yea_count)}명 반 ${esc(lastVote.nay_count)}명` : null;
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
+    const lastVote = [...votes].sort((a, b) => String(b.vote_date).localeCompare(String(a.vote_date)))[0];
+    const voteInfo = lastVote ? window.PolicyEvidence.voteEvidence(lastVote) : null;
+    const voteText = voteInfo ? `${voteInfo.kind === 'cloture' ? '토론 종결' : '표결'} 찬 ${esc(voteInfo.yea_count ?? '미확인')} · 반 ${esc(voteInfo.nay_count ?? '미확인')}` : null;
+    const itemId = esc(bill.bill_id);
 
     return `<div class="policy-fav-bill-card">
       <div class="policy-fav-bill-title">${esc(bill.title)}</div>
@@ -710,18 +850,31 @@
         <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
         ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
       </div>
+      ${setback ? `<p class="policy-notice policy-procedural-alert">${esc(`${CHAMBER_LABELS[lifecycle.procedural_alert.chamber]} ${setback.label}`)}</p>` : ''}
+      <div class="policy-fav-bill-actions">
+        <label class="policy-fav-bill-notify">
+          <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
+          메일 알림
+        </label>
+        <button type="button" class="policy-fav-star" data-remove-item-id="${itemId}" title="즐겨찾기 해제" aria-label="즐겨찾기 해제">★</button>
+      </div>
     </div>`;
   }
 
-  const actionRow = (a) => `
+  const actionRow = (row) => {
+    const evidence = window.PolicyEvidence.classifyAction(row);
+    const a = { ...row, chamber: evidence.chamber };
+    const label = ({ passage: '본회의 통과', passage_failed: '본회의 통과 표결 부결', procedural_vote: '절차 표결', other: '기타' })[evidence.kind] || stageLabel(evidence.kind);
+    return `
     <li class="policy-action">
       <span class="policy-action-date">${esc(a.action_date || '')}</span>
       <span class="policy-action-body">
         ${a.chamber ? `<span class="policy-action-chamber">${esc(CHAMBER_LABELS[a.chamber] || a.chamber)}</span>` : ''}
         <span>${esc(a.action_text || '')}</span>
       </span>
-      ${a.normalized_stage ? `<span class="policy-tag">${esc(stageLabel(a.normalized_stage))}</span>` : ''}
+      <span class="policy-tag">${esc(label)}</span>
     </li>`;
+  };
 
   // Version rows link out only. docs/api-spec.md forbids storing or
   // re-serving the document text itself, so the official copy is the copy.
@@ -737,20 +890,24 @@
   };
 
   function billPanel(bill) {
-    const votes = bill.bill_votes || [];
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
+    // Same resolution stageRail uses below, so the badge and the rail's
+    // highlighted step can never name two different stages for one bill.
+    const { lifecycle: badgeLifecycle, stageFlow: badgeStageFlow, currentIndex: badgeCurrentIndex } = resolveBillStage(bill);
+    const currentStageLabel = badgeLifecycle.current.label;
 
     const voteBody = votes.length
       ? votes.map((v) => `
           <div class="policy-vote">
             <div class="policy-vote-head">
               <span>${esc(CHAMBER_LABELS[v.chamber] || v.chamber)} · ${esc(v.question)}</span>
-              <span class="policy-vote-result">${esc(v.result)}</span>
+              <span class="policy-vote-result">${esc(({ passed: '가결', failed: '부결', unknown: '결과 미확인' })[v.result] || v.result)}</span>
             </div>
             <div class="policy-vote-counts">
-              <span class="yea">찬성 ${esc(v.yea_count)}</span>
-              <span class="nay">반대 ${esc(v.nay_count)}</span>
-              <span>기권 ${esc(v.present_count)}</span>
-              <span>불참 ${esc(v.not_voting_count)}</span>
+              <span class="yea">찬성 ${esc(v.yea_count ?? '미확인')}</span>
+              <span class="nay">반대 ${esc(v.nay_count ?? '미확인')}</span>
+              <span>기권 ${esc(v.present_count ?? '미확인')}</span>
+              <span>불참 ${esc(v.not_voting_count ?? '미확인')}</span>
             </div>
             <div class="policy-vote-foot">
               <span>${esc(v.vote_date)}</span>
@@ -786,7 +943,7 @@
         ${favButton('bill', bill.bill_id, bill.title)}
       </div>
       <div class="policy-bill-meta">
-        ${stageBadge(bill.current_stage)}
+        <span class="policy-stage-badge">${esc(currentStageLabel)}</span>
         <span class="policy-bill-cite">${esc(billNumberLabel(bill))}</span>
         ${bill.sponsor ? `<span>발의자 ${esc(bill.sponsor)}</span>` : ''}
         ${bill.introduced_date ? `<span>발의일 ${esc(bill.introduced_date)}</span>` : ''}
@@ -1006,9 +1163,8 @@
     const heading = `"${query}" 검색`;
     if (!body) return shell(card(heading, empty('검색 결과를 불러오지 못했습니다')));
     if (body.unavailable) return shell(card(heading, empty('검색 기능 준비 중입니다')));
-    if (!body.items?.length) return shell(card(heading, empty('검색 결과가 없습니다')));
-    return shell(card(`${heading} (${body.items.length}건)`,
-      `<div class="policy-search-page-results">${body.items.map(searchResultRow).join('')}</div>`));
+    return shell(card(`${heading} (${body.items?.length || 0}건)`,
+      `<div class="policy-search-page-results">${searchResultsMarkup(body, { compact: false })}</div>`));
   }
 
   /* -------------------------------------------------------------- routing */
@@ -1042,8 +1198,14 @@
     switch (view) {
       case 'congress': return '의회';
       case 'executive': return '행정부';
-      case 'committee':
-        return overview?.congress_overview?.committees?.find((c) => c.committee_id === id)?.name || '상임위';
+      case 'committee': {
+        // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
+        // code) to its canonical committee_id -- the overview list only ever
+        // carries the canonical row, so look that up instead of the raw id
+        // or an old link falls back to the generic label below.
+        const resolvedId = extra?.detail?.committee_id || id;
+        return overview?.congress_overview?.committees?.find((c) => c.committee_id === resolvedId)?.name || '상임위';
+      }
       case 'agency':
         return overview?.executive_overview?.agencies?.find((a) => a.agency_id === id)?.name || '기관';
       case 'area':
@@ -1277,10 +1439,28 @@
   }
 
   function onClick(event) {
+    const sortButton = event.target.closest('[data-search-order]');
+    if (sortButton && host.contains(sortButton)) {
+      const wrapper = sortButton.closest('.policy-condition-search');
+      const lists = wrapper.querySelectorAll('.policy-search-group-rows');
+      const order = sortButton.dataset.searchOrder;
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, relevance_rank: row.dataset.relevanceRank, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
+      lists.forEach(list => [...list.querySelectorAll('[data-condition-row]')].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row)));
+      wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
+      return;
+    }
     const searchWrap = host.querySelector('[data-search]');
     if (searchWrap && !searchWrap.contains(event.target)) {
+      searchToken += 1; // drop any in-flight dropdown fetch now that it's dismissed
+      setSearchSpinner(false);
       const box = searchWrap.querySelector('[data-search-results]');
       if (box) box.hidden = true;
+    }
+    const searchSubmit = event.target.closest('[data-search-submit]');
+    if (searchSubmit && host.contains(searchSubmit)) {
+      const query = host.querySelector('[data-search-input]')?.value.trim();
+      if (query) submitSearch(query);
+      return;
     }
     const fav = event.target.closest('.policy-fav');
     if (fav && host.contains(fav)) {
@@ -1289,6 +1469,9 @@
     }
     const searchResult = event.target.closest('.policy-search-result');
     if (searchResult && host.contains(searchResult)) {
+      clearTimeout(searchTimer);
+      searchToken += 1;
+      setSearchSpinner(true); // this row's own [data-view]/[data-id] nav below is the submit
       const box = host.querySelector('[data-search-results]');
       const input = host.querySelector('[data-search-input]');
       if (box) box.hidden = true;
@@ -1347,7 +1530,7 @@
     const token = ++renderToken;
     host.classList.add('policy-surface');
     host.dataset.policyTarget = target;
-    host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}</div>`;
+    host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}<span class="mm-cpi-spinner" aria-hidden="true"></span></div>`;
 
     subscribeToAuth();
 

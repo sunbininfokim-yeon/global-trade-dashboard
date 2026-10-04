@@ -47,4 +47,13 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add "New for anti/public/data/icrisat_crop_production.json"
           # 변경사항이 있을 때만 커밋
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update ICRISAT crop data" && git push)
+          if git diff --quiet && git diff --staged --quiet; then exit 0; fi
+          git commit -m "chore: update ICRISAT crop data"
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push

@@ -1,0 +1,68 @@
+name: Refresh KR/JP policy boards
+
+# 한국은행 금융통화위원회(통화정책방향 결정문·의사록·일정·위원), 일본은행 정책위원회
+# (성명서·전망보고서·주요 의견 요약·의사록·일정), 영란은행 MPC(요약·의사록·표결·위원별 견해)와
+# ECB 정책이사회(보도자료·기자회견 성명·회의 요약 account)를 각 은행 사이트에서 받아
+# public/data/cb_policy_v1.json 을 다시 만든다.
+# 키가 필요 없는 공개 페이지만 쓴다. (워크플로 이름은 deploy.yml 의 workflow_run 목록이 이 이름으로
+# 걸려 있어 그대로 둔다.) FOMC 수집(fomc_collect_refresh.yml)과 같은 방식으로 멱등이다 --
+# 이미 받은 회의는 다시 받지 않고, 의사록이 아직 없는 회의만 매번 다시 찾는다. 그래서 회의 당일과 의사록 공개일을 빼면 하루치 실행은 거의 변화가 없다.
+#
+# 시각: BOJ 는 12:00 JST(03:00 UTC)에, BOK 는 오전 10시 KST(01:00 UTC) 무렵 결정문을
+# 낸다. 영란은행(정오 런던)과 ECB(14:15 CET)는 06:10 UTC 보다 늦게 결정을 내므로 그 당일 결정은
+# 다음 날 실행에서 반영된다(문서 패널이지 실시간 시세가 아니다).
+# 커밋만으로는 배포가 뜨지 않으므로 deploy.yml 이 이 워크플로의 완료를 받아 배포한다.
+
+on:
+  schedule:
+    - cron: '10 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-cb-policy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        working-directory: New for anti/scripts/macro_monitor
+        # pdfminer.six: 두 은행 모두 PDF 문서가 있고, pypdf 는 BOJ 에서 단어를 잘못 끊고
+        # BOK 의사록에서 띄어쓰기를 모두 지운다. pypdf 는 BOJ 전망 표를 행 단위로 읽는 데만 쓴다.
+        # olefile: BOK 의사록은 HWP 로 읽는다(PDF 는 줄바꿈마다 띄어쓰기가 사라짐, HWP 는 문단·띄어쓰기가 그대로).
+        run: pip install pytest beautifulsoup4 pypdf pdfminer.six olefile
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_boj_mpm.py tests/test_bok_mpc.py tests/test_cb_minutes.py tests/test_cb_policy.py tests/test_boe_mpc.py tests/test_ecb_gc.py -v
+      - name: Collect BOJ statements
+        working-directory: New for anti/scripts/macro_monitor
+        # 읽지 못한 회의가 있으면 exit 1 이지만 이미 받은 회의는 그대로 남는다.
+        # 한 회의의 새 문서 형식 때문에 다른 은행의 갱신까지 막지 않도록 job 은 계속 간다.
+        run: python build_boj_mpm.py || true
+      - name: Collect BOK decisions
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_bok_mpc.py || true
+      - name: Collect BoE MPC meetings
+        working-directory: New for anti/scripts/macro_monitor
+        # 표결 인원이 요약의 표결 수와 맞지 않으면 그 회의만 건너뛰고 exit 1 (이미 받은 회의는 남는다).
+        run: python build_boe_mpc.py || true
+      - name: Collect ECB Governing Council documents
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_ecb_gc.py || true
+      - name: Assemble cb_policy_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_cb_policy.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/macro_monitor/config/boj_mpm_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/bok_mpc_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/boe_mpc_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/ecb_gc_v1.json" \
+                  "New for anti/public/data/cb_policy_v1.json"
+          git commit -m "chore: refresh central-bank policy boards" || exit 0
+          git push

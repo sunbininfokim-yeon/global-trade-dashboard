@@ -59,7 +59,20 @@
     </script>
 
     <!-- MapLibre & Deck.gl -->
-    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <!-- Pinned, not @latest: unpkg's "latest" silently jumped from 9.3.7 to
+         9.4.0 on 2026-09-05 (deck.gl's own changelog: "All layers go WebGPU"
+         -- a full WebGL->WebGPU renderer swap, plus new GlobeView controller
+         interaction/elastic bounds). Nothing in this repo's own JS changed,
+         but production started rendering with a different, unproven engine
+         overnight with no one choosing to upgrade. Not confirmed as the
+         cause of any specific bug here (the elections-map click issue fixed
+         2026-09-20 reproduced the same way on both 9.3.7 and 9.4.0 -- see
+         the pointer-fallback comment near ensureElectionsMapPointerFallback
+         in app.js) -- pinned as hygiene, so a future breaking release can't
+         land in production without anyone deciding to adopt it. Every
+         _GlobeView picking quirk documented in this file's history was
+         verified against 9.3.7; move the pin only with deliberate testing. -->
+    <script src="https://unpkg.com/deck.gl@9.3.7/dist.min.js"></script>
     <script src="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.css" rel="stylesheet" />
     
@@ -67,7 +80,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=76">
+    <link rel="stylesheet" href="style.css?v=104">
+    <link rel="stylesheet" href="export-controls.css?v=3">
 </head>
 <body>
     <div id="app">
@@ -76,9 +90,11 @@
             <div class="logo" id="home-logo" style="cursor: pointer;">ChokePoint Monitor</div>
             <nav class="main-menu">
                 <!-- 에너지·금속·농산물을 「원자재」 하나로 묶고, 드롭다운 안에서
-                     3열로 나눴다. 상단 메뉴가 5개에서 3개로 줄어 해운·금융이
+                     열로 나눴다. 상단 메뉴가 5개에서 3개로 줄어 해운·금융이
                      같은 층위로 보이고, 품목을 찾을 때 메뉴를 옮겨 다니지 않아도
-                     세 분류를 한눈에 비교할 수 있다. 열 구성은 기존 각 메뉴와 동일. -->
+                     분류를 한눈에 비교할 수 있다.
+                     2026-10-02: 품목 3열 + 「모니터링」 열. 작황 모니터는 농산물 열에서
+                     옮겨 왔고, 수출통제 모니터는 품목 분류를 가로지르므로 같은 열에 둔다. -->
                 <div class="menu-item" data-nav-default="climate">
                     <span class="menu-parent" role="button" tabindex="0" aria-label="작황 모니터 열기">원자재</span>
                     <div class="dropdown dropdown-columns">
@@ -86,6 +102,7 @@
                             <span class="dd-head">에너지</span>
                             <a href="#" data-target="oil">원유</a>
                             <a href="#" data-target="gas">천연가스</a>
+                            <a href="#" data-target="light_oils">경질유 (납사·휘발유)</a>
                             <a href="#" data-target="thermal_coal">석탄 (연료탄)</a>
                             <a href="#" data-target="met_coal">석탄 (원료탄)</a>
                         </div>
@@ -129,12 +146,19 @@
 
                         <div class="dd-col">
                             <span class="dd-head">농산물</span>
-                            <a href="#" data-target="climate" class="dd-feature">작황 모니터</a>
                             <a href="#" data-target="wheat">밀</a>
                             <a href="#" data-target="corn">옥수수</a>
                             <a href="#" data-target="soybeans">대두</a>
                             <a href="#" data-target="sugar">설탕</a>
+                            <a href="#" data-target="palm_oil">팜유</a>
+                            <a href="#" data-target="rubber">천연고무</a>
                             <a href="#" data-target="coffee">커피</a>
+                        </div>
+
+                        <div class="dd-col dd-col-monitor">
+                            <span class="dd-head">모니터링</span>
+                            <a href="#" data-target="climate">작황 모니터</a>
+                            <a href="#" data-target="export_controls">수출통제 모니터</a>
                         </div>
                     </div>
                 </div>
@@ -170,21 +194,21 @@
                         <a href="#" data-target="us-policy-hub">미국</a>
                     </div>
                 </div>
-                <div class="menu-item" style="margin-left: 20px;">
-                    <span style="color: #cbd5e1;">주요 기관</span>
-                    <div class="dropdown">
-                        <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
-                        <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
-                    </div>
-                </div>
-                <!-- Hidden until signed in -- auth.js toggles this on every
-                     auth state change, same as it does the login/logout
-                     button in #auth-container. No dropdown: a bare
-                     data-nav-default item navigates straight to mypage. -->
-                <div class="menu-item hidden" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
-                </div>
             </nav>
+            <!-- Split out of .main-menu so they land at the header's far
+                 right (with auth/date-picker), separate from the
+                 원자재/금융/해운/정치/정책 cluster -- main-menu's
+                 margin-right:auto pushes everything after </nav> rightward. -->
+            <div class="menu-item" style="margin-left: 20px;" data-nav-default="tutorial" data-target="tutorial">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="사용설명서 열기" style="color: #cbd5e1;">튜토리얼</span>
+            </div>
+            <!-- Hidden until signed in -- auth.js toggles this on every
+                 auth state change, same as it does the login/logout
+                 button in #auth-container. No dropdown: a bare
+                 data-nav-default item navigates straight to mypage. -->
+            <div class="menu-item hidden" style="margin-left: 20px;" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
+                <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
+            </div>
             <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
@@ -218,8 +242,13 @@
                 <!-- Commodity Overview (Always top when a commodity is selected) -->
                 <div class="panel-section hidden" id="commodity-info-panel">
                     <div class="panel-header">
-                        <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
-                        <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
+                        <div class="panel-header-title-row">
+                            <h2 id="current-view-title">원자재: 석탄</h2>
+                            <button type="button" class="policy-fav commodity-fav-star hidden" id="commodity-fav-star" aria-pressed="false" title="즐겨찾기">
+                                <span class="policy-fav-icon" aria-hidden="true">☆</span>
+                            </button>
+                        </div>
+                        <p id="current-view-desc">국가 클릭 → 수출 대상 순위</p>
                     </div>
                     
                     <div class="stats-container" id="commodity-stats">
@@ -250,6 +279,11 @@
                     </div>
                 </div>
 
+                <!-- 수출통제 모니터 (export-controls.js) -->
+                <div class="panel-section hidden" id="export-controls-panel">
+                    <div id="export-controls-content" class="ec-panel"></div>
+                </div>
+
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
 
@@ -260,6 +294,12 @@
             <!-- Center Pane: Map -->
             <div class="map-pane">
                 <div id="map"></div>
+
+                <!-- Corner attribution for the commodity trade map -- data
+                     source used to be crammed into #current-view-desc next to
+                     the commodity blurb; it now lives here so the subtitle
+                     stays a short interaction hint. -->
+                <div id="map-source-note" class="map-source-note"></div>
 
                 <!-- Election blocks open here: a window centred over the map,
                      scoped to .map-pane so the nav and right pane stay usable. -->
@@ -287,6 +327,8 @@
                 </div>
                 <!-- Climate map legend (shown only in climate views) -->
                 <div id="climate-map-legend" class="climate-map-legend hidden"></div>
+                <!-- 수출통제 모니터 legend (export-controls.js) -->
+                <div id="export-controls-legend" class="climate-map-legend world-mini hidden"></div>
 
                 <!-- Trade map overlay: scale, flow toggle, interaction hint -->
                 <div id="trade-overlay" class="trade-overlay hidden">
@@ -321,6 +363,7 @@
                      one. The heading lives inside #reports-slot's own markup
                      (trade.js), so this wrapper carries no title of its own. -->
                 <div class="panel-section hidden" id="commodity-reports-panel">
+                    <div id="ctl-board-slot"></div>
                     <div id="reports-slot"></div>
                 </div>
 
@@ -399,14 +442,14 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=11"></script>
-    <script src="shipping.js?v=19"></script>
+    <script src="data.js?v=22"></script>
+    <script src="shipping.js?v=22"></script>
     <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
          and window.auth-container are ready by the time app.js's other
          renderers run. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="auth-config.js?v=1"></script>
-    <script src="auth.js?v=7"></script>
+    <script src="auth.js?v=12"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and
@@ -423,17 +466,22 @@
          valuation view dies. index.html is served no-store (see serveAsset in
          _worker.js), so these query strings are what actually pins the group
          to one build. -->
-    <script src="macro.js?v=14"></script>
-    <script src="market-microstructure.js?v=overseas-letf-2"></script>
+    <script src="macro.js?v=16"></script>
+    <script src="market-microstructure.js?v=krx-deriv-flow-3"></script>
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
-    <script src="policy.js?v=20"></script>
+    <script src="policy-evidence.js?v=2"></script>
+    <script src="policy.js?v=29"></script>
     <!-- My Page: reads window.Auth (favorites, account fields) and
          window.USPolicy (favorited-bill cards), so it loads after both. -->
-    <script src="mypage.js?v=2"></script>
-    <script src="app.js?v=121"></script>
+    <script src="mypage.js?v=6"></script>
+    <script src="tutorial.js?v=8"></script>
+    <script src="export-controls.js?v=6"></script>
+    <script src="app.js?v=137"></script>
     <script src="gas-storage.js?v=2"></script>
-    <script src="trade.js?v=gas-storage-2"></script>
-    <script type="module" src="js/elections/index.js?v=4"></script>
+    <script src="trade.js?v=light-oils-1"></script>
+    <script src="trade-monthly.js?v=5"></script>
+    <script type="module" src="js/elections/index.js?v=6"></script>
 </body>
 </html>
+

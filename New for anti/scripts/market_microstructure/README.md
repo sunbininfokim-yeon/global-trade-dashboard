@@ -26,7 +26,8 @@ cd "New for anti/scripts/market_microstructure"
 # 한국 라이브 — Cloudflare secret 이름: KRX_API (+ HK/crypto 자동)
 export KRX_API='…'   # optional
 ../../.venv/bin/python build_market_microstructure.py --live --source auto --print-stats
-# → KR + Yahoo(7709/7747/7347) + Binance(SKHYNIXUSDT/SAMSUNGUSDT/…)
+# → KR + HK 7709/7747/7347 (해외 보드 재사용) + Binance(SKHYNIXUSDT/SAMSUNGUSDT/…)
+# HK는 build_overseas_letf.py 산출물을 읽는다 — run_daily.sh에서 먼저 실행된다.
 # → public/data/market_microstructure_v1.json
 # → public/data/ai_casino_brief_v1.json  (유동시총 대비 레버 % + ETF 순위)
 # → public/data/external_venues_v1.json (HK/US 외부 스냅샷; 다음 단계에서 append)
@@ -104,7 +105,8 @@ KRX 순자산총액 필드가 없고 `MKTCAP`을 대신 쓴 경우 `aum_quality=
 - 정의1 (paper 2.1%): `KR 레버·인버스 ETF AUM / KOSPI 유동시총`
 - 정의2: `Σ AUM×|L| / 커버 종목 유동시총`
 - HK·crypto는 KR 유동시총 분모에 **합산하지 않음**
-- AUM 1위는 보통 **7709.HK** (7708 아님)
+- AUM 1위는 보통 **7709.HK** (7708 아님) — 단 CSOP가 기준일 AUM을 공개하지 않는
+  기간에는 `aum_usd: null`이라 **순위에서 빠진다**(0으로 내려가지 않는다)
 
 ## US → KR cross-market
 

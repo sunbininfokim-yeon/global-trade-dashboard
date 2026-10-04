@@ -29,6 +29,8 @@ const MS_FILES = {
     // The micro snapshot carries a thin, older copy of deposit_credit: no
     // 미수금/반대매매 and no daily series. This is the full FreeSIS table.
     credit: 'deposit_credit_v1.json',
+    // KRX 15007 투자자별 선물·콜·풋 거래실적, 2019~ (build_krx_deriv_flow.py).
+    flow: 'krx_deriv_flow_v1.json',
 };
 
 // Prefer the standalone FreeSIS table, falling back to the micro snapshot's
@@ -108,18 +110,25 @@ const msGetJsonl = async (name) => {
 
 const msFinite = (v) => Number.isFinite(v) ? v : null;
 const msToJo = (v) => Number.isFinite(v) ? v / 1e12 : null;
+const msToEok = (v) => Number.isFinite(v) ? v / 1e8 : null;
 
 // key → which log, which number, how it is labelled. Field names match the
 // snapshot schemas so the ingestion side does not need a second vocabulary.
 const MS_HIST_SERIES = {
-    'act:fut_tv':   { file: 'activity', label: 'K200 선물 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_futures?.trading_value_krw) },
+    // Trading value reads the 2019~ KRX 15007 market totals when that file is
+    // present (rowsFn); the daily activity log only started in 2026-08.
+    'act:fut_tv':   { file: 'activity', rowsFn: () => msFlowActivityRows(), label: 'K200 선물 거래대금', unit: '조',
+        pick: (r) => r.flow15007 ? msToJo(r.fut_tv) : msToJo(r.kospi200_futures?.trading_value_krw) },
     'act:fut_vol':  { file: 'activity', label: 'K200 선물 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_futures?.volume) },
-    'act:call_tv':  { file: 'activity', label: 'K200 콜옵션 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_options?.call_trading_value_krw) },
+    'act:call_tv':  { file: 'activity', rowsFn: () => msFlowActivityRows(), label: 'K200 콜옵션 거래대금', unit: '억',
+        pick: (r) => r.flow15007 ? msToEok(r.call_tv) : msToEok(r.kospi200_options?.call_trading_value_krw) },
     'act:call_vol': { file: 'activity', label: 'K200 콜옵션 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_options?.call_volume) },
-    'act:put_tv':   { file: 'activity', label: 'K200 풋옵션 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_options?.put_trading_value_krw) },
+    'act:put_tv':   { file: 'activity', rowsFn: () => msFlowActivityRows(), label: 'K200 풋옵션 거래대금', unit: '억',
+        pick: (r) => r.flow15007 ? msToEok(r.put_tv) : msToEok(r.kospi200_options?.put_trading_value_krw) },
     'act:put_vol':  { file: 'activity', label: 'K200 풋옵션 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_options?.put_volume) },
     'act:pc_vol':   { file: 'activity', label: '풋/콜 거래량 비율', unit: '', pick: (r) => msFinite(r.kospi200_options?.put_call_volume) },
-    'act:pc_tv':    { file: 'activity', label: '풋/콜 거래대금 비율', unit: '', pick: (r) => msFinite(r.kospi200_options?.put_call_trading_value) },
+    'act:pc_tv':    { file: 'activity', rowsFn: () => msFlowActivityRows(), label: '풋/콜 거래대금 비율', unit: '',
+        pick: (r) => r.flow15007 ? msFinite(r.pc_tv) : msFinite(r.kospi200_options?.put_call_trading_value) },
 
     'lev:ratio':    { file: 'direction', label: '레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', unit: '%', pick: (r) => msFinite(r.levered_inverse_etf_tv_over_kospi_cash_tv_pct) },
     'lev:kospi_tv': { file: 'direction', label: '코스피 현물 거래대금', unit: '조', pick: (r) => msToJo(r.kospi_cash_tv_krw) },
@@ -178,20 +187,20 @@ const ms15007RelSeries = (callSeries, putSeries) => {
         .filter(Boolean);
 };
 const ms15007Series = (callSeries, putSeries) => [
-    { rows: ms15007Sorted(callSeries), label: '외국인 콜 매도', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.sell_krw) : null },
-    { rows: ms15007Sorted(callSeries), label: '외국인 콜 매수', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.buy_krw) : null },
-    { rows: ms15007Sorted(callSeries), label: '외국인 콜 순매수', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.net_krw) : null },
-    { rows: ms15007Sorted(putSeries), label: '외국인 풋 매도', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.sell_krw) : null },
-    { rows: ms15007Sorted(putSeries), label: '외국인 풋 매수', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.buy_krw) : null },
-    { rows: ms15007Sorted(putSeries), label: '외국인 풋 순매수', unit: '조',
-        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToJo(r.foreign.net_krw) : null },
-    { rows: ms15007RelSeries(callSeries, putSeries), label: '풋 순매수 − 콜 순매수 (상대 흐름)', unit: '조',
-        pick: (r) => msToJo(r.put_minus_call_krw),
+    { rows: ms15007Sorted(callSeries), label: '외국인 콜 매도', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.sell_krw) : null },
+    { rows: ms15007Sorted(callSeries), label: '외국인 콜 매수', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.buy_krw) : null },
+    { rows: ms15007Sorted(callSeries), label: '외국인 콜 순매수', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.net_krw) : null },
+    { rows: ms15007Sorted(putSeries), label: '외국인 풋 매도', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.sell_krw) : null },
+    { rows: ms15007Sorted(putSeries), label: '외국인 풋 매수', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.buy_krw) : null },
+    { rows: ms15007Sorted(putSeries), label: '외국인 풋 순매수', unit: '억',
+        pick: (r) => (r.quality === 'observed' && msFlowConsistent(r.foreign)) ? msToEok(r.foreign.net_krw) : null },
+    { rows: ms15007RelSeries(callSeries, putSeries), label: '풋 순매수 − 콜 순매수 (상대 흐름)', unit: '억',
+        pick: (r) => msToEok(r.put_minus_call_krw),
         note: '당일 거래 흐름의 상대값이며 방향 예측·외국인 OI·신규 포지션·헤지 의도의 확정 판정이 아님' },
 ];
 
@@ -203,7 +212,7 @@ const msHistRows = (file) => (MS_HIST || {})[file] || [];
 // call/put series instead arrives embedded in the daily snapshot itself
 // (products.options_call.series), so its spec carries the rows directly.
 const msSpecRows = (spec) => {
-    const rows = spec.rows || msHistRows(spec.file);
+    const rows = spec.rows || (spec.rowsFn && spec.rowsFn()) || msHistRows(spec.file);
     return spec.filter ? rows.filter(spec.filter) : rows;
 };
 
@@ -257,6 +266,11 @@ const msHistBlock = (specs) => {
 const msMissing = (label) => `<span class="ms-missing">${finEsc(label || '데이터 없음')}</span>`;
 const msNum = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { maximumFractionDigits: d }) : '—';
 const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
+// USD magnitudes. A null here means the issuer withheld a dated AUM or its
+// daily target, which `null / 1e9` would have quietly rendered as $0.0B --
+// the reading this panel exists to avoid.
+const msUsdB = (v) => Number.isFinite(v) ? `$${(v / 1e9).toFixed(1)}B` : '미관측';
+const msUsdM = (v) => Number.isFinite(v) ? `$${(v / 1e6).toFixed(0)}M` : '미관측';
 // `letf_aum_quality`/product `aum_quality` distinguish KRX-reported net assets
 // from a market-cap stand-in. Calling the MKTCAP fallback "실측" is exactly
 // the overstatement this label exists to prevent.
@@ -279,6 +293,15 @@ const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).t
 // msEok signs its output because it reports net flows. A balance is not a
 // flow -- "+999,765억" of 예탁금 reads as an inflow of the entire deposit pool.
 const msEokLevel = (v) => Number.isFinite(v) ? `${Math.round(v).toLocaleString('ko-KR')}억` : '—';
+// KRW → 억 for option flows. A K200 option day is tens of 억, which the 조
+// formatters above round to "-0.00조". Rounded before the sign is chosen so a
+// −0.3억 day prints "0억", not "-0억".
+const msKrwEok = (v) => {
+    if (!Number.isFinite(v)) return '—';
+    const r = Math.round(v / 1e8);
+    return `${r > 0 ? '+' : ''}${r.toLocaleString('ko-KR')}억`;
+};
+const msKrwEokLevel = (v) => Number.isFinite(v) ? `${Math.round(v / 1e8).toLocaleString('ko-KR')}억` : '—';
 const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
 const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
 
@@ -677,10 +700,14 @@ const msTangle = (D) => {
         </p>
         ${stack.global_stack_usd ? `
         <p class="fin-note">
-            해외 레버 스택(규모 비교용, 국내 회전율에 합산하지 않음): KR $${(stack.kr_single_stock_letf_notional_usd / 1e9).toFixed(1)}B ·
-            HK $${(stack.hk_swap_letf_notional_usd / 1e9).toFixed(1)}B · US $${(stack.us_levered_etf_notional_usd / 1e9).toFixed(1)}B ·
-            crypto $${(stack.crypto_perp_oi_notional_usd / 1e6).toFixed(0)}M. ${finEsc(stack.hedge_channel_ko || '')}
-        </p>` : ''}
+            해외 레버 스택(규모 비교용, 국내 회전율에 합산하지 않음): KR ${msUsdB(stack.kr_single_stock_letf_notional_usd)} ·
+            HK ${msUsdB(stack.hk_swap_letf_notional_usd)} · US ${msUsdB(stack.us_levered_etf_notional_usd)} ·
+            crypto ${msUsdM(stack.crypto_perp_oi_notional_usd)}. ${finEsc(stack.hedge_channel_ko || '')}
+        </p>
+        ${(stack.global_stack_unobserved_venues || []).length ? `<p class="fin-note ms-warn">
+            ${finEsc((stack.global_stack_unobserved_venues || []).join(' · ').toUpperCase())} 노셔널은 이 관측일에 비어 있어 합계에서 빠졌습니다 —
+            규모가 줄어든 것이 아니라 <strong>관측되지 않은 것</strong>입니다. 합계를 전일과 비교하지 마세요.
+        </p>` : ''}` : ''}
     </section>
 
     <section class="fin-block fin-block-wide">
@@ -690,14 +717,38 @@ const msTangle = (D) => {
             2배 ETF 1좌는 기초자산 2좌만큼의 노출을 만듭니다. IR(Implied Rebalancing)은 그 노출을 되사고 되팔 때
             <strong>현물 당일 거래대금</strong> 대비 얼마나 큰 조정 노출이 되는지를 가정으로 표시합니다. 실제 리밸런싱 체결이나 가격 영향은 이 데이터만으로 확인할 수 없습니다.
         </p>
+        <p class="fin-note">
+            앞의 두 열은 <strong>분모의 정의가 같습니다</strong> — 둘 다 “해당 관측일의 한국 현물 거래대금”으로 나눈 값이라
+            크기를 견줄 수 있습니다. 다만 <strong>같은 날이 아닙니다</strong>: 해외 수집은 국내 배치보다 보통 한 거래일 앞선 날짜까지만
+            확정돼서, 홍콩 열에는 그 열의 관측일이 함께 표시됩니다. 날짜가 다르면 서로 다른 날의 거래대금으로 나눈 값입니다.
+            그리고 <strong>더하지는 마세요.</strong> 국내 상품은 주문이 KRX에 직접 들어가지만, 홍콩 CSOP는 스왑이라 상대방(증권사)이
+            자기 헤지를 하면서 <em>간접적으로</em> 현물에 닿습니다. 성격이 다른 압력입니다.
+            −5%·−10% 가정 조정은 <strong>국내 상품만</strong> 계산에 넣습니다 — 홍콩 상품은 운용사가 당일 목표 배율을 공개하지 않아
+            조정 물량을 계산할 수 없습니다 (가변 배율, 2026-08-03~).
+        </p>
         ${stocks.length ? msTable(
-            ['종목', 'LETF/현물 당일 거래대금', '거래활동 밴드', '인버스 거래대금 비중', '−5% 가정 조정', '−10% 가정 조정', '밴드', ''],
+            ['종목', '국내 LETF/현물 당일 거래대금', '홍콩 LETF/현물 당일 거래대금', '거래활동 밴드', '인버스 거래대금 비중', '−5% 가정 조정', '−10% 가정 조정', '밴드', ''],
             ranked.map((st) => {
                 const t = st.flow_tangle || {};
                 const s10 = st.scenarios?.r_minus_10pct, s5 = st.scenarios?.r_minus_5pct;
+                // Same denominator as the domestic column -- the day's Korean
+                // cash turnover -- which is the only reason these two can sit
+                // side by side. They are still not added together: the CSOP
+                // funds are swaps, so their pressure reaches KRX through a
+                // counterparty's hedge rather than through the order book.
+                const ext = st.external_vs_spot || {};
+                const hkRatio = ext.hk_tv_over_kr_cash_tv;
                 return [
                     `${finEsc(st.name)} <span class="co-hint">${finEsc(st.ticker)}</span>`,
                     finPct(st.letf_turnover_ratio),
+                    Number.isFinite(hkRatio)
+                        ? `${finPct(hkRatio)} <span class="co-hint">${finEsc((ext.hk_tv_tickers || []).join(' · '))}${
+                            // Always shown, never only on mismatch: the day is
+                            // what tells the reader whether the two columns
+                            // share a denominator, and they usually do not.
+                            ext.hk_tv_as_of ? ` · ${finEsc(ext.hk_tv_as_of)}${
+                                ext.hk_tv_as_of !== m.as_of ? ` <b>(국내 ${finEsc(m.as_of || '—')})</b>` : ''}` : ''}</span>`
+                        : '—',
                     `<span class="ms-badge ${bandCls[t.wag_the_dog_band] || ''}">${finEsc(t.wag_the_dog_band || '—')}</span>`,
                     finPct(t.inverse_tv_share),
                     Number.isFinite(s5?.ir_pct) ? s5.ir_pct.toFixed(1) + '%' : '—',
@@ -845,6 +896,23 @@ const msLevelsCompute = (D) => {
     return { isIndex, src, tickers, allDays, pts, bins, rows };
 };
 
+// Ticker buttons follow the selected universe, in the engine's own order
+// (market-cap rank, or realised-volatility rank). Object.keys(tickers) is
+// neither: JS lists integer-like keys ("105560") ahead of zero-padded ones
+// ("005930"), so the old slice(0, 8) showed whichever names sorted first --
+// mid-caps ahead of Samsung and Hynix -- and cut the rest, regardless of
+// which universe the toggle said was active.
+const msUniverseTickers = (lv, tickers) => {
+    const meta = lv.universe_meta || {};
+    const codes = MS_UNIVERSE === 'high_vol'
+        ? ((meta.high_vol_in_marcap_top || {}).pairs || []).map((p) => p[0])
+        : ((meta.marcap_top || {}).tickers || []).map((t) => t.ticker);
+    const list = codes.filter((c) => tickers[c]);
+    // A name chosen earlier stays visible even if the other universe lacks it.
+    if (MS_TICKER && tickers[MS_TICKER] && !list.includes(MS_TICKER)) list.push(MS_TICKER);
+    return list.length ? list : Object.keys(tickers).slice(0, 10);
+};
+
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const dc = msCredit(D);
@@ -863,7 +931,7 @@ const msLevelsTab = (D) => {
         </p>
         <div class="co-struct-toggle">
             <button class="mm-view-btn ${isIndex ? 'on' : ''}" data-ms-ticker="">코스피 지수</button>
-            ${Object.keys(tickers).slice(0, 8).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
+            ${msUniverseTickers(lv, tickers).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
                 data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
         </div>
         ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
@@ -895,8 +963,11 @@ const msLevelsTab = (D) => {
         <p class="fin-note">
             ${finEsc(src.method_ko || '')} 단위 억원 · quality ${finEsc(src.quality || '—')} ·
             원본 ${src.n_days || 0}일 (${finEsc(src.date_start || '')} ~ ${finEsc(src.date_end || '')}) ·
-            출처 ${finEsc(src.source || '—')}
+            출처 ${finEsc([].concat(src.source || '—').join(' · '))}
         </p>
+        ${isIndex && src.scope_ko ? `<p class="fin-note ms-warn">${finEsc(src.scope_ko)}</p>` : ''}
+        ${isIndex ? msStaleNote('코스피 시장 투자자별 수급', src.flow_date_end || src.date_end) : ''}
+        ${isIndex && src.quality !== 'observed' ? `<p class="fin-note">${msMissing('코스피 시장 수급이 비어 있습니다')} — 위 종목 버튼은 종목별 수급으로 따로 그려집니다.</p>` : ''}
     </section>
 
     <section class="fin-block fin-block-wide">
@@ -1070,6 +1141,547 @@ const msUsKr = (D) => {
     <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
 };
 
+// --- KRX 15007 투자자별 파생 순매수 히스토리 ---------------------------------
+// krx_deriv_flow_v1.json (build_krx_deriv_flow.py) carries the full KRX 15007
+// investor table -- K200 futures, calls and puts, four investor groups, every
+// trading day since 2019 -- as columns in KRX's own unit, 백만원. A null cell
+// is a day KRX did not publish or a row whose buy−sell failed to reproduce its
+// own net; it stays a gap in the line, never a zero.
+const MS_FLOW_INVESTORS = [
+    { key: 'foreign', ko: '외국인', color: '#f472b6' },
+    { key: 'institution', ko: '기관', color: '#a78bfa' },
+    { key: 'retail', ko: '개인', color: '#38bdf8' },
+    { key: 'other_corp', ko: '기타법인', color: '#94a3b8' },
+];
+// Futures nets run to whole 조 a day; option nets are tens of 억. One unit for
+// both would print futures as six-digit 억 or options as 0.00조.
+const MS_FLOW_PRODUCTS = [
+    { key: 'futures', ko: 'K200 선물', div: 1e6, unit: '조', digits: 2 },
+    { key: 'options_call', ko: 'K200 콜옵션', div: 100, unit: '억', digits: 0 },
+    { key: 'options_put', ko: 'K200 풋옵션', div: 100, unit: '억', digits: 0 },
+];
+const MS_FLOW_WINDOWS = [['20', '20거래일'], ['60', '60거래일'], ['120', '120거래일'], ['250', '1년'], ['all', '2019~ 전체']];
+let MS_FLOW_PRODUCT = 'futures';
+let MS_FLOW_WIN = '60';
+
+const msFlowOk = (F) => !!F && F.schema_version === 'krx-deriv-flow-v1'
+    && Array.isArray(F.dates) && F.dates.length > 0 && !!F.flow;
+const msFlowCol = (F, product, col) => ((F.flow || {})[product] || {})[col] || [];
+const msFlowScale = (v, p) => Number.isFinite(v) ? v / p.div : null;
+// Rounded before the sign is chosen, so a sub-unit day prints "0", not "-0".
+const msFlowFmt = (v, p) => {
+    if (!Number.isFinite(v)) return '—';
+    const r = Number((v / p.div).toFixed(p.digits));
+    return `${r > 0 ? '+' : ''}${(r === 0 ? 0 : r).toLocaleString('ko-KR', { minimumFractionDigits: p.digits, maximumFractionDigits: p.digits })}${p.unit}`;
+};
+const msSignCls = (v) => !Number.isFinite(v) ? '' : v >= 0 ? 'fin-up' : 'fin-down';
+// Sum of the last n observed trading days. Reports how many of those days were
+// actually present so a window with a gap never reads as a full one.
+const msFlowTail = (arr, n) => {
+    const tail = arr.slice(-n);
+    const got = tail.filter(Number.isFinite);
+    return { sum: got.length ? got.reduce((a, b) => a + b, 0) : null, obs: got.length, n: tail.length };
+};
+
+// The 15007 products in the shape the snapshot's detailed_15007 uses, so the
+// existing call/put cards and 추이 modal read the full history unchanged.
+const msFlowAs15007 = (F, product) => {
+    const net = msFlowCol(F, product, 'foreign_net');
+    const buy = msFlowCol(F, product, 'foreign_buy');
+    const sell = msFlowCol(F, product, 'foreign_sell');
+    const mkt = msFlowCol(F, product, 'market_total_buy');
+    const partial = new Set((F.partial_days || {})[product] || []);
+    const src = 'KRX 15007 투자자별 거래실적 (정규화 이력)';
+    const series = F.dates.map((date, i) => {
+        if (![net[i], buy[i], sell[i]].every(Number.isFinite)) return null;
+        return { date, source: src, quality: partial.has(date) ? 'partial_observed' : 'observed',
+            foreign: { buy_krw: buy[i] * 1e6, sell_krw: sell[i] * 1e6, net_krw: net[i] * 1e6 },
+            market_total: Number.isFinite(mkt[i]) ? { buy_krw: mkt[i] * 1e6, sell_krw: mkt[i] * 1e6, net_krw: 0 } : null };
+    }).filter(Boolean);
+    const last = series[series.length - 1];
+    if (!last) return null;
+    return { ...last, as_of: last.date, series };
+};
+
+// Whichever of the two sources is newer wins, per product. The snapshot's own
+// block comes from the newest raw CSV folder; the history comes from the
+// normalized hive and is usually ahead of it.
+const msPick15007 = (D) => {
+    const board = ((((D.board || {}).kr || {}).investor_nets || {}).detailed_15007 || {}).products || {};
+    const F = D.flow;
+    if (!msFlowOk(F)) return board;
+    const out = { ...board };
+    ['options_call', 'options_put'].forEach((p) => {
+        const fp = msFlowAs15007(F, p);
+        const bp = board[p];
+        if (fp && (!bp || String(fp.as_of) >= String(bp.as_of || ''))) out[p] = fp;
+    });
+    return out;
+};
+
+// Multi-series line / diverging-bar chart on the macro chart geometry. One
+// y-axis, zero line always in view, gaps where the source has none.
+const msMultiChart = (dates, series, opts = {}) => {
+    const n = dates.length;
+    const ys = series.flatMap((s) => s.values).filter(Number.isFinite);
+    if (n < 2 || ys.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    // Flows are signed, so zero stays on the axis; a price or OI level does
+    // not need it (opts.zero === false) and would flatten against it.
+    const withZero = opts.zero !== false;
+    let lo = Math.min(...ys, ...(withZero ? [0] : [])), hi = Math.max(...ys, ...(withZero ? [0] : []));
+    if (lo === hi) { lo -= 1; hi += 1; }
+    // Round-number ticks (1/2/5 × 10^k) so zero and the gridlines land on
+    // values a reader would say out loud, not 0.44 or -7.20.
+    const raw = (hi - lo) / 4;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((m) => m >= raw) || raw;
+    lo = Math.floor(lo / step) * step;
+    hi = Math.ceil(hi / step) * step;
+    const x0 = MM_L, x1 = MM_W - MM_R;
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const ticks = [];
+    for (let t = lo; t <= hi + step / 2; t += step) ticks.push(Math.abs(t) < step / 1e6 ? 0 : t);
+    let marks = '';
+    if (opts.bars) {
+        // Bars sit in equal slots; the gap disappears once they get too thin
+        // to spare it, rather than letting the gap eat the bar.
+        // Several series share a slot only when their signs differ (call OI up,
+        // put OI drawn as negative), so they never overlap.
+        const slot = (x1 - x0) / n;
+        const gap = slot > 4 ? 1 : 0;
+        const fade = series.length === 1;
+        marks = series.map((s) => s.values.map((v, i) => {
+            if (!Number.isFinite(v)) return '';
+            const y = sy(Math.max(v, 0)), h = Math.max(Math.abs(sy(v) - sy(0)), 0.5);
+            return `<rect x="${(x0 + i * slot + gap / 2).toFixed(2)}" y="${y.toFixed(1)}" width="${Math.max(slot - gap, 0.4).toFixed(2)}"
+                height="${h.toFixed(1)}" fill="${finEsc(s.color)}" fill-opacity="${fade && v < 0 ? 0.5 : 0.85}"/>`;
+        }).join('')).join('');
+        if (Number.isInteger(opts.markIndex) && opts.markIndex >= 0 && opts.markIndex < n) {
+            const mx = x0 + (opts.markIndex + 0.5) * slot;
+            marks += `<line x1="${mx.toFixed(1)}" y1="${MM_T}" x2="${mx.toFixed(1)}" y2="${MM_H - MM_B}" class="ms-mark"/>
+                <text x="${(mx + 4).toFixed(1)}" y="${MM_T + 10}" class="ms-mark-tag">${finEsc(opts.markLabel || '')}</text>`;
+        }
+    } else {
+        const sx = (i) => x0 + (i / Math.max(n - 1, 1)) * (x1 - x0);
+        marks = series.map((s) => {
+            let d = '', pen = false;
+            s.values.forEach((v, i) => {
+                if (!Number.isFinite(v)) { pen = false; return; }
+                d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
+                pen = true;
+            });
+            return `<path d="${d}" fill="none" stroke="${finEsc(s.color)}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+        }).join('');
+    }
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const payload = { dates, n, bars: !!opts.bars, unit: opts.unit || '', digits: opts.digits ?? 0, signed: opts.signed !== false, abs: !!opts.abs,
+        series: series.map((s) => ({ label: s.label, color: s.color, values: s.values.map((v) => Number.isFinite(v) ? v : null),
+            ...(Array.isArray(s.daily) ? { daily: s.daily.map((v) => Number.isFinite(v) ? v : null) } : {}) })) };
+    return `
+    <div class="mm-chart-box ms-mc-box" data-ms-mc='${finEsc(JSON.stringify(payload))}'>
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(opts.label || '시계열')} 차트">
+            ${ticks.map((t) => `
+                <line x1="${x0}" y1="${sy(t).toFixed(1)}" x2="${x1}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${x0 - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(opts.abs ? Math.abs(t) : t)}</text>`).join('')}
+            ${(lo < 0 && hi > 0) || (withZero && lo === 0) ? `<line x1="${x0}" y1="${sy(0).toFixed(1)}" x2="${x1}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            ${marks}
+            ${xAt.map((i) => {
+                const x = opts.bars ? x0 + (i + 0.5) * (x1 - x0) / n : x0 + (i / Math.max(n - 1, 1)) * (x1 - x0);
+                return `<text x="${x.toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                    text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`;
+            }).join('')}
+            <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
+        </svg>
+        <div class="mm-tip-box" style="display:none"></div>
+        ${series.length > 1 || opts.legend ? `<div class="mm-ma-legend">${series.map((s) => `<span class="mm-ma-key"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)}</span>`).join('')}</div>` : ''}
+    </div>`;
+};
+
+const msWireMultiCharts = (host) => {
+    host.querySelectorAll('[data-ms-mc]').forEach((box) => {
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.mm-cross');
+        const tip = box.querySelector('.mm-tip-box');
+        let P;
+        try { P = JSON.parse(box.dataset.msMc); } catch (_) { return; }
+        if (!svg || !cross || !tip || !P || !P.n) return;
+        const x0 = MM_L, x1 = MM_W - MM_R;
+        const hide = () => { cross.style.display = 'none'; tip.style.display = 'none'; };
+        svg.addEventListener('mousemove', (e) => {
+            const r = svg.getBoundingClientRect();
+            if (!r.width) return;
+            const vx = (e.clientX - r.left) / r.width * MM_W;
+            const t = (vx - x0) / (x1 - x0);
+            const i = Math.max(0, Math.min(P.n - 1, P.bars ? Math.floor(t * P.n) : Math.round(t * (P.n - 1))));
+            const px = P.bars ? x0 + (i + 0.5) * (x1 - x0) / P.n : x0 + (i / Math.max(P.n - 1, 1)) * (x1 - x0);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            const fmt = (v) => Number.isFinite(v)
+                ? `${P.signed && v >= 0 ? '+' : ''}${(P.abs ? Math.abs(v) : v).toLocaleString('ko-KR', { minimumFractionDigits: P.digits, maximumFractionDigits: P.digits })}${P.unit}`
+                : '관측 없음';
+            tip.innerHTML = `<span class="mm-tip-date">${finEsc(P.dates[i] || '')}</span>`
+                + P.series.map((s) => `<span class="ms-mc-tip-row"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)} <b>${fmt(s.values[i])}</b>${
+                    s.daily ? `<em>당일 ${fmt(s.daily[i])}</em>` : ''}</span>`).join('');
+            tip.style.display = '';
+            tip.style.left = `${Math.min(Math.max(px / MM_W * 100, 12), 82)}%`;
+        });
+        svg.addEventListener('mouseleave', hide);
+    });
+};
+
+const msFlowSection = (D) => {
+    const F = D.flow;
+    if (!msFlowOk(F)) {
+        return `
+    <section class="fin-block fin-block-wide">
+        <h2>투자자별 K200 파생 순매수 추이</h2>
+        <div class="ms-hist-empty"><strong>KRX 15007 이력 파일 없음</strong>
+            <p><code>krx_deriv_flow_v1.json</code> 이 아직 배포되지 않았습니다. 일일 워크플로가 krx-month-paste 정규화 이력에서 생성합니다.</p></div>
+    </section>`;
+    }
+    const P = MS_FLOW_PRODUCTS.find((p) => p.key === MS_FLOW_PRODUCT) || MS_FLOW_PRODUCTS[0];
+    const total = F.dates.length;
+    const n = MS_FLOW_WIN === 'all' ? total : Math.min(total, Number(MS_FLOW_WIN));
+    const dates = F.dates.slice(-n);
+    const lastDate = F.dates[total - 1];
+
+    // Latest-day board across all three products, 억 throughout so the rows
+    // compare directly.
+    const eok = (v) => Number.isFinite(v) ? msKrwEok(v * 1e6) : '—';
+    const cell = (v) => `<span class="${msSignCls(v)}">${eok(v)}</span>`;
+    const tailCell = (arr, k) => {
+        const t = msFlowTail(arr, k);
+        return `<span class="${msSignCls(t.sum)}">${eok(t.sum)}</span>${t.obs < t.n ? ` <span class="ms-q">${t.obs}/${t.n}일</span>` : ''}`;
+    };
+    const boardRows = MS_FLOW_PRODUCTS.map((p) => {
+        const col = (inv) => msFlowCol(F, p.key, `${inv}_net`);
+        const last = (inv) => col(inv)[total - 1];
+        return [`${finEsc(p.ko)} <button class="mm-view-btn" data-ms-modal="flow_hist:${p.key}">추이</button>`,
+            cell(last('foreign')), finEsc(msRankLabel(col('foreign'), last('foreign')) || '—'),
+            tailCell(col('foreign'), 5), tailCell(col('foreign'), 20),
+            cell(last('institution')), cell(last('retail')), cell(last('other_corp'))];
+    });
+
+    // Cumulative net from the window's first day. A missing day is a gap in
+    // the line; the running total carries across it rather than restarting.
+    const cumSeries = MS_FLOW_INVESTORS.map((inv) => {
+        const raw = msFlowCol(F, P.key, `${inv.key}_net`).slice(-n);
+        let acc = 0;
+        return { label: inv.ko, color: inv.color, daily: raw.map((v) => msFlowScale(v, P)),
+            values: raw.map((v) => { if (!Number.isFinite(v)) return null; acc += v; return msFlowScale(acc, P); }) };
+    });
+    // Days that dominate the window. A cumulative line is only as readable as
+    // its biggest steps -- one block-sized day can outweigh a month -- so the
+    // window's largest foreign days are listed with their counterparties and
+    // a multiple of the product's usual (2019~ median) day.
+    const fAll = msFlowCol(F, P.key, 'foreign_net');
+    const absSorted = fAll.filter(Number.isFinite).map(Math.abs).sort((a, b) => a - b);
+    const typical = absSorted.length ? absSorted[Math.floor(absSorted.length / 2)] : null;
+    const bigDays = F.dates.map((d, i) => i).slice(-n)
+        .filter((i) => Number.isFinite(fAll[i]))
+        .sort((a, b) => Math.abs(fAll[b]) - Math.abs(fAll[a]))
+        .slice(0, 5)
+        .map((i) => [
+            finEsc(F.dates[i]),
+            ...MS_FLOW_INVESTORS.slice(0, 3).map((inv) => {
+                const v = msFlowCol(F, P.key, `${inv.key}_net`)[i];
+                return `<span class="${msSignCls(v)}">${msFlowFmt(v, P)}</span>`;
+            }),
+            msKrwEokLevel(Number.isFinite(msFlowCol(F, P.key, 'market_total_buy')[i]) ? msFlowCol(F, P.key, 'market_total_buy')[i] * 1e6 : null),
+            typical ? `${(Math.abs(fAll[i]) / typical).toFixed(0)}배` : '—',
+        ]);
+    const foreignDaily = msFlowCol(F, P.key, 'foreign_net').slice(-n).map((v) => msFlowScale(v, P));
+
+    const front = F.futures_front || {};
+    const closeW = (front.close || []).slice(-n);
+    const oiW = (front.open_interest || []).slice(-n);
+
+    const recent = F.dates.map((d, i) => i).slice(-10).reverse().map((i) => [
+        finEsc(F.dates[i]),
+        ...MS_FLOW_INVESTORS.map((inv) => {
+            const v = msFlowCol(F, P.key, `${inv.key}_net`)[i];
+            return `<span class="${msSignCls(v)}">${msFlowFmt(v, P)}</span>`;
+        }),
+        ...(P.key === 'futures' ? [
+            Number.isFinite((front.close || [])[i]) ? front.close[i].toFixed(2) : '—',
+            Number.isFinite((front.open_interest || [])[i]) ? `${msNum(front.open_interest[i])}계약` : '—',
+        ] : []),
+    ]);
+    const missing = (F.missing_trading_days || []).map((m) => m.date).filter(Boolean);
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>투자자별 K200 파생 순매수 추이 · KRX 15007</h2>
+        <p class="fin-lead">KRX 「투자자별 거래실적」 일별 거래대금 기준 순매수(매수−매도)입니다. ${finEsc(F.range?.start || '')} ~ ${finEsc(lastDate)} · ${msNum(total)}거래일.
+            최근 거래일 ${finEsc(lastDate)}.</p>
+        ${msStaleNote('KRX 15007 투자자별 수급', (F.last_dates || {}).flow || lastDate)}
+        ${msTable(['상품 (억원)', '외국인 당일', '2019~ 위치', '외국인 5일 합', '외국인 20일 합', '기관 당일', '개인 당일', '기타법인 당일'], boardRows)}
+        <p class="fin-note">2019~ 위치: 같은 상품의 외국인 일별 순매수 ${msNum(total)}거래일 분포에서 오늘 값이 놓인 자리입니다 (상위 = 순매수 쪽 극단).</p>
+
+        <div class="ms-flow-controls">
+            <div class="mm-tabs ms-flow-tabs" role="group" aria-label="상품">
+                ${MS_FLOW_PRODUCTS.map((p) => `<button class="mm-tab ${p.key === P.key ? 'on' : ''}" data-ms-flow-product="${p.key}">${finEsc(p.ko)}</button>`).join('')}
+            </div>
+            ${msWinBar('ms-flow-win', MS_FLOW_WIN)}
+        </div>
+
+        <h3 class="fin-sub">${finEsc(P.ko)} · 주체별 누적 순매수 (${finEsc(dates[0])} = 0 에서 시작, ${P.unit}원)</h3>
+        ${msMultiChart(dates, cumSeries, { unit: P.unit, digits: P.digits, label: `${P.ko} 누적 순매수` })}
+        <p class="fin-note">누적은 선택한 기간의 첫날을 0으로 두고 더합니다. 그래서 기간(20·60·120일…)을 바꾸면 같은 날짜의 누적 수준은 달라지고,
+            하루 사이의 계단 높이(그날 순매수)는 그대로입니다. 차트에 마우스를 올리면 누적과 함께 당일 값이 나옵니다.</p>
+        ${bigDays.length ? `
+        <h3 class="fin-sub">이 기간 외국인 순매수가 가장 컸던 날 · ${finEsc(P.ko)}</h3>
+        ${msTable(['날짜', ...MS_FLOW_INVESTORS.slice(0, 3).map((i) => i.ko), '시장 전체 거래대금', '평소 대비'], bigDays)}
+        <p class="fin-note">평소 대비 = 그날 외국인 순매수 절댓값 ÷ 2019년 이후 같은 상품의 일별 절댓값 중앙값(${typical ? msFlowFmt(typical, P).replace('+', '') : '—'}).
+            한쪽이 크게 사고 다른 주체가 거의 같은 금액을 판 날은 한 번에 체결된 대량 거래일 가능성이 큽니다 — 원자료에서 확인되는 사실은 주체별 금액까지입니다.</p>` : ''}
+
+        <h3 class="fin-sub">${finEsc(P.ko)} · 외국인 일별 순매수 (${P.unit}원)</h3>
+        ${msMultiChart(dates, [{ label: '외국인', color: MS_FLOW_INVESTORS[0].color, values: foreignDaily }],
+            { bars: true, unit: P.unit, digits: P.digits, label: `${P.ko} 외국인 일별 순매수` })}
+
+        ${P.key === 'futures' ? `
+        <h3 class="fin-sub">K200 선물 최근월물 종가 (정규장)</h3>
+        ${msMultiChart(dates, [{ label: '종가', color: '#e2e8f0', values: closeW }],
+            { zero: false, signed: false, digits: 2, label: 'K200 선물 최근월물 종가' })}
+        <h3 class="fin-sub">K200 선물 최근월물 미결제약정 (시장 전체, 계약)</h3>
+        ${msMultiChart(dates, [{ label: '미결제약정', color: '#94a3b8', values: oiW }],
+            { zero: false, signed: false, unit: '계약', label: 'K200 선물 최근월물 미결제약정' })}
+        <p class="fin-note">${finEsc(front.scope_ko || '시장 전체 미결제약정이며 외국인 보유분이 아닙니다.')} 분기 만기(3·6·9·12월) 롤오버 날 최근월물이 바뀌며 OI가 급변합니다.</p>` : ''}
+
+        <h3 class="fin-sub">최근 10거래일 · ${finEsc(P.ko)}</h3>
+        ${msTable(['날짜', ...MS_FLOW_INVESTORS.map((i) => i.ko), ...(P.key === 'futures' ? ['최근월 종가', '미결제약정'] : [])], recent)}
+
+        <p class="fin-note ms-warn">순매수는 당일 거래 흐름입니다. 미결제약정·보유 포지션·신규/청산 구분·헤지 의도가 아니며 다음 방향을 예측하지 않습니다.
+            네 주체 순매수의 합은 0이라, 한 주체의 매수는 다른 주체의 매도입니다. 옵션은 프리미엄 거래대금이며 계약 수·델타가 아닙니다.</p>
+        <p class="fin-note">출처 ${finEsc((F.source || {}).flow || 'KRX 15007')}${P.key === 'futures' ? ` · ${finEsc((F.source || {}).futures_front || '')}` : ''}.
+            휴장일은 날짜가 없고, 매수−매도≠순매수인 행은 비웁니다.${missing.length ? ` 미수집 거래일: ${missing.map(finEsc).join(', ')}.` : ''}
+            ${((F.partial_days || {})[P.key] || []).length ? ` 부분 관측 ${F.partial_days[P.key].length}일은 값 없이 비어 있습니다.` : ''}
+            생성 ${finEsc(F.generated_at || '—')}.</p>
+    </section>`;
+};
+
+// --- 수집 지연 ----------------------------------------------------------------
+// KRX publishes a trading day overnight and the Action picks it up the next
+// morning, so one weekday of lag is normal. From three weekdays on, the block
+// says so -- and keeps drawing everything up to its last observed day, since
+// the builder never drops published history when a source stops. Holidays are
+// not modelled, which is why the threshold leaves room for a long weekend.
+const MS_STALE_WEEKDAYS = 3;
+const msKstToday = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+const msWeekdayLag = (from, to) => {
+    const d = new Date(`${from}T00:00:00Z`);
+    const end = new Date(`${to}T00:00:00Z`);
+    if (Number.isNaN(d.getTime()) || Number.isNaN(end.getTime())) return 0;
+    let n = 0;
+    d.setUTCDate(d.getUTCDate() + 1);
+    for (let guard = 0; d < end && guard < 5000; guard++) {
+        const w = d.getUTCDay();
+        if (w !== 0 && w !== 6) n++;
+        d.setUTCDate(d.getUTCDate() + 1);
+    }
+    return n;
+};
+const msStaleNote = (label, last) => {
+    if (!last) return '';
+    const lag = msWeekdayLag(last, msKstToday());
+    if (lag < MS_STALE_WEEKDAYS) return '';
+    return `<p class="ms-stale"><strong>수집 멈춤</strong> · ${finEsc(label)} 마지막 관측 ${finEsc(last)} (평일 기준 ${lag}일 전, 공휴일 미반영).
+        아래 표와 차트는 ${finEsc(last)}까지의 과거 데이터이며, 수집이 재개되면 이어서 갱신됩니다.</p>`;
+};
+
+// Where a value sits in its own 2019~ distribution. Twenty observations is the
+// floor below which a percentile is noise.
+const msRankLabel = (arr, v) => {
+    const xs = (arr || []).filter(Number.isFinite);
+    if (!Number.isFinite(v) || xs.length < 20) return '';
+    const below = xs.filter((x) => x < v).length / xs.length;
+    const atOrBelow = xs.filter((x) => x <= v).length / xs.length;
+    return below >= 0.5 ? `상위 ${Math.max(1, Math.round((1 - below) * 100))}%` : `하위 ${Math.max(1, Math.round(atOrBelow * 100))}%`;
+};
+
+const msWinN = (win, total) => win === 'all' ? total : Math.min(total, Number(win));
+const msWinBar = (attr, cur) => `
+    <div class="ms-hist-period" role="group" aria-label="표시 기간">
+        ${MS_FLOW_WINDOWS.map(([id, ko]) => `<button class="mm-tab ${id === cur ? 'on' : ''}" data-${attr}="${id}">${finEsc(ko)}</button>`).join('')}
+    </div>`;
+
+// 15007 market totals as activity-log-shaped rows, so the existing 거래대금
+// cards open a 2019~ trend instead of the few weeks the activity log holds.
+let MS_FLOW_ACT_CACHE = null;
+const msFlowActivityRows = () => {
+    const F = (MS_DATA || {}).flow;
+    if (!msFlowOk(F)) return null;
+    if (MS_FLOW_ACT_CACHE && MS_FLOW_ACT_CACHE.F === F) return MS_FLOW_ACT_CACHE.rows;
+    const f = msFlowCol(F, 'futures', 'market_total_buy');
+    const c = msFlowCol(F, 'options_call', 'market_total_buy');
+    const p = msFlowCol(F, 'options_put', 'market_total_buy');
+    const krw = (v) => Number.isFinite(v) ? v * 1e6 : null;
+    const rows = F.dates.map((date, i) => ({ date, flow15007: true, quality: 'observed',
+        source: 'KRX 15007 시장 전체 거래대금',
+        fut_tv: krw(f[i]), call_tv: krw(c[i]), put_tv: krw(p[i]),
+        pc_tv: Number.isFinite(p[i]) && c[i] > 0 ? p[i] / c[i] : null }))
+        .filter((r) => [r.fut_tv, r.call_tv, r.put_tv].some(Number.isFinite));
+    MS_FLOW_ACT_CACHE = { F, rows: rows.length ? rows : null };
+    return MS_FLOW_ACT_CACHE.rows;
+};
+
+// Per-investor net history for one product, in that product's display unit.
+const msFlowHistSpecs = (F, product) => {
+    const P = MS_FLOW_PRODUCTS.find((x) => x.key === product) || MS_FLOW_PRODUCTS[0];
+    const partial = new Set((F.partial_days || {})[product] || []);
+    const cols = Object.fromEntries(MS_FLOW_INVESTORS.map((inv) => [inv.key, msFlowCol(F, product, `${inv.key}_net`)]));
+    const rows = F.dates.map((date, i) => ({ date, i, quality: partial.has(date) ? 'partial_observed' : 'observed',
+        source: 'KRX 15007 투자자별 거래실적' }));
+    return MS_FLOW_INVESTORS.slice(0, 3).map((inv) => ({ rows, label: `${P.ko} ${inv.ko} 순매수`, unit: P.unit,
+        pick: (r) => msFlowScale(cols[inv.key][r.i], P) }));
+};
+
+// --- K200 옵션 최근월물 미결제약정 (15018) ------------------------------------
+const MS_CALL_COLOR = '#fbbf24';
+const MS_PUT_COLOR = '#818cf8';
+const MS_PX_COLOR = '#e2e8f0';
+let MS_OI_WIN = '120';
+
+const msOptionOiSection = (D) => {
+    const F = D.flow;
+    const O = msFlowOk(F) ? F.option_oi : null;
+    if (!O || !Array.isArray(O.call_oi)) return '';
+    const last = (F.last_dates || {}).option_oi;
+    const li = F.dates.lastIndexOf(last);
+    if (li < 0) return '';
+    const total = li + 1;
+    const n = msWinN(MS_OI_WIN, total);
+    const from = total - n;
+    const dates = F.dates.slice(from, total);
+    const win = (arr) => (arr || []).slice(from, total);
+    const front = F.futures_front || {};
+    const iv = O.atm_iv[li];
+    const pc = O.pc_oi[li];
+
+    const prof = O.profile || {};
+    const strikes = (prof.strikes || []);
+    const fClose = prof.futures_close;
+    let markIndex = null;
+    if (Number.isFinite(fClose) && strikes.length) {
+        markIndex = strikes.reduce((best, r, i) => Math.abs(r[0] - fClose) < Math.abs(strikes[best][0] - fClose) ? i : best, 0);
+    }
+    const strikeLabel = (v) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }) : '—';
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>K200 옵션 미결제약정 · 최근월물 체인 (KRX 15018)</h2>
+        <p class="fin-lead">최근월물 ${finEsc(O.expiry[li] || '—')} 전 행사가의 시장 전체 미결제약정입니다. 기준일 ${finEsc(last)}.</p>
+        ${msStaleNote('옵션 미결제약정', last)}
+        <div class="fin-cards">
+            ${msCard('콜 미결제약정 합계', Number.isFinite(O.call_oi[li]) ? `${msNum(O.call_oi[li])}계약` : '—',
+                `최대 OI 행사가 ${strikeLabel(O.call_wall[li])}`, 'oi_hist:totals')}
+            ${msCard('풋 미결제약정 합계', Number.isFinite(O.put_oi[li]) ? `${msNum(O.put_oi[li])}계약` : '—',
+                `최대 OI 행사가 ${strikeLabel(O.put_wall[li])}`, 'oi_hist:totals')}
+            ${msCard('풋/콜 OI 비율', Number.isFinite(pc) ? pc.toFixed(2) : '—',
+                Number.isFinite(pc) ? `2019~ 분포 ${msRankLabel(O.pc_oi.slice(0, total), pc) || '—'}` : msMissing('콜·풋 OI 필요'), 'oi_hist:pc')}
+            ${msCard('ATM 내재변동성', Number.isFinite(iv) ? `${iv.toFixed(1)}%` : '—',
+                Number.isFinite(iv) ? `행사가 ${strikeLabel(O.atm_strike[li])} · 2019~ 분포 ${msRankLabel(O.atm_iv.slice(0, total), iv) || '—'}`
+                    : msMissing('만기일이거나 호가 없음 — 산출 안 함'), 'oi_hist:iv')}
+        </div>
+
+        ${strikes.length ? `
+        <h3 class="fin-sub">행사가별 미결제약정 · ${finEsc(prof.date || '')} · ${finEsc(prof.expiry || '')} (위: 콜, 아래: 풋)</h3>
+        ${msMultiChart(strikes.map((r) => strikeLabel(r[0])),
+            [{ label: '콜 OI', color: MS_CALL_COLOR, values: strikes.map((r) => r[1]) },
+             { label: '풋 OI', color: MS_PUT_COLOR, values: strikes.map((r) => Number.isFinite(r[2]) ? -r[2] : null) }],
+            { bars: true, abs: true, signed: false, unit: '계약', legend: true, markIndex,
+              markLabel: Number.isFinite(fClose) ? `선물 ${fClose.toFixed(2)}` : '', label: '행사가별 미결제약정' })}
+        <p class="fin-note">선물 종가 ±15% 행사가만 그립니다. 미결제약정은 매수·매도 양쪽이 같이 보유한 계약이라 방향이 없습니다 — 콜 OI가 많다고 상승 베팅이 많은 것이 아닙니다.</p>` : ''}
+
+        <div class="ms-flow-controls">
+            <span class="ms-sub-h">추이 · ${finEsc(dates[0])} ~ ${finEsc(last)}</span>
+            ${msWinBar('ms-oi-win', MS_OI_WIN)}
+        </div>
+        <h3 class="fin-sub">최대 OI 행사가와 선물 최근월물 종가</h3>
+        ${msMultiChart(dates, [
+            { label: '콜 최대 OI 행사가', color: MS_CALL_COLOR, values: win(O.call_wall) },
+            { label: '풋 최대 OI 행사가', color: MS_PUT_COLOR, values: win(O.put_wall) },
+            { label: '선물 종가', color: MS_PX_COLOR, values: win(front.close) },
+        ], { zero: false, signed: false, digits: 1, label: '최대 OI 행사가와 선물 종가' })}
+        <h3 class="fin-sub">풋/콜 미결제약정 비율</h3>
+        ${msMultiChart(dates, [{ label: '풋/콜 OI', color: MS_PUT_COLOR, values: win(O.pc_oi) }],
+            { zero: false, signed: false, digits: 2, label: '풋/콜 OI 비율' })}
+        <h3 class="fin-sub">ATM 내재변동성 (%)</h3>
+        ${msMultiChart(dates, [{ label: 'ATM IV', color: MS_CALL_COLOR, values: win(O.atm_iv) }],
+            { zero: false, signed: false, digits: 1, unit: '%', label: 'ATM 내재변동성' })}
+
+        <p class="fin-note ms-warn">${finEsc(O.scope_ko || '시장 전체 미결제약정이며 외국인 보유분이 아닙니다.')}
+            만기일에는 KRX가 미결제약정을 공시하지 않아 그날은 비어 있고, 다음 날 최근월물이 바뀌어 OI 합계와 최대 OI 행사가가 새 월물 기준으로 다시 시작합니다. 최대 OI 행사가는 거래가 몰린 자리일 뿐 지지·저항을 보장하지 않습니다.
+            ATM IV는 KRX 공시 내재변동성(선물 종가에 가장 가까운 행사가의 콜·풋 평균)이며, 잔존가치가 없는 만기일은 비웁니다.</p>
+        <p class="fin-note">출처 ${finEsc((F.source || {}).option_oi || 'KRX 15018')} · 관측 ${msNum(O.call_oi.filter(Number.isFinite).length)}거래일.</p>
+    </section>`;
+};
+
+// --- 프로그램매매 (12012) -----------------------------------------------------
+const MS_PROG_TYPES = [
+    { key: 'arbitrage', ko: '차익', color: MS_CALL_COLOR },
+    { key: 'non_arbitrage', ko: '비차익', color: '#38bdf8' },
+    { key: 'total', ko: '전체', color: MS_PX_COLOR },
+];
+let MS_PROG_WIN = '60';
+
+const msProgramSection = (D) => {
+    const F = D.flow;
+    const G = msFlowOk(F) ? F.program : null;
+    if (!G || !Array.isArray(G.dates) || !G.dates.length) return '';
+    const total = G.dates.length;
+    const n = msWinN(MS_PROG_WIN, total);
+    const dates = G.dates.slice(-n);
+    const last = G.dates[total - 1];
+    const col = (t) => (G[`${t}_net`] || []);
+    const JO = { div: 1e6, unit: '조', digits: 2 };
+    // The hive has long uncollected stretches, so N points here can span far
+    // more than N trading days. Say how many of the window's trading days
+    // (from the K200 calendar) were actually collected.
+    const cal = F.dates.filter((d) => d >= dates[0] && d <= last);
+    const have = new Set(dates);
+    const covered = cal.filter((d) => have.has(d)).length;
+
+    const cum = MS_PROG_TYPES.map((t) => {
+        let acc = 0;
+        return { label: t.ko, color: t.color,
+            values: col(t.key).slice(-n).map((v) => { if (!Number.isFinite(v)) return null; acc += v; return acc / JO.div; }) };
+    });
+    const recent = G.dates.map((d, i) => i).slice(-10).reverse().map((i) => [
+        finEsc(G.dates[i]),
+        ...MS_PROG_TYPES.map((t) => { const v = col(t.key)[i]; return `<span class="${msSignCls(v)}">${msKrwEok(Number.isFinite(v) ? v * 1e6 : null)}</span>`; }),
+    ]);
+    const tail = (k) => msFlowTail(col('total'), k);
+    const t5 = tail(5);
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>프로그램매매 · 유가증권시장 (KRX 12012)</h2>
+        <p class="fin-lead">차익(선물·현물 가격차를 이용한 바스켓)과 비차익(지수 바스켓) 프로그램의 현물 순매수입니다. 마지막 관측 ${finEsc(last)}.</p>
+        ${msStaleNote('프로그램매매', last)}
+        <div class="fin-cards">
+            ${MS_PROG_TYPES.map((t) => {
+                const v = col(t.key)[total - 1];
+                return msCard(`${t.ko} 순매수`, `<span class="${msSignCls(v)}">${msKrwEok(Number.isFinite(v) ? v * 1e6 : null)}</span>`,
+                    `${finEsc(last)} · 2019~ 수집일 중 ${msRankLabel(col(t.key), v) || '—'}`, null);
+            }).join('')}
+            ${msCard('전체 최근 5개 수집일 합', `<span class="${msSignCls(t5.sum)}">${msKrwEok(Number.isFinite(t5.sum) ? t5.sum * 1e6 : null)}</span>`,
+                `${finEsc(G.dates[Math.max(0, total - 5)])} ~ ${finEsc(last)}`, null)}
+        </div>
+        <div class="ms-flow-controls">
+            <span class="ms-sub-h">수집일 ${msNum(dates.length)}개 · ${finEsc(dates[0])} ~ ${finEsc(last)} · 이 구간 거래일 ${msNum(cal.length)}일 중 ${msNum(covered)}일 수집</span>
+            ${msWinBar('ms-prog-win', MS_PROG_WIN)}
+        </div>
+        <h3 class="fin-sub">누적 순매수 (조원)</h3>
+        ${msMultiChart(dates, cum, { unit: '조', digits: 2, label: '프로그램매매 누적 순매수' })}
+        <h3 class="fin-sub">최근 10개 수집일</h3>
+        ${msTable(['날짜', ...MS_PROG_TYPES.map((t) => t.ko)], recent)}
+        <p class="fin-note ms-warn">수집된 날만 이어 그립니다 — 빈 기간은 가로축에서 압축되고 누적은 그 사이를 건너뜁니다.
+            전 기간 수집률 ${Number.isFinite(G.coverage_pct) ? `${G.coverage_pct.toFixed(0)}%` : '—'}. 프로그램매매는 현물 주식 거래이며 파생 포지션이 아닙니다.</p>
+        <p class="fin-note">출처 ${finEsc((F.source || {}).program || 'KRX 12012')}.</p>
+    </section>`;
+};
+
 // --- ④ KRX 파생 수급 --------------------------------------------------------
 // The public KRX dashboard identifies the foreign investor's K200 futures and
 // options-total flow. It does *not* split that foreign options flow into calls
@@ -1094,8 +1706,9 @@ const msDerivatives = (D) => {
     // call/put by proportion or demo value. Only kr.investor_nets.detailed_15007
     // .products carries a real call/put split, and only for the days it has an
     // authenticated 15007 export -- most days this is entirely absent.
-    const d15007 = ((kr.investor_nets || {}).detailed_15007) || {};
-    const products15007 = d15007.products || {};
+    // msPick15007 prefers the full normalized history when it is newer than
+    // the snapshot's raw-CSV block -- same fields, same validation below.
+    const products15007 = msPick15007(D);
     const callP = products15007.options_call || null;
     const putP = products15007.options_put || null;
     const callState = ms15007State(callP);
@@ -1117,64 +1730,87 @@ const msDerivatives = (D) => {
         msMissing(reason) + (has15007Hist ? ` <button class="mm-view-btn" data-ms-modal="kr_15007_hist">추이</button>` : ''),
     ];
     const flowRow15007 = (label, p, state) => state.ok
-        ? [finEsc(label), msJo(p.foreign.sell_krw), msJo(p.foreign.buy_krw),
-            `<span class="${p.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(p.foreign.net_krw)}</span>`,
-            `실측 · KRX 15007 <button class="mm-view-btn" data-ms-modal="kr_15007_hist">추이</button>`]
+        ? [finEsc(label), msKrwEokLevel(p.foreign.sell_krw), msKrwEokLevel(p.foreign.buy_krw),
+            `<span class="${p.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(p.foreign.net_krw)}</span>`,
+            `실측 · KRX 15007 (${finEsc(p.as_of || '—')}) <button class="mm-view-btn" data-ms-modal="kr_15007_hist">추이</button>`]
         : missingSplitRow(label, state.reason);
 
     return `
     <section class="fin-block fin-block-wide">
         <h2>외국인 KOSPI200 파생 수급</h2>
         <p class="fin-lead">매도·매수·순매수는 KRX 공개 대시보드(선물)와 인증된 KRX 15007 원자료(콜·풋)의 당일 거래 흐름입니다. 수급 기준일 ${finEsc(foreignAsOf)} · 표출 시각 ${finEsc(observedAt)}.</p>
+        ${/^\d{4}-\d{2}-\d{2}$/.test(foreignAsOf) ? msStaleNote('KRX 공개 대시보드 수급', foreignAsOf) : ''}
         <div class="fin-cards">
             ${msCard('외국인 K200 선물 순매수', `<span class="${futuresFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(futuresFlow.net_krw)}</span>`,
                 `매수 ${msJo(futuresFlow.buy_krw)} · 매도 ${msJo(futuresFlow.sell_krw)}`, 'kr_investor')}
-            ${msCard('외국인 콜 순매수', callState.ok ? `<span class="${callP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(callP.foreign.net_krw)}</span>` : '—',
-                callState.ok ? `매수 ${msJo(callP.foreign.buy_krw)} · 매도 ${msJo(callP.foreign.sell_krw)}` : msMissing(callState.reason),
+            ${msCard('외국인 콜 순매수', callState.ok ? `<span class="${callP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(callP.foreign.net_krw)}</span>` : '—',
+                callState.ok ? `${finEsc(callP.as_of || '')} · 매수 ${msKrwEokLevel(callP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(callP.foreign.sell_krw)}` : msMissing(callState.reason),
                 has15007Hist ? 'kr_15007_hist' : null)}
-            ${msCard('외국인 풋 순매수', putState.ok ? `<span class="${putP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(putP.foreign.net_krw)}</span>` : '—',
-                putState.ok ? `매수 ${msJo(putP.foreign.buy_krw)} · 매도 ${msJo(putP.foreign.sell_krw)}` : msMissing(putState.reason),
+            ${msCard('외국인 풋 순매수', putState.ok ? `<span class="${putP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(putP.foreign.net_krw)}</span>` : '—',
+                putState.ok ? `${finEsc(putP.as_of || '')} · 매수 ${msKrwEokLevel(putP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(putP.foreign.sell_krw)}` : msMissing(putState.reason),
                 has15007Hist ? 'kr_15007_hist' : null)}
-            ${msCard('풋 순매수 − 콜 순매수', relKrw === null ? '—' : `<span class="${relKrw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(relKrw)}</span>`,
+            ${msCard('풋 순매수 − 콜 순매수', relKrw === null ? '—' : `<span class="${relKrw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(relKrw)}</span>`,
                 relKrw === null ? msMissing('콜·풋 모두 관측 필요') : `${relLabel} · 당일 거래 흐름의 상대값 — 방향·OI·헤지 판정 아님`,
                 has15007Hist ? 'kr_15007_hist' : null)}
         </div>
         ${msTable(['구분', '매도', '매수', '순매수', '데이터 상태'], [
-            flowRow('K200 선물', futuresFlow, (dashboard.futures || {}).quality === 'observed' ? '실측' : '—'),
+            (() => {
+                const r = flowRow('K200 선물', futuresFlow, (dashboard.futures || {}).quality === 'observed' ? '실측' : '—');
+                if (msFlowOk(D.flow)) r[4] += ' <button class="mm-view-btn" data-ms-modal="flow_hist:futures">추이</button>';
+                return r;
+            })(),
             flowRow15007('K200 콜옵션', callP, callState),
             flowRow15007('K200 풋옵션', putP, putState),
-            flowRow('K200 옵션 전체 (참고)', optionsFlow, (dashboard.options_total || {}).quality === 'observed' ? '실측 · 콜/풋 미분리' : '—'),
+            [finEsc('K200 옵션 전체 (참고)'), msKrwEokLevel(optionsFlow.sell_krw), msKrwEokLevel(optionsFlow.buy_krw),
+                `<span class="${optionsFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(optionsFlow.net_krw)}</span>`,
+                (dashboard.options_total || {}).quality === 'observed' ? '실측 · 콜/풋 미분리' : '—'],
         ])}
         <p class="fin-note ms-warn">${finEsc(sourceNote)} 콜/풋 행은 옵션 전체를 배분해 추정하지 않으며, KRX 15007 원자료가 있는 날에만 값을 보입니다.
             콜·풋 매수·매도·순매수는 당일 외국인 거래 흐름입니다. 외국인 미결제약정, 신규 포지션, 헤지 목적 또는 다음 가격 방향을 확정하지 않습니다.</p>
     </section>
 
+    ${msFlowSection(D)}
+
+    ${msOptionOiSection(D)}
+
+    ${msProgramSection(D)}
+
     <section class="fin-block fin-block-wide">
         <h2>KOSPI200 시장 전체 거래 활동</h2>
         <p class="fin-lead">아래는 투자자별 수급과 별개인 시장 전체 체결 합계입니다. 활동 규모를 보되, 외국인 거래로 읽으면 안 됩니다.</p>
+        ${msStaleNote('KRX OpenAPI 시장 활동 스냅샷', kr.as_of)}
         <div class="fin-cards">
             ${msCard('K200 선물 거래대금', msJo(futures.trading_value_krw),
                 `거래량 ${msNum(futures.volume)}계약 · ${finEsc(futures.coverage_ko || '')}`, 'hist:act:fut_tv')}
             ${msCard('K200 콜옵션 거래량', Number.isFinite(options.call_volume) ? `${msNum(options.call_volume)}계약` : '—',
-                `거래대금 ${msJo(options.call_trading_value_krw)}`, 'hist:act:call_vol')}
+                `거래대금 ${msKrwEokLevel(options.call_trading_value_krw)}`, 'hist:act:call_vol')}
             ${msCard('K200 풋옵션 거래량', Number.isFinite(options.put_volume) ? `${msNum(options.put_volume)}계약` : '—',
-                `거래대금 ${msJo(options.put_trading_value_krw)}`, 'hist:act:put_vol')}
+                `거래대금 ${msKrwEokLevel(options.put_trading_value_krw)}`, 'hist:act:put_vol')}
             ${msCard('풋/콜 거래량 비율', Number.isFinite(options.put_call_volume) ? options.put_call_volume.toFixed(2) : '—',
                 '시장 전체 풋 거래량 ÷ 콜 거래량', 'hist:act:pc_vol')}
+            ${(() => {
+                const rows = msFlowActivityRows();
+                const lastR = rows ? rows[rows.length - 1] : null;
+                if (!lastR || !Number.isFinite(lastR.pc_tv)) return '';
+                return msCard('풋/콜 거래대금 비율 (15007)', lastR.pc_tv.toFixed(2),
+                    `${finEsc(lastR.date)} · 2019~ ${msRankLabel(rows.map((r) => r.pc_tv), lastR.pc_tv) || '—'} · 콜 ${msKrwEokLevel(lastR.call_tv)} · 풋 ${msKrwEokLevel(lastR.put_tv)}`,
+                    'hist:act:pc_tv');
+            })()}
             ${msCard('오늘 전체 활동 표', '한 번에 보기', '선물·콜·풋 거래량과 거래대금', 'kr_activity')}
         </div>
         <p class="fin-note">시장 활동 기준일 ${finEsc(activityAsOf)} · 선물 ${finEsc(futures.source || '출처 미표기')} · 옵션 ${finEsc(options.source || '출처 미표기')}. 이 보드에서는 한국 OI를 표시하지 않습니다.
-            ${msHistRows('activity').length < MS_HIST_MIN_OBS ? ' 일별 이력이 쌓이는 중이라 카드를 열면 추이 대신 관측일수가 표시됩니다.' : ' 카드를 열면 일별 추이가 표시됩니다.'}</p>
+            ${msFlowActivityRows() ? ' 거래대금 추이는 KRX 15007 시장 전체 거래대금(2019~)으로, 거래량 추이는 일별 활동 로그로 그립니다.'
+                : msHistRows('activity').length < MS_HIST_MIN_OBS ? ' 일별 이력이 쌓이는 중이라 카드를 열면 추이 대신 관측일수가 표시됩니다.' : ' 카드를 열면 일별 추이가 표시됩니다.'}</p>
         ${(callP || putP) ? `
         <h3 class="fin-sub">KOSPI200 콜·풋 시장 전체 거래대금 (체결 상대방 포함 활동 규모)</h3>
         ${msTable(['상품', '시장 전체 매도 거래대금', '시장 전체 매수 거래대금', '거래량', '방향 해석'], [
             ['K200 콜옵션',
-                Number.isFinite(callP?.market_total?.sell_krw) ? msJo(callP.market_total.sell_krw) : '—',
-                Number.isFinite(callP?.market_total?.buy_krw) ? msJo(callP.market_total.buy_krw) : '—',
+                Number.isFinite(callP?.market_total?.sell_krw) ? msKrwEokLevel(callP.market_total.sell_krw) : '—',
+                Number.isFinite(callP?.market_total?.buy_krw) ? msKrwEokLevel(callP.market_total.buy_krw) : '—',
                 Number.isFinite(options.call_volume) ? `${msNum(options.call_volume)}계약` : '—', '활동 규모만'],
             ['K200 풋옵션',
-                Number.isFinite(putP?.market_total?.sell_krw) ? msJo(putP.market_total.sell_krw) : '—',
-                Number.isFinite(putP?.market_total?.buy_krw) ? msJo(putP.market_total.buy_krw) : '—',
+                Number.isFinite(putP?.market_total?.sell_krw) ? msKrwEokLevel(putP.market_total.sell_krw) : '—',
+                Number.isFinite(putP?.market_total?.buy_krw) ? msKrwEokLevel(putP.market_total.buy_krw) : '—',
                 Number.isFinite(options.put_volume) ? `${msNum(options.put_volume)}계약` : '—', '활동 규모만'],
         ])}
         <p class="fin-note">시장 전체 매수·매도 거래대금은 체결 상대방을 포함한 활동 규모이며, 매수 우위 신호가 아닙니다.
@@ -1194,21 +1830,30 @@ const msModalFor = (key, D) => {
         const dashboard = (kr.investor_nets || {}).public_dashboard || {};
         const futures = ((dashboard.futures || {}).investors || {}).foreign || {};
         const options = ((dashboard.options_total || {}).investors || {}).foreign || {};
-        const products15007 = ((kr.investor_nets || {}).detailed_15007 || {}).products || {};
+        const products15007 = msPick15007(D);
         const callP = products15007.options_call || null;
         const putP = products15007.options_put || null;
         const callState = ms15007State(callP);
         const putState = ms15007State(putP);
         const row15007 = (label, p, state) => state.ok
-            ? [label, msJo(p.foreign.sell_krw), msJo(p.foreign.buy_krw), msSignedJo(p.foreign.net_krw), `KRX 15007 (${finEsc(p.as_of || '—')})`]
+            ? [label, msKrwEokLevel(p.foreign.sell_krw), msKrwEokLevel(p.foreign.buy_krw), msKrwEok(p.foreign.net_krw), `KRX 15007 (${finEsc(p.as_of || '—')})`]
             : [label, '—', '—', '—', msMissing(state.reason)];
         return { title: '외국인 KOSPI200 파생 수급 — 원자료 구분',
             html: msTable(['구분', '매도', '매수', '순매수', '출처'], [
                 ['K200 선물', msJo(futures.sell_krw), msJo(futures.buy_krw), msSignedJo(futures.net_krw), 'KRX 공개 대시보드'],
                 row15007('K200 콜옵션', callP, callState),
                 row15007('K200 풋옵션', putP, putState),
-                ['K200 옵션 전체', msJo(options.sell_krw), msJo(options.buy_krw), msSignedJo(options.net_krw), 'KRX 공개 대시보드 · 콜/풋 미분리'],
-            ]) + '<p class="fin-note">공개 대시보드의 옵션 전체 금액을 콜·풋으로 나누어 추정하지 않습니다. 콜·풋은 인증된 KRX 15007 원자료가 있는 날에만 값을 보입니다. 매수·매도·순매수는 당일 거래 흐름이며 보유 포지션이나 헤지 방향이 아닙니다.</p>' };
+                ['K200 옵션 전체', msKrwEokLevel(options.sell_krw), msKrwEokLevel(options.buy_krw), msKrwEok(options.net_krw), 'KRX 공개 대시보드 · 콜/풋 미분리'],
+            ]) + (() => {
+                const inv = [['foreign', '외국인'], ['institution', '기관'], ['retail', '개인']];
+                const f = (dashboard.futures || {}).investors || {};
+                const o = (dashboard.options_total || {}).investors || {};
+                const rows = inv.map(([k, ko]) => [ko,
+                    `<span class="${msSignCls((f[k] || {}).net_krw)}">${msSignedJo((f[k] || {}).net_krw)}</span>`,
+                    `<span class="${msSignCls((o[k] || {}).net_krw)}">${msKrwEok((o[k] || {}).net_krw)}</span>`]);
+                return `<h3 class="fin-sub">주체별 순매수 · 공개 대시보드 (${finEsc((dashboard.futures || {}).as_of || '—')})</h3>`
+                    + msTable(['주체', 'K200 선물', 'K200 옵션 전체'], rows);
+            })() + '<p class="fin-note">공개 대시보드의 옵션 전체 금액을 콜·풋으로 나누어 추정하지 않습니다. 콜·풋은 인증된 KRX 15007 원자료가 있는 날에만 값을 보입니다. 매수·매도·순매수는 당일 거래 흐름이며 보유 포지션이나 헤지 방향이 아닙니다.</p>' };
     }
     if (key === 'kr_activity') {
         const futures = kr.kospi200_futures || {};
@@ -1216,14 +1861,41 @@ const msModalFor = (key, D) => {
         return { title: 'KOSPI200 시장 전체 거래 활동',
             html: msTable(['상품', '거래량', '거래대금', '범위'], [
                 ['K200 선물', `${msNum(futures.volume)}계약`, msJo(futures.trading_value_krw), finEsc(futures.coverage_ko || '—')],
-                ['K200 콜옵션', `${msNum(options.call_volume)}계약`, msJo(options.call_trading_value_krw), finEsc(options.coverage_ko || '—')],
-                ['K200 풋옵션', `${msNum(options.put_volume)}계약`, msJo(options.put_trading_value_krw), finEsc(options.coverage_ko || '—')],
+                ['K200 콜옵션', `${msNum(options.call_volume)}계약`, msKrwEokLevel(options.call_trading_value_krw), finEsc(options.coverage_ko || '—')],
+                ['K200 풋옵션', `${msNum(options.put_volume)}계약`, msKrwEokLevel(options.put_trading_value_krw), finEsc(options.coverage_ko || '—')],
             ]) + '<p class="fin-note">시장 전체 체결 합계입니다. 외국인·개인·기관별 거래를 뜻하지 않으며 OI도 아닙니다.</p>' };
+    }
+    // Investor net history for one 15007 product (futures / call / put).
+    if (key.startsWith('flow_hist:')) {
+        const F = D.flow;
+        if (!msFlowOk(F)) return { title: '추이', html: msMissing('KRX 15007 이력 없음') };
+        const product = key.slice(10);
+        const P = MS_FLOW_PRODUCTS.find((x) => x.key === product) || MS_FLOW_PRODUCTS[0];
+        return { title: `${P.ko} 투자자별 순매수 추이 — KRX 15007`, key,
+            html: msStaleNote('KRX 15007 투자자별 수급', (F.last_dates || {}).flow)
+                + msHistBlock(msFlowHistSpecs(F, P.key))
+                + '<p class="fin-note ms-warn">당일 거래대금 순매수입니다. 미결제약정·보유 포지션·헤지 의도가 아닙니다. 네 주체(기타법인 포함)의 합은 0입니다.</p>' };
+    }
+    if (key.startsWith('oi_hist:')) {
+        const F = D.flow;
+        const O = msFlowOk(F) ? F.option_oi : null;
+        if (!O) return { title: '추이', html: msMissing('옵션 미결제약정 이력 없음') };
+        const rows = F.dates.map((date, i) => ({ date, i, quality: 'observed', source: 'KRX 15018 최근월물 옵션' }))
+            .filter((r) => Number.isFinite(O.call_oi[r.i]) || Number.isFinite(O.put_oi[r.i]));
+        const specs = {
+            totals: [{ rows, label: '콜 미결제약정 합계', unit: '계약', pick: (r) => O.call_oi[r.i] },
+                { rows, label: '풋 미결제약정 합계', unit: '계약', pick: (r) => O.put_oi[r.i] }],
+            pc: [{ rows, label: '풋/콜 미결제약정 비율', unit: '', pick: (r) => O.pc_oi[r.i] }],
+            iv: [{ rows, label: 'ATM 내재변동성', unit: '%', pick: (r) => O.atm_iv[r.i] }],
+        }[key.slice(8)] || [];
+        return { title: `${(specs[0] || {}).label || '옵션'} 추이 — KRX 15018`, key,
+            html: msStaleNote('옵션 미결제약정', (F.last_dates || {}).option_oi) + msHistBlock(specs)
+                + '<p class="fin-note ms-warn">최근월물 시장 전체 미결제약정입니다 (외국인 보유분 아님). 만기 다음 날 월물이 바뀌어 합계가 끊깁니다.</p>' };
     }
     // KRX 15007 콜/풋 일자별 추이. options_total과 달리 이 계열은 배분 추정이
     // 아니라 인증된 원자료이므로, 관측되지 않은 날은 채우지 않고 그대로 빈다.
     if (key === 'kr_15007_hist') {
-        const products15007 = ((kr.investor_nets || {}).detailed_15007 || {}).products || {};
+        const products15007 = msPick15007(D);
         const callSeries = (products15007.options_call || {}).series || [];
         const putSeries = (products15007.options_put || {}).series || [];
         return { title: '외국인 KOSPI200 콜·풋 순매수 — KRX 15007',
@@ -1600,7 +2272,12 @@ const renderMicrostructure = async (host) => {
             paint();
         });
         on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; MS_MODAL_KEY = null; paint(); } });
+        on('[data-ms-flow-product]', (b) => { MS_FLOW_PRODUCT = b.dataset.msFlowProduct; paint(); });
+        on('[data-ms-flow-win]', (b) => { MS_FLOW_WIN = b.dataset.msFlowWin; paint(); });
+        on('[data-ms-oi-win]', (b) => { MS_OI_WIN = b.dataset.msOiWin; paint(); });
+        on('[data-ms-prog-win]', (b) => { MS_PROG_WIN = b.dataset.msProgWin; paint(); });
         mmWireCharts(host);
+        msWireMultiCharts(host);
         msWirePlcHover(host);
     };
     paint();

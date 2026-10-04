@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-16T04:54:39.085444+00:00",
+  "generated_at": "2026-10-04T05:59:28.653820+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
+    "sources_ok": 9,
+    "sources_failed": 1,
     "raw_items": 164,
     "scored": 164,
     "selected": 40,
-    "indicators": 17
+    "indicators": 13
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 16,
+      "count": 22,
       "error": null,
       "mode": "live"
     },
@@ -88,14 +88,28 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
   "dashboard_fields": {},
   "indicators": [
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
+      "published_at": "2026-09-27T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 4.271
+    },
     {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
@@ -105,10 +119,51 @@
         "economy"
       ],
       "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "published_at": "2026-09-16T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.445
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+      "published_at": "2026-09-16T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.445
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Summary of Opinions at the Monetary Policy Meeting on September 17 and 18, 2026",
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf",
+      "published_at": "2026-09-30T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.326
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve issues FOMC statement",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "published_at": "2026-07-29T18:00:00+00:00",
       "site_slot": "finance.policy",
-      "significance": 3.445
+      "significance": 2.842
     },
     {
       "series_id": "US_FED_FOMC",
@@ -150,32 +205,6 @@
       "significance": 2.842
     },
     {
-      "series_id": "US_FED_FOMC",
-      "label_ko": "FOMC 성명·의사록",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "title": "Federal Reserve issues FOMC statement",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.842
-    },
-    {
-      "series_id": "US_FED_FOMC",
-      "label_ko": "FOMC 성명·의사록",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.842
-    },
-    {
       "series_id": "EU_ECB_POLICY",
       "label_ko": "ECB 정책",
       "country": "EUR",
@@ -183,9 +212,9 @@
         "finance",
         "economy"
       ],
-      "title": "Monetary policy decisions",
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
-      "published_at": "2026-09-10T12:15:00+00:00",
+      "title": "ECB amends monetary policy implementation guidelines as part of regular review",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
+      "published_at": "2026-09-29T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.64
     },
@@ -213,8 +242,8 @@
         "finance"
       ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
-      "published_at": "2026-09-14T08:00:00+00:00",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     },
@@ -226,65 +255,9 @@
         "economy",
         "finance"
       ],
-      "title": "Bank of Japan Accounts (September 10)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260910.htm",
-      "published_at": "2026-09-14T01:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Warning against Scams Using the Bank of Japan's Name",
-      "url": "http://www.boj.or.jp/en/about/organization/notice/index.htm",
-      "published_at": "2026-09-09T01:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Monetary Base and the Bank of Japan's Transactions (Aug.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2608.pdf",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan's Transactions with the Government (Aug.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2608.pdf",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Market Operations by the Bank of Japan (Aug.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "published_at": "2026-09-06T23:50:00+00:00",
+      "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     },
@@ -297,51 +270,127 @@
         "finance"
       ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260831.xlsx",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Collateral Accepted by the Bank of Japan (End of Aug.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2608.xlsx",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan Accounts (August 31)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
-      "published_at": "2026-09-02T01:00:00+00:00",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "published_at": "2026-09-25T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
   ],
   "ticker_items": [
     {
-      "id": "bde8c9fa455dbd71",
-      "published_at": "2026-07-29T18:00:00+00:00",
+      "id": "33438a5a46428120",
+      "published_at": "2026-09-27T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 4.271,
+        "final": 4.271
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "01cfdfb380c8b2b3",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
+      },
+      "summary": "Exchange of letters between the Governor and the Chancellor",
+      "scores": {
+        "significance": 4.094,
+        "final": 4.094
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "e26f4bb4c3f411e3",
+      "published_at": "2026-09-25T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Indicators for Core CPI",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Indicators for Core CPI"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.591,
+        "final": 3.591
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ccdd25279440b2c3",
+      "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
         "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -368,39 +417,74 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "fcc347c0fd221134",
-      "published_at": null,
+      "id": "c077487460d9d3d6",
+      "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_usda_fas_newsroom",
-        "name": "USDA FAS",
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.fas.usda.gov/newsroom/usda-announces-expanded-suite-trade-development-and-food-security-opportunities-venezuela",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "agriculture",
+        "finance",
         "economy"
       ],
-      "series_id": null,
+      "series_id": "US_FED_FOMC",
       "title": {
-        "original": "USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela",
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
         "original_lang": "en",
-        "ko": "[USA·농업] USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela"
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting"
       },
-      "summary": "",
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 2.938,
-        "final": 2.938
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:economy,agriculture",
-        "boost:1"
+        "domains:economy,finance",
+        "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "d942386287977d26",
+      "published_at": "2026-09-30T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on September 17 and 18, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on September 17 and 18, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "2c49d640f007c948",
@@ -438,76 +522,38 @@
       "site_slot": null
     },
     {
-      "id": "0b193a95ccc21c2a",
-      "published_at": "2026-09-04T19:23:49+00:00",
+      "id": "98bf837ee1b53a46",
+      "published_at": "2026-07-29T18:00:00+00:00",
       "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/promoting-fair-competition-in-livestock-markets-and-expanding-market-access-for-american-meat-producers/",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "agriculture",
-        "economy",
-        "diplomacy",
-        "security"
+        "finance"
       ],
-      "series_id": null,
+      "series_id": "US_FED_FOMC",
       "title": {
-        "original": "Promoting Fair Competition In Livestock Markets And Expanding Market Access for American Meat Producers",
+        "original": "Federal Reserve issues FOMC statement",
         "original_lang": "en",
-        "ko": "[USA·농업] Promoting Fair Competition In Livestock Markets And Expanding Market Access for American Meat Producers"
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
       },
-      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose. American ranchers want to be able to butcher, process, package, and sell their meat to consumers across State lines while maintai",
+      "summary": "Federal Reserve issues FOMC statement",
       "scores": {
-        "significance": 2.852,
-        "final": 2.852
+        "significance": 2.842,
+        "final": 2.842
       },
       "rank_reasons": [
-        "domains:economy,diplomacy,security"
+        "domains:finance",
+        "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "6966e7733b9f7ce1",
-      "published_at": "2026-09-04T19:15:33+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-promotes-fair-competition-in-livestock-markets-and-expands-market-access-for-american-meat-producers/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "agriculture",
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Promotes Fair Competition in Livestock Markets and Expands Market Access for American Meat Producers",
-        "original_lang": "en",
-        "ko": "[USA·농업] Fact Sheet: President Donald J. Trump Promotes Fair Competition in Livestock Markets and Expands Market Access for American Meat Producers"
-      },
-      "summary": "ADVANCING COMPETITION AND ACCOUNTABILITY: Today, President Donald J. Trump signed an Executive Order to support American producers’ ability to butcher, process, package, and sell their meat to consumers across state lines while maintaining the highest standards of food safety whi",
-      "scores": {
-        "significance": 2.852,
-        "final": 2.852
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     },
     {
       "id": "f2558ae30ce31143",
@@ -612,74 +658,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "f91e4f22a2eeab5f",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve issues FOMC statement",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
-      },
-      "summary": "Federal Reserve issues FOMC statement",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "26cd5209acf0dba3",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3ccec9193b30c1e1",
       "published_at": "2026-07-09T19:00:00+00:00",
       "source": {
@@ -714,15 +692,15 @@
       "site_slot": null
     },
     {
-      "id": "16d35197e439e008",
-      "published_at": "2026-09-10T12:15:00+00:00",
+      "id": "2af4c3204b0dd386",
+      "published_at": "2026-09-29T08:00:00+00:00",
       "source": {
         "id": "eu_ecb_press",
         "name": "ECB",
         "region": "eur",
         "slant": null
       },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -731,9 +709,9 @@
       ],
       "series_id": "EU_ECB_POLICY",
       "title": {
-        "original": "Monetary policy decisions",
+        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
         "original_lang": "en",
-        "ko": "[EUR·금융] Monetary policy decisions"
+        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
       },
       "summary": "",
       "scores": {
@@ -747,6 +725,111 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "636abf84bad4f1c6",
+      "published_at": "2026-09-25T06:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
+      },
+      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "32e5a1657b55368d",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/the-governor-interview-transcript-17-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Transcript of the Governor's pooled broadcast interview given on 17 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
+      },
+      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "38fc95e4eb631490",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "a5c20705f701aa97",
@@ -784,15 +867,15 @@
       "site_slot": null
     },
     {
-      "id": "e30d35f8b5b79dbc",
-      "published_at": "2026-09-08T18:52:09+00:00",
+      "id": "8282cdb739994bb2",
+      "published_at": "2026-10-02T18:28:12+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/adjusting-certain-delegations-under-the-defense-production-act-e2de/",
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -802,11 +885,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Adjusting Certain Delegations Under the Defense Production Act",
+        "original": "Presidential Message on National Cybersecurity Awareness Month",
         "original_lang": "en",
-        "ko": "[USA·안보] Adjusting Certain Delegations Under the Defense Production Act"
+        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
       },
-      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose. This order amends Executive Order 13603 of March 16, 2012 (National Defense Resources Preparedness), as amended by Executive Orde",
+      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -819,29 +902,134 @@
       "site_slot": null
     },
     {
-      "id": "739ae76230f8a4d2",
-      "published_at": "2026-09-04T15:25:08+00:00",
+      "id": "ad4a7b2030e6aad7",
+      "published_at": "2026-09-26T03:29:32+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/releases/2026/09/made-in-america-manufacturing-private-hiring-power-explosive-august-jobs-report/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-advances-a-fair-and-reciprocal-relationship-with-china-while-hosting-historic-state-visit/",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
         "diplomacy",
+        "economy",
         "security"
       ],
       "series_id": null,
       "title": {
-        "original": "Made in America: Manufacturing, Private Hiring Power Explosive August Jobs Report",
+        "original": "Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit",
         "original_lang": "en",
-        "ko": "[USA·경제] Made in America: Manufacturing, Private Hiring Power Explosive August Jobs Report"
+        "ko": "[USA·외교] Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit"
       },
-      "summary": "“America added 162,000 jobs in August — triple economists’ expectations. The private sector has now created over one million jobs under President Trump, whose reindustrialization agenda continues to drive manufacturing and factory construction job growth. America is in the middle",
+      "summary": "DELIVERING FOR AMERICANS: This week, President Donald J. Trump and First Lady Melania Trump hosted President Xi Jinping and Madame Peng Liyuan of the People’s Republic of China for a reciprocal State Visit. During the visit, President Trump advanced the U.S.-China relationship an",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "865d3f6fd6509e4c",
+      "published_at": "2026-09-25T20:10:42+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/09/president-trump-first-lady-conclude-historic-china-state-visit/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump, First Lady Conclude Historic China State Visit",
+        "original_lang": "en",
+        "ko": "[USA·외교] President Trump, First Lady Conclude Historic China State Visit"
+      },
+      "summary": "Today, President Donald J. Trump and First Lady Melania Trump concluded a historic state visit with His Excellency Xi Jinping, President of the People’s Republic of China, and Madame Peng Liyuan. This marked the first visit to the White House by a Chinese President in more than a",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2d5d4b8f14cca831",
+      "published_at": "2026-09-25T19:47:32+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/gold-star-mothers-and-familys-day-2026/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Gold Star Mother’s And Family’s Day, 2026",
+        "original_lang": "en",
+        "ko": "[USA·안보] Gold Star Mother’s And Family’s Day, 2026"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION America is free, strong, secure, and prosperous due to the courage of the heroes in uniform who are willing to lay down their lives in the defense of our Republic. The supreme sacrifice paid by every fallen warrior i",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4a12dbf3421be19",
+      "published_at": "2026-09-25T16:24:18+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-state-visit-of-president-xi-jinping-and-madame-peng-liyuan/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan",
+        "original_lang": "en",
+        "ko": "[USA·외교] First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan"
+      },
+      "summary": "“Art and culture have a remarkable ability to transcend borders, connect generations, and offer us a deeper appreciation for one another. It was an honor to welcome President Xi Jinping and Madame Peng Liyuan and share with them the history, artistry, and traditions that help mak",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -926,15 +1114,15 @@
       "site_slot": "ticker"
     },
     {
-      "id": "5c82c02117ae010c",
-      "published_at": "2026-09-14T17:45:59+00:00",
+      "id": "3780d0bddf10fcc1",
+      "published_at": "2026-10-03T03:01:43+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/releases/2026/09/warrior-ethos-in-action-dude-44-bravos-incredible-story/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-president-donald-j-trump-announces-medicare-improvement-fund-payments-for-seniors/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -944,11 +1132,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Warrior Ethos in Action: DUDE 44 Bravo’s Incredible Story",
+        "original": "Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors",
         "original_lang": "en",
-        "ko": "[USA·경제] Warrior Ethos in Action: DUDE 44 Bravo’s Incredible Story"
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors"
       },
-      "summary": "For the first time, a U.S. Air Force officer shot down over Iran — mission call sign DUDE 44 Bravo — told America his story. In an exclusive 60 Minutes interview, Bravo delivered a powerful account of survival, faith, and combat leadership — a testament to the unmatched bravery o",
+      "summary": "IMPROVING MEDICARE FOR SENIORS: Today, President Donald J. Trump announced that the federal government will be making one-time payments of $90 per person to help more than 20 million enrollees pay for their Medicare Part B premiums. HISTORIC ACTION TO HELP SENIOR CITIZENS: With t",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -962,15 +1150,15 @@
       "site_slot": null
     },
     {
-      "id": "8b277bde0ea06a05",
-      "published_at": "2026-09-10T14:06:53+00:00",
+      "id": "2759417b865677c7",
+      "published_at": "2026-09-30T17:10:17+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-announces-the-working-families-obamacare-refunds/",
+      "url": "https://www.whitehouse.gov/releases/2026/09/icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -980,11 +1168,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds",
+        "original": "ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa",
         "original_lang": "en",
-        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds"
+        "ko": "[USA·경제] ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa"
       },
-      "summary": "RETURNING BIDEN OVERCHARGES TO WORKING FAMILIES: Today, President Donald J. Trump announced that the federal government will return to the American people hundreds of millions in Obamacare overcharges, collected by the Biden Administration, by issuing refunds of $500 per person t",
+      "summary": "President Donald J. Trump announced a $15 billion Mesabi Metallics steel complex is coming to Iowa — the largest steel plant ever built in the United States as more industrial capacity comes home. The project will create 1,750 new, permanent jobs, support up to 6,000 construction",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -998,15 +1186,51 @@
       "site_slot": null
     },
     {
-      "id": "95ff6db629f724e0",
-      "published_at": "2026-09-10T01:30:00+00:00",
+      "id": "dd7f4e6066a90f93",
+      "published_at": "2026-09-29T19:07:36+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-announces-2026-fall-garden-tours/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Announces 2026 Fall Garden Tours",
+        "original_lang": "en",
+        "ko": "[USA·경제] First Lady Melania Trump Announces 2026 Fall Garden Tours"
+      },
+      "summary": "The White House will welcome visitors this fall for the 2026 Fall Garden Tours, offering an opportunity for visitors to experience the historic gardens and grounds of the People’s House. The grounds will be open Saturday, October 17 from 10:00 AM – 4:30 PM, and Sunday, October 18",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "0e9e2aac6e07abd2",
+      "published_at": "2026-09-30T07:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260910a.htm",
+      "url": "http://www.boj.or.jp/en/paym/bond/ryudo.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1015,9 +1239,9 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Speech by Board Member MASU in Fukui (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original": "Liquidity Indicators in the JGB Markets (August)",
         "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member MASU in Fukui (Economic Activity, Prices, and Monetary Policy in Japan)"
+        "ko": "[JPN·금융] Liquidity Indicators in the JGB Markets (August)"
       },
       "summary": "",
       "scores": {
@@ -1026,6 +1250,181 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "151d87614848cd23",
+      "published_at": "2026-09-25T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260925a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Peoples Bancorp Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "02c906844fc903d0",
+      "published_at": "2026-09-22T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "afcd050f27db0d35",
+      "published_at": "2026-09-18T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1172,155 +1571,15 @@
       "site_slot": null
     },
     {
-      "id": "9e15c780144c2929",
-      "published_at": "2026-08-19T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, July 28–29, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "050d5992a5bd064d",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804c.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "e7755a9b18b98a15",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by FS Bancorp, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "aa37b7321f23ff09",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "4769d7602816e6a1",
-      "published_at": "2026-09-14T08:00:00+00:00",
+      "id": "0b6fc03efe6dd90e",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1347,15 +1606,15 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "3447e898a37590ff",
-      "published_at": "2026-09-14T01:00:00+00:00",
+      "id": "5f1c41b57a7020e0",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260910.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1364,9 +1623,9 @@
       ],
       "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Bank of Japan Accounts (September 10)",
+        "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
         "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (September 10)"
+        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
       },
       "summary": "",
       "scores": {
@@ -1382,155 +1641,15 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4882b151b076ae9e",
-      "published_at": "2026-09-09T01:00:00+00:00",
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/organization/notice/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Warning against Scams Using the Bank of Japan's Name",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Warning against Scams Using the Bank of Japan's Name"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "b6eaa775a51e2beb",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2608.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Monetary Base and the Bank of Japan's Transactions (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "86aef90637e96bf8",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2608.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan's Transactions with the Government (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "8131aa2b41a19c8a",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Market Operations by the Bank of Japan (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "8cebc4de29ff9ea8",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260831.xlsx",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1555,190 +1674,62 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "1e40bffb8d4a14c2",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Collateral Accepted by the Bank of Japan (End of Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "e1ecf306c0645d83",
-      "published_at": "2026-09-02T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 31)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 31)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "058ee9e755c0ea82",
-      "published_at": "2026-09-14T15:15:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914_2~a3f0efbee4.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde: A new age of capital: growth, sovereignty and AI",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Christine Lagarde: A new age of capital: growth, sovereignty and AI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "653cb0f748a5876b",
-      "published_at": "2026-09-10T13:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "450a54499fa92683",
-      "published_at": "2026-09-01T16:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     }
   ],
   "pending_review": [
     {
-      "title": "Philip R. Lane: Outlook for the euro area economy",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf",
+      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Philip R. Lane: The outlook for the euro area economy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf",
       "country": "EUR",
       "domains": [
         "economy",
         "finance"
       ],
       "significance": 2.064,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Philip R. Lane: The Outlook for the Euro Area Economy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf",
+      "country": "EUR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 2.064,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Monetary Policy Committee dates for 2027",
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
+      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1753,36 +1744,47 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "UK financial regulators to begin overseeing Critical Third Parties announced by HM Treasury",
-      "url": "https://www.bankofengland.co.uk/news/2026/july/uk-financial-regulators-to-begin-overseeing-critical-third-parties-announced-by-hmt",
+      "title": "Minutes of the Meeting of the Court of Directors held on 16 July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-16-july-2026",
       "country": "GBR",
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Megan Greene's CV and questionnaire for the Treasury Select Committee",
-      "url": "https://www.bankofengland.co.uk/news/2026/june/megan-greene-tsc-reappointment",
+      "title": "Bank of England announces new office space in Leeds",
+      "url": "https://www.bankofengland.co.uk/news/2026/september/bank-of-england-announces-new-office-space-in-leeds",
       "country": "GBR",
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Asset Purchase Facility: Gilt Sales – Market Notice 19 June 2026",
-      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/june/apf-gilt-sales-market-notice-19-june-2026",
+      "title": "Minutes of the Transaction and Post-trade Reporting Harmonisation Taskforce - July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/minutes-of-the-transaction-and-post-trade-reporting-harmonisation-taskforce-july-2026",
       "country": "GBR",
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Chancellor announces Bank of England appointments",
+      "url": "https://www.bankofengland.co.uk/news/2026/september/chancellor-announces-boe-appointments",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1806,105 +1808,123 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Meeting of the Court of Directors held on 4 June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-4-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Money Market Committee meeting – June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/money-markets-committee-minutes-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the UK Money Markets Code Sub-Committee – June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/uk-money-markets-committee-minutes-june-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the London FXJSC Main Committee Meeting – 26 March 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-main-committee-meeting-26-march-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the London FXJSC Legal Sub Committee Meeting – 17 March 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-legal-sub-committee-meeting-17-march-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 18 March 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-operations-sub-committee-meeting-18-march-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
     {
-      "id": "bde8c9fa455dbd71",
-      "published_at": "2026-07-29T18:00:00+00:00",
+      "id": "33438a5a46428120",
+      "published_at": "2026-09-27T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 4.271,
+        "final": 4.271
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "01cfdfb380c8b2b3",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
+      },
+      "summary": "Exchange of letters between the Governor and the Chancellor",
+      "scores": {
+        "significance": 4.094,
+        "final": 4.094
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "e26f4bb4c3f411e3",
+      "published_at": "2026-09-25T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Indicators for Core CPI",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Indicators for Core CPI"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.591,
+        "final": 3.591
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ccdd25279440b2c3",
+      "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
         "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1931,39 +1951,74 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "fcc347c0fd221134",
-      "published_at": null,
+      "id": "c077487460d9d3d6",
+      "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_usda_fas_newsroom",
-        "name": "USDA FAS",
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.fas.usda.gov/newsroom/usda-announces-expanded-suite-trade-development-and-food-security-opportunities-venezuela",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "agriculture",
+        "finance",
         "economy"
       ],
-      "series_id": null,
+      "series_id": "US_FED_FOMC",
       "title": {
-        "original": "USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela",
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
         "original_lang": "en",
-        "ko": "[USA·농업] USDA Announces Expanded Suite of Trade, Development and Food Security Opportunities for Venezuela"
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting"
       },
-      "summary": "",
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 2.938,
-        "final": 2.938
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:economy,agriculture",
-        "boost:1"
+        "domains:economy,finance",
+        "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "d942386287977d26",
+      "published_at": "2026-09-30T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on September 17 and 18, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on September 17 and 18, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "2c49d640f007c948",
@@ -2001,76 +2056,38 @@
       "site_slot": null
     },
     {
-      "id": "0b193a95ccc21c2a",
-      "published_at": "2026-09-04T19:23:49+00:00",
+      "id": "98bf837ee1b53a46",
+      "published_at": "2026-07-29T18:00:00+00:00",
       "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/promoting-fair-competition-in-livestock-markets-and-expanding-market-access-for-american-meat-producers/",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "agriculture",
-        "economy",
-        "diplomacy",
-        "security"
+        "finance"
       ],
-      "series_id": null,
+      "series_id": "US_FED_FOMC",
       "title": {
-        "original": "Promoting Fair Competition In Livestock Markets And Expanding Market Access for American Meat Producers",
+        "original": "Federal Reserve issues FOMC statement",
         "original_lang": "en",
-        "ko": "[USA·농업] Promoting Fair Competition In Livestock Markets And Expanding Market Access for American Meat Producers"
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
       },
-      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose. American ranchers want to be able to butcher, process, package, and sell their meat to consumers across State lines while maintai",
+      "summary": "Federal Reserve issues FOMC statement",
       "scores": {
-        "significance": 2.852,
-        "final": 2.852
+        "significance": 2.842,
+        "final": 2.842
       },
       "rank_reasons": [
-        "domains:economy,diplomacy,security"
+        "domains:finance",
+        "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "6966e7733b9f7ce1",
-      "published_at": "2026-09-04T19:15:33+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-promotes-fair-competition-in-livestock-markets-and-expands-market-access-for-american-meat-producers/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "agriculture",
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Promotes Fair Competition in Livestock Markets and Expands Market Access for American Meat Producers",
-        "original_lang": "en",
-        "ko": "[USA·농업] Fact Sheet: President Donald J. Trump Promotes Fair Competition in Livestock Markets and Expands Market Access for American Meat Producers"
-      },
-      "summary": "ADVANCING COMPETITION AND ACCOUNTABILITY: Today, President Donald J. Trump signed an Executive Order to support American producers’ ability to butcher, process, package, and sell their meat to consumers across state lines while maintaining the highest standards of food safety whi",
-      "scores": {
-        "significance": 2.852,
-        "final": 2.852
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     },
     {
       "id": "f2558ae30ce31143",
@@ -2175,74 +2192,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "f91e4f22a2eeab5f",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve issues FOMC statement",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
-      },
-      "summary": "Federal Reserve issues FOMC statement",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "26cd5209acf0dba3",
-      "published_at": "2026-03-18T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3ccec9193b30c1e1",
       "published_at": "2026-07-09T19:00:00+00:00",
       "source": {
@@ -2277,15 +2226,15 @@
       "site_slot": null
     },
     {
-      "id": "16d35197e439e008",
-      "published_at": "2026-09-10T12:15:00+00:00",
+      "id": "2af4c3204b0dd386",
+      "published_at": "2026-09-29T08:00:00+00:00",
       "source": {
         "id": "eu_ecb_press",
         "name": "ECB",
         "region": "eur",
         "slant": null
       },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2294,9 +2243,9 @@
       ],
       "series_id": "EU_ECB_POLICY",
       "title": {
-        "original": "Monetary policy decisions",
+        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
         "original_lang": "en",
-        "ko": "[EUR·금융] Monetary policy decisions"
+        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
       },
       "summary": "",
       "scores": {
@@ -2310,6 +2259,111 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "636abf84bad4f1c6",
+      "published_at": "2026-09-25T06:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
+      },
+      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "32e5a1657b55368d",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/the-governor-interview-transcript-17-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Transcript of the Governor's pooled broadcast interview given on 17 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
+      },
+      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "38fc95e4eb631490",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "a5c20705f701aa97",
@@ -2347,15 +2401,15 @@
       "site_slot": null
     },
     {
-      "id": "e30d35f8b5b79dbc",
-      "published_at": "2026-09-08T18:52:09+00:00",
+      "id": "8282cdb739994bb2",
+      "published_at": "2026-10-02T18:28:12+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/adjusting-certain-delegations-under-the-defense-production-act-e2de/",
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2365,11 +2419,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Adjusting Certain Delegations Under the Defense Production Act",
+        "original": "Presidential Message on National Cybersecurity Awareness Month",
         "original_lang": "en",
-        "ko": "[USA·안보] Adjusting Certain Delegations Under the Defense Production Act"
+        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
       },
-      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose. This order amends Executive Order 13603 of March 16, 2012 (National Defense Resources Preparedness), as amended by Executive Orde",
+      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -2382,29 +2436,134 @@
       "site_slot": null
     },
     {
-      "id": "739ae76230f8a4d2",
-      "published_at": "2026-09-04T15:25:08+00:00",
+      "id": "ad4a7b2030e6aad7",
+      "published_at": "2026-09-26T03:29:32+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/releases/2026/09/made-in-america-manufacturing-private-hiring-power-explosive-august-jobs-report/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-advances-a-fair-and-reciprocal-relationship-with-china-while-hosting-historic-state-visit/",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
         "diplomacy",
+        "economy",
         "security"
       ],
       "series_id": null,
       "title": {
-        "original": "Made in America: Manufacturing, Private Hiring Power Explosive August Jobs Report",
+        "original": "Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit",
         "original_lang": "en",
-        "ko": "[USA·경제] Made in America: Manufacturing, Private Hiring Power Explosive August Jobs Report"
+        "ko": "[USA·외교] Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit"
       },
-      "summary": "“America added 162,000 jobs in August — triple economists’ expectations. The private sector has now created over one million jobs under President Trump, whose reindustrialization agenda continues to drive manufacturing and factory construction job growth. America is in the middle",
+      "summary": "DELIVERING FOR AMERICANS: This week, President Donald J. Trump and First Lady Melania Trump hosted President Xi Jinping and Madame Peng Liyuan of the People’s Republic of China for a reciprocal State Visit. During the visit, President Trump advanced the U.S.-China relationship an",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "865d3f6fd6509e4c",
+      "published_at": "2026-09-25T20:10:42+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/09/president-trump-first-lady-conclude-historic-china-state-visit/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump, First Lady Conclude Historic China State Visit",
+        "original_lang": "en",
+        "ko": "[USA·외교] President Trump, First Lady Conclude Historic China State Visit"
+      },
+      "summary": "Today, President Donald J. Trump and First Lady Melania Trump concluded a historic state visit with His Excellency Xi Jinping, President of the People’s Republic of China, and Madame Peng Liyuan. This marked the first visit to the White House by a Chinese President in more than a",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2d5d4b8f14cca831",
+      "published_at": "2026-09-25T19:47:32+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/gold-star-mothers-and-familys-day-2026/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Gold Star Mother’s And Family’s Day, 2026",
+        "original_lang": "en",
+        "ko": "[USA·안보] Gold Star Mother’s And Family’s Day, 2026"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION America is free, strong, secure, and prosperous due to the courage of the heroes in uniform who are willing to lay down their lives in the defense of our Republic. The supreme sacrifice paid by every fallen warrior i",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4a12dbf3421be19",
+      "published_at": "2026-09-25T16:24:18+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-state-visit-of-president-xi-jinping-and-madame-peng-liyuan/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan",
+        "original_lang": "en",
+        "ko": "[USA·외교] First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan"
+      },
+      "summary": "“Art and culture have a remarkable ability to transcend borders, connect generations, and offer us a deeper appreciation for one another. It was an honor to welcome President Xi Jinping and Madame Peng Liyuan and share with them the history, artistry, and traditions that help mak",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -2489,15 +2648,15 @@
       "site_slot": "ticker"
     },
     {
-      "id": "5c82c02117ae010c",
-      "published_at": "2026-09-14T17:45:59+00:00",
+      "id": "3780d0bddf10fcc1",
+      "published_at": "2026-10-03T03:01:43+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/releases/2026/09/warrior-ethos-in-action-dude-44-bravos-incredible-story/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-president-donald-j-trump-announces-medicare-improvement-fund-payments-for-seniors/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2507,11 +2666,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Warrior Ethos in Action: DUDE 44 Bravo’s Incredible Story",
+        "original": "Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors",
         "original_lang": "en",
-        "ko": "[USA·경제] Warrior Ethos in Action: DUDE 44 Bravo’s Incredible Story"
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Medicare Improvement Fund Payments for Seniors"
       },
-      "summary": "For the first time, a U.S. Air Force officer shot down over Iran — mission call sign DUDE 44 Bravo — told America his story. In an exclusive 60 Minutes interview, Bravo delivered a powerful account of survival, faith, and combat leadership — a testament to the unmatched bravery o",
+      "summary": "IMPROVING MEDICARE FOR SENIORS: Today, President Donald J. Trump announced that the federal government will be making one-time payments of $90 per person to help more than 20 million enrollees pay for their Medicare Part B premiums. HISTORIC ACTION TO HELP SENIOR CITIZENS: With t",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -2525,15 +2684,15 @@
       "site_slot": null
     },
     {
-      "id": "8b277bde0ea06a05",
-      "published_at": "2026-09-10T14:06:53+00:00",
+      "id": "2759417b865677c7",
+      "published_at": "2026-09-30T17:10:17+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-announces-the-working-families-obamacare-refunds/",
+      "url": "https://www.whitehouse.gov/releases/2026/09/icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2543,11 +2702,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds",
+        "original": "ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa",
         "original_lang": "en",
-        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds"
+        "ko": "[USA·경제] ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa"
       },
-      "summary": "RETURNING BIDEN OVERCHARGES TO WORKING FAMILIES: Today, President Donald J. Trump announced that the federal government will return to the American people hundreds of millions in Obamacare overcharges, collected by the Biden Administration, by issuing refunds of $500 per person t",
+      "summary": "President Donald J. Trump announced a $15 billion Mesabi Metallics steel complex is coming to Iowa — the largest steel plant ever built in the United States as more industrial capacity comes home. The project will create 1,750 new, permanent jobs, support up to 6,000 construction",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -2561,15 +2720,51 @@
       "site_slot": null
     },
     {
-      "id": "95ff6db629f724e0",
-      "published_at": "2026-09-10T01:30:00+00:00",
+      "id": "dd7f4e6066a90f93",
+      "published_at": "2026-09-29T19:07:36+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-announces-2026-fall-garden-tours/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Announces 2026 Fall Garden Tours",
+        "original_lang": "en",
+        "ko": "[USA·경제] First Lady Melania Trump Announces 2026 Fall Garden Tours"
+      },
+      "summary": "The White House will welcome visitors this fall for the 2026 Fall Garden Tours, offering an opportunity for visitors to experience the historic gardens and grounds of the People’s House. The grounds will be open Saturday, October 17 from 10:00 AM – 4:30 PM, and Sunday, October 18",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "0e9e2aac6e07abd2",
+      "published_at": "2026-09-30T07:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260910a.htm",
+      "url": "http://www.boj.or.jp/en/paym/bond/ryudo.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2578,9 +2773,9 @@
       ],
       "series_id": null,
       "title": {
-        "original": "Speech by Board Member MASU in Fukui (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original": "Liquidity Indicators in the JGB Markets (August)",
         "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member MASU in Fukui (Economic Activity, Prices, and Monetary Policy in Japan)"
+        "ko": "[JPN·금융] Liquidity Indicators in the JGB Markets (August)"
       },
       "summary": "",
       "scores": {
@@ -2589,6 +2784,181 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "151d87614848cd23",
+      "published_at": "2026-09-25T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260925a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Peoples Bancorp Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "02c906844fc903d0",
+      "published_at": "2026-09-22T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "afcd050f27db0d35",
+      "published_at": "2026-09-18T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2735,155 +3105,15 @@
       "site_slot": null
     },
     {
-      "id": "9e15c780144c2929",
-      "published_at": "2026-08-19T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, July 28–29, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "050d5992a5bd064d",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804c.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "e7755a9b18b98a15",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by FS Bancorp, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "aa37b7321f23ff09",
-      "published_at": "2026-08-04T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc."
-      },
-      "summary": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "4769d7602816e6a1",
-      "published_at": "2026-09-14T08:00:00+00:00",
+      "id": "0b6fc03efe6dd90e",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2910,15 +3140,15 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "3447e898a37590ff",
-      "published_at": "2026-09-14T01:00:00+00:00",
+      "id": "5f1c41b57a7020e0",
+      "published_at": "2026-10-02T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260910.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2927,9 +3157,9 @@
       ],
       "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Bank of Japan Accounts (September 10)",
+        "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
         "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (September 10)"
+        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
       },
       "summary": "",
       "scores": {
@@ -2945,155 +3175,15 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4882b151b076ae9e",
-      "published_at": "2026-09-09T01:00:00+00:00",
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
         "name": "Bank of Japan",
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/organization/notice/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Warning against Scams Using the Bank of Japan's Name",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Warning against Scams Using the Bank of Japan's Name"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "b6eaa775a51e2beb",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2608.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Monetary Base and the Bank of Japan's Transactions (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "86aef90637e96bf8",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2608.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan's Transactions with the Government (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "8131aa2b41a19c8a",
-      "published_at": "2026-09-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Market Operations by the Bank of Japan (Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "8cebc4de29ff9ea8",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260831.xlsx",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -3118,178 +3208,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "1e40bffb8d4a14c2",
-      "published_at": "2026-09-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2608.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Collateral Accepted by the Bank of Japan (End of Aug.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Aug.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "e1ecf306c0645d83",
-      "published_at": "2026-09-02T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 31)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 31)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "058ee9e755c0ea82",
-      "published_at": "2026-09-14T15:15:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914_2~a3f0efbee4.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde: A new age of capital: growth, sovereignty and AI",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Christine Lagarde: A new age of capital: growth, sovereignty and AI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "653cb0f748a5876b",
-      "published_at": "2026-09-10T13:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "450a54499fa92683",
-      "published_at": "2026-09-01T16:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.112,
-        "final": 2.112
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     }
   ]
 }
