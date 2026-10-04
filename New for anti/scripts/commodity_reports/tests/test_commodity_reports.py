@@ -938,6 +938,60 @@ class BoardOnlySourceTests(unittest.TestCase):
         self.assertNotIn(tanker["id"], indexed)       # ...on no commodity window
 
 
+class ExporterSourcesTests(unittest.TestCase):
+    """Russia, India and Indonesia feed the export-controls board (2026-10-02)."""
+
+    @staticmethod
+    def _source(sid):
+        doc = json.loads((ROOT / "config" / "sources.json").read_text(encoding="utf-8"))
+        return next(s for s in doc["sources"] if s["id"] == sid)
+
+    def test_dgft_table_reads_the_description_cell_and_keeps_export_policy_rows(self):
+        from commodity_reports.feeds import parse_html_table
+        html = """<table><tr><th>Sl.No.</th><th>Number</th></tr>
+          <tr><td>1</td><td>37/2026-27</td><td>2026-27</td>
+              <td>Extension of timelines under RELIEF Intervention for Export Facilitation - reg.</td>
+              <td>30/09/2026</td><td style="display:none">x</td>
+              <td><a title="Download" href="https://content.dgft.gov.in/a/RELIEF Notif 37.pdf">Download</a></td></tr>
+          <tr><td>2</td><td>35/2026-27</td><td>2026-27</td>
+              <td>Amendment in the Export Policy of Wheat - reg.</td>
+              <td>24/08/2026</td><td style="display:none">x</td>
+              <td><a title="Download" href="https://content.dgft.gov.in/b/Scan wheat english.pdf">Download</a></td></tr>
+          <tr><td>3</td><td>31/2026-27</td><td>2026-27</td>
+              <td>Amendment in import policy of Raw Sugar</td>
+              <td>20/08/2026</td><td style="display:none">x</td>
+              <td><a href="https://content.dgft.gov.in/c/sugar.pdf">Download</a></td></tr></table>"""
+        items = parse_html_table(html, self._source("in_dgft_notifications"))
+        self.assertEqual(len(items), 1)
+        wheat = items[0]
+        self.assertEqual(wheat.title, "DGFT Notification 35/2026-27: Amendment in the Export Policy of Wheat - reg.")
+        self.assertEqual(wheat.published_at[:10], "2026-08-24")
+        self.assertEqual(wheat.url, "https://content.dgft.gov.in/b/Scan%20wheat%20english.pdf")
+        self.assertEqual(wheat.board, "export_controls")
+
+    def test_russian_cabinet_feed_keeps_export_decisions_only(self):
+        rss = """<?xml version="1.0"?><rss><channel>
+          <item><title>Правительство продлило временный запрет на вывоз отдельных видов топлива производителями</title>
+                <link>http://government.ru/docs/1/</link><pubDate>Wed, 01 Oct 2026 10:00:00 +0300</pubDate></item>
+          <item><title>Правительство утвердило Концепцию развития математических наук</title>
+                <link>http://government.ru/docs/2/</link><pubDate>Wed, 01 Oct 2026 09:00:00 +0300</pubDate></item>
+        </channel></rss>"""
+        items = parse_feed(rss, self._source("ru_government_docs"))
+        self.assertEqual([it.url for it in items], ["http://government.ru/docs/1/"])
+        self.assertEqual(items[0].board, "export_controls")
+
+    def test_indonesian_trade_ministry_only_puts_export_controls_on_the_board(self):
+        rss = """<?xml version="1.0"?><rss><channel>
+          <item><title>Pemerintah Tetapkan Larangan Ekspor Bijih Bauksit Mulai Juni</title>
+                <link>https://www.kemendag.go.id/a</link></item>
+          <item><title>HR CPO dan HPE Biji Kakao Naik pada Oktober 2026</title>
+                <link>https://www.kemendag.go.id/b</link></item>
+        </channel></rss>"""
+        items = {it.url: it for it in parse_feed(rss, self._source("id_kemendag"))}
+        self.assertEqual(items["https://www.kemendag.go.id/a"].board, "export_controls")
+        self.assertIsNone(items["https://www.kemendag.go.id/b"].board)  # still a palm/cocoa report
+
+
 class CommodityScopeTests(unittest.TestCase):
     """commodity_scope: a narrow source is never filed under anything else."""
 
