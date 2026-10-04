@@ -11,6 +11,14 @@ from export_controls.universe import load as load_universe
 
 TODAY = date(2026, 10, 2)
 
+# Deadline cases as fixtures, not the live catalogue: rows there change every week.
+DEADLINE_DOC = {"controls": [
+    {"id": "ind-sugar", "country_ko": "인도", "level": "prohibited", "until": "2026-09-30", "url": "https://a"},
+    {"id": "rus-fuel-products", "country_ko": "러시아", "level": "prohibited", "until": "2027-01-31",
+     "review_valid_until": "2026-10-08", "url": "https://b"},
+    {"id": "ind-wheat", "level": "lifted", "until": "2026-09-01", "url": "https://c"},
+]}
+
 
 def notice(iso, measure, en, items=(), day="2026-09-30", ko=None):
     return {
@@ -23,7 +31,7 @@ def notice(iso, measure, en, items=(), day="2026-09-30", ko=None):
 
 class DeadlineTest(unittest.TestCase):
     def test_passed_and_near_deadlines(self):
-        flags = {f["id"]: f for f in report.deadline_flags(load_catalogue(), TODAY)}
+        flags = {f["id"]: f for f in report.deadline_flags(DEADLINE_DOC, TODAY)}
         self.assertEqual(flags["ind-sugar"]["state"], "지남")      # until 2026-09-30
         self.assertEqual(flags["ind-sugar"]["days"], -2)
         self.assertEqual(flags["rus-fuel-products"]["field"], "review_valid_until")
@@ -67,7 +75,7 @@ class CandidateTest(unittest.TestCase):
     def test_rendered_table_has_every_section(self):
         entry = {"week": "2026-W40", "control_count": 20, "needs_reconfirm": ["a"],
                  "pairs": {"live": 28, "lifted": 1, "unchecked": 196}, "open_questions": ["q1"]}
-        rep = report.build(self.doc, self.universe, today=TODAY, entry=entry,
+        rep = report.build(DEADLINE_DOC, self.universe, today=TODAY, entry=entry,
                            notices=[notice("IND", "export_restriction", "Amendment in the Export Policy of Onions", ["onions"])],
                            links=[{"id": "x", "url": "https://a", "status": 404, "state": "깨짐"}])
         text = report.render(rep)
