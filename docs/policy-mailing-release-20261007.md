@@ -9,17 +9,17 @@ PR #321을 main `29600737`과 통합했습니다. main의 즐겨찾기·마이�
 - 메일 테스트 46개 + #443 보강 테스트 15개 통과.
 - RSS 파서·분류·실패 시 이전 자료 보존 테스트 79개 통과.
 - 정책 검색 테스트 18개 통과.
-- Worker 타입 생성·정적 검사·dry-run 빌드 통과. Wrangler 4.147.0 및 호환 Workers 타입으로 고정했고 npm audit 결과 0건.
+- Worker 타입 생성·정적 검사·dry-run 빌드 통과. Wrangler 4.147.0 및 호환 Workers 타입으로 고정했고 npm audit 결과 0건. GitHub Mailing Reliability Checks, Ownership guard, Feed probe도 통과했습니다(메일 run 37191532988).
 
-맥이 공식 기관 피드를 직접 읽고 private snapshot을 저장한 뒤 DB 보관하도록 연결했습니다. 첫 실행 30개 소스 중 29개 성공, 유효 보고서 69건 저장, 발행일 불명 14개 제외입니다. USDA newsroom/NASS/FAS와 EIA 세 소스가 응답했습니다. BCR 시간 초과 1개는 이전 자료 3건을 보존했습니다. 생성된 JSON은 웹사이트에 배포하지 않았습니다. 키워드·시리즈 사전·기관 문맥으로 주제를 분류하며 Gemini는 일부 번역을 보조합니다.
+맥이 공식 기관 피드를 직접 읽고 private snapshot을 저장한 뒤 DB 보관하도록 연결했습니다. 첫 실행 30개 소스 중 29개 성공, 유효 보고서 69건 저장, 발행일 불명 14개 제외입니다. 운영 DB 전체 보관은 98→103건으로 늘었고 원자재 발송 대기 5건은 10/5 08:00 KST로 예약되어 있습니다. USDA newsroom/NASS/FAS와 EIA 세 소스가 응답했습니다. BCR 시간 초과 1개는 이전 자료 3건을 보존했습니다. 생성된 JSON은 웹사이트에 배포하지 않았습니다. 키워드·시리즈 사전·기관 문맥으로 주제를 분류하며 Gemini는 일부 번역을 보조합니다.
 
-맥 법안 실행기 한 개를 재개했습니다. 즐겨찾기 법안 4개를 먼저 확인했으며 일반 수집은 실행 중입니다. 마지막 기존 프로세스가 사라진 원인은 로그만으로 확정할 수 없습니다. 전원·로그아웃·재부팅 후 자동 재기동 설정은 이번에 설치하지 않았습니다.
+맥 법안 실행기 한 개(PID 13074)를 재개했습니다. 즐겨찾기 법안 4개를 먼저 확인했으며 일반 수집은 실행 중입니다. 마지막 기존 프로세스가 사라진 원인은 로그만으로 확정할 수 없습니다. 전원·로그아웃·재부팅 후 자동 재기동 설정은 이번에 설치하지 않았습니다.
 
 실제 검색은 Node fetch에서 CLARITY Act·암호화폐·3조건 검색 응답 200을 확인했습니다. 암호화폐 결과에 CLARITY가 4번째로 나왔고 한국어·복수 조건 요청에서 semantic_available=true를 확인했습니다. CLARITY 단일 요청 중 하나는 semantic_available=false로 문자 검색이 보완했습니다. 빈 결과와 장애를 구분하며 모든 요청의 공급자 가용성을 보장하지 않습니다.
 
 ## 실제 발송 전환
 
-현재 `chokemonitor-mailing`의 MAIL_SEND_ENABLED는 false입니다. 기본 주소는 alerts@chokemonitor.com이며 Resend가 이메일을 발송합니다. Cloudflare의 cron은 10분마다 DB 대기열을 읽는 실행기입니다.
+10/4 실제 조회에서 `chokemonitor.com` Resend 도메인은 verified, Supabase/Resend Secret은 존재하고 cron은 10분 주기입니다. 현재 `chokemonitor-mailing`의 MAIL_SEND_ENABLED는 false입니다. 기본 주소는 alerts@chokemonitor.com이며 Resend가 이메일을 발송합니다. Cloudflare의 cron은 10분마다 DB 대기열을 읽는 실행기입니다.
 
 1. 승인된 전환 시 기존 commodity-digest 예약을 비활성화하고 실행 중인 sender가 없음을 확인합니다. Congress의 POLICY_FAVORITES_MAIL_ENABLED도 꺼진 상태를 유지합니다.
 2. Worker의 Supabase·Resend Secret과 루트 도메인 인증을 확인합니다. 이미 등록된 키는 다시 채팅에 받을 필요 없습니다.
