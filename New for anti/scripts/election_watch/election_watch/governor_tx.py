@@ -1,8 +1,8 @@
-"""Texas TEC direct-campaign-expenditure candidate rows: governor support only.
+"""Texas TEC candidate rows: audit only until transaction direction is verified.
 
 The official CAND record identifies a candidate benefiting from an expenditure.
-It does not identify opposition, and a multi-candidate expenditure has no
-published allocation per target, so neither is inferred here.
+It lacks a transaction support/oppose field. No amount from this table is
+published as support or opposition, including a single-candidate expenditure.
 """
 from collections import Counter, defaultdict
 import csv
@@ -97,9 +97,9 @@ def normalize(cycle, lines, revision, roster=None):
             'election_type': 'UNKNOWN', 'source_id': f'TX:DCE:{report_id}:{expenditure_id}',
             'report_id': report_id, 'source_url': ARCHIVE,
             'classification_source_url': SCHEMA,
-            'support_cents': cents, 'oppose_cents': 0, 'records': 1,
+            'amount_cents': cents, 'direction': None, 'records': 1,
             'filing_date': received, 'expenditure_date': spent,
-            'monthly': {spent[:7]: {'support_cents': cents, 'oppose_cents': 0}},
+            'monthly': {spent[:7]: {'amount_cents': cents}},
             'monthly_basis': 'reported_expenditure_date',
             'provenance': 'TEC CAND row linked to one DCE expenditure; candidate benefiting; not all independent spending',
         })
@@ -108,15 +108,15 @@ def normalize(cycle, lines, revision, roster=None):
     if input_records != len(records) + sum(excluded.values()):
         raise SourceError('Texas CAND accounting mismatch')
     return {
-        'schema': 'usa_governor_source_v1', 'cycle': cycle, 'state': 'TX',
-        'generated_at': now(), 'status': 'partial', 'dataset_revision': revision,
+        'schema': 'usa_governor_audit_v1', 'cycle': cycle, 'state': 'TX',
+        'generated_at': now(), 'status': 'needs_direction_review', 'dataset_revision': revision,
         'source_url': ARCHIVE, 'metadata_url': SCHEMA,
         'last_filing_date': max((r['filing_date'] for r in records), default=None),
-        'spending': records, 'candidates': roster,
+        'spending': [], 'unclassified_spending': records, 'candidates': roster,
         'quality': {'input_records': input_records, 'included_records': len(records),
                     'excluded_records': dict(excluded)},
         'limitations_ko': [
-            '텍사스 CAND 행에서 단일 주지사 후보가 수혜자로 명시된 DCE 지출만 포함합니다. 반대 지출·일반 PAC 지출·복수 후보 대상 지출은 포함하지 않습니다.',
+            '텍사스 CAND에는 거래별 지지/반대 필드가 없어 금액을 발행하지 않습니다. 단일 후보 수혜 행도 감사 자료로만 보존하며 지지액으로 변환하지 않습니다.',
             '후보 정당은 공식 본선 명부와 이름이 정확히 일치할 때만 붙입니다. 지출 당시 후보 정당이나 경선·본선 용도는 추정하지 않습니다.',
             '지출자 슈퍼팩 유형은 이 파일만으로 확인할 수 없습니다.',
             '단체 전체 지출 또는 주지사 선거 외부지출 총액이 아닙니다.',

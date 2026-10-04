@@ -31,7 +31,10 @@ def main():
     started = now()
     results = []
     for cycle in cycles:
-        for name, script in [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]:
+        sources = [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]
+        if (ROOT / 'config/governor_ie_filers' / str(cycle) / 'NY.json').exists():
+            sources.append(('NY_governor', 'build_governor_finance.py'))
+        for name, script in sources:
             # The key is inherited from the runner environment, never written to arguments or outputs.
             command = [sys.executable, str(ROOT / script), '--cycle', str(cycle), '--public', str(args.public)]
             if name.endswith('_governor'):

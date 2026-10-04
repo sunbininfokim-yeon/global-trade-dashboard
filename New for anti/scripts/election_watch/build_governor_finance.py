@@ -7,6 +7,7 @@ from build_superpac import PUBLIC, ROOT, atomic_json
 from election_watch.governor_wa import collect as collect_wa
 from election_watch.governor_ca import collect as collect_ca
 from election_watch.governor_tx import collect as collect_tx
+from election_watch.governor_ny import collect as collect_ny
 from election_watch.superpac import SourceError
 from election_watch.superpac_schedule import reporting_cycle
 
@@ -14,7 +15,7 @@ from election_watch.superpac_schedule import reporting_cycle
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cycle', type=int, default=reporting_cycle())
-    parser.add_argument('--state', choices=['WA','CA','TX'], default='WA')
+    parser.add_argument('--state', choices=['WA','CA','TX','NY'], default='WA')
     parser.add_argument('--ca-local-tables', type=Path, help='Reviewed local official tables; offline verification only')
     parser.add_argument('--tx-local-archive', type=Path, help='Official TEC ZIP; offline verification only')
     parser.add_argument('--public', type=Path, default=PUBLIC)
@@ -28,8 +29,15 @@ def main():
             payload = collect_wa(args.cycle)
         elif args.state == 'CA':
             payload = collect_ca(args.cycle, roster, args.ca_local_tables)
+        elif args.state == 'NY':
+            registry_path = ROOT / 'config/governor_ie_filers' / str(args.cycle) / 'NY.json'
+            if not registry_path.exists():
+                raise SourceError('New York reviewed IE filer registry unavailable for this cycle')
+            payload = collect_ny(args.cycle, roster, json.loads(registry_path.read_text()))
         else:
             payload = collect_tx(args.cycle, args.tx_local_archive, roster)
+        if payload.get('schema') != 'usa_governor_source_v1':
+            raise SourceError('Governor source is audit only; support/oppose verification required; old snapshot preserved')
         atomic_json(args.public / 'usa_governor_finance' / str(args.cycle) / (args.state + '.json'), payload)
         print(json.dumps({'cycle': args.cycle, 'state': args.state, 'quality': payload['quality']}))
     except SourceError as exc:
