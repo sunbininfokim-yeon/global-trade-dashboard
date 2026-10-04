@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-04T06:16:46.841534+00:00",
+  "generated_at": "2026-10-04T14:21:01.247690+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 33,
-    "sources_failed": 1,
-    "raw_items": 539,
-    "scored": 143,
-    "published": 127,
-    "commodities": 25,
-    "buckets": 75
+    "sources_ok": 31,
+    "sources_failed": 5,
+    "raw_items": 451,
+    "scored": 145,
+    "published": 129,
+    "commodities": 26,
+    "buckets": 77
   },
   "feed_status": [
     {
@@ -35,24 +35,24 @@
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": true,
-      "count": 1,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live",
-      "archived": 3
+      "carried_over": 3
     },
     {
       "source_id": "us_nass_asb",
-      "ok": true,
-      "count": 40,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "us_nass_news",
-      "ok": true,
-      "count": 40,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
@@ -87,9 +87,9 @@
     },
     {
       "source_id": "int_fao_newsroom",
-      "ok": true,
-      "count": 19,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 503: Service Unavailable",
       "mode": "live"
     },
     {
@@ -108,9 +108,9 @@
     },
     {
       "source_id": "us_usgs_news",
-      "ok": false,
-      "count": 0,
-      "error": "TimeoutError: The read operation timed out",
+      "ok": true,
+      "count": 11,
+      "error": null,
       "mode": "live"
     },
     {
@@ -119,7 +119,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 42 reports linked, 11 read, 25 already known",
+      "note": "45 list pages, 40 reports linked, 10 read, 26 already known",
       "archived": 1
     },
     {
@@ -230,6 +230,20 @@
       "mode": "live"
     },
     {
+      "source_id": "ru_government_docs",
+      "ok": true,
+      "count": 1,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "in_dgft_notifications",
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live"
+    },
+    {
       "source_id": "int_ita_tin",
       "ok": true,
       "count": 10,
@@ -278,13 +292,14 @@
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 1,
+    "annotated": 2,
     "reused": 41,
     "error": null
   },
   "boards": {
     "export_controls": [
       "922529a322767a94",
+      "40c416f81351d284",
       "500ccb61f23619e0",
       "59d7681e3c02b816",
       "92a445d0e0c3f58b",
@@ -330,6 +345,7 @@
   "commodity_labels": {
     "oil": "원유",
     "gas": "천연가스",
+    "light_oils": "경질유",
     "thermal_coal": "연료탄",
     "met_coal": "원료탄",
     "gold": "금",
@@ -775,6 +791,11 @@
         "c6333ba481073b9b"
       ]
     },
+    "light_oils": {
+      "BRA": [
+        "937f667ad21463f2"
+      ]
+    },
     "palm_oil": {
       "MYS": [
         "229809ad43dc4b0b"
@@ -828,6 +849,9 @@
       "UKR": [
         "088f09f9aa8eb7c7"
       ],
+      "_global": [
+        "976dad99c36e6871"
+      ],
       "KEN": [
         "3ff8c2dd8b700c92"
       ],
@@ -855,14 +879,14 @@
       "CHN": [
         "6e3880b1a989890a"
       ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
       "IND": [
         "6269fa1eda293c5a"
       ],
       "USA": [
         "0466c9487c9388ef"
+      ],
+      "_global": [
+        "976dad99c36e6871"
       ],
       "ARG": [
         "21c3dd4f0cf93fd0"
@@ -1036,7 +1060,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.005,
+      "importance": 5.965,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1069,7 +1093,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.748,
+      "importance": 5.708,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1103,7 +1127,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.363,
+      "importance": 5.326,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1135,7 +1159,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.672,
+      "importance": 4.642,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1168,7 +1192,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.191,
+      "importance": 4.164,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1200,7 +1224,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.959,
+      "importance": 3.941,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1233,7 +1257,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.907,
+      "importance": 3.89,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1242,6 +1266,39 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "937f667ad21463f2",
+      "title": {
+        "original": "Brazil: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Brazil has raised its mandatory anhydrous ethanol blend in gasoline to 32%, a temporary measure designed to reduce gasoline imports and absorb the country's...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-biofuels-annual",
+      "published_at": "2026-09-02T10:49:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "light_oils"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.881,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "229809ad43dc4b0b",
@@ -1266,7 +1323,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.831,
+      "importance": 3.804,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1299,7 +1356,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.831,
+      "importance": 3.804,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1330,7 +1387,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.831,
+      "importance": 3.804,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1361,7 +1418,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.752,
+      "importance": 3.726,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1392,7 +1449,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.676,
+      "importance": 3.651,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1423,7 +1480,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.537,
+      "importance": 3.519,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1454,42 +1511,10 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.525,
+      "importance": 3.505,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "6e3880b1a989890a",
-      "title": {
-        "original": "China: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
-      "published_at": "2026-09-04T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.37,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -1517,11 +1542,43 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.369,
+      "importance": 3.358,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "6e3880b1a989890a",
+      "title": {
+        "original": "China: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.355,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
@@ -1550,7 +1607,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.282,
+      "importance": 3.267,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1558,37 +1615,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.271,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-04T06:16:46.841534+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -1613,7 +1639,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.271,
+      "importance": 3.25,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1645,7 +1671,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.271,
+      "importance": 3.25,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1677,7 +1703,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.226,
+      "importance": 3.21,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1709,7 +1735,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.049,
+      "importance": 3.037,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1741,7 +1767,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.696,
+      "importance": 2.677,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1772,7 +1798,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.594,
+      "importance": 2.578,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -1803,7 +1829,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.499,
+      "importance": 2.494,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1923,7 +1949,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.375,
+      "importance": 2.365,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1954,45 +1980,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.365,
+      "importance": 2.349,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
-      "id": "f8aa4f64781b6480",
-      "title": {
-        "original": "Electric Power Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
-      "url": "http://www.eia.gov/electricity/monthly/",
-      "published_at": "2026-09-24T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.347,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0466c9487c9388ef",
@@ -2058,6 +2052,38 @@
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 24 Sep 2026) Data in the September 2026 <em>Electric Power Monthly</em> are for July 2026, when net generation in the United States increased 1.7% from July 2025. Coal consumption for power generation was down 6.0% compared with the previous year. The average residential retail price of electricity was up 4.9% from July 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-09-24T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.332,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "088f09f9aa8eb7c7",
       "title": {
         "original": "Ukraine: Grain and Feed Quarterly",
@@ -2081,7 +2107,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.261,
+      "importance": 2.256,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2113,7 +2139,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.129,
+      "importance": 2.117,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2144,13 +2170,40 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.122,
+      "importance": 2.109,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "976dad99c36e6871",
+      "title": {
+        "original": "European Union: European Commission Authorizes Seven GE Crops for Import",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The European Commission authorized seven genetically engineered crops for food and feed use in June and September 2026: four soybean events and three maize...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/european-union-european-commission-authorizes-seven-ge-crops-import",
+      "published_at": "2026-10-02T10:11:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.719,
+      "reasons": [],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "3ff8c2dd8b700c92",
@@ -2175,73 +2228,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.707,
+      "importance": 1.701,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "7376f1ff6d49470e",
-      "title": {
-        "original": "Short-Term Energy Outlook",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 09 Sep 2026) <strong>Global oil market assumptions.</strong> We forecast oil production in the Middle East will rise in the coming months because of gradually increasing flows through the Strait of Hormuz and the use of alternative routes out of the region, according to our September 2026 <em>Short-Term Energy Outlook</em> (STEO). However, we assume some constraints to exporting oil from the Middle East will persist through the end of the year, which keeps crude oil production in the region below pre-conflict averages until the second quarter of 2027 (2Q27).",
-      "url": "http://www.eia.gov/outlooks/steo/",
-      "published_at": "2026-09-09T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil",
-        "gas",
-        "thermal_coal"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.663,
-      "reasons": [
-        "series:EIA_STEO"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b8e0e19f0f00a266",
-      "title": {
-        "original": "¡Crece la participación de la mujer en la minería del cobre!",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
-      "published_at": "2026-08-31T19:35:57+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.663,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2325,6 +2317,67 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "b8e0e19f0f00a266",
+      "title": {
+        "original": "¡Crece la participación de la mujer en la minería del cobre!",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "Ya está disponible el estudio Cochilco “Representación de la mujer en el sector minero del cobre en Chile al año 2025”; que examina los avances en materias de género en el sector minero. Un análisis clave que abarca el 99% de la producción de cobre nacional. La presencia femenina en la minería chilena continúa creciendo,[...] La entrada ¡Crece la participación de la mujer en la minería del cobre! se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/crece-la-participacion-de-la-mujer-en-la-mineria-del-cobre/",
+      "published_at": "2026-08-31T19:35:57+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.656,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "7376f1ff6d49470e",
+      "title": {
+        "original": "Short-Term Energy Outlook",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 09 Sep 2026) <strong>Global oil market assumptions.</strong> We forecast oil production in the Middle East will rise in the coming months because of gradually increasing flows through the Strait of Hormuz and the use of alternative routes out of the region, according to our September 2026 <em>Short-Term Energy Outlook</em> (STEO). However, we assume some constraints to exporting oil from the Middle East will persist through the end of the year, which keeps crude oil production in the region below pre-conflict averages until the second quarter of 2027 (2Q27).",
+      "url": "http://www.eia.gov/outlooks/steo/",
+      "published_at": "2026-09-09T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil",
+        "gas",
+        "thermal_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 1.655,
+      "reasons": [
+        "series:EIA_STEO"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "5f087a520744649c",
       "title": {
         "original": "July 2026 crude steel production",
@@ -2346,7 +2399,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.64,
+      "importance": 1.635,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2377,7 +2430,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.618,
+      "importance": 1.606,
       "reasons": [
         "country_in_text"
       ],
@@ -2407,7 +2460,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.618,
+      "importance": 1.606,
       "reasons": [
         "country_in_text"
       ],
@@ -2437,7 +2490,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.618,
+      "importance": 1.606,
       "reasons": [
         "country_in_text"
       ],
@@ -2467,7 +2520,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.585,
+      "importance": 1.574,
       "reasons": [
         "country_in_text"
       ],
@@ -2498,7 +2551,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.573,
+      "importance": 1.568,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2530,7 +2583,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.572,
+      "importance": 1.563,
       "reasons": [
         "country_in_text"
       ],
@@ -2619,7 +2672,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.474,
+      "importance": 1.466,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -2820,12 +2873,51 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.453,
+      "importance": 1.446,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "40c416f81351d284",
+      "title": {
+        "original": "Правительство продлило временный запрет на вывоз отдельных видов топлива производителями",
+        "original_lang": "ru",
+        "ko": "정부가 생산업체의 특정 유형 연료 수출에 대한 임시 금지 조치를 연장했습니다.",
+        "en": "The Government extended the temporary ban on the export of certain types of fuel by producers"
+      },
+      "summary": "Постановление от 29 сентября 2026 года №1252",
+      "url": "http://government.ru/docs/60024/",
+      "published_at": "2026-09-30T07:00:00+00:00",
+      "agency": "Government of the Russian Federation",
+      "agency_ko": "러시아 연방정부",
+      "source_id": "ru_government_docs",
+      "commodities": [],
+      "countries": [
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.426,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "RUS",
+        "issuer_body": "Government of the Russian Federation",
+        "issuer_body_ko": "러시아 연방정부",
+        "measure": "export_ban",
+        "items": [],
+        "targets": [
+          "RUS"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "http://government.ru/",
+      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "500ccb61f23619e0",
@@ -2849,7 +2941,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.427,
+      "importance": 1.417,
       "reasons": [
         "country_in_text"
       ],
@@ -2892,7 +2984,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.411,
+      "importance": 1.403,
       "reasons": [
         "country_in_text"
       ],
@@ -2921,7 +3013,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.398,
+      "importance": 1.389,
       "reasons": [
         "country_in_text"
       ],
@@ -2961,7 +3053,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.383,
+      "importance": 1.374,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -2988,7 +3080,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.371,
+      "importance": 1.362,
       "reasons": [
         "country_in_text"
       ],
@@ -3032,7 +3124,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.361,
+      "importance": 1.352,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
@@ -3187,7 +3279,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.349,
+      "importance": 1.345,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3218,7 +3310,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.33,
+      "importance": 1.321,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -3246,7 +3338,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.304,
+      "importance": 1.297,
       "reasons": [
         "country_in_text"
       ],
@@ -3275,38 +3367,12 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.294,
+      "importance": 1.292,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
       ],
       "agency_url": "https://worldsteel.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "0260f9aa0131b0b8",
-      "title": {
-        "original": "Petroleum Supply Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 30 Sep 2026) The report includes supply and disposition of crude oil and petroleum products on the national and regional levels. The data series describe production, imports and exports, movements, and inventories.",
-      "url": "http://www.eia.gov/petroleum/supply/monthly/",
-      "published_at": "2026-09-30T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.268,
-      "reasons": [],
-      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3332,11 +3398,37 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.267,
+      "importance": 1.261,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0260f9aa0131b0b8",
+      "title": {
+        "original": "Petroleum Supply Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 30 Sep 2026) The report includes supply and disposition of crude oil and petroleum products on the national and regional levels. The data series describe production, imports and exports, movements, and inventories.",
+      "url": "http://www.eia.gov/petroleum/supply/monthly/",
+      "published_at": "2026-09-30T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.259,
+      "reasons": [],
+      "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3362,7 +3454,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.258,
+      "importance": 1.255,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3391,7 +3483,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.258,
+      "importance": 1.253,
       "reasons": [
         "has_figure"
       ],
@@ -3421,7 +3513,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.246,
+      "importance": 1.241,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3451,7 +3543,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.245,
+      "importance": 1.237,
       "reasons": [
         "country_in_text"
       ],
@@ -3643,7 +3735,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.2,
+      "importance": 1.196,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3673,7 +3765,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.144,
+      "importance": 1.136,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -3711,7 +3803,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.139,
+      "importance": 1.132,
       "reasons": [
         "country_in_text"
       ],
@@ -3752,7 +3844,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.125,
+      "importance": 1.119,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -3779,7 +3871,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.12,
+      "importance": 1.113,
       "reasons": [
         "country_in_text"
       ],
@@ -3823,7 +3915,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.106,
+      "importance": 1.1,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -3851,7 +3943,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.101,
+      "importance": 1.095,
       "reasons": [
         "country_in_text"
       ],
@@ -3892,7 +3984,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.09,
+      "importance": 1.084,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -3919,7 +4011,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.076,
+      "importance": 1.068,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -3959,7 +4051,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.066,
+      "importance": 1.06,
       "reasons": [
         "country_in_text"
       ],
@@ -4002,39 +4094,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.06,
+      "importance": 1.057,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "62f11e17ce23601c",
-      "title": {
-        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
-      "published_at": "2026-09-07T15:45:14+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.042,
-      "reasons": [],
-      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -4720,6 +4784,34 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "62f11e17ce23601c",
+      "title": {
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.037,
+      "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "882a7745e1a1f1d0",
       "title": {
         "original": "商务部等5部门关于调整《向特定国家（地区）出口易制毒化学品管理目录》的公告",
@@ -4741,7 +4833,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.019,
+      "importance": 1.013,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4779,7 +4871,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.981,
+      "importance": 0.978,
       "reasons": [
         "country_in_text"
       ],
@@ -4808,7 +4900,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.976,
+      "importance": 0.97,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4848,7 +4940,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.957,
+      "importance": 0.953,
       "reasons": [
         "country_in_text"
       ],
@@ -4962,7 +5054,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.787,
+      "importance": 0.784,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -4988,7 +5080,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.784,
+      "importance": 0.781,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5016,7 +5108,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.742,
+      "importance": 0.74,
       "reasons": [
         "country_in_text"
       ],
@@ -5057,7 +5149,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.636,
+      "importance": 0.635,
       "reasons": [
         "country_in_text"
       ],
@@ -5098,7 +5190,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.627,
+      "importance": 0.626,
       "reasons": [
         "country_in_text"
       ],
@@ -5140,7 +5232,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.622,
+      "importance": 0.62,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -5168,7 +5260,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.602,
+      "importance": 0.601,
       "reasons": [
         "country_in_text"
       ],
@@ -5197,7 +5289,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.533,
+      "importance": 0.532,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5236,7 +5328,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.487,
+      "importance": 0.486,
       "reasons": [],
       "agency_url": "https://silverinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
