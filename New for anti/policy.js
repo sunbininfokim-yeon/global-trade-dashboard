@@ -278,6 +278,7 @@
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
           ${conditionLabel}
+          ${item.search_coverage?.text_status === 'unavailable' ? '<span class="policy-search-result-meta">공식 본문 미확보</span>' : ''}
           ${item.search_refresh_pending ? '<span class="policy-search-result-meta">검색 자료 갱신 대기</span>' : ''}
           ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
         </span>`;

@@ -6,6 +6,22 @@ const { MODEL } = require('./lib/policy-search-document');
 const { acquireLock, releaseLock } = require('./lib/policy-search-lock');
 const { supabaseGet, supabaseRpc, geminiEmbeddings, isOptionalEmbeddingError, requireEnv, sleep } = require('./lib/sync-utils');
 
+function failureReason(error) {
+  // Only static classifications are persisted. Provider messages may include
+  // credentials, request URLs or private details and must stay out of logs.
+  const status = Number(error.status || String(error.message || '').match(/\bHTTP (\d{3})\b/)?.[1]);
+  if (status >= 100 && status <= 599) return `http_${status}`;
+  const message = String(error.message || '');
+  if (/requires .*official.*source URL/.test(message)) return 'missing_official_source';
+  if (message === 'Source document no longer exists') return 'source_deleted';
+  if (message === 'Unsupported official source URL') return 'unsupported_source_url';
+  if (message === 'Official source exceeds 5MB text limit') return 'official_text_too_large';
+  if (message.startsWith('Missing required environment variable:')) return 'missing_environment';
+  if (isOptionalEmbeddingError(error)) return 'embedding_provider_unavailable';
+  if (['TimeoutError', 'AbortError'].includes(error.name)) return 'request_timeout';
+  return 'unexpected_error';
+}
+
 async function processJob(job, loader, embed = true) {
   const document = await loader.document(job.source_type, job.source_id);
   const existing = await supabaseGet('policy_search_passages', { select: 'passage_index,input_hash,embedding_model,embedded_at', document_id: `eq.${job.document_id}` });
@@ -31,6 +47,23 @@ async function seed(types, limit, after = '') {
     console.log(JSON.stringify({ source_type: type, enqueued: rows.length, next_after: rows.at(-1)?.[config.key] || null }));
   }
   return enqueued;
+}
+async function reconcileMissingText({ get = supabaseGet, rpc = supabaseRpc, now = Date.now() } = {}) {
+  // Publication can lag Congress's enactment metadata without changing the
+  // original row. Recheck a bounded set once a day, retaining its searchable
+  // metadata and unchanged vectors. Never reset an active/queued/failed lease.
+  const rows = await get('policy_search_documents', { select:'document_id,source_type,source_id',
+    'coverage->>text_status':'eq.unavailable', refreshed_at:`lt.${new Date(now - 86400000).toISOString()}`,
+    order:'refreshed_at.asc,document_id.asc', limit:'25' });
+  if (!rows.length) return 0;
+  const jobs = await get('policy_search_jobs', { select:'document_id,status',
+    document_id:`in.(${rows.map(row => JSON.stringify(row.document_id)).join(',')})` });
+  const done = new Set(jobs.filter(job => job.status === 'done').map(job => job.document_id));
+  let count = 0;
+  for (const row of rows) if (done.has(row.document_id)) {
+    await rpc('enqueue_policy_search_document', { p_type:row.source_type, p_id:row.source_id }); count++;
+  }
+  return count;
 }
 async function run() {
   requireEnv('SUPABASE_URL'); requireEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -60,6 +93,10 @@ async function run() {
   const loader = sourceLoader({ cacheDir: root }); let completed = 0;
   const deadline=Date.now()+Math.max(1,Number(val('--max-minutes'))||60)*60000;
   try {
+    if (!fs.existsSync(path.join(root, 'STOP')) && !(process.env.POLICY_COLLECTOR_STOP_FILE && fs.existsSync(process.env.POLICY_COLLECTOR_STOP_FILE))) {
+      const requeued = await reconcileMissingText();
+      if (requeued) console.log(JSON.stringify({ missing_text_requeued:requeued }));
+    }
     for (let i = 0; i < limit; i++) {
       if (Date.now()>=deadline) break;
       if (fs.existsSync(path.join(root, 'STOP')) || (process.env.POLICY_COLLECTOR_STOP_FILE && fs.existsSync(process.env.POLICY_COLLECTOR_STOP_FILE))) break;
@@ -77,16 +114,17 @@ async function run() {
         completed++; console.log(JSON.stringify({ document_id: job.document_id, ...result }));
       } catch (e) {
         // Do not persist raw provider errors or URLs with credentials.
+        const reason = failureReason(e);
         await supabaseRpc('finish_policy_search_job', { p_id: job.document_id, p_token: job.claim_token,
-          p_error: `Index refresh failed: ${e.status || e.name}` });
-        console.error(`Index refresh failed for ${job.document_id}: ${e.status || e.name}`);
+          p_error: `Index refresh failed: ${reason}` });
+        console.error(`Index refresh failed for ${job.document_id}: ${reason}`);
         process.exitCode=2;
-        if ([403,429].includes(e.status) || isOptionalEmbeddingError(e)) break;
+        if (['http_403','http_429','missing_environment'].includes(reason) || isOptionalEmbeddingError(e)) break;
       }
       await sleep(300);
     }
     console.log(JSON.stringify({ completed }));
   } finally { releaseLock(lock,process.pid); }
 }
-module.exports = { processJob, seed, run };
-if (require.main === module) run().catch(e => { console.error(e.message); process.exitCode = 1; });
+module.exports = { processJob, seed, run, failureReason, reconcileMissingText };
+if (require.main === module) run().catch(e => { console.error(`Search indexer stopped: ${failureReason(e)}`); process.exitCode = 1; });

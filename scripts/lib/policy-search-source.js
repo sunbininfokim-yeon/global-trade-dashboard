@@ -17,6 +17,10 @@ function publicTextUrl(url) {
   if (bill) return `https://www.govinfo.gov/content/pkg/${bill[1]}/html/${bill[1]}.htm`;
   return url;
 }
+function publicLawPackage(id) {
+  const match = String(id).match(/^(\d{2,3})-public-(\d{1,4})$/);
+  return match ? `PLAW-${Number(match[1])}publ${Number(match[2])}` : null;
+}
 function sourceLoader(options = {}) {
   const root = options.cacheDir || process.env.POLICY_SEARCH_CACHE_DIR;
   if (!root) throw new Error('POLICY_SEARCH_CACHE_DIR is required (private, outside git)');
@@ -26,12 +30,26 @@ function sourceLoader(options = {}) {
   const request = async (url, version = '') => {
     const clean = officialUrl(url); if (!clean) throw new Error('Unsupported official source URL');
     const file = path.join(root, hash(`${clean}|${version}`) + '.json');
-    try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+    try {
+      const cached = JSON.parse(await fs.readFile(file, 'utf8'));
+      // An empty official text listing is a temporary observation. It must
+      // expire even when Congress hasn't changed the source row's revision.
+      const unavailable = (Array.isArray(cached.textVersions) && !cached.textVersions.length) || cached.text === '';
+      if (!unavailable || Date.now() - (await fs.stat(file)).mtimeMs < 86400000) return cached;
+    } catch (e) { if (e.code !== 'ENOENT') throw e; }
     return requestGate(async () => {
       const u = new URL(url);
       if (u.hostname === 'api.congress.gov') u.searchParams.set('api_key', requireEnv('CONGRESS_API_KEY'));
       if (u.hostname === 'api.govinfo.gov') u.searchParams.set('api_key', process.env.GOVINFO_API_KEY || requireEnv('DATA_GOV_API_KEY'));
-      const response = await fetchSource(u, { signal: AbortSignal.timeout(35000), redirect: 'error', headers: { 'User-Agent': 'ChokeMonitor-policy-index/1.0' } });
+      const response = await fetchSource(u, { signal: AbortSignal.timeout(35000), redirect: 'manual', headers: { 'User-Agent': 'ChokeMonitor-policy-index/1.0' } });
+      if ([301,302,303,307,308].includes(response.status)) {
+        // GovInfo routes unpublished content to /error rather than returning
+        // a 404. Do not index that HTML page or forward API credentials.
+        let target; try { target = new URL(response.headers.get('location'), u); } catch {}
+        const unavailable = u.hostname === 'www.govinfo.gov' && target?.origin === u.origin && target.pathname === '/error';
+        const error = new Error(unavailable ? 'Official text unavailable (GovInfo error page)' : 'Official source redirect requires review');
+        error.status = response.status; error.sourceUnavailable = unavailable; throw error;
+      }
       if (!response.ok) { const error = new Error(`Official source HTTP ${response.status}`); error.status = response.status; throw error; }
       const reader = response.body.getReader(); const buffers = []; let bytes = 0;
       while (true) {
@@ -73,9 +91,16 @@ function sourceLoader(options = {}) {
       textUrl = version?.html_url || version?.formatted_text_url || version?.xml_url ||
         version?.formats?.find(f => /formatted|html|xml/i.test(f.type))?.url;
     } else if (type === 'public_law') {
-      textUrl = row.official_text_url || (row.source_package_id ? `https://www.govinfo.gov/content/pkg/${row.source_package_id}/text/${row.source_package_id}.txt` : null);
+      // Congress can announce an enacted law before its GovInfo identifiers
+      // reach the source row. Try the canonical package's official text;
+      // a 404 remains unavailable, never substituted with a bill's text.
+      const packageId = row.source_package_id || publicLawPackage(id);
+      textUrl = row.official_text_url || (packageId ? `https://www.govinfo.gov/content/pkg/${packageId}/text/${packageId}.txt` : null);
       if (row.bill_id) {
         const bill = (await get('bills', { select: 'summary,congress_url', bill_id: `eq.${row.bill_id}`, limit: '1' }))?.[0];
+        // The linked official bill page is provenance for law metadata and
+        // CRS summary only, not evidence that the enrolled law text exists.
+        base.sourceUrl = base.sourceUrl || officialUrl(bill?.congress_url);
         if (bill?.summary) { base.summary = bill.summary; base.summaryUrl = bill.congress_url; }
       }
     } else if (type === 'executive_order') {
@@ -94,7 +119,7 @@ function sourceLoader(options = {}) {
       try {
         const result = await request(publicTextUrl(textUrl), base.sourceVersion);
         base.body = result.text; base.bodyUrl = publicTextUrl(textUrl); base.bodyStatus = base.body ? 'body' : 'unavailable';
-      } catch (e) { if (![404,410].includes(e.status)) throw e; base.bodyStatus = 'unavailable'; }
+      } catch (e) { if (![404,410].includes(e.status) && !e.sourceUnavailable) throw e; base.bodyStatus = 'unavailable'; }
     }
     return base;
   }
@@ -117,4 +142,4 @@ function sourceLoader(options = {}) {
   }
   return { load, document };
 }
-module.exports = { SOURCES, publicTextUrl, sourceLoader };
+module.exports = { SOURCES, publicTextUrl, publicLawPackage, sourceLoader };

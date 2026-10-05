@@ -40,3 +40,8 @@ test('full page keeps empty lanes visible and semantic search uses the same four
  assert.match(html,/data-similarity="0.8"/);
  const compact=render({items:[]},true);assert.ok(!compact.includes('<section'));
 });
+test('a metadata-only enacted law is searchable without implying official text coverage',()=>{
+ const law={...row('119-public-112',1,'public_law'),search_coverage:{text_status:'unavailable',embedding_coverage:'complete'}};
+ assert.match(render({search_mode:'conditions',items:[law]}),/공식 본문 미확보/);
+ assert.ok(!render({search_mode:'conditions',items:[{...law,search_coverage:{text_status:'body'}}]}).includes('공식 본문 미확보'));
+});

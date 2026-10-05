@@ -61,6 +61,7 @@ function buildDocument({ type, id, title, date, sourceUrl, summary, summaryUrl, 
       { target_type: c.target_type, target_id: c.target_id, citation: ref.citation, citation_url: officialUrl(c.citation_url) });
   }
   if (!parts.length) throw new Error('A search document requires text with an official source URL');
+  if (!sourceUrl) throw new Error('A search document requires an official document source URL');
   const input = { version: VERSION, source_type: type, source_id: String(id), title: plain(title), document_date: date || null,
     source_url: officialUrl(sourceUrl), evidence_parts: parts, references: explicitRefs, source_version: sourceVersion,
     text_status: retained ? (cleaned.length > retained.length ? 'partial_body' : 'body') : bodyStatus,
