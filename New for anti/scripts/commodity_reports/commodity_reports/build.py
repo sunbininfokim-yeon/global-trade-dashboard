@@ -409,6 +409,8 @@ def build_commodity_reports(
     }
 
     scored: List[ScoredReport] = []
+    unclassified = 0
+    rejected = 0
     for r in raw:
         note = notes.get(report_id(r)) or {}
         tagged = tag_report(
@@ -435,6 +437,10 @@ def build_commodity_reports(
         # what got dropped is a real feature; it isn't built yet, so there is
         # nothing here pretending to be one.
         if item is None:
+            if not tagged.commodities:
+                unclassified += 1
+            else:
+                rejected += 1
             continue
         if note.get("en"):
             item.title_en = note["en"]
@@ -532,6 +538,8 @@ def build_commodity_reports(
             "sources_failed": sum(1 for s in feed_status if not s.get("ok")),
             "raw_items": len(raw),
             "scored": len(scored),
+            "unclassified": unclassified,
+            "rejected": rejected,
             "published": len(items),
             "commodities": len(index),
             "buckets": bucket_count,

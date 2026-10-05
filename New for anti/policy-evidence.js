@@ -158,6 +158,17 @@
     return { step_id: step.id, label, date: alert.evidence?.date || null,
       note: alert.kind === 'passage' ? '이번 통과 표결이 부결됐습니다.' : '절차 표결 부결이며, 법안 최종 통과 표결의 부결과는 다릅니다.' };
   }
+  // Presence alone does not prove that a vector describes the current summary.
+  function embeddingQuality(bill) {
+    const source = bill.raw_source || {};
+    const proof = source.embedding_provenance;
+    const current = source.embedding_current_input_hash;
+    const status = !bill.embedding ? 'not_embedded'
+      : source.embedding_refresh_required ? 'stale'
+      : proof?.input_hash && current && proof.model === bill.embedding_model && proof.dimensions === 1536
+        ? (proof.input_hash === current ? 'current' : 'stale') : 'unknown';
+    return { status, model: bill.embedding_model || null, embedded_at: bill.embedded_at || null };
+  }
   function notificationSnapshot(lifecycle) {
     const e = lifecycle.latest_event;
     return { version: 1, origin_chamber: lifecycle.origin_chamber, current: lifecycle.current,
@@ -165,6 +176,6 @@
       procedural_alert: lifecycle.procedural_alert ? { label: lifecycle.procedural_alert.label, kind: lifecycle.procedural_alert.kind, result: lifecycle.procedural_alert.result } : null,
       next: lifecycle.next ? { id: lifecycle.next.id, label: lifecycle.next.label, required_data: lifecycle.next.required_data } : null };
   }
-  return { parseBillQuery, billUrl, actionChamber, classifyAction, voteEvidence, buildLifecycle, floorSetback, notificationSnapshot };
+  return { parseBillQuery, billUrl, actionChamber, classifyAction, voteEvidence, buildLifecycle, floorSetback, embeddingQuality, notificationSnapshot };
 });
 
