@@ -386,7 +386,9 @@
       const series = keys.map(key => ({ key, ...typeSeries(point, key, days) })).filter(item => item.rows.length);
       const dates = series[0]?.rows.map(row => row.date) || [];
       const metric = point.live?.metrics?.[metricKey] || {};
-      const recent = metric.current_7d_mean_estimated_trade_tonnes;
+      const traffic = trafficSummaryOf(point);
+      const comparison = metricKey === 'all' ? traffic : asArray(traffic?.ship_types).find(row => row.metric_key === metricKey);
+      const recent = comparison ? comparison.current?.value : metric.current_7d_mean_estimated_trade_tonnes;
       const prior = metric.prior_28d_mean_estimated_trade_tonnes;
       const anyPrior = series.some(item => item.hasPrior);
       result.innerHTML = `
@@ -397,9 +399,8 @@
         <div class="shipping-observed-value">
           <span>${metricKey === 'all' ? '전체 선종 최근 7일 일평균' : `${escapeHtml(SHIP_TYPE_LABELS[metricKey] || metricKey)} 최근 7일 일평균`}</span>
           <strong>${formatTonnes(recent)}/일</strong>
+          ${renderTrafficComparisons(comparison)}
           <small>직전 28일 대비 ${formatPct(metric.change_pct, 1)}</small>
-          ${finite(point.live?.metric_histories?.[metricKey]?.year_ago?.change_pct)
-            ? `<small>52주 전 같은 7일 대비 ${formatPct(point.live.metric_histories[metricKey].year_ago.change_pct, 1)}</small>` : ''}
         </div>
         <div class="shipping-observed-compare">
           <span>직전 28일 기준선</span>
@@ -1423,6 +1424,35 @@
   // (`chokepoint_trend`); this only draws.
   const TREND_COLORS = ['#38bdf8', '#f87171', '#fbbf24', '#34d399', '#a78bfa', '#f472b6', '#fb923c', '#94a3b8', '#2dd4bf'];
   const signedPct = (value, digits = 0) => finite(value) ? `${Number(value) > 0 ? '+' : ''}${formatPct(value, digits)}` : '—';
+
+  const trafficSummaryOf = point => point.live?.traffic_summary?.contract_version === 'chokepoint-traffic-v1'
+    && point.live.traffic_summary.unit === 'estimated_trade_tonnes_per_day' ? point.live.traffic_summary : null;
+
+  // Read engine percentages only. Different comparison windows, native cargo
+  // units and source coverage are never recomputed or blended in the browser.
+  const renderTrafficComparisons = summary => `<div class="shipping-note" style="display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0" aria-label="AIS 포착량 기간별 변화율">
+    ${[['week', '전주'], ['month', '전월'], ['year', '전년']].map(([key, label]) => {
+      const comparison = summary?.comparisons?.[key];
+      const baseline = comparison?.baseline;
+      const title = comparison ? `${comparison.label_ko} · 기준 ${baseline?.start_date || '—'}~${baseline?.end_date || '—'}${comparison.status === 'zero_baseline' ? ' · 기준량 0으로 변화율 미산출' : comparison.status !== 'available' ? ' · 일별 자료 부족' : ''}` : '일별 비교 자료 없음';
+      return `<span title="${escapeHtml(title)}">${label} <b>${comparison?.status === 'available' ? signedPct(comparison.change_pct, 1) : '—'}</b></span>`;
+    }).join('')}
+  </div>`;
+
+  const renderTrafficComposition = summary => {
+    const rows = asArray(summary?.ship_types).filter(row => finite(row.current?.value)).slice(0, 3);
+    if (!rows.length) return '<p class="shipping-note">선종별 일별 자료 부족</p>';
+    return `<div aria-label="AIS 추정 화물중량 선종 구성" style="margin:8px 0">
+      ${rows.map(row => `<div style="margin:5px 0">
+        <div style="display:flex;justify-content:space-between;gap:5px;font-size:10px;color:#94a3b8">
+          <span>${escapeHtml(row.label_ko)}</span>
+          <span>${formatTonnes(row.current.value)}/일${finite(row.share_pct) ? ` · ${formatPct(row.share_pct, 1)}` : ''}</span>
+        </div>
+        ${finite(row.share_pct) ? `<div style="height:3px;background:#1e293b;margin-top:3px;border-radius:2px"><div style="height:3px;width:${Number(row.share_pct)}%;background:${SHIP_TYPE_COLORS[row.metric_key] || '#94a3b8'};border-radius:2px"></div></div>` : ''}
+      </div>`).join('')}
+      ${finite(summary.remaining_types_share_pct) ? `<small class="shipping-note">기타·미분류 ${formatPct(summary.remaining_types_share_pct, 1)}</small>` : '<small class="shipping-note">선종 비중 미산출 · 구성 자료 불충분</small>'}
+    </div>`;
+  };
   const renderChokepoints = (data, root, showAll = false) => {
     destroyCharts();
     const allPoints = data.ui.chokepoints;
@@ -1431,35 +1461,35 @@
       : allPoints.filter(point => CORE_CHOKEPOINT_IDS.includes(point.id));
     const trendById = new Map(asArray(data.chokepoint_trend?.points).map(row => [row.chokepoint_id, row]));
     const trendOf = point => trendById.get(point.id) || {};
-    const metricLabel = key => key === 'all' ? '전체 선종' : (SHIP_TYPE_LABELS[key] || key);
-
     const cards = points.map(point => {
       const display = point.display || {};
       const trend = trendOf(point);
-      const yoy = trend.latest_yoy_pct;
       const latest = latestOfficialCargo(point) || trend.official_latest;
+      const summary = trafficSummaryOf(point);
+      const officialPrimary = point.id === 'hormuz' && latest && finite(latest.value);
       const isStale = Boolean(display.is_stale);
       return `<article class="shipping-chokepoint-card" data-chokepoint="${escapeHtml(point.id)}"
                        role="button" tabindex="0" aria-expanded="false">
         <div class="shipping-chokepoint-head">
           <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
-          ${badge(latest ? '공식 발표' : 'AIS 추정', latest ? 'estimated' : 'neutral')}
+          ${badge(officialPrimary ? '공식 발표' : 'AIS 추정', officialPrimary ? 'estimated' : 'neutral')}
         </div>
-        <strong class="shipping-change" style="font-size:clamp(18px,2vw,26px)">${latest && finite(latest.value)
+        <strong class="shipping-change" style="font-size:clamp(18px,2vw,26px)">${officialPrimary
           ? formatOfficialValue(latest.value, latest.unit)
-          : `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`}</strong>
-        <p>${latest
-          ? `석유 전체 · ${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}${latest.geography_scope === 'suez_canal_and_sumed_pipeline' ? ' · SUMED 포함' : ''}`
-          : `AIS 포착 추정량 · ${escapeHtml(metricLabel(trend.metric_key || point.metricKey))} · 최근 7일 평균`}</p>
-        ${definitionRows([
-          ['AIS 포착량 · 전년 같은 7일 대비', signedPct(yoy, 0)]
-        ])}
+          : `${formatTonnes(summary?.current?.value)}/일`}</strong>
+        <p>${officialPrimary ? `석유 전체 · ${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}` : '전체 선종 · AIS 포착 최근 7일 평균'}</p>
+        ${officialPrimary ? `<p class="shipping-note">전체 AIS 포착 ${formatTonnes(summary?.current?.value)}/일 · 최근 7일</p>` : ''}
+        ${renderTrafficComposition(summary)}
+        <small class="shipping-note">전체 AIS 포착량 변화</small>
+        ${renderTrafficComparisons(summary)}
+        ${trend.official_vs_ais?.status === 'ais_undercount_likely' ? '<small class="shipping-note">기관 자료 대비 AIS 미포착 유의</small>' : ''}
+        ${latest && !officialPrimary ? `<p class="shipping-note">석유 참고 ${formatOfficialValue(latest.value, latest.unit)}<br>${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}${latest.geography_scope === 'suez_canal_and_sumed_pipeline' ? ' · SUMED 포함' : ''}</p>` : ''}
         <p class="shipping-note">${latest ? `발표 ${formatDate(latest.source_published_at)} · ` : ''}AIS 기준 ${formatDate(trend.latest_date || display.latest_date || point.live.latest_date)}${isStale ? ' · 갱신 지연' : ''}</p>
       </article>`;
     }).join('');
 
     const body = `
-      <p class="shipping-note">공식 물량은 발표 기간의 일평균입니다. AIS 포착량의 감소율은 실제 석유 감소율·봉쇄율이 아닙니다.</p>
+      <p class="shipping-note">규모·선종 비중·변화율은 AIS 포착 추정 화물중량 기준입니다. 공식 석유 물량은 별도 기간 평균이며, AIS 감소율은 실제 석유 감소율·봉쇄율이 아닙니다.<br>비교 기준: 최근 7일 평균 ↔ 전주 7일 / 전월 같은 시점 7일 / 전년 같은 요일 7일. 전월은 달 전체 평균이 아닙니다.</p>
       <div class="shipping-panel-tools" style="justify-content:space-between;flex-wrap:wrap;margin-bottom:12px">
         <span class="shipping-note">${showAll ? '전체' : '핵심'} ${formatNumber(points.length)}개 통로 · 클릭하면 상세</span>
         <button type="button" class="shipping-secondary-control" id="shipping-chokepoint-scope-toggle" aria-pressed="${showAll}">

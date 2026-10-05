@@ -19,7 +19,7 @@ const context = vm.createContext({
 const marker = 'window.ShippingDashboard = { render, unmount, loadData: loadShippingData };';
 assert.ok(source.includes(marker));
 vm.runInContext(source.replace(marker, `${marker}
-  window.__chokeTest = {normalizeSnapshot, latestOfficialCargo, officialVolumeChartData, publishedOfficialRows, publicationPeriod, renderChokepoints, renderObservedTypeComparison, scenarioPresetControls};`), context);
+  window.__chokeTest = {normalizeSnapshot, latestOfficialCargo, officialVolumeChartData, publishedOfficialRows, publicationPeriod, renderChokepoints, renderObservedTypeComparison, scenarioPresetControls, trafficSummaryOf, renderTrafficComparisons, renderTrafficComposition};`), context);
 const api = context.window.__chokeTest;
 const normalized = api.normalizeSnapshot(snapshot);
 const point = id => normalized.ui.chokepoints.find(row => row.id === id);
@@ -39,8 +39,48 @@ test('Hormuz main value is the latest official oil average, not a big -99% headl
   assert.equal(latest.value, 7600000);
   assert.match(html, /760만 배럴\/일/);
   assert.match(html, /2026-08/);
-  assert.match(html, /AIS 포착량 · 전년 같은 7일 대비/);
+  assert.match(html, /전체 AIS 포착량 변화/);
+  assert.match(html, /전년 같은 요일 7일/);
   assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>-99%/);
+});
+
+test('Suez headline is all-ship AIS tonnes; SUMED oil is only a separate reference', () => {
+  const html = card(renderList(), 'suez');
+  assert.match(html, /<strong class="shipping-change[^>]*>1\.53M t\/일/);
+  assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>580만 배럴\/일/);
+  assert.match(html, /석유 참고 580만 배럴\/일/);
+  assert.match(html, /SUMED 포함/);
+  assert.ok(html.indexOf('유조선') < html.indexOf('벌크선'));
+  assert.ok(html.indexOf('벌크선') < html.indexOf('컨테이너선'));
+  assert.match(html, /41\.8%/);
+  assert.match(html, /29\.6%/);
+  assert.match(html, /27\.0%/);
+  assert.doesNotMatch(html, /TEU/);
+});
+
+test('small comparisons render engine values without treating prior 28 days as a month', () => {
+  const summary = api.trafficSummaryOf(point('suez'));
+  const html = api.renderTrafficComparisons(summary);
+  assert.match(html, /전주 <b>-6\.8%/);
+  assert.match(html, /전월 <b>\+5\.6%/);
+  assert.match(html, /전년 <b>\+0\.7%/);
+  assert.match(html, /2026-08-21~2026-08-27/);
+  const mutated = plain(summary);
+  mutated.comparisons.week.change_pct = 123.4;
+  assert.match(api.renderTrafficComparisons(mutated), /전주 <b>\+123\.4%/);
+  assert.match(renderList(), /전월은 달 전체 평균이 아닙니다/);
+});
+
+test('unavailable comparisons and weights do not become synthetic zero percentages', () => {
+  const summary = plain(api.trafficSummaryOf(point('suez')));
+  summary.comparisons.week.status = 'zero_baseline';
+  summary.comparisons.week.change_pct = null;
+  assert.match(api.renderTrafficComparisons(summary), /전주 <b>—/);
+  summary.ship_types.forEach(row => { row.share_pct = null; });
+  summary.remaining_types_share_pct = null;
+  assert.match(api.renderTrafficComposition(summary), /선종 비중 미산출/);
+  assert.doesNotMatch(api.renderTrafficComposition(summary), /width:|0\.0%/);
+  assert.equal(api.trafficSummaryOf({live: {}}), null);
 });
 
 test('list is compact and the AIS overview is initially closed', () => {

@@ -1,7 +1,7 @@
 {
   "schema_version": "shipping-capacity-diagnostics-v1",
   "artifact_type": "model_diagnostics",
-  "bundle_id": "2e605675ae8589b8db5d",
+  "bundle_id": "c8a992190852a97d9b95",
   "generated_at": "2026-10-04T21:53:23.152413+00:00",
   "model": {
     "name": "Route Cycle Capacity + Chokepoint Shock",
@@ -18425,7 +18425,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 1525155.857143,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -6.8,
+            "baseline": {
+              "status": "available",
+              "value": 1636042.428571,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 5.6,
+            "baseline": {
+              "status": "available",
+              "value": 1444141.714286,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": 0.7,
+            "baseline": {
+              "status": "available",
+              "value": 1513868.0,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 638095.428571,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -10.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 708804.142857,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -0.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 643731.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -23.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 829725.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 41.8
+          },
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 451852.285714,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 16.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 389125.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 6.5,
+                "baseline": {
+                  "status": "available",
+                  "value": 424332.0,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 1.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 447039.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 29.6
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 411226.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -19.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 511624.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 22.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 335079.571429,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 88.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 217960.428571,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 27.0
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 20402.285714,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -21.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 25901.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -44.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 37046.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 26.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 16140.0,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 1.3
+          }
+        ],
+        "remaining_types_share_pct": 1.6,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "panama": {
       "portwatch_id": "chokepoint2",
@@ -36585,7 +36862,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 787348.428571,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -0.7,
+            "baseline": {
+              "status": "available",
+              "value": 793022.857143,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": -1.3,
+            "baseline": {
+              "status": "available",
+              "value": 797524.571429,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -21.1,
+            "baseline": {
+              "status": "available",
+              "value": 997684.428571,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 330301.0,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 30.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 254063.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -0.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 332963.571429,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -0.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 330356.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 42.0
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 324257.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -2.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 332136.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -3.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 336324.857143,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -3.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 335003.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 41.2
+          },
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 110166.571429,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -41.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 187990.714286,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -3.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 113822.857143,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -63.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 303343.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 14.0
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 14541.428571,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 68.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 8638.142857,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 39.5,
+                "baseline": {
+                  "status": "available",
+                  "value": 10426.571429,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -4.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 15261.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 1.8
+          }
+        ],
+        "remaining_types_share_pct": 2.9,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "bosporus": {
       "portwatch_id": "chokepoint3",
@@ -54745,7 +55299,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 554421.714286,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -20.7,
+            "baseline": {
+              "status": "available",
+              "value": 699276.0,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": -35.8,
+            "baseline": {
+              "status": "available",
+              "value": 863879.428571,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -57.6,
+            "baseline": {
+              "status": "available",
+              "value": 1306995.428571,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 255362.571429,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 19.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 214650.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -14.5,
+                "baseline": {
+                  "status": "available",
+                  "value": 298774.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -59.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 631384.428571,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 46.1
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 191696.857143,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -50.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 386317.857143,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -56.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 445198.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -64.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 533789.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 34.6
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 56753.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 19.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 47621.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -16.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 67769.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -30.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 82072.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 10.2
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 50368.428571,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 1.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 49482.714286,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -3.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 51997.0,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -15.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 59490.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 9.1
+          }
+        ],
+        "remaining_types_share_pct": 9.1,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "bab_el_mandeb": {
       "portwatch_id": "chokepoint4",
@@ -72905,7 +73736,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 1103529.714286,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": 34.9,
+            "baseline": {
+              "status": "available",
+              "value": 817860.0,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 23.6,
+            "baseline": {
+              "status": "available",
+              "value": 892831.0,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -10.6,
+            "baseline": {
+              "status": "available",
+              "value": 1234004.0,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 581734.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 82.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 318982.857143,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 88.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 308202.857143,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 0.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 576339.0,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 52.7
+          },
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 381734.285714,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 6.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 357704.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -16.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 458361.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -30.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 545163.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 34.6
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 118066.571429,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 11.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 105966.142857,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 16.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 101168.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 59.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 73814.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 10.7
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 19355.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -34.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 29366.714286,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -13.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 22325.0,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -47.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 37142.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 1.8
+          }
+        ],
+        "remaining_types_share_pct": 2.0,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "hormuz": {
       "portwatch_id": "chokepoint6",
@@ -91065,7 +92173,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 52376.285714,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -7.3,
+            "baseline": {
+              "status": "available",
+              "value": 56495.571429,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": -28.0,
+            "baseline": {
+              "status": "available",
+              "value": 72713.0,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -98.4,
+            "baseline": {
+              "status": "available",
+              "value": 3257618.857143,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 34332.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -28.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 48250.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -30.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 49551.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -93.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 559002.428571,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 65.5
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 17831.285714,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 1151.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 1424.285714,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -5.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 18777.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -99.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 2261149.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 34.0
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 212.571429,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -83.4,
+                "baseline": {
+                  "status": "available",
+                  "value": 1282.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -89.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 2038.857143,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -99.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 25893.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 0.4
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 0.0,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -100.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 5537.857143,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -100.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 2344.571429,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -100.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 405872.428571,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 0.0
+          }
+        ],
+        "remaining_types_share_pct": 0.0,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "malacca": {
       "portwatch_id": "chokepoint5",
@@ -109225,7 +110610,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 8142412.571429,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -0.7,
+            "baseline": {
+              "status": "available",
+              "value": 8202834.285714,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 8.0,
+            "baseline": {
+              "status": "available",
+              "value": 7540787.857143,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -11.6,
+            "baseline": {
+              "status": "available",
+              "value": 9211332.428571,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 3249351.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -7.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 3526424.285714,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -2.5,
+                "baseline": {
+                  "status": "available",
+                  "value": 3333142.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -12.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 3690786.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 39.9
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 2867164.0,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 13.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 2532141.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 24.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 2297018.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -21.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 3634398.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 35.2
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 1895912.428571,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -6.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 2018267.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 5.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 1790117.571429,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 7.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 1767614.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 23.3
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 106989.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 7.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 99940.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 4.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 102067.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 5.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 101922.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 1.3
+          }
+        ],
+        "remaining_types_share_pct": 1.6,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "cape_good_hope": {
       "portwatch_id": "chokepoint7",
@@ -127385,7 +129047,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 5557178.285714,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -2.0,
+            "baseline": {
+              "status": "available",
+              "value": 5670245.857143,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 2.2,
+            "baseline": {
+              "status": "available",
+              "value": 5438074.857143,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": -3.6,
+            "baseline": {
+              "status": "available",
+              "value": 5762700.0,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 3521799.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -1.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 3577631.428571,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 8.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 3237603.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 7.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 3292375.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 63.4
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 1247472.428571,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 17.5,
+                "baseline": {
+                  "status": "available",
+                  "value": 1061237.285714,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 36.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 915563.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 2.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 1215936.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 22.4
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 724097.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -24.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 955255.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -40.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 1221444.714286,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -40.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 1207987.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 13.0
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 46210.285714,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -23.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 60244.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 1.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 45710.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 47.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 31253.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 0.8
+          }
+        ],
+        "remaining_types_share_pct": 1.1,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "gibraltar": {
       "portwatch_id": "chokepoint8",
@@ -145545,7 +147484,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 3396449.714286,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": -6.2,
+            "baseline": {
+              "status": "available",
+              "value": 3622181.428571,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 8.0,
+            "baseline": {
+              "status": "available",
+              "value": 3143444.142857,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": 1.9,
+            "baseline": {
+              "status": "available",
+              "value": 3332414.571429,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 1197949.857143,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -1.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 1212839.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 29.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 928918.285714,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 23.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 972394.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 35.3
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 1143060.714286,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -24.0,
+                "baseline": {
+                  "status": "available",
+                  "value": 1503506.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -10.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 1273773.285714,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -14.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 1330722.571429,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 33.7
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 964937.0,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 19.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 809593.142857,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 13.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 847607.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 3.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 934857.714286,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 28.4
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 77089.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -5.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 81401.714286,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -9.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 85292.857143,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -5.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 81627.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 2.3
+          }
+        ],
+        "remaining_types_share_pct": 2.7,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     },
     "oresund": {
       "portwatch_id": "chokepoint10",
@@ -163705,7 +165921,284 @@
       "stale_days": 7,
       "is_stale": false,
       "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "source_status": "api_observation_fresh",
+      "traffic_summary": {
+        "contract_version": "chokepoint-traffic-v1",
+        "unit": "estimated_trade_tonnes_per_day",
+        "basis": "same_calendar_7d_mean_observed_only_no_imputation",
+        "source": "IMF PortWatch",
+        "current": {
+          "status": "available",
+          "value": 123056.714286,
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-27",
+          "observed_days": 7,
+          "required_days": 7
+        },
+        "comparisons": {
+          "week": {
+            "label_ko": "전주 같은 7일",
+            "status": "available",
+            "change_pct": 38.6,
+            "baseline": {
+              "status": "available",
+              "value": 88791.0,
+              "start_date": "2026-09-14",
+              "end_date": "2026-09-20",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "month": {
+            "label_ko": "전월 같은 시점 7일",
+            "status": "available",
+            "change_pct": 29.7,
+            "baseline": {
+              "status": "available",
+              "value": 94856.571429,
+              "start_date": "2026-08-21",
+              "end_date": "2026-08-27",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          },
+          "year": {
+            "label_ko": "전년 같은 요일 7일",
+            "status": "available",
+            "change_pct": 35.2,
+            "baseline": {
+              "status": "available",
+              "value": 90996.428571,
+              "start_date": "2025-09-22",
+              "end_date": "2025-09-28",
+              "observed_days": 7,
+              "required_days": 7
+            }
+          }
+        },
+        "composition_status": "available",
+        "ship_types": [
+          {
+            "metric_key": "dry_bulk",
+            "label_ko": "벌크선",
+            "current": {
+              "status": "available",
+              "value": 50325.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 70.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 29486.142857,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 224.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 15505.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 104.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 24656.285714,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 40.9
+          },
+          {
+            "metric_key": "tanker",
+            "label_ko": "유조선",
+            "current": {
+              "status": "available",
+              "value": 37618.0,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 53.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 24532.857143,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": 9.7,
+                "baseline": {
+                  "status": "available",
+                  "value": 34284.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": 83.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 20531.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 30.6
+          },
+          {
+            "metric_key": "general_cargo",
+            "label_ko": "일반화물선",
+            "current": {
+              "status": "available",
+              "value": 24826.571429,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": 11.3,
+                "baseline": {
+                  "status": "available",
+                  "value": 22312.0,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -21.1,
+                "baseline": {
+                  "status": "available",
+                  "value": 31464.142857,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -14.6,
+                "baseline": {
+                  "status": "available",
+                  "value": 29077.142857,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 20.2
+          },
+          {
+            "metric_key": "container",
+            "label_ko": "컨테이너선",
+            "current": {
+              "status": "available",
+              "value": 8605.142857,
+              "start_date": "2026-09-21",
+              "end_date": "2026-09-27",
+              "observed_days": 7,
+              "required_days": 7
+            },
+            "comparisons": {
+              "week": {
+                "label_ko": "전주 같은 7일",
+                "status": "available",
+                "change_pct": -15.9,
+                "baseline": {
+                  "status": "available",
+                  "value": 10237.571429,
+                  "start_date": "2026-09-14",
+                  "end_date": "2026-09-20",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "month": {
+                "label_ko": "전월 같은 시점 7일",
+                "status": "available",
+                "change_pct": -30.8,
+                "baseline": {
+                  "status": "available",
+                  "value": 12442.428571,
+                  "start_date": "2026-08-21",
+                  "end_date": "2026-08-27",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              },
+              "year": {
+                "label_ko": "전년 같은 요일 7일",
+                "status": "available",
+                "change_pct": -38.2,
+                "baseline": {
+                  "status": "available",
+                  "value": 13923.857143,
+                  "start_date": "2025-09-22",
+                  "end_date": "2025-09-28",
+                  "observed_days": 7,
+                  "required_days": 7
+                }
+              }
+            },
+            "share_pct": 7.0
+          }
+        ],
+        "remaining_types_share_pct": 8.4,
+        "comparison_policy_ko": "최근 7일 일평균 대비 전주 7일·전월 같은 시점에 끝나는 7일·52주 전 같은 요일 7일. 전월 말일 초과는 말일로 조정. 달 전체 평균 비교가 아닙니다.",
+        "warning_ko": "AIS 포착 기반 추정 화물중량입니다. 선종별 중량 비중은 실제 품목 구성·TEU·원유 배럴·봉쇄율이 아니며 미포착 선박은 포함하지 못합니다."
+      }
     }
   },
   "official_cargo_monitor": {

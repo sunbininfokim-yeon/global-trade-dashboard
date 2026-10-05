@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import copy
 from datetime import date, timedelta
 from typing import Any
+
+from shipping_capacity.traffic_summary import CONTRACT_VERSION, build_traffic_summary
 
 
 SCREEN_HISTORY_POINT_LIMIT = 180
@@ -50,6 +53,7 @@ def _bundle_id(snapshot: dict[str, Any]) -> str:
         "model_version": snapshot.get("model", {}).get("version"),
         "route_ids": [row["id"] for row in snapshot.get("routes", [])],
         "scenario_ids": [row["id"] for row in snapshot.get("scenarios", [])],
+        "traffic_contract_version": CONTRACT_VERSION,
     }
     encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()[:20]
@@ -288,6 +292,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
     the fleet/routes/chokepoint list screens should not have to download it.
     """
 
+    snapshot = copy.deepcopy(snapshot)
+    for status in snapshot.get("chokepoints_live", {}).values():
+        status["traffic_summary"] = build_traffic_summary(status)
     bundle_id = _bundle_id(snapshot)
     routes = snapshot.get("routes", [])
     public_count = sum(
@@ -367,6 +374,8 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             if key
             not in {
                 "schema_version",
+                "artifact_type",
+                "bundle_id",
                 "generated_at",
                 "event_observations",
                 "historical_event_calibration",
@@ -402,6 +411,9 @@ def golden_contract_failures(
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
+    for point_id, status in screen.get("chokepoints_live", {}).items():
+        if status.get("traffic_summary") != diagnostics.get("chokepoints_live", {}).get(point_id, {}).get("traffic_summary"):
+            failures.append(f"traffic_summary_screen_diagnostics_mismatch:{point_id}")
     for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
         if screen.get(key) != diagnostics.get(key):
             failures.append(f"{key}_screen_diagnostics_mismatch")
