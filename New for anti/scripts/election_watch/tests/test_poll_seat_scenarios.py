@@ -34,7 +34,8 @@ class SeatScenarioTests(unittest.TestCase):
         self.assertEqual(senate['buckets']['retained'], {'DEM':32,'GOP':31,'IND':2})
         self.assertEqual(senate['unresolved_seats'], 9)
         self.assertEqual(result['chambers']['house']['unresolved_seats'],43)
-        self.assertEqual(result['chambers']['governor']['unresolved_seats'],36)
+        self.assertEqual(result['chambers']['governor']['unresolved_seats'],12)
+        self.assertEqual(result['chambers']['governor']['scenario_counts'],{'DEM':19,'GOP':19,'IND':0})
 
     def test_poll_replaces_one_pending_race_and_windows_stay_separate(self):
         b=board();b['races']['USA:PA:house:07']={'windows':{
@@ -72,6 +73,12 @@ class SeatScenarioTests(unittest.TestCase):
         p=deepcopy(POLICY)
         p['senate']['ratings']['solid_dem'].remove('CO')
         p['senate']['ratings']['solid_dem'].append('NY')
+        with self.assertRaises(ValueError):build(p=p)
+
+    def test_same_size_wrong_governor_schedule_fails_closed(self):
+        p=deepcopy(POLICY)
+        p['governor']['ratings']['solid_dem'].remove('CA')
+        p['governor']['ratings']['solid_dem'].append('DE')
         with self.assertRaises(ValueError):build(p=p)
 
     def test_bad_roster_holds_scenario_without_discarding_fresh_polls(self):

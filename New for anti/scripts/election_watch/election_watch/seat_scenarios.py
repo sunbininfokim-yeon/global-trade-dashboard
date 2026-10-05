@@ -65,6 +65,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
     require(policy['house']['total'] == 435 and policy['senate']['total'] == 100
             and policy['governor']['total'] == 50, 'national seat totals')
     sources = [policy[o]['source_url'] for o in ('house', 'senate', 'governor')]
+    sources.append(policy['governor']['schedule_source_url'])
     sources.append('https://votehub.com/polls/api/')
     windows = {}
     for days in (7, 14):
@@ -72,7 +73,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
         for office in ('house', 'senate', 'governor'):
             p = policy[office]
             after_election = as_of > policy['election_date']
-            rating_ok = (not after_election and office != 'governor'
+            rating_ok = (not after_election
                          and 0 <= (day - date.fromisoformat(p['as_of'])).days <= policy['rating_max_age_days'])
             retained = Counter(senate_keep if office == 'senate' else gov_keep if office == 'governor' else {})
             rated = Counter()
@@ -98,8 +99,11 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
                     require(set(codes) == senate_up, 'Senate rating/schedule mismatch')
                     candidates = [(f'USA:{code}:senate', tier) for tier, values in ratings.items() for code in values]
                 else:
-                    require(not ratings, 'governor ratings require a reviewed adapter')
-                    candidates = [(f'USA:{state}:governor', 'unrated') for state in sorted(gov_up)]
+                    codes = [code for values in ratings.values() for code in values]
+                    require(len(codes) == 36 and len(set(codes)) == 36 and set(codes) == gov_up,
+                            'governor rating/schedule mismatch')
+                    candidates = [(f'USA:{state}:governor', tier)
+                                  for tier, values in ratings.items() for state in values]
                 baseline_unknown = 0
             confirmed, poll_leads = Counter(), Counter()
             pending = baseline_unknown
@@ -151,7 +155,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
     return {'schema': 'usa_midterms_forecast_v1', 'cycle': policy['cycle'], 'as_of': as_of,
             'generated_at': checked_at, 'default_window_days': 7, 'refresh_seconds': 3600,
             'method_ko': '비선거 현직 + 검토한 Solid/Likely 유지 가정 + 최근 7일 조사 우세. 14일 별도. 미정 보존.',
-            'source_ko': 'Cook 공개 등급 검토본 · 기존 의석 명부 · NGA 선거 일정 · VoteHub 선정 기관',
+            'source_ko': 'Cook 하원·상원·주지사 공개 등급 검토본 · 기존 명부 · NGA 일정 · VoteHub 선정 기관',
             'sources': sources, 'chambers': windows['7']['chambers'], 'windows': windows,
             'limitations_ko': [policy['note_ko'], 'seats·win_prob는 발행하지 않음. 조건부 범위는 통계적 신뢰구간이 아님.',
                                '평가 등급은 검토본이며 자동 갱신되지 않음. 21일 경과 시 집계에서 제외.',

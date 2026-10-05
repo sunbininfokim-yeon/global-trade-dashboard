@@ -2,14 +2,15 @@
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
   "as_of": "2026-10-05",
-  "generated_at": "2026-10-05T04:42:14.318874+00:00",
+  "generated_at": "2026-10-05T04:50:43.156712+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + 검토한 Solid/Likely 유지 가정 + 최근 7일 조사 우세. 14일 별도. 미정 보존.",
-  "source_ko": "Cook 공개 등급 검토본 · 기존 의석 명부 · NGA 선거 일정 · VoteHub 선정 기관",
+  "source_ko": "Cook 하원·상원·주지사 공개 등급 검토본 · 기존 명부 · NGA 일정 · VoteHub 선정 기관",
   "sources": [
     "https://www.cookpolitical.com/ratings/house-race-ratings",
     "https://www.cookpolitical.com/ratings/senate-race-ratings",
+    "https://www.cookpolitical.com/ratings/governor-race-ratings",
     "https://www.nga.org/governors/elections/",
     "https://votehub.com/polls/api/"
   ],
@@ -566,256 +567,259 @@
     },
     "governor": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 6 · 공화 8 · 무소속 0 · 미정 36. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 19 · 공화 19 · 무소속 0 · 미정 12. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 50,
       "scenario_counts": {
-        "DEM": 6,
-        "GOP": 8,
+        "DEM": 19,
+        "GOP": 19,
         "IND": 0
       },
-      "unresolved_seats": 36,
+      "unresolved_seats": 12,
       "buckets": {
         "retained": {
           "DEM": 6,
           "GOP": 8
         },
-        "rated_baseline_assumption": {},
+        "rated_baseline_assumption": {
+          "DEM": 13,
+          "GOP": 11
+        },
         "recent_poll_lead": {},
         "certified_result": {}
       },
       "conditional_bounds": {
         "DEM": {
-          "min": 6,
-          "max": 42
+          "min": 19,
+          "max": 31
         },
         "GOP": {
-          "min": 8,
-          "max": 44
+          "min": 19,
+          "max": 31
         },
         "IND": {
           "min": 0,
-          "max": 36
+          "max": 12
         }
       },
-      "ratings_as_of": "미확보",
-      "ratings_usable": false,
+      "ratings_as_of": "2026-10-01",
+      "ratings_usable": true,
       "polls_usable": true,
       "races": [
         {
-          "race_id": "USA:AK:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:AL:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:AR:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:AZ:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
           "race_id": "USA:CA:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
         },
         {
           "race_id": "USA:CO:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
         },
         {
           "race_id": "USA:CT:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:FL:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:GA:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
         },
         {
           "race_id": "USA:HI:governor",
-          "rating": "unrated",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:IL:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:MA:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:MD:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:ME:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:MN:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:NM:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:NY:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:PA:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:RI:governor",
+          "rating": "solid_dem",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "DEM"
+        },
+        {
+          "race_id": "USA:AZ:governor",
+          "rating": "lean_dem",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
           "race_id": "USA:IA:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:ID:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:IL:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:KS:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:MA:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:MD:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:ME:governor",
-          "rating": "unrated",
+          "rating": "lean_dem",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
           "race_id": "USA:MI:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:MN:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:NE:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:NH:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:NM:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:NV:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:NY:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:OH:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:OK:governor",
-          "rating": "unrated",
+          "rating": "lean_dem",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
           "race_id": "USA:OR:governor",
-          "rating": "unrated",
+          "rating": "lean_dem",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
-          "race_id": "USA:PA:governor",
-          "rating": "unrated",
+          "race_id": "USA:AK:governor",
+          "rating": "toss_up",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
-          "race_id": "USA:RI:governor",
-          "rating": "unrated",
+          "race_id": "USA:GA:governor",
+          "rating": "toss_up",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
-          "race_id": "USA:SC:governor",
-          "rating": "unrated",
+          "race_id": "USA:NV:governor",
+          "rating": "toss_up",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
-          "race_id": "USA:SD:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:TN:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:TX:governor",
-          "rating": "unrated",
-          "basis": "pending",
-          "party_abbr": "없음"
-        },
-        {
-          "race_id": "USA:VT:governor",
-          "rating": "unrated",
+          "race_id": "USA:OH:governor",
+          "rating": "toss_up",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
           "race_id": "USA:WI:governor",
-          "rating": "unrated",
+          "rating": "toss_up",
           "basis": "pending",
           "party_abbr": "없음"
         },
         {
-          "race_id": "USA:WY:governor",
-          "rating": "unrated",
+          "race_id": "USA:FL:governor",
+          "rating": "lean_rep",
           "basis": "pending",
           "party_abbr": "없음"
+        },
+        {
+          "race_id": "USA:KS:governor",
+          "rating": "lean_rep",
+          "basis": "pending",
+          "party_abbr": "없음"
+        },
+        {
+          "race_id": "USA:TX:governor",
+          "rating": "lean_rep",
+          "basis": "pending",
+          "party_abbr": "없음"
+        },
+        {
+          "race_id": "USA:NH:governor",
+          "rating": "likely_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:AL:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:AR:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:ID:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:NE:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:OK:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:SC:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:SD:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:TN:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:VT:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
+        },
+        {
+          "race_id": "USA:WY:governor",
+          "rating": "solid_rep",
+          "basis": "rated_baseline_assumption",
+          "party_abbr": "GOP"
         }
       ]
     }
@@ -1375,256 +1379,259 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 6 · 공화 8 · 무소속 0 · 미정 36. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 19 · 공화 19 · 무소속 0 · 미정 12. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
-            "DEM": 6,
-            "GOP": 8,
+            "DEM": 19,
+            "GOP": 19,
             "IND": 0
           },
-          "unresolved_seats": 36,
+          "unresolved_seats": 12,
           "buckets": {
             "retained": {
               "DEM": 6,
               "GOP": 8
             },
-            "rated_baseline_assumption": {},
+            "rated_baseline_assumption": {
+              "DEM": 13,
+              "GOP": 11
+            },
             "recent_poll_lead": {},
             "certified_result": {}
           },
           "conditional_bounds": {
             "DEM": {
-              "min": 6,
-              "max": 42
+              "min": 19,
+              "max": 31
             },
             "GOP": {
-              "min": 8,
-              "max": 44
+              "min": 19,
+              "max": 31
             },
             "IND": {
               "min": 0,
-              "max": 36
+              "max": 12
             }
           },
-          "ratings_as_of": "미확보",
-          "ratings_usable": false,
+          "ratings_as_of": "2026-10-01",
+          "ratings_usable": true,
           "polls_usable": true,
           "races": [
             {
-              "race_id": "USA:AK:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AR:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AZ:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
               "race_id": "USA:CA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:CO:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:CT:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:FL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:GA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:HI:governor",
-              "rating": "unrated",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:IL:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MA:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MD:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:ME:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MN:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:NM:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:NY:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:PA:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:RI:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:AZ:governor",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:IA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:ID:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:IL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:KS:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MD:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:ME:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:MI:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MN:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NE:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NH:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NM:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NV:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NY:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:OH:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:OK:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:OR:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:PA:governor",
-              "rating": "unrated",
+              "race_id": "USA:AK:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:RI:governor",
-              "rating": "unrated",
+              "race_id": "USA:GA:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:SC:governor",
-              "rating": "unrated",
+              "race_id": "USA:NV:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:SD:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:TN:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:TX:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:VT:governor",
-              "rating": "unrated",
+              "race_id": "USA:OH:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:WI:governor",
-              "rating": "unrated",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:WY:governor",
-              "rating": "unrated",
+              "race_id": "USA:FL:governor",
+              "rating": "lean_rep",
               "basis": "pending",
               "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:KS:governor",
+              "rating": "lean_rep",
+              "basis": "pending",
+              "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:TX:governor",
+              "rating": "lean_rep",
+              "basis": "pending",
+              "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:NH:governor",
+              "rating": "likely_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:AL:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:AR:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:ID:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:NE:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:OK:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:SC:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:SD:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:TN:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:VT:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:WY:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
             }
           ]
         }
@@ -2184,256 +2191,259 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 6 · 공화 8 · 무소속 0 · 미정 36. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 19 · 공화 19 · 무소속 0 · 미정 12. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
-            "DEM": 6,
-            "GOP": 8,
+            "DEM": 19,
+            "GOP": 19,
             "IND": 0
           },
-          "unresolved_seats": 36,
+          "unresolved_seats": 12,
           "buckets": {
             "retained": {
               "DEM": 6,
               "GOP": 8
             },
-            "rated_baseline_assumption": {},
+            "rated_baseline_assumption": {
+              "DEM": 13,
+              "GOP": 11
+            },
             "recent_poll_lead": {},
             "certified_result": {}
           },
           "conditional_bounds": {
             "DEM": {
-              "min": 6,
-              "max": 42
+              "min": 19,
+              "max": 31
             },
             "GOP": {
-              "min": 8,
-              "max": 44
+              "min": 19,
+              "max": 31
             },
             "IND": {
               "min": 0,
-              "max": 36
+              "max": 12
             }
           },
-          "ratings_as_of": "미확보",
-          "ratings_usable": false,
+          "ratings_as_of": "2026-10-01",
+          "ratings_usable": true,
           "polls_usable": true,
           "races": [
             {
-              "race_id": "USA:AK:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AR:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:AZ:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
               "race_id": "USA:CA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:CO:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:CT:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:FL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:GA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
             },
             {
               "race_id": "USA:HI:governor",
-              "rating": "unrated",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:IL:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MA:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MD:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:ME:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:MN:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:NM:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:NY:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:PA:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:RI:governor",
+              "rating": "solid_dem",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "DEM"
+            },
+            {
+              "race_id": "USA:AZ:governor",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:IA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:ID:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:IL:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:KS:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MA:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MD:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:ME:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:MI:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:MN:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NE:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NH:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NM:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NV:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:NY:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:OH:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:OK:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:OR:governor",
-              "rating": "unrated",
+              "rating": "lean_dem",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:PA:governor",
-              "rating": "unrated",
+              "race_id": "USA:AK:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:RI:governor",
-              "rating": "unrated",
+              "race_id": "USA:GA:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:SC:governor",
-              "rating": "unrated",
+              "race_id": "USA:NV:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:SD:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:TN:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:TX:governor",
-              "rating": "unrated",
-              "basis": "pending",
-              "party_abbr": "없음"
-            },
-            {
-              "race_id": "USA:VT:governor",
-              "rating": "unrated",
+              "race_id": "USA:OH:governor",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
               "race_id": "USA:WI:governor",
-              "rating": "unrated",
+              "rating": "toss_up",
               "basis": "pending",
               "party_abbr": "없음"
             },
             {
-              "race_id": "USA:WY:governor",
-              "rating": "unrated",
+              "race_id": "USA:FL:governor",
+              "rating": "lean_rep",
               "basis": "pending",
               "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:KS:governor",
+              "rating": "lean_rep",
+              "basis": "pending",
+              "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:TX:governor",
+              "rating": "lean_rep",
+              "basis": "pending",
+              "party_abbr": "없음"
+            },
+            {
+              "race_id": "USA:NH:governor",
+              "rating": "likely_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:AL:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:AR:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:ID:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:NE:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:OK:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:SC:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:SD:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:TN:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:VT:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
+            },
+            {
+              "race_id": "USA:WY:governor",
+              "rating": "solid_rep",
+              "basis": "rated_baseline_assumption",
+              "party_abbr": "GOP"
             }
           ]
         }
@@ -2444,7 +2454,7 @@
     "평가상 Solid/Likely 우세를 유지한다고 가정하는 집계. 확정 의석·당선 확률·통계적 신뢰구간이 아님. 대선 주 색상 미사용.",
     "seats·win_prob는 발행하지 않음. 조건부 범위는 통계적 신뢰구간이 아님.",
     "평가 등급은 검토본이며 자동 갱신되지 않음. 21일 경과 시 집계에서 제외.",
-    "36개 주 선거·14개 비선거 주. 준주 3곳 제외. 전국 주지사 등급 원문 미확보로 비선거 주만 기초 집계; 선거 36곳은 여론조사/인증 결과 또는 미정.",
+    "36개 주 선거·14개 비선거 주. 준주 3곳 제외. 2026-10-01 Cook 공개 등급을 2026-10-05 브라우저 원문으로 검토. Solid/Likely 유지 가정; Lean/Toss-up은 조사 우세/인증 결과 또는 미정.",
     "비선거 현직은 기존 의석 명부 기준이며 임기 중 교체와 공석은 명부 갱신 필요."
   ],
   "roster_generated_at": "2026-10-01T16:56:41.549449+00:00"
