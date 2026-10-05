@@ -1,0 +1,55 @@
+name: US election polls daily
+
+on:
+  schedule:
+    - cron: '10 21 * * *' # 06:10 KST daily; includes post-election health/results refresh
+  workflow_dispatch:
+
+concurrency:
+  group: us-election-polls-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate polling contracts
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest discover -s tests -p 'test*poll*.py' -v
+      - name: Refresh selected polls and reviewed official results
+        id: collect
+        continue-on-error: true
+        run: python3 'New for anti/scripts/election_watch/refresh_live_polls.py'
+      - name: Retain reviewable output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-election-polls
+          path: |
+            New for anti/public/data/usa_election_live_polls*.json
+            New for anti/public/data/usa_election_poll_history_2026.json
+      - name: Publish data and source health
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- 'New for anti/public/data/usa_election_live_polls_v1.json' 'New for anti/public/data/usa_election_live_polls_status_v1.json' 'New for anti/public/data/usa_election_poll_history_2026.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh US election polls and source health'
+          for attempt in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          git push origin HEAD:main
+      - name: Report collection failure after preserving last good data
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
