@@ -3121,7 +3121,7 @@ async function handleUsPolicy(request, env) {
             let filter;
             try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            return await kvCachedJson(env, `us:search:v5:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v6:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -3300,7 +3300,7 @@ async function usSemanticSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
-        rows = await usRpc(env, 'search_policy_corpus', {
+        rows = await usCorpusVectors(env, {
             p_query_embedding: vector,
             p_embedding_model: GEMINI_EMBEDDING_MODEL,
             p_result_limit: f.limit,
@@ -3347,9 +3347,9 @@ async function usSemanticSearch(env, f) {
     ].map(async source => {
         const ids=[...new Set((rows || []).filter(r=>r.source_type===source.type).map(r=>r.source_id))];
         if(!ids.length)return;
-        const query=new URLSearchParams({select:[source.key,...source.dates].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        const query=new URLSearchParams({select:[source.key,...source.dates,...(source.type==='public_law'?['govinfo_url','congress_url']:[])].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
         const metadata=await usFetch(env,source.table,query.toString());
-        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,Object.fromEntries(source.dates.map(key=>[key,row[key]])));
+        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,{...Object.fromEntries(source.dates.map(key=>[key,row[key]])),...(source.type==='public_law'?{source_url:row.govinfo_url||row.congress_url}: {})});
     }));
     const items = (rows || []).map((r) => {
         const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
@@ -3359,7 +3359,7 @@ async function usSemanticSearch(env, f) {
             title: r.title,
             similarity_score: r.similarity_score,
             ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
-            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : documentDates.get(`${r.source_type}:${r.source_id}`)?.source_url,
             ...(bill ? {
                 congress_number: bill.congress_number,
                 bill_type: bill.bill_type,
@@ -3377,13 +3377,43 @@ async function usSemanticSearch(env, f) {
 
 
 // Candidate discovery uses aliases AND a semantic candidate set. Labels are
-// verified only against stored title/summary, never inferred from cosine scores.
+// verified against bounded official evidence, never inferred from cosine scores.
 const CONDITION_SOURCES = [
     {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
     {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,publication_date,signed_date,federal_register_url'},
     {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,publication_date,federal_register_url'},
     {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
 ];
+async function usCorpusVectors(env,args){
+    const results=await Promise.allSettled(['search_policy_document_vectors','search_policy_corpus'].map(name=>usRpc(env,name,args)));
+    if(results.every(r=>r.status==='rejected'))throw results[1].reason;
+    const merged=new Map();
+    // Prefer refreshed passages for documents already indexed; legacy vectors
+    // remain a fallback for sources not yet migrated.
+    for(const r of [...results].reverse())if(r.status==='fulfilled')for(const item of r.value)
+        merged.set(`${item.source_type}:${item.source_id}`,item);
+    return [...merged.values()].sort((a,b)=>b.similarity_score-a.similarity_score).slice(0,args.p_result_limit);
+}
+async function usDocumentCandidates(env,terms){
+    let hits;
+    try {hits=await usRpc(env,'search_policy_document_terms',{p_terms:terms,p_limit:100});}
+    catch{return {available:false,items:[],limited:false};}
+    const items=[];
+    await Promise.all(CONDITION_SOURCES.map(async source=>{
+        const selected=hits.filter(h=>h.source_type===source.type),ids=selected.map(h=>String(h.source_id));
+        if(!ids.length)return;
+        const q=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        for(const row of await usFetch(env,source.table,q.toString())){
+            const h=selected.find(h=>String(h.source_id)===String(row[source.key]));
+            items.push({...row,type:source.type,id:String(row[source.key]),title:row.title||row.law_title,
+                summary:row.summary||row.abstract||'',evidence_parts:h.evidence_parts,
+                search_coverage:h.coverage,search_refresh_pending:h.refresh_pending,
+                source_url:row.federal_register_url||row.govinfo_url||row.congress_url||h.source_url,
+                ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
+        }
+    }));
+    return {available:true,items,limited:hits.length===100};
+}
 async function usHybridSearch(env, f) {
     const term=PolicySearchTerms.single(f.query), candidates=new Map();
     let lexicalAvailable=true,candidateLimited=false;
@@ -3393,6 +3423,10 @@ async function usHybridSearch(env, f) {
             ...source.fields.map(field=>({source,filter:{and:`(${PolicySearchTerms.clause([field],term)})`}}))];
     }) : [];
     const lexical=async()=>{
+        const documents=await usDocumentCandidates(env,[{key:term.label,...term}]);
+        candidateLimited ||= documents.limited;
+        for(const item of documents.items){const rank=PolicySearchTerms.lexicalRank(item,term);
+            if(rank)candidates.set(`${item.type}:${item.id}`,{...item,relevance_rank:rank,match_type:'official_text'});}
         for(let offset=0;offset<tasks.length;offset+=4){
             const results=await Promise.allSettled(tasks.slice(offset,offset+4).map(async({source,filter})=>{
                 const q=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.desc`,...filter});
@@ -3403,7 +3437,7 @@ async function usHybridSearch(env, f) {
                         summary:row.summary||row.abstract||'',source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
                         ...(source.type==='public_law'?{current_stage:'enacted'}:{})};
                     const rank=PolicySearchTerms.lexicalRank(item,term);
-                    if(rank)candidates.set(`${item.type}:${item.id}`,{...item,relevance_rank:rank,
+                    if(rank)candidates.set(`${item.type}:${item.id}`,{...candidates.get(`${item.type}:${item.id}`),...item,relevance_rank:rank,
                         match_type:rank===4?(term.aliases.includes(String(item.title).normalize('NFKC').toLowerCase().trim())?'exact_title':'exact_summary_title'):rank===3?'title_phrase':'summary_phrase'});
                 }
             }));
@@ -3427,11 +3461,14 @@ async function usConditionSearch(env,f){
     const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
     const add=(source,row,score=0)=>{
         const id=String(row[source.key]),key=`${source.type}:${id}`;
-        candidates.set(key,{...row,type:source.type,id,title:row.title||row.law_title,
+        candidates.set(key,{...candidates.get(key),...row,type:source.type,id,title:row.title||row.law_title,
             summary:row.summary||row.abstract||'',similarity_score:Math.max(score,candidates.get(key)?.similarity_score||0),
             source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
             ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
     };
+    const documents=await usDocumentCandidates(env,f.conditions);
+    candidateLimited ||= documents.limited;
+    for(const item of documents.items)candidates.set(`${item.type}:${item.id}`,item);
     // Search the conjunction separately so many single-condition matches cannot
     // crowd all-condition documents out of the bounded candidate pool.
     const jobs=CONDITION_SOURCES.flatMap(source=>[f.conditions,...f.conditions.map(t=>[t])].map(terms=>({source,terms})));
@@ -3446,18 +3483,22 @@ async function usConditionSearch(env,f){
     if(hasPolicyEmbeddingProvider(env)){
         try{
             const vector=await geminiEmbedQuery(env,f.conditions.map(t=>t.aliases.find(a=>/^[a-z]/.test(a))||t.label).join(' '));
-            const hits=await usRpc(env,'search_policy_corpus',{p_query_embedding:vector,p_embedding_model:GEMINI_EMBEDDING_MODEL,p_result_limit:50});
+            const hits=await usCorpusVectors(env,{p_query_embedding:vector,p_embedding_model:GEMINI_EMBEDDING_MODEL,p_result_limit:50});
             await Promise.all(CONDITION_SOURCES.map(async source=>{
                 const ids=[...new Set(hits.filter(r=>r.source_type===source.type).map(r=>String(r.source_id)))];
                 if(!ids.length)return;
                 const query=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
-                for(const row of await usFetch(env,source.table,query.toString()))add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
+                for(const row of await usFetch(env,source.table,query.toString())){
+                    add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
+                    candidates.get(`${source.type}:${row[source.key]}`).semantic_candidate=true;
+                }
             }));semanticAvailable=true;
         }catch{ /* Exact evidence search still works; expose degraded retrieval. */ }
     }
     const ranked=PolicySearchTerms.rank([...candidates.values()],f.conditions,10000);
     return {ok:true,body:{query:f.query,search_mode:'conditions',conditions:f.conditions.map(t=>({label:t.label,aliases:t.aliases})),
-        match_basis:'stored_title_summary',semantic_available:semanticAvailable,candidate_limited:candidateLimited,
+        match_basis:documents.available?'official_text_and_citations':'stored_title_summary',document_index_available:documents.available,
+        semantic_available:semanticAvailable,candidate_limited:candidateLimited,
         result_limited:ranked.length>f.limit,items:ranked.slice(0,f.limit)}};
 }
 
@@ -3521,6 +3562,7 @@ async function usCoverage(env) {
         regulationsTotal, regulationsEmbedded,
         committeeMembersCurrentByRole, committeeMembersCurrentTotal,
         legislatorsTotal, committeesTotal,
+        searchIndex,
     ] = await Promise.all([
         usCountScalar(env, 'bills'),
         usCountBy(env, 'bills', 'current_stage'),
@@ -3535,6 +3577,7 @@ async function usCoverage(env) {
         usCountScalar(env, 'committee_members', 'current=is.true'),
         usCountScalar(env, 'us_legislators'),
         usCountScalar(env, 'committees'),
+        usRpc(env,'policy_search_status',{}).catch(()=>null),
     ]);
     return {
         ok: true,
@@ -3547,6 +3590,7 @@ async function usCoverage(env) {
             committees: { total: committeesTotal },
             committee_members: { current_total: committeeMembersCurrentTotal, current_by_role: committeeMembersCurrentByRole },
             legislators: { total: legislatorsTotal },
+            search_index: searchIndex,
         },
     };
 }

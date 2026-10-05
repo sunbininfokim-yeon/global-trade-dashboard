@@ -270,7 +270,7 @@
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
-    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${item.match_level === 'semantic_only' ? '의미상 관련 · 조건 근거 미확인' : `${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치`}</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}${matches.some(m => m.matched && m.field === 'cited_document') ? ' · 인용 문서 맥락 포함' : ''}</span>` : '';
     const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
     const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
@@ -278,6 +278,7 @@
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
           ${conditionLabel}
+          ${item.search_refresh_pending ? '<span class="policy-search-result-meta">검색 자료 갱신 대기</span>' : ''}
           ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
@@ -317,7 +318,7 @@
     return `<div class="policy-condition-search">
       ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
       <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
-      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
+      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">${body.match_basis === 'official_text_and_citations' ? '공식 제목·요약·본문·인용 문서 기준' : '제목·요약 기준'}${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
     </div>`;
   }
 

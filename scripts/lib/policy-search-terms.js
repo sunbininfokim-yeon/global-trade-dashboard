@@ -1,6 +1,10 @@
 'use strict';
 // Auditable, conservative concept aliases. Unknown terms remain literal.
 const GROUPS = [
+  ['캐나다', '케나다', 'canada', 'canadian'],
+  ['관세', 'tariff', 'tariffs', 'customs duty', 'customs duties', 'import duty', 'import duties', 'ad valorem duty', 'ad valorem duties', 'ad valorem rate of duty', 'imposing duties'],
+  ['중국', 'china', 'chinese'], ['멕시코', 'mexico', 'mexican'], ['한국', 'south korea', 'republic of korea'],
+  ['일본', 'japan', 'japanese'], ['유럽연합', '유럽 연합', 'european union'],
   ['니켈', 'nickel'],
   ['수출통제', '수출 통제', '수출규제', '수출 규제', 'export control', 'export controls', 'export restriction', 'export restrictions', 'export ban', 'export bans', 'export licensing', 'export license', 'export licenses'],
   ['배터리', 'battery', 'batteries', '이차전지', '이차 전지', 'secondary battery', 'secondary batteries'],
@@ -32,19 +36,21 @@ function evidence(text,alias){
   return text.slice(Math.max(0,found.index-75),Math.min(text.length,found.index+found[0].length+110));
 }
 function annotate(item,terms){
-  const fields=[['title',plain(item.title)],['summary',plain(item.summary)]];
+  const fields=[{field:'title',text:plain(item.title)},{field:'summary',text:plain(item.summary)},
+    ...(item.evidence_parts||[]).map(p=>({...p,text:plain(p.text)}))];
   const matches=terms.map(t=>{
-    for(const [field,text]of fields)for(const alias of t.aliases){const snippet=evidence(text,alias);if(snippet)return {term:t.label,matched:true,alias,field,snippet};}
+    for(const part of fields)for(const alias of t.aliases){const snippet=evidence(part.text,alias);if(snippet)return {term:t.label,matched:true,alias,field:part.field,snippet,
+      ...(part.source_url?{source_url:part.source_url}:{}),...(part.target_id?{target_type:part.target_type,target_id:part.target_id,citation:part.citation,citation_url:part.citation_url}:{})};}
     return {term:t.label,matched:false};
   });
   const count=matches.filter(m=>m.matched).length;
-  return {...item,summary:undefined,condition_matches:matches,matched_condition_count:count,total_condition_count:terms.length,match_level:count===terms.length?'all':'partial'};
+  return {...item,summary:undefined,evidence_parts:undefined,condition_matches:matches,matched_condition_count:count,total_condition_count:terms.length,match_level:count===terms.length?'all':count?'partial':'semantic_only'};
 }
 function clause(fields,term){
   return `or(${fields.flatMap(field=>term.aliases.map(alias=>`${field}.ilike.${JSON.stringify('*'+alias.replace(/ /g,'*')+'*')}`)).join(',')})`;
 }
 function rank(items,terms,limit){
-  return items.map(i=>annotate(i,terms)).filter(i=>i.matched_condition_count>0)
+  return items.map(i=>annotate(i,terms)).filter(i=>i.matched_condition_count>0 || (i.semantic_candidate && i.similarity_score>=0.65))
     .sort((a,b)=>b.matched_condition_count-a.matched_condition_count || (b.similarity_score||0)-(a.similarity_score||0) || String(a.id).localeCompare(String(b.id)))
     .slice(0,limit);
 }
@@ -62,6 +68,7 @@ function lexicalRank(item,term) {
   if(heading && plain(heading).split(/\s+or\s+(?:the\s+)?/).some(name=>term.aliases.includes(name.replace(/\s+of\s+\d{4}$/,''))))return 4;
   if(term.aliases.some(a=>evidence(title,a)))return 3;
   if(term.aliases.some(a=>evidence(summary,a)))return 1;
+  if((item.evidence_parts||[]).some(p=>term.aliases.some(a=>evidence(plain(p.text),a))))return 1;
   return 0;
 }
 module.exports={parse,annotate,clause,rank,single,lexicalRank};

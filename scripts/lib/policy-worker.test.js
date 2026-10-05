@@ -176,6 +176,7 @@ test('condition search includes full and partial matches across types, with no e
  const calls=[];
  const w=worker(async url=>{
   const u=new URL(url);calls.push(u);
+  if(u.pathname.endsWith('/rpc/search_policy_document_terms'))return Response.json({message:'not installed'},{status:404});
   assert.ok(u.searchParams.get('and').startsWith('(or('));
   if(u.pathname.endsWith('/bills'))return Response.json([
    {bill_id:'119-hr-1',title:'Nickel batteries',summary:'Export controls apply',current_stage:'introduced'},
@@ -191,7 +192,7 @@ test('condition search includes full and partial matches across types, with no e
  assert.deepEqual(data.items.map(i=>i.matched_condition_count),[3,3,2]);
  assert.equal(data.items[2].condition_matches.find(m=>m.term==='수출통제').matched,false);
  assert.ok(data.items.some(i=>i.type==='public_law'));
- assert.equal(calls.length,16);assert.ok(calls.some(u=>u.searchParams.get('and').includes('),or(')));
+ assert.equal(calls.filter(u=>!u.pathname.includes('/rpc/')).length,16);assert.ok(calls.some(u=>u.searchParams.get('and')?.includes('),or(')));
 });
 test('too many conditions return an actionable 400 without API calls',async()=>{
  const w=worker(async()=>{throw Error('must not call');});
