@@ -4,14 +4,34 @@ on:
   schedule:
     - cron: '10 21 * * *' # 06:10 KST daily; includes post-election health/results refresh
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/election_watch/**/*poll*'
+      - 'New for anti/scripts/election_watch/config/usa_polls/**'
+      - '.github/workflows/us_election_polls_refresh.yml'
+
+permissions:
+  contents: read
 
 concurrency:
   group: us-election-polls-refresh
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate polling contracts without network
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest discover -s tests -p 'test*poll*.py' -v
+
   refresh:
-    if: github.ref == 'refs/heads/main'
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -23,9 +43,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate polling contracts
-        working-directory: New for anti/scripts/election_watch
-        run: python3 -m unittest discover -s tests -p 'test*poll*.py' -v
       - name: Refresh selected polls and reviewed official results
         id: collect
         continue-on-error: true
