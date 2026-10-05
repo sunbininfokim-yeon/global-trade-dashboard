@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>초크포인트 UI 로컬 검증</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    html, body { margin: 0; overflow: auto; background: #080e1b; color: #e2e8f0; }
+    #shipping-ui-preview { padding: 24px; }
+    @media (max-width: 600px) { #shipping-ui-preview { padding: 12px; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/shipping.js"></script>
+</head>
+<body>
+  <!-- Real UI and committed public data only. No fixture or mock responses. -->
+  <main id="shipping-ui-preview"></main>
+  <script>window.ShippingDashboard.render('shipping_chokepoints', document.getElementById('shipping-ui-preview'));</script>
+</body>
+</html>
