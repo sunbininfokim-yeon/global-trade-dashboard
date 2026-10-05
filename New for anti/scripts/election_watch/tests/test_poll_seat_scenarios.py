@@ -81,6 +81,23 @@ class SeatScenarioTests(unittest.TestCase):
         p['governor']['ratings']['solid_dem'].append('DE')
         with self.assertRaises(ValueError):build(p=p)
 
+    def test_lean_direction_never_becomes_a_poll_conclusion(self):
+        b=board();b['races']['USA:NC:senate']={'windows':{'7':{'status':'insufficient_pollsters','party':None}}}
+        result=build(b)
+        conclusions=result['windows']['7']['competitive_conclusions']
+        self.assertEqual(len(conclusions),64)
+        row=next(r for r in conclusions if r['race_id']=='USA:NC:senate')
+        self.assertEqual(row['party_abbr'],'없음')
+        self.assertEqual(row['conclusion_ko'],'판정 보류')
+
+    def test_solid_likely_baseline_is_separate_from_competitive_polling(self):
+        b=board();b['races']['USA:GA:senate']={'windows':{'7':{'status':'poll_lead','party':'REP'}}}
+        result=build(b)
+        row=next(r for r in result['chambers']['senate']['races'] if r['race_id']=='USA:GA:senate')
+        self.assertEqual(row['basis'],'rated_baseline_assumption')
+        self.assertEqual(row['party_abbr'],'DEM')
+        self.assertFalse(row['competitive'])
+
     def test_bad_roster_holds_scenario_without_discarding_fresh_polls(self):
         import refresh_live_polls
         from test_live_polls import poll

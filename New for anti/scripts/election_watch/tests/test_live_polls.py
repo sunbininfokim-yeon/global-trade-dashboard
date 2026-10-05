@@ -25,15 +25,15 @@ def summary(raw,days=7):
 class LivePollTests(unittest.TestCase):
     def test_competitive_watchlist_adds_discovery_slots_without_poll_leads(self):
         selected=apply_watchlist(POLICY,WATCHLIST)
-        self.assertEqual(selected['watchlist']['priority_race_count'],55)
+        self.assertEqual(selected['watchlist']['priority_race_count'],64)
         self.assertEqual(selected['races']['USA:OH:house:07']['monitor_priority']['tier'],'toss_up')
         self.assertEqual(selected['races']['USA:AK:senate']['required_candidates'],[])
         self.assertIn('OH',selected['states'])
-        self.assertEqual(POLICY['states'],['NY','TN','GA','FL','PA','MI','WI','AZ','NV','NC'])
+        self.assertEqual(POLICY['states'],['NY','TN','GA','FL','PA','MI','WI','AZ','NV','NC','TX'])
         board=build_live([],selected,{'schema':'usa_confirmed_results_v1','results':[]},DAY,DAY,'test')
         self.assertEqual(board['races']['USA:AK:senate']['windows']['7']['status'],'no_recent_poll')
         self.assertIsNone(board['races']['USA:AK:senate']['windows']['7']['party'])
-        self.assertEqual(board['watchlist']['priority_race_count'],55)
+        self.assertEqual(board['watchlist']['priority_race_count'],64)
     def test_watchlist_rejects_duplicate_races(self):
         import copy
         bad=copy.deepcopy(WATCHLIST)
@@ -72,8 +72,31 @@ class LivePollTests(unittest.TestCase):
         a=[{'choice':'Kathy Hochul','pct':20},{'choice':'Bruce Blakeman','pct':20},{'choice':'Unmapped Candidate','pct':50}]
         s=summary([poll(answers=a),second(answers=a)]);self.assertEqual(s['status'],'unknown_leader_party');self.assertIsNone(s['party'])
     def test_watch_slot_is_not_general_race(self):
-        good,bad=normalize([poll(subject='2026 Tennessee')],POLICY,DAY)
+        good,bad=normalize([poll(subject='2026 Tennessee',poll_type='us-senator')],POLICY,DAY)
         self.assertFalse(good);self.assertEqual(bad[0]['reason'],'matchup_not_reviewed')
+
+    def test_non_election_interest_slots_are_excluded(self):
+        selected=apply_watchlist(POLICY,WATCHLIST)
+        for item in POLICY['excluded_watch_slots']:
+            self.assertNotIn(item['race_id'],selected['races'])
+        self.assertIn('USA:TX:governor',selected['races'])
+        self.assertEqual(selected['races']['USA:OH:senate']['election_kind'],'special')
+
+    def test_siena_partner_labels_count_as_one_institution(self):
+        raw=[poll(pollster='Siena University',url='https://sri.siena.edu/test'),
+             poll('partner',pollster='ReconMR/Siena University',url='https://sri.siena.edu/partner')]
+        self.assertEqual(summary(raw)['pollster_count'],1)
+        self.assertEqual(summary(raw)['status'],'insufficient_pollsters')
+
+    def test_reviewed_house_poll_joins_only_the_exact_district(self):
+        item=poll(subject='2026 NY-17',poll_type='us-representative',seat_name='NY-17',
+                  pollster='Emerson College',url='https://emersoncollegepolling.com/ny-17-2026-poll/',
+                  answers=[{'choice':'Cait Conley','pct':48},{'choice':'Mike Lawler','pct':46}])
+        accepted,_=normalize([item],POLICY,DAY)
+        self.assertEqual(accepted[0]['race_id'],'USA:NY:house:17')
+        accepted,rejected=normalize([{**item,'seat_name':'NY-18'}],POLICY,DAY)
+        self.assertFalse(accepted)
+        self.assertEqual(rejected[0]['reason'],'ambiguous_seat')
     def test_corrections_replace_snapshot(self):
         result={'schema':'usa_confirmed_results_v1','results':[]}
         a=build_live([poll(),second()],POLICY,result,DAY,DAY,'test')

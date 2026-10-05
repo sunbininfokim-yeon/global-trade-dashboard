@@ -11,7 +11,8 @@
     "WI",
     "AZ",
     "NV",
-    "NC"
+    "NC",
+    "TX"
   ],
   "selection_criteria_ko": [
     "대학 조사센터 또는 지역 언론 공동 조사이며 원문과 조사 방법을 공개하는 기관을 우선 선정",
@@ -109,24 +110,33 @@
       ],
       "methodology_url": "https://surveyresearch.ecu.edu/",
       "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Marist University": {
+      "group": "marist",
+      "hosts": [
+        "maristpoll.marist.edu"
+      ],
+      "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+      "selection_reason_ko": "대학 조사센터가 조사 기간·표본·방법·원문을 공개하고 주별 선거를 지속 발표. 2026-10-05 Ohio 원문 검토. 정확도 보증은 아님."
+    },
+    "Marist College": {
+      "group": "marist",
+      "hosts": [
+        "maristpoll.marist.edu"
+      ],
+      "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+      "selection_reason_ko": "대학 조사센터가 조사 기간·표본·방법·원문을 공개하고 주별 선거를 지속 발표. 2026-10-05 Ohio 원문 검토. 정확도 보증은 아님."
+    },
+    "ReconMR/Siena University": {
+      "group": "siena",
+      "hosts": [
+        "sri.siena.edu"
+      ],
+      "methodology_url": "https://sri.siena.edu/",
+      "selection_reason_ko": "Siena 원문 및 ReconMR 파트너 표기 확인. NYTimes/Siena와 같은 siena 그룹으로 중복 집계 방지."
     }
   },
   "races": {
-    "USA:NY:senate": {
-      "state": "NY",
-      "office": "senate",
-      "district": null,
-      "subject": "2026 New York",
-      "poll_type": "us-senator",
-      "seat_name": null,
-      "contest_id": "USA:NY:senate:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "사용자 지정 관심 주"
-    },
     "USA:NY:governor": {
       "state": "NY",
       "office": "governor",
@@ -177,13 +187,27 @@
       "subject": "2026 Tennessee",
       "poll_type": "governor",
       "seat_name": null,
-      "contest_id": "USA:TN:governor:2026:general",
+      "contest_id": "USA:TN:governor:2026:general:regular",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "사용자 지정 관심 주"
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Marsha Blackburn",
+        "Jerri Green"
+      ],
+      "candidates": {
+        "Marsha Blackburn": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Jerri Green": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
     },
     "USA:GA:senate": {
       "state": "GA",
@@ -220,13 +244,27 @@
       "subject": "2026 Georgia",
       "poll_type": "governor",
       "seat_name": null,
-      "contest_id": "USA:GA:governor:2026:general",
+      "contest_id": "USA:GA:governor:2026:general:regular",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "사용자 지정 관심 주"
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Keisha Lance Bottoms",
+        "Rick Jackson"
+      ],
+      "candidates": {
+        "Keisha Lance Bottoms": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Rick Jackson": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
     },
     "USA:FL:senate": {
       "state": "FL",
@@ -283,21 +321,6 @@
       },
       "selection_reason_ko": "사용자 지정 관심 주",
       "election_kind": "regular"
-    },
-    "USA:PA:senate": {
-      "state": "PA",
-      "office": "senate",
-      "district": null,
-      "subject": "2026 Pennsylvania",
-      "poll_type": "us-senator",
-      "seat_name": null,
-      "contest_id": "USA:PA:senate:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
     },
     "USA:PA:governor": {
       "state": "PA",
@@ -383,21 +406,6 @@
       "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
       "election_kind": "regular"
     },
-    "USA:WI:senate": {
-      "state": "WI",
-      "office": "senate",
-      "district": null,
-      "subject": "2026 Wisconsin",
-      "poll_type": "us-senator",
-      "seat_name": null,
-      "contest_id": "USA:WI:senate:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
-    },
     "USA:WI:governor": {
       "state": "WI",
       "office": "governor",
@@ -426,21 +434,6 @@
       "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
       "election_kind": "regular"
     },
-    "USA:AZ:senate": {
-      "state": "AZ",
-      "office": "senate",
-      "district": null,
-      "subject": "2026 Arizona",
-      "poll_type": "us-senator",
-      "seat_name": null,
-      "contest_id": "USA:AZ:senate:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
-    },
     "USA:AZ:governor": {
       "state": "AZ",
       "office": "governor",
@@ -448,28 +441,27 @@
       "subject": "2026 Arizona",
       "poll_type": "governor",
       "seat_name": null,
-      "contest_id": "USA:AZ:governor:2026:general",
+      "contest_id": "USA:AZ:governor:2026:general:regular",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
-    },
-    "USA:NV:senate": {
-      "state": "NV",
-      "office": "senate",
-      "district": null,
-      "subject": "2026 Nevada",
-      "poll_type": "us-senator",
-      "seat_name": null,
-      "contest_id": "USA:NV:senate:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Katie Hobbs",
+        "Andy Biggs"
+      ],
+      "candidates": {
+        "Katie Hobbs": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Andy Biggs": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
     },
     "USA:NV:governor": {
       "state": "NV",
@@ -530,21 +522,6 @@
       },
       "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
       "election_kind": "regular"
-    },
-    "USA:NC:governor": {
-      "state": "NC",
-      "office": "governor",
-      "district": null,
-      "subject": "2026 North Carolina",
-      "poll_type": "governor",
-      "seat_name": null,
-      "contest_id": "USA:NC:governor:2026:general",
-      "general_from": "2026-09-01",
-      "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님"
     },
     "USA:NY:house:10": {
       "state": "NY",
@@ -631,6 +608,151 @@
       },
       "selection_reason_ko": "지역 대학의 지역구별 본선 조사 공개·2024 대선 교차투표 지역(조사기관 설명)",
       "election_kind": "regular"
+    },
+    "USA:TX:governor": {
+      "state": "TX",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Texas",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:TX:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Gina Hinojosa",
+        "Greg Abbott"
+      ],
+      "candidates": {
+        "Gina Hinojosa": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        },
+        "Greg Abbott": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:OH:governor": {
+      "state": "OH",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Ohio",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:OH:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Amy Acton",
+        "Vivek Ramaswamy"
+      ],
+      "candidates": {
+        "Amy Acton": {
+          "party": "DEM",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        },
+        "Vivek Ramaswamy": {
+          "party": "REP",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:IA:governor": {
+      "state": "IA",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Iowa",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:IA:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Rob Sand",
+        "Zach Lahn"
+      ],
+      "candidates": {
+        "Rob Sand": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        },
+        "Zach Lahn": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:OH:senate": {
+      "state": "OH",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Ohio",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:OH:senate:2026:general:special",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "special",
+      "required_candidates": [
+        "Sherrod Brown",
+        "Jon Husted"
+      ],
+      "candidates": {
+        "Sherrod Brown": {
+          "party": "DEM",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        },
+        "Jon Husted": {
+          "party": "REP",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:NY:house:17": {
+      "state": "NY",
+      "office": "house",
+      "district": "17",
+      "subject": "2026 NY-17",
+      "poll_type": "us-representative",
+      "seat_name": "NY-17",
+      "contest_id": "USA:NY:house:17:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Cait Conley",
+        "Mike Lawler"
+      ],
+      "candidates": {
+        "Cait Conley": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/ny-17-2026-poll/"
+        },
+        "Mike Lawler": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/ny-17-2026-poll/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
     }
   },
   "official_result_hosts": {
@@ -667,5 +789,43 @@
   },
   "excluded_records": {
     "us-202easa9c1ac17": "forced_choice_question_not_comparable"
-  }
+  },
+  "excluded_watch_slots": [
+    {
+      "race_id": "USA:NY:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:PA:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:WI:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:AZ:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:NV:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:NC:governor",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    }
+  ]
 }
