@@ -6,8 +6,23 @@ from pathlib import Path
 from election_watch.polls import read, atomic
 from election_watch.live_polls import (apply_watchlist, build_live, close_finished_races,
                                       fetch_polls, poll_history, validated_results)
+from election_watch.seat_scenarios import build_scenarios, held_scenarios
 
 ROOT = Path(__file__).resolve().parent
+
+
+def publish_scenarios(board, args, checked, health=None):
+    # Forecast validation must not discard successfully fetched polling data.
+    try:
+        forecast = build_scenarios(board, read(args.election_board), read(args.scenario_policy),
+                                   args.as_of, checked, health)
+        status = {'status': 'ok'}
+    except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+        forecast = held_scenarios(args.as_of, checked, type(exc).__name__)
+        status = {'status': 'hold', 'error_type': type(exc).__name__}
+    atomic(args.output.with_name('usa_midterms_forecast_v1.json'), forecast)
+    return status
+
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -16,6 +31,8 @@ def main():
     p.add_argument('--results', type=Path, default=ROOT/'config/usa_polls/results_2026.json')
     p.add_argument('--output', type=Path, default=ROOT.parent.parent/'public/data/usa_election_live_polls_v1.json')
     p.add_argument('--as-of', default=datetime.now(timezone.utc).date().isoformat())
+    p.add_argument('--scenario-policy', type=Path, default=ROOT/'config/usa_polls/seat_scenarios_2026.json')
+    p.add_argument('--election-board', type=Path, default=ROOT.parent.parent/'public/data/elections_board_v1.json')
     p.add_argument('--input', type=Path, help='Replay saved provider response for testing; marked as replay')
     args = p.parse_args()
     checked = datetime.now(timezone.utc).isoformat()
@@ -30,10 +47,15 @@ def main():
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')
         atomic(archive_path, history)
         atomic(args.output, board)
-        atomic(health, {'checked_at': checked, 'status': board['source_status'], 'as_of': args.as_of})
+        forecast_status = publish_scenarios(board, args, checked)
+        atomic(health, {'checked_at': checked, 'status': board['source_status'], 'as_of': args.as_of,
+                        'seat_scenario': forecast_status})
         print(board['coverage'])
         print({d: {s: sum(r['windows'][d]['status'] == s for r in board['races'].values())
                    for s in ('poll_lead','no_recent_poll','insufficient_pollsters','tie')} for d in ('7','14')})
+        if forecast_status['status'] != 'ok':
+            print('Seat scenario held:', forecast_status['error_type'])
+            return 1
     except Exception as exc:
         # Official outcomes are independent of the poll transport. If the API
         # fails, still accept a newly reviewed result without refreshing polls.
@@ -47,6 +69,8 @@ def main():
                     len(r.get('observations', [])) for r in existing.get('races', {}).values())
                 existing['source_status'] = 'error_stale'
                 atomic(args.output, existing)
+            # Recompute conditional counts without stale polling signals.
+            publish_scenarios(existing, args, checked, {'status': 'error'})
         except (OSError, ValueError, KeyError, TypeError):
             pass
         atomic(health, {'checked_at': checked, 'status': 'error', 'error_type': type(exc).__name__,
