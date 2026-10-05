@@ -6,6 +6,7 @@ const GROUPS = [
   ['배터리', 'battery', 'batteries', '이차전지', '이차 전지', 'secondary battery', 'secondary batteries'],
   ['리튬', 'lithium'], ['코발트', 'cobalt'], ['반도체', 'semiconductor', 'semiconductors'],
   ['희토류', 'rare earth', 'rare earths'], ['핵심광물', '핵심 광물', 'critical mineral', 'critical minerals'],
+  ['암호화폐', 'cryptocurrency', 'cryptocurrencies', 'crypto', 'digital asset', 'digital assets', 'digital commodity', 'digital commodities'],
 ];
 const normalize = value => String(value || '').normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim();
 function parse(query) {
@@ -47,4 +48,20 @@ function rank(items,terms,limit){
     .sort((a,b)=>b.matched_condition_count-a.matched_condition_count || (b.similarity_score||0)-(a.similarity_score||0) || String(a.id).localeCompare(String(b.id)))
     .slice(0,limit);
 }
-module.exports={parse,annotate,clause,rank};
+function single(query) {
+  // PostgREST syntax and LIKE wildcards must never become user operators.
+  const label=normalize(query).replace(/[^\p{L}\p{N}\s-]/gu,' ').replace(/\s+/g,' ').trim();
+  return {label,aliases:GROUPS.find(g=>g.includes(label))||[label]};
+}
+function lexicalRank(item,term) {
+  const title=plain(item.title),summary=plain(item.summary);
+  if(term.aliases.some(a=>title===a))return 4;
+  // CRS summaries conventionally start with the official short title in bold.
+  // Read only that heading; an incidental act mentioned later is not an alias.
+  const heading=String(item.summary||'').match(/^\s*<p>\s*<(?:strong|b)>([\s\S]*?)<\/(?:strong|b)>\s*<\/p>/i)?.[1];
+  if(heading && plain(heading).split(/\s+or\s+(?:the\s+)?/).some(name=>term.aliases.includes(name.replace(/\s+of\s+\d{4}$/,''))))return 4;
+  if(term.aliases.some(a=>evidence(title,a)))return 3;
+  if(term.aliases.some(a=>evidence(summary,a)))return 1;
+  return 0;
+}
+module.exports={parse,annotate,clause,rank,single,lexicalRank};

@@ -24,6 +24,25 @@ ISO_BY_CODE = {str(int(v['m49'])): k for k, v in PRIORITY_REPORTERS.items()}
 ISO_BY_CODE.update({'180': 'COD', '894': 'ZMB', '716': 'ZWE', '508': 'MOZ'})
 
 
+def read_controls(path):
+    """The export-control catalogue: a manifest plus one file per category.
+
+    Accepts the directory (public/data/export_controls) or a single legacy
+    document with a flat `controls` list, and returns the flat shape.
+    """
+    path = Path(path)
+    if not path.is_dir():
+        return read_json(path)
+    manifest = read_json(path / 'manifest.json')
+    if not isinstance(manifest, dict):
+        return None
+    controls = []
+    for module in manifest.get('modules') or []:
+        body = read_json(path / module['file'])
+        controls.extend((body or {}).get('controls') or [])
+    return {**{k: v for k, v in manifest.items() if k != 'modules'}, 'controls': controls}
+
+
 def months_back(end, count):
     period_key(end, 'M')
     n = int(end[:4]) * 12 + int(end[4:]) - 1
@@ -151,7 +170,7 @@ def main(argv=None):
     p.add_argument('--interval', type=float, default=3)
     p.add_argument('--checkpoint', type=Path, required=True, help='persist outside public; restore across CI runs')
     p.add_argument('--out-dir', type=Path, default=PUBLIC / 'commodity_trade_bilateral_v1')
-    p.add_argument('--controls', type=Path, default=PUBLIC / 'export_controls_v1.json')
+    p.add_argument('--controls', type=Path, default=PUBLIC / 'export_controls')
     p.add_argument('--policy-monitor', type=Path)
     p.add_argument('--checkpoint-seed-out', type=Path, help='optional non-secret handoff state; never under public/')
     p.add_argument('--plan-only', action='store_true')
@@ -217,7 +236,7 @@ def main(argv=None):
                 state['jobs'][j['id']].setdefault('query_meta', j['meta'])
                 state['jobs'][j['id']].setdefault('partners', j['partners'])
         atomic_json(args.checkpoint, state)
-        catalogue = read_json(args.controls)
+        catalogue = read_controls(args.controls)
         if not isinstance(catalogue, dict) or not isinstance(catalogue.get('controls'), list):
             raise ContractError('export-control catalogue missing or invalid; publication stopped')
         catalogue = with_documents(catalogue, read_json(ROOT / 'config/export_policy_documents.json', {'documents': []}))

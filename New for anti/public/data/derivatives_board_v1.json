@@ -3,29 +3,29 @@
   "kr": {
     "schema_version": "kr-derivatives-v1",
     "as_of": "2026-09-03",
-    "fetched_at": "2026-09-25T23:58:22.787744+00:00",
+    "fetched_at": "2026-10-03T00:30:01.542277+00:00",
     "kospi200_futures": {
       "product": "KOSPI200_futures",
-      "volume": 114797.0,
-      "trading_value_krw": 32323750947500.0,
+      "volume": 105208.0,
+      "trading_value_krw": 29128146375000.0,
       "n_contracts": 26,
       "quality": "observed",
       "coverage_ko": "코스피200 선물 전 결제월 합계. 미니코스피200 제외.",
       "source": "KRX OpenAPI drv/fut_bydd_trd"
     },
     "kospi200_options": {
-      "call_volume": 374571.0,
-      "put_volume": 294187.0,
-      "call_trading_value_krw": 212473450000.0,
-      "put_trading_value_krw": 106094230000.0,
-      "put_call_volume": 0.7854,
-      "put_call_trading_value": 0.4993,
-      "n_call_contracts": 5246,
-      "n_put_contracts": 5246,
+      "call_volume": 184565.0,
+      "put_volume": 127914.0,
+      "call_trading_value_krw": 156047937500.0,
+      "put_trading_value_krw": 116142727500.0,
+      "put_call_volume": 0.6931,
+      "put_call_trading_value": 0.7443,
+      "n_call_contracts": 4838,
+      "n_put_contracts": 4838,
       "quality": "observed",
       "coverage_ko": "코스피200 표준·위클리 옵션 합계. 미니코스피200·코스닥150 제외.",
       "source": "KRX OpenAPI drv/opt_bydd_trd",
-      "bas_dd": "20260923"
+      "bas_dd": "20261002"
     },
     "investor_nets": {
       "note_ko": "KRX 공개 대시보드는 코스피200 선물 및 옵션 전체의 투자자별 매수·매도·순매수를 제공한다. 옵션 콜/풋 분리는 인증이 필요한 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export해야 한다.",
@@ -34,45 +34,45 @@
         "coverage_ko": "KOSPI200 선물 및 KOSPI200 옵션 전체의 투자자별 매수·매도·순매수. 옵션 콜/풋 분리 아님.",
         "unit": "KRW",
         "futures": {
-          "as_of": "2026-09-23",
-          "observed_at_krx": "2026.09.26 AM 08:58:21",
+          "as_of": "2026-10-02",
+          "observed_at_krx": "2026.10.03 AM 09:30:00",
           "investors": {
             "institution": {
-              "buy_krw": 3431000000000,
+              "buy_krw": 3036000000000,
               "sell_krw": 3831000000000,
-              "net_krw": -400000000000
+              "net_krw": -795000000000
             },
             "foreign": {
-              "buy_krw": 24226000000000,
-              "sell_krw": 23839000000000,
-              "net_krw": 388000000000
+              "buy_krw": 21513000000000,
+              "sell_krw": 20654000000000,
+              "net_krw": 859000000000
             },
             "retail": {
-              "buy_krw": 4415000000000,
-              "sell_krw": 4405000000000,
-              "net_krw": 10000000000
+              "buy_krw": 4335000000000,
+              "sell_krw": 4341000000000,
+              "net_krw": -6000000000
             }
           },
           "quality": "observed"
         },
         "options_total": {
-          "as_of": "2026-09-23",
-          "observed_at_krx": "2026.09.26 AM 08:58:22",
+          "as_of": "2026-10-02",
+          "observed_at_krx": "2026.10.03 AM 09:30:01",
           "investors": {
             "institution": {
-              "buy_krw": 15000000000,
-              "sell_krw": 6000000000,
-              "net_krw": 9000000000
+              "buy_krw": 32000000000,
+              "sell_krw": 33000000000,
+              "net_krw": -1000000000
             },
             "foreign": {
-              "buy_krw": 77000000000,
-              "sell_krw": 87000000000,
-              "net_krw": -9000000000
+              "buy_krw": 87000000000,
+              "sell_krw": 85000000000,
+              "net_krw": 1000000000
             },
             "retail": {
-              "buy_krw": 19000000000,
-              "sell_krw": 19000000000,
-              "net_krw": 1000000000
+              "buy_krw": 20000000000,
+              "sell_krw": 21000000000,
+              "net_krw": 0
             }
           },
           "quality": "observed"
@@ -96,17 +96,17 @@
         },
         "products": {
           "options_call": {
-            "as_of": "2026-09-18",
+            "as_of": "2026-09-30",
             "source": "KRX 15007 authenticated export",
             "quality": "observed",
             "foreign": {
-              "buy_krw": 55009000000,
-              "sell_krw": 54371000000,
-              "net_krw": 638000000
+              "buy_krw": 57648000000,
+              "sell_krw": 61131000000,
+              "net_krw": -3483000000
             },
             "market_total": {
-              "buy_krw": 68067000000,
-              "sell_krw": 68067000000,
+              "buy_krw": 75776000000,
+              "sell_krw": 75776000000,
               "net_krw": 0
             },
             "series": [
@@ -143,21 +143,38 @@
                 "quality": "observed",
                 "source_unit": "million_krw",
                 "conversion_to_krw": 1000000
+              },
+              {
+                "date": "2026-09-30",
+                "foreign": {
+                  "buy_krw": 57648000000,
+                  "sell_krw": 61131000000,
+                  "net_krw": -3483000000
+                },
+                "market_total": {
+                  "buy_krw": 75776000000,
+                  "sell_krw": 75776000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
               }
             ]
           },
           "options_put": {
-            "as_of": "2026-09-18",
+            "as_of": "2026-09-30",
             "source": "KRX 15007 authenticated export",
             "quality": "observed",
             "foreign": {
-              "buy_krw": 69696000000,
-              "sell_krw": 66136000000,
-              "net_krw": 3560000000
+              "buy_krw": 48465000000,
+              "sell_krw": 45890000000,
+              "net_krw": 2575000000
             },
             "market_total": {
-              "buy_krw": 77239000000,
-              "sell_krw": 77239000000,
+              "buy_krw": 57714000000,
+              "sell_krw": 57714000000,
               "net_krw": 0
             },
             "series": [
@@ -194,21 +211,38 @@
                 "quality": "observed",
                 "source_unit": "million_krw",
                 "conversion_to_krw": 1000000
+              },
+              {
+                "date": "2026-09-30",
+                "foreign": {
+                  "buy_krw": 48465000000,
+                  "sell_krw": 45890000000,
+                  "net_krw": 2575000000
+                },
+                "market_total": {
+                  "buy_krw": 57714000000,
+                  "sell_krw": 57714000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
               }
             ]
           },
           "futures": {
-            "as_of": "2026-09-18",
+            "as_of": "2026-09-30",
             "source": "KRX 15007 authenticated export",
             "quality": "observed",
             "foreign": {
-              "buy_krw": 21907834000000,
-              "sell_krw": 20376636000000,
-              "net_krw": 1531198000000
+              "buy_krw": 25818801000000,
+              "sell_krw": 27126656000000,
+              "net_krw": -1307855000000
             },
             "market_total": {
-              "buy_krw": 29816236000000,
-              "sell_krw": 29816236000000,
+              "buy_krw": 34984612000000,
+              "sell_krw": 34984612000000,
               "net_krw": 0
             },
             "series": [
@@ -245,6 +279,23 @@
                 "quality": "observed",
                 "source_unit": "million_krw",
                 "conversion_to_krw": 1000000
+              },
+              {
+                "date": "2026-09-30",
+                "foreign": {
+                  "buy_krw": 25818801000000,
+                  "sell_krw": 27126656000000,
+                  "net_krw": -1307855000000
+                },
+                "market_total": {
+                  "buy_krw": 34984612000000,
+                  "sell_krw": 34984612000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
               }
             ]
           }
@@ -262,145 +313,145 @@
   },
   "us_oi_snap": {
     "schema_version": "us-oi-daily-v1",
-    "as_of": "2026-09-25",
-    "fetched_at": "2026-09-25T23:58:29.037236+00:00",
+    "as_of": "2026-10-03",
+    "fetched_at": "2026-10-03T00:30:07.473447+00:00",
     "names": [
       {
         "symbol": "MU",
-        "put_call_oi": 1.0247,
-        "put_call_volume": 0.6352,
-        "put_oi": 1659037.0,
-        "call_oi": 1619120.0,
-        "put_volume": 443505.0,
-        "call_volume": 698235.0,
-        "atm_call_iv": 0.2858,
-        "total_volume": 1141740.0,
+        "put_call_oi": 1.008,
+        "put_call_volume": 0.6245,
+        "put_oi": 1777966.0,
+        "call_oi": 1763794.0,
+        "put_volume": 509662.0,
+        "call_volume": 816157.0,
+        "atm_call_iv": 0.2941,
+        "total_volume": 1325819.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "NVDA",
-        "put_call_oi": 0.8612,
-        "put_call_volume": 0.4351,
-        "put_oi": 6782018.0,
-        "call_oi": 7875366.0,
-        "put_volume": 927902.0,
-        "call_volume": 2132620.0,
-        "atm_call_iv": 0.2018,
-        "total_volume": 3060522.0,
+        "put_call_oi": 0.87,
+        "put_call_volume": 0.5943,
+        "put_oi": 6935306.0,
+        "call_oi": 7972070.0,
+        "put_volume": 1726869.0,
+        "call_volume": 2905688.0,
+        "atm_call_iv": 0.3248,
+        "total_volume": 4632557.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AMD",
-        "put_call_oi": 1.1128,
-        "put_call_volume": 0.7265,
-        "put_oi": 1760220.0,
-        "call_oi": 1581767.0,
-        "put_volume": 305491.0,
-        "call_volume": 420498.0,
-        "atm_call_iv": 0.3634,
-        "total_volume": 725989.0,
+        "put_call_oi": 1.1379,
+        "put_call_volume": 0.7701,
+        "put_oi": 1760569.0,
+        "call_oi": 1547247.0,
+        "put_volume": 317332.0,
+        "call_volume": 412075.0,
+        "atm_call_iv": 0.306,
+        "total_volume": 729407.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AMZN",
-        "put_call_oi": 0.6782,
-        "put_call_volume": 0.4167,
-        "put_oi": 1928169.0,
-        "call_oi": 2842860.0,
-        "put_volume": 248538.0,
-        "call_volume": 596514.0,
-        "atm_call_iv": 0.2324,
-        "total_volume": 845052.0,
+        "put_call_oi": 0.6796,
+        "put_call_volume": 0.3996,
+        "put_oi": 1985311.0,
+        "call_oi": 2921427.0,
+        "put_volume": 235580.0,
+        "call_volume": 589507.0,
+        "atm_call_iv": 0.2972,
+        "total_volume": 825087.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "SOXL",
-        "put_call_oi": 1.8374,
-        "put_call_volume": 1.2726,
-        "put_oi": 1011319.0,
-        "call_oi": 550394.0,
-        "put_volume": 219105.0,
-        "call_volume": 172176.0,
-        "atm_call_iv": 1.0673,
-        "total_volume": 391281.0,
+        "put_call_oi": 1.8962,
+        "put_call_volume": 1.2288,
+        "put_oi": 1039046.0,
+        "call_oi": 547952.0,
+        "put_volume": 230101.0,
+        "call_volume": 187255.0,
+        "atm_call_iv": 1.1623,
+        "total_volume": 417356.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "SMH",
-        "put_call_oi": 1.7558,
-        "put_call_volume": 2.7217,
-        "put_oi": 1140617.0,
-        "call_oi": 649638.0,
-        "put_volume": 231062.0,
-        "call_volume": 84895.0,
-        "atm_call_iv": 0.5104,
-        "total_volume": 315957.0,
+        "put_call_oi": 1.7804,
+        "put_call_volume": 3.237,
+        "put_oi": 1150207.0,
+        "call_oi": 646040.0,
+        "put_volume": 306874.0,
+        "call_volume": 94802.0,
+        "atm_call_iv": 0.4926,
+        "total_volume": 401676.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AVGO",
-        "put_call_oi": 0.9466,
-        "put_call_volume": 0.5123,
-        "put_oi": 1116778.0,
-        "call_oi": 1179795.0,
-        "put_volume": 95625.0,
-        "call_volume": 186659.0,
-        "atm_call_iv": 0.3874,
-        "total_volume": 282284.0,
+        "put_call_oi": 0.9874,
+        "put_call_volume": 0.5598,
+        "put_oi": 1177668.0,
+        "call_oi": 1192708.0,
+        "put_volume": 174475.0,
+        "call_volume": 311691.0,
+        "atm_call_iv": 0.514,
+        "total_volume": 486166.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "TSM",
-        "put_call_oi": 1.0524,
-        "put_call_volume": 0.8019,
-        "put_oi": 907026.0,
-        "call_oi": 861874.0,
-        "put_volume": 46878.0,
-        "call_volume": 58460.0,
-        "atm_call_iv": 0.6833,
-        "total_volume": 105338.0,
+        "put_call_oi": 1.0251,
+        "put_call_volume": 0.6548,
+        "put_oi": 936769.0,
+        "call_oi": 913861.0,
+        "put_volume": 80374.0,
+        "call_volume": 122753.0,
+        "atm_call_iv": 0.2808,
+        "total_volume": 203127.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       }
     ],
     "vol_indices": {
-      "fetched_at": "2026-09-25T23:58:29.037179+00:00",
+      "fetched_at": "2026-10-03T00:30:07.473395+00:00",
       "indices": {
         "VIX": {
-          "as_of": "09/24/2026",
-          "close": 15.67,
-          "prev_close": 15.18,
-          "day_return": 0.032279,
+          "as_of": "10/01/2026",
+          "close": 16.39,
+          "prev_close": 16.34,
+          "day_return": 0.00306,
           "source": "Cboe VIX_History.csv",
           "quality": "observed"
         },
         "VVIX": {
-          "as_of": "09/25/2026",
-          "close": 87.84,
-          "prev_close": 90.57,
-          "day_return": -0.030142,
+          "as_of": "10/02/2026",
+          "close": 87.02,
+          "prev_close": 92.01,
+          "day_return": -0.054233,
           "source": "Cboe VVIX_History.csv",
           "quality": "observed"
         },
         "SKEW": {
-          "as_of": "09/24/2026",
-          "close": 146.04,
-          "prev_close": 146.15,
-          "day_return": -0.000753,
+          "as_of": "10/01/2026",
+          "close": 142.77,
+          "prev_close": 141.92,
+          "day_return": 0.005989,
           "source": "Cboe SKEW_History.csv",
           "quality": "observed"
         },
         "VIX_quote": {
-          "price": 14.87,
-          "change_pct": -5.1053,
-          "timestamp": "2026-09-25 23:57:48",
+          "price": 15.31,
+          "change_pct": -6.5894,
+          "timestamp": "2026-10-03 00:29:54",
           "source": "Cboe delayed_quotes/_VIX",
           "quality": "observed"
         }
@@ -413,7 +464,7 @@
   },
   "us_kr_rules": {
     "schema_version": "us-oi-kr-rules-v1",
-    "as_of": "2026-09-25",
+    "as_of": "2026-10-03",
     "headline_level": "경계",
     "alerts": [
       {
@@ -423,27 +474,13 @@
         "kr": "000660",
         "edge_type": "etf_beta",
         "reasons": [
-          "P/C vol=2.72 (≥1.5) vol=315957"
+          "P/C vol=3.24 (≥1.5) vol=401676"
         ],
         "metrics": {
-          "put_call_oi": 1.7558,
-          "put_call_volume": 2.7217,
-          "put_oi": 1140617.0,
-          "call_oi": 649638.0
-        }
-      },
-      {
-        "channel": "upside",
-        "level": "주의",
-        "us": "NVDA",
-        "kr": "000660",
-        "edge_type": "demand_ai_gpu",
-        "reasons": [
-          "call-heavy P/C vol=0.44"
-        ],
-        "metrics": {
-          "put_call_volume": 0.4351,
-          "call_volume": 2132620.0
+          "put_call_oi": 1.7804,
+          "put_call_volume": 3.237,
+          "put_oi": 1150207.0,
+          "call_oi": 646040.0
         }
       },
       {
@@ -453,11 +490,11 @@
         "kr": "000660",
         "edge_type": "demand_hyperscaler",
         "reasons": [
-          "call-heavy P/C vol=0.42"
+          "call-heavy P/C vol=0.40"
         ],
         "metrics": {
-          "put_call_volume": 0.4167,
-          "call_volume": 596514.0
+          "put_call_volume": 0.3996,
+          "call_volume": 589507.0
         }
       },
       {
@@ -467,13 +504,13 @@
         "kr": "000660",
         "edge_type": "etf_beta",
         "reasons": [
-          "P/C vol=1.27 (≥1.1)"
+          "P/C vol=1.23 (≥1.1)"
         ],
         "metrics": {
-          "put_call_oi": 1.8374,
-          "put_call_volume": 1.2726,
-          "put_oi": 1011319.0,
-          "call_oi": 550394.0
+          "put_call_oi": 1.8962,
+          "put_call_volume": 1.2288,
+          "put_oi": 1039046.0,
+          "call_oi": 547952.0
         }
       },
       {
@@ -483,13 +520,13 @@
         "kr": "005930",
         "edge_type": "etf_beta",
         "reasons": [
-          "P/C vol=1.27 (≥1.1)"
+          "P/C vol=1.23 (≥1.1)"
         ],
         "metrics": {
-          "put_call_oi": 1.8374,
-          "put_call_volume": 1.2726,
-          "put_oi": 1011319.0,
-          "call_oi": 550394.0
+          "put_call_oi": 1.8962,
+          "put_call_volume": 1.2288,
+          "put_oi": 1039046.0,
+          "call_oi": 547952.0
         }
       }
     ],
@@ -498,29 +535,15 @@
         {
           "channel": "upside",
           "level": "주의",
-          "us": "NVDA",
-          "kr": "000660",
-          "edge_type": "demand_ai_gpu",
-          "reasons": [
-            "call-heavy P/C vol=0.44"
-          ],
-          "metrics": {
-            "put_call_volume": 0.4351,
-            "call_volume": 2132620.0
-          }
-        },
-        {
-          "channel": "upside",
-          "level": "주의",
           "us": "AMZN",
           "kr": "000660",
           "edge_type": "demand_hyperscaler",
           "reasons": [
-            "call-heavy P/C vol=0.42"
+            "call-heavy P/C vol=0.40"
           ],
           "metrics": {
-            "put_call_volume": 0.4167,
-            "call_volume": 596514.0
+            "put_call_volume": 0.3996,
+            "call_volume": 589507.0
           }
         },
         {
@@ -530,13 +553,13 @@
           "kr": "000660",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C vol=1.27 (≥1.1)"
+            "P/C vol=1.23 (≥1.1)"
           ],
           "metrics": {
-            "put_call_oi": 1.8374,
-            "put_call_volume": 1.2726,
-            "put_oi": 1011319.0,
-            "call_oi": 550394.0
+            "put_call_oi": 1.8962,
+            "put_call_volume": 1.2288,
+            "put_oi": 1039046.0,
+            "call_oi": 547952.0
           }
         },
         {
@@ -546,13 +569,13 @@
           "kr": "000660",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C vol=2.72 (≥1.5) vol=315957"
+            "P/C vol=3.24 (≥1.5) vol=401676"
           ],
           "metrics": {
-            "put_call_oi": 1.7558,
-            "put_call_volume": 2.7217,
-            "put_oi": 1140617.0,
-            "call_oi": 649638.0
+            "put_call_oi": 1.7804,
+            "put_call_volume": 3.237,
+            "put_oi": 1150207.0,
+            "call_oi": 646040.0
           }
         }
       ],
@@ -564,13 +587,13 @@
           "kr": "005930",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C vol=1.27 (≥1.1)"
+            "P/C vol=1.23 (≥1.1)"
           ],
           "metrics": {
-            "put_call_oi": 1.8374,
-            "put_call_volume": 1.2726,
-            "put_oi": 1011319.0,
-            "call_oi": 550394.0
+            "put_call_oi": 1.8962,
+            "put_call_volume": 1.2288,
+            "put_oi": 1039046.0,
+            "call_oi": 547952.0
           }
         }
       ]

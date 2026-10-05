@@ -1,0 +1,270 @@
+"""Japan public series (macro_monitor.jp_public_series). Fixtures are excerpts of the real answers."""
+from __future__ import annotations
+
+import json
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from macro_monitor import jp_public_series as jps  # noqa: E402
+from macro_monitor import us_public_series as ups  # noqa: E402
+
+BOJ_OK = """STATUS,200
+MESSAGEID,M181000I
+MESSAGE,Successfully completed
+DATE,2026-09-26T13:35:33.459+09:00
+PARAMETER,FORMAT,CSV
+NEXTPOSITION,
+SERIES_CODE,NAME_OF_TIME_SERIES,UNIT,FREQUENCY,CATEGORY,LAST_UPDATE,SURVEY_DATES,VALUES
+MABJMTA,"Bank of Japan Accounts/Assets/Total (Assets, or Liabilities and Net Assets) (s)",100 million yen,MONTHLY,Bank of Japan Accounts,20260901,202607,6497120
+MABJMTA,"Bank of Japan Accounts/Assets/Total (Assets, or Liabilities and Net Assets) (s)",100 million yen,MONTHLY,Bank of Japan Accounts,20260901,202608,6446620
+MABJMTA,"x",100 million yen,MONTHLY,Bank of Japan Accounts,20260901,202609,
+"""
+
+MOF = """Interest Rate (September 2026),,,,,,,,,,,,,,,(Unit : %)
+Date,1Y,2Y,3Y,4Y,5Y,6Y,7Y,8Y,9Y,10Y,15Y,20Y,25Y,30Y,40Y
+2026/8/31,1.20,1.743,1.9,2.0,2.2,2.4,2.6,2.7,2.8,2.943,3.4,3.9,4.0,4.092,4.1
+2026/9/1,1.21,1.75,1.9,2.0,2.2,2.4,2.6,2.7,2.8,2.95,3.4,3.9,4.0,4.10,4.1
+2026/9/24,1.30,1.912,2.0,2.1,2.3,2.5,2.7,2.8,2.9,3.073,3.5,4.0,4.1,-,4.2
+"""
+
+CFTC_ROWS = [
+    {"report_date_as_yyyy_mm_dd": "2026-09-22T00:00:00.000", "noncomm_positions_long_all": "192274", "noncomm_positions_short_all": "120292"},
+    {"report_date_as_yyyy_mm_dd": "2026-09-15T00:00:00.000", "noncomm_positions_long_all": "237951", "noncomm_positions_short_all": "117592"},
+]
+
+
+class Parsers(unittest.TestCase):
+    def test_boj_rows_become_first_of_month_points_and_blank_values_are_skipped(self):
+        self.assertEqual(jps.parse_boj_csv(BOJ_OK), [("2026-07-01", 6497120.0), ("2026-08-01", 6446620.0)])
+
+    def test_boj_answer_that_is_not_ok_raises(self):
+        with self.assertRaises(ValueError):
+            jps.parse_boj_csv("STATUS,400\nMESSAGE,Invalid\n")
+
+    def test_mof_yields_by_tenor_with_missing_marked_by_dash(self):
+        y = jps.parse_mof_jgb(MOF)
+        self.assertEqual(y["10Y"][-1], ("2026-09-24", 3.073))
+        self.assertEqual([d for d, _ in y["30Y"]], ["2026-08-31", "2026-09-01"])          # 9/24 had no 30Y quote
+
+    def test_month_last_keeps_the_latest_day_of_each_month(self):
+        y = jps.parse_mof_jgb(MOF)
+        self.assertEqual(jps.month_last(y["10Y"]), [("2026-08-31", 2.943), ("2026-09-24", 3.073)])
+
+    def test_cftc_net_is_long_minus_short_ascending(self):
+        self.assertEqual(jps.parse_cftc_yen(CFTC_ROWS), [("2026-09-15", 237951 - 117592.0), ("2026-09-22", 192274 - 120292.0)])
+
+
+CPI_CSV = """類・品目,総合,食料,生鮮食品を除く総合,生鮮食品及びエネルギーを除く総合
+Group/Item,All items,Food,"All items, less fresh food","All items, less fresh food and energy"
+類・品目符号(Group/Item code),0001,0002,0161,0165
+ウエイト(Weight),3543757090,975803165,3300000000,2900000000
+202512,100.861,101.5,100.5,100.2
+202601,101.000,101.9,100.9,100.4
+202608,102.179,103.804,102.047,101.9
+"""
+
+
+class StatBureauCpi(unittest.TestCase):
+    def test_columns_are_picked_by_their_english_names(self):
+        d = jps.parse_stat_cpi_csv(CPI_CSV, jps.CPI_ITEMS)
+        self.assertEqual(d["All items, less fresh food"][-1], ("2026-08-01", 102.047))
+        self.assertEqual(d["All items, less fresh food and energy"][0], ("2025-12-01", 100.2))
+
+    def test_a_missing_or_repeated_column_raises(self):
+        with self.assertRaises(ValueError):
+            jps.parse_stat_cpi_csv(CPI_CSV, ("All items, less imputed rent",))
+        twice = CPI_CSV.replace("Food,", "All items,").replace('"All items, less fresh food",', "All items,")
+        with self.assertRaises(ValueError):
+            jps.parse_stat_cpi_csv(twice, ("All items",))
+
+    def test_yoy_uses_the_old_base_before_the_switch_and_the_new_base_after(self):
+        old = [("2024-12-01", 100.0), ("2025-12-01", 102.0), ("2026-01-01", 110.0), ("2025-01-01", 100.0)]
+        new = [("2025-01-01", 50.0), ("2026-01-01", 51.0)]
+        out = dict(jps.chained_yoy(old, new, switch="2026-01-01"))
+        self.assertAlmostEqual(out["2025-12-01"], 2.0)          # old base: 102 / 100
+        self.assertAlmostEqual(out["2026-01-01"], 2.0)          # new base: 51 / 50, not the old base's 10%
+        self.assertNotIn("2025-01-01", out)                     # no prior-year figure on the old base
+
+    def test_without_an_old_base_the_yoy_starts_at_the_switch(self):
+        out = jps.chained_yoy([], [("2025-06-01", 100.0), ("2026-06-01", 101.7)], switch="2026-01-01")
+        self.assertEqual([d for d, _ in out], ["2026-06-01"])
+
+
+class FakeSheet:
+    """The few xlrd sheet methods the real-wage parser uses."""
+
+    def __init__(self, rows):
+        self.rows = rows
+        self.nrows = len(rows)
+        self.ncols = max(len(r) for r in rows)
+
+    def cell_value(self, r, c):
+        return self.rows[r][c] if c < len(self.rows[r]) else ""
+
+
+class MhlwFiles(unittest.TestCase):
+    def test_job_ratio_takes_the_seasonally_adjusted_block(self):
+        import io
+
+        import openpyxl
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        months = [f"{m}月" for m in "１２３４５６７８９"] + ["10月", "11月", "12月"]
+        ws.append(["有効求人倍率（パートタイムを含む一般）"])
+        ws.append([])
+        ws.append([None, None] + ["実数"] * 12 + ["実数"] * 6 + ["季節調整値"] * 12)
+        ws.append(["西暦", "和暦"] + months + ["1～3月平均"] * 6 + months)
+        ws.append([None, None] + ["倍"] * 30)
+        ws.append(["2026年", "令和８年", 1.27, 1.26, 1.22, 1.12, 1.08, 1.11, 1.15] + [None] * 5 + [1.25, 1.1, None, None, 1.18, 1.18]
+                  + [1.18, 1.19, 1.18, 1.18, 1.17, 1.18, 1.18] + [None] * 5)
+        buf = io.BytesIO()
+        wb.save(buf)
+        out = jps.parse_job_ratio_xlsx(buf.getvalue())
+        self.assertEqual(out[0], ("2026-01-01", 1.18))
+        self.assertEqual(out[-1], ("2026-07-01", 1.18))           # July: the adjusted 1.18, not the actual 1.15
+        self.assertEqual(len(out), 7)
+
+    def test_real_wage_reads_the_year_on_year_section_not_the_index_levels(self):
+        head = ["年", "1-12", "1-6", "7-12", "1-3", "4-6", "7-9", "10-12"] + [float(m) for m in range(1, 13)] + ["4-3"]
+        level = [2025.0, "-", "-", "-", "-", "-", "-", "-"] + [100.0 + m for m in range(12)] + [""]
+        yoy = [2026.0, "", 1.8, "", 1.3, 1.8, "", ""] + [0.7, 2.0, 1.4, 2.0, 1.6, 2.2] + [""] * 6 + [""]
+        sh = FakeSheet([["実質賃金指数"], [""], head, level, ["前年比(Year-on-year growth rate)"], head, yoy])
+        self.assertEqual(jps.parse_real_wage_sheet(sh), [("2026-01-01", 0.7), ("2026-02-01", 2.0), ("2026-03-01", 1.4),
+                                                        ("2026-04-01", 2.0), ("2026-05-01", 1.6), ("2026-06-01", 2.2)])
+        with self.assertRaises(ValueError):
+            jps.parse_real_wage_sheet(FakeSheet([["実質賃金指数"], head, level]))
+
+    def test_catalog_lookup_skips_months_without_an_entry_and_needs_the_right_title(self):
+        def get(url):
+            if "surveyYears=202609" in url:
+                return json.dumps({"GET_DATA_CATALOG": {"RESULT": {"STATUS": 1}}}).encode()
+            res = [{"TITLE": {"NAME": "長期時系列表_2_新規求人倍率"}, "URL": "u2"}, {"TITLE": {"NAME": "長期時系列表_3_有効求人倍率（実数、季節調整値）"}, "URL": "u3"}]
+            return json.dumps({"GET_DATA_CATALOG": {"RESULT": {"STATUS": 0}, "DATA_CATALOG_LIST_INF": {"DATA_CATALOG_INF": {"RESOURCES": {"RESOURCE": res}}}}}).encode()
+
+        self.assertEqual(jps.estat_find_file("k", search_word="x", title_has="_3_有効求人倍率", months=["202609", "202608"], get=get), ("u3", "202608"))
+        with self.assertRaises(RuntimeError):
+            jps.estat_find_file("k", search_word="x", title_has="nothing like this", months=["202608"], get=get)
+
+    def test_the_cache_serves_the_key_less_run_and_is_rewritten_only_on_change(self):
+        import os
+        import tempfile
+
+        old = os.environ.pop("ESTAT_APP_ID", None)
+        try:
+            with tempfile.TemporaryDirectory() as td:
+                path = Path(td) / "c.json"
+                cache = jps.load_estat_cache(path)
+                self.assertEqual(cache["series"], {})
+                with self.assertRaises(jps.MissingKey):                              # no key and nothing cached yet
+                    jps.estat_reader(cache, {})("real_wage")
+                updates = {"real_wage": ([("2009-12-01", -1.0), ("2026-06-01", 2.2)], {"file": "f", "catalog_month": "202606"})}
+                self.assertTrue(jps.save_estat_cache(cache, updates, "t1", path))
+                cache = jps.load_estat_cache(path)
+                self.assertEqual(cache["series"]["real_wage"]["points"], [["2026-06-01", 2.2]])           # trimmed to 2010 onward
+                self.assertEqual(jps.estat_reader(cache, {})("real_wage"), [("2026-06-01", 2.2)])         # served without a key
+                self.assertFalse(jps.save_estat_cache(cache, updates, "t2", path))                        # unchanged: not rewritten
+                self.assertEqual(jps.load_estat_cache(path)["retrieved_at"], "t1")
+        finally:
+            if old is not None:
+                os.environ["ESTAT_APP_ID"] = old
+
+    def test_months_go_back_across_a_year_boundary(self):
+        from datetime import date
+
+        self.assertEqual(jps.recent_months(date(2026, 2, 10), 4), ["202602", "202601", "202512", "202511"])
+
+    def test_without_the_key_the_two_cards_are_skipped_not_failed(self):
+        import os
+
+        old = os.environ.pop("ESTAT_APP_ID", None)
+        try:
+            with self.assertRaises(jps.MissingKey):
+                jps.fetch_estat_series("job_ratio")
+        finally:
+            if old is not None:
+                os.environ["ESTAT_APP_ID"] = old
+
+
+class Transforms(unittest.TestCase):
+    def test_ratio_uses_the_months_quarter_and_the_latest_quarter_after_it(self):
+        monthly = [("2026-03-01", 600.0), ("2026-04-01", 640.0), ("2026-07-01", 650.0), ("2026-08-01", 660.0)]
+        gdp = [("2026-01-01", 600.0), ("2026-04-01", 640.0)]                       # Q1, Q2; Q3 is not out
+        out = jps.ratio_to_quarterly(monthly, gdp)
+        self.assertEqual([round(v, 1) for _, v in out], [100.0, 100.0, 101.6, 103.1])
+
+    def test_months_before_the_first_quarter_are_left_out(self):
+        self.assertEqual(jps.ratio_to_quarterly([("2025-12-01", 1.0)], [("2026-01-01", 2.0)]), [])
+
+    def test_spread_is_in_bp_and_only_on_shared_dates(self):
+        self.assertEqual(jps.spread_bp([("a", 3.0), ("b", 3.1)], [("a", 1.8)]), [("a", 120.0)])
+
+    def test_last_point_of_an_unfinished_month_keeps_its_own_date(self):
+        patch = {"history": {"5y": {"dates": ["2026-08-31", "2026-09-30"], "values": [1.0, 2.0]}}}
+        jps.pin_last_date(patch, "2026-09-24")
+        self.assertEqual(patch["history"]["5y"]["dates"], ["2026-08-31", "2026-09-24"])
+        done = {"history": {"5y": {"dates": ["2026-08-31"], "values": [1.0]}}}
+        jps.pin_last_date(done, "2026-08-31")
+        self.assertEqual(done["history"]["5y"]["dates"], ["2026-08-31"])
+
+
+def stub_sources(**series):
+    return jps.Sources(boj=lambda db, code: series[f"{db}/{code}"], fred=lambda sid: series[sid],
+                       mof=lambda: series["jgb"], cftc=lambda: series["yen"])
+
+
+class Series(unittest.TestCase):
+    def test_units_are_converted_to_what_the_card_says(self):
+        s = stub_sources(**{"BS01/MABJMTA": [("2026-08-01", 6446620.0)], "BS01/MABJMA004": [("2026-08-01", 6510.0)],
+                            "TRESEGJPM052N": [("2026-08-01", 1083420.49)], "yen": [("2026-09-22", 71982.0)]})
+        self.assertAlmostEqual(jps.series_for("boj_total_assets", s)[-1][1], 644.662)      # 100 million yen -> trillion yen
+        self.assertAlmostEqual(jps.series_for("boj_jreit", s)[-1][1], 651.0)               # -> billion yen
+        self.assertAlmostEqual(jps.series_for("fx_reserves", s)[-1][1], 1083.42049, places=4)   # million USD -> billion USD
+        self.assertAlmostEqual(jps.series_for("yen_imm_net", s)[-1][1], 71.982)            # contracts -> thousand
+
+    def test_patch_shows_the_observation_date_for_daily_sourced_series(self):
+        y = jps.parse_mof_jgb(MOF)
+        s = stub_sources(jgb=y)
+        pts = jps.series_for("bond_10y", s)
+        p = jps.build_patch("bond_10y", pts, retrieved_at="t")
+        self.assertEqual((p["display"], p["asof"], p["data_status"]), ("3.07%", "2026-09-24", "live"))
+        self.assertEqual(p["history"]["5y"]["dates"][-1], "2026-09-24")
+
+    def test_every_spec_has_a_series_definition(self):
+        for spec_id in jps.SPECS:
+            self.assertIn(spec_id, {"boj_total_assets", "boj_assets_yoy", "boj_assets_gdp", "boj_etf", "boj_jreit", "call_rate", "m2_vs_2019",
+                                    "cgpi", "current_account", "gdp_yoy", "gdp_qoq", "fx_reserves", "bond_2y", "bond_10y", "bond_30y",
+                                    "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi",
+                                    "job_applicant_ratio", "real_wage_yoy"})
+
+
+class Apply(unittest.TestCase):
+    def pack(self):
+        def ind(i, status="demo", **kw):
+            return {"id": i, "label_ko": i, "data_status": status, "quality": "demo", **kw}
+        return {"indicators": [ind("gdp_yoy", "official_snapshot"), ind("gdp_qoq"), ind("gdp"), ind("boj_etf"),
+                               ind("boj_etf_holdings", components=[{"id": "boj_etf"}, {"id": "boj_etf_share"}])],
+                "categories": {"growth": [{"id": "gdp"}]}, "headlines": [{"id": "gdp_yoy"}], "data_status_summary": {"demo": 9}}
+
+    def test_gdp_composite_and_etf_holdings_follow_the_real_series(self):
+        jpn = self.pack()
+        pts = [("2025-04-01", 100.0), ("2025-07-01", 100.5), ("2025-10-01", 101.0), ("2026-01-01", 101.5), ("2026-04-01", 102.0)]
+        s = stub_sources(JPNRGDPEXP=pts, **{"BS01/MABJMA003": [("2026-08-01", 369835.0)]})
+        patches = {k: jps.build_patch(k, jps.series_for(k, s), retrieved_at="t") for k in ("gdp_yoy", "gdp_qoq", "boj_etf")}
+        r = jps.apply_all(jpn, patches, retrieved_at="t")
+        by = {i["id"]: i for i in jpn["indicators"]}
+        self.assertEqual({"gdp_yoy", "gdp_qoq", "boj_etf", "gdp", "boj_etf_holdings"}, set(r["changed"]))
+        self.assertEqual(by["gdp"]["display"], "2.0% | 0.5%")
+        self.assertEqual(by["boj_etf_holdings"]["display"], "37.0T")
+        self.assertEqual([c["id"] for c in by["boj_etf_holdings"]["components"]], ["boj_etf"])            # no invented market share
+        self.assertEqual(jpn["data_status_summary"], {"live": 5})
+        self.assertTrue(r["summary_changed"])
+        again = jps.apply_all(jpn, patches, retrieved_at="later")
+        self.assertEqual(again["changed"], [])                                                          # idempotent
+
+
+if __name__ == "__main__":
+    unittest.main()

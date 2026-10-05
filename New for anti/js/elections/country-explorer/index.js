@@ -49,13 +49,25 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
             if (iso3 === 'CHN') applyCnPartyChart(await loadCnPartyChart());
+            // Wait for the map's own layers/click handler to actually land
+            // before painting the shell -- not just for the committee/EOP
+            // fetch above. admin1 geometry is cached after a country's first
+            // visit (loadAdmin1 memoizes the promise), so a repeat visit (e.g.
+            // USA -> a state -> back to USA) skips the committee fetch too
+            // (country.us_committees is already set) and reaches this point
+            // almost immediately -- before renderCountryMap's continuation
+            // after its own admin1 fetch had a chance to call
+            // host.setElectionMap. The shell looked ready, but a click still
+            // landed on the previous screen's stale layers/handler until
+            // something else forced a redraw ("두번째로 다른 주 클릭할 때 바로
+            // 안 되고 더블 클릭하거나 지도 크기가 바뀐 뒤에야 됨", 2026-10-02).
+            await mapReady;
             if (isStale()) return;
             onRoute?.({ country: iso3 });
             shell = renderCountryShell(host.roots.country, {
                 country, manifest: bundle.manifest, onBack, modal, host,
                 onRoute: (patch) => onRoute?.({ country: iso3, ...patch }),
             });
-            await mapReady;
         },
         async showUsaState(stateId, { financeMode = false, district = null } = {}) {
             // The state dashboard replaces the right pane wholesale, so any

@@ -60,6 +60,16 @@ PINNED = [
         "commodities": ["cocoa"],
         "why": "코코아 원두 주요 수출국. 귀금속 30개국(금)에는 이미 있다",
     },
+    {
+        "iso": "BEL", "name": "Belgium", "category": "minerals",
+        "commodities": ["diamonds"],
+        "why": "안트워프가 다이아몬드 재수출 통제의 주체다. 농산물·금 통과 허브로는 보지 않는다.",
+    },
+    {
+        "iso": "SGP", "name": "Singapore", "category": "energy",
+        "commodities": ["petroleum_products"],
+        "why": "석유제품 혼재·재수출에 자체 제한이 걸릴 수 있다. 원유 생산국 목록에는 넣지 않는다.",
+    },
 ]
 
 

@@ -99,11 +99,15 @@ class ScoredReport:
     reasons: List[str] = field(default_factory=list)
     title_ko: Optional[str] = None
     date_precision: str = "day"
+    board: Optional[str] = None
+    title_en: Optional[str] = None
+    control: Optional[Dict[str, Any]] = None
 
     def to_item(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko},
+            "title": {"original": self.title, "original_lang": self.lang, "ko": self.title_ko,
+                      **({"en": self.title_en} if self.title_en else {})},
             "summary": self.summary or None,
             "url": self.url,
             "published_at": self.published_at,
@@ -119,6 +123,8 @@ class ScoredReport:
             "series_label_ko": self.series_label_ko,
             "importance": round(self.importance, 3),
             "reasons": self.reasons,
+            **({"board": self.board} if self.board else {}),
+            **({"control": self.control} if self.control else {}),
         }
 
 
@@ -173,8 +179,9 @@ class ReportScorer:
         if any(p.search(text) for p in self.reject_pats):
             return None
         # No commodity, no window to put it on. This is the whole filter: the
-        # dashboard has nowhere to show a report that is about nothing it trades.
-        if not tagged.commodities:
+        # dashboard has nowhere to show a report that is about nothing it trades
+        # -- unless its source feeds a board, which is shown on its own.
+        if not tagged.commodities and not raw.board:
             return None
 
         low = text.lower()
@@ -244,6 +251,7 @@ class ReportScorer:
             importance=importance,
             reasons=reasons,
             date_precision=getattr(raw, "date_precision", "day"),
+            board=raw.board,
         )
 
 
