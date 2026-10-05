@@ -2,7 +2,7 @@
 
 ## 2026-10-02 자동 수집·경합 선거 감시 확장
 
-이 문서 아래의 2026-09-11 내용은 초기 **수기 검증 자료**의 당시 상태입니다. 별도 최신 출력 `public/data/usa_election_live_polls_v1.json`은 VoteHub 공개 API로 매번 갱신하며, `usa_election_live_polls_status_v1.json`에 성공/실패를 기록합니다. 신규 관측은 `verification=selected_source_aggregator_import`로 표기합니다. 기관·원문 도메인·본선 대진·날짜·모집단·표본 검사 후에만 수용합니다. 현재 7일 기본, 14일 선택입니다. 기관별 최신 한 건을 세고 독립 기관 2곳 이상에서 같은 후보가 과반 우세일 때만 `poll_lead`를 냅니다. 공식 인증 결과는 별도 수기 검토 파일을 통해서만 우선합니다.
+이 문서 아래의 2026-09-11 내용은 초기 **수기 검증 자료**의 당시 상태입니다. 별도 최신 출력 `public/data/usa_election_live_polls_v1.json`은 VoteHub 공개 API로 매번 갱신하며, `usa_election_live_polls_status_v1.json`에 성공/실패를 기록합니다. 신규 관측은 `verification=selected_source_aggregator_import`로 표기합니다. 기관·원문 도메인·본선 대진·날짜·모집단·표본 검사 후에만 수용합니다. 현재 7일 기본, 14일 선택입니다. 기관별 최신 한 건을 셉니다. 사용자 2026-10-05 지시로 단일 기관도 `single_poll_lead`와 근거 하 등급으로 제공하며, 2기관 이상 과반 우세는 `poll_lead`입니다. 공식 인증 결과는 별도 수기 검토 파일을 통해서만 우선합니다.
 
 선거 전에는 `races[race_id].observations[]`에 해당 본선의 채택된 조사를 누적해 보여줄 수 있습니다. 7/14일 우세 집계는 그중 해당 기간의 기관별 최신 조사만 씁니다. 선거일 다음 날(UTC 날짜 기준)부터 `phase=awaiting_certified_result`가 되고 **화면용** `observations[]`는 빈 배열, `windows[7|14].status=election_closed`가 됩니다. 인증된 결과가 들어오면 `phase=certified_result`와 `result`를 표시합니다. 과거 조사 기록은 `public/data/usa_election_poll_history_2026.json`에 감사용으로 남습니다. Git 커밋 이력과 원출처도 존재하므로 전체 저장소에서 조사 흔적을 물리적으로 삭제하는 기능은 아닙니다. API 실패 시에도 선거가 끝난 레이스의 화면용 목록은 닫고 source health를 오류로 표시합니다.
 
@@ -155,15 +155,37 @@ Cook의 등급 방향을 결론으로 사용하지 않습니다. 대상은 하�
 12곳, 총 64곳이며 `windows[7|14].competitive_conclusions`에서 각 선거의 결론을
 읽습니다. `conclusion_ko`는 조사상 우세 또는 판정 보류이고, `basis`, `poll_status`,
 `included_poll_ids`로 근거를 추적합니다. 7일 기본·14일 선택, 기관별 최신 조사 1건,
-최소 2개 독립 기관과 과반 우세, LV/RV 분리 규칙을 그대로 적용합니다.
-조사 부족·동률·미검증 대진은 보류합니다. Solid/Likely는 별도의 기초 유지 가정이며
+단일 기관 우세는 하 근거 참고값, 복수 기관은 과반 우세이며 LV/RV는 분리합니다.
+조사 없음·동률·미검증 대진은 보류합니다. Solid/Likely는 별도의 기초 유지 가정이며
 이 결론 목록에 포함하지 않습니다. 인증 결과는 모든 등급보다 우선합니다.
 
 Marist 공개 방법론과 OH 원문, Emerson NY-17, Siena TX·IA 주지사 원문, NGA AZ·GA·TN
 대진을 검토해 편입했습니다. 2026 비선거 슬롯 6곳은 제외했습니다. 감시 목록은
 26개 주 71개 슬롯이며 실제 자료가 있는 수와 구분해야 합니다.
 
-마지막 정상 실수집 공개본은 22관측·68슬롯입니다. NY-17 식별자 보정과 64곳 감시 확대
-이후 추가 네트워크 실행은 자동 승인 심사의 사용량 한도로 실행되지 않았습니다.
-저장 API 응답의 로컬 replay 검증은 23관측·71슬롯이며 운영 데이터로 승격하지 않았습니다.
-최종 변경은 로컬 커밋까지 완료하고 GitHub 후속 push/검사는 재개가 필요합니다.
+2026-10-05 09:41 UTC 실제 공개 API 수집 성공: 23관측·14개 선거에 자료 있음·71개 감시
+슬롯·26개 주. 감시 대상 수와 실제 조사가 있는 수는 다릅니다. 7일에는 단일 기관 우세
+4곳, 복수 기관 우세 0곳입니다. 14일에는 단일 기관 우세 8곳, 복수 기관 우세 1곳입니다.
+자동화 PR의 병합과 최초 Actions→배포 검증은 아직 남았습니다.
+
+### 조사 출처와 판단 근거 등급 (2026-10-05)
+
+`observations[].source_quality`는 집계값의 검증 상태입니다. 현재 자동 수집은
+`verification_level=partial`, `methodological_quality=unrated`입니다. 선정 기관과
+원문 도메인·대진·날짜·표본을 확인했지만, 매 실행 원문 수치 재전사와 오차범위·문항별
+표본은 미확보입니다. 유명 기관이라는 이유로 방법론 상 등급을 자동 부여하지 않습니다.
+
+`windows[7|14].evidence_quality`는 내부 근거 수준입니다. 독립 기관별 최신 1건을
+세어 1기관은 하, 2기관 이상은 중, 3기관 이상에서 같은 후보 우세가 75% 이상이고
+동일 회차 충돌이 없을 때만 상입니다. 당선확률·정확도·통계적 신뢰수준은 아닙니다.
+동률·과반 미달·정당 불명은 기관 수가 많아도 우세로 판정하지 않습니다. 미검증
+대진·원문 도메인 오류·정파/내부 조사 등을 하 등급으로 우회 편입하지 않습니다.
+방법론 공개는 정확도 인증이 아니라는 기준은 [AAPOR 안내](https://aapor.org/standards-and-ethics/transparency-initiative/)를 참고했습니다.
+
+조건부 집계는 단일 기관 우세를 `buckets.single_poll_lead`에 분리합니다.
+`single_poll_lead_counts`, `scenario_counts_without_single_polls`,
+`unresolved_without_single_polls`로 하 근거를 제외한 비교도 가능합니다.
+64개 경쟁 선거 결론에 등급·기관 수·채택 조사 ID를 함께 제공합니다.
+UI에서는 `single_poll_lead`를 단일 조사 참고값으로, `evidence_quality.label_ko`를
+함께 표시해야 합니다. 이 PR은 UI를 수정하지 않으며 기존 지도는 새 상태를
+처리하기 전까지 단일 기관 색상을 표시하지 않을 수 있습니다.

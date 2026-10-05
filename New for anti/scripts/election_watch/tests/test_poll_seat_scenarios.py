@@ -51,6 +51,41 @@ class SeatScenarioTests(unittest.TestCase):
             b=board();b.update(change);b['races']['USA:PA:house:07']={'windows':{'7':{'status':'poll_lead','party':'DEM'}}}
             self.assertEqual(build(b,health=health)['chambers']['house']['unresolved_seats'],43)
 
+    def test_single_poll_is_separate_and_can_be_excluded_from_counts(self):
+        b=board();b['races']['USA:PA:house:07']={'windows':{'7':{
+            'status':'single_poll_lead','party':'REP','included_ids':['one'],
+            'evidence_quality':{'level':'low','label_ko':'하','independent_pollster_count':1}}}}
+        result=build(b);house=result['chambers']['house']
+        self.assertEqual(house['scenario_counts']['GOP'],196)
+        self.assertEqual(house['single_poll_lead_counts']['GOP'],1)
+        self.assertEqual(house['scenario_counts_without_single_polls']['GOP'],195)
+        self.assertEqual(house['unresolved_without_single_polls'],43)
+        self.assertEqual(house['buckets']['single_poll_lead'],{'GOP':1})
+        self.assertEqual(house['buckets']['recent_poll_lead'],{})
+        self.assertEqual(house['lead_abbr'],'없음')
+        self.assertEqual(sum(house['scenario_counts_without_single_polls'].values())+
+                         house['unresolved_without_single_polls'],435)
+        row=next(r for r in result['windows']['7']['competitive_conclusions'] if r['race_id']=='USA:PA:house:07')
+        self.assertEqual(row['evidence_quality']['level'],'low')
+        self.assertIn('근거 하',row['conclusion_ko'])
+        self.assertEqual(row['included_poll_ids'],['one'])
+
+    def test_failed_source_cannot_publish_single_poll_evidence(self):
+        b=board();b['races']['USA:PA:house:07']={'windows':{'7':{
+            'status':'single_poll_lead','party':'DEM','evidence_quality':{'level':'low'}}}}
+        result=build(b,health={'status':'error'})
+        row=next(r for r in result['windows']['7']['competitive_conclusions'] if r['race_id']=='USA:PA:house:07')
+        self.assertEqual(row['party_abbr'],'없음');self.assertIsNone(row['evidence_quality'])
+        self.assertEqual(result['chambers']['house']['single_poll_lead_counts']['DEM'],0)
+
+    def test_election_end_removes_single_poll_signal_and_quality(self):
+        b=board();b['races']['USA:PA:house:07']={'windows':{'7':{
+            'status':'single_poll_lead','party':'DEM','evidence_quality':{'level':'low'}}}}
+        result=build(b,day='2026-11-04')
+        self.assertEqual(result['chambers']['house']['unresolved_seats'],435)
+        row=next(r for r in result['windows']['7']['competitive_conclusions'] if r['race_id']=='USA:PA:house:07')
+        self.assertIsNone(row['evidence_quality']);self.assertEqual(row['conclusion_ko'],'판정 보류')
+
     def test_stale_ratings_are_not_silently_refreshed(self):
         result=build(day='2026-10-20')
         self.assertEqual(result['chambers']['house']['unresolved_seats'],435)

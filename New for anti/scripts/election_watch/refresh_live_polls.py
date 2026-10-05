@@ -52,7 +52,7 @@ def main():
                         'seat_scenario': forecast_status})
         print(board['coverage'])
         print({d: {s: sum(r['windows'][d]['status'] == s for r in board['races'].values())
-                   for s in ('poll_lead','no_recent_poll','insufficient_pollsters','tie')} for d in ('7','14')})
+                   for s in ('poll_lead','single_poll_lead','no_recent_poll','tie','unknown_leader_party')} for d in ('7','14')})
         if forecast_status['status'] != 'ok':
             print('Seat scenario held:', forecast_status['error_type'])
             return 1

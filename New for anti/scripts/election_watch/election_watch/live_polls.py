@@ -147,11 +147,30 @@ def normalize(rows, policy, as_of):
                              'verification': 'selected_source_aggregator_import',
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
+                             'source_quality': {
+                                 'verification_level': 'partial',
+                                 'methodological_quality': 'unrated',
+                                 'label_ko': '선정 기관 · 집계값 부분 검증',
+                                 'basis_ko': '기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.',
+                                 'missing_fields': ['margin_of_error_pp', 'question_sample_n', 'primary_values_rechecked']},
                              'limitations_ko': 'VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공.'})
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': raw.get('id'), 'race_id': rid, 'pollster': raw.get('pollster'),
                              'reason': str(exc) if isinstance(exc, ValueError) else 'malformed_record'})
     return accepted, rejected
+
+
+def evidence_quality(pollster_count, agreement_fraction, conflicting=()):
+    """Internal information/consistency label, not a pollster accuracy rating."""
+    level = ('none' if not pollster_count else 'low' if pollster_count == 1 else
+             'high' if pollster_count >= 3 and agreement_fraction >= .75 else 'medium')
+    if conflicting and level == 'high':
+        level = 'medium'
+    return {'level': level, 'label_ko': {'none': '없음', 'low': '하', 'medium': '중', 'high': '상'}[level],
+            'independent_pollster_count': pollster_count,
+            'agreement_fraction': agreement_fraction if pollster_count else None,
+            'basis_ko': '기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.',
+            'limitations_ko': '조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다.'}
 
 
 def summarize(rows, race, as_of, days):
@@ -191,13 +210,16 @@ def summarize(rows, race, as_of, days):
     name = leading[0] if len(leading) == 1 else None
     status, party = 'no_recent_poll', None
     if chosen:
-        status = 'insufficient_pollsters' if len(chosen) < 2 else 'tie'
-    if len(chosen) >= 2 and name and counts[name] > len(chosen) / 2:
-        status = 'poll_lead' if parties[name] else 'unknown_leader_party'
+        status = 'tie'
+    if chosen and name and counts[name] > len(chosen) / 2:
+        status = ('single_poll_lead' if len(chosen) == 1 else 'poll_lead') if parties[name] else 'unknown_leader_party'
         party = parties[name]
+    quality = evidence_quality(len(chosen), max(counts.values(), default=0) / len(chosen) if chosen else 0,
+                               conflicting)
     return {'window_days': days, 'from': start.isoformat(), 'through': as_of,
             'population': population if chosen else None, 'status': status, 'party': party,
-            'leader': name if status == 'poll_lead' else None,
+            'leader': name if status in ('poll_lead', 'single_poll_lead') else None,
+            'evidence_quality': quality,
             'lead_counts': dict(counts), 'tie_count': ties, 'pollster_count': len(chosen),
             'included_ids': [p['id'] for p in chosen], 'conflicting_pollsters': conflicting,
             'latest_field_end': max((p['field_end'] for p in chosen), default=None)}
@@ -268,7 +290,8 @@ def close_finished_races(board, policy, confirmed, as_of):
                     window.update({'status': 'election_closed', 'party': None, 'leader': None,
                                    'lead_counts': {}, 'tie_count': 0, 'pollster_count': 0,
                                    'included_ids': [], 'conflicting_pollsters': [],
-                                   'latest_field_end': None, 'population': None})
+                                   'latest_field_end': None, 'population': None,
+                                   'evidence_quality': evidence_quality(0, 0)})
                     changed = True
     if changed:
         board['lifecycle_checked_as_of'] = as_of
@@ -291,7 +314,8 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
             'stale_after_hours': 48, 'source': {'name': 'VoteHub', 'url': 'https://votehub.com/polls/api/',
                 'request_url': source_url, 'license': 'CC BY 4.0', 'modified': '선정·정규화·기관별 최신 조사 집계'},
             'rules_ko': ['최근 7일 기본·14일 선택. 조사 종료일 기준(UTC), 오늘 포함.',
-                '기관별 최신 1회. 최소 2개 독립 기관, 전체 채택 조사 과반에서 앞선 같은 후보만 색 표시.',
+                '기관별 최신 1회. 단일 기관 우세는 하 근거 참고 신호, 복수 기관 과반 우세는 별도 신호.',
+                '근거 하/중/상은 조사 수·일치도 내부 등급이며 기관의 정확도나 방법론 품질 등급이 아닙니다. 출처 검증 상태는 별도.',
                 'LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.',
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',

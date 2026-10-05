@@ -51,17 +51,57 @@ class LivePollTests(unittest.TestCase):
     def test_seven_days_includes_today_and_six_days_before(self):
         self.assertEqual(summary([poll(start_date='2026-09-23',end_date='2026-09-23')])['pollster_count'],0)
         self.assertEqual(summary([poll(end_date='2026-09-24')])['pollster_count'],1)
-    def test_one_pollster_never_colours(self):
-        s=summary([poll(),poll('duplicate')]);self.assertEqual(s['status'],'insufficient_pollsters')
-        self.assertEqual(s['lead_counts'],{'Kathy Hochul':1});self.assertIsNone(s['party'])
+    def test_one_pollster_is_a_low_evidence_reference_signal(self):
+        s=summary([poll(),poll('duplicate')]);self.assertEqual(s['status'],'single_poll_lead')
+        self.assertEqual(s['lead_counts'],{'Kathy Hochul':1});self.assertEqual(s['party'],'DEM')
+        self.assertEqual(s['leader'],'Kathy Hochul')
+        self.assertEqual(s['evidence_quality']['level'],'low')
+        self.assertEqual(s['evidence_quality']['independent_pollster_count'],1)
     def test_two_independent_latest_surveys_agree(self):
         s=summary([poll(),second()]);self.assertEqual((s['status'],s['party']),('poll_lead','DEM'))
+        self.assertEqual(s['evidence_quality']['level'],'medium')
+    def test_source_verification_is_not_an_accuracy_rating(self):
+        rows,_=normalize([poll()],POLICY,DAY)
+        self.assertEqual(rows[0]['source_quality']['verification_level'],'partial')
+        self.assertEqual(rows[0]['source_quality']['methodological_quality'],'unrated')
+        self.assertIsNone(rows[0]['margin_of_error_pp'])
+    def test_three_independent_agreeing_pollsters_have_high_evidence(self):
+        third=poll('c',pollster='Marist University',url='https://maristpoll.marist.edu/test')
+        s=summary([poll(),second(),third])
+        self.assertEqual(s['evidence_quality']['level'],'high')
+        self.assertEqual(s['evidence_quality']['agreement_fraction'],1)
+    def test_three_pollsters_with_disagreement_have_medium_evidence(self):
+        third=poll('c',pollster='Marist University',url='https://maristpoll.marist.edu/test',
+                   answers=[{'choice':'Kathy Hochul','pct':40},{'choice':'Bruce Blakeman','pct':50}])
+        s=summary([poll(),second(),third])
+        self.assertEqual(s['status'],'poll_lead')
+        self.assertEqual(s['evidence_quality']['level'],'medium')
+        self.assertAlmostEqual(s['evidence_quality']['agreement_fraction'],2/3)
+    def test_one_tied_poll_cannot_become_a_low_evidence_lead(self):
+        s=summary([poll(answers=[{'choice':'Kathy Hochul','pct':45},{'choice':'Bruce Blakeman','pct':45}])])
+        self.assertEqual(s['status'],'tie');self.assertIsNone(s['party'])
+        self.assertIsNone(s['leader']);self.assertEqual(s['evidence_quality']['level'],'low')
+    def test_no_recent_poll_has_no_evidence(self):
+        s=summary([])
+        self.assertEqual(s['evidence_quality']['level'],'none')
+        self.assertIsNone(s['evidence_quality']['agreement_fraction'])
     def test_latest_per_institution(self):
         old=second(end_date='2026-09-24',answers=[{'choice':'Kathy Hochul','pct':40},{'choice':'Bruce Blakeman','pct':50}]);old['id']='old'
         self.assertEqual(summary([poll(),old,second()])['lead_counts'],{'Kathy Hochul':2})
     def test_conflicting_same_wave_quarantined(self):
         conflict=second(answers=[{'choice':'Kathy Hochul','pct':40},{'choice':'Bruce Blakeman','pct':50}]);conflict['id']='c'
-        s=summary([poll(),second(),conflict]);self.assertEqual(s['conflicting_pollsters'],['emerson']);self.assertIsNone(s['party'])
+        s=summary([poll(),second(),conflict]);self.assertEqual(s['conflicting_pollsters'],['emerson'])
+        self.assertEqual(s['included_ids'],['a'])
+        self.assertEqual(s['status'],'single_poll_lead')
+        self.assertEqual(s['evidence_quality']['level'],'low')
+    def test_conflicting_excluded_wave_prevents_high_evidence(self):
+        third=poll('c',pollster='Marist University',url='https://maristpoll.marist.edu/test')
+        fourth=poll('d',pollster='Siena University',url='https://sri.siena.edu/test')
+        conflict=poll('e',pollster='Siena University',url='https://sri.siena.edu/test',
+                      answers=[{'choice':'Kathy Hochul','pct':40},{'choice':'Bruce Blakeman','pct':50}])
+        s=summary([poll(),second(),third,fourth,conflict])
+        self.assertEqual(s['pollster_count'],3)
+        self.assertEqual(s['evidence_quality']['level'],'medium')
     def test_tie_not_majority(self):
         s=summary([poll(),second(answers=[{'choice':'Kathy Hochul','pct':45},{'choice':'Bruce Blakeman','pct':45}])])
         self.assertEqual(s['tie_count'],1);self.assertIsNone(s['party'])
@@ -86,7 +126,8 @@ class LivePollTests(unittest.TestCase):
         raw=[poll(pollster='Siena University',url='https://sri.siena.edu/test'),
              poll('partner',pollster='ReconMR/Siena University',url='https://sri.siena.edu/partner')]
         self.assertEqual(summary(raw)['pollster_count'],1)
-        self.assertEqual(summary(raw)['status'],'insufficient_pollsters')
+        self.assertEqual(summary(raw)['status'],'single_poll_lead')
+        self.assertEqual(summary(raw)['evidence_quality']['level'],'low')
 
     def test_reviewed_house_poll_joins_only_the_exact_district(self):
         item=poll(subject='2026 NY-17',poll_type='us-representative',seat_name='NY-17',
@@ -102,7 +143,8 @@ class LivePollTests(unittest.TestCase):
         a=build_live([poll(),second()],POLICY,result,DAY,DAY,'test')
         b=build_live([poll()],POLICY,result,DAY,DAY,'test')
         self.assertEqual(a['races'][RID]['windows']['7']['status'],'poll_lead')
-        self.assertEqual(b['races'][RID]['windows']['7']['status'],'insufficient_pollsters')
+        self.assertEqual(b['races'][RID]['windows']['7']['status'],'single_poll_lead')
+        self.assertEqual(b['races'][RID]['windows']['7']['evidence_quality']['level'],'low')
     def test_poll_list_accumulates_until_election_then_clears_from_live_board(self):
         results={'schema':'usa_confirmed_results_v1','results':[]}
         rows=[poll(),second()]
@@ -157,6 +199,7 @@ class LivePollTests(unittest.TestCase):
             updated=json.loads(path.read_text())
             self.assertEqual(updated['races'][RID]['observations'],[])
             self.assertEqual(updated['races'][RID]['windows']['7']['status'],'election_closed')
+            self.assertEqual(updated['races'][RID]['windows']['7']['evidence_quality']['level'],'none')
             self.assertEqual(updated['source_status'],'error_stale')
             self.assertEqual(json.loads((Path(d)/'usa_election_live_polls_status_v1.json').read_text())['status'],'error')
 if __name__=='__main__':unittest.main()
