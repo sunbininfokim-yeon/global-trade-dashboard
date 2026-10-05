@@ -81,4 +81,4 @@
 
 | T-POLL-ACTIONS-20261005 | 미국 여론조사 Actions 실운영 연결 | codex | `.github/workflows/us_election_polls_refresh.yml`, `deploy.yml` 수집기 hook, 여론조사 데이터·계약 | `codex/us-polls-actions` | review | 사용자 2026-10-05 자동화→의석 전망→미연결 주 확대 지시. PR #451은 데이터·템플릿만. 설치·공용 배포 연결은 `codex/us-polls-deploy` 별도 PR로 분리. UI·LETF 변경 없음. |
 
-| T-POLL-DEPLOY-20261005 | 미국 여론조사 Actions 설치·공용 배포 hook | codex | `.github/workflows/us_election_polls_refresh.yml`, `deploy.yml`, 설치 템플릿 | `codex/us-polls-deploy` | review | 사용자 요청으로 PR #451 데이터에서 분리. polling 검증→매일 수집→배포 연결. 공용 deploy 경로가 LETF 검사를 실행하며 LETF 코드 변경 없음. 소유권·LETF 검사 실패 병합 승인 대기. |
+| T-POLL-DEPLOY-20261005 | 미국 여론조사 Actions 설치·공용 배포 hook | codex | `.github/workflows/us_election_polls_refresh.yml`, `deploy.yml`, `ownership_guard.yml`, `tools/ops/ownership_rules.py`, 소유권 scope tests, 설치 템플릿 | `codex/us-polls-deploy` | in_progress | 사용자 2026-10-06 남은 작업 진행 지시. PR #451 데이터 병합 완료. 해당 브랜치·워크플로 3개만 담당 예외로 등록하고 나머지 UI/배포 제한은 유지·테스트. LETF 검사 수정은 #456 별도 PR, 사용자 병합 예정. |
