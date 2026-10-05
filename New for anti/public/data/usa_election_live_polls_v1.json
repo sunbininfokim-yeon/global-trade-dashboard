@@ -2,7 +2,7 @@
   "schema": "usa_live_polls_v1",
   "cycle": 2026,
   "as_of": "2026-10-05",
-  "fetched_at": "2026-10-05T09:41:47.686483+00:00",
+  "fetched_at": "2026-10-05T15:05:53.708717+00:00",
   "source_status": "ok",
   "default_window_days": 7,
   "history_file": "usa_election_poll_history_2026.json",
@@ -16,8 +16,8 @@
   },
   "rules_ko": [
     "최근 7일 기본·14일 선택. 조사 종료일 기준(UTC), 오늘 포함.",
-    "기관별 최신 1회. 단일 기관 우세는 하 근거 참고 신호, 복수 기관 과반 우세는 별도 신호.",
-    "근거 하/중/상은 조사 수·일치도 내부 등급이며 기관의 정확도나 방법론 품질 등급이 아닙니다. 출처 검증 상태는 별도.",
+    "기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.",
+    "기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.",
     "LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.",
     "색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.",
     "선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.",
@@ -134,18 +134,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://poll.qu.edu/methodology/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -158,13 +159,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -181,13 +187,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -225,13 +236,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -248,13 +264,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -306,13 +327,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -329,13 +355,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -386,13 +417,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -409,13 +445,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -474,13 +515,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -497,13 +543,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -554,13 +605,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -577,13 +633,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -641,13 +702,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -664,13 +730,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -741,18 +812,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -765,13 +837,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -788,13 +865,36 @@
           "party": "DEM",
           "leader": "Josh Shapiro",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202the361d1d72",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "선정 기관 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 20.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Josh Shapiro": 1
           },
@@ -874,18 +974,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         },
         {
           "id": "us-202suf59500e62",
@@ -935,18 +1036,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         },
         {
           "id": "us-202eme99d02ce6",
@@ -998,18 +1100,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -1022,13 +1125,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1045,13 +1153,36 @@
           "party": "DEM",
           "leader": "Abdul El-Sayed",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "us-202thecf4746de",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "선정 기관 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Abdul El-Sayed": 1
           },
@@ -1131,18 +1262,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         },
         {
           "id": "gov202suf29857b9c",
@@ -1187,18 +1319,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         },
         {
           "id": "gov202emeadcf7c77",
@@ -1245,18 +1378,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -1269,13 +1403,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1292,13 +1431,36 @@
           "party": "DEM",
           "leader": "Jocelyn Benson",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202the033a69e6",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "선정 기관 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Jocelyn Benson": 1
           },
@@ -1378,18 +1540,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://law.marquette.edu/poll/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -1402,13 +1565,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1425,13 +1593,36 @@
           "party": "DEM",
           "leader": "David Crowley",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202mar6e84a0e7",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "선정 기관 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 3.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "David Crowley": 1
           },
@@ -1494,13 +1685,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1517,13 +1713,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1610,18 +1811,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -1634,13 +1836,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1657,13 +1864,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1739,18 +1951,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.highpoint.edu/src/hpupoll/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -1763,13 +1976,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1786,13 +2004,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1830,13 +2053,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1853,13 +2081,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1904,13 +2137,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -1927,13 +2165,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2009,18 +2252,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.fandmpoll.org/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2033,13 +2277,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2056,13 +2305,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2138,18 +2392,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.fandmpoll.org/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2162,13 +2417,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2185,13 +2445,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2268,18 +2533,44 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
-            "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
+              "sample_design",
+              "sample_n_primary_verification",
               "question_sample_n",
-              "primary_values_rechecked"
-            ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+              "precision",
+              "question_wording",
+              "weighting",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-05",
+            "review_sources": [
+              "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+            ],
+            "primary_toplines": {
+              "Gina Hinojosa": 49,
+              "Greg Abbott": 46
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "sponsor": "The New York Times",
+              "sample_n": null,
+              "field_dates": null,
+              "sampling_frame": null,
+              "mode": null,
+              "weighting": null,
+              "question_wording_checked": null
+            },
+            "reported_precision": null,
+            "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+          }
         },
         {
           "id": "gov202eme6536e559",
@@ -2316,18 +2607,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         },
         {
           "id": "gov202rece076214c",
@@ -2362,18 +2654,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2386,13 +2679,61 @@
           "party": "DEM",
           "leader": "Gina Hinojosa",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202theafe06bf1",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Gina Hinojosa": 49,
+                  "Greg Abbott": 46
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 3.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Gina Hinojosa": 1
           },
@@ -2413,13 +2754,61 @@
           "party": "DEM",
           "leader": "Gina Hinojosa",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202theafe06bf1",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Gina Hinojosa": 49,
+                  "Greg Abbott": 46
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 3.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Gina Hinojosa": 1
           },
@@ -2500,18 +2889,44 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
-            "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
+              "sample_design",
+              "sample_n_primary_verification",
               "question_sample_n",
-              "primary_values_rechecked"
-            ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+              "precision",
+              "question_wording",
+              "weighting",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-05",
+            "review_sources": [
+              "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+            ],
+            "primary_toplines": {
+              "Amy Acton": 49,
+              "Vivek Ramaswamy": 45
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "sponsor": "The New York Times",
+              "sample_n": null,
+              "field_dates": null,
+              "sampling_frame": null,
+              "mode": null,
+              "weighting": null,
+              "question_wording_checked": null
+            },
+            "reported_precision": null,
+            "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+          }
         },
         {
           "id": "gov202sufa08bfacb",
@@ -2548,18 +2963,51 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
-            "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+              "weight_calculation_details",
+              "design_effect_adjustment",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-05",
+            "review_sources": [
+              "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
+              "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
+            ],
+            "primary_toplines": {
+              "Amy Acton": 50.4,
+              "Vivek Ramaswamy": 41.4
+            },
+            "question_sample_n": 500,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 500,
+              "field_dates": [
+                "2026-09-23",
+                "2026-09-27"
+              ],
+              "sponsor": "USA TODAY Network Ohio",
+              "sampling_frame": "landline and cell phones; county allocation proportional to expected likely voters",
+              "mode": "live telephone",
+              "weighting": null,
+              "question_wording_checked": true,
+              "demographic_design": "quotas informed by prior midterm exit polls, Census and ACS"
+            },
+            "reported_precision": {
+              "kind": "margin_of_sampling_error",
+              "half_width_pp": 4.4,
+              "confidence_level_pct": null,
+              "scope": "overall_sample",
+              "model_details_verified": false
+            },
+            "limitations_ko": "전체 표본 발표 오차범위. 후보 간 격차 오차범위는 별도이며 유의성 미평가. 인구별 할당 설명을 사후 가중치 공개로 간주하지 않음."
+          }
         },
         {
           "id": "gov202marb1c4f938",
@@ -2589,18 +3037,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2613,13 +3062,61 @@
           "party": "DEM",
           "leader": "Amy Acton",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202the240fb48b",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 49,
+                  "Vivek Ramaswamy": 45
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Amy Acton": 1
           },
@@ -2640,13 +3137,110 @@
           "party": "DEM",
           "leader": "Amy Acton",
           "evidence_quality": {
-            "level": "medium",
-            "label_ko": "중",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
             "independent_pollster_count": 2,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202the240fb48b",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 49,
+                  "Vivek Ramaswamy": 45
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202sufa08bfacb",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "weight_calculation_details",
+                  "design_effect_adjustment",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
+                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 50.4,
+                  "Vivek Ramaswamy": 41.4
+                },
+                "question_sample_n": 500,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 500,
+                  "field_dates": [
+                    "2026-09-23",
+                    "2026-09-27"
+                  ],
+                  "sponsor": "USA TODAY Network Ohio",
+                  "sampling_frame": "landline and cell phones; county allocation proportional to expected likely voters",
+                  "mode": "live telephone",
+                  "weighting": null,
+                  "question_wording_checked": true,
+                  "demographic_design": "quotas informed by prior midterm exit polls, Census and ACS"
+                },
+                "reported_precision": {
+                  "kind": "margin_of_sampling_error",
+                  "half_width_pp": 4.4,
+                  "confidence_level_pct": null,
+                  "scope": "overall_sample",
+                  "model_details_verified": false
+                },
+                "limitations_ko": "전체 표본 발표 오차범위. 후보 간 격차 오차범위는 별도이며 유의성 미평가. 인구별 할당 설명을 사후 가중치 공개로 간주하지 않음."
+              },
+              "leading_margin_pp": 9.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Amy Acton": 2
           },
@@ -2728,18 +3322,44 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
-            "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
+              "sample_design",
+              "sample_n_primary_verification",
               "question_sample_n",
-              "primary_values_rechecked"
-            ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+              "precision",
+              "question_wording",
+              "weighting",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-05",
+            "review_sources": [
+              "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+            ],
+            "primary_toplines": {
+              "Rob Sand": 52,
+              "Zach Lahn": 41
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "sponsor": "The New York Times",
+              "sample_n": null,
+              "field_dates": null,
+              "sampling_frame": null,
+              "mode": null,
+              "weighting": null,
+              "question_wording_checked": null
+            },
+            "reported_precision": null,
+            "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+          }
         },
         {
           "id": "gov202marf9ae66ed",
@@ -2769,18 +3389,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2793,13 +3414,61 @@
           "party": "DEM",
           "leader": "Rob Sand",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202thefb920530",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 52,
+                  "Zach Lahn": 41
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 11.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Rob Sand": 1
           },
@@ -2820,13 +3489,61 @@
           "party": "DEM",
           "leader": "Rob Sand",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "gov202thefb920530",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "sample_design",
+                  "sample_n_primary_verification",
+                  "question_sample_n",
+                  "precision",
+                  "question_wording",
+                  "weighting",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 52,
+                  "Zach Lahn": 41
+                },
+                "question_sample_n": null,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sponsor": "The New York Times",
+                  "sample_n": null,
+                  "field_dates": null,
+                  "sampling_frame": null,
+                  "mode": null,
+                  "weighting": null,
+                  "question_wording_checked": null
+                },
+                "reported_precision": null,
+                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
+              },
+              "leading_margin_pp": 11.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Rob Sand": 1
           },
@@ -2907,18 +3624,19 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
+            "accuracy_grade": null,
             "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+          }
         }
       ],
       "windows": {
@@ -2931,13 +3649,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -2954,13 +3677,36 @@
           "party": "DEM",
           "leader": "Sherrod Brown",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "us-202mara7f1d430",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "선정 기관 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 8.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Sherrod Brown": 1
           },
@@ -3043,18 +3789,50 @@
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
-            "label_ko": "선정 기관 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
-          },
-          "limitations_ko": "VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공."
+              "precision_model_specification",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-05",
+            "review_sources": [
+              "https://emersoncollegepolling.com/ny-17-2026-poll/",
+              "https://docs.google.com/spreadsheets/d/1gjED-hyQ-n55NjZa-D8FwRJAj-5U_Rlh/edit?gid=1122632566"
+            ],
+            "primary_toplines": {
+              "Cait Conley": 47.9,
+              "Mike Lawler": 45.6
+            },
+            "question_sample_n": 400,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 400,
+              "field_dates": [
+                "2026-09-27",
+                "2026-09-29"
+              ],
+              "sponsor": "PIX11 News",
+              "sampling_frame": "Aristotle voter file and PureSpectrum panel",
+              "mode": "text-to-web and online panel",
+              "weighting": "gender, education, party registration, region; Census and voter-file benchmarks",
+              "question_wording_checked": true,
+              "data_quality_controls": "restricted links; panel identity matched to voter file"
+            },
+            "reported_precision": {
+              "kind": "credibility_interval",
+              "half_width_pp": 4.9,
+              "confidence_level_pct": 95,
+              "scope": "overall_sample",
+              "model_details_verified": false
+            },
+            "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
+          }
         }
       ],
       "windows": {
@@ -3067,13 +3845,67 @@
           "party": "DEM",
           "leader": "Cait Conley",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "us-202emefa6f3e99",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "precision_model_specification",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://emersoncollegepolling.com/ny-17-2026-poll/",
+                  "https://docs.google.com/spreadsheets/d/1gjED-hyQ-n55NjZa-D8FwRJAj-5U_Rlh/edit?gid=1122632566"
+                ],
+                "primary_toplines": {
+                  "Cait Conley": 47.9,
+                  "Mike Lawler": 45.6
+                },
+                "question_sample_n": 400,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 400,
+                  "field_dates": [
+                    "2026-09-27",
+                    "2026-09-29"
+                  ],
+                  "sponsor": "PIX11 News",
+                  "sampling_frame": "Aristotle voter file and PureSpectrum panel",
+                  "mode": "text-to-web and online panel",
+                  "weighting": "gender, education, party registration, region; Census and voter-file benchmarks",
+                  "question_wording_checked": true,
+                  "data_quality_controls": "restricted links; panel identity matched to voter file"
+                },
+                "reported_precision": {
+                  "kind": "credibility_interval",
+                  "half_width_pp": 4.9,
+                  "confidence_level_pct": 95,
+                  "scope": "overall_sample",
+                  "model_details_verified": false
+                },
+                "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Cait Conley": 1
           },
@@ -3094,13 +3926,67 @@
           "party": "DEM",
           "leader": "Cait Conley",
           "evidence_quality": {
-            "level": "low",
-            "label_ko": "하",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
             "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [
+            {
+              "id": "us-202emefa6f3e99",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "precision_model_specification",
+                  "historical_accuracy_rating"
+                ],
+                "reviewed_on": "2026-10-05",
+                "review_sources": [
+                  "https://emersoncollegepolling.com/ny-17-2026-poll/",
+                  "https://docs.google.com/spreadsheets/d/1gjED-hyQ-n55NjZa-D8FwRJAj-5U_Rlh/edit?gid=1122632566"
+                ],
+                "primary_toplines": {
+                  "Cait Conley": 47.9,
+                  "Mike Lawler": 45.6
+                },
+                "question_sample_n": 400,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 400,
+                  "field_dates": [
+                    "2026-09-27",
+                    "2026-09-29"
+                  ],
+                  "sponsor": "PIX11 News",
+                  "sampling_frame": "Aristotle voter file and PureSpectrum panel",
+                  "mode": "text-to-web and online panel",
+                  "weighting": "gender, education, party registration, region; Census and voter-file benchmarks",
+                  "question_wording_checked": true,
+                  "data_quality_controls": "restricted links; panel identity matched to voter file"
+                },
+                "reported_precision": {
+                  "kind": "credibility_interval",
+                  "half_width_pp": 4.9,
+                  "confidence_level_pct": 95,
+                  "scope": "overall_sample",
+                  "model_details_verified": false
+                },
+                "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "lead_counts": {
             "Cait Conley": 1
           },
@@ -3149,13 +4035,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3172,13 +4063,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3223,13 +4119,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3246,13 +4147,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3297,13 +4203,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3320,13 +4231,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3371,13 +4287,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3394,13 +4315,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3445,13 +4371,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3468,13 +4399,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3519,13 +4455,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3542,13 +4483,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3593,13 +4539,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3616,13 +4567,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3667,13 +4623,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3690,13 +4651,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3741,13 +4707,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3764,13 +4735,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3815,13 +4791,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3838,13 +4819,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3889,13 +4875,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3912,13 +4903,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3963,13 +4959,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -3986,13 +4987,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4037,13 +5043,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4060,13 +5071,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4111,13 +5127,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4134,13 +5155,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4185,13 +5211,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4208,13 +5239,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4259,13 +5295,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4282,13 +5323,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4333,13 +5379,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4356,13 +5407,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4407,13 +5463,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4430,13 +5491,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4481,13 +5547,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4504,13 +5575,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4555,13 +5631,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4578,13 +5659,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4629,13 +5715,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4652,13 +5743,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4703,13 +5799,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4726,13 +5827,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4777,13 +5883,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4800,13 +5911,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4851,13 +5967,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4874,13 +5995,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4925,13 +6051,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4948,13 +6079,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -4999,13 +6135,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5022,13 +6163,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5073,13 +6219,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5096,13 +6247,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5147,13 +6303,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5170,13 +6331,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5221,13 +6387,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5244,13 +6415,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5295,13 +6471,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5318,13 +6499,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5369,13 +6555,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5392,13 +6583,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5443,13 +6639,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5466,13 +6667,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5517,13 +6723,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5540,13 +6751,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5591,13 +6807,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5614,13 +6835,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5665,13 +6891,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5688,13 +6919,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5739,13 +6975,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5762,13 +7003,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5813,13 +7059,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5836,13 +7087,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5887,13 +7143,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5910,13 +7171,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5961,13 +7227,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -5984,13 +7255,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6035,13 +7311,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6058,13 +7339,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6109,13 +7395,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6132,13 +7423,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6183,13 +7479,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6206,13 +7507,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6257,13 +7563,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6280,13 +7591,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6331,13 +7647,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6354,13 +7675,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6405,13 +7731,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6428,13 +7759,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6479,13 +7815,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6502,13 +7843,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6553,13 +7899,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6576,13 +7927,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6627,13 +7983,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -6650,13 +8011,18 @@
           "party": null,
           "leader": null,
           "evidence_quality": {
-            "level": "none",
-            "label_ko": "없음",
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
             "independent_pollster_count": 0,
             "agreement_fraction": null,
-            "basis_ko": "기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.",
-            "limitations_ko": "조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다."
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
+          "poll_details": [],
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,

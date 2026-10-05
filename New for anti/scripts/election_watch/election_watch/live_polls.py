@@ -11,6 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
+from .poll_quality import source_quality, evidence_context
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -138,7 +139,7 @@ def normalize(rows, policy, as_of):
                 normalized.append({'name': a['choice'], 'pct': a['pct'],
                                    'party': identity['party'] if identity else None})
             require(not any(a['name'].casefold() in ('dem', 'rep', 'democrat', 'republican') for a in normalized), 'generic_ballot')
-            accepted.append({'id': p['id'], 'race_id': rid, 'contest_id': race['contest_id'],
+            observation = {'id': p['id'], 'race_id': rid, 'contest_id': race['contest_id'],
                              'pollster': p['pollster'], 'pollster_group': source['group'],
                              'field_start': p['start_date'], 'field_end': p['end_date'],
                              'provider_record_date': p['created_at'], 'population': p['population'],
@@ -147,30 +148,20 @@ def normalize(rows, policy, as_of):
                              'verification': 'selected_source_aggregator_import',
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
-                             'source_quality': {
-                                 'verification_level': 'partial',
-                                 'methodological_quality': 'unrated',
-                                 'label_ko': '선정 기관 · 집계값 부분 검증',
-                                 'basis_ko': '기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 이번 실행에서 원문 수치를 재전사하지 않았습니다.',
-                                 'missing_fields': ['margin_of_error_pp', 'question_sample_n', 'primary_values_rechecked']},
-                             'limitations_ko': 'VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공.'})
+                             'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
+            observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
+            accepted.append(observation)
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': raw.get('id'), 'race_id': rid, 'pollster': raw.get('pollster'),
                              'reason': str(exc) if isinstance(exc, ValueError) else 'malformed_record'})
     return accepted, rejected
 
 
-def evidence_quality(pollster_count, agreement_fraction, conflicting=()):
-    """Internal information/consistency label, not a pollster accuracy rating."""
-    level = ('none' if not pollster_count else 'low' if pollster_count == 1 else
-             'high' if pollster_count >= 3 and agreement_fraction >= .75 else 'medium')
-    if conflicting and level == 'high':
-        level = 'medium'
-    return {'level': level, 'label_ko': {'none': '없음', 'low': '하', 'medium': '중', 'high': '상'}[level],
-            'independent_pollster_count': pollster_count,
-            'agreement_fraction': agreement_fraction if pollster_count else None,
-            'basis_ko': '기간 내 기관별 최신 1건: 1기관 하, 2기관 이상 중, 3기관 이상·동일 후보 우세 75% 이상·충돌 없음 상.',
-            'limitations_ko': '조사 수와 일치도의 내부 근거 등급. 기관의 방법론 품질·정확도·통계적 신뢰수준·당선확률 등급이 아닙니다.'}
+def poll_detail(poll):
+    values = sorted((a['pct'] for a in poll['answers']), reverse=True)
+    return {'id': poll['id'], 'source_quality': poll['source_quality'],
+            'leading_margin_pp': round(values[0] - values[1], 3),
+            'significance': 'not_evaluated'}
 
 
 def summarize(rows, race, as_of, days):
@@ -214,12 +205,13 @@ def summarize(rows, race, as_of, days):
     if chosen and name and counts[name] > len(chosen) / 2:
         status = ('single_poll_lead' if len(chosen) == 1 else 'poll_lead') if parties[name] else 'unknown_leader_party'
         party = parties[name]
-    quality = evidence_quality(len(chosen), max(counts.values(), default=0) / len(chosen) if chosen else 0,
+    quality = evidence_context(len(chosen), max(counts.values(), default=0) / len(chosen) if chosen else 0,
                                conflicting)
     return {'window_days': days, 'from': start.isoformat(), 'through': as_of,
             'population': population if chosen else None, 'status': status, 'party': party,
             'leader': name if status in ('poll_lead', 'single_poll_lead') else None,
             'evidence_quality': quality,
+            'poll_details': [poll_detail(p) for p in chosen],
             'lead_counts': dict(counts), 'tie_count': ties, 'pollster_count': len(chosen),
             'included_ids': [p['id'] for p in chosen], 'conflicting_pollsters': conflicting,
             'latest_field_end': max((p['field_end'] for p in chosen), default=None)}
@@ -291,7 +283,7 @@ def close_finished_races(board, policy, confirmed, as_of):
                                    'lead_counts': {}, 'tie_count': 0, 'pollster_count': 0,
                                    'included_ids': [], 'conflicting_pollsters': [],
                                    'latest_field_end': None, 'population': None,
-                                   'evidence_quality': evidence_quality(0, 0)})
+                                   'evidence_quality': evidence_context(0, 0), 'poll_details': []})
                     changed = True
     if changed:
         board['lifecycle_checked_as_of'] = as_of
@@ -314,8 +306,8 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
             'stale_after_hours': 48, 'source': {'name': 'VoteHub', 'url': 'https://votehub.com/polls/api/',
                 'request_url': source_url, 'license': 'CC BY 4.0', 'modified': '선정·정규화·기관별 최신 조사 집계'},
             'rules_ko': ['최근 7일 기본·14일 선택. 조사 종료일 기준(UTC), 오늘 포함.',
-                '기관별 최신 1회. 단일 기관 우세는 하 근거 참고 신호, 복수 기관 과반 우세는 별도 신호.',
-                '근거 하/중/상은 조사 수·일치도 내부 등급이며 기관의 정확도나 방법론 품질 등급이 아닙니다. 출처 검증 상태는 별도.',
+                '기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.',
+                '기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.',
                 'LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.',
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',

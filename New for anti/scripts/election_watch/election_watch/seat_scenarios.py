@@ -137,7 +137,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
                     rated[party] += 1
                 else:
                     pending += 1
-                label = (f'{PARTY_KO[party]} 단일 조사상 우세 · 근거 하' if basis == 'single_poll_lead' else
+                label = (f'{PARTY_KO[party]} 단일 조사에서 수치상 앞섬 · 참고' if basis == 'single_poll_lead' else
                          f'{PARTY_KO[party]} 조사상 우세' if basis == 'recent_poll_lead' else
                          f'{PARTY_KO[party]} 당선 확정' if basis == 'certified_result' else
                          f'{PARTY_KO[party]} 기초 유지 가정' if basis == 'rated_baseline_assumption' else
@@ -146,6 +146,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
                                 'basis': basis, 'party_abbr': party or '없음', 'conclusion_ko': label,
                                 'poll_status': observed.get('status', 'no_recent_poll') if poll_ok else 'source_unavailable',
                                 'evidence_quality': observed.get('evidence_quality') if poll_ok and basis in ('recent_poll_lead', 'single_poll_lead', 'pending') and not after_election else None,
+                                'poll_details': observed.get('poll_details', []) if poll_ok and not after_election and tier in COMPETITIVE else [],
                                 'included_poll_ids': observed.get('included_ids', []) if basis in ('recent_poll_lead', 'single_poll_lead') else []})
             assigned = retained + rated + confirmed + poll_leads + single_leads
             require(sum(assigned.values()) + pending == p['total'], 'seat conservation')
@@ -159,7 +160,7 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
             counts = {party: assigned[party] for party in ('DEM', 'GOP', 'IND')}
             chambers[office] = {
                 'lead_abbr': lead,
-                'margin_note_ko': f'조건부 집계 민주 {counts["DEM"]} · 공화 {counts["GOP"]} · 무소속 {counts["IND"]} · 미정 {pending}. 단일 기관 하 근거 {sum(single_leads.values())}곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.',
+                'margin_note_ko': f'조건부 집계 민주 {counts["DEM"]} · 공화 {counts["GOP"]} · 무소속 {counts["IND"]} · 미정 {pending}. 단일 기관 참고 {sum(single_leads.values())}곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.',
                 'total_seats': p['total'], 'scenario_counts': counts, 'unresolved_seats': pending,
                 'buckets': {'retained': dict(retained), 'rated_baseline_assumption': dict(rated),
                             'recent_poll_lead': dict(poll_leads), 'single_poll_lead': dict(single_leads),
@@ -177,11 +178,11 @@ def build_scenarios(board, election_board, policy, as_of, checked_at, health=Non
                                                          for r in c['races'] if r['competitive']]}
     return {'schema': 'usa_midterms_forecast_v1', 'cycle': policy['cycle'], 'as_of': as_of,
             'generated_at': checked_at, 'default_window_days': 7, 'refresh_seconds': 3600,
-            'method_ko': '비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 하 근거 참고 집계로 분리. 조사 없음·동률은 보류.',
+            'method_ko': '비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.',
             'source_ko': 'Cook 하원·상원·주지사 공개 등급 검토본 · 기존 명부 · NGA 일정 · VoteHub 선정 기관',
             'sources': sources, 'chambers': windows['7']['chambers'], 'windows': windows,
             'limitations_ko': [policy['note_ko'], 'seats·win_prob는 발행하지 않음. 조건부 범위는 통계적 신뢰구간이 아님.',
-                               '단일 기관 우세는 하 근거 참고값. 이를 제외한 집계와 미정 수를 별도 제공. 상/중/하는 기관의 정확도 등급이 아님.',
+                               '단일 기관 수치상 앞섬은 참고값. 이를 제외한 집계와 미정 수를 별도 제공. 기관 수·일치도를 상/중/하 품질 등급으로 변환하지 않음.',
                                '평가 등급은 검토본이며 자동 갱신되지 않음. 21일 경과 시 집계에서 제외.',
                                policy['governor']['note_ko'], '비선거 현직은 기존 의석 명부 기준이며 임기 중 교체와 공석은 명부 갱신 필요.'],
             'roster_generated_at': election_board['generated_at']}

@@ -28,6 +28,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--policy', type=Path, default=ROOT/'config/usa_polls/live_2026.json')
     p.add_argument('--watchlist', type=Path, default=ROOT/'config/usa_polls/watchlist_2026.json')
+    p.add_argument('--quality-reviews', type=Path, default=ROOT/'config/usa_polls/quality_reviews_2026.json')
     p.add_argument('--results', type=Path, default=ROOT/'config/usa_polls/results_2026.json')
     p.add_argument('--output', type=Path, default=ROOT.parent.parent/'public/data/usa_election_live_polls_v1.json')
     p.add_argument('--as-of', default=datetime.now(timezone.utc).date().isoformat())
@@ -39,6 +40,10 @@ def main():
     health = args.output.with_name('usa_election_live_polls_status_v1.json')
     try:
         policy = apply_watchlist(read(args.policy), read(args.watchlist))
+        quality = read(args.quality_reviews)
+        if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
+            raise ValueError('quality review schema/cycle')
+        policy['quality_reviews'] = quality['reviews']
         rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
         history = poll_history(rows, policy, args.as_of)
