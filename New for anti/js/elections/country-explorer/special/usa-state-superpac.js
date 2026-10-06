@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js';
+import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=2';
 
 // Every figure here is independent expenditure: money outside groups spent of
 // their own accord to promote or attack a named candidate. The index says so

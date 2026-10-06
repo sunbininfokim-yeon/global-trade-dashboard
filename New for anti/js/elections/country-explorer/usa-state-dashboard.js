@@ -1,5 +1,5 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-import { usaStateSuperPac } from './special/usa-state-superpac.js';
+import { usaStateSuperPac } from './special/usa-state-superpac.js?v=3';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 // Returns safe HTML, not plain text: a bioguideId (present on every House/

@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { normalizeParty, pollSignal } from '../../data/usa-election-context.js';
+import { normalizeParty, pollSignal } from '../../data/usa-election-context.js?v=2';
 
 const money = (cents) => {
     if (cents == null) return '관측 없음';

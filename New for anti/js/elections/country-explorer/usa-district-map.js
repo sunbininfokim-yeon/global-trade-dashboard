@@ -1,5 +1,5 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js';
-import { pollSignal, pollSourceReady } from '../data/usa-election-context.js';
+import { pollSignal, pollSourceReady } from '../data/usa-election-context.js?v=2';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
     : party === 'GOP' ? [220, 38, 38, 225] : [71, 85, 105, 230];

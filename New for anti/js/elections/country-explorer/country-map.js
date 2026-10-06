@@ -1,5 +1,5 @@
 import { loadAdmin1 } from '../data/geo-service.js';
-import { classColors, stateClass2024 } from '../data/usa-election-context.js';
+import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];

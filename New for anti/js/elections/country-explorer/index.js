@@ -1,13 +1,14 @@
 import { renderCountryShell } from './country-shell.js?v=3';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=3';
-import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=2';
-import { renderUsaDistrictMap } from './usa-district-map.js?v=2';
+import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=3';
+import { renderUsaDistrictMap } from './usa-district-map.js?v=3';
 import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract } from '../data/finance-service.js?v=2';
-import { loadLivePolls } from '../data/poll-service.js';
-import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js';
+import { loadLivePolls } from '../data/poll-service.js?v=2';
+import { loadUsaMidtermsForecast } from '../data/forecast-service.js';
+import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=2';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
@@ -73,14 +74,14 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }) });
             if (usaElectionMode) {
                 host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.</p></div>';
-                const [polls, contract] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract()]);
+                const [polls, contract, forecast] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract(), loadUsaMidtermsForecast()]);
                 const entries = await Promise.all(nationalMonitoringStates(polls.board)
                     .map(async (id) => [id, await loadStateFinanceIndex(id)]));
                 if (isStale()) return;
                 shell = null;
                 onRoute?.({ country: iso3, view: 'finance' });
                 renderUsaElectionNational(host.roots.country, {
-                    ...polls, contract, indexes: Object.fromEntries(entries), days: pollWindowDays,
+                    ...polls, contract, forecast, indexes: Object.fromEntries(entries), days: pollWindowDays,
                     onBack, onToggle: () => this.showCountry('USA'),
                     onWindowChange: (days) => { pollWindowDays = days; this.showCountry('USA', { electionMode: true }); },
                     onStateOpen: (stateId, district) => this.showUsaState(stateId, { financeMode: true, district }),

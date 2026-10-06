@@ -1,6 +1,6 @@
 import { escapeHtml } from '../../ui.js';
-import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal, pollSourceReady } from '../../data/usa-election-context.js';
-import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js';
+import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal, pollSourceReady } from '../../data/usa-election-context.js?v=2';
+import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=2';
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
 
@@ -47,11 +47,13 @@ export const summarizeNationalRaces = (board, health, days = 7, now = Date.now()
 };
 
 export const renderUsaElectionNational = (root, {
-    board, health, indexes = {}, contract, days = 7, onBack, onToggle, onWindowChange, onStateOpen,
+    board, health, indexes = {}, contract, forecast = null, days = 7, onBack, onToggle, onWindowChange, onStateOpen,
 }) => {
     const races = selectNationalRaces(board, days, health);
     const summary = summarizeNationalRaces(board, health, days);
     const ready = pollSourceReady(board, health);
+    const conditional = ready && forecast?.schema === 'usa_midterms_forecast_v1' && forecast.as_of === board?.as_of
+        ? forecast.windows?.[String(days)]?.chambers : null;
     const allMonitored = monitoredNationalRaces(board).sort((a, b) => (a.collection_priority?.order || 4)
         - (b.collection_priority?.order || 4) || a.race_id.localeCompare(b.race_id));
     const unresolved = allMonitored.filter((race) => (race.required_candidates || []).length < 2);
@@ -89,6 +91,14 @@ export const renderUsaElectionNational = (root, {
             ${summary.total.certifiedDem + summary.total.certifiedRep ? `<p class="elections-panel-note">공식 확정 결과: 민주 ${summary.total.certifiedDem} · 공화 ${summary.total.certifiedRep} (조사 우세와 별도)</p>` : ''}
             <p class="elections-panel-note">이는 관심 주의 확인된 레이스만 센 수이며, 전국 의석 전망이나 확정 의석 수가 아닙니다. 블루·레드·퍼플 지도색은 집계에 넣지 않습니다.</p>
         </section>
+        ${conditional ? `<section class="elections-detail-section" aria-label="수집 시점 전국 조건부 집계">
+            <p class="section-title">전국 조건부 집계 · ${escapeHtml(forecast.as_of)} 수집 시점</p>
+            ${[['house','하원'],['senate','상원'],['governor','주지사']].map(([office,label]) => {
+                const row=conditional[office]; if (!row || !row.scenario_counts) return '';
+                return `<p>${label} · 민주 ${row.scenario_counts.DEM ?? 0} · 공화 ${row.scenario_counts.GOP ?? 0} · 무소속 ${row.scenario_counts.IND ?? 0} · 미정 ${row.unresolved_seats ?? '?'}</p>`;
+            }).join('')}
+            <p class="elections-panel-note">${escapeHtml(forecast.method_ko || '')} 매주 수집 시점의 조건부 값이며 현재 날짜의 조사 우세 표와 구분합니다. 확정 의석·당선확률이 아닙니다.</p>
+        </section>` : ''}
         <section class="elections-detail-section"><p class="section-title">주목 선거 · 주를 누르면 지역구까지 보기</p>
             <div class="elections-national-races">${races.map((race) => `
                 <article class="elections-race-card">
