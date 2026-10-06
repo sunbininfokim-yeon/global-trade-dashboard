@@ -85,3 +85,9 @@ test('browser window calculation agrees with all published backend race windows'
         }
     }
 });
+
+test('reviewed non-election slots show a schedule label instead of an unconnected poll', () => {
+    const b={...board,races:{},excluded_watch_slots:[{race_id:'USA:NY:senate',reason:'not_on_2026_regular_ballot'}]};
+    const html=usaStateSuperPac({id:'NY'},[{race_id:'USA:NY:senate',office:'senate',status:'partial',candidates:[]}],null,null,b,{status:'ok'},7);
+    assert.match(html,/2026 정기선거 없음/);
+});
