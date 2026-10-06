@@ -22,6 +22,13 @@ class PollingScopeTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertNotIn(path, permitted)
 
+    def test_user_requested_election_ui_exception_is_exact(self):
+        self.assertEqual(scoped_paths('codex/usa-election-ui'),
+                         {'New for anti/index.html', 'New for anti/style.css'})
+        self.assertNotIn('New for anti/app.js', scoped_paths('codex/usa-election-ui'))
+        self.assertFalse(scoped_paths('codex/usa-election-ui-extra'))
+        self.assertNotIn('.github/workflows/deploy.yml', scoped_paths('codex/usa-election-ui'))
+
 
 if __name__ == '__main__':
     unittest.main()
