@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from html import unescape
 from typing import Any, Dict, List, Optional
-from urllib.parse import unquote, urljoin
+from urllib.parse import quote, unquote, urljoin
 
 _TAG_RE = re.compile(r"<[^>]+>", re.S)
 _SCRIPT_RE = re.compile(r"<(script|style)[^>]*>.*?</\1>", re.I | re.S)
@@ -205,6 +205,17 @@ def parse_date(raw: str) -> Optional[str]:
         return None
 
 
+def _board_for(source: Dict[str, Any], title: str) -> Optional[str]:
+    """The board an item goes on. A general ministry feed (Indonesia's trade
+    ministry) sets board_title_re so only its export-policy headlines join
+    the board; the rest stay ordinary commodity reports."""
+    board = source.get("board") or None
+    pattern = source.get("board_title_re")
+    if board and pattern and not re.search(pattern, title or ""):
+        return None
+    return board
+
+
 def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
     return RawReport(
         source_id=source["id"],
@@ -218,7 +229,7 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         market_only=bool(source.get("market_only")),
         commodity_from=source.get("commodity_from", "text"),
         commodity_scope=list(source.get("commodity_scope") or []),
-        board=source.get("board") or None,
+        board=_board_for(source, kw.get("title", "")),
         **kw,
     )
 
@@ -241,6 +252,9 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     else:
         return []
 
+    # A feed of everything a government publishes keeps only matching
+    # headlines (Russia: export bans, quotas, duties).
+    title_keep = re.compile(source["title_re"]) if source.get("title_re") else None
     items: List[RawReport] = []
     for el in entries[:max_items]:
         title = link = pub = ""
@@ -264,6 +278,8 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
         title = strip_html(title)
         summary = strip_html(max(bodies, key=len) if bodies else "")
         if not title or not link:
+            continue
+        if title_keep and not title_keep.search(title):
             continue
         # Feeds that repeat the headline as the body add nothing to the card.
         if summary.lower().startswith(title.lower()):
@@ -372,6 +388,63 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         items.append(
             _raw_from(source, title=title, url=full, summary="", published_at=published)
         )
+        if len(items) >= max_items:
+            break
+    return items
+
+
+_DMY_RE = re.compile(r"(\d{1,2})[/.-](\d{1,2})[/.-](20\d{2})")
+
+
+def parse_html_table(body: str, source: Dict[str, Any]) -> List[RawReport]:
+    """Rows of a server-rendered table whose headline sits in its own cell
+    and whose link is a bare "Download" (India's DGFT notifications: number,
+    year, description, date, PDF).
+
+    cfg ("table"): title_col and date_col are 0-based <td> indexes;
+    number_col, when set, prefixes the headline ("Notification 35/2026-27:
+    ..."); date_order "dmy" (default) or "ymd"; title_re keeps matching
+    headlines only; max_items caps the rows read.
+    """
+    cfg = source.get("table") or {}
+    base = cfg.get("base") or source.get("url") or ""
+    title_col = int(cfg.get("title_col", 0))
+    date_col = cfg.get("date_col")
+    number_col = cfg.get("number_col")
+    prefix = cfg.get("number_prefix", "")
+    title_keep = re.compile(cfg["title_re"]) if cfg.get("title_re") else None
+    max_items = int(cfg.get("max_items") or 30)
+    items: List[RawReport] = []
+    seen = set()
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S | re.I):
+        cells = [strip_html(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S | re.I)]
+        if len(cells) <= title_col:
+            continue
+        title = cells[title_col].strip()
+        if not title or (title_keep and not title_keep.search(title)):
+            continue
+        href = re.search(r"href=[\"']([^\"']+)[\"']", row, re.I)
+        if not href:
+            continue
+        # DGFT's PDF names carry spaces ("Notif 39 E.pdf").
+        url = quote(urljoin(base, href.group(1).strip()), safe=":/?&=%#~+,;@!$'()*")
+        if url in seen:
+            continue
+        seen.add(url)
+        if number_col is not None and len(cells) > int(number_col) and cells[int(number_col)]:
+            title = f"{prefix}{cells[int(number_col)]}: {title}"
+        published = None
+        if date_col is not None and len(cells) > int(date_col):
+            raw = cells[int(date_col)]
+            m = _LIST_DATE_RE.search(raw) if cfg.get("date_order") == "ymd" else _DMY_RE.search(raw)
+            if m:
+                y, mo, d = (m.group(1), m.group(2), m.group(3)) if cfg.get("date_order") == "ymd" \
+                    else (m.group(3), m.group(2), m.group(1))
+                try:
+                    published = datetime(int(y), int(mo), int(d), tzinfo=timezone.utc).isoformat()
+                except ValueError:
+                    published = None
+        items.append(_raw_from(source, title=title, url=url, summary="", published_at=published))
         if len(items) >= max_items:
             break
     return items
@@ -673,6 +746,8 @@ def fetch_source(
             )
     elif kind == "fas_gain_cards":
         items = parse_fas_gain_cards(body, source, max_items=max_items)
+    elif kind == "html_table":
+        items = parse_html_table(body, source)
 
     else:
         return {"source_id": sid, "ok": False, "items": [], "count": 0,

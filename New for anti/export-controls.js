@@ -156,6 +156,9 @@
         // this is the 원유 map. Fuels show in the monitor only.
         oil: ['oil', 'crude'],
         gas: ['gas', 'lng'],
+        // The 경질유 map is HS 271012 -- naphtha and motor gasoline -- so
+        // Russia's gasoline export ban (petroleum_products) belongs on it.
+        light_oils: ['naphtha', 'gasoline', 'petroleum_products'],
         thermal_coal: ['coal', 'thermal_coal'],
         met_coal: ['coal', 'met_coal'],
         wheat: ['wheat'],
@@ -364,7 +367,7 @@
             </div>
             <div class="ec-src">
                 ${esc(c.source)}${url ? ` <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">원문 ↗</a>` : ''}
-                · 신뢰도 ${esc(c.confidence || '—')}${c.verified_at ? ` · 확인 ${esc(c.verified_at)}` : ''}
+                ${c.basis === 'reported' ? '· <span class="ec-recheck">보도 기반 · 공식 고시 없음</span> ' : ''}${c.basis === 'official' ? '· 정부 원문 ' : ''}· 신뢰도 ${esc(c.confidence || '—')}${c.verified_at ? ` · 확인 ${esc(c.verified_at)}` : ''}
                 ${c.needs_reconfirm ? ' · <span class="ec-recheck">재확인 필요</span>' : ''}
             </div>
         </li>`;
@@ -450,11 +453,17 @@
         return '';
     };
 
-    const noticeFootHtml = () => `<p class="ec-foot">
-        미국 재무부 OFAC · 상무부 BIS · 중국 상무부 수출입통제국 공고, 최신순 최대 200건 ·
+    // The agencies named are whichever the board actually carries, so a new
+    // regulator in sources.json shows up here without a UI change.
+    const noticeFootHtml = () => {
+        const bodies = [...new Set((notices?.items || [])
+            .map((it) => it.control.issuer_body_ko || it.agency_ko || it.control.issuer_body).filter(Boolean))];
+        return `<p class="ec-foot">
+        ${esc(bodies.join(' · ') || '규제 기관')} 공고, 최신순 최대 200건 ·
         갱신 ${esc(String(notices?.generated_at || '').slice(0, 10) || '—')}.
         한글 제목과 조치 종류·대상국은 제목 한 줄을 Gemini가 읽은 값입니다 — 판단은 원문으로.
         EU·일본 METI는 아직 연결 전.</p>`;
+    };
 
     const renderNoticesPanel = () => {
         const status = noticeStatusHtml();
