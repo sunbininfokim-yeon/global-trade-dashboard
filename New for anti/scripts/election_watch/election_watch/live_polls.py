@@ -11,6 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
+from .poll_quality import source_quality, evidence_context
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -87,6 +88,40 @@ def fetch_polls(cycle, as_of):
     return data, url
 
 
+def reviewed_source(raw, policy, as_of):
+    """A reviewed release can qualify without an institution-wide registration.
+
+    Never trust an arbitrary link, or allow a shared document host wholesale.
+    The release's URL, pollster and later normalized fingerprint must all match.
+    """
+    review = policy.get('quality_reviews', {}).get(raw['id'], {})
+    admission = review.get('admission')
+    if admission:
+        require(len(review.get('primary_toplines', {})) >= 2 and review.get('sources')
+                and review.get('disclosure_review'), 'incomplete_source_review')
+        require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of),
+                'future_quality_review')
+        require(admission['pollster'] == raw['pollster']
+                and admission['provider_url'] == raw.get('url'), 'source_review_changed')
+        for value in [admission['provider_url'], admission['methodology_url'], *review['sources']]:
+            url = urlparse(value)
+            require(url.scheme == 'https' and url.hostname and not url.username and not url.password,
+                    'invalid_reviewed_source_url')
+        require(admission['source_role'] in ('pollster_primary', 'commissioner_primary'),
+                'unverified_source_role')
+        require(type(admission['signal_eligible']) is bool and admission['group'],
+                'invalid_source_admission')
+        require(admission['signal_eligible'] or admission.get('signal_exclusion_reasons'),
+                'missing_reference_reason')
+        return {'group': admission['group'], 'methodology_url': admission['methodology_url']}, admission
+    source = policy['pollsters'].get(raw.get('pollster'))
+    require(source is not None, 'pollster_not_selected')
+    url = urlparse(raw.get('url') if isinstance(raw.get('url'), str) else '')
+    require(url.scheme == 'https' and not url.username and not url.password
+            and url.hostname in source['hosts'], 'unregistered_primary_host')
+    return source, None
+
+
 def normalize(rows, policy, as_of):
     day = date.fromisoformat(as_of)
     races = policy['races']
@@ -106,18 +141,23 @@ def normalize(rows, policy, as_of):
             require(p['id'] not in seen_ids, 'duplicate_id')
             seen_ids.add(p['id'])
             require(p['id'] not in policy.get('excluded_records', {}), policy.get('excluded_records', {}).get(p['id'], 'excluded_record'))
-            source = policy['pollsters'].get(p.get('pollster'))
-            require(source is not None, 'pollster_not_selected')
-            require(p.get('internal') is False and p.get('partisan') is None, 'internal_or_partisan')
-            url = urlparse(p.get('url') if isinstance(p.get('url'), str) else '')
-            require(url.scheme == 'https' and not url.username and not url.password
-                    and url.hostname in source['hosts'], 'unregistered_primary_host')
+            source, admission = reviewed_source(p, policy, as_of)
+            partisan_reference = (admission and admission.get('allow_partisan_reference') is True
+                                  and admission['signal_eligible'] is False
+                                  and p.get('internal') is False
+                                  and p.get('partisan') == admission.get('reviewed_partisan')
+                                  and p.get('sponsors') == admission.get('reviewed_sponsors'))
+            require(p.get('internal') is False and (p.get('partisan') is None or partisan_reference),
+                    'internal_or_partisan')
             start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
             require(start <= end <= published <= day, 'date_order_or_future')
             race = races[rid]
             require(len(race['required_candidates']) >= 2, 'matchup_not_reviewed')
-            require(date.fromisoformat(race['general_from']) <= start <= end
-                    < date.fromisoformat(race['election_date']), 'outside_reviewed_general_period')
+            in_general_period = date.fromisoformat(race['general_from']) <= start
+            historical_reference = (admission and admission.get('allow_historical_reference') is True
+                                    and not admission['signal_eligible'])
+            require((in_general_period or historical_reference)
+                    and end < date.fromisoformat(race['election_date']), 'outside_reviewed_general_period')
             require(p.get('population') in ('lv', 'rv'), 'unsupported_population')
             require(type(p.get('sample_size')) is int and p['sample_size'] > 0, 'missing_sample_size')
             require(p.get('seat_name') in (None, race.get('seat_name')), 'ambiguous_seat')
@@ -138,26 +178,54 @@ def normalize(rows, policy, as_of):
                 normalized.append({'name': a['choice'], 'pct': a['pct'],
                                    'party': identity['party'] if identity else None})
             require(not any(a['name'].casefold() in ('dem', 'rep', 'democrat', 'republican') for a in normalized), 'generic_ballot')
-            accepted.append({'id': p['id'], 'race_id': rid, 'contest_id': race['contest_id'],
+            observation = {'id': p['id'], 'race_id': rid, 'contest_id': race['contest_id'],
                              'pollster': p['pollster'], 'pollster_group': source['group'],
                              'field_start': p['start_date'], 'field_end': p['end_date'],
                              'provider_record_date': p['created_at'], 'population': p['population'],
                              'sample_n': p['sample_size'], 'answers': normalized,
                              'sponsors': p.get('sponsors') or [], 'source_url': p['url'],
-                             'verification': 'selected_source_aggregator_import',
+                             'verification': ('reviewed_release_aggregator_import' if admission
+                                              else 'selected_source_aggregator_import'),
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
-                             'limitations_ko': 'VoteHub 자동 수집값. 이번 실행에서 원문 수치를 재전사하지 않았습니다. 오차범위·문항별 표본은 API 미제공.'})
+                             'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
+            observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
+                                             'sponsors': p.get('sponsors') or []}
+            observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
+            reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if partisan_reference:
+                reasons.append('party_commissioned_reference')
+            if not in_general_period:
+                reasons.append('outside_reviewed_general_period')
+            observation['aggregation_eligibility'] = {
+                'eligible': not reasons, 'reasons': sorted(set(reasons))}
+            observation['display_group'] = 'general' if in_general_period else 'historical_matchup_reference'
+            observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
+            accepted.append(observation)
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': raw.get('id'), 'race_id': rid, 'pollster': raw.get('pollster'),
-                             'reason': str(exc) if isinstance(exc, ValueError) else 'malformed_record'})
+                             'reason': str(exc) if isinstance(exc, ValueError) else 'malformed_record',
+                             'source_url': raw.get('url'), 'field_start': raw.get('start_date'),
+                             'field_end': raw.get('end_date'), 'population': raw.get('population'),
+                             'sample_n': raw.get('sample_size'), 'sponsors': raw.get('sponsors') or [],
+                             'internal': raw.get('internal'), 'partisan': raw.get('partisan'),
+                             'verification': 'not_accepted_not_verified'})
     return accepted, rejected
+
+
+def poll_detail(poll):
+    values = sorted((a['pct'] for a in poll['answers']), reverse=True)
+    return {'id': poll['id'], 'source_quality': poll['source_quality'],
+            'leading_margin_pp': round(values[0] - values[1], 3),
+            'significance': 'not_evaluated'}
 
 
 def summarize(rows, race, as_of, days):
     end = date.fromisoformat(as_of)
     start = end - timedelta(days=days - 1)
     eligible = [p for p in rows if start <= date.fromisoformat(p['field_end']) <= end]
+    references = [p for p in eligible if not p.get('aggregation_eligibility', {}).get('eligible', True)]
+    eligible = [p for p in eligible if p.get('aggregation_eligibility', {}).get('eligible', True)]
     # LV and RV never vote in the same count. Prefer LV, with an explicitly
     # labelled RV fallback only if no LV observation exists in this window.
     population = 'lv' if any(p['population'] == 'lv' for p in eligible) else 'rv'
@@ -191,13 +259,23 @@ def summarize(rows, race, as_of, days):
     name = leading[0] if len(leading) == 1 else None
     status, party = 'no_recent_poll', None
     if chosen:
-        status = 'insufficient_pollsters' if len(chosen) < 2 else 'tie'
-    if len(chosen) >= 2 and name and counts[name] > len(chosen) / 2:
-        status = 'poll_lead' if parties[name] else 'unknown_leader_party'
+        status = 'tie'
+    if chosen and name and counts[name] > len(chosen) / 2:
+        status = ('single_poll_lead' if len(chosen) == 1 else 'poll_lead') if parties[name] else 'unknown_leader_party'
         party = parties[name]
+    quality = evidence_context(len(chosen), max(counts.values(), default=0) / len(chosen) if chosen else 0,
+                               conflicting)
     return {'window_days': days, 'from': start.isoformat(), 'through': as_of,
             'population': population if chosen else None, 'status': status, 'party': party,
-            'leader': name if status == 'poll_lead' else None,
+            'leader': name if status in ('poll_lead', 'single_poll_lead') else None,
+            'evidence_quality': quality,
+            'poll_details': [poll_detail(p) for p in chosen],
+            'reference_ids': [p['id'] for p in references],
+            'reference_poll_count': len(references),
+            'reference_details': [{'id': p['id'], 'reasons': p['aggregation_eligibility']['reasons']}
+                                  for p in references],
+            'status_note_ko': ('기간 내 참고 전용 자료는 있으나 우세 집계 가능한 조사는 없습니다.'
+                               if references and not chosen else None),
             'lead_counts': dict(counts), 'tie_count': ties, 'pollster_count': len(chosen),
             'included_ids': [p['id'] for p in chosen], 'conflicting_pollsters': conflicting,
             'latest_field_end': max((p['field_end'] for p in chosen), default=None)}
@@ -268,7 +346,10 @@ def close_finished_races(board, policy, confirmed, as_of):
                     window.update({'status': 'election_closed', 'party': None, 'leader': None,
                                    'lead_counts': {}, 'tie_count': 0, 'pollster_count': 0,
                                    'included_ids': [], 'conflicting_pollsters': [],
-                                   'latest_field_end': None, 'population': None})
+                                   'latest_field_end': None, 'population': None,
+                                   'evidence_quality': evidence_context(0, 0), 'poll_details': [],
+                                   'reference_ids': [], 'reference_details': [],
+                                   'reference_poll_count': 0, 'status_note_ko': None})
                     changed = True
     if changed:
         board['lifecycle_checked_as_of'] = as_of
@@ -288,17 +369,24 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
     board = {'schema': 'usa_live_polls_v1', 'cycle': policy['cycle'], 'as_of': as_of,
             'fetched_at': fetched_at, 'source_status': 'ok', 'default_window_days': 7,
             'history_file': f'usa_election_poll_history_{policy["cycle"]}.json',
-            'stale_after_hours': 48, 'source': {'name': 'VoteHub', 'url': 'https://votehub.com/polls/api/',
+            'refresh_cadence': deepcopy(policy.get('refresh_cadence', {'interval_days': 1})),
+            'stale_after_hours': policy.get('refresh_cadence', {}).get('stale_after_hours', 48), 'source': {'name': 'VoteHub', 'url': 'https://votehub.com/polls/api/',
                 'request_url': source_url, 'license': 'CC BY 4.0', 'modified': '선정·정규화·기관별 최신 조사 집계'},
             'rules_ko': ['최근 7일 기본·14일 선택. 조사 종료일 기준(UTC), 오늘 포함.',
-                '기관별 최신 1회. 최소 2개 독립 기관, 전체 채택 조사 과반에서 앞선 같은 후보만 색 표시.',
-                'LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.',
+                '기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.',
+                '기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.',
+                '기관 미등록이라도 원문·방법·대진·개별 레코드 대조 완료 시 편입. 참고 전용 조사는 누적 목록에 보관하고 우세 집계에서 제외.',
+                'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.',
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',
                 '선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다.'],
             'coverage': {'selected_states': policy['states'], 'race_count': len(races),
-                         'accepted_observations': len(accepted), 'excluded_observations': len(rejected)},
+                         'accepted_observations': len(accepted), 'excluded_observations': len(rejected),
+                         'aggregation_eligible_observations': sum(p['aggregation_eligibility']['eligible'] for p in accepted),
+                         'reference_only_observations': sum(not p['aggregation_eligibility']['eligible'] for p in accepted),
+                         'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
             'watchlist': policy.get('watchlist'),
+            'excluded_watch_slots': deepcopy(policy.get('excluded_watch_slots', [])),
             'races': races, 'review_queue': rejected,
             'results_collection': {'status': 'official_source_review_required',
                 'note_ko': '주별 인증 결과 자동 수집기는 아직 미연결. 공식 출처를 검토한 결과 파일이 들어오면 자동 우선 표시.'}}
