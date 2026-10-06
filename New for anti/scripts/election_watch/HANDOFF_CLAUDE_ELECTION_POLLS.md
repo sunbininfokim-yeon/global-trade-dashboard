@@ -200,3 +200,37 @@ NY-17은 결과표·방법론, Ohio Suffolk는 원문 PDF·방법론을 확인�
 UI에서는 `single_poll_lead`를 단일 조사 참고값으로, 기관 수·출처 검증·수치상 격차와
 발표 오차범위를 함께 표시해야 합니다. 이 PR은 UI를 수정하지 않으며 기존 지도는
 새 상태를 처리하기 전까지 단일 기관 색상을 표시하지 않을 수 있습니다.
+
+### 미등록 기관·개별 원문 편입 (2026-10-06 KST)
+
+기관 등록은 필요조건이 아닙니다. 기존 기관/호스트 경로와 별도로
+`quality_reviews_2026.json.reviews[id].admission`의 개별 발표 검토 경로를 추가했습니다.
+정확한 기관명·provider URL·원문 수치·방법 공개 항목·정규화 fingerprint가 모두
+일치해야 합니다. 공유 Google/Drive 호스트 전체를 허용하지 않으며, 링크만 있는
+미검토 레코드는 채택하지 않습니다. 새 발표는 원문 대조 또는 검토한 기관 경로로
+편입합니다. URL/값/모집단/표본 변경은 재검토 대상입니다.
+
+- `source_admission`: `registered_pollster` 또는 `reviewed_release`.
+- `aggregation_eligibility`: `eligible`, 제외 사유 `reasons`.
+- `display_group`: 본선 자료 `general` 또는 과거 대진 참고
+  `historical_matchup_reference`. 기관 미등록을 저품질 등급으로 바꾸지 않습니다.
+- `windows[7|14].reference_ids/reference_details/reference_poll_count`:
+  최근 기간에 있는 참고 전용 자료. `included_ids`와 기관별 우세 횟수에는 넣지 않습니다.
+  참고만 있으면 `status_note_ko`가 집계 가능한 조사 없음과 자료 자체의 부재를 구분합니다.
+- 검토 대기열에도 원문 URL·기간·모집단·표본·의뢰자·제외 사유를 남깁니다.
+  `verification=not_accepted_not_verified`이며 조사 없음/저품질 확정이 아닙니다.
+
+추가 원문 대조 8건: 조지아 Big Data Poll 상원·주지사 2건, 플로리다 Stetson
+상원·주지사 2건, Change Research 상원·주지사 2건, 테네시 Beacon/Targoz
+상원·주지사 2건. Stetson과 Targoz의 검토한 원문 호스트는 향후 자동 발견 경로에도
+등록했습니다. Big Data Poll의 미정층 재질문 후 두 후보 합계 100% 값은 참고만 보관합니다.
+Change Research는 원문 내 LV 표본 수가 1063/1107로 상충하고 의뢰자 성격이
+미확인이라 참고 전용입니다. 원문 값을 다른 수치로 임의 보정하지 않습니다.
+Targoz 원문 RV 문항 표본은 주지사 1149/상원 1157로 확인했고 전체 RV 1200 및
+LV 결과와 구분했습니다. 8월 자료를 최신 조사로 표시하지 않습니다.
+
+실수집(2026-10-06 UTC): 31관측·20선거·12개 주에 누적 자료가 있습니다.
+그 중 집계 적격 25건, 참고 전용 6건입니다. GA·FL·TN에 자료가 추가됐지만
+이 세 주에 현재 7일/14일 우세 신호가 생긴 것은 아닙니다. GA는 참고 전용,
+FL의 적격 Stetson은 9월21일로 기간 밖, TN은 8월 자료입니다.
+기관 확대 테스트 포함 65개 polling 테스트 통과. UI·Actions·LETF 편집 없음.

@@ -17,7 +17,7 @@
   "selection_criteria_ko": [
     "대학 조사센터 또는 지역 언론 공동 조사이며 원문과 조사 방법을 공개하는 기관을 우선 선정",
     "수치적 정확도 순위가 아니라 출처 공개·지역 선거 보도 연속성에 따른 편입 기준",
-    "새 기관은 검토 후 등록. 선정 기관도 내부·정파 조사, 원문 링크 없는 건은 제외",
+    "기관 등록은 우선 수집 경로. 미등록 기관·공유 문서도 개별 원문 수치·방법·대진·레코드 검토로 편입 가능. 내부·정파 조사와 미검증 출처는 우세 집계 제외",
     "VoteHub API는 발견·전송 수단이며 원문 재전사 검증과 구분"
   ],
   "pollsters": {
@@ -134,6 +134,22 @@
       ],
       "methodology_url": "https://sri.siena.edu/",
       "selection_reason_ko": "Siena 원문 및 ReconMR 파트너 표기 확인. NYTimes/Siena와 같은 siena 그룹으로 중복 집계 방지."
+    },
+    "Stetson University Center for Public Opinion Research": {
+      "group": "stetson",
+      "hosts": [
+        "www.stetson.edu"
+      ],
+      "methodology_url": "https://www.stetson.edu/artsci/cpor/",
+      "selection_reason_ko": "2026-10-06 대학 공식 PDF의 결과·방법론 확인. 온라인 비확률 표본·LV 하위집단 표본 수 미공개 등은 개별 source_quality로 표시. 정확도 인증 아님."
+    },
+    "Targoz Market Research": {
+      "group": "targoz",
+      "hosts": [
+        "tennsight.com"
+      ],
+      "methodology_url": "https://tennsight.com/polls/august-2026/",
+      "selection_reason_ko": "Beacon/TennSight 의뢰기관의 원문 결과표·방법 공개 확인. RV/LV 및 전체/문항별 표본을 분리하며 의뢰자 표기. 정확도 인증 아님."
     }
   },
   "races": {
@@ -175,10 +191,23 @@
       "contest_id": "USA:TN:senate:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
-      "selection_reason_ko": "사용자 지정 관심 주"
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Bill Hagerty",
+        "Marquita Bradshaw"
+      ],
+      "candidates": {
+        "Bill Hagerty": {
+          "party": "REP",
+          "source_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf"
+        },
+        "Marquita Bradshaw": {
+          "party": "DEM",
+          "source_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf"
+        }
+      },
+      "selection_reason_ko": "의뢰기관 원문 p47 후보명·정당 확인. 8월 조사는 현재 기간 밖 참고 기록으로만 편입.",
+      "reviewed_on": "2026-10-06"
     },
     "USA:TN:governor": {
       "state": "TN",

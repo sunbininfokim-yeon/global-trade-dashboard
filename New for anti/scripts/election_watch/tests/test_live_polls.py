@@ -148,7 +148,7 @@ class LivePollTests(unittest.TestCase):
         a=[{'choice':'Kathy Hochul','pct':20},{'choice':'Bruce Blakeman','pct':20},{'choice':'Unmapped Candidate','pct':50}]
         s=summary([poll(answers=a),second(answers=a)]);self.assertEqual(s['status'],'unknown_leader_party');self.assertIsNone(s['party'])
     def test_watch_slot_is_not_general_race(self):
-        good,bad=normalize([poll(subject='2026 Tennessee',poll_type='us-senator')],POLICY,DAY)
+        good,bad=normalize([poll(subject='2026 NY-10',poll_type='us-representative')],POLICY,DAY)
         self.assertFalse(good);self.assertEqual(bad[0]['reason'],'matchup_not_reviewed')
 
     def test_non_election_interest_slots_are_excluded(self):

@@ -11,7 +11,7 @@ def review_fingerprint(row):
 
 def source_quality(row, reviews, as_of):
     base = {'verification_level': 'partial', 'methodological_quality': 'unrated',
-            'accuracy_grade': None, 'label_ko': '선정 기관 · 집계값 부분 검증',
+            'accuracy_grade': None, 'label_ko': '출처 연결 · 집계값 부분 검증',
             'basis_ko': '기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.',
             'missing_fields': ['margin_of_error_pp', 'question_sample_n', 'primary_values_rechecked']}
     review = reviews.get(row['id'])
@@ -29,6 +29,8 @@ def source_quality(row, reviews, as_of):
             'question_sample_n': review.get('question_sample_n'),
             'disclosure_review': deepcopy(review.get('disclosure_review', {})),
             'reported_precision': deepcopy(review.get('reported_precision')),
+            'ballot_format': review.get('ballot_format', 'not_reviewed'),
+            'sponsor_review': deepcopy(review.get('sponsor_review', {})),
             'basis_ko': '수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.',
             'missing_fields': review.get('missing_fields', []),
             'limitations_ko': review['limitations_ko']}

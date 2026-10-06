@@ -1,11 +1,549 @@
 {
   "schema": "usa_poll_history_v1",
   "cycle": 2026,
-  "as_of": "2026-10-05",
+  "as_of": "2026-10-06",
   "note_ko": "감사·출처 확인용 기록. 선거 종료 후 지도 우세 신호로 사용하지 않습니다.",
-  "race_count": 14,
-  "observation_count": 23,
+  "race_count": 20,
+  "observation_count": 31,
   "races": {
+    "USA:FL:governor": {
+      "contest_id": "USA:FL:governor:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "gov202cha9102cf63",
+          "race_id": "USA:FL:governor",
+          "contest_id": "USA:FL:governor:2026:general:regular",
+          "pollster": "Change Research",
+          "pollster_group": "change_research",
+          "field_start": "2026-09-25",
+          "field_end": "2026-09-27",
+          "provider_record_date": "2026-09-29",
+          "population": "lv",
+          "sample_n": 1063,
+          "answers": [
+            {
+              "name": "Byron Donalds",
+              "pct": 46.0,
+              "party": "REP"
+            },
+            {
+              "name": "David Jolly",
+              "pct": 48.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [
+            "Freedom Project USA"
+          ],
+          "source_url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "commissioner_affiliation_not_reviewed",
+              "conflicting_published_lv_sample_sizes"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement"
+            ],
+            "primary_toplines": {
+              "Byron Donalds": 46,
+              "David Jolly": 48
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "online social advertisements and voter-file SMS",
+              "total_sample_n": 1277,
+              "population": "self-reported vote motivation 8-10 LV",
+              "lv_sample_n": null,
+              "published_lv_sample_n_variants": [
+                1063,
+                1107
+              ],
+              "field_dates": [
+                "2026-09-25",
+                "2026-09-27"
+              ],
+              "weighting": "age, gender, race/ethnicity, education, 2024 presidential vote, region"
+            },
+            "reported_precision": {
+              "kind": "modeled_margin_of_error",
+              "half_width_pp": 2.8,
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_with_leaners_and_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Freedom Project USA"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "원문 내 LV 표본 수 1063/1107 상충. API 값 1063을 재해석하지 않고 의뢰자 성격 확인 전 참고 전용으로 보관. 수치 대조 완료가 방법 정확도 인증은 아님."
+          }
+        },
+        {
+          "id": "gov202steb5a21bdb",
+          "race_id": "USA:FL:governor",
+          "contest_id": "USA:FL:governor:2026:general:regular",
+          "pollster": "Stetson University Center for Public Opinion Research",
+          "pollster_group": "stetson",
+          "field_start": "2026-09-14",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 830,
+          "answers": [
+            {
+              "name": "Byron Donalds",
+              "pct": 51.0,
+              "party": "REP"
+            },
+            {
+              "name": "David Jolly",
+              "pct": 39.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf"
+            ],
+            "primary_toplines": {
+              "Byron Donalds": 51,
+              "David Jolly": 39
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "online nonprobability Qualtrics panel",
+              "total_sample_n": 830,
+              "population": "LV subgroup using modeled turnout score",
+              "lv_sample_n": null,
+              "field_dates": [
+                "2026-09-14",
+                "2026-09-21"
+              ],
+              "weighting": "age, race, ethnicity, education, gender, region"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_nonprobability_error",
+              "half_width_pp": 4.3,
+              "population": "LV",
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_with_leaners_and_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "830명은 전체 성인 응답자 수이며 LV 문항 표본은 미공개. 미정층 재질문 포함·비확률 온라인 표본. 공표 오차를 확률표본 오차나 후보 격차 유의성으로 간주하지 않음."
+          }
+        }
+      ]
+    },
+    "USA:FL:senate": {
+      "contest_id": "USA:FL:senate:2026:general:special",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202chad8109bd5",
+          "race_id": "USA:FL:senate",
+          "contest_id": "USA:FL:senate:2026:general:special",
+          "pollster": "Change Research",
+          "pollster_group": "change_research",
+          "field_start": "2026-09-25",
+          "field_end": "2026-09-27",
+          "provider_record_date": "2026-09-29",
+          "population": "lv",
+          "sample_n": 1063,
+          "answers": [
+            {
+              "name": "Ashley Moody",
+              "pct": 48.0,
+              "party": "REP"
+            },
+            {
+              "name": "Angie Nixon",
+              "pct": 47.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [
+            "Freedom Project USA"
+          ],
+          "source_url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "commissioner_affiliation_not_reviewed",
+              "conflicting_published_lv_sample_sizes"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement"
+            ],
+            "primary_toplines": {
+              "Ashley Moody": 48,
+              "Angie Nixon": 47
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "online social advertisements and voter-file SMS",
+              "total_sample_n": 1277,
+              "population": "self-reported vote motivation 8-10 LV",
+              "lv_sample_n": null,
+              "published_lv_sample_n_variants": [
+                1063,
+                1107
+              ],
+              "field_dates": [
+                "2026-09-25",
+                "2026-09-27"
+              ],
+              "weighting": "age, gender, race/ethnicity, education, 2024 presidential vote, region"
+            },
+            "reported_precision": {
+              "kind": "modeled_margin_of_error",
+              "half_width_pp": 2.8,
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_with_leaners_and_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Freedom Project USA"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "원문 내 LV 표본 수 1063/1107 상충. API 값 1063을 재해석하지 않고 의뢰자 성격 확인 전 참고 전용으로 보관. 수치 대조 완료가 방법 정확도 인증은 아님."
+          }
+        },
+        {
+          "id": "us-202ste67ef4e2d",
+          "race_id": "USA:FL:senate",
+          "contest_id": "USA:FL:senate:2026:general:special",
+          "pollster": "Stetson University Center for Public Opinion Research",
+          "pollster_group": "stetson",
+          "field_start": "2026-09-14",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 830,
+          "answers": [
+            {
+              "name": "Ashley Moody",
+              "pct": 51.0,
+              "party": "REP"
+            },
+            {
+              "name": "Angie Nixon",
+              "pct": 40.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf"
+            ],
+            "primary_toplines": {
+              "Ashley Moody": 51,
+              "Angie Nixon": 40
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "online nonprobability Qualtrics panel",
+              "total_sample_n": 830,
+              "population": "LV subgroup using modeled turnout score",
+              "lv_sample_n": null,
+              "field_dates": [
+                "2026-09-14",
+                "2026-09-21"
+              ],
+              "weighting": "age, race, ethnicity, education, gender, region"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_nonprobability_error",
+              "half_width_pp": 4.3,
+              "population": "LV",
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_with_leaners_and_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "830명은 전체 성인 응답자 수이며 LV 문항 표본은 미공개. 미정층 재질문 포함·비확률 온라인 표본. 공표 오차를 확률표본 오차나 후보 격차 유의성으로 간주하지 않음."
+          }
+        }
+      ]
+    },
+    "USA:GA:governor": {
+      "contest_id": "USA:GA:governor:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "gov202bigf56bfd9a",
+          "race_id": "USA:GA:governor",
+          "contest_id": "USA:GA:governor:2026:general:regular",
+          "pollster": "Big Data Poll",
+          "pollster_group": "big_data_poll",
+          "field_start": "2026-09-21",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 678,
+          "answers": [
+            {
+              "name": "Rick Jackson",
+              "pct": 50.5,
+              "party": "REP"
+            },
+            {
+              "name": "Keisha Lance Bottoms",
+              "pct": 49.5,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [
+            "Public Polling Project"
+          ],
+          "source_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "binary_leaner_share_not_comparable"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/"
+            ],
+            "primary_toplines": {
+              "Rick Jackson": 50.5,
+              "Keisha Lance Bottoms": 49.5
+            },
+            "question_sample_n": 678,
+            "disclosure_review": {
+              "mode": "online panel and phone/text mixed mode",
+              "population": "LV",
+              "total_sample_n": 712,
+              "lv_sample_n": 678,
+              "field_dates": [
+                "2026-09-21",
+                "2026-09-23"
+              ],
+              "weighting": "sex, age, race/ethnicity, education, geography"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_mixed_sample_error",
+              "half_width_pp": 4.0,
+              "confidence_level": 95,
+              "validated_here": false
+            },
+            "ballot_format": "binary_leaner_share",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Public Polling Project"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "미정층 재질문 후 두 후보 비율 합계 100%로 발표한 값. 최초 응답과 기준이 달라 누적 참고 전용. 공표 오차의 모델 타당성 미평가."
+          }
+        }
+      ]
+    },
+    "USA:GA:senate": {
+      "contest_id": "USA:GA:senate:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202bigbe8a8854",
+          "race_id": "USA:GA:senate",
+          "contest_id": "USA:GA:senate:2026:general:regular",
+          "pollster": "Big Data Poll",
+          "pollster_group": "big_data_poll",
+          "field_start": "2026-09-21",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 678,
+          "answers": [
+            {
+              "name": "Jon Ossoff",
+              "pct": 55.4,
+              "party": "DEM"
+            },
+            {
+              "name": "Mike Collins",
+              "pct": 44.6,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "Public Polling Project"
+          ],
+          "source_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "binary_leaner_share_not_comparable"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/"
+            ],
+            "primary_toplines": {
+              "Jon Ossoff": 55.4,
+              "Mike Collins": 44.6
+            },
+            "question_sample_n": 678,
+            "disclosure_review": {
+              "mode": "online panel and phone/text mixed mode",
+              "population": "LV",
+              "total_sample_n": 712,
+              "lv_sample_n": 678,
+              "field_dates": [
+                "2026-09-21",
+                "2026-09-23"
+              ],
+              "weighting": "sex, age, race/ethnicity, education, geography"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_mixed_sample_error",
+              "half_width_pp": 4.0,
+              "confidence_level": 95,
+              "validated_here": false
+            },
+            "ballot_format": "binary_leaner_share",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Public Polling Project"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "미정층 재질문 후 두 후보 비율 합계 100%로 발표한 값. 최초 응답과 기준이 달라 누적 참고 전용. 공표 오차의 모델 타당성 미평가."
+          }
+        }
+      ]
+    },
     "USA:IA:governor": {
       "contest_id": "USA:IA:governor:2026:general:regular",
       "election_date": "2026-11-03",
@@ -39,6 +577,12 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
@@ -74,6 +618,8 @@
               "question_wording_checked": null
             },
             "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
             "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
           }
         },
@@ -106,11 +652,17 @@
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -154,11 +706,17 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -211,11 +769,17 @@
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -270,11 +834,17 @@
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -318,11 +888,17 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -380,11 +956,17 @@
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -444,11 +1026,17 @@
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -492,11 +1080,17 @@
           "methodology_url": "https://www.highpoint.edu/src/hpupoll/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -547,11 +1141,17 @@
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -595,11 +1195,17 @@
           "methodology_url": "https://poll.qu.edu/methodology/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -645,6 +1251,12 @@
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
@@ -686,6 +1298,8 @@
               "scope": "overall_sample",
               "model_details_verified": false
             },
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
             "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
           }
         }
@@ -724,6 +1338,12 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
@@ -759,6 +1379,8 @@
               "question_wording_checked": null
             },
             "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
             "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
           }
         },
@@ -798,6 +1420,12 @@
           "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
@@ -840,6 +1468,8 @@
               "scope": "overall_sample",
               "model_details_verified": false
             },
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
             "limitations_ko": "전체 표본 발표 오차범위. 후보 간 격차 오차범위는 별도이며 유의성 미평가. 인구별 할당 설명을 사후 가중치 공개로 간주하지 않음."
           }
         },
@@ -872,11 +1502,17 @@
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -920,11 +1556,17 @@
           "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -970,11 +1612,17 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -1018,11 +1666,17 @@
           "methodology_url": "https://www.fandmpoll.org/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -1066,17 +1720,216 @@
           "methodology_url": "https://www.fandmpoll.org/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
               "question_sample_n",
               "primary_values_rechecked"
             ]
+          }
+        }
+      ]
+    },
+    "USA:TN:governor": {
+      "contest_id": "USA:TN:governor:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "gov202tar2b53cae7",
+          "race_id": "USA:TN:governor",
+          "contest_id": "USA:TN:governor:2026:general:regular",
+          "pollster": "Targoz Market Research",
+          "pollster_group": "targoz",
+          "field_start": "2026-08-15",
+          "field_end": "2026-08-26",
+          "provider_record_date": "2026-09-03",
+          "population": "rv",
+          "sample_n": 1149,
+          "answers": [
+            {
+              "name": "Marsha Blackburn",
+              "pct": 46.0,
+              "party": "REP"
+            },
+            {
+              "name": "Jerri Green",
+              "pct": 33.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Independent",
+              "pct": 8.0,
+              "party": null
+            }
+          ],
+          "sponsors": [
+            "Beacon Center of Tennessee"
+          ],
+          "source_url": "https://tennsight.com/polls/august-2026/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "historical_reference",
+              "outside_reviewed_general_period"
+            ]
+          },
+          "display_group": "historical_matchup_reference",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+              "https://tennsight.com/polls/august-2026/"
+            ],
+            "primary_toplines": {
+              "Marsha Blackburn": 46,
+              "Jerri Green": 33
+            },
+            "question_sample_n": 1149,
+            "disclosure_review": {
+              "mode": "online",
+              "total_sample_n": 1200,
+              "population": "RV",
+              "field_dates": [
+                "2026-08-15",
+                "2026-08-26"
+              ],
+              "weighting": "demographics, party, geography, behavioral measures",
+              "question_sample_n": 1149,
+              "primary_table_page": 44
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_online_error",
+              "half_width_pp": 2.77,
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_ballot_with_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Beacon Center of Tennessee"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "전체 RV 1200명과 문항 표본을 구분. API RV 46/33·51/31은 LV 55/34·58/33과 다름. 8월 조사로 현재 7일/14일 우세 집계에 사용하지 않음. 의뢰기관 정치 성격 미평가."
+          }
+        }
+      ]
+    },
+    "USA:TN:senate": {
+      "contest_id": "USA:TN:senate:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202tara610e9e2",
+          "race_id": "USA:TN:senate",
+          "contest_id": "USA:TN:senate:2026:general",
+          "pollster": "Targoz Market Research",
+          "pollster_group": "targoz",
+          "field_start": "2026-08-15",
+          "field_end": "2026-08-26",
+          "provider_record_date": "2026-09-03",
+          "population": "rv",
+          "sample_n": 1157,
+          "answers": [
+            {
+              "name": "Bill Hagerty",
+              "pct": 51.0,
+              "party": "REP"
+            },
+            {
+              "name": "Marquita Bradshaw",
+              "pct": 31.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [
+            "Beacon Center of Tennessee"
+          ],
+          "source_url": "https://tennsight.com/polls/august-2026/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "historical_reference",
+              "outside_reviewed_general_period"
+            ]
+          },
+          "display_group": "historical_matchup_reference",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-06",
+            "review_sources": [
+              "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+              "https://tennsight.com/polls/august-2026/"
+            ],
+            "primary_toplines": {
+              "Bill Hagerty": 51,
+              "Marquita Bradshaw": 31
+            },
+            "question_sample_n": 1157,
+            "disclosure_review": {
+              "mode": "online",
+              "total_sample_n": 1200,
+              "population": "RV",
+              "field_dates": [
+                "2026-08-15",
+                "2026-08-26"
+              ],
+              "weighting": "demographics, party, geography, behavioral measures",
+              "question_sample_n": 1157,
+              "primary_table_page": 47
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_online_error",
+              "half_width_pp": 2.77,
+              "confidence_level": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_ballot_with_undecided",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Beacon Center of Tennessee"
+              ],
+              "affiliation_verified": false
+            },
+            "limitations_ko": "전체 RV 1200명과 문항 표본을 구분. API RV 46/33·51/31은 LV 55/34·58/33과 다름. 8월 조사로 현재 7일/14일 우세 집계에 사용하지 않음. 의뢰기관 정치 성격 미평가."
           }
         }
       ]
@@ -1114,6 +1967,12 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
@@ -1149,6 +2008,8 @@
               "question_wording_checked": null
             },
             "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
             "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
           }
         },
@@ -1188,11 +2049,17 @@
           "methodology_url": "https://emersoncollegepolling.com/about/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -1235,11 +2102,17 @@
           "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",
@@ -1283,11 +2156,17 @@
           "methodology_url": "https://law.marquette.edu/poll/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
           "source_quality": {
             "verification_level": "partial",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "선정 기관 · 집계값 부분 검증",
+            "label_ko": "출처 연결 · 집계값 부분 검증",
             "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
             "missing_fields": [
               "margin_of_error_pp",

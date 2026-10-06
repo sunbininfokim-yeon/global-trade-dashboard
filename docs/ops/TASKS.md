@@ -84,3 +84,5 @@
 | T-POLL-DEPLOY-20261005 | 미국 여론조사 Actions 설치·공용 배포 hook | codex | `.github/workflows/us_election_polls_refresh.yml`, `deploy.yml`, 설치 템플릿 | `codex/us-polls-deploy` | review | 사용자 요청으로 PR #451 데이터에서 분리. polling 검증→매일 수집→배포 연결. 공용 deploy 경로가 LETF 검사를 실행하며 LETF 코드 변경 없음. 소유권·LETF 검사 실패 병합 승인 대기. |
 
 | T-POLL-SEATS-20261005 | 미국 전국 의석 조건부 집계·조사 근거 등급 데이터 | codex | `election_watch/seat_scenarios.py`, `election_watch/live_polls.py`, `refresh_live_polls.py`, 집계 정책·테스트, polling/forecast JSON·인수 문서 | `codex/us-poll-seat-scenarios` | review | 55개 polling 테스트 통과. 임의 상/중/하 등급 철회. 원문 대조 5건·방법론 공개 항목·기관 수·격차를 분리. 단일 기관 제외 집계 제공. 실수집 23관측·14선거·26주71슬롯. Actions·공용 배포·LETF 코드는 별도 PR. |
+
+| T-POLL-SOURCE-20261006 | 미등록 조사 원문 기반 편입·참고 기록 분리 | codex | `election_watch/live_polls.py`, `poll_quality.py`, `config/usa_polls/**`, polling tests/data, 인수 문서 | `codex/us-poll-seat-scenarios` | review | 원문 대조 8건 추가. 실수집 31관측·20선거·12주, 적격25/참고6. polling 테스트65개 통과. 미등록 개별 발표 검토 경로·검토 대기 URL·참고 분리. UI·Actions 편집 없음. |
