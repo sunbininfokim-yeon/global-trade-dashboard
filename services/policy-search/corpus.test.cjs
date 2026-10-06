@@ -20,6 +20,8 @@ async function fixture(fn) {
       create table regulations(regulation_id text primary key,title text,abstract text,source_updated_at timestamptz,publication_date date);`);
     await db.exec('create table bill_text_versions(bill_id text,html_url text);create table bill_subjects(bill_id text,subject_id text);');
     await db.exec(sql); await db.exec(sql);
+    const quality=fs.readFileSync(require.resolve('../../supabase/migrations/20261006010000_policy_search_quality.sql'),'utf8');
+    await db.exec(quality);await db.exec(quality);
     const enqueue = async (id='119-hjres-72') => db.query('select enqueue_policy_search_document($1,$2)', ['bill',id]);
     const claim = async () => (await db.query('select * from claim_policy_search_job()')).rows[0];
     const save = async (doc, job, passages=doc.passages) => (await db.query('select save_policy_search_document($1,$2,$3) saved', [JSON.stringify(doc),JSON.stringify(passages),job.claim_token])).rows[0].saved;
@@ -117,4 +119,38 @@ test('Mac cycle is bounded, reads existing Gemini key, respects explicit disable
   const cycle=searchCycle({AI_STUDIO_API_KEY:'fixture'},'/tmp/user');
   assert.deepEqual(cycle.args,['--limit','1000','--max-minutes','60']);assert.equal(cycle.env.GEMINI_API_KEY,'fixture');
   assert.ok(cycle.env.POLICY_COLLECTOR_STOP_FILE.endsWith('/mac-20260930/STOP'));
+});
+test('balanced SQL returns rare lanes even when bills dominate; legacy columns optional and schema rerunnable',()=>fixture(async({db})=>{
+ const v=JSON.stringify([1,...Array(1535).fill(0)]);
+ for(const [type,id] of [...Array.from({length:30},(_,n)=>['bill','b'+n]),['public_law','law'],['executive_order','eo'],['regulation','reg']]){
+  const docid=type+':'+id;
+  await db.query(`insert into policy_search_documents(document_id,source_type,source_id,title,source_url,search_text,evidence_parts,input_hash,coverage)
+    values($1,$2,$3,'Energy','https://www.govinfo.gov/x','Energy', '[{"field":"title","text":"Energy"}]','hash','{"text_status":"body"}')`,[docid,type,id]);
+  await db.query(`insert into policy_search_passages(document_id,passage_index,field,text_content,source_url,input_hash,embedding,embedding_model)
+    values($1,0,'title','Energy','https://www.govinfo.gov/x','hash',$2,'gemini-embedding-001')`,[docid,v]);
+ }
+ const rows=(await db.query('select * from search_policy_balanced_vectors($1,$2,2)',[v,'gemini-embedding-001'])).rows;
+ assert.equal(rows.length,5);assert.equal(new Set(rows.map(r=>r.source_type)).size,4);
+ assert.ok(rows.every(r=>r.coverage.text_status==='body'));
+ const lexical=(await db.query('select * from search_policy_balanced_terms($1,2)',[JSON.stringify([{key:'energy',aliases:['energy']}])])).rows;
+ assert.equal(lexical.length,5);
+ await db.exec('alter table public_laws add column embedding extensions.vector(1536);alter table public_laws add column embedding_model text;');
+ await db.query("insert into public_laws(public_law_id,law_title,embedding,embedding_model) values('legacy','Energy legacy',$1,'gemini-embedding-001')",[v]);
+ assert.ok((await db.query('select * from search_policy_balanced_vectors($1,$2,2)',[v,'gemini-embedding-001'])).rows.some(r=>r.source_id==='legacy'));
+ assert.equal((await db.query('select * from search_policy_balanced_vectors($1,$2,2)',[v,'wrong-model'])).rows.length,0);
+ assert.equal((await db.query("select has_function_privilege('anon','search_policy_balanced_terms(jsonb,integer)','execute') allowed")).rows[0].allowed,false);
+}));
+test('long documents reserve definition and prohibition headings without sacrificing distributed body coverage',()=>{
+ const text='SEC. 1. BACKGROUND. '+ 'ordinary '.repeat(20000)+' SEC. 2. PROHIBITIONS. Critical licensing clause. '+ 'ordinary '.repeat(20000)+' SEC. 3. DEFINITIONS. Special defined term. '+ 'ordinary '.repeat(20000)+' final tail';
+ const doc=buildDocument({type:'public_law',id:'long',title:'Long Act',sourceUrl:url,body:text});
+ assert.equal(doc.passages.length,24);assert.equal(doc.embedding_coverage,'partial');
+ assert.ok(doc.passages.some(p=>p.text.includes('Critical licensing clause')));assert.ok(doc.passages.some(p=>p.text.includes('Special defined term')));
+ assert.ok(doc.passages.some(p=>p.text.includes('final tail')));
+});
+
+test('title-case Executive Order section headings retain definitions and exceptions',()=>{
+ const text='Section 1. Policy. '+ 'ordinary '.repeat(20000)+' Sec. 2. Definitions. Defined nuclear term. '+ 'ordinary '.repeat(20000)+' Section 3. Exceptions. Critical exception. '+ 'ordinary '.repeat(20000)+' final tail';
+ const doc=buildDocument({type:'executive_order',id:'1',title:'Energy',sourceUrl:'https://www.govinfo.gov/a',body:text,bodyUrl:'https://www.govinfo.gov/a'});
+ assert.ok(doc.passages.some(p=>p.text.includes('Defined nuclear term')));assert.ok(doc.passages.some(p=>p.text.includes('Critical exception')));
+ assert.equal(require('../../scripts/lib/policy-search-document').sectionBodyChunks('An incidental section 3 reference.').length,1);
 });

@@ -3121,7 +3121,7 @@ async function handleUsPolicy(request, env) {
             let filter;
             try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            return await kvCachedJson(env, `us:search:v6:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v7:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -3358,6 +3358,7 @@ async function usSemanticSearch(env, f) {
             id: r.source_id,
             title: r.title,
             similarity_score: r.similarity_score,
+            search_coverage:r.coverage,search_refresh_pending:r.refresh_pending,
             ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
             source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : documentDates.get(`${r.source_type}:${r.source_id}`)?.source_url,
             ...(bill ? {
@@ -3385,6 +3386,15 @@ const CONDITION_SOURCES = [
     {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
 ];
 async function usCorpusVectors(env,args){
+    try {
+        // Reuse one query embedding; separate statement budgets prevent a slow
+        // lane from making the sum of four otherwise valid queries time out.
+        const lanes=await Promise.all(CONDITION_SOURCES.map(source=>usRpc(env,'search_policy_vectors_for_type',{
+            p_query_embedding:args.p_query_embedding,p_embedding_model:args.p_embedding_model,
+            p_source_type:source.type,p_per_type_limit:Math.min(50,Math.max(10,args.p_result_limit)),
+        })));
+        return lanes.flat();
+    } catch { /* Additive migration may not be installed yet. */ }
     const results=await Promise.allSettled(['search_policy_document_vectors','search_policy_corpus'].map(name=>usRpc(env,name,args)));
     if(results.every(r=>r.status==='rejected'))throw results[1].reason;
     const merged=new Map();
@@ -3396,7 +3406,17 @@ async function usCorpusVectors(env,args){
 }
 async function usDocumentCandidates(env,terms){
     let hits;
-    try {hits=await usRpc(env,'search_policy_document_terms',{p_terms:terms,p_limit:100});}
+    try {
+        try {
+            const lanes=await Promise.all(CONDITION_SOURCES.map(source=>usRpc(env,'search_policy_document_terms_for_type',
+                {p_terms:terms,p_source_type:source.type,p_limit:25})));
+            hits=lanes.flat();
+        }
+        catch {
+            try {hits=await usRpc(env,'search_policy_balanced_terms',{p_terms:terms,p_per_type_limit:25});}
+            catch {hits=await usRpc(env,'search_policy_document_terms',{p_terms:terms,p_limit:100});}
+        }
+    }
     catch{return {available:false,items:[],limited:false};}
     const items=[];
     await Promise.all(CONDITION_SOURCES.map(async source=>{
@@ -3412,7 +3432,7 @@ async function usDocumentCandidates(env,terms){
                 ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
         }
     }));
-    return {available:true,items,limited:hits.length===100};
+    return {available:true,items,limited:CONDITION_SOURCES.some(s=>hits.filter(h=>h.source_type===s.type).length>=25)};
 }
 async function usHybridSearch(env, f) {
     const term=PolicySearchTerms.single(f.query), candidates=new Map();
@@ -3452,10 +3472,9 @@ async function usHybridSearch(env, f) {
     }
     // A provider outage with no lexical hits is not evidence of an empty corpus.
     if(!semantic&&!candidates.size){const error=new Error('정책 검색을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.');error.status=503;throw error;}
-    const items=[...candidates.values()].sort((a,b)=>b.relevance_rank-a.relevance_rank||
-        (b.similarity_score||0)-(a.similarity_score||0)||Number(b.congress_number||0)-Number(a.congress_number||0)||String(a.id).localeCompare(String(b.id)));
+    const items=PolicySearchTerms.fuse([...candidates.values()].filter(i=>i.relevance_rank>0||i.similarity_score>=0.65));
     return {ok:true,body:{query:f.query,search_mode:'hybrid',semantic_available:semantic,lexical_available:lexicalAvailable,
-        candidate_limited:candidateLimited,result_limited:items.length>f.limit,items:items.slice(0,f.limit).map(({summary,raw_source,embedding,...item})=>item)}};
+        candidate_limited:candidateLimited,result_limited:items.length>f.limit,items:PolicySearchTerms.balancedLimit(items,f.limit).map(({summary,evidence_parts,raw_source,embedding,...item})=>item)}};
 }
 async function usConditionSearch(env,f){
     const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
@@ -3490,7 +3509,10 @@ async function usConditionSearch(env,f){
                 const query=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
                 for(const row of await usFetch(env,source.table,query.toString())){
                     add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
-                    candidates.get(`${source.type}:${row[source.key]}`).semantic_candidate=true;
+                    const candidate=candidates.get(`${source.type}:${row[source.key]}`);
+                    candidate.semantic_candidate=true;
+                    const hit=hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]));
+                    candidate.search_coverage ||= hit?.coverage;candidate.search_refresh_pending ||= hit?.refresh_pending;
                 }
             }));semanticAvailable=true;
         }catch{ /* Exact evidence search still works; expose degraded retrieval. */ }
@@ -3499,7 +3521,7 @@ async function usConditionSearch(env,f){
     return {ok:true,body:{query:f.query,search_mode:'conditions',conditions:f.conditions.map(t=>({label:t.label,aliases:t.aliases})),
         match_basis:documents.available?'official_text_and_citations':'stored_title_summary',document_index_available:documents.available,
         semantic_available:semanticAvailable,candidate_limited:candidateLimited,
-        result_limited:ranked.length>f.limit,items:ranked.slice(0,f.limit)}};
+        result_limited:ranked.length>f.limit,items:PolicySearchTerms.balancedLimit(ranked,f.limit)}};
 }
 
 // The obvious way to write this is a PostgREST group-by aggregate

@@ -3,8 +3,45 @@
 const GROUPS = [
   ['캐나다', '케나다', 'canada', 'canadian'],
   ['관세', 'tariff', 'tariffs', 'customs duty', 'customs duties', 'import duty', 'import duties', 'ad valorem duty', 'ad valorem duties', 'ad valorem rate of duty', 'imposing duties'],
-  ['중국', 'china', 'chinese'], ['멕시코', 'mexico', 'mexican'], ['한국', 'south korea', 'republic of korea'],
+  ['중국', '중화인민공화국', '중화 인민 공화국', 'china', 'chinese', "people's republic of china", 'people’s republic of china'], ['멕시코', 'mexico', 'mexican'], ['한국', 'south korea', 'republic of korea'],
   ['일본', 'japan', 'japanese'], ['유럽연합', '유럽 연합', 'european union'],
+  ['기후', 'climate'], ['환경', 'environment', 'environmental'], ['비상사태', '비상 사태', 'emergency'],
+  ['안보', 'security'], ['혁신', 'innovation'], ['일자리', 'jobs'],
+  ['인프라', '기반시설', '기반 시설', 'infrastructure'], ['공급망', '공급 망', 'supply chain', 'supply chains'],
+  ['알래스카', 'alaska'], ['세계보건기구', '세계 보건 기구', 'world health organization'],
+  ['에너지', 'energy'], ['에너지안보', '에너지 안보', 'energy security'],
+  ['원유', 'crude oil', 'crude petroleum'], ['석유', 'petroleum'],
+  ['천연가스', '천연 가스', 'natural gas'],
+  ['액화천연가스', '액화 천연가스', 'lng', 'liquefied natural gas', 'liquified natural gas'],
+  ['전력', '전기', 'electricity', 'electric power'], ['전력망', 'electric grid', 'electrical grid', 'power grid'],
+  ['원자력', '원자력에너지', '원자력 에너지', 'nuclear energy', 'nuclear power'], ['우라늄', 'uranium'],
+  ['재생에너지', '재생 에너지', 'renewable energy'], ['태양광', 'solar energy', 'solar power'],
+  ['풍력', 'wind energy', 'wind power'], ['수소', 'hydrogen'], ['석탄', 'coal'],
+  ['시추', 'drilling'], ['정유', 'oil refining', 'petroleum refining'],
+  ['탄소포집', '탄소 포집', 'carbon capture'], ['온실가스', '온실 가스', 'greenhouse gas', 'greenhouse gases'],
+  ['구리', 'copper'], ['알루미늄', 'aluminum', 'aluminium'],
+  ['농업', 'agriculture', 'agricultural'], ['보건의료', '보건 의료', 'health care', 'healthcare'],
+  ['해운', 'maritime shipping', 'ocean shipping'], ['보조금', 'subsidy', 'subsidies'],
+  ['경제제재', '경제 제재', 'economic sanction', 'economic sanctions'],
+  // Policy topics stay distinct; ambiguous abbreviations are not aliases.
+  ['금융', 'finance', 'financial'], ['금융시장', '금융 시장', 'financial market', 'financial markets'],
+  ['금융규제', '금융 규제', 'financial regulation', 'financial regulations', 'financial regulatory'],
+  ['은행', 'banking', 'commercial bank', 'commercial banks', 'depository institution', 'depository institutions', 'bank holding company', 'bank holding companies'],
+  ['자본시장', '자본 시장', 'capital market', 'capital markets'], ['증권', 'securities'],
+  ['보험', 'insurance'], ['금리', 'interest rate', 'interest rates'],
+  ['스테이블코인', '스테이블 코인', 'stablecoin', 'stablecoins', 'stable coin', 'stable coins'],
+  ['자금세탁', '자금 세탁', 'money laundering'],
+  ['자금세탁방지', '자금 세탁 방지', 'anti money laundering'],
+  ['외국인투자', '외국인 투자', 'foreign investment', 'foreign investments', 'foreign direct investment'],
+  ['해외투자', '해외 투자', 'outbound investment', 'outbound investments'],
+  ['미중관계', '미중', '미중 관계', 'us china relations', 'united states china relations'],
+  ['중국공산당', '중국 공산당', 'chinese communist party', 'communist party of china'],
+  ['대만', 'taiwan', 'taiwanese'], ['홍콩', 'hong kong'],
+  ['국가안보', '국가 안보', 'national security'], ['경제안보', '경제 안보', 'economic security'],
+  ['인공지능', '인공 지능', 'artificial intelligence'],
+  ['첨단반도체', '첨단 반도체', 'advanced semiconductor', 'advanced semiconductors'],
+  ['수입규제', '수입 규제', 'import restriction', 'import restrictions', 'import ban', 'import bans'],
+  ['무역협정', '무역 협정', 'trade agreement', 'trade agreements', 'free trade agreement', 'free trade agreements'],
   ['니켈', 'nickel'],
   ['수출통제', '수출 통제', '수출규제', '수출 규제', 'export control', 'export controls', 'export restriction', 'export restrictions', 'export ban', 'export bans', 'export licensing', 'export license', 'export licenses'],
   ['배터리', 'battery', 'batteries', '이차전지', '이차 전지', 'secondary battery', 'secondary batteries'],
@@ -35,6 +72,41 @@ function evidence(text,alias){
   const found=re.exec(text);if(!found)return null;
   return text.slice(Math.max(0,found.index-75),Math.min(text.length,found.index+found[0].length+110));
 }
+// A shared 360-character window proves proximity, not legal applicability.
+function relationship(fields,terms,matches){
+  const matched=terms.filter((t,i)=>matches[i].matched);
+  if(matched.length<2)return null;
+  for(const part of fields){
+    for(let offset=0;offset<part.text.length;offset+=180){
+      const window=part.text.slice(offset,offset+360);
+      if(matched.every(t=>t.aliases.some(a=>evidence(window,a))))
+        return part.field==='cited_document'?'cited_shared_passage':'shared_passage';
+    }
+  }
+  const cited=matches.filter(m=>m.matched&&m.field==='cited_document');
+  return cited.length===matched.length?'cited_separate_mentions':cited.length?'mixed_citation':'separate_mentions';
+}
+const TYPES=['bill','public_law','executive_order','regulation'];
+// Quotas are applied only after relevance filtering, so irrelevant empty lanes
+// are never filled. Preserve ranked order inside each lane.
+function balancedLimit(items,limit){
+  const lanes=TYPES.map(t=>items.filter(i=>i.type===t));const picked=new Set();
+  for(let depth=0;picked.size<limit&&lanes.some(l=>l.length>depth);depth++)
+    for(const lane of lanes)if(lane[depth]&&picked.size<limit)picked.add(lane[depth]);
+  return items.filter(i=>picked.has(i));
+}
+// Fuse independent lexical and semantic ranks within each type. An exact short
+// title remains first; raw cosine and arbitrary lexical scores are not added.
+function fuse(items){
+  const scores=new Map();
+  for(const type of TYPES){
+    const lane=items.filter(i=>i.type===type);
+    const lists=[lane.filter(i=>i.relevance_rank>0).sort((a,b)=>b.relevance_rank-a.relevance_rank||Number(b.match_type==='exact_title')-Number(a.match_type==='exact_title')||String(b.latest_action_date||b.enacted_date||b.publication_date||'').localeCompare(String(a.latest_action_date||a.enacted_date||a.publication_date||''))||String(a.id).localeCompare(String(b.id))),
+      lane.filter(i=>i.similarity_score!=null).sort((a,b)=>b.similarity_score-a.similarity_score||String(a.id).localeCompare(String(b.id)))];
+    for(const list of lists)list.forEach((i,n)=>scores.set(i,(scores.get(i)||0)+1/(60+n+1)));
+  }
+  return items.map(i=>({...i,fusion_score:scores.get(i)||0})).sort((a,b)=>Number(b.relevance_rank===4)-Number(a.relevance_rank===4)||Number(b.match_type==='exact_title')-Number(a.match_type==='exact_title')||b.fusion_score-a.fusion_score||String(a.id).localeCompare(String(b.id)));
+}
 function annotate(item,terms){
   const fields=[{field:'title',text:plain(item.title)},{field:'summary',text:plain(item.summary)},
     ...(item.evidence_parts||[]).map(p=>({...p,text:plain(p.text)}))];
@@ -44,14 +116,14 @@ function annotate(item,terms){
     return {term:t.label,matched:false};
   });
   const count=matches.filter(m=>m.matched).length;
-  return {...item,summary:undefined,evidence_parts:undefined,condition_matches:matches,matched_condition_count:count,total_condition_count:terms.length,match_level:count===terms.length?'all':count?'partial':'semantic_only'};
+  return {...item,summary:undefined,evidence_parts:undefined,condition_matches:matches,matched_condition_count:count,total_condition_count:terms.length,condition_relationship:relationship(fields,terms,matches),match_level:count===terms.length?'all':count?'partial':'semantic_only'};
 }
 function clause(fields,term){
   return `or(${fields.flatMap(field=>term.aliases.map(alias=>`${field}.ilike.${JSON.stringify('*'+alias.replace(/ /g,'*')+'*')}`)).join(',')})`;
 }
 function rank(items,terms,limit){
   return items.map(i=>annotate(i,terms)).filter(i=>i.matched_condition_count>0 || (i.semantic_candidate && i.similarity_score>=0.65))
-    .sort((a,b)=>b.matched_condition_count-a.matched_condition_count || (b.similarity_score||0)-(a.similarity_score||0) || String(a.id).localeCompare(String(b.id)))
+    .sort((a,b)=>b.matched_condition_count-a.matched_condition_count || Number(['shared_passage','cited_shared_passage'].includes(b.condition_relationship))-Number(['shared_passage','cited_shared_passage'].includes(a.condition_relationship)) || (b.similarity_score||0)-(a.similarity_score||0) || String(a.id).localeCompare(String(b.id)))
     .slice(0,limit);
 }
 function single(query) {
@@ -71,4 +143,4 @@ function lexicalRank(item,term) {
   if((item.evidence_parts||[]).some(p=>term.aliases.some(a=>evidence(plain(p.text),a))))return 1;
   return 0;
 }
-module.exports={parse,annotate,clause,rank,single,lexicalRank};
+module.exports={parse,annotate,clause,rank,single,lexicalRank,balancedLimit,fuse};

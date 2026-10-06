@@ -1,6 +1,6 @@
 'use strict';
 const crypto = require('node:crypto');
-const VERSION = 'policy-document-v1';
+const VERSION = 'policy-document-v2';
 const MODEL = 'gemini-embedding-001';
 const DIMENSIONS = 1536;
 const hash = text => crypto.createHash('sha256').update(text).digest('hex');
@@ -38,6 +38,18 @@ function chunks(text, size = 2200, overlap = 160) {
   }
   return result;
 }
+function sectionBodyChunks(text){
+  // Numbered statute/EO headings with a capitalized heading only. Incidental "section 3" references do
+  // not create a boundary. This is a selection heuristic, not legal parsing.
+  const headings=[...text.matchAll(/\b(?:SEC(?:TION)?|Sec(?:tion)?|Section)\.?\s+\d+[A-Z]?\.\s+[A-Z][A-Za-z0-9 ,()'’&-]{3,100}(?=\.|:)/g)];
+  if(!headings.length)return chunks(text).map(text=>({text,priority:false}));
+  const starts=[0,...headings.map(h=>h.index)].filter((n,i,a)=>!i||n!==a[i-1]);
+  return starts.flatMap((start,i)=>{
+    const heading=headings.find(h=>h.index===start)?.[0]||'';
+    const priority=/DEFINITIONS|AUTHORIZ|PROHIBIT|RESTRICTION|EXEMPTION|EXCEPTION|APPLICABILITY|ENFORCEMENT|EFFECTIVE DATE/.test(heading.toUpperCase());
+    return chunks(text.slice(start,starts[i+1]||text.length)).map((text,n)=>({text,priority:priority&&n===0}));
+  });
+}
 function buildDocument({ type, id, title, date, sourceUrl, summary, summaryUrl, subjects = [], body, bodyUrl,
   bodyStatus = 'unavailable', references = [], contexts = [], sourceVersion = null, maxPassages = 24 }) {
   if (!Number.isInteger(maxPassages) || maxPassages < 12 || maxPassages > 24) throw new Error('Passage budget must be between 12 and 24');
@@ -67,7 +79,7 @@ function buildDocument({ type, id, title, date, sourceUrl, summary, summaryUrl, 
     text_status: retained ? (cleaned.length > retained.length ? 'partial_body' : 'body') : bodyStatus,
     body_characters: cleaned.length, retained_body_characters: retained.length,
     resolved_references: parts.filter(p=>p.field==='cited_document').length, reference_count: explicitRefs.length };
-  const candidates = parts.flatMap(p => chunks(p.text).map(text => ({ field: p.field, source_url: p.source_url,
+  const candidates = parts.flatMap(p => (p.field==='body'?sectionBodyChunks(p.text):chunks(p.text).map(text=>({text,priority:false}))).map(({text,priority}) => ({ priority, field: p.field, source_url: p.source_url,
     target_type: p.target_type || null, target_id: p.target_id || null, text,
     input_text: `${input.title.slice(0,500)}\nDocument type: ${type}\n${p.field === 'cited_document' ? `Explicitly cites ${p.citation}. Related document context (not this document's operative text):\n` : ''}${text}` })));
   // Reserve room for cited context even when a long source uses the chunk cap.
@@ -78,11 +90,13 @@ function buildDocument({ type, id, title, date, sourceUrl, summary, summaryUrl, 
   // Keep the entire retained body for lexical proof. A bounded vector budget
   // samples across the body (including its tail), rather than just its prefix.
   const selectedHeaders = headers.slice(0,8), selectedContext = spread(contextChunks,Math.min(contextChunks.length,4));
-  const selected = [...selectedHeaders,...spread(bodyChunks,Math.max(0,maxPassages-selectedHeaders.length-selectedContext.length)),...selectedContext];
+  const bodyBudget=Math.max(0,maxPassages-selectedHeaders.length-selectedContext.length);
+  const priorityBody=spread(bodyChunks.filter(p=>p.priority),Math.min(Math.floor(bodyBudget/2),bodyChunks.filter(p=>p.priority).length));
+  const selected = [...selectedHeaders,...priorityBody,...spread(bodyChunks.filter(p=>!priorityBody.includes(p)),bodyBudget-priorityBody.length),...selectedContext];
   input.embedding_coverage = selected.length < candidates.length ? 'partial' : 'complete';
   input.available_passages = candidates.length;
   const passages = selected.map((p, index) => ({ ...p, passage_index: index, input_hash: hash(p.input_text) }));
   const inputHash = hash(JSON.stringify({ ...input, passages: passages.map(p => p.input_hash) }));
   return { ...input, document_id: `${type}:${id}`, search_text: parts.map(p => p.text).join('\n'), input_hash: inputHash, passages };
 }
-module.exports = { VERSION, MODEL, DIMENSIONS, hash, plain, officialUrl, citations, chunks, buildDocument };
+module.exports = { VERSION, MODEL, DIMENSIONS, hash, plain, officialUrl, citations, chunks, sectionBodyChunks, buildDocument };
