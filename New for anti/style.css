@@ -6809,3 +6809,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 @media (max-width: 1080px) {
   .policy-search-page-results .policy-search-lanes { flex-direction: column; }
 }
+
+/* Weekly polling coverage remains reachable beyond the highlighted cards. */
+.elections-monitoring-list[open] { max-height: 520px; overflow-y: auto; }
+.elections-monitoring-row { display: flex; width: 100%; flex-wrap: wrap; gap: 6px 12px; justify-content: space-between; padding: 9px 6px; border: 0; border-bottom: 1px solid #334155; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.elections-monitoring-row span { font-size: 12px; color: #cbd5e1; }
+.elections-poll-observations .is-reference { border-left: 2px solid #94a3b8; padding-left: 8px; }

@@ -59,10 +59,10 @@ test('national party counts use verified poll leads and keep official results se
                 result: { status: 'certified', party: 'REP', winner: 'Winner' } },
         } };
     const seven = summarizeNationalRaces(board, { status: 'ok' }, 7, now);
-    assert.deepEqual(seven.total, { dem: 1, rep: 0, pending: 1, certifiedDem: 0, certifiedRep: 1 });
-    assert.deepEqual(seven.governor, { dem: 1, rep: 0, pending: 0, certifiedDem: 0, certifiedRep: 1 });
+    assert.deepEqual(seven.total, { dem: 1, rep: 0, pending: 1, certifiedDem: 0, certifiedRep: 1, singleDem: 0, singleRep: 0 });
+    assert.deepEqual(seven.governor, { dem: 1, rep: 0, pending: 0, certifiedDem: 0, certifiedRep: 1, singleDem: 0, singleRep: 0 });
     assert.deepEqual(summarizeNationalRaces(board, { status: 'ok' }, 14, now).total,
-        { dem: 0, rep: 1, pending: 1, certifiedDem: 0, certifiedRep: 1 });
+        { dem: 0, rep: 1, pending: 1, certifiedDem: 0, certifiedRep: 1, singleDem: 0, singleRep: 0 });
     assert.deepEqual(summarizeNationalRaces(board, { status: 'stale' }, 7, now).total,
-        { dem: 0, rep: 0, pending: 2, certifiedDem: 0, certifiedRep: 1 });
+        { dem: 0, rep: 0, pending: 2, certifiedDem: 0, certifiedRep: 1, singleDem: 0, singleRep: 0 });
 });

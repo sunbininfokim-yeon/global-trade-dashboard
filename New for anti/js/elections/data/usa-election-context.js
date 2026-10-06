@@ -1,3 +1,4 @@
+import { currentPollWindow } from './poll-window.js';
 // A historical map key, not a forecast for the 2026 midterms. Cook's 2024
 // Swing State Project covered these seven states. The remaining red/blue
 // classification follows the certified 2024 presidential statewide winner.
@@ -49,6 +50,7 @@ export const raceClosedByDate = (race, now = Date.now()) => {
 };
 
 export const pollSourceReady = (board, health, now = Date.now()) => {
+    if (health?.as_of && board?.as_of && health.as_of !== board.as_of) return false;
     if (!board || board.schema !== 'usa_live_polls_v1' || board.source_status !== 'ok' || health?.status !== 'ok') return false;
     const fetched = Date.parse(board.fetched_at);
     const hours = Number(board.stale_after_hours) || 48;
@@ -64,9 +66,9 @@ export const pollSignal = (race, board, health, days = 7, now = Date.now()) => {
         return { status: 'awaiting_certified_result', party: null };
     }
     if (!pollSourceReady(board, health, now)) return { status: 'stale', party: null };
-    const window = race.windows?.[String(days)];
+    const window = currentPollWindow(race, days, now);
     if (!window) return { status: 'unavailable', party: null };
-    const party = window.status === 'poll_lead' ? normalizeParty(window.party) : null;
+    const party = ['poll_lead', 'single_poll_lead'].includes(window.status) ? normalizeParty(window.party) : null;
     return { status: window.status, party: party === 'DEM' || party === 'REP' ? party : null,
         leader: window.leader || null, window };
 };

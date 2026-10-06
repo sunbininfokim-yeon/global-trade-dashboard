@@ -33,6 +33,7 @@ export const financeEvidence = (race, contract) => {
 
 export const financeEvidenceHtml = (race, contract) => {
     const evidence = financeEvidence(race, contract);
+    if (!race) return '<div class="elections-evidence-finance"><strong>외부 독립지출</strong><span>자료 연결 대기</span></div>';
     if (race?.status === 'unsupported') return `<div class="elections-evidence-finance">
         <strong>${escapeHtml(evidence.label)}</strong><span>주 공시 미수집</span>
         <small>금액을 0 또는 지출 없음으로 해석할 수 없습니다.</small></div>`;
@@ -58,14 +59,20 @@ const sourceLink = (url) => {
 
 const observationHtml = (row) => {
     const answers = (row.answers || []).map((answer) => `${answer.name} ${answer.pct}%`).join(' · ');
-    const sponsors = (row.sponsors || []).length ? ` · 의뢰 ${row.sponsors.join(', ')}` : '';
-    return `<li><span>${escapeHtml(row.pollster || '조사기관 미기재')} · ${escapeHtml(row.field_end || '')}
+    const sponsorNames = row.commissioning?.sponsors || row.sponsors || [];
+    const sponsors = sponsorNames.length ? ` · 의뢰 ${sponsorNames.join(', ')}` : '';
+    const reference = row.aggregation_eligibility?.eligible === false;
+    const quality = row.source_quality;
+    const review = quality?.verification_level === 'primary_toplines_checked' ? '원문 수치 대조' : '등록 출처 자동 수입 · 원문 추가 검토 전';
+    const method = quality?.methodological_quality === 'unrated' ? ' · 정확도 미등급' : '';
+    const exclusions = reference ? ` · 참고 전용: ${(row.aggregation_eligibility.reasons || []).join(', ')}` : '';
+    return `<li${reference ? ' class="is-reference"' : ''}><small>${escapeHtml(review + method + exclusions)}</small><span>${escapeHtml(row.pollster || '조사기관 미기재')} · ${escapeHtml(row.field_end || '')}
         · ${escapeHtml((row.population || '').toUpperCase())} · n=${escapeHtml(row.sample_n ?? '?')}${escapeHtml(sponsors)}</span>
         <span>${escapeHtml(answers)}</span>${sourceLink(row.source_url)} ${row.methodology_url ? sourceLink(row.methodology_url).replace('원문 ↗', '방법론 ↗') : ''}</li>`;
 };
 
 const statusLabel = {
-    poll_lead: '최근 조사상 우세', no_recent_poll: '최근 조사 없음',
+    poll_lead: '복수 기관 조사상 우세', single_poll_lead: '단일 기관 수치상 앞섬 · 참고', no_recent_poll: '최근 조사 없음',
     insufficient_pollsters: '독립 조사기관 부족', tie: '조사 우세 동률',
     unknown_leader_party: '우세 정당 확인 대기', stale: '수집 자료 갱신 대기',
     unavailable: '여론조사 데이터 연결 대기', awaiting_certified_result: '선거 종료 · 공식 결과 대기',
@@ -84,6 +91,10 @@ export const pollEvidenceHtml = (race, board, health, days = 7) => {
         ? ` · 독립 기관 ${signal.window.pollster_count}곳` : '';
     const leads = Object.entries(signal.window?.lead_counts || {});
     const leadCountText = leads.length ? `조사별 우세 횟수: ${leads.map(([candidate, count]) => `${candidate} ${count}회`).join(' · ')}${signal.window?.tie_count ? ` · 동률 ${signal.window.tie_count}회` : ''}` : '';
+    const coverage = board?.monitoring?.race_coverage?.[race?.race_id];
+    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '본선 후보 대진 검토 대기 · 새 조사 자동 채택 보류'
+        : coverage.status === 'no_provider_record' ? '현재 수집 API 미발견 · 조사 자체의 부재를 뜻하지 않음'
+        : coverage.status === 'review_required' ? '발견한 조사 출처·문항 검토 대기' : '';
     const note = race?.schedule_status === 'watch_slot_unverified' && !hasPoll
         ? '<small>선거 일정·본선 대진 확인 전 감시 슬롯입니다. 이 목록만으로 실제 선거를 뜻하지 않습니다.</small>' : '';
     return `<div class="elections-evidence-poll">
@@ -95,10 +106,12 @@ export const pollEvidenceHtml = (race, board, health, days = 7) => {
         ${signal.status === 'certified_result' ? `<small>확정 ${escapeHtml(race?.result?.certified_on || '')} ${sourceLink(race?.result?.source_url)}</small>` : ''}
         ${leadCountText ? `<small>${escapeHtml(leadCountText)}</small>` : ''}
         ${note}
+        ${coverageLabel ? `<small>${escapeHtml(coverageLabel)}</small>` : ''}
+        ${signal.window?.status_note_ko ? `<small>${escapeHtml(signal.window.status_note_ko)}</small>` : ''}
         ${hasPoll ? `<details class="elections-disclosure">
             <summary>누적 조사 ${observations.length}건 보기</summary>
             <ol class="elections-poll-observations">${observations.map(observationHtml).join('')}</ol>
-            <small>선정 기관의 자동 수집값입니다. 원문 수치를 이번 실행에서 재전사한 자료는 아닙니다.</small>
+            <small>원문 대조·자동 수입·참고 전용을 조사별로 구분합니다. 참고 전용 자료는 우세 횟수에서 제외하며, 단일 조사와 수치상 격차를 당선확률로 해석하지 않습니다.</small>
         </details>` : ''}
     </div>`;
 };

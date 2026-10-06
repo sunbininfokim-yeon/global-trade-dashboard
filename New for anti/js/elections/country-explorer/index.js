@@ -7,7 +7,7 @@ import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract } from '../data/finance-service.js?v=2';
 import { loadLivePolls } from '../data/poll-service.js';
-import { NATIONAL_WATCH_STATES, renderUsaElectionNational } from './special/usa-election-national.js';
+import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
@@ -22,10 +22,35 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
     // user has already moved on (back to world, another country) is dropped
     // instead of painting over the screen they're now on.
     let navSeq = 0;
+    let displayTimer = null;
+    const stopDisplayRefresh = () => { if (displayTimer) clearTimeout(displayTimer); displayTimer = null; };
+    const watchDisplay = (polls, seq, redraw) => {
+        stopDisplayRefresh();
+        const signature = (value) => [value.board?.fetched_at, value.health?.status,
+            new Date().toISOString().slice(0, 10)].join('|');
+        const before = signature(polls);
+        const tick = async () => {
+            if (seq !== navSeq) return;
+            const latest = await loadLivePolls(); // memoized for 15 minutes
+            if (seq !== navSeq) return;
+            if (signature(latest) !== before) {
+                const scroll = host.roots.country.scrollTop;
+                const monitoringOpen = host.roots.country.querySelector('.elections-monitoring-list')?.open;
+                await redraw();
+                host.roots.country.scrollTop = scroll;
+                const list = host.roots.country.querySelector('.elections-monitoring-list');
+                if (list && monitoringOpen) list.open = true;
+                return;
+            }
+            displayTimer = setTimeout(tick, 60000);
+        };
+        displayTimer = setTimeout(tick, 60000);
+    };
     return {
         modal,
         openScreen(key) { shell?.openSection(key); },
         async showWorld() {
+            stopDisplayRefresh();
             modal?.close();
             shell = null;
             navSeq += 1;
@@ -33,6 +58,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             await renderWorldElectionMap(host, bundle.countries, onCountryOpen);
         },
         async showCountry(iso3, { electionMode = false } = {}) {
+            stopDisplayRefresh();
             const country = bundle.countries.get(iso3);
             if (!country) return;
             usaElectionMode = iso3 === 'USA' && electionMode;
@@ -47,10 +73,9 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }) });
             if (usaElectionMode) {
                 host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.</p></div>';
-                const [polls, contract, entries] = await Promise.all([
-                    loadLivePolls(), loadFinanceDisplayContract(),
-                    Promise.all(NATIONAL_WATCH_STATES.map(async (id) => [id, await loadStateFinanceIndex(id)])),
-                ]);
+                const [polls, contract] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract()]);
+                const entries = await Promise.all(nationalMonitoringStates(polls.board)
+                    .map(async (id) => [id, await loadStateFinanceIndex(id)]));
                 if (isStale()) return;
                 shell = null;
                 onRoute?.({ country: iso3, view: 'finance' });
@@ -61,6 +86,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                     onStateOpen: (stateId, district) => this.showUsaState(stateId, { financeMode: true, district }),
                 });
                 await mapReady;
+                if (!isStale()) watchDisplay(polls, seq, () => this.showCountry('USA', { electionMode: true }));
                 return;
             }
             // The 의회 screen's 상임위 chips need the policy overview's
@@ -95,6 +121,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             });
         },
         async showUsaState(stateId, { financeMode = false, district = null } = {}) {
+            stopDisplayRefresh();
             // The state dashboard replaces the right pane wholesale, so any
             // country block still open would be describing the wrong screen.
             modal?.close();
@@ -138,6 +165,8 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                         electionMode: financeMode, pollBoard: polls.board, pollHealth: polls.health, windowDays: pollWindowDays });
                 },
             });
+            if (financeMode && !isStale()) watchDisplay(polls, seq,
+                () => this.showUsaState(stateId, { financeMode: true, district }));
             if (!districtMapReady) {
                 await renderCountryMap({ host, country: usa, selectedStateId: stateId, electionMode: financeMode,
                     isStale, onStateOpen: (nextStateId) => this.showUsaState(nextStateId, { financeMode }) });

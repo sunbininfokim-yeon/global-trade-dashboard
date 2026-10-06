@@ -4,27 +4,40 @@ import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
 
-const raceRank = (race, days) => (race.windows?.[String(days)]?.status === 'poll_lead' ? 200 :
-    race.windows?.[String(days)]?.pollster_count ? 150 : race.observations?.length ? 100 + race.observations.length : 0)
-    + (stateClass2024(race.state) === 'swing' ? 12 : 0)
-    + (race.office === 'senate' ? 3 : race.office === 'governor' ? 2 : 1);
+export const nationalMonitoringStates = (board) => [...new Set([
+    ...NATIONAL_WATCH_STATES, ...Object.values(board?.races || {}).map((race) => race.state),
+])].filter((id) => /^[A-Z]{2}$/.test(id));
 
-const eligibleNationalRaces = (board) => board?.races ? Object.values(board.races).filter((race) =>
-        ['house', 'senate', 'governor'].includes(race.office)
-        && NATIONAL_WATCH_STATES.includes(race.state)
-        && (race.schedule_status === 'reported_general_matchup' || race.phase === 'certified_result')) : [];
+const monitoredNationalRaces = (board) => Object.values(board?.races || {}).filter((race) =>
+    ['house', 'senate', 'governor'].includes(race.office)
+    && (NATIONAL_WATCH_STATES.includes(race.state) || race.monitor_priority || race.collection_priority));
 
-export const selectNationalRaces = (board, days = 7) =>
-    eligibleNationalRaces(board).sort((a, b) => raceRank(b, days) - raceRank(a, days)).slice(0, 18);
+const eligibleNationalRaces = (board) => monitoredNationalRaces(board).filter((race) =>
+    race.schedule_status === 'reported_general_matchup' || race.phase === 'certified_result');
+
+const raceRank = (race, board, health, days, now) => {
+    const signal = pollSignal(race, board, health, days, now);
+    return (4 - (race.collection_priority?.order || 4)) * 1000
+        + (signal.status === 'poll_lead' ? 200 : signal.status === 'single_poll_lead' ? 150
+            : race.observations?.length ? 100 : 0)
+        + (stateClass2024(race.state) === 'swing' ? 12 : 0)
+        + (race.office === 'senate' ? 3 : race.office === 'governor' ? 2 : 1);
+};
+
+export const selectNationalRaces = (board, days = 7, health = null, now = Date.now()) =>
+    eligibleNationalRaces(board).sort((a, b) => raceRank(b, board, health, days, now)
+        - raceRank(a, board, health, days, now)).slice(0, 18);
 
 export const summarizeNationalRaces = (board, health, days = 7, now = Date.now()) => {
-    const empty = () => ({ dem: 0, rep: 0, pending: 0, certifiedDem: 0, certifiedRep: 0 });
+    const empty = () => ({ dem: 0, rep: 0, pending: 0, certifiedDem: 0, certifiedRep: 0, singleDem: 0, singleRep: 0 });
     const summary = { total: empty(), governor: empty(), senate: empty(), house: empty() };
     for (const race of eligibleNationalRaces(board)) {
         const signal = pollSignal(race, board, health, days, now);
         for (const bucket of [summary.total, summary[race.office]]) {
             if (signal.status === 'certified_result' && signal.party === 'DEM') bucket.certifiedDem++;
             else if (signal.status === 'certified_result' && signal.party === 'REP') bucket.certifiedRep++;
+            else if (signal.status === 'single_poll_lead' && signal.party === 'DEM') bucket.singleDem++;
+            else if (signal.status === 'single_poll_lead' && signal.party === 'REP') bucket.singleRep++;
             else if (signal.status === 'poll_lead' && signal.party === 'DEM') bucket.dem++;
             else if (signal.status === 'poll_lead' && signal.party === 'REP') bucket.rep++;
             else bucket.pending++;
@@ -36,9 +49,13 @@ export const summarizeNationalRaces = (board, health, days = 7, now = Date.now()
 export const renderUsaElectionNational = (root, {
     board, health, indexes = {}, contract, days = 7, onBack, onToggle, onWindowChange, onStateOpen,
 }) => {
-    const races = selectNationalRaces(board, days);
+    const races = selectNationalRaces(board, days, health);
     const summary = summarizeNationalRaces(board, health, days);
     const ready = pollSourceReady(board, health);
+    const allMonitored = monitoredNationalRaces(board).sort((a, b) => (a.collection_priority?.order || 4)
+        - (b.collection_priority?.order || 4) || a.race_id.localeCompare(b.race_id));
+    const unresolved = allMonitored.filter((race) => (race.required_candidates || []).length < 2);
+    const cadence = board?.refresh_cadence?.interval_days === 7 ? '매주 월요일 06:10 KST 수집' : '정기 수집';
     const financeById = new Map(Object.entries(indexes).flatMap(([, index]) =>
         (index?.races || []).map((race) => [race.race_id, race])));
     root.className = 'panel-section elections-country elections-national-mode';
@@ -59,14 +76,15 @@ export const renderUsaElectionNational = (root, {
             <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${days === 7}">7일</button>
             <button type="button" data-window="14" aria-pressed="${days === 14}">14일</button>
         </div>
-        <p class="elections-panel-note">${ready ? `조사 수집 ${escapeHtml(board.fetched_at || '')}` : '여론조사 데이터 연결 또는 갱신 대기'} · 조사 우세는 예측이나 당선 확정이 아닙니다.</p>
+        <p class="elections-panel-note">${ready ? `조사 수집 ${escapeHtml(board.fetched_at || '')}` : '여론조사 데이터 연결 또는 갱신 대기'} · ${cadence} · 현재 날짜로 7/14일 범위를 다시 계산합니다.</p>
         <section class="elections-detail-section" aria-label="정당별 조사 우세 레이스 수">
             <p class="section-title">최근 ${days}일 조사 우세 · 확인된 본선 레이스 ${Object.values(summary.total).reduce((sum, n) => sum + n, 0)}곳</p>
             <div class="elections-evidence-grid">
                 <div class="elections-evidence-poll"><strong>민주당 우세</strong><span class="is-dem">${summary.total.dem}곳</span></div>
                 <div class="elections-evidence-poll"><strong>공화당 우세</strong><span class="is-gop">${summary.total.rep}곳</span></div>
-                <div class="elections-evidence-poll"><strong>판정 대기·조사 부족</strong><span>${summary.total.pending}곳</span></div>
+                <div class="elections-evidence-poll"><strong>판정 대기·최근 조사 부족</strong><span>${summary.total.pending}곳</span></div>
             </div>
+            <p class="elections-panel-note">단일 기관 참고: 민주 ${summary.total.singleDem}곳 · 공화 ${summary.total.singleRep}곳. 위 복수 기관 우세와 별도입니다.</p>
             <p class="elections-panel-note">주지사 민주 ${summary.governor.dem} · 공화 ${summary.governor.rep} · 대기 ${summary.governor.pending} / 상원 민주 ${summary.senate.dem} · 공화 ${summary.senate.rep} · 대기 ${summary.senate.pending} / 하원 민주 ${summary.house.dem} · 공화 ${summary.house.rep} · 대기 ${summary.house.pending}</p>
             ${summary.total.certifiedDem + summary.total.certifiedRep ? `<p class="elections-panel-note">공식 확정 결과: 민주 ${summary.total.certifiedDem} · 공화 ${summary.total.certifiedRep} (조사 우세와 별도)</p>` : ''}
             <p class="elections-panel-note">이는 관심 주의 확인된 레이스만 센 수이며, 전국 의석 전망이나 확정 의석 수가 아닙니다. 블루·레드·퍼플 지도색은 집계에 넣지 않습니다.</p>
@@ -84,7 +102,22 @@ export const renderUsaElectionNational = (root, {
                     </div>
                 </article>`).join('') || '<p class="elections-muted">확인된 2026 본선 선거 목록을 아직 불러오지 못했습니다. 감시 슬롯을 실제 선거로 표시하지 않습니다.</p>'}</div>
         </section>
-        <p class="elections-panel-note">대상: NY·TN·FL·TX와 2024 경합주 7곳(조지아 포함). 본선 대진이 확인된 선거만 카드에 넣습니다. 감시 슬롯은 선거 확인 전까지 제외합니다.</p>`;
+        <details class="elections-disclosure elections-monitoring-list">
+            <summary>전체 감시 목록 ${allMonitored.length}곳 · 후보 대진 검토 대기 ${unresolved.length}곳</summary>
+            <p class="elections-panel-note">감시 슬롯은 실제 선거·확정 후보 명부와 구분합니다. 현재 API 미발견은 여론조사 자체가 없다는 뜻이 아닙니다.</p>
+            ${allMonitored.map((race) => {
+                const coverage = board?.monitoring?.race_coverage?.[race.race_id];
+                const signal = pollSignal(race, board, health, days);
+                const label = (race.required_candidates || []).length < 2 ? '후보 대진 검토 대기'
+                    : !race.observations?.length ? '현재 수집 자료 없음'
+                    : signal.status === 'single_poll_lead' ? '최근 단일 기관 참고'
+                    : signal.status === 'poll_lead' ? '최근 복수 기관 우세'
+                    : signal.status === 'tie' ? '최근 조사 동률' : '최근 적격 자료 없음';
+                return `<button class="elections-monitoring-row" type="button" data-open-state="${escapeHtml(race.state)}" data-open-district="${escapeHtml(race.office === 'house' ? race.district || '' : '')}">
+                    <strong>${escapeHtml(raceLabel(race))}</strong><span>${escapeHtml(label)} · 누적 ${coverage?.accepted_count || 0}건${race.monitor_priority ? ' · Cook 감시' : ''}</span></button>`;
+            }).join('')}
+        </details>
+        <p class="elections-panel-note">대상: 요청 주 → 전국 Cook Toss-up/Lean → 검토한 한국기업 소재지 순서. 위 카드는 본선 대진 검토 완료 선거 중 상위18곳입니다.</p>`;
     root.querySelector('[data-election-back]')?.addEventListener('click', onBack);
     root.querySelector('[data-election-mode]')?.addEventListener('click', onToggle);
     root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange(Number(button.dataset.window))));
