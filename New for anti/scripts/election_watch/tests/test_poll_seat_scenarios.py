@@ -138,7 +138,7 @@ class SeatScenarioTests(unittest.TestCase):
         from test_live_polls import poll
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/'polls.json'
-            with patch('sys.argv',['refresh','--output',str(out),'--as-of','2026-10-05',
+            with patch('sys.argv',['refresh','--output',str(out),'--as-of','2026-10-06',
                                     '--election-board',str(Path(tmp)/'missing.json')]),\
                  patch.object(refresh_live_polls,'fetch_polls',return_value=([poll()], 'test')):
                 self.assertEqual(refresh_live_polls.main(),1)

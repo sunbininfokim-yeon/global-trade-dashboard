@@ -6,6 +6,7 @@ from pathlib import Path
 from election_watch.polls import read, atomic
 from election_watch.live_polls import (apply_watchlist, build_live, close_finished_races,
                                       fetch_polls, poll_history, validated_results)
+from election_watch.poll_priorities import apply_priorities, attach_coverage, load_finance_links
 from election_watch.seat_scenarios import build_scenarios, held_scenarios
 
 ROOT = Path(__file__).resolve().parent
@@ -28,6 +29,9 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--policy', type=Path, default=ROOT/'config/usa_polls/live_2026.json')
     p.add_argument('--watchlist', type=Path, default=ROOT/'config/usa_polls/watchlist_2026.json')
+    p.add_argument('--priorities', type=Path, default=ROOT/'config/usa_polls/priorities_2026.json')
+    p.add_argument('--districts', type=Path, default=ROOT.parent.parent/'public/data/congressional_districts/USA')
+    p.add_argument('--finance-index', type=Path, default=ROOT.parent.parent/'public/data/usa_election_finance_index_v1.json')
     p.add_argument('--quality-reviews', type=Path, default=ROOT/'config/usa_polls/quality_reviews_2026.json')
     p.add_argument('--results', type=Path, default=ROOT/'config/usa_polls/results_2026.json')
     p.add_argument('--output', type=Path, default=ROOT.parent.parent/'public/data/usa_election_live_polls_v1.json')
@@ -39,13 +43,19 @@ def main():
     checked = datetime.now(timezone.utc).isoformat()
     health = args.output.with_name('usa_election_live_polls_status_v1.json')
     try:
-        policy = apply_watchlist(read(args.policy), read(args.watchlist))
+        policy = apply_priorities(apply_watchlist(read(args.policy), read(args.watchlist)),
+                                  read(args.priorities), args.districts, args.as_of)
         quality = read(args.quality_reviews)
         if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
             raise ValueError('quality review schema/cycle')
         policy['quality_reviews'] = quality['reviews']
         rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
+        try:
+            finance = load_finance_links(args.finance_index, policy['cycle'])
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            finance = {'status': 'hold', 'error_type': type(exc).__name__, 'races': {}}
+        attach_coverage(board, rows, policy, finance)
         history = poll_history(rows, policy, args.as_of)
         if args.input:
             board['source_status'] = 'replay'
@@ -66,7 +76,8 @@ def main():
         # fails, still accept a newly reviewed result without refreshing polls.
         try:
             existing = read(args.output)
-            policy = apply_watchlist(read(args.policy), read(args.watchlist))
+            policy = apply_priorities(apply_watchlist(read(args.policy), read(args.watchlist)),
+                                  read(args.priorities), args.districts, args.as_of)
             confirmed = validated_results(read(args.results), policy, args.as_of)
             changed = close_finished_races(existing, policy, confirmed, args.as_of)
             if changed:

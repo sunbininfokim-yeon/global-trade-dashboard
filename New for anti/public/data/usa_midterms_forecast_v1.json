@@ -2,7 +2,7 @@
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
   "as_of": "2026-10-06",
-  "generated_at": "2026-10-06T03:48:46.069571+00:00",
+  "generated_at": "2026-10-06T04:21:57.349136+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1631,14 +1631,14 @@
     },
     "governor": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 22 · 공화 19 · 무소속 0 · 미정 9. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 22 · 공화 20 · 무소속 0 · 미정 8. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 50,
       "scenario_counts": {
         "DEM": 22,
-        "GOP": 19,
+        "GOP": 20,
         "IND": 0
       },
-      "unresolved_seats": 9,
+      "unresolved_seats": 8,
       "buckets": {
         "retained": {
           "DEM": 6,
@@ -1650,13 +1650,14 @@
         },
         "recent_poll_lead": {},
         "single_poll_lead": {
-          "DEM": 3
+          "DEM": 3,
+          "GOP": 1
         },
         "certified_result": {}
       },
       "single_poll_lead_counts": {
         "DEM": 3,
-        "GOP": 0,
+        "GOP": 1,
         "IND": 0
       },
       "scenario_counts_without_single_polls": {
@@ -1668,15 +1669,15 @@
       "conditional_bounds": {
         "DEM": {
           "min": 22,
-          "max": 31
+          "max": 30
         },
         "GOP": {
-          "min": 19,
+          "min": 20,
           "max": 28
         },
         "IND": {
           "min": 0,
-          "max": 9
+          "max": 8
         }
       },
       "ratings_as_of": "2026-10-01",
@@ -2167,24 +2168,44 @@
           "race_id": "USA:KS:governor",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "gov202thecdc40b4c",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202thecdc40b4c"
+          ]
         },
         {
           "race_id": "USA:TX:governor",
@@ -4010,14 +4031,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 22 · 공화 19 · 무소속 0 · 미정 9. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 22 · 공화 20 · 무소속 0 · 미정 8. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
             "DEM": 22,
-            "GOP": 19,
+            "GOP": 20,
             "IND": 0
           },
-          "unresolved_seats": 9,
+          "unresolved_seats": 8,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -4029,13 +4050,14 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 3
+              "DEM": 3,
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 3,
-            "GOP": 0,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -4047,15 +4069,15 @@
           "conditional_bounds": {
             "DEM": {
               "min": 22,
-              "max": 31
+              "max": 30
             },
             "GOP": {
-              "min": 19,
+              "min": 20,
               "max": 28
             },
             "IND": {
               "min": 0,
-              "max": 9
+              "max": 8
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -4546,24 +4568,44 @@
               "race_id": "USA:KS:governor",
               "rating": "lean_rep",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "GOP",
+              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "gov202thecdc40b4c",
+                  "source_quality": {
+                    "verification_level": "partial",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "출처 연결 · 집계값 부분 검증",
+                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                    "missing_fields": [
+                      "margin_of_error_pp",
+                      "question_sample_n",
+                      "primary_values_rechecked"
+                    ]
+                  },
+                  "leading_margin_pp": 5.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "gov202thecdc40b4c"
+              ]
             },
             {
               "race_id": "USA:TX:governor",
@@ -6295,24 +6337,44 @@
           "race_id": "USA:KS:governor",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "gov202thecdc40b4c",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202thecdc40b4c"
+          ]
         },
         {
           "race_id": "USA:TX:governor",
@@ -6390,14 +6452,14 @@
       "chambers": {
         "house": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 198 · 공화 195 · 무소속 0 · 미정 42. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 198 · 공화 196 · 무소속 0 · 미정 41. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 435,
           "scenario_counts": {
             "DEM": 198,
-            "GOP": 195,
+            "GOP": 196,
             "IND": 0
           },
-          "unresolved_seats": 42,
+          "unresolved_seats": 41,
           "buckets": {
             "retained": {},
             "rated_baseline_assumption": {
@@ -6406,13 +6468,14 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 1
+              "DEM": 1,
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 1,
-            "GOP": 0,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -6424,15 +6487,15 @@
           "conditional_bounds": {
             "DEM": {
               "min": 198,
-              "max": 240
+              "max": 239
             },
             "GOP": {
-              "min": 195,
+              "min": 196,
               "max": 237
             },
             "IND": {
               "min": 0,
-              "max": 42
+              "max": 41
             }
           },
           "ratings_as_of": "2026-09-25",
@@ -6956,24 +7019,83 @@
               "race_id": "USA:WA:house:03",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "GOP",
+              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202dhmdd00a623",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "candidate_gap_significance"
+                    ],
+                    "reviewed_on": "2026-10-06",
+                    "review_sources": [
+                      "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/",
+                      "https://www.opb.org/pdf/OPB%20Fall%202026%20Election%20Survey--Toplines%20(Washington%20Abridged)--September%202026_1790882419395.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Marie Gluesenkamp Perez": 47,
+                      "John Braun": 48
+                    },
+                    "question_sample_n": 543,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 543,
+                      "field_dates": [
+                        "2026-09-17",
+                        "2026-09-27"
+                      ],
+                      "mode": "live telephone and text-to-online",
+                      "sampling_frame": "WA-03 registered voter file; 600 RV and 543 modeled LV",
+                      "weighting": "quotas for age, gender, party, area, race/ethnicity, income, education; modeled LV uses intent/history",
+                      "sponsor": "Oregon Public Broadcasting",
+                      "question_wording_checked": true
+                    },
+                    "reported_precision": {
+                      "kind": "reported_margin_of_error",
+                      "half_width_pp": 4.2,
+                      "confidence_level_pct": 95,
+                      "scope": "likely_voter_subsample",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                    "sponsor_review": {
+                      "provider_sponsors": [
+                        "Oregon Public Broadcasting"
+                      ],
+                      "partisan": null,
+                      "internal": false,
+                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                    },
+                    "limitations_ko": "공개 원문 첫 응답 44/46과 기울어진 미정층 포함 47/48을 구분. API는 후자이며 전체 RV 600 대신 LV 543 사용. 단일 조사이며 격차 유의성 평가 없음."
+                  },
+                  "leading_margin_pp": 1.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202dhmdd00a623"
+              ]
             },
             {
               "race_id": "USA:WI:house:03",
@@ -7485,14 +7607,14 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 44 · 공화 46 · 무소속 2 · 미정 8. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 47 · 공화 46 · 무소속 2 · 미정 5. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
-            "DEM": 44,
+            "DEM": 47,
             "GOP": 46,
             "IND": 2
           },
-          "unresolved_seats": 8,
+          "unresolved_seats": 5,
           "buckets": {
             "retained": {
               "GOP": 31,
@@ -7505,12 +7627,12 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 1
+              "DEM": 4
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 1,
+            "DEM": 4,
             "GOP": 0,
             "IND": 0
           },
@@ -7522,16 +7644,16 @@
           "unresolved_without_single_polls": 9,
           "conditional_bounds": {
             "DEM": {
-              "min": 44,
+              "min": 47,
               "max": 52
             },
             "GOP": {
               "min": 46,
-              "max": 54
+              "max": 51
             },
             "IND": {
               "min": 2,
-              "max": 10
+              "max": 7
             }
           },
           "ratings_as_of": "2026-09-23",
@@ -7720,24 +7842,82 @@
               "race_id": "USA:IA:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202beaadb6c4f9",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "candidate_gap_significance"
+                    ],
+                    "reviewed_on": "2026-10-06",
+                    "review_sources": [
+                      "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
+                      "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Josh Turek": 49,
+                      "Ashley Hinson": 47
+                    },
+                    "question_sample_n": 1008,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 1008,
+                      "field_dates": [
+                        "2026-09-24",
+                        "2026-09-28"
+                      ],
+                      "mode": "live landline/cell interviews and text-to-web",
+                      "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                      "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                      "sponsor": "Fox News",
+                      "question_wording_checked": true
+                    },
+                    "reported_precision": {
+                      "kind": "reported_margin_of_error",
+                      "half_width_pp": 3,
+                      "scope": "likely_voter_subsample",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                    "sponsor_review": {
+                      "provider_sponsors": [
+                        "Fox News"
+                      ],
+                      "partisan": null,
+                      "internal": false,
+                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                    },
+                    "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202beaadb6c4f9"
+              ]
             },
             {
               "race_id": "USA:ME:senate",
@@ -7766,24 +7946,44 @@
               "race_id": "USA:MI:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202beac0286b40",
+                  "source_quality": {
+                    "verification_level": "partial",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "출처 연결 · 집계값 부분 검증",
+                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                    "missing_fields": [
+                      "margin_of_error_pp",
+                      "question_sample_n",
+                      "primary_values_rechecked"
+                    ]
+                  },
+                  "leading_margin_pp": 1.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202beac0286b40"
+              ]
             },
             {
               "race_id": "USA:NH:senate",
@@ -7855,24 +8055,82 @@
               "race_id": "USA:TX:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202beab9600d9b",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "candidate_gap_significance"
+                    ],
+                    "reviewed_on": "2026-10-06",
+                    "review_sources": [
+                      "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
+                      "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
+                    ],
+                    "primary_toplines": {
+                      "James Talarico": 51,
+                      "Ken Paxton": 49
+                    },
+                    "question_sample_n": 881,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 881,
+                      "field_dates": [
+                        "2026-09-24",
+                        "2026-09-28"
+                      ],
+                      "mode": "live landline/cell interviews and text-to-web",
+                      "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                      "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                      "sponsor": "Fox News",
+                      "question_wording_checked": true
+                    },
+                    "reported_precision": {
+                      "kind": "reported_margin_of_error",
+                      "half_width_pp": 3,
+                      "scope": "likely_voter_subsample",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                    "sponsor_review": {
+                      "provider_sponsors": [
+                        "Fox News"
+                      ],
+                      "partisan": null,
+                      "internal": false,
+                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                    },
+                    "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202beab9600d9b"
+              ]
             },
             {
               "race_id": "USA:KS:senate",
@@ -8081,14 +8339,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 23 · 공화 19 · 무소속 0 · 미정 8. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 23 · 공화 20 · 무소속 0 · 미정 7. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
             "DEM": 23,
-            "GOP": 19,
+            "GOP": 20,
             "IND": 0
           },
-          "unresolved_seats": 8,
+          "unresolved_seats": 7,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -8099,36 +8357,37 @@
               "GOP": 11
             },
             "recent_poll_lead": {
-              "DEM": 1
+              "DEM": 2
             },
             "single_poll_lead": {
-              "DEM": 3
+              "DEM": 2,
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 3,
-            "GOP": 0,
+            "DEM": 2,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 20,
+            "DEM": 21,
             "GOP": 19,
             "IND": 0
           },
-          "unresolved_without_single_polls": 11,
+          "unresolved_without_single_polls": 10,
           "conditional_bounds": {
             "DEM": {
               "min": 23,
-              "max": 31
+              "max": 30
             },
             "GOP": {
-              "min": 19,
+              "min": 20,
               "max": 27
             },
             "IND": {
               "min": 0,
-              "max": 8
+              "max": 7
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -8318,23 +8577,78 @@
               "race_id": "USA:IA:governor",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "single_poll_lead",
+              "basis": "recent_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "conclusion_ko": "민주당 조사상 우세",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
               "poll_details": [
+                {
+                  "id": "gov202bea91ef4faa",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "candidate_gap_significance"
+                    ],
+                    "reviewed_on": "2026-10-06",
+                    "review_sources": [
+                      "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
+                      "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Rob Sand": 53,
+                      "Zach Lahn": 44
+                    },
+                    "question_sample_n": 1008,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 1008,
+                      "field_dates": [
+                        "2026-09-24",
+                        "2026-09-28"
+                      ],
+                      "mode": "live landline/cell interviews and text-to-web",
+                      "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                      "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                      "sponsor": "Fox News",
+                      "question_wording_checked": true
+                    },
+                    "reported_precision": {
+                      "kind": "reported_margin_of_error",
+                      "half_width_pp": 3,
+                      "scope": "likely_voter_subsample",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                    "sponsor_review": {
+                      "provider_sponsors": [
+                        "Fox News"
+                      ],
+                      "partisan": null,
+                      "internal": false,
+                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                    },
+                    "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                  },
+                  "leading_margin_pp": 9.0,
+                  "significance": "not_evaluated"
+                },
                 {
                   "id": "gov202thefb920530",
                   "source_quality": {
@@ -8381,6 +8695,7 @@
                 }
               ],
               "included_poll_ids": [
+                "gov202bea91ef4faa",
                 "gov202thefb920530"
               ]
             },
@@ -8388,24 +8703,44 @@
               "race_id": "USA:MI:governor",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "gov202bea0796a0d8",
+                  "source_quality": {
+                    "verification_level": "partial",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "출처 연결 · 집계값 부분 검증",
+                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                    "missing_fields": [
+                      "margin_of_error_pp",
+                      "question_sample_n",
+                      "primary_values_rechecked"
+                    ]
+                  },
+                  "leading_margin_pp": 9.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "gov202bea0796a0d8"
+              ]
             },
             {
               "race_id": "USA:OR:governor",
@@ -8691,32 +9026,9 @@
               "race_id": "USA:KS:governor",
               "rating": "lean_rep",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
-              "evidence_quality": {
-                "level": "unrated",
-                "grade": null,
-                "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
-                "conflicting_pollsters": [],
-                "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
-                "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
-              },
-              "poll_details": [],
-              "included_poll_ids": []
-            },
-            {
-              "race_id": "USA:TX:governor",
-              "rating": "lean_rep",
-              "competitive": true,
               "basis": "single_poll_lead",
-              "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "party_abbr": "GOP",
+              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
               "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
@@ -8731,6 +9043,104 @@
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
               "poll_details": [
+                {
+                  "id": "gov202thecdc40b4c",
+                  "source_quality": {
+                    "verification_level": "partial",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "출처 연결 · 집계값 부분 검증",
+                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                    "missing_fields": [
+                      "margin_of_error_pp",
+                      "question_sample_n",
+                      "primary_values_rechecked"
+                    ]
+                  },
+                  "leading_margin_pp": 5.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "gov202thecdc40b4c"
+              ]
+            },
+            {
+              "race_id": "USA:TX:governor",
+              "rating": "lean_rep",
+              "competitive": true,
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "tie",
+              "evidence_quality": {
+                "level": "unrated",
+                "grade": null,
+                "label_ko": "품질 등급 미평가",
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
+                "agreement_fraction": 0.5,
+                "conflicting_pollsters": [],
+                "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+                "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
+              },
+              "poll_details": [
+                {
+                  "id": "gov202bea2d2ef4cb",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "candidate_gap_significance"
+                    ],
+                    "reviewed_on": "2026-10-06",
+                    "review_sources": [
+                      "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
+                      "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Greg Abbott": 52,
+                      "Gina Hinojosa": 47
+                    },
+                    "question_sample_n": 881,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 881,
+                      "field_dates": [
+                        "2026-09-24",
+                        "2026-09-28"
+                      ],
+                      "mode": "live landline/cell interviews and text-to-web",
+                      "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                      "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                      "sponsor": "Fox News",
+                      "question_wording_checked": true
+                    },
+                    "reported_precision": {
+                      "kind": "reported_margin_of_error",
+                      "half_width_pp": 3,
+                      "scope": "likely_voter_subsample",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                    "sponsor_review": {
+                      "provider_sponsors": [
+                        "Fox News"
+                      ],
+                      "partisan": null,
+                      "internal": false,
+                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                    },
+                    "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                  },
+                  "leading_margin_pp": 5.0,
+                  "significance": "not_evaluated"
+                },
                 {
                   "id": "gov202theafe06bf1",
                   "source_quality": {
@@ -8776,9 +9186,7 @@
                   "significance": "not_evaluated"
                 }
               ],
-              "included_poll_ids": [
-                "gov202theafe06bf1"
-              ]
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:NH:governor",
@@ -9433,24 +9841,83 @@
           "race_id": "USA:WA:house:03",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202dhmdd00a623",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "candidate_gap_significance"
+                ],
+                "reviewed_on": "2026-10-06",
+                "review_sources": [
+                  "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/",
+                  "https://www.opb.org/pdf/OPB%20Fall%202026%20Election%20Survey--Toplines%20(Washington%20Abridged)--September%202026_1790882419395.pdf"
+                ],
+                "primary_toplines": {
+                  "Marie Gluesenkamp Perez": 47,
+                  "John Braun": 48
+                },
+                "question_sample_n": 543,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 543,
+                  "field_dates": [
+                    "2026-09-17",
+                    "2026-09-27"
+                  ],
+                  "mode": "live telephone and text-to-online",
+                  "sampling_frame": "WA-03 registered voter file; 600 RV and 543 modeled LV",
+                  "weighting": "quotas for age, gender, party, area, race/ethnicity, income, education; modeled LV uses intent/history",
+                  "sponsor": "Oregon Public Broadcasting",
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "reported_margin_of_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": 95,
+                  "scope": "likely_voter_subsample",
+                  "model_details_verified": false
+                },
+                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "sponsor_review": {
+                  "provider_sponsors": [
+                    "Oregon Public Broadcasting"
+                  ],
+                  "partisan": null,
+                  "internal": false,
+                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                },
+                "limitations_ko": "공개 원문 첫 응답 44/46과 기울어진 미정층 포함 47/48을 구분. API는 후자이며 전체 RV 600 대신 LV 543 사용. 단일 조사이며 격차 유의성 평가 없음."
+              },
+              "leading_margin_pp": 1.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202dhmdd00a623"
+          ]
         },
         {
           "race_id": "USA:WI:house:03",
@@ -10008,24 +10475,82 @@
           "race_id": "USA:IA:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202beaadb6c4f9",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "candidate_gap_significance"
+                ],
+                "reviewed_on": "2026-10-06",
+                "review_sources": [
+                  "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
+                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Josh Turek": 49,
+                  "Ashley Hinson": 47
+                },
+                "question_sample_n": 1008,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 1008,
+                  "field_dates": [
+                    "2026-09-24",
+                    "2026-09-28"
+                  ],
+                  "mode": "live landline/cell interviews and text-to-web",
+                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                  "sponsor": "Fox News",
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "reported_margin_of_error",
+                  "half_width_pp": 3,
+                  "scope": "likely_voter_subsample",
+                  "model_details_verified": false
+                },
+                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "sponsor_review": {
+                  "provider_sponsors": [
+                    "Fox News"
+                  ],
+                  "partisan": null,
+                  "internal": false,
+                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                },
+                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202beaadb6c4f9"
+          ]
         },
         {
           "race_id": "USA:ME:senate",
@@ -10054,24 +10579,44 @@
           "race_id": "USA:MI:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202beac0286b40",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 1.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202beac0286b40"
+          ]
         },
         {
           "race_id": "USA:NH:senate",
@@ -10143,24 +10688,82 @@
           "race_id": "USA:TX:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202beab9600d9b",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "candidate_gap_significance"
+                ],
+                "reviewed_on": "2026-10-06",
+                "review_sources": [
+                  "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
+                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
+                ],
+                "primary_toplines": {
+                  "James Talarico": 51,
+                  "Ken Paxton": 49
+                },
+                "question_sample_n": 881,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 881,
+                  "field_dates": [
+                    "2026-09-24",
+                    "2026-09-28"
+                  ],
+                  "mode": "live landline/cell interviews and text-to-web",
+                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                  "sponsor": "Fox News",
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "reported_margin_of_error",
+                  "half_width_pp": 3,
+                  "scope": "likely_voter_subsample",
+                  "model_details_verified": false
+                },
+                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "sponsor_review": {
+                  "provider_sponsors": [
+                    "Fox News"
+                  ],
+                  "partisan": null,
+                  "internal": false,
+                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                },
+                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202beab9600d9b"
+          ]
         },
         {
           "race_id": "USA:KS:senate",
@@ -10212,23 +10815,78 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [
+            {
+              "id": "gov202bea91ef4faa",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "candidate_gap_significance"
+                ],
+                "reviewed_on": "2026-10-06",
+                "review_sources": [
+                  "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
+                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 53,
+                  "Zach Lahn": 44
+                },
+                "question_sample_n": 1008,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 1008,
+                  "field_dates": [
+                    "2026-09-24",
+                    "2026-09-28"
+                  ],
+                  "mode": "live landline/cell interviews and text-to-web",
+                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                  "sponsor": "Fox News",
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "reported_margin_of_error",
+                  "half_width_pp": 3,
+                  "scope": "likely_voter_subsample",
+                  "model_details_verified": false
+                },
+                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "sponsor_review": {
+                  "provider_sponsors": [
+                    "Fox News"
+                  ],
+                  "partisan": null,
+                  "internal": false,
+                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                },
+                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+              },
+              "leading_margin_pp": 9.0,
+              "significance": "not_evaluated"
+            },
             {
               "id": "gov202thefb920530",
               "source_quality": {
@@ -10275,6 +10933,7 @@
             }
           ],
           "included_poll_ids": [
+            "gov202bea91ef4faa",
             "gov202thefb920530"
           ]
         },
@@ -10282,24 +10941,44 @@
           "race_id": "USA:MI:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "gov202bea0796a0d8",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 9.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202bea0796a0d8"
+          ]
         },
         {
           "race_id": "USA:OR:governor",
@@ -10585,32 +11264,9 @@
           "race_id": "USA:KS:governor",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
-          "evidence_quality": {
-            "level": "unrated",
-            "grade": null,
-            "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
-            "conflicting_pollsters": [],
-            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
-            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
-          },
-          "poll_details": [],
-          "included_poll_ids": []
-        },
-        {
-          "race_id": "USA:TX:governor",
-          "rating": "lean_rep",
-          "competitive": true,
           "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
           "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
@@ -10625,6 +11281,104 @@
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [
+            {
+              "id": "gov202thecdc40b4c",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202thecdc40b4c"
+          ]
+        },
+        {
+          "race_id": "USA:TX:governor",
+          "rating": "lean_rep",
+          "competitive": true,
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "tie",
+          "evidence_quality": {
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
+            "agreement_fraction": 0.5,
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
+          },
+          "poll_details": [
+            {
+              "id": "gov202bea2d2ef4cb",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "candidate_gap_significance"
+                ],
+                "reviewed_on": "2026-10-06",
+                "review_sources": [
+                  "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
+                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Greg Abbott": 52,
+                  "Gina Hinojosa": 47
+                },
+                "question_sample_n": 881,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 881,
+                  "field_dates": [
+                    "2026-09-24",
+                    "2026-09-28"
+                  ],
+                  "mode": "live landline/cell interviews and text-to-web",
+                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
+                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
+                  "sponsor": "Fox News",
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "reported_margin_of_error",
+                  "half_width_pp": 3,
+                  "scope": "likely_voter_subsample",
+                  "model_details_verified": false
+                },
+                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "sponsor_review": {
+                  "provider_sponsors": [
+                    "Fox News"
+                  ],
+                  "partisan": null,
+                  "internal": false,
+                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                },
+                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+              },
+              "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            },
             {
               "id": "gov202theafe06bf1",
               "source_quality": {
@@ -10670,9 +11424,7 @@
               "significance": "not_evaluated"
             }
           ],
-          "included_poll_ids": [
-            "gov202theafe06bf1"
-          ]
+          "included_poll_ids": []
         }
       ]
     }

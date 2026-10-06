@@ -112,6 +112,21 @@ class SourceAdmissionTests(unittest.TestCase):
             self.assertFalse(rows)
             self.assertEqual(len(rejected), 1)
 
+    def test_party_commissioned_release_requires_bound_reference_only_review(self):
+        raw, policy = self.release(eligible=False)
+        raw.update(partisan='DEM', sponsors=['Fixture party committee'])
+        admission = policy['quality_reviews'][raw['id']]['admission']
+        admission.update(allow_partisan_reference=True, reviewed_partisan='DEM',
+                         reviewed_sponsors=raw['sponsors'])
+        rows, rejected = normalize([raw], policy, DAY)
+        self.assertFalse(rejected)
+        self.assertIn('party_commissioned_reference', rows[0]['aggregation_eligibility']['reasons'])
+        self.assertEqual(summarize(rows, policy['races'][RID], DAY, 7)['pollster_count'], 0)
+        for change in [{'sponsors': ['Different sponsor']}, {'partisan': 'REP'}, {'internal': True}]:
+            self.assertFalse(normalize([{**raw, **change}], policy, DAY)[0])
+        admission['signal_eligible'] = True
+        self.assertFalse(normalize([raw], policy, DAY)[0])
+
     def test_reference_live_list_closes_after_election_and_history_survives(self):
         raw, policy = self.release(eligible=False)
         results = {'schema': 'usa_confirmed_results_v1', 'results': []}

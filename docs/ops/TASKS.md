@@ -86,3 +86,5 @@
 | T-POLL-SEATS-20261005 | 미국 전국 의석 조건부 집계·조사 근거 등급 데이터 | codex | `election_watch/seat_scenarios.py`, `election_watch/live_polls.py`, `refresh_live_polls.py`, 집계 정책·테스트, polling/forecast JSON·인수 문서 | `codex/us-poll-seat-scenarios` | review | 55개 polling 테스트 통과. 임의 상/중/하 등급 철회. 원문 대조 5건·방법론 공개 항목·기관 수·격차를 분리. 단일 기관 제외 집계 제공. 실수집 23관측·14선거·26주71슬롯. Actions·공용 배포·LETF 코드는 별도 PR. |
 
 | T-POLL-SOURCE-20261006 | 미등록 조사 원문 기반 편입·참고 기록 분리 | codex | `election_watch/live_polls.py`, `poll_quality.py`, `config/usa_polls/**`, polling tests/data, 인수 문서 | `codex/us-poll-seat-scenarios` | review | 원문 대조 8건 추가. 실수집 31관측·20선거·12주, 적격25/참고6. polling 테스트65개 통과. 미등록 개별 발표 검토 경로·검토 대기 URL·참고 분리. UI·Actions 편집 없음. |
+
+| T-POLL-PRIORITY-20261006 | 요청 주→Cook Toss-up/Lean→한국기업 소재지 여론조사 데이터 확대 | codex | `New for anti/scripts/election_watch/{election_watch/*poll*,election_watch/poll_priorities.py,refresh*poll*.py,config/usa_polls/**,tests/test_poll*}`, polling JSON·인수 문서 | `codex/us-poll-seat-scenarios` | review | 실수집49관측·29선거·17주(79선거/27주 감시), 적격40/참고9. Cook23/64 자료 있음. 기업11곳 중10곳→9하원 연결, 삼성 경계 인접 보류. Census/EPA/TCEQ 근거·빈칸/자금 조인 계약. polling83검사 통과. UI·Actions·LETF 편집 없음. |

@@ -142,7 +142,13 @@ def normalize(rows, policy, as_of):
             seen_ids.add(p['id'])
             require(p['id'] not in policy.get('excluded_records', {}), policy.get('excluded_records', {}).get(p['id'], 'excluded_record'))
             source, admission = reviewed_source(p, policy, as_of)
-            require(p.get('internal') is False and p.get('partisan') is None, 'internal_or_partisan')
+            partisan_reference = (admission and admission.get('allow_partisan_reference') is True
+                                  and admission['signal_eligible'] is False
+                                  and p.get('internal') is False
+                                  and p.get('partisan') == admission.get('reviewed_partisan')
+                                  and p.get('sponsors') == admission.get('reviewed_sponsors'))
+            require(p.get('internal') is False and (p.get('partisan') is None or partisan_reference),
+                    'internal_or_partisan')
             start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
             require(start <= end <= published <= day, 'date_order_or_future')
             race = races[rid]
@@ -183,8 +189,12 @@ def normalize(rows, policy, as_of):
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
                              'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
+            observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
+                                             'sponsors': p.get('sponsors') or []}
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if partisan_reference:
+                reasons.append('party_commissioned_reference')
             if not in_general_period:
                 reasons.append('outside_reviewed_general_period')
             observation['aggregation_eligibility'] = {
@@ -365,7 +375,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                 '기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.',
                 '기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.',
                 '기관 미등록이라도 원문·방법·대진·개별 레코드 대조 완료 시 편입. 참고 전용 조사는 누적 목록에 보관하고 우세 집계에서 제외.',
-                'LV 우선·없을 때 RV 별도 집계. 경선·가상 대결·내부/정파 조사·미검증 대진 제외.',
+                'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.',
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',
                 '선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다.'],
