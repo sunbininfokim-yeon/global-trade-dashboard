@@ -75,3 +75,22 @@ test('China, Taiwan and Hong Kong remain distinct and finance acronyms do not in
  assert.equal(annotate({title:'Commercial banking in Taiwan and Hong Kong'},parse('금융, 중국')).condition_matches[1].matched,false);
  assert.equal(annotate({title:'Social security, river banks, acute leukemia AML and PRC'},parse('증권, 은행, 자금세탁방지, 중국')).matched_condition_count,0);
 });
+
+test('semiconductor and advanced-industry topics match official phrases in all source types',()=>{
+ const terms=parse('반도체, 첨단제조, 중국');
+ for(const type of ['bill','public_law','executive_order','regulation']){
+  const row=annotate({type,evidence_parts:[{field:'body',text:'Advanced manufacturing of semiconductors in China.'}]},terms);
+  assert.equal(row.matched_condition_count,3);
+ }
+ assert.equal(annotate({title:'Export controls on high-bandwidth memory and semiconductor manufacturing equipment'},parse('고대역폭메모리, 반도체장비, 수출통제')).matched_condition_count,3);
+});
+test('specific advanced technologies stay distinct from the broad industry category',()=>{
+ const {single}=require('./policy-search-terms');
+ assert.ok(single('첨단산업').aliases.includes('advanced industries'));
+ assert.ok(single('첨단기술').aliases.includes('advanced technologies'));
+ assert.ok(single('핵심신흥기술').aliases.includes('critical and emerging technologies'));
+ assert.equal(annotate({title:'Quantum computing, robotics and biotechnology'},parse('양자컴퓨팅, 로봇공학, 생명공학')).matched_condition_count,3);
+ assert.equal(annotate({title:'Potato chips, a semiconductorless device and artificial intelligence'},parse('반도체, 첨단산업')).matched_condition_count,0);
+ assert.ok(!single('첨단산업').aliases.includes('artificial intelligence'));
+ assert.ok(!single('반도체').aliases.includes('chip'));
+});
