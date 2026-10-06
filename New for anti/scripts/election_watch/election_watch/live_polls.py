@@ -386,6 +386,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                          'reference_only_observations': sum(not p['aggregation_eligibility']['eligible'] for p in accepted),
                          'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
             'watchlist': policy.get('watchlist'),
+            'excluded_watch_slots': deepcopy(policy.get('excluded_watch_slots', [])),
             'races': races, 'review_queue': rejected,
             'results_collection': {'status': 'official_source_review_required',
                 'note_ko': '주별 인증 결과 자동 수집기는 아직 미연결. 공식 출처를 검토한 결과 파일이 들어오면 자동 우선 표시.'}}

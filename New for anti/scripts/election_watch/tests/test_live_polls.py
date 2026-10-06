@@ -157,6 +157,8 @@ class LivePollTests(unittest.TestCase):
             self.assertNotIn(item['race_id'],selected['races'])
         self.assertIn('USA:TX:governor',selected['races'])
         self.assertEqual(selected['races']['USA:OH:senate']['election_kind'],'special')
+        b=build_live([], selected, {'schema':'usa_confirmed_results_v1','results':[]}, DAY,DAY,'test')
+        self.assertEqual(b['excluded_watch_slots'],POLICY['excluded_watch_slots'])
 
     def test_siena_partner_labels_count_as_one_institution(self):
         raw=[poll(pollster='Siena University',url='https://sri.siena.edu/test'),
