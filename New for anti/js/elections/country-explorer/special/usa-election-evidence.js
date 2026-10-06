@@ -57,6 +57,12 @@ const sourceLink = (url) => {
     }
 };
 
+const referenceReasons = {
+    party_commissioned_reference: '정당 의뢰 조사', outside_reviewed_general_period: '검토한 본선 기간 밖',
+    forced_choice_after_undecided_probe: '미정층 재질문 문항', forced_choice_question_not_comparable: '문항 비교 제한',
+    primary_sample_size_conflict: '원문 표본 수 상충', commissioner_affiliation_unverified: '의뢰자 성격 미확인',
+    historical_matchup: '과거 후보 대진',
+};
 const observationHtml = (row) => {
     const answers = (row.answers || []).map((answer) => `${answer.name} ${answer.pct}%`).join(' · ');
     const sponsorNames = row.commissioning?.sponsors || row.sponsors || [];
@@ -65,7 +71,7 @@ const observationHtml = (row) => {
     const quality = row.source_quality;
     const review = quality?.verification_level === 'primary_toplines_checked' ? '원문 수치 대조' : '등록 출처 자동 수입 · 원문 추가 검토 전';
     const method = quality?.methodological_quality === 'unrated' ? ' · 정확도 미등급' : '';
-    const exclusions = reference ? ` · 참고 전용: ${(row.aggregation_eligibility.reasons || []).join(', ')}` : '';
+    const exclusions = reference ? ` · 참고 전용: ${(row.aggregation_eligibility.reasons || []).map((reason) => referenceReasons[reason] || '집계 제외 · 출처 검토 메모').join(', ')}` : '';
     return `<li${reference ? ' class="is-reference"' : ''}><small>${escapeHtml(review + method + exclusions)}</small><span>${escapeHtml(row.pollster || '조사기관 미기재')} · ${escapeHtml(row.field_end || '')}
         · ${escapeHtml((row.population || '').toUpperCase())} · n=${escapeHtml(row.sample_n ?? '?')}${escapeHtml(sponsors)}</span>
         <span>${escapeHtml(answers)}</span>${sourceLink(row.source_url)} ${row.methodology_url ? sourceLink(row.methodology_url).replace('원문 ↗', '방법론 ↗') : ''}</li>`;
