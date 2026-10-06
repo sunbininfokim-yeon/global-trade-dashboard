@@ -6815,3 +6815,7 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-monitoring-row { display: flex; width: 100%; flex-wrap: wrap; gap: 6px 12px; justify-content: space-between; padding: 9px 6px; border: 0; border-bottom: 1px solid #334155; background: transparent; color: inherit; text-align: left; cursor: pointer; }
 .elections-monitoring-row span { font-size: 12px; color: #cbd5e1; }
 .elections-poll-observations .is-reference { border-left: 2px solid #94a3b8; padding-left: 8px; }
+/* Candidate names need a full line inside the narrow two-party columns. */
+.elections-spac-cand { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+.elections-spac-cand > span:first-child { overflow-wrap: break-word; }
+.elections-spac-cand .elections-spac-amts { flex-wrap: wrap; white-space: normal; }
