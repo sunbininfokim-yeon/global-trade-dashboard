@@ -7,7 +7,6 @@ const base = new URL('../../../public/data/', import.meta.url);
 const read = f => JSON.parse(fs.readFileSync(new URL(f, base)));
 const country = read('elections_board_v1.json').countries.find(c => c.iso3 === 'USA');
 const ratings = read('usa_election_ratings_review_v1.json');
-const board = read('usa_election_live_polls_v1.json'), health = read('usa_election_live_polls_status_v1.json');
 const states = country.ui_ready.state_drilldown.states;
 const now = Date.parse('2026-10-07T00:00:00Z');
 const sum = c => c.DEM + c.GOP + c.IND + (c.unknown || 0);
@@ -94,6 +93,16 @@ test('outlook reconciles 435/100/50, accounts for special Senate races and does 
 
 test('7/14-day selections use live windows and separate single-source references; stale polls cannot call a contest', () => {
     const r = summary('house');
+    const watched = r.races.filter(x => x.effective_rating === 'toss_up').slice(0,2);
+    const board = {schema:'usa_live_polls_v1',source_status:'ok',as_of:'2026-10-07',fetched_at:'2026-10-07T00:00:00Z',races:{}};
+    const health = {status:'ok',as_of:'2026-10-07'};
+    watched.forEach((race,i) => {
+        const demLead=i===0;
+        board.races[race.race_id]={...race,election_date:'2026-11-03',observations:[{
+            id:`sample-${i}`,field_end:'2026-09-29',pollster_group:`independent-${i}`,population:'lv',
+            answers:[{name:'D candidate',party:'DEM',pct:demLead?51:44},{name:'R candidate',party:'GOP',pct:demLead?44:51}],
+        }]};
+    });
     const opts = {board,health,now};
     const seven = electionOutlook(country,'house',r,{...opts,days:7});
     const fourteen = electionOutlook(country,'house',r,{...opts,days:14});
