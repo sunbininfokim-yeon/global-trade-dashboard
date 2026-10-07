@@ -1,7 +1,7 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 // ?v=5: #463 이 이미 ?v=4 로 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=5';
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=6';
 import { electionOverviewHtml, evidenceSectionHtml } from './special/usa-election-overview.js';
 import { pollEvidenceHtml } from './special/usa-election-evidence.js?v=2';
 import { ELECTION_OFFICES } from '../data/election-overview.js';
@@ -94,7 +94,7 @@ const subtitleFor = (financeMode, districtMapReady) => {
 
 const skeletonHtml = () => `
     <div class="elections-spac-skeleton" aria-busy="true">
-        <p class="elections-panel-note">선거 자금·여론조사 자료를 불러오는 중입니다. 지도는 먼저 표시됩니다.</p>
+        <p class="elections-panel-note">선거 자금·여론조사 자료를 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span> 지도는 먼저 표시됩니다.</p>
         <i></i><i></i><i></i>
     </div>`;
 
@@ -124,7 +124,9 @@ export const renderUsaStateDashboard = (root, {
             <button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button>
             <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거·슈퍼팩</button>
         </div>
-        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${escapeHtml(subtitleFor(financeMode, districtMapReady))}</p></div>`;
+        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${escapeHtml(subtitleFor(financeMode, districtMapReady))}${
+            !financeMode && districtMapReady === undefined ? '<span class="inline-spinner" aria-hidden="true"></span>' : ''
+        }</p></div>`;
     const bindHeader = () => {
         root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
         root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
