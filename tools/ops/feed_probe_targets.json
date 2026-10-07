@@ -4,6 +4,37 @@
  ],
  "targets": [
   {
+   "group": "prod",
+   "id": "prod_index_ec_monitor_only",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/?probe=ec",
+   "find": [
+    "trade.js?v=ec-monitor-only-1",
+    "app.js?v=138",
+    "data-target=\"export_controls\""
+   ]
+  },
+  {
+   "group": "prod",
+   "id": "prod_trade_js",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/trade.js?v=ec-monitor-only-1",
+   "find": [
+    "trade-export-controls",
+    "renderTradeLegend",
+    "ctl-card",
+    "REPORT_BOARDS_BY_COUNTRY = {}",
+    "수출통제 모니터 only"
+   ]
+  },
+  {
+   "group": "prod",
+   "id": "prod_app_js",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/app.js?v=138",
+   "find": [
+    "window.ExportControls?.load().then",
+    "window.ExportControls?.mount("
+   ]
+  },
+  {
    "group": "sanctions",
    "id": "ofac_recent_actions",
    "url": "https://ofac.treasury.gov/recent-actions",
@@ -57,32 +88,6 @@
    "link_text": true,
    "link_re": "meti\\.go\\.jp/[^\\\"' ]+",
    "samples": 10
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_oil_usa_p1",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=0",
-   "show_body": 500
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_oil_usa_p2",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=2",
-   "show_body": 500
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_corn_world",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=corn&limit=100",
-   "show_body": 300
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_index_html",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/",
-   "show_body": 0,
-   "link_re": "trade\\.js\\?v=[a-z0-9-]+",
-   "samples": 3
   },
   {
    "group": "opec",
