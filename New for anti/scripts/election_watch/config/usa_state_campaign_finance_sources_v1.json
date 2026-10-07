@@ -1,6 +1,6 @@
 {
   "schema": "usa_state_campaign_finance_sources_v1",
-  "verified_on": "2026-09-10",
+  "verified_on": "2026-10-04",
   "directory_url": "https://www.fec.gov/introduction-campaign-finance/how-to-research-public-records/combined-federalstate-disclosure-and-election-directory/",
   "note_ko": "공식 문서로 제공 방식을 확인한 출처 목록. API의 존재는 주지사 후보·지지/반대·정정·위원회 유형 매핑의 완성을 의미하지 않는다. 계정 없이 조회 가능한 자료에는 신고자 계정을 만들지 않는다.",
   "states": {
@@ -51,7 +51,15 @@
       "access": "bulk_csv_and_search",
       "url": "https://webservices.ethics.state.tx.us/search/cf/",
       "authentication": "public_download",
-      "independent_expenditure_mapping": "not_implemented"
+      "independent_expenditure_mapping": "CAND_audit_only_no_transaction_direction",
+      "api_endpoint": "https://prd.tecprd.ethicsefile.com/public/cf/public/TEC_CF_CSV.zip",
+      "api_documentation": "https://www.ethics.state.tx.us/data/search/cf/CFS-ReadMe.txt",
+      "limitations_ko": "CAND 행은 감사 전용. 거래별 지지/반대 필드가 없어 지지액으로 발행하지 않음. 원문 지출 설명/보고서와 추가 검증 필요.",
+      "last_probe": {
+        "date": "2026-10-02",
+        "result": "ZIP_directory_read_then_CloudFront_HTTP_403",
+        "status": "adapter_ready_live_source_blocked"
+      }
     },
     "FL": {
       "agency": "Florida Division of Elections",
@@ -62,13 +70,82 @@
     },
     "NY": {
       "agency": "New York State Board of Elections",
-      "access": "public_reporting_search",
+      "access": "daily_socrata_api_and_public_notice_export",
       "url": "https://elections.ny.gov/campaign-finance",
-      "authentication": "public_search",
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "implemented_reviewed_IE_filers_unique_F_R_governor_links_partial",
+      "last_probe": {
+        "date": "2026-10-04",
+        "result": "live_API_100_governor_allocations_75_unique_paid_links_map_contract_verified",
+        "status": "connected_partial_branch_only"
+      },
+      "api_endpoint": "https://data.ny.gov/resource/e9ss-239a.json",
+      "metadata_url": "https://data.ny.gov/api/views/e9ss-239a.json",
+      "limitations_ko": "검토된 IE 지출자 8곳의 단일 후보 F/R 연결만. 누적 배분·복수 후보·불명확한 정정 연결 제외. 신규 지출자 검토 필요. 24시간 통지 직접 자동 수집은 403."
+    },
+    "AZ": {
+      "agency": "Arizona Secretary of State Spotlight",
+      "access": "public_json_api_documented",
+      "url": "https://spotlightv2.arizona.vote/Reporting/Api",
+      "authentication": "none_required_per_official_docs",
       "independent_expenditure_mapping": "not_implemented",
       "last_probe": {
-        "date": "2026-09-10",
-        "result": "public_portal_exists_but_collection_HTTP_403",
+        "date": "2026-10-02",
+        "result": "documented_API_but_direct_request_Cloudflare_HTTP_403",
+        "status": "not_connected"
+      }
+    },
+    "GA": {
+      "agency": "Georgia Government Transparency and Campaign Finance Commission",
+      "access": "public_search_export",
+      "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "MI": {
+      "agency": "Michigan Secretary of State MiTN",
+      "access": "public_search_and_annual_transaction_zip",
+      "url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+      "authentication": "public_search_no_account_per_official_docs",
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-10-02",
+        "result": "public_export_direct_request_timeout",
+        "status": "not_connected"
+      }
+    },
+    "NV": {
+      "agency": "Nevada Secretary of State",
+      "access": "public_campaign_finance_search",
+      "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "PA": {
+      "agency": "Pennsylvania Department of State",
+      "access": "annual_full_export_zip",
+      "url": "https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/campaign-finance-data",
+      "authentication": "public_download",
+      "independent_expenditure_mapping": "not_implemented",
+      "limitations_ko": "공개 full export의 비용 행에 지지·반대 대상 후보 필드가 없어 이 파일만으로 주지사 독립지출을 계산할 수 없음."
+    },
+    "TN": {
+      "agency": "Tennessee Registry of Election Finance",
+      "access": "public_search_csv_export",
+      "url": "https://apps.tn.gov/tncamp/",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "WI": {
+      "agency": "Wisconsin Ethics Commission Sunshine",
+      "access": "public_reporting_search",
+      "url": "https://campaignfinance.wi.gov/",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented",
+      "official_source_url": "https://ethics.wi.gov/Pages/CampaignFinance/ViewReports.aspx",
+      "last_probe": {
+        "date": "2026-10-04",
+        "result": "official_Sunshine_search_export_documented_direct_DNS_failed",
         "status": "not_connected"
       }
     },

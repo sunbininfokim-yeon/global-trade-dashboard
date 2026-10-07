@@ -146,7 +146,10 @@ def build(public=PUBLIC, cadence='daily'):
             'quality': meta.get('quality') if meta else None, 'notices_included': False}}
         for state, source in state_sources.items():
             source_status[state + '_governor'] = {'status': source['status'], 'last_success_at': source['generated_at'],
-                'last_filing_date': source['last_filing_date'], 'quality': source['quality']}
+                'last_filing_date': source['last_filing_date'], 'quality': source['quality'],
+                'source_data_updated_at': source.get('source_data_updated_at'),
+                'reviewed_filer_registry_as_of': source.get('reviewed_filer_registry_as_of'),
+                'amount_basis': source.get('amount_basis'), 'limitations_ko': source.get('limitations_ko', [])}
         for source in source_status.values():
             current = int(cycle) == reporting_cycle()
             previous = int(cycle) == reporting_cycle() - 2
@@ -173,6 +176,8 @@ def build(public=PUBLIC, cadence='daily'):
                 'district_source': sorted({r['district_source']['status'] for r in selected + registered if r.get('district_source')}),
                 'status': status, 'source_status_key': source_key, 'currency': 'USD',
                 'coverage_note_ko': ('연결된 주 공시 양식의 부분 집계입니다.' if source_key else '주 공시 수집기 미연결. 관측 없음 또는 실제 지출 0을 뜻하지 않습니다.') if office == 'governor' else None, 'amount_unit': 'cents',
+                'source_limitations_ko': source.get('limitations_ko', []) if office == 'governor' and source else [],
+                'amount_basis': source.get('amount_basis') if office == 'governor' and source else None,
                 'seat_class': None, 'ballot_election_id': None,
                 'totals_by_category': amounts(selected),
                 'totals_by_election_type': {p: amounts(v) for p, v in group_rows(selected, 'election_type').items()},

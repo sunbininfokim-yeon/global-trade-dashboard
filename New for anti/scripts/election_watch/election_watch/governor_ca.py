@@ -16,9 +16,10 @@ LINES = 'S496_CD'
 
 class RemoteZip(io.RawIOBase):
     """Pin every byte range to one ETag; refuse full-file or mixed-version responses."""
-    def __init__(self, opener=urlopen):
+    def __init__(self, opener=urlopen, url=URL):
         self.opener = opener
-        with opener(Request(URL, method='HEAD'), timeout=60) as response:
+        self.url = url
+        with opener(Request(self.url, method='HEAD'), timeout=60) as response:
             self.size = int(response.headers['Content-Length'])
             self.etag = response.headers['ETag']
             self.modified = response.headers.get('Last-Modified')
@@ -34,7 +35,7 @@ class RemoteZip(io.RawIOBase):
         if size > 80_000_000 or self.pos < 0:
             raise SourceError('California ZIP range exceeds budget')
         end = self.pos + size - 1
-        request = Request(URL, headers={'Range': f'bytes={self.pos}-{end}', 'If-Match': self.etag})
+        request = Request(self.url, headers={'Range': f'bytes={self.pos}-{end}', 'If-Match': self.etag})
         with self.opener(request, timeout=60) as response:
             if response.status != 206 or response.headers.get('ETag') != self.etag:
                 raise SourceError('California ZIP range/revision contract changed')
