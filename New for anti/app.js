@@ -471,7 +471,9 @@ const signalFixedCard = ({ id, title, value, sub, foot, tone, target }) => `
     <div class="signal-fixed-card${target ? ' is-clickable' : ''}${tone ? ` tone-${tone}` : ''}"
          id="${id}"${target ? ` role="button" tabindex="0" data-target="${finEsc(target)}"` : ''}>
         <span class="signal-fixed-title">${finEsc(title)}</span>
-        <span class="signal-fixed-value">${finEsc(value)}</span>
+        <span class="signal-fixed-value">${finEsc(value)}${
+            value === '불러오는 중' ? '<span class="inline-spinner" aria-hidden="true"></span>' : ''
+        }</span>
         <span class="signal-fixed-sub">${finEsc(sub)}</span>
         ${foot ? `<span class="signal-fixed-foot">${finEsc(foot)}</span>` : ''}
     </div>`;
@@ -5244,7 +5246,7 @@ const showElectionView = () => {
         render();
     } else {
         electionHost().setPanels({ timeline: true, country: false, left: true, right: false });
-        electionTimelinePanelEl.innerHTML = '<div class="panel-header"><h2>세계 선거 일정</h2><p>선거 모듈을 불러오는 중입니다.</p></div>';
+        electionTimelinePanelEl.innerHTML = '<div class="panel-header"><h2>세계 선거 일정</h2><p>선거 모듈을 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span></p></div>';
         window.addEventListener('electionapp:ready', render, { once: true });
     }
 };

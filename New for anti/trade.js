@@ -1330,7 +1330,7 @@ const renderFuturesHistory = async (box) => {
 
     let doc = futuresHistoryCache.get(symbol);
     if (doc === undefined) {
-        host.innerHTML = '<p class="empty-state" style="margin:6px 0;">불러오는 중…</p>';
+        host.innerHTML = '<p class="empty-state" style="margin:6px 0;">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         try {
             const res = await fetch(`/api/quote/history?symbol=${encodeURIComponent(symbol)}&range=1y`);
             doc = res.ok ? await res.json() : null;

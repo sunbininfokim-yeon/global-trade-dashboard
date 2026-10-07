@@ -70,7 +70,7 @@
             container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
             return;
         }
-        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div><p class="mypage-empty">저장됨 · 상세정보 불러오는 중…</p></div>`).join('');
+        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div><p class="mypage-empty">저장됨 · 상세정보 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>`).join('');
         // One request per favorited bill -- fine at favorites-list scale;
         // revisit with a batch endpoint if this list grows large.
         bills.forEach(async (f) => {
@@ -131,7 +131,7 @@
 
     async function renderFavorites() {
         const el = panel('favorites');
-        el.innerHTML = '<p class="mypage-empty">불러오는 중…</p>';
+        el.innerHTML = '<p class="mypage-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         const token = renderToken;
         let favorites = [];
         try {
@@ -263,8 +263,8 @@
         const el = panel('mailing');
         el.innerHTML = `
             <div class="mypage-status-strip" id="mypage-mail-status">
-                <div class="mypage-status-tile"><div class="v">불러오는 중…</div><div class="k">법안 알림</div></div>
-                <div class="mypage-status-tile"><div class="v">불러오는 중…</div><div class="k">원자재 다이제스트</div></div>
+                <div class="mypage-status-tile"><div class="v">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></div><div class="k">법안 알림</div></div>
+                <div class="mypage-status-tile"><div class="v">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></div><div class="k">원자재 다이제스트</div></div>
                 <div class="mypage-status-tile"><div class="v">준비 중</div><div class="k">시장 미시구조</div></div>
             </div>
 
@@ -278,12 +278,12 @@
                 </label>
             </div>
             <p class="mypage-status hidden" id="mypage-bill-pause-status"></p>
-            <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…</p></div>
+            <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>
 
             <p class="mypage-section-title">원자재</p>
             <p class="mypage-empty">박스 제목을 체크한 원자재만 최근 8일 이내 리포트를 매주 월요일 오전 8시(KST) 발송 대상으로 확인합니다. 실행 지연에 따라 도착 시각은 늦어질 수 있습니다. 체크 안 한 원자재는 그 안의 기관 체크와 상관없이 메일이 가지 않습니다. 아래 기관 체크는 즐겨찾기한 원자재 안에서 어느 기관 소식만 뺄지 고르는 용도입니다.</p>
             <p class="mypage-empty" id="mypage-report-quality"></p>
-            <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
+            <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>
 
             <p class="mypage-section-title">시장 미시구조</p>
             <p class="mypage-empty">준비 중입니다.</p>
@@ -399,7 +399,7 @@
 
     async function renderAccount() {
         const el = panel('account');
-        el.innerHTML = '<p class="mypage-empty">불러오는 중…</p>';
+        el.innerHTML = '<p class="mypage-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         const token = renderToken;
         let profile = null;
         try {

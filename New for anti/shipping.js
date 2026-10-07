@@ -1585,7 +1585,7 @@
 
       detail.innerHTML = `
         <div class="shipping-detail-grid">
-          ${panel('LOCATION', point.name_ko, '<div id="shipping-minimap"><p class="shipping-empty">지도를 불러오는 중…</p></div>')}
+          ${panel('LOCATION', point.name_ko, '<div id="shipping-minimap"><p class="shipping-empty">지도를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>')}
           ${panel('CHOKEPOINT DETAIL', '물량과 통항 여건', `
             <div class="shipping-observed-type-controls" role="tablist" aria-label="초크포인트 상세 정보">
               ${tabs.map(([key, label]) => `<button type="button" id="shipping-detail-tab-${key}" data-choke-detail-tab="${key}" role="tab" aria-selected="${key === activeTab}" aria-controls="shipping-detail-pane-${key}">${label}</button>`).join('')}
@@ -1624,7 +1624,7 @@
         if (key === 'simulator') {
           // Check again after the shared fetch: closing/changing the detail
           // while the grid loads must not create charts on detached nodes.
-          pane.innerHTML = '<p class="shipping-note">시나리오 데이터를 불러오는 중…</p>';
+          pane.innerHTML = '<p class="shipping-note">시나리오 데이터를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
           try {
             await loadScenarioGrid(data);
             if (openId !== point.id || !detail.contains(pane) || !pane.isConnected) return;
@@ -1781,7 +1781,7 @@
   // screen data (see GRID_URL above), so list screens never pay for it.
   const renderScenarioSimulatorInto = (data, mount, chokepointId = null) => {
     if (!mount) return;
-    mount.innerHTML = '<p class="shipping-empty">시나리오 격자를 불러오는 중…</p>';
+    mount.innerHTML = '<p class="shipping-empty">시나리오 격자를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
     loadScenarioGrid(data)
       .then(grid => renderScenarioSimulatorBody(data, grid, mount, chokepointId))
       .catch(error => {

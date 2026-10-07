@@ -821,7 +821,7 @@
         }
         host.setHeader('수출통제 모니터', '현행 조치(수기 정리)와 규제 기관 최근 공고 · 국가를 클릭하면 조치·공고·원문');
         host.setPanels();
-        if (ui.panel) ui.panel.innerHTML = '<p class="ec-empty">불러오는 중…</p>';
+        if (ui.panel) ui.panel.innerHTML = '<p class="ec-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         host.setMap([], onMapClick, onMapHover);
         await Promise.all([load(), loadNotices(), host.loadWorldGeo()]);
         if (!host.isActive()) return;
