@@ -38,7 +38,15 @@ CARD_SOURCES: dict[str, tuple[str, str, str]] = {
     "interest_coverage": ("ma_metrics", "interest_coverage", "derived"),
 }
 
-_INDUSTRIAL_ONLY_CARDS = frozenset({"fcf", "net_debt", "interest_coverage"})
+# A bank or insurer may report lines with names that resemble cash, debt, or
+# revenue, but those labels are not interchangeable with the industrial
+# working-capital / enterprise-value chain.  Keep only reported profit lines
+# in this legacy-card surface until a dedicated financial-issuer view exists.
+_FINANCIAL_UNSAFE_CARDS = frozenset({
+    "revenue", "cfo", "cash", "fcf", "net_debt", "current_ratio", "debt_ratio", "interest_coverage",
+})
+_INDUSTRIAL_HISTORY_CARDS = ("revenue", "operating_income", "net_income", "cfo")
+_FINANCIAL_HISTORY_CARDS = ("operating_income", "net_income")
 
 
 def _now_iso() -> str:
@@ -112,8 +120,12 @@ def _card_from_history(
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     source, key, value_kind = CARD_SOURCES[card_id]
     financial = bool(entity_policy.get("is_financial_entity"))
-    if financial and card_id in _INDUSTRIAL_ONLY_CARDS:
-        reason = f"not_applicable:financial_entity_{card_id}"
+    if financial and card_id in _FINANCIAL_UNSAFE_CARDS:
+        reason = (
+            "not_applicable:financial_entity_industrial_revenue"
+            if card_id == "revenue"
+            else f"not_applicable:financial_entity_industrial_{card_id}"
+        )
         return ({"value": None, "series": [], "reason": reason, "value_kind": "not_applicable"}, [])
 
     lineage: list[dict[str, Any]] = []
@@ -174,6 +186,65 @@ def _safe_models(company: Mapping[str, Any], entity_policy: Mapping[str, Any]) -
     return unified
 
 
+def assess_snapshot_service_readiness(
+    snapshot: Mapping[str, Any],
+    *,
+    requested_years: int | None = None,
+) -> dict[str, Any]:
+    """State whether a static asset is safe to prefer over a live response.
+
+    The decision deliberately separates *renderable* from *authoritative*:
+    migrated legacy samples can remain inspectable, but a one-point history or
+    incomplete currency contract must trigger a live lookup when the Worker is
+    available.  This makes the Hynix-style stale-snapshot failure observable
+    without deleting useful offline samples.
+    """
+    years_required = requested_years if requested_years is not None else _MIN_HISTORY_POINTS
+    if not isinstance(years_required, int) or years_required < 1:
+        raise ValueError("invalid:requested_history_years")
+
+    policy = snapshot.get("entity_policy") or {}
+    financial = bool(policy.get("is_financial_entity"))
+    expected_cards = _FINANCIAL_HISTORY_CARDS if financial else _INDUSTRIAL_HISTORY_CARDS
+    cards = snapshot.get("basic_cards") or {}
+    reasons: list[str] = []
+    history: dict[str, int] = {}
+    for card_id in expected_cards:
+        card = cards.get(card_id) if isinstance(cards, Mapping) else None
+        points = len(card.get("series") or []) if isinstance(card, Mapping) else 0
+        history[card_id] = points
+        if points < years_required:
+            reasons.append(f"insufficient:reported_annual_history:{card_id}:{points}_of_{years_required}")
+
+    contract = snapshot.get("currency_contract") or {}
+    calculation = contract.get("calculation_currency")
+    display = contract.get("display_currency")
+    if not calculation or not display:
+        reasons.append("missing:consistent_calculation_and_display_currency")
+
+    snapshot_contract = snapshot.get("snapshot_contract")
+    if snapshot_contract != SNAPSHOT_CONTRACT:
+        reasons.append("invalid:snapshot_contract")
+
+    quality = snapshot.get("data_quality") or {}
+    legacy_unverified = not bool(quality.get("raw_filing_facts_embedded"))
+    fallback_required = bool(reasons)
+    return {
+        "schema": "kfa-snapshot-service-readiness/1",
+        "status": (
+            "fallback_required" if fallback_required
+            else "legacy_unverified" if legacy_unverified
+            else "ready"
+        ),
+        "static_eligible": not fallback_required,
+        "live_fallback_required": fallback_required,
+        "legacy_unverified": legacy_unverified,
+        "requested_annual_years": years_required,
+        "observed_annual_history": history,
+        "reasons": reasons,
+    }
+
+
 def build_kfa_snapshot(
     annual_companies: Iterable[Mapping[str, Any]],
     *,
@@ -215,7 +286,7 @@ def build_kfa_snapshot(
     if calculation_currency is None:
         quality_reasons.append("missing:consistent_calculation_currency")
 
-    return {
+    snapshot = {
         "schema": SNAPSHOT_SCHEMA,
         "snapshot_contract": SNAPSHOT_CONTRACT,
         "label": label or corp.get("stock_code") or corp.get("code") or corp.get("corp_code"),
@@ -261,6 +332,11 @@ def build_kfa_snapshot(
         },
         "disclaimer_ko": "공시 기반 수치와 명시적 입력만 사용하며 투자 권유 또는 자동 목표주가가 아닙니다.",
     }
+    snapshot["service_readiness"] = assess_snapshot_service_readiness(
+        snapshot,
+        requested_years=requested_years,
+    )
+    return snapshot
 
 
 def build_kfa_snapshot_from_dart_filings(
@@ -360,10 +436,15 @@ def enrich_legacy_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         if isinstance(card, dict):
             card.update({"value": None, "series": [], "reason": ebitda_reason, "value_kind": "unavailable"})
     if entity_policy.get("is_financial_entity"):
-        for card_id in _INDUSTRIAL_ONLY_CARDS | {"ebitda", "ebitda_or_op", "net_debt_to_ebitda", "fcf_to_ebitda"}:
+        for card_id in _FINANCIAL_UNSAFE_CARDS | {"ebitda", "ebitda_or_op", "net_debt_to_ebitda", "fcf_to_ebitda"}:
             card = (out.get("basic_cards") or {}).get(card_id)
             if isinstance(card, dict):
-                card.update({"value": None, "series": [], "reason": f"not_applicable:financial_entity_{card_id}", "value_kind": "not_applicable"})
+                reason = (
+                    "not_applicable:financial_entity_industrial_revenue"
+                    if card_id == "revenue"
+                    else f"not_applicable:financial_entity_industrial_{card_id}"
+                )
+                card.update({"value": None, "series": [], "reason": reason, "value_kind": "not_applicable"})
 
     # The old sample embeds prototype model results.  Preserve their IDs and
     # shape for the UI, but never expose a computed-looking valuation or
@@ -411,4 +492,5 @@ def enrich_legacy_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "reason": "missing:quarterly_filing_inputs",
         },
     }
+    out["service_readiness"] = assess_snapshot_service_readiness(out)
     return out

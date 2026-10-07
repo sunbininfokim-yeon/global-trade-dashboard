@@ -1063,5 +1063,25 @@
       "status": "not_materialized_in_legacy_static_asset",
       "reason": "missing:quarterly_filing_inputs"
     }
+  },
+  "service_readiness": {
+    "schema": "kfa-snapshot-service-readiness/1",
+    "status": "fallback_required",
+    "static_eligible": false,
+    "live_fallback_required": true,
+    "legacy_unverified": true,
+    "requested_annual_years": 3,
+    "observed_annual_history": {
+      "revenue": 1,
+      "operating_income": 1,
+      "net_income": 1,
+      "cfo": 1
+    },
+    "reasons": [
+      "insufficient:reported_annual_history:revenue:1_of_3",
+      "insufficient:reported_annual_history:operating_income:1_of_3",
+      "insufficient:reported_annual_history:net_income:1_of_3",
+      "insufficient:reported_annual_history:cfo:1_of_3"
+    ]
   }
 }

@@ -372,8 +372,19 @@ def _assemble_series(
 ) -> dict[str, Any]:
     nature = str(spec["nature"])
     values = {bucket: (source_points.get(bucket) or {}).get("value") for bucket in REPORT_ORDER}
+    direct_values = {
+        REPORT_TO_QUARTER[bucket]: (source_points.get(bucket) or {}).get("direct_value")
+        for bucket in REPORT_ORDER
+    }
     if nature == "flow":
-        converted = discrete_quarters_from_ytd(values, periods=period_layout["metadata"], metric_id=account_id)
+        converted = discrete_quarters_from_ytd(
+            values,
+            periods=period_layout["metadata"],
+            metric_id=account_id,
+            direct_values=direct_values,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        )
     else:
         converted = point_in_time_quarters(values, periods=period_layout["metadata"], metric_id=account_id)
 
@@ -437,8 +448,19 @@ def _assemble_series(
                 "end": period_layout["reports"][bucket]["source_end"],
             },
         }
+        if cell.get("direct_source_report"):
+            provenance["direct_quarter_source"] = dict(point.get("direct_provenance") or {})
+            provenance["direct_quarter_value"] = cell.get("value")
+        if cell.get("direct_value") is not None or cell.get("ytd_derived_value") is not None:
+            provenance["direct_vs_ytd"] = {
+                "direct_value": cell.get("direct_value"),
+                "ytd_derived_value": cell.get("ytd_derived_value"),
+                "tolerance": cell.get("tolerance"),
+            }
         value = cell.get("value")
-        derived = nature == "flow" and bucket != "Q1"
+        derived = nature == "flow" and cell.get("derivation") not in {
+            "reported_q1_ytd", "reported_direct_quarter",
+        }
         quarters[quarter] = _finish_fact(
             base,
             value=value,
@@ -531,6 +553,63 @@ def _pick_dart_rows(
     return [], None
 
 
+_EXPLICIT_DIRECT_PERIOD_KINDS = frozenset({"direct", "discrete", "quarter", "standalone_quarter"})
+
+
+def _dart_direct_quarter_point(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    bucket: str,
+    spec: Mapping[str, Any],
+    scale: Decimal,
+) -> tuple[int | float | None, dict[str, Any] | None]:
+    """Return a standalone-quarter observation only when the source says so.
+
+    OpenDART's generic interim amount fields are not consistently labelled
+    across filers.  Treating every ``thstrm_amount`` as a quarter would turn a
+    cumulative H1/Q3 figure into a falsely discrete bar.  A caller must pass
+    either an explicit ``direct_quarter_amount`` or mark the row with one of
+    the recognised ``period_value_kind`` values.
+    """
+    if spec["nature"] != "flow" or not rows:
+        return None, None
+
+    selected: list[tuple[Mapping[str, Any], str, Decimal]] = []
+    for row in rows:
+        if _amount(row.get("direct_quarter_amount")) is not None:
+            field = "direct_quarter_amount"
+        elif (
+            str(row.get("period_value_kind") or "").strip().lower() in _EXPLICIT_DIRECT_PERIOD_KINDS
+            and _amount(row.get("thstrm_amount")) is not None
+        ):
+            field = "thstrm_amount"
+        else:
+            return None, None
+        raw = _amount(row.get(field))
+        if raw is None:
+            return None, None
+        selected.append((row, field, raw))
+
+    value = _json_number(sum((raw for _, _, raw in selected), Decimal(0)) * scale)
+    first = selected[0][0]
+    return value, {
+        "provider": "OpenDART",
+        "report_code": first.get("reprt_code") or DART_CODE_BY_BUCKET[bucket],
+        "direct_quarter": REPORT_TO_QUARTER[bucket],
+        "source_facts": [
+            {
+                "filing_id": row.get("rcept_no"),
+                "account_id": row.get("account_id"),
+                "account_name": row.get("account_nm"),
+                "source_field": field,
+                "source_value": row.get(field),
+                "period_value_kind": row.get("period_value_kind"),
+            }
+            for row, field, _ in selected
+        ],
+    }
+
+
 def _dart_source_point(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -579,9 +658,17 @@ def _dart_source_point(
         reason = None
         value = _json_number(sum((value for value in raw_values if value is not None), Decimal(0)) * scale)
     first = rows[0]
+    direct_value, direct_provenance = _dart_direct_quarter_point(
+        rows,
+        bucket=bucket,
+        spec=spec,
+        scale=scale,
+    )
     return {
         "value": value,
         "reason": reason,
+        "direct_value": direct_value,
+        "direct_provenance": direct_provenance,
         "source_concept": "+".join(str(row.get("account_id") or row.get("account_nm") or "") for row in rows),
         "provenance": {
             "provider": "OpenDART",

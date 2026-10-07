@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from dart_kfa.snapshot_adapter import (  # noqa: E402
     SNAPSHOT_CONTRACT,
+    assess_snapshot_service_readiness,
     build_kfa_snapshot,
     build_kfa_snapshot_from_dart_filings,
     enrich_legacy_snapshot,
@@ -67,6 +68,8 @@ class SnapshotAdapterTest(unittest.TestCase):
         self.assertEqual(card["value_kind"], "direct")
         self.assertEqual(card["period_lineage"][-1]["observation_kind"], "direct")
         self.assertEqual(snapshot["period_lineage"]["quarterly"]["status"], "not_materialized_in_annual_snapshot")
+        self.assertEqual(snapshot["service_readiness"]["status"], "ready")
+        self.assertFalse(snapshot["service_readiness"]["live_fallback_required"])
 
     def test_static_export_never_computes_a_model_without_explicit_inputs(self):
         item = company(2025, 150)
@@ -84,12 +87,20 @@ class SnapshotAdapterTest(unittest.TestCase):
         self.assertEqual(len(card["series"]), 1)
         self.assertEqual(card["history_reason"], "insufficient:reported_annual_history:1_of_3")
         self.assertTrue(snapshot["data_quality"]["no_interpolation"])
+        readiness = snapshot["service_readiness"]
+        self.assertEqual(readiness["status"], "fallback_required")
+        self.assertTrue(readiness["live_fallback_required"])
+        self.assertIn("insufficient:reported_annual_history:revenue:1_of_3", readiness["reasons"])
 
     def test_financial_entity_gates_industrial_cards(self):
         snapshot = build_kfa_snapshot([company(2025, 150, financial=True)])
-        for key in ("fcf", "net_debt", "interest_coverage"):
+        for key in ("revenue", "cfo", "cash", "fcf", "net_debt", "current_ratio", "debt_ratio", "interest_coverage"):
             self.assertIsNone(snapshot["basic_cards"][key]["value"])
             self.assertEqual(snapshot["basic_cards"][key]["value_kind"], "not_applicable")
+        self.assertEqual(
+            snapshot["basic_cards"]["revenue"]["reason"],
+            "not_applicable:financial_entity_industrial_revenue",
+        )
         model = snapshot["unified_views"]["model_registry"]["scenario_dcf_ev_bridge"]
         self.assertEqual(model["status"], "not_applicable")
 
@@ -106,6 +117,15 @@ class SnapshotAdapterTest(unittest.TestCase):
         self.assertEqual(len(migrated["basic_cards"]["revenue"]["series"]), 1)
         self.assertIn("history_reason", migrated["basic_cards"]["revenue"])
         self.assertEqual(migrated["pe"]["models"]["coverage_capacity"]["status"], "omitted")
+        self.assertEqual(migrated["service_readiness"]["status"], "fallback_required")
+
+    def test_legacy_snapshot_with_complete_history_is_renderable_but_marked_unverified(self):
+        snapshot = build_kfa_snapshot([company(2023, 100), company(2024, 120), company(2025, 150)])
+        snapshot["data_quality"]["raw_filing_facts_embedded"] = False
+        readiness = assess_snapshot_service_readiness(snapshot)
+        self.assertEqual(readiness["status"], "legacy_unverified")
+        self.assertTrue(readiness["static_eligible"])
+        self.assertFalse(readiness["live_fallback_required"])
 
     def test_raw_dart_bridge_uses_canonical_engine_without_network(self):
         specs = {

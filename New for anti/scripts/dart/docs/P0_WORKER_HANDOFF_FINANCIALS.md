@@ -4,6 +4,19 @@
 반영 항목의 명세다. 계정 태그는 실시간 OpenDART 응답을 확인하지 않은
 상태에서 추측으로 추가하지 않는다.
 
+## 0. 정적 snapshot 우선순위
+
+- `service_readiness.live_fallback_required == true`인 static asset은 화면의
+  최종 데이터가 아니다. Worker/API live 응답을 요청해야 한다.
+- 현재 `kfa_000660_v1.json`은 이 상태다. 역사값을 보간하거나 JSON의 한 점을
+  확장하지 말고, 연도별 공시를 다시 조회한다.
+- `status == legacy_unverified`이지만 `static_eligible == true`인 asset은
+  오프라인 표시에는 사용할 수 있다. 다만 원문 line-level provenance가 없는
+  이전 샘플임을 source status로 유지한다.
+- Worker는 Python 파일을 직접 읽지 않는다. static snapshot과 live 응답이 같은
+  `snapshot_contract`, `currency_contract`, `entity_policy`, `period_lineage`
+  의미를 갖도록 JS 어댑터를 구현한다.
+
 ## 1. 은행·금융지주 DART 손익계정
 
 ### 엔진에서 확정한 정책
@@ -77,7 +90,17 @@ Python `scripts/dart/`의 기존 `analyze_rows()`는 하나의 OpenDART 응답�
 5. 출력에 `series_source: annual_filings` 및 각 점의 `rcept_no` 또는 원문 연도
    provenance를 추가해 UI가 실제 보고서 시계열임을 알 수 있게 한다.
 
-## 3. 통화 handoff
+## 3. 분기 원칙
+
+- source가 `direct_quarter_amount` 또는 명시적인 standalone-quarter marker를
+  제공할 때만 독립 분기값을 우선한다. 일반 `thstrm_amount`만으로는 분기값이라고
+  추정하지 않는다.
+- 직접 분기값과 YTD 차분값이 모두 있고 불일치하면 `null`과
+  `conflict:direct_quarter_vs_ytd_derivation`을 반환한다.
+- P&L·현금흐름만 YTD 차분할 수 있다. 대차대조표는 보고 시점 값이며 절대 차분하지
+  않는다.
+
+## 4. 통화 handoff
 
 Python 엔진은 `unified_views.currency.calculation_currency`를 모델 통화로,
 `display_currency`를 카드 표시 통화로 명시한다. Worker도 다음을 지켜야 한다.

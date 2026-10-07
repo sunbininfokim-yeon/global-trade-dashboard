@@ -69,6 +69,30 @@ class TestDartYtdQuarterConversion(unittest.TestCase):
         self.assertEqual(got["Q3"]["value"], 17.0)
         self.assertEqual(got["Q4"]["value"], 22.0)
 
+    def test_explicit_direct_quarter_precedes_matching_ytd_subtraction(self):
+        got = discrete_quarters_from_ytd(
+            {"Q1": 10, "H1": 31, "Q3": 48, "FY": 70},
+            direct_values={"Q2": 21, "Q3": 17},
+            periods=self.periods,
+            metric_id="REVENUE",
+        )
+        self.assertEqual(got["Q2"]["value"], 21.0)
+        self.assertEqual(got["Q2"]["derivation"], "reported_direct_quarter")
+        self.assertEqual(got["Q2"]["ytd_derived_value"], 21.0)
+        self.assertEqual(got["Q3"]["derivation"], "reported_direct_quarter")
+
+    def test_direct_and_ytd_conflict_is_unavailable(self):
+        got = discrete_quarters_from_ytd(
+            {"Q1": 10, "H1": 31},
+            direct_values={"Q2": 20},
+            periods=self.periods,
+            metric_id="REVENUE",
+        )
+        self.assertIsNone(got["Q2"]["value"])
+        self.assertEqual(got["Q2"]["reason"], "conflict:direct_quarter_vs_ytd_derivation")
+        self.assertEqual(got["Q2"]["direct_value"], 20.0)
+        self.assertEqual(got["Q2"]["ytd_derived_value"], 21.0)
+
     def test_balances_are_not_differenced(self):
         got = point_in_time_quarters(
             {"Q1": 100, "H1": 130, "Q3": 90, "FY": 120}, periods=self.periods, metric_id="CASH"
