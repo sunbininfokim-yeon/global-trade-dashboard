@@ -270,14 +270,18 @@
     const view = SEARCH_TYPE_VIEWS[item.type];
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const matches = Array.isArray(item.condition_matches) ? item.condition_matches : [];
-    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}</span>` : '';
+    const relationshipLabels={shared_passage:'한 근거 구간에서 함께 언급',cited_shared_passage:'인용 문서의 한 구간에서 함께 언급',separate_mentions:'확인한 근거가 서로 다른 구간',cited_separate_mentions:'인용 문서의 서로 다른 근거 구간',mixed_citation:'원문·인용 문서에 나누어 언급'};
+    const relationshipLabel=relationshipLabels[item.condition_relationship];
+    const conditionLabel = matches.length ? `<span class="policy-search-result-meta"><strong>${item.match_level === 'semantic_only' ? '의미상 관련 · 조건 근거 미확인' : `${esc(item.total_condition_count)}개 중 ${esc(item.matched_condition_count)}개 일치`}</strong> · ${matches.filter(m => m.matched).map(m => esc(m.term)).join(' · ')}${matches.some(m => m.matched && m.field === 'cited_document') ? ' · 인용 문서 맥락 포함' : ''}${relationshipLabel ? ` · ${esc(relationshipLabel)}` : ''}</span>` : '';
     const searchDate = item.latest_action_date || item.publication_date || item.signed_date || item.enacted_date || '';
-    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-search-date="${esc(searchDate)}"`;
+    const matchAttrs = ` data-condition-row data-match-count="${Number(item.matched_condition_count) || 0}" data-relevance-rank="${Number(item.relevance_rank) || 0}" data-similarity="${Number(item.similarity_score) || 0}" data-exact-title="${Number(item.match_type==='exact_title')}" data-fusion="${Number(item.fusion_score)||0}" data-shared="${Number(['shared_passage','cited_shared_passage'].includes(item.condition_relationship))}" data-search-date="${esc(searchDate)}"`;
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
           <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
           ${conditionLabel}
+          ${item.search_coverage?.text_status === 'unavailable' ? '<span class="policy-search-result-meta">공식 본문 미확보</span>' : ''}
+          ${item.search_refresh_pending ? '<span class="policy-search-result-meta">검색 자료 갱신 대기</span>' : ''}
           ${searchDate && !meta.includes(searchDate) ? `<span class="policy-search-result-meta">${esc(searchDate)}</span>` : ''}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
@@ -317,7 +321,7 @@
     return `<div class="policy-condition-search">
       ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
       <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
-      ${!opts.compact && ['conditions', 'hybrid'].includes(body.search_mode) ? `<small class="policy-search-scope">제목·요약 기준${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 의미 검색을 사용할 수 없어 단어·유사 표현으로 보완' : ''}</small>` : ''}
+      ${!opts.compact && ['conditions', 'hybrid'].includes(body.search_mode) ? `<small class="policy-search-scope">${body.match_basis === 'official_text_and_citations' ? '공식 제목·요약·본문·인용 문서 기준' : '제목·요약 기준'}${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 의미 검색을 사용할 수 없어 단어·유사 표현으로 보완' : ''}</small>` : ''}
     </div>`;
   }
 
@@ -327,7 +331,11 @@
     const time = date(b) - date(a);
     const similarity = Number(b.similarity_score || 0) - Number(a.similarity_score || 0);
     const name = Number(b.relevance_rank || 0) - Number(a.relevance_rank || 0);
-    return order === 'latest' ? time || count || name || similarity : count || name || similarity || time;
+    const shared=Number(b.shared_passage||['shared_passage','cited_shared_passage'].includes(b.condition_relationship))-Number(a.shared_passage||['shared_passage','cited_shared_passage'].includes(a.condition_relationship));
+    const fusion=Number(b.fusion_score||0)-Number(a.fusion_score||0);
+    const direct=Number(b.exact_title||b.match_type==='exact_title')-Number(a.exact_title||a.match_type==='exact_title');
+    const exact=Number(Number(b.relevance_rank)===4)-Number(Number(a.relevance_rank)===4);
+    return order === 'latest' ? time || count || exact || direct || fusion || name || similarity : count || shared || exact || direct || fusion || name || similarity || time;
   }
 
   function renderSearchResults(body) {
@@ -1447,7 +1455,7 @@
       const wrapper = sortButton.closest('.policy-condition-search');
       const lists = wrapper.querySelectorAll('.policy-search-group-rows');
       const order = sortButton.dataset.searchOrder;
-      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, relevance_rank: row.dataset.relevanceRank, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity });
+      const rowData = row => ({ matched_condition_count: row.dataset.matchCount, relevance_rank: row.dataset.relevanceRank, latest_action_date: row.dataset.searchDate, similarity_score: row.dataset.similarity, fusion_score:row.dataset.fusion, shared_passage:row.dataset.shared, exact_title:row.dataset.exactTitle });
       lists.forEach(list => [...list.querySelectorAll('[data-condition-row]')].sort((a,b) => searchOrderCompare(rowData(a), rowData(b), order)).forEach(row => list.appendChild(row)));
       wrapper.querySelectorAll('[data-search-order]').forEach(button => button.setAttribute('aria-pressed', String(button === sortButton)));
       return;

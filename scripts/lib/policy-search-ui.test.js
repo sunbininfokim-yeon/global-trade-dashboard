@@ -40,3 +40,13 @@ test('full page keeps empty lanes visible and semantic search uses the same four
  assert.match(html,/data-similarity="0.8"/);
  const compact=render({items:[]},true);assert.ok(!compact.includes('<section'));
 });
+test('a metadata-only enacted law is searchable without implying official text coverage',()=>{
+ const law={...row('119-public-112',1,'public_law'),search_coverage:{text_status:'unavailable',embedding_coverage:'complete'}};
+ assert.match(render({search_mode:'conditions',items:[law]}),/공식 본문 미확보/);
+ assert.ok(!render({search_mode:'conditions',items:[{...law,search_coverage:{text_status:'body'}}]}).includes('공식 본문 미확보'));
+});
+test('shared evidence and separate mentions are shown without changing the four lanes',()=>{
+ const shared={...row('x',3),condition_relationship:'shared_passage'};
+ assert.match(render({search_mode:'conditions',items:[shared]}),/한 근거 구간에서 함께 언급/);
+ assert.match(render({search_mode:'conditions',items:[{...shared,condition_relationship:'separate_mentions'}]}),/확인한 근거가 서로 다른 구간/);
+});
