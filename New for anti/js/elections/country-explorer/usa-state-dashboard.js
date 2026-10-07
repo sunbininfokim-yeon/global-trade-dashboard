@@ -1,5 +1,22 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-import { usaStateSuperPac } from './special/usa-state-superpac.js?v=3';
+import { usaStateSuperPac } from './special/usa-state-superpac.js?v=4';
+import { electionOverviewHtml, evidenceSectionHtml } from './special/usa-election-overview.js';
+import { pollEvidenceHtml } from './special/usa-election-evidence.js?v=2';
+import { ELECTION_OFFICES } from '../data/election-overview.js';
+
+export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null) => {
+    const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
+    return ELECTION_OFFICES.map(([office, label]) => {
+        const selected = races.filter((r) => r.office === office).sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
+        if (!selected.length) return '';
+        return `<section class="elections-state-polls"><h3>${label}</h3>${selected.map((race) => {
+            const district = office === 'house' ? String(race.district) : null;
+            return `<article class="elections-race-card${district && district === String(selectedDistrict) ? ' is-selected' : ''}" data-poll-race="${escapeHtml(race.race_id)}">
+                ${district ? `<button class="elections-race-open" type="button" data-poll-district="${escapeHtml(district)}"><strong>하원 ${Number(district)}구</strong><span>지도에서 보기 →</span></button>` : ''}
+                ${pollEvidenceHtml(race, board, health, days)}</article>`;
+        }).join('')}</section>`;
+    }).join('') || '<p class="elections-muted">이 주의 여론조사 감시 자료가 아직 연결되지 않았습니다. 조사 자체가 없다는 뜻은 아닙니다.</p>';
+};
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 // Returns safe HTML, not plain text: a bioguideId (present on every House/
@@ -65,7 +82,7 @@ const chamberCard = (label, chamber) => {
 };
 
 export const renderUsaStateDashboard = (root, {
-    state, districtMapReady, onBackToUsa,
+    state, country = null, ratings = null, evidenceOpen = {}, districtMapReady, onBackToUsa,
     financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, openDistrict = null,
     pollBoard = null, pollHealth = null, windowDays = 7, onWindowChange,
     onToggleFinance, onHighlightDistrict,
@@ -84,13 +101,26 @@ export const renderUsaStateDashboard = (root, {
             : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
 
     if (financeMode) {
-        root.innerHTML = header + `<div class="elections-window-switch" role="group" aria-label="최근 여론조사 집계 기간">
+        const polledRaces = Object.values(pollBoard?.races || {}).filter((r) => r.state === state.id);
+        const observationCount = polledRaces.reduce((n, r) => n + (r.observations?.length || 0), 0);
+        const pollContent = `<div class="elections-window-switch" role="group" aria-label="최근 여론조사 집계 기간">
             <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${windowDays === 7}">7일</button>
-            <button type="button" data-window="14" aria-pressed="${windowDays === 14}">14일</button></div>`
-            + usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract, pollBoard, pollHealth, windowDays);
+            <button type="button" data-window="14" aria-pressed="${windowDays === 14}">14일</button></div>
+            <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
+            ${statePollEvidenceHtml(state.id, pollBoard, pollHealth, windowDays, openDistrict)}`;
+        const financeContent = usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract, pollBoard, pollHealth, windowDays, { showPolls: false });
+        root.innerHTML = header + electionOverviewHtml(country, ratings, { state, board: pollBoard, health: pollHealth, days: windowDays })
+            + '<p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>'
+            + evidenceSectionHtml('poll', '여론조사', `감시 ${polledRaces.length}개 선거 · 누적 ${observationCount}건 · 최근 ${windowDays}일`, pollContent, evidenceOpen.poll)
+            + evidenceSectionHtml('finance', '슈퍼팩 · 외부 독립지출', '주지사·상원·하원 후보별 공시', financeContent, evidenceOpen.finance || (openDistrict != null && !evidenceOpen.poll));
         root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
         root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
         root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange?.(Number(button.dataset.window))));
+        root.querySelectorAll('[data-poll-district]').forEach((button) => button.addEventListener('click', () => {
+            root.querySelectorAll('[data-poll-race]').forEach((row) => row.classList.remove('is-selected'));
+            button.closest('[data-poll-race]').classList.add('is-selected');
+            onHighlightDistrict?.(button.dataset.pollDistrict);
+        }));
         // Opening a district is a local DOM change, not a re-render: the list
         // runs to 50+ rows and rebuilding it would throw away the scroll
         // position on every click. Only the map is told to change.

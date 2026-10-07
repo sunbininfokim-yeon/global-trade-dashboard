@@ -1,14 +1,14 @@
 import { renderCountryShell } from './country-shell.js?v=3';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=3';
-import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=3';
+import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=4';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=3';
 import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract } from '../data/finance-service.js?v=2';
 import { loadLivePolls } from '../data/poll-service.js?v=2';
-import { loadUsaMidtermsForecast } from '../data/forecast-service.js';
-import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=2';
+import { loadUsaElectionRatings } from '../data/rating-service.js';
+import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=3';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
@@ -19,6 +19,10 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
     let shell = null;
     let usaElectionMode = false;
     let pollWindowDays = 7;
+    const evidenceOpen = { poll: false, finance: false };
+    const rememberEvidence = () => host.roots.country.querySelectorAll('[data-evidence-section]').forEach((section) => {
+        evidenceOpen[section.dataset.evidenceSection] = section.open;
+    });
     // Bumped on every navigation, so a map that finishes loading after the
     // user has already moved on (back to world, another country) is dropped
     // instead of painting over the screen they're now on.
@@ -59,6 +63,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             await renderWorldElectionMap(host, bundle.countries, onCountryOpen);
         },
         async showCountry(iso3, { electionMode = false } = {}) {
+            rememberEvidence();
             stopDisplayRefresh();
             const country = bundle.countries.get(iso3);
             if (!country) return;
@@ -74,14 +79,14 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }) });
             if (usaElectionMode) {
                 host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.</p></div>';
-                const [polls, contract, forecast] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract(), loadUsaMidtermsForecast()]);
+                const [polls, contract, ratings] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract(), loadUsaElectionRatings()]);
                 const entries = await Promise.all(nationalMonitoringStates(polls.board)
                     .map(async (id) => [id, await loadStateFinanceIndex(id)]));
                 if (isStale()) return;
                 shell = null;
                 onRoute?.({ country: iso3, view: 'finance' });
                 renderUsaElectionNational(host.roots.country, {
-                    ...polls, contract, forecast, indexes: Object.fromEntries(entries), days: pollWindowDays,
+                    country, ...polls, contract, ratings, evidenceOpen, indexes: Object.fromEntries(entries), days: pollWindowDays,
                     onBack, onToggle: () => this.showCountry('USA'),
                     onWindowChange: (days) => { pollWindowDays = days; this.showCountry('USA', { electionMode: true }); },
                     onStateOpen: (stateId, district) => this.showUsaState(stateId, { financeMode: true, district }),
@@ -122,6 +127,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             });
         },
         async showUsaState(stateId, { financeMode = false, district = null } = {}) {
+            rememberEvidence();
             stopDisplayRefresh();
             // The state dashboard replaces the right pane wholesale, so any
             // country block still open would be describing the wrong screen.
@@ -133,12 +139,13 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             const seq = ++navSeq;
             const isStale = () => seq !== navSeq;
             const route = { country: 'USA', state: stateId, view: financeMode ? 'finance' : null, district: financeMode ? district : null };
+            let activeDistrict = district;
             onRoute?.(route);
             // Every race file for the state, plus the district ids the map can
             // actually draw, only once the 선거 toggle is on.
-            const [financeRaces, financeContract, polls] = financeMode ? await Promise.all([
-                loadStateFinance(stateId), loadFinanceDisplayContract(), loadLivePolls(),
-            ]) : [null, null, { board: null, health: null }];
+            const [financeRaces, financeContract, polls, ratings] = financeMode ? await Promise.all([
+                loadStateFinance(stateId), loadFinanceDisplayContract(), loadLivePolls(), loadUsaElectionRatings(),
+            ]) : [null, null, { board: null, health: null }, null];
             const districtGeo = financeMode ? await loadCongressionalDistricts(stateId).catch(() => null) : null;
             const mappedDistricts = districtGeo
                 ? new Set((districtGeo.features || []).map((feature) => String(feature.properties?.district ?? '')))
@@ -148,26 +155,28 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             if (isStale()) return;
             renderUsaStateDashboard(host.roots.country, {
                 state,
+                country: usa, ratings, evidenceOpen,
                 districtMapReady,
                 financeMode,
                 financeRaces,
                 financeContract,
                 mappedDistricts,
                 pollBoard: polls.board, pollHealth: polls.health, windowDays: pollWindowDays,
-                onWindowChange: (days) => { pollWindowDays = days; this.showUsaState(stateId, { financeMode: true, district }); },
+                onWindowChange: (days) => { pollWindowDays = days; this.showUsaState(stateId, { financeMode: true, district: activeDistrict }); },
                 openDistrict: financeMode ? district : null,
                 onBackToUsa: () => this.showCountry('USA', { electionMode: usaElectionMode || financeMode }),
                 onToggleFinance: () => this.showUsaState(stateId, { financeMode: !financeMode }),
                 // Only the map is redrawn, and only its colours: fitView stays
                 // off so clicking a district never moves the camera.
                 onHighlightDistrict: (next) => {
+                    activeDistrict = next;
                     onRoute?.({ ...route, district: next });
                     return renderUsaDistrictMap({ host, stateId, highlightDistrict: next, fitView: false,
                         electionMode: financeMode, pollBoard: polls.board, pollHealth: polls.health, windowDays: pollWindowDays });
                 },
             });
             if (financeMode && !isStale()) watchDisplay(polls, seq,
-                () => this.showUsaState(stateId, { financeMode: true, district }));
+                () => this.showUsaState(stateId, { financeMode: true, district: activeDistrict }));
             if (!districtMapReady) {
                 await renderCountryMap({ host, country: usa, selectedStateId: stateId, electionMode: financeMode,
                     isStale, onStateOpen: (nextStateId) => this.showUsaState(nextStateId, { financeMode }) });
