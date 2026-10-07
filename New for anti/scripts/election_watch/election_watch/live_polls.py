@@ -386,6 +386,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                          'reference_only_observations': sum(not p['aggregation_eligibility']['eligible'] for p in accepted),
                          'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
             'watchlist': policy.get('watchlist'),
+            'governor_roster_coverage': deepcopy(policy.get('governor_roster_coverage')),
             'excluded_watch_slots': deepcopy(policy.get('excluded_watch_slots', [])),
             'races': races, 'review_queue': rejected,
             'results_collection': {'status': 'official_source_review_required',

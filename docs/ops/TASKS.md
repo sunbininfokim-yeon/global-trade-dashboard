@@ -101,3 +101,5 @@
 | T30b | 관심 주 주지사 독립지출 연결 | codex | `New for anti/scripts/election_watch/*governor*`, NY IE registry/tests/source directory, `public/data/usa_governor_finance/2026/NY.json` | `codex/governor-ie-texas` | review | 2026-10-04: NY 공식 일일 API 실자료 75건, 후보별 F/R 고유 연결·지지/반대·지도 계약 검증. TX CAND는 방향 미확보 감사 전용으로 보정. UI/workflow 파일 수정 없음. |
 
 | T-ELECTION-DETAIL-20261007 | 상원35석 분리·정당 칩 목록·주별 후보 대결과 지도 선택 | codex | `New for anti/js/elections/**`, 상원 명부·생성기·calendar/board, `index.html` 선거 캐시, `style.css` 선거 스타일, UI tests | `codex/usa-election-ui` | review | 사용자 6개 UI 요구 명시 승인. 기존 비동기 로딩 유지. 본선/경선/과거 공시 분리, 출처와 미수집 보존. 상원 특별선거 원본 명부·생성기와 calendar/board 동일 범위 보정. UI44·poll83·상원명부2·소유권4·배포연결38 통과. 전국35목록/NY지도선택/7·14일 실화면 검증. PR·배포 대기. |
+
+| T-GOVERNOR-COVERAGE-20261007 | 미국 주지사 대진·외부지출 데이터 공백 보강 | codex | `New for anti/scripts/election_watch/` 주지사·지도 집계·검토 명부/관련 tests, `New for anti/public/data/usa_*` 선거 데이터 | `codex/governor-coverage-20261007` | review | 2026-10-07: 후보 대진 13→36개 선거 주(NGA 33+공식 명부 OK/RI/SC), NY 75건 지도 연결, CA 본선/경선 명시 날짜 분리. Python 94+50, JS 선거 계약 검증. 사용자 요청으로 병합·배포 금지, UI/workflow 변경 없음. [인수인계](handoff/2026-10-07-codex-governor-coverage.md). |
