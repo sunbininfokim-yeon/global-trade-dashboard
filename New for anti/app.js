@@ -5620,11 +5620,8 @@ const setView = (target) => {
 
         // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');
-        window.ExportControls?.load().then(() => {
-            if (currentCommodity !== target) return;
-            const arcs = window.TradeData?.[target]?.arcs;
-            if (arcs?.length) renderMapLayers(arcs, { keepView: true });
-        });
+        // The trade map no longer paints export controls (수출통제 모니터
+        // only, 2026-10-07), so it does not wait on that catalogue.
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
