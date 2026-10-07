@@ -67,7 +67,7 @@
 3. 끝: `review` 또는 `done` + `./tools/ops/handoff.sh`  
 
 | T30 | 해외 LETF 수집·이력·시장미시구조 UI·배포 연결 | **codex** | `scripts/market_microstructure/**overseas*`, `public/data/overseas_letf_*`, `market-microstructure.js`, 해외 workflow·deploy hook | `claude/overseas-letf-pipeline-integration` | **done** | 사용자 2026-09-08 승인. PR #262·#263 병합, 첫 원격 수집·저장 및 운영 배포 성공, 공개 파일 4개 내용 일치와 운영 UI 확인. 데이터 16개 계약 테스트·브라우저 검증 통과. |
-| T31 | KOSPI universe 조회 실패의 2종목 성공 대체 제거 | **codex** | `scripts/market_microstructure/{build_investor_price_levels.py,market_microstructure/investor_price_levels.py,tests/test_investor*.py}` | `codex/kospi-universe-failure` | **review** | 목록·고변동 선별 불완전 시 기존 JSON/보고서 보존 + exit 1 + Actions 오류 annotation. 목록 1회 조회. 112 테스트 및 UI 계약 통과. 해외 LETF 브라우저 실패는 별도. |
+| T31 | KOSPI universe 조회 실패의 2종목 성공 대체 제거 | **codex** | `scripts/market_microstructure/{build_investor_price_levels.py,market_microstructure/investor_price_levels.py,tests/test_investor*.py}` | `codex/kospi-universe-failure` → `codex/krx-screen-flow-audit` | **review** | 목록·고변동 선별 불완전 시 기존 JSON/보고서 보존 + exit 1 + Actions 오류 annotation. 목록 1회 조회. 112 테스트 및 UI 계약 통과. 해외 LETF 브라우저 실패는 별도. 2026-10-07 보강: 정상 이력 부족/무거래 제외와 조회 오류 분리; 오류 종목만 순차 1회 재시도. KRX 12009 삼전·하닉 30일종목 대조: 기타법인·기타외국인 수급으로 큰 음수 설명, 9/21 이후 KRX 미확인. 수량/종가 환산 금액 구분. 감사: `scripts/market_microstructure/KRX_SCREEN_AND_FLOW_AUDIT_2026-10-07.md`. |
 
 | T31 | 천연가스 공식 재고·Henry Hub 자동 수집 및 표시 | codex | `scripts/gas_storage/**`, `public/data/gas_storage_v1.json`, `gas-storage.js`, trade/index hooks, gas workflow/deploy hook | `codex/natural-gas-storage-pipeline` | review | 2026-09-09 사용자 파이프라인 및 GitHub/Cloudflare 배포 지시. 별도 checkout. 7개 테스트 및 로컬 UI 확인. TTF 제공업체 확인 대기. |
 
