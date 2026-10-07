@@ -46,3 +46,17 @@ New for anti/scripts/cache/
 # 개인 포트폴리오 진단 결과. New for anti/ 는 Cloudflare 가 공개 배포하므로
 # 커밋하면 보유 내역이 공개 URL 로 노출된다. 로컬에서 run_pipeline.py 로 생성해 쓴다.
 New for anti/public/data/portfolio_analysis_v1.json
+
+# Obsidian 볼트 설정·플러그인 캐시. Local REST API 플러그인의 data.json 에는 API 키와
+# RSA 개인키가, smart-env/smtcmp 에는 노트 임베딩이 들어 있다 -- 레포에 둘 것이 아니다.
+.obsidian/
+**/.obsidian/
+.smart-env/
+**/.smart-env/
+.smtcmp_json_db/
+**/.smtcmp_json_db/
+*.smtcmp_vector_db.tar.gz
+
+# 개인 보유 내역 샘플 (골든 테스트용). 로컬에만 둔다.
+New for anti/scripts/금융_재무분석/samples/user_balanced_portfolio.json
+anti/New for anti 1/public/data/portfolio_analysis_v1.json

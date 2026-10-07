@@ -13,6 +13,7 @@
 // per-favorite state comparison.
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const {
   requireEnv, supabaseGet, supabaseUpsert, fetchJson,
 } = require('./lib/sync-utils');
@@ -21,9 +22,7 @@ const {
 // would receive (counts only -- no addresses), send nothing, record nothing.
 // For checking the Supabase wiring without mailing anyone.
 const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
-requireEnv('SUPABASE_URL');
-requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-const RESEND_API_KEY = DRY_RUN ? process.env.RESEND_API_KEY : requireEnv('RESEND_API_KEY');
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
 const REPORTS_JSON = path.join(__dirname, '..', 'New for anti', 'public', 'data', 'commodity_reports_v1.json');
 const WINDOW_DAYS = 8; // a little over a week, so a cadence slip never silently drops a report
@@ -86,7 +85,12 @@ async function fetchProfiles(userIds) {
   return new Map(rows.map((row) => [row.id, row.email]));
 }
 
-function sendDigestEmail(email, groups) {
+function digestIdempotencyKey(userId, groups) {
+  const ids = [...new Set(groups.flatMap(g => g.items.map(i => String(i.id))))].sort();
+  return 'commodity-legacy/' + crypto.createHash('sha256').update(JSON.stringify([userId, ids])).digest('hex');
+}
+
+async function sendDigestEmail(email, groups, userId) {
   const sections = groups.map(({ label, items }) => `
     <h3 style="margin:20px 0 8px;font-size:15px;">${esc(label)}</h3>
     <ul style="padding-left:20px;margin:0;">
@@ -103,9 +107,9 @@ function sendDigestEmail(email, groups) {
       ${sections}
       <p style="margin-top:24px;"><a href="${SITE_URL}">ChokePoint Monitor에서 전체 보기 →</a></p>
     </div>`;
-  return fetchJson('https://api.resend.com/emails', {
+  const accepted = await fetchJson('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': digestIdempotencyKey(userId, groups) },
     body: JSON.stringify({
       from: FROM_EMAIL,
       to: email,
@@ -113,9 +117,14 @@ function sendDigestEmail(email, groups) {
       html,
     }),
   }, { label: 'Resend send' });
+  if (!accepted?.id || typeof accepted.id !== 'string') throw Error('resend_acceptance_unconfirmed');
+  return accepted.id;
 }
 
 async function run() {
+  requireEnv('SUPABASE_URL');
+  requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+  if (!DRY_RUN) requireEnv('RESEND_API_KEY');
   const { items, labels } = loadRecentReports();
   if (!items.length) {
     console.log(`No commodity reports published in the last ${WINDOW_DAYS} days.`);
@@ -139,7 +148,6 @@ async function run() {
     fetchDisabledSourcesByUser(),
   ]);
   const digestByUser = new Map(); // user_id -> Map(commodityKey -> [item])
-  const sentInserts = [];
 
   for (const [userId, commodityKeys] of favoritesByUser) {
     const disabledSources = disabledSourcesByUser.get(userId);
@@ -190,10 +198,14 @@ async function run() {
       console.log(`[dry-run] user ${userId.slice(0, 8)}… would get: ${summary}`);
       continue;
     }
-    await sendDigestEmail(email, groups);
+    await sendDigestEmail(email, groups, userId);
+    const sentInserts = [];
     for (const groupItems of byCommodity.values()) {
       for (const item of groupItems) sentInserts.push({ user_id: userId, report_id: item.id });
     }
+    // Record each accepted recipient immediately: a later user's failure
+    // must not erase the receipt of an already accepted message.
+    await supabaseUpsert('commodity_report_notifications', sentInserts, 'user_id,report_id', 'resolution=ignore-duplicates,return=minimal');
     sent += 1;
   }
   if (DRY_RUN) {
@@ -202,11 +214,8 @@ async function run() {
   }
   console.log(`Sent ${sent} weekly commodity digest(s).`);
 
-  if (sentInserts.length) {
-    // ignore-duplicates, not merge: a retry after a partial failure must not
-    // error on rows a prior attempt already recorded.
-    await supabaseUpsert('commodity_report_notifications', sentInserts, 'user_id,report_id', 'resolution=ignore-duplicates,return=minimal');
-  }
+
 }
 
-run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
+module.exports = { digestIdempotencyKey, sendDigestEmail, run };
+if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
