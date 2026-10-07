@@ -2,6 +2,7 @@ const DATA_ROOT = '/public/data';
 let indexPromise = null;
 let nationalPromise = null;
 const statePromises = new Map();
+const stateIndexPromises = new Map();
 
 const loadJson = async (path) => {
     const response = await fetch(`${DATA_ROOT}/${path}`, { cache: 'force-cache' });
@@ -35,6 +36,16 @@ export const loadUsaElectionFinance = () => {
     return nationalPromise;
 };
 
+// The national watch panel only needs race-level totals. Keep candidate-level
+// files lazy until a state is opened.
+export const loadStateFinanceIndex = (stateId) => {
+    if (!stateIndexPromises.has(stateId)) stateIndexPromises.set(stateId, loadUsaElectionFinance()
+        .then((national) => national?.states?.[stateId]?.data_file)
+        .then((file) => file ? loadJson(file) : null)
+        .catch(() => null));
+    return stateIndexPromises.get(stateId);
+};
+
 // Per-candidate amounts and per-party totals live only in the individual race
 // files, so a state's 선거 panel needs all of them: national index -> that
 // state's race list -> every race file it names. Memoised per state, and only
@@ -42,10 +53,7 @@ export const loadUsaElectionFinance = () => {
 export const loadStateFinance = (stateId) => {
     if (!statePromises.has(stateId)) {
         statePromises.set(stateId, (async () => {
-            const national = await loadUsaElectionFinance();
-            const stateFile = national?.states?.[stateId]?.data_file;
-            if (!stateFile) return null;
-            const index = await loadJson(stateFile).catch(() => null);
+            const index = await loadStateFinanceIndex(stateId);
             if (!index?.races?.length) return null;
             const races = await Promise.all(index.races.map((race) => (
                 race.data_file ? loadJson(race.data_file).catch(() => null) : null

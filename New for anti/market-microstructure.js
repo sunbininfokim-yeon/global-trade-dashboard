@@ -896,6 +896,23 @@ const msLevelsCompute = (D) => {
     return { isIndex, src, tickers, allDays, pts, bins, rows };
 };
 
+// Ticker buttons follow the selected universe, in the engine's own order
+// (market-cap rank, or realised-volatility rank). Object.keys(tickers) is
+// neither: JS lists integer-like keys ("105560") ahead of zero-padded ones
+// ("005930"), so the old slice(0, 8) showed whichever names sorted first --
+// mid-caps ahead of Samsung and Hynix -- and cut the rest, regardless of
+// which universe the toggle said was active.
+const msUniverseTickers = (lv, tickers) => {
+    const meta = lv.universe_meta || {};
+    const codes = MS_UNIVERSE === 'high_vol'
+        ? ((meta.high_vol_in_marcap_top || {}).pairs || []).map((p) => p[0])
+        : ((meta.marcap_top || {}).tickers || []).map((t) => t.ticker);
+    const list = codes.filter((c) => tickers[c]);
+    // A name chosen earlier stays visible even if the other universe lacks it.
+    if (MS_TICKER && tickers[MS_TICKER] && !list.includes(MS_TICKER)) list.push(MS_TICKER);
+    return list.length ? list : Object.keys(tickers).slice(0, 10);
+};
+
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const dc = msCredit(D);
@@ -914,7 +931,7 @@ const msLevelsTab = (D) => {
         </p>
         <div class="co-struct-toggle">
             <button class="mm-view-btn ${isIndex ? 'on' : ''}" data-ms-ticker="">코스피 지수</button>
-            ${Object.keys(tickers).slice(0, 8).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
+            ${msUniverseTickers(lv, tickers).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
                 data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
         </div>
         ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}

@@ -75,6 +75,11 @@
             id: "rubber",
             name_ko: "천연고무",
             aliases: ["rubber", "natural rubber", "천연고무", "고무", "tsr", "rss", "4001"]
+        },
+        "light_oils": {
+            id: "light_oils",
+            name_ko: "경질유",
+            aliases: ["light_oils", "light oils", "경질유", "naphtha", "납사", "나프타", "gasoline", "휘발유", "271012"]
         }
     };
 
@@ -244,7 +249,16 @@
             { symbol: "UK10Y", name: "UK10Y" },
             { symbol: "^SOX", name: "SOX" },
             { symbol: "^KS11", name: "KOSPI" },
-            { symbol: "KRW=X", name: "KRW_USD" }
+            { symbol: "KRW=X", name: "KRW_USD" },
+            // Wheat/corn/soybeans/sugar: IMF's monthly PWHEAMTUSDM/PMAIZMTUSDM/
+            // PSOYBUSDM/PSUGAISAUSDM (fetched above into macroData already)
+            // lag real-world prices by weeks, so overwrite with Yahoo futures
+            // when available -- displayed in Yahoo's own quoting units
+            // (cents/bushel for wheat/corn/soybeans, cents/lb for sugar).
+            { symbol: "ZW=F", name: "WHEAT" },
+            { symbol: "ZC=F", name: "CORN" },
+            { symbol: "ZS=F", name: "SOYBEANS" },
+            { symbol: "SB=F", name: "SUGAR" }
         ];
 
         const fetchCnbcQuote = async (symbol) => {
@@ -295,7 +309,7 @@
             }
         }));
     } catch(e) {
-        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD/WHEAT/CORN/SOYBEANS/SUGAR):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.
@@ -437,6 +451,14 @@
         gas: {
             hsCode: "2711",
             colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        // Light oils, HS 271012: naphtha, motor gasoline, aviation spirit and
+        // light solvents in one six-digit line -- only national 8-digit codes
+        // split them. The map is the line as a whole; the view lists its
+        // representative products (TradeData.light_oils.subProducts).
+        light_oils: {
+            hsCode: "271012",
+            colorScheme: { source: [217, 70, 239], target: [232, 121, 249] }
         },
         thermal_coal: {
             hsCode: "2701",
@@ -896,6 +918,26 @@
                 "Brazil": { production: "10 Mt", import: "12 Mt", consumption: "18 Mt", price: "$260 / ton" },
                 "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
             }
+        },
+        light_oils: {
+            title: "에너지: 경질유 (HS 271012)",
+            desc: "납사·휘발유 등 경질유 무역 흐름 · HS 271012",
+            // Shown in the map's source note (app.js comtradeSourceText).
+            hsNote: "HS 271012 경질유: 납사·휘발유 등 합산(제품별 구분 불가)",
+            // Representative products inside the line. The trade map cannot
+            // split them; the view describes each and tags each report with
+            // the one it is about (trade.js). `match` is tested against the
+            // report's title (original, English and Korean).
+            subProducts: [
+                { id: "naphtha", label: "납사", desc: "석유화학 원료(에틸렌·프로필렌), 휘발유 배합 원료. 한국·일본·대만 등 아시아가 주 수입처",
+                  match: "naphtha|납사|나프타|石脑油|ナフサ" },
+                { id: "gasoline", label: "휘발유", desc: "자동차 연료. 경질유 교역에서 가장 큰 몫",
+                  match: "gasoline|petrol(?!eum|ochem)|motor spirit|휘발유|汽油|ガソリン" },
+            ],
+            totalVolume: "—",
+            topExporter: "—",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 271012)
+            news: defaultNews("light oils")
         },
         oil: {
             title: "에너지: 원유",

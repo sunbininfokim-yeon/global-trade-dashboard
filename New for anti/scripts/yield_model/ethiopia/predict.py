@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from .climate import latest_source_dates
+if os.environ.get("CLIMATE_SOURCE", "power") == "gee":
+    from .climate import latest_source_dates
+else:
+    from .climate_power import latest_source_dates
 from .regions import BELT_KEY, CLIMATE_FEATURES, POINTS
 from .train import _prepare, _trend
 
@@ -67,15 +71,15 @@ def predict(year: int = None):
     if not source_dates.get("chirps") or source_dates["chirps"] < f"{year}-07-31":
         climate_anomalies["rain_filling_jun_jul_mm_z"] = None
         incomplete.append(
-            "CHIRPS Jun-Jul filling-rain window incomplete; do not read the partial sum as drought."
+            "Jun-Jul filling-rain window incomplete; do not read the partial sum as drought."
         )
     if not source_dates.get("era5_land") or source_dates["era5_land"] < f"{year}-07-31":
         climate_anomalies["hot30_mar_jul_c_days_z"] = None
         climate_anomalies["root_sm_mar_jul_z"] = None
         climate_anomalies["vpd_mar_jul_kpa_z"] = None
-        incomplete.append("ERA5-Land Mar-Jul window incomplete.")
+        incomplete.append("Mar-Jul heat/soil-moisture/VPD window incomplete.")
     crop = {"label_ko": "아라비카 생두", "unit": "kg/ha", "last_actual": {"year": int(last.year), "yield": round(float(last.yield_kg_ha), 1)}, "official_outlook": outlook, "structural_context": model["structural_context_not_fitted"], "climate_risk_monitor": {"period": f"{year-1}-08-01 through {year}-07-31", "source_latest_dates": source_dates, "anomalies_vs_1993_2024": climate_anomalies, "coverage_warnings": incomplete, "note_ko": "생산가중 국가 기후 위험값이며 단수 예측이 아닙니다. 미완성 창은 null 처리합니다."}, "model_diagnostics": {"selected": model["selected_full_model"], "holdout_skill_vs_trend": round(selected_holdout["skill_vs_trend"], 3), "holdout_rmse_kg_ha": round(selected_holdout["rmse_kg_ha"], 1), "trend_rmse_kg_ha": round(selected_holdout["baseline_rmse_kg_ha"], 1), "cycle_only_rmse_kg_ha": round(cycle_holdout["rmse_kg_ha"], 1), "weather_incremental_skill_vs_cycle": round(model["weather_incremental_skill_vs_cycle_holdout"], 3), "decision": model["operational_choice"], "candidate_2026_kg_ha": round(candidate, 1), "trend_2026_kg_ha": round(trend, 1), "boosted_tree": ({"development_skill_vs_trend": round(challenger["selected"]["development"]["skill_vs_trend"], 3), "holdout_skill_vs_trend": round(challenger["holdout_2015_2024"]["skill_vs_trend"], 3), "holdout_rmse_kg_ha": round(challenger["holdout_2015_2024"]["rmse_kg_ha"], 1), "decision": challenger["decision"]} if challenger else None)}, "regional_context": {"weights_period": "MY 2023/24-2025/26 three-year average", "shares": {"Oromia": .595, "South-West Ethiopia": .137, "Sidama": .129, "South Ethiopia": .071, "Central Ethiopia": .037, "Gambella": .015, "Amhara": .011}}}
-    payload = {"generated_at": datetime.now(timezone.utc).isoformat(), "season": year if accepted else "FAOSTAT 2024 actual / USDA MY 2026/27 outlook", "country": "Ethiopia", "forecast_available": accepted, "panel_mode": "forecast" if accepted else "reference", "government_outlooks": [outlook], "sources": [{"name": "FAOSTAT QCL via OWID", "url": "https://ourworldindata.org/grapher/coffee-yields", "supports": "국가 단수·생산·면적"}, {"name": "USDA FAS Ethiopia Coffee Annual 2026", "url": USDA_URL, "supports": "지역 비중, stumping, 노령목, MY 2026/27 전망"}, {"name": "GEE CHIRPS + ERA5-Land", "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY", "supports": "산지 강수·열·토양수분·VPD"}], "regions": {BELT_KEY: {"label": "Ethiopia national Arabica belt", "label_ko": "에티오피아 아라비카 벨트", "zones": list(dict.fromkeys(p["region"] for p in POINTS)), "crops": {"coffee": crop}}}}
+    payload = {"generated_at": datetime.now(timezone.utc).isoformat(), "season": year if accepted else "FAOSTAT 2024 actual / USDA MY 2026/27 outlook", "country": "Ethiopia", "forecast_available": accepted, "panel_mode": "forecast" if accepted else "reference", "government_outlooks": [outlook], "sources": [{"name": "FAOSTAT QCL via OWID", "url": "https://ourworldindata.org/grapher/coffee-yields", "supports": "국가 단수·생산·면적"}, {"name": "USDA FAS Ethiopia Coffee Annual 2026", "url": USDA_URL, "supports": "지역 비중, stumping, 노령목, MY 2026/27 전망"}, {"name": "NASA POWER daily", "url": "https://power.larc.nasa.gov/", "supports": "산지 강수·열·토양수분·VPD"}], "regions": {BELT_KEY: {"label": "Ethiopia national Arabica belt", "label_ko": "에티오피아 아라비카 벨트", "zones": list(dict.fromkeys(p["region"] for p in POINTS)), "crops": {"coffee": crop}}}}
     if accepted:
         q68, q95 = model["uncertainty"]["q68_kg_ha"], model["uncertainty"]["q95_kg_ha"]
         crop.update({"point": round(candidate, 1), "range_68": [round(max(0, candidate-q68), 1), round(candidate+q68, 1)], "range_95": [round(max(0, candidate-q95), 1), round(candidate+q95, 1)], "trend": round(trend, 1), "weather_effect": round(candidate-trend, 1), "weather_effect_pct": round((candidate/trend-1)*100, 2), "skill": {"skill_vs_trend_only": round(selected_holdout["skill_vs_trend"], 3), "weather_incremental_skill_vs_cycle": round(model["weather_incremental_skill_vs_cycle_holdout"], 3), "beats_trend": True, "low_confidence": model["low_confidence"], "evaluation_period": "untouched 2015-2024"}, "trained_years": model["trained_years"]})

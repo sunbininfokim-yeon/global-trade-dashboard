@@ -1,10 +1,11 @@
-"""Turn the collected BOJ / BOK records into the block the macro panel reads.
+"""Turn the collected BOJ / BOK / BoE / ECB records into the block the macro panel reads.
 
-Both banks end up with the same top-level shape (decision, decision_history,
+Every bank ends up with the same top-level shape (decision, decision_history,
 votes, vote_history, statement_diffs, outlook, schedule, releases, roster) so the
 UI has one renderer. Differences that are real are kept as fields, not smoothed
-over: the BOJ names the members who voted for; the BOK names only the
-dissenters, so its for-side is attendance minus dissenters and says so.
+over: the BOJ and the BoE name the members who voted for; the BOK names only the
+dissenters, so its for-side is attendance minus dissenters and says so; the ECB
+publishes no votes at all, only how far members agreed, and says so.
 
 Nothing here scores or classifies wording. A diff is a redline; a vote is a
 list of names.
@@ -333,4 +334,272 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "releases": releases,
         "roster": {"asof": (doc.get("retrieved_at") or "")[:10], "source": "한국은행 금융통화위원회 위원 명단",
                    "members": [{"name": r["name"], "role": r["role"]} for r in roster]},
+    }
+
+
+# --------------------------------------------------------------------------
+# Bank of England
+# --------------------------------------------------------------------------
+
+def _member_groups(views: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Member rationales grouped the way the Bank prints them ("Votes to maintain Bank Rate at 3.75%")."""
+    groups: list[dict[str, Any]] = []
+    for v in views:
+        g = next((x for x in groups if x["label"] == v["group"]), None)
+        if g is None:
+            g = {"label": v["group"], "action": v["group_action"], "rate_pct": v["group_rate_pct"], "members": []}
+            groups.append(g)
+        g["members"].append({"name": v["name"], "paragraphs": v["paragraphs"]})
+    return groups
+
+
+_BOE_ROW_KO = {
+    "cpi": "CPI 인플레이션(전년 동기 대비 %)", "gdp": "실질 GDP 성장률(전년 동기 대비 %)", "excess": "수급갭(잠재 GDP 대비 %)",
+    "unemployment": "실업률(ILO 기준 %)", "wages": "민간 정규 주간임금 상승률(%)", "bank_rate": "Bank Rate(시장 내재 경로 %)",
+    "energy": "에너지 가격의 CPI 기여도(%p)", "world_export": "세계 수출물가(%)",
+}
+
+
+def _boe_table(entry: dict[str, Any]) -> dict[str, Any]:
+    """A Report table as the panel draws it: every row keeps the Bank's English label and the
+    definition its footnote gives; a Korean label is added only for the rows we know."""
+    notes = entry.get("footnotes", {})
+    blocks = []
+    for b in entry["blocks"]:
+        rows = []
+        for r in b["rows"]:
+            defs = [notes[k] for k in r.get("notes", []) if k in notes]
+            rows.append({"id": r["id"], "label_en": r["label_en"], "label_ko": _BOE_ROW_KO.get(r["id"]),
+                         "values": r["values"], "definition_en": " ".join(defs) or None})
+        blocks.append({"name": b["name"], "rows": rows})
+    prior_note = next((v for v in notes.values() if v.startswith("Figures in parentheses")), None)
+    used = {k for b in entry["blocks"] for r in b["rows"] for k in r.get("notes", [])}
+    general = [v for k, v in notes.items() if k not in used and v != prior_note]          # the notes on the table as a whole
+    return {"table_id": entry["table_id"], "title": entry["title"], "columns": entry["columns"], "blocks": blocks,
+            "prior_note_en": prior_note, "general_en": general}
+
+
+def _boe_outlook(doc: dict[str, Any], last_meeting_date: str) -> dict[str, Any] | None:
+    reports = sorted(doc.get("reports", []), key=lambda r: r["meeting_date"])
+    if not reports:
+        return None
+    cur = reports[-1]
+    prev = reports[-2] if len(reports) >= 2 else None
+    return {
+        "kind": "projection_blocks",
+        "meeting_date": cur["meeting_date"], "title": cur["title"], "source_url": cur["source_url"],
+        "forecast_round": cur["meeting_date"] == last_meeting_date,
+        "summary": _boe_table(cur["summary"]),
+        "annual": [_boe_table(a) for a in cur.get("annual", [])],
+        "previous": {"meeting_date": prev["meeting_date"], "title": prev["title"], "source_url": prev["source_url"],
+                     "summary": _boe_table(prev["summary"])} if prev else None,
+    }
+
+
+def assemble_boe(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
+    meetings = sorted(doc.get("meetings", []), key=lambda m: m["meeting_date"])
+    if not meetings:
+        return None
+    last = meetings[-1]
+    lv = last["vote"]
+
+    decision = {
+        "meeting_date": last["meeting_date"], "action": last["action"], "change_bp": last["change_bp"],
+        "prior_rate_pct": last["prior_rate_pct"], "rate_pct": last["rate_pct"],
+        "majority": "만장일치" if last["unanimous"] else f"{last['tally_for']}-{last['tally_against']}",
+        "unanimous": last["unanimous"], "source_url": last["source_url"],
+    }
+    history = [{"meeting_date": m["meeting_date"], "action": m["action"], "change_bp": m["change_bp"],
+                "prior_rate_pct": m["prior_rate_pct"], "rate_pct": m["rate_pct"]} for m in meetings][-HISTORY_LEN:]
+
+    votes = {
+        "meeting_date": last["meeting_date"],
+        "for": [{"name": n} for n in lv["for"]],
+        "for_source": lv["for_source"],
+        "for_count": len(lv["for"]),
+        "against": [{"name": a["name"], "reason": None, "alt_rate_pct": a["alt_rate_pct"],
+                     "direction": _direction(a["alt_rate_pct"], last["rate_pct"])} for a in lv["against"]],
+        "absent": [],
+        "text": last["summary_tally_text"],
+        "earlier_steps": lv.get("earlier", []),
+        "notes": lv.get("notes", []),
+    }
+    vote_history = [{
+        "meeting_date": m["meeting_date"], "for_count": len(m["vote"]["for"]), "against_count": len(m["vote"]["against"]),
+        "unanimous": m["unanimous"], "dissenters": [a["name"] for a in m["vote"]["against"]], "source": m["vote"]["for_source"],
+    } for m in meetings][-HISTORY_LEN:]
+
+    texts = [{"meeting_date": m["meeting_date"], "text": " ".join(m["summary_paragraphs"]), "source_url": m["source_url"]}
+             for m in meetings if m["summary_paragraphs"]]
+    pair = _latest_pair(texts)
+    diffs = [_diff_block("statement", "통화정책 요약(Monetary Policy Summary)", *pair)] if pair else []
+
+    minutes = {
+        "meeting_date": last["meeting_date"], "released_on": last["meeting_date"], "page_url": last["source_url"],
+        "kind": "sections", "sections": last["minutes"]["sections"],
+        "present": [p["name"] for p in last["minutes"]["present"]],
+        "treasury_representative": last["minutes"].get("treasury_representative"),
+    }
+    views = None
+    if last.get("member_views"):
+        views = {"meeting_date": last["meeting_date"], "groups": _member_groups(last["member_views"])}
+
+    rows = (doc.get("calendar") or {}).get("rows", [])
+    upcoming = next((r for r in rows if r["decision_date"] > today.isoformat()), None)
+    next_date = upcoming["decision_date"] if upcoming else (doc.get("calendar") or {}).get("next_due")
+    releases = [{"meeting_date": m["meeting_date"], "kind": "minutes", "kind_ko": "의사록 (요약과 같은 날 공개)",
+                 "date": m["meeting_date"], "status": "released", "basis": "boe_page", "source_url": m["source_url"]}
+                for m in meetings[-2:]]
+
+    return {
+        "iso3": "GBR",
+        "bank_ko": "영란은행 통화정책위원회(MPC)",
+        "rate_label_ko": "기준금리(Bank Rate)",
+        "decision": decision,
+        "decision_history": history,
+        "votes": votes,
+        "vote_history": vote_history,
+        "statement_diffs": diffs,
+        "outlook": _boe_outlook(doc, last["meeting_date"]),
+        "minutes": minutes,
+        "member_views": views,
+        "opinions": None,
+        "schedule": {"next_meeting_date": next_date, "next_meeting_days": [next_date] if next_date else None,
+                     "next_outlook_release": next_date if upcoming and upcoming.get("monetary_policy_report") else None},
+        "releases": releases,
+        "roster": {"asof": last["meeting_date"], "source": "의사록의 출석 위원 명단(재무부 대표·감독 참관인은 제외)",
+                   "members": [{"name": p["name"], "role": p["role"]} for p in last["minutes"]["present"]]},
+    }
+
+
+# --------------------------------------------------------------------------
+# European Central Bank
+# --------------------------------------------------------------------------
+
+_PROJ_ROWS = (("hicp", "소비자물가(HICP, 헤드라인)"), ("core", "근원(에너지·식품 제외)"), ("gdp", "실질 GDP 성장률"))
+
+
+def _ecb_outlook(meetings: list[dict[str, Any]]) -> dict[str, Any] | None:
+    rounds = [m for m in meetings if m.get("projections")]
+    if not rounds:
+        return None
+    cur = rounds[-1]
+    prev = rounds[-2] if len(rounds) >= 2 else None
+    years = sorted({int(y) for d in cur["projections"].values() for y in d})
+    rows = []
+    for key, label in _PROJ_ROWS:
+        series = cur["projections"].get(key)
+        if not series:
+            continue
+        rows.append({
+            "id": key, "label_ko": label, "unit": "%",
+            "values": [{"year": y, "value": series.get(str(y)),
+                        "prior": ((prev or {}).get("projections", {}).get(key) or {}).get(str(y)), "forecast": True}
+                       if str(y) in series else None for y in years],
+        })
+    if not rows:
+        return None
+    sentences = [p for p in cur["paragraphs"] if "projection" in p.lower() or "baseline" in p.lower()]
+    return {
+        "kind": "sentences", "meeting_date": cur["meeting_date"], "source_url": cur["source_url"],
+        "forecast_round": cur["meeting_date"] == meetings[-1]["meeting_date"],
+        "sentences": sentences,
+        "sentences_label_ko": "해당 회의 보도자료의 전망 서술", "sentences_unit_ko": "단락",
+        "sentences_note_ko": "보도자료 단락을 그대로 옮겼습니다(영어).",
+        "table": {
+            "meeting_date": cur["meeting_date"], "prior_made_in": prev["meeting_date"][:7] if prev else None,
+            "years": [str(y) for y in years], "rows": rows, "source_url": cur["source_url"],
+            "title_ko": "ECB·Eurosystem 스태프 전망", "prior_label_ko": (prev["meeting_date"][:7] if prev else None),
+            "note_ko": ("보도자료 본문에 적힌 수치를 옮겼습니다. 세 개 연도가 이어서 적힌 문장만 읽고, 그렇지 않은 서술은 싣지 않았습니다. "
+                        "작은 글씨는 직전 전망 회의의 같은 연도 값과 그 대비 변화입니다."),
+        },
+    }
+
+
+def assemble_ecb(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
+    meetings = sorted(doc.get("meetings", []), key=lambda m: m["meeting_date"])
+    if not meetings:
+        return None
+    last = meetings[-1]
+    decision = {
+        "meeting_date": last["meeting_date"], "action": last["action"], "change_bp": last["change_bp"],
+        "prior_rate_pct": last["prior_dfr_pct"], "rate_pct": last["dfr_pct"],
+        "majority": None, "unanimous": None, "source_url": last["source_url"],
+        "also": {"mro_pct": last["mro_pct"], "mlf_pct": last["mlf_pct"], "effective_date": last["effective_date"]},
+    }
+    history = [{"meeting_date": m["meeting_date"], "action": m["action"], "change_bp": m["change_bp"],
+                "prior_rate_pct": m["prior_dfr_pct"], "rate_pct": m["dfr_pct"]} for m in meetings][-HISTORY_LEN:]
+
+    with_account = [m for m in meetings if m.get("account")]
+    votes = None
+    if with_account:
+        acct = with_account[-1]["account"]
+        votes = {
+            "meeting_date": acct["meeting_date"], "kind": "consensus_only",
+            "for": None, "for_source": None, "for_count": None, "against": [], "absent": [],
+            "agreement": acct["agreement"], "notes": acct["record_notes"], "account_url": acct["source_url"],
+            "history": [{"meeting_date": m["meeting_date"], "quantifier": (m["account"]["agreement"] or {}).get("quantifier"),
+                         "notes": len(m["account"]["record_notes"])} for m in with_account][-HISTORY_LEN:],
+            "note_ko": ("ECB 정책이사회는 위원별 표결을 공개하지 않습니다. 결정은 의장 제안에 대한 합의로 기록되고, "
+                        "회의 요약(account)에는 '모든 위원이 동의' 같은 합의 정도와 다른 견해를 적은 문단만 실립니다. 아래는 그 원문입니다."),
+        }
+
+    diffs = []
+    pr_pair = _latest_pair([{"meeting_date": m["meeting_date"], "text": " ".join(m["paragraphs"]), "source_url": m["source_url"]} for m in meetings])
+    if pr_pair:
+        diffs.append(_diff_block("press_release", "통화정책 결정 보도자료", *pr_pair))
+    # The introductory statement is rewritten in full every meeting (a redline of it is nearly all
+    # red and green), so it is collected but not redlined; the press release is the stable text.
+    diffs.sort(key=lambda d: d["current_meeting"], reverse=True)
+
+    minutes = None
+    if with_account:
+        a = with_account[-1]["account"]
+        minutes = {
+            "meeting_date": a["meeting_date"], "released_on": a["released_on"], "page_url": a["source_url"], "kind": "sections",
+            "sections": a["sections"], "present": [m["name"] for m in a["members"] if m["voting"]],
+            "agreement": a["agreement"], "next_release": a["next_account_release"],
+        }
+
+    upcoming = next((r for r in doc.get("calendar", []) if r["decision_date"] > today.isoformat()), None)
+    releases = []
+    pending_date = with_account[-1]["account"]["next_account_release"] if with_account else None
+    first_pending_used = False
+    for m in meetings[-2:]:
+        if m.get("account"):
+            releases.append({"meeting_date": m["meeting_date"], "kind": "minutes", "kind_ko": "요약(Account)",
+                             "date": m["account"]["released_on"], "status": "released", "basis": "ecb_account",
+                             "source_url": m["account"]["source_url"]})
+        elif pending_date and not first_pending_used:
+            first_pending_used = True
+            releases.append({"meeting_date": m["meeting_date"], "kind": "minutes", "kind_ko": "요약(Account)", "date": pending_date,
+                             "status": "scheduled" if pending_date > today.isoformat() else "expected", "basis": "ecb_account"})
+
+    roster = None
+    if with_account:
+        a = with_account[-1]["account"]
+        roster = {
+            "asof": a["meeting_date"],
+            "source": "회의 요약(account)의 참석자 명단 — 별표(*)는 그 달 투표권이 없는 위원(순환, ESCB 규정 10.2조)",
+            "members": [{"name": m["name"], "role": " · ".join(x for x in (m["role"], None if m["voting"] else "투표권 없음") if x) or None}
+                        for m in a["members"]],
+        }
+
+    return {
+        "iso3": "EMU",
+        "bank_ko": "유럽중앙은행 정책이사회(Governing Council)",
+        "rate_label_ko": "예금금리(DFR)",
+        "decision": decision,
+        "decision_history": history,
+        "votes": votes,
+        "vote_history": [],
+        "statement_diffs": diffs,
+        "outlook": _ecb_outlook(meetings),
+        "minutes": minutes,
+        "opinions": None,
+        "schedule": {"next_meeting_date": upcoming["decision_date"] if upcoming else None,
+                     "next_meeting_days": [d for d in ((upcoming or {}).get("day1"), (upcoming or {}).get("decision_date")) if d] or None,
+                     "next_outlook_release": None},
+        "releases": releases,
+        "roster": roster,
     }

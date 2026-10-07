@@ -1,7 +1,7 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js?v=2';
+import { createCountryExplorer } from './country-explorer/index.js?v=6';
 import { renderTimeline } from './timeline/index.js';
 import { briefKeyFor, openBrief } from './briefs/index.js';
 
@@ -63,7 +63,11 @@ const openWorld = async (nextHost) => {
             restoring = true;
             try {
                 state.set({ mode: 'country', iso3: route.country, month });
-                await render();
+                if (route.country === 'USA' && route.view === 'finance' && !route.state) {
+                    await explorer.showCountry('USA', { electionMode: true });
+                } else {
+                    await render();
+                }
                 if (route.state) {
                     await explorer.showUsaState(route.state, {
                         financeMode: route.view === 'finance',

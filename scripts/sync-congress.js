@@ -14,6 +14,7 @@ const {
 const API_BASE = 'https://api.congress.gov/v3';
 const API_KEY = process.env.CONGRESS_API_KEY || process.env.DATA_GOV_API_KEY;
 const RESOURCE = 'congress.gov:bills';
+const STATE_RESOURCE = process.env.SYNC_MODE === 'incremental' ? `${RESOURCE}:incremental` : RESOURCE;
 const MAX_BILLS = Number(process.env.MAX_BILLS || 200);
 const CONCURRENCY = Number(process.env.DETAIL_CONCURRENCY || 2);
 const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 850);
@@ -113,7 +114,7 @@ async function activeCongress() {
   return Number(body?.congress?.number || 119);
 }
 async function loadState() {
-  return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${RESOURCE}`, limit: '1' }))?.[0] || null;
+  return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${STATE_RESOURCE}`, limit: '1' }))?.[0] || null;
 }
 function lastFour(active) {
   return process.env.CONGRESS_NUMBERS
@@ -134,6 +135,7 @@ function initialWindow(state) {
 }
 
 function shouldBootstrap(state) {
+  if (process.env.SYNC_MODE === 'incremental') return false;
   // Daily runs automatically continue a deliberately-started bootstrap until
   // the stored cursor is complete. This is what makes backfill truly resumable.
   return process.env.SYNC_MODE === 'bootstrap'
@@ -158,23 +160,32 @@ async function candidates(congresses, state, bootstrap) {
       checkpointCursor: null,
     };
   }
-  const windowFrom = initialWindow(state);
-  const items = [];
-  for (const congress of congresses) {
-    let offset = 0;
-    for (let page = 0; page < MAX_DISCOVERY_PAGES; page += 1) {
-      const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset, fromDateTime: windowFrom });
-      const pageItems = asArray(body?.bills);
-      items.push(...pageItems.map((item) => refFrom(item, congress)).filter(Boolean));
-      if (pageItems.length < DISCOVERY_PAGE_SIZE || !body?.pagination?.next) break;
-      offset += pageItems.length;
-    }
+  const prior = state?.cursor;
+  if (prior?.mode === 'incremental' && !prior.complete && prior.window_to &&
+      ((prior.congresses && JSON.stringify(prior.congresses) !== JSON.stringify(congresses)) ||
+       (!prior.congresses && JSON.stringify(congresses) !== '[119]'))) {
+    throw new Error('Congress scope differs from unfinished incremental cursor');
   }
-  return {
-    refs: unique(items),
-    cursor: { mode: 'incremental', congresses, window_from: windowFrom },
-    checkpointCursor: null,
-  };
+  let next = prior?.mode === 'incremental' && !prior.complete && prior.window_to
+    ? { ...prior, congresses }
+    : { mode: 'incremental', congresses, window_from: congressDateTime(process.env.FROM_DATE_TIME ||
+        new Date((Date.parse(prior?.window_to || state?.last_successful_at) || Date.now()-7*86400000)-36*3600000)),
+        window_to: congressDateTime(Date.now()), next_congress_index: 0, next_offset: 0, complete: false };
+  const refs = [];
+  for (let page=0; page<MAX_DISCOVERY_PAGES && !next.complete; page++) {
+    const i=next.next_congress_index || 0, offset=next.next_offset || 0;
+    const body=await apiGet(`/bill/${congresses[i]}`, {limit:DISCOVERY_PAGE_SIZE, offset,
+      fromDateTime:next.window_from, toDateTime:next.window_to, sort:'updateDate+asc'});
+    const rows=asArray(body?.bills);
+    const pageRefs=unique(rows.map(item=>refFrom(item,congresses[i])).filter(Boolean));
+    // Queue durability precedes advancing discovery. Replaying a page is idempotent.
+    await stageCandidates(pageRefs); refs.push(...pageRefs);
+    next = rows.length && body?.pagination?.next
+      ? {...next,next_offset:offset+rows.length}
+      : {...next,next_congress_index:i+1,next_offset:0,complete:i+1>=congresses.length};
+    await checkpointSyncState(STATE_RESOURCE,next);
+  }
+  return {refs:unique(refs),cursor:next,checkpointCursor:null};
 }
 
 function detailLevel(currentStage) {
@@ -185,17 +196,37 @@ function detailLevel(currentStage) {
   return 'index';
 }
 
-async function stageCandidates(refs) {
+async function stageCandidates(refs, priorityFloor = 0) {
   let inserted = 0;
   for (const ref of refs) {
     const sourceUpdatedAt = firstNonEmpty(ref.listItem?.updateDate, ref.listItem?.updateDateIncludingText);
-    const priority = detailLevel(stage(firstNonEmpty(ref.listItem?.latestAction?.text, ''), ref.type)) === 'enriched' ? 20 : 0;
+    const priority = Math.max(priorityFloor, detailLevel(stage(firstNonEmpty(ref.listItem?.latestAction?.text, ''), ref.type)) === 'enriched' ? 20 : 0);
     const result = await enqueuePolicyItem(RESOURCE, idOf(ref.congress, ref.type, ref.number), {
       congress: ref.congress, type: ref.type, number: ref.number, list_item: ref.listItem || null,
     }, { sourceUpdatedAt, priority });
     if (result !== 'unchanged') inserted += 1;
   }
   return inserted;
+}
+
+async function discoverFavorites(congresses) {
+  const ids=new Set();
+  for(let offset=0;;offset+=1000){
+    const rows=await supabaseGet('user_favorites',{select:'item_id',item_kind:'eq.bill',limit:'1000',offset:String(offset)});
+    for(const row of rows)ids.add(row.item_id);
+    if(rows.length<1000)break;
+  }
+  let checked=0;
+  for(const id of ids){
+    const parsed=PolicyEvidence.parseBillQuery(id);
+    if(!parsed?.congress||!congresses.includes(parsed.congress))continue;
+    // Check the official update even while the general discovery cursor is
+    // catching up. Unchanged favorites are not re-enqueued or re-embedded.
+    const body=await apiGet(`/bill/${parsed.congress}/${parsed.type}/${parsed.number}`,{},true);
+    const ref=refFrom(body?.bill,parsed.congress);
+    if(ref){await stageCandidates([ref],100);checked++;}
+  }
+  return checked;
 }
 
 async function memberName(bioguideId) {
@@ -214,7 +245,7 @@ async function bundle(ref) {
   // Every current-Congress bill reads its official action timeline once so the
   // lifecycle stage is based on evidence, not only the wording of the latest
   // one-line status. Index-only bills discard the timeline after classification
-  // and never persist action, text, or vote detail.
+  // and persist only its newest action for monitoring, without text versions.
   const [summaryBody, subjectBody, committeeBody, actionBody] = await Promise.all([
     apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
     apiGet(`${path}/committees`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
@@ -318,8 +349,12 @@ async function saveBundle(data) {
       last_activity_at: asArray(committee.activities).map(a => parseTimestamp(a.date)).filter(Boolean).sort().at(-1) || null, raw_source: committee }], 'bill_id,committee_id');
   }
   let latestActionId = null;
-  if (data.detailLevel !== 'index') for (let index = 0; index < data.actions.length; index += 1) {
-    const action = data.actions[index]; const actionText = firstNonEmpty(action.text, 'Action recorded'); const id = actionId(data.billId, action, index);
+  // Even an index-only record needs the newest official action for monitoring.
+  const historyActions = data.detailLevel === 'index'
+    ? [latestActionOf(data.actions, { actionDate: data.row.latest_action_date, text: data.row.latest_action_text })].filter(a => a?.text)
+    : data.actions;
+  for (let index = 0; index < historyActions.length; index += 1) {
+    const action = historyActions[index]; const actionText = firstNonEmpty(action.text, 'Action recorded'); const id = actionId(data.billId, action, index);
     const actionDate = parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`);
     await supabaseUpsert('bill_actions', [{ bill_action_id: id, bill_id: data.billId, action_date: actionDate,
       action_code: action.actionCode || null, action_type: action.sourceSystem?.name || action.actionType || null,
@@ -327,10 +362,12 @@ async function saveBundle(data) {
       source_url: withoutKey(action.url) || officialUrl(data.ref), raw_source: {
         source: 'congress.gov', action_code: action.actionCode || null, recorded_vote_count: asArray(action.recordedVotes).length,
       } }], 'bill_action_id');
-    if (action === latestActionOf(data.actions)) latestActionId = id;
+    if (action === latestActionOf(historyActions)) latestActionId = id;
     for (const vote of asArray(action.recordedVotes)) await saveVote(data, action, vote);
   }
-  if (latestActionId && (!previous || previous.current_status !== data.row.current_status)) await supabaseInsertIgnore('bill_status_history', { bill_id: data.billId, status: data.row.current_status,
+  // Idempotent insertion also repairs a run that wrote the bill then died before
+  // writing history. Comparing only previous.current_status loses that event.
+  if (latestActionId) await supabaseInsertIgnore('bill_status_history', { bill_id: data.billId, status: data.row.current_status,
     normalized_stage: data.row.current_stage, changed_at: data.row.status_updated_at || new Date().toISOString(), source_action_id: latestActionId }, 'bill_id,status,changed_at');
   for (const version of data.textVersions) {
     const formats = asArray(version.formats); const find = (pattern) => formats.find((format) => pattern.test(format.type || ''))?.url || null;
@@ -465,9 +502,11 @@ async function run() {
     // Recover any row a prior run left stuck in 'processing' (Actions
     // timeout or crash) before it becomes invisible to takePolicyQueue.
     await reapStalePolicyQueue(RESOURCE);
+    const favoriteChecks = await discoverFavorites(congresses);
+    console.log(`Congress.gov: checked ${favoriteChecks} watched bills before general discovery.`);
     const next = await candidates(congresses, state, bootstrap);
     const staged = await stageCandidates(next.refs);
-    await checkpointSyncState(RESOURCE, next.cursor);
+    await checkpointSyncState(STATE_RESOURCE, next.cursor);
     const queued = await takePolicyQueue(RESOURCE, MAX_BILLS);
     read = queued.length;
     console.log(`Congress.gov: discovered ${next.refs.length}, staged ${staged}, processing ${read} queued bills for Congress ${congresses.join(', ')}.`);
@@ -490,7 +529,7 @@ async function run() {
         const saved = await saveBundle(result.item);
         if (saved.shouldEmbed) embeds.push(result.item);
         written += 1;
-        if (saved.terminal) {
+        if (saved.terminal && process.env.PRUNE_TERMINAL_BILLS === 'true') {
           // This terminal item should not be picked up again unless the
           // official source publishes a newer update. Set skipped only after
           // notification matching, then let an RPC atomically remove detail.
@@ -521,7 +560,7 @@ async function run() {
     const embeddedBills = await embed(embeds);
     const semanticRelations = await refreshSemanticRelations(embeddedBills);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
-    await updateSyncState(RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
+    await updateSyncState(STATE_RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
     const status = written === read ? 'succeeded' : 'partial';
     await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
       cursor: next.cursor, staged, embedded: embeddedBills.length, semantic_relations: semanticRelations,

@@ -6,9 +6,11 @@ import json
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .feeds import RawReport, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .gemini import GeminiAnnotator
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
 
@@ -103,6 +105,13 @@ ARCHIVE_DAYS = 84
 CARRY_OVER_DAYS = ARCHIVE_DAYS  # kept for callers that tune it (tests)
 
 
+def source_home(src: Dict[str, Any]) -> Optional[str]:
+    if src.get("home"):
+        return src["home"]
+    parts = urlsplit(src.get("url") or "")
+    return f"{parts.scheme}://{parts.netloc}/" if parts.scheme in ("http", "https") and parts.netloc else None
+
+
 def horizon_days(src: Optional[Dict[str, Any]]) -> int:
     return max(CARRY_OVER_DAYS, int(((src or {}).get("html") or {}).get("max_age_days") or 0))
 
@@ -164,6 +173,7 @@ def previous_raws(
             market_only=bool(src.get("market_only")),
             commodity_from=src.get("commodity_from", "text"),
             commodity_scope=list(src.get("commodity_scope") or []),
+            board=src.get("board") or None,
         )
         if r.url and r.title:
             out.setdefault(src["id"], []).append(r)
@@ -236,7 +246,7 @@ def _recency_sort_key(report: ScoredReport) -> tuple:
 
 
 def build_index(
-    reports: List[ScoredReport], *, per_bucket: int
+    reports: List[ScoredReport], *, per_bucket: int, skip_sources: Iterable[str] = ()
 ) -> Dict[str, Dict[str, List[str]]]:
     """commodity -> country (or _global) -> report ids, newest first.
 
@@ -253,8 +263,11 @@ def build_index(
     the notice's series carries slightly more weight.
     """
     by_id = {r.id: r for r in reports}
+    skip = set(skip_sources)
     index: Dict[str, Dict[str, List[str]]] = {}
     for r in sorted(reports, key=lambda x: -x.importance):
+        if r.source_id in skip:
+            continue
         buckets = r.countries if r.scope == "country" else [GLOBAL_BUCKET]
         for commodity in r.commodities:
             per_commodity = index.setdefault(commodity, {})
@@ -268,6 +281,76 @@ def build_index(
     return index
 
 
+BOARD_LIMIT = 200
+
+
+def annotate_raws(raw: List[RawReport], sources: Dict[str, Dict[str, Any]],
+                  previous: Optional[Dict[str, Any]], annotator: GeminiAnnotator) -> Dict[str, Dict[str, Any]]:
+    """report id -> {"en", "ko", "control"?, "fresh"} for opted-in reports.
+
+    Reused from the previous build when the same URL still carries the same
+    headline; only new or re-titled headlines are sent.
+    """
+    prev: Dict[str, Dict[str, Any]] = {}
+    for it in (previous or {}).get("items") or []:
+        title = it.get("title") or {}
+        if title.get("en"):
+            prev[it.get("url") or ""] = {
+                "original": title.get("original"), "en": title["en"], "ko": title.get("ko"),
+                "control": {k: v for k, v in (it.get("control") or {}).items()
+                            if k in ("measure", "items", "targets")} or None,
+            }
+    notes: Dict[str, Dict[str, Any]] = {}
+    ask: List[Dict[str, Any]] = []
+    for r in raw:
+        src = sources.get(r.source_id) or {}
+        if not (src.get("translate") or r.board):
+            continue
+        rid = report_id(r)
+        if rid in notes:
+            continue
+        hit = prev.get(r.url)
+        if hit and hit["original"] == r.title and (hit["control"] or not r.board):
+            notes[rid] = {"en": hit["en"], "ko": hit["ko"], "fresh": False,
+                          **({"control": hit["control"]} if hit["control"] else {})}
+            continue
+        ask.append({"key": rid, "title": r.title, "lang": r.lang, "control": bool(r.board)})
+    for rid, res in annotator.annotate(ask).items():
+        notes[rid] = {**res, "fresh": True}
+    return notes
+
+
+def control_record(src: Dict[str, Any], note: Dict[str, Any]) -> Dict[str, Any]:
+    """The export-controls window's fields for one board item.
+
+    issuer / issuer_body come from the source catalog (who published it);
+    measure / items / targets are Gemini's reading of the headline, null
+    until one has been made.
+    """
+    reading = note.get("control") or {}
+    return {
+        "issuer": src.get("issuer") or src.get("default_country"),
+        "issuer_body": src.get("issuer_body") or src.get("agency"),
+        "issuer_body_ko": src.get("agency_ko") or src.get("agency"),
+        "measure": reading.get("measure"),
+        "items": reading.get("items") or [],
+        "targets": reading.get("targets") or [],
+        "extracted_by": "gemini" if reading else None,
+    }
+
+
+def build_boards(reports: List[ScoredReport], *, limit: int = BOARD_LIMIT) -> Dict[str, List[str]]:
+    """board -> report ids, newest first (dateless ones after, by importance)."""
+    out: Dict[str, List[ScoredReport]] = {}
+    for r in reports:
+        if r.board:
+            out.setdefault(r.board, []).append(r)
+    return {
+        name: [r.id for r in sorted(rows, key=lambda r: (_recency_sort_key(r), r.importance), reverse=True)[:limit]]
+        for name, rows in out.items()
+    }
+
+
 def build_commodity_reports(
     *,
     fetch_live: bool = True,
@@ -276,6 +359,7 @@ def build_commodity_reports(
     max_items: int = 5000,
     translate: bool = False,
     translate_limit: int = 60,
+    annotator: Optional[GeminiAnnotator] = None,
     now: Optional[datetime] = None,
     previous_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
@@ -311,10 +395,24 @@ def build_commodity_reports(
         raw, feed_status = [], [{"source_id": "_", "ok": False, "count": 0,
                                  "error": "no_fetch", "mode": "none"}]
 
+    # English (and Korean) headlines for sources that opt in, and a control
+    # reading for export-control boards -- before tagging, so the English is
+    # what the taggers see. Off without GEMINI_API_KEY.
+    annotator = annotator or GeminiAnnotator()
+    by_src = {s["id"]: s for s in sources}
+    notes = annotate_raws(raw, by_src, previous, annotator)
+    gemini_status = {
+        "enabled": annotator.enabled, "model": annotator.model_used, "calls": annotator.calls,
+        "annotated": sum(1 for n in notes.values() if n.get("fresh")),
+        "reused": sum(1 for n in notes.values() if not n.get("fresh")),
+        "error": annotator.error,
+    }
+
     scored: List[ScoredReport] = []
     for r in raw:
+        note = notes.get(report_id(r)) or {}
         tagged = tag_report(
-            title=r.title,
+            title=f"{r.title}\n{note['en']}" if note.get("en") else r.title,
             summary=r.summary,
             commodity_tagger=commodity_tagger,
             country_tagger=country_tagger,
@@ -338,6 +436,11 @@ def build_commodity_reports(
         # nothing here pretending to be one.
         if item is None:
             continue
+        if note.get("en"):
+            item.title_en = note["en"]
+            item.title_ko = item.title_ko or note.get("ko")
+        if r.board:
+            item.control = control_record(by_src.get(r.source_id) or {}, note)
         scored.append(item)
 
     # The board is the last ARCHIVE_DAYS (or a source's own longer window).
@@ -363,12 +466,25 @@ def build_commodity_reports(
 
         apply_korean_titles(reports, limit=translate_limit)
 
-    index = build_index(reports, per_bucket=per_bucket)
+    # board_only sources (OFAC, BIS) feed their board and nothing else until
+    # the export-controls window that shows them exists -- an Iran tanker
+    # designation would otherwise start appearing on the oil board.
+    board_only = {s["id"] for s in sources if s.get("board_only")}
+    index = build_index(reports, per_bucket=per_bucket, skip_sources=board_only)
 
     # Only ship the reports some window actually references. Everything else
     # is weight in a file the browser downloads on the static fallback path.
+    boards = build_boards(reports)
     referenced = {rid for buckets in index.values() for ids in buckets.values() for rid in ids}
+    referenced |= {rid for ids in boards.values() for rid in ids}
     items = [r.to_item() for r in reports if r.id in referenced]
+    # The publisher's own site, so the card's agency name links there (the
+    # title already links the report itself). A source's "home" wins; else
+    # the scheme and host of the URL it is collected from.
+    homes = {s["id"]: source_home(s) for s in sources}
+    for it in items:
+        if homes.get(it["source_id"]):
+            it["agency_url"] = homes[it["source_id"]]
     # When this build first saw each report. List-page sources publish no
     # date, and the weekly favorites digest mails what is new in the last
     # week -- without this those reports (ANRPC, VRA, CONAB, USGS...) could
@@ -421,6 +537,10 @@ def build_commodity_reports(
             "buckets": bucket_count,
         },
         "feed_status": feed_status,
+        "translation": gemini_status,
+        # Named lists fed by a source regardless of commodity: board -> ids,
+        # newest first. "cn_export_controls": MOFCOM's export-control bureau.
+        "boards": boards,
         "commodity_labels": commodity_labels,
         "country_names": country_names,
         "index": index,

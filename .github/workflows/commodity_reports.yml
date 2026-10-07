@@ -19,7 +19,10 @@ jobs:
           python-version: '3.12'
       # pypdf quotes the opening of PDF-only press releases (ILZSG); the
       # build still runs without it, just with those summaries empty.
-      - run: pip install --quiet pypdf
+      # curl_cffi is the last-resort Chrome TLS handshake for MOFCOM's
+      # export-control bureau (feeds.fetch_text); without it that source just
+      # fails on the runs urllib's handshake does.
+      - run: pip install --quiet pypdf curl_cffi
       - name: Tests
         working-directory: New for anti/scripts/commodity_reports
         run: python -m unittest discover -s tests -v
@@ -27,6 +30,11 @@ jobs:
         working-directory: New for anti/scripts/commodity_reports
         # --print-stats lists every feed that failed, which is the only place a
         # publisher that moved or started returning 403 becomes visible.
+        # Gemini translates headlines of sources marked "translate" (MOFCOM's
+        # export-control bureau) before tagging; without the key the build
+        # runs on the originals. Same AI Studio key sync-congress uses.
+        env:
+          GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
         run: python build_reports.py build --print-stats
       - name: Commit
         run: |
@@ -34,4 +42,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/commodity_reports_v1.json"
           git commit -m "chore: refresh commodity report intel" || exit 0
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

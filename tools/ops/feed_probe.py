@@ -171,7 +171,11 @@ def discover(url: str, html: str, limit: int = MAX_DISCOVERED) -> List[str]:
     return out[:limit]
 
 
-def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0) -> Dict[str, Any]:
+_ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
+
+
+def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0,
+             link_text: bool = False) -> Dict[str, Any]:
     out: Dict[str, Any] = {"status": res.get("status")}
     if res.get("error"):
         out["error"] = res["error"]
@@ -193,10 +197,20 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 
             out["block_hint"] = next((k for k in ("akamai", "cloudflare", "access denied", "captcha", "incapsula", "forbidden") if k in low), "")
         if link_re:
             links = []
-            for href in _HREF_RE.findall(text):
-                full = urljoin(res.get("final") or "", unescape(href))
-                if re.search(link_re, full) and full not in links:
-                    links.append(full)
+            if link_text:
+                # "url | anchor text": what a list-page parser would title it.
+                seen = set()
+                for href, inner in _ANCHOR_RE.findall(text):
+                    full = urljoin(res.get("final") or "", unescape(href))
+                    if re.search(link_re, full) and full not in seen:
+                        seen.add(full)
+                        label = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()
+                        links.append(f"{full} | {label[:90]}")
+            else:
+                for href in _HREF_RE.findall(text):
+                    full = urljoin(res.get("final") or "", unescape(href))
+                    if re.search(link_re, full) and full not in links:
+                        links.append(full)
             out["links"] = len(links)
             out["link_samples"] = links[:samples]
         if show_body:
@@ -256,7 +270,7 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     report: Dict[str, Any] = {"id": target["id"], "group": target.get("group", ""), "url": url}
     for key, res in raw.items():
         res["url"] = url
-        report[key] = describe(res, link_re, samples, show_body)
+        report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")))
     if target.get("render"):
         report["render"] = rendered(url, link_re)
     # Feed discovery from the first variant that got a readable page.
