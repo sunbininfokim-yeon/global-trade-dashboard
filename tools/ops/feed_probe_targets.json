@@ -5,156 +5,103 @@
  "targets": [
   {
    "group": "more",
-   "id": "eia_twip",
-   "url": "https://www.eia.gov/petroleum/weekly/",
+   "id": "eia_twip_rss",
+   "url": "https://www.eia.gov/petroleum/weekly/includes/week_in_petroleum_rss.xml",
    "variants": true,
-   "link_re": "eia\\.gov/petroleum/weekly/[^\\\"' ]+",
-   "samples": 12,
+   "show_body": 1800
+  },
+  {
+   "group": "more",
+   "id": "eia_gasdiesel_rss",
+   "url": "https://www.eia.gov/petroleum/gasdiesel/includes/gas_diesel_rss.xml",
+   "variants": true,
+   "show_body": 1500
+  },
+  {
+   "group": "more",
+   "id": "imnl_en_news",
+   "url": "https://www.manganese.org/en/news",
+   "variants": true,
+   "link_re": "manganese\\.org/en/[^\\\"' ]+",
+   "samples": 15,
    "link_text": true
   },
   {
    "group": "more",
-   "id": "eia_gasdiesel",
-   "url": "https://www.eia.gov/petroleum/gasdiesel/",
+   "id": "wpic_press",
+   "url": "https://platinuminvestment.com/news/press-releases",
    "variants": true,
-   "link_re": "eia\\.gov/[^\\\"' ]*(?:gasdiesel|todayinenergy)[^\\\"' ]*",
-   "samples": 10,
+   "link_re": "platinuminvestment\\.com/[^\\\"' ]+",
+   "samples": 15,
    "link_text": true
   },
   {
    "group": "more",
-   "id": "eia_rss_index",
-   "url": "https://www.eia.gov/tools/rssfeeds/",
+   "id": "wpic_research",
+   "url": "https://platinuminvestment.com/research",
    "variants": true,
-   "link_re": "eia\\.gov/rss/[^\\\"' ]+|\\.xml",
-   "samples": 40,
+   "link_re": "platinuminvestment\\.com/[^\\\"' ]+",
+   "samples": 15,
    "link_text": true
   },
   {
    "group": "more",
-   "id": "iea_news",
-   "url": "https://www.iea.org/news",
+   "id": "icda_home",
+   "url": "https://www.icda.org/",
    "variants": true,
-   "link_re": "iea\\.org/news/[a-z0-9-]+",
-   "samples": 10,
+   "link_re": "icda\\.org/[^\\\"' ]+",
+   "samples": 15,
    "link_text": true
   },
   {
    "group": "more",
-   "id": "iea_feed",
-   "url": "https://www.iea.org/feed",
+   "id": "fr_graphite",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=graphite",
    "variants": true,
-   "show_body": 300
+   "show_body": 900
   },
   {
    "group": "more",
-   "id": "eu_oil_bulletin",
-   "url": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+   "id": "fr_rare_earth",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=%22rare+earth%22",
    "variants": true,
-   "link_re": "europa\\.eu/[^\\\"' ]*oil[^\\\"' ]*",
-   "samples": 8,
-   "link_text": true
+   "show_body": 900
   },
   {
    "group": "more",
-   "id": "jogmec_news",
-   "url": "https://www.jogmec.go.jp/english/news/",
+   "id": "fr_critical_minerals",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=%22critical+minerals%22",
    "variants": true,
-   "link_re": "jogmec\\.go\\.jp/english/news/[^\\\"' ]+",
-   "samples": 10,
-   "link_text": true
+   "show_body": 900
   },
   {
    "group": "more",
-   "id": "wpic_feed",
-   "url": "https://platinuminvestment.com/feed/",
+   "id": "fr_platinum",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=platinum",
    "variants": true,
-   "show_body": 300
+   "show_body": 600
   },
   {
    "group": "more",
-   "id": "wpic_news",
-   "url": "https://platinuminvestment.com/news/",
+   "id": "fr_manganese",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=manganese",
    "variants": true,
-   "link_re": "platinuminvestment\\.com/[a-z-]+/[a-z0-9-]+",
-   "samples": 10,
-   "link_text": true
+   "show_body": 600
   },
   {
    "group": "more",
-   "id": "jm_pgm",
-   "url": "https://matthey.com/news",
+   "id": "fr_chromium",
+   "url": "https://www.federalregister.gov/documents/search.rss?conditions%5Bterm%5D=chromium",
    "variants": true,
-   "link_re": "matthey\\.com/news/[^\\\"' ]+",
-   "samples": 10,
-   "link_text": true
+   "show_body": 600
   },
   {
    "group": "more",
-   "id": "icda_feed",
-   "url": "https://www.icda.org/feed/",
+   "id": "au_rss_page",
+   "url": "https://www.industry.gov.au/contact-us/rss-feeds",
    "variants": true,
-   "show_body": 300
-  },
-  {
-   "group": "more",
-   "id": "icda_news",
-   "url": "https://www.icda.org/news/",
-   "variants": true,
-   "link_re": "icda\\.org/[^\\\"' ]*news[^\\\"' ]*",
-   "samples": 10,
-   "link_text": true
-  },
-  {
-   "group": "more",
-   "id": "imnl_feed",
-   "url": "https://www.manganese.org/feed/",
-   "variants": true,
-   "show_body": 300
-  },
-  {
-   "group": "more",
-   "id": "imnl_news",
-   "url": "https://www.manganese.org/news/",
-   "variants": true,
-   "link_re": "manganese\\.org/[^\\\"' ]+",
-   "samples": 10,
-   "link_text": true
-  },
-  {
-   "group": "more",
-   "id": "doe_cmm",
-   "url": "https://www.energy.gov/cmm/critical-minerals-and-materials",
-   "variants": true,
-   "link_re": "energy\\.gov/[^\\\"' ]*(?:article|news|cmm)[^\\\"' ]*",
-   "samples": 10,
-   "link_text": true
-  },
-  {
-   "group": "more",
-   "id": "eu_crm",
-   "url": "https://single-market-economy.ec.europa.eu/sectors/raw-materials/areas-specific-interest/critical-raw-materials_en",
-   "variants": true,
-   "link_re": "europa\\.eu/[^\\\"' ]+",
-   "samples": 8,
-   "link_text": true
-  },
-  {
-   "group": "more",
-   "id": "au_industry_news",
-   "url": "https://www.industry.gov.au/news",
-   "variants": true,
-   "link_re": "industry\\.gov\\.au/news/[a-z0-9-]+",
-   "samples": 10,
-   "link_text": true
-  },
-  {
-   "group": "more",
-   "id": "ga_news",
-   "url": "https://www.ga.gov.au/news",
-   "variants": true,
-   "link_re": "ga\\.gov\\.au/news/[a-z0-9-]+",
-   "samples": 8,
+   "link_re": "industry\\.gov\\.au/[^\\\"' ]*(?:rss|feed)[^\\\"' ]*",
+   "samples": 20,
    "link_text": true
   },
   {
