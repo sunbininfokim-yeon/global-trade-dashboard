@@ -95,7 +95,7 @@ test('semantic search keeps grouped bill metadata and regulation links after exa
     if (u.pathname.includes('/rpc/')) {
       const body = JSON.parse(options.body);
       assert.equal(body.p_embedding_model, 'gemini-embedding-001');
-      return Response.json([{ source_type: 'bill', source_id: fixture.bill_id, title: fixture.title, similarity_score: 0.9 }, { source_type: 'regulation', source_id: 'reg-test', title: 'Test regulation', similarity_score: 0.8 },{source_type:'executive_order',source_id:'12345',title:'Test EO',similarity_score:0.7},{source_type:'public_law',source_id:'PLAW-test',title:'Test law',similarity_score:0.6}]);
+      return Response.json([{ source_type: 'bill', source_id: fixture.bill_id, title: fixture.title, similarity_score: 0.9 }, { source_type: 'regulation', source_id: 'reg-test', title: 'Test regulation', similarity_score: 0.8 },{source_type:'executive_order',source_id:'12345',title:'Test EO',similarity_score:0.7},{source_type:'public_law',source_id:'PLAW-test',title:'Test law',similarity_score:0.7}]);
     }
     if (u.pathname.endsWith('/regulations')) return Response.json([{ regulation_id: 'reg-test', federal_register_url: 'https://www.federalregister.gov/test',publication_date:'2026-09-01' }]);
     if (u.pathname.endsWith('/executive_orders')) return Response.json([{eo_number:12345,publication_date:'2026-09-02',signed_date:'2026-09-01'}]);
@@ -108,10 +108,10 @@ test('semantic search keeps grouped bill metadata and regulation links after exa
   const b = await response.json();
   assert.equal(b.items[0].current_stage, 'enacted');
   assert.equal(b.items[0].law_number, '119-1');
-  assert.equal(b.items[1].source_url, 'https://www.federalregister.gov/test');
-  assert.equal(b.items[1].publication_date,'2026-09-01');
-  assert.equal(b.items[2].publication_date,'2026-09-02');
-  assert.equal(b.items[3].enacted_date,'2026-09-03');
+  assert.equal(b.items.find(i=>i.type==='regulation').source_url, 'https://www.federalregister.gov/test');
+  assert.equal(b.items.find(i=>i.type==='regulation').publication_date,'2026-09-01');
+  assert.equal(b.items.find(i=>i.type==='executive_order').publication_date,'2026-09-02');
+  assert.equal(b.items.find(i=>i.type==='public_law').enacted_date,'2026-09-03');
 });
 test('usOverview reads committee_directory and uses canonical_bill_count, not three JEC rows', async () => {
   const paths = [];
@@ -176,6 +176,7 @@ test('condition search includes full and partial matches across types, with no e
  const calls=[];
  const w=worker(async url=>{
   const u=new URL(url);calls.push(u);
+  if(u.pathname.endsWith('/rpc/search_policy_document_terms'))return Response.json({message:'not installed'},{status:404});
   assert.ok(u.searchParams.get('and').startsWith('(or('));
   if(u.pathname.endsWith('/bills'))return Response.json([
    {bill_id:'119-hr-1',title:'Nickel batteries',summary:'Export controls apply',current_stage:'introduced'},
@@ -191,7 +192,7 @@ test('condition search includes full and partial matches across types, with no e
  assert.deepEqual(data.items.map(i=>i.matched_condition_count),[3,3,2]);
  assert.equal(data.items[2].condition_matches.find(m=>m.term==='수출통제').matched,false);
  assert.ok(data.items.some(i=>i.type==='public_law'));
- assert.equal(calls.length,16);assert.ok(calls.some(u=>u.searchParams.get('and').includes('),or(')));
+ assert.equal(calls.filter(u=>!u.pathname.includes('/rpc/')).length,16);assert.ok(calls.some(u=>u.searchParams.get('and')?.includes('),or(')));
 });
 test('too many conditions return an actionable 400 without API calls',async()=>{
  const w=worker(async()=>{throw Error('must not call');});

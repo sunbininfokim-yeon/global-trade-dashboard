@@ -2,6 +2,48 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
   "title": "Shipping Capacity Snapshot v1",
+  "$defs": {
+    "trafficWindow": {
+      "type": "object",
+      "required": ["status", "value", "start_date", "end_date", "observed_days", "required_days"],
+      "properties": {
+        "status": {"enum": ["available", "insufficient_daily_coverage"]},
+        "value": {"type": ["number", "null"], "minimum": 0},
+        "start_date": {"type": ["string", "null"], "format": "date"},
+        "end_date": {"type": ["string", "null"], "format": "date"},
+        "observed_days": {"type": "integer", "minimum": 0, "maximum": 7},
+        "required_days": {"const": 7}
+      },
+      "if": {"properties": {"status": {"const": "available"}}},
+      "then": {"properties": {"value": {"type": "number"}, "observed_days": {"const": 7}}},
+      "else": {"properties": {"value": {"type": "null"}}}
+    },
+    "trafficComparison": {
+      "type": "object",
+      "required": ["label_ko", "status", "change_pct", "baseline"],
+      "properties": {
+        "label_ko": {"type": "string"},
+        "status": {"enum": ["available", "zero_baseline", "insufficient_daily_coverage"]},
+        "change_pct": {"type": ["number", "null"], "minimum": -100},
+        "baseline": {"$ref": "#/$defs/trafficWindow"}
+      },
+      "if": {"properties": {"status": {"const": "available"}}},
+      "then": {"properties": {"change_pct": {"type": "number"}}},
+      "else": {"properties": {"change_pct": {"type": "null"}}}
+    },
+    "trafficMetric": {
+      "type": "object",
+      "required": ["current", "comparisons"],
+      "properties": {
+        "current": {"$ref": "#/$defs/trafficWindow"},
+        "comparisons": {
+          "type": "object",
+          "required": ["week", "month", "year"],
+          "additionalProperties": {"$ref": "#/$defs/trafficComparison"}
+        }
+      }
+    }
+  },
   "type": "object",
   "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "ui_delivery_contract", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
@@ -332,6 +374,29 @@
         "type": "object",
         "required": ["metrics", "history", "history_metric_key", "history_field", "history_unit", "history_point_count", "history_status", "daily_averages"],
         "properties": {
+          "traffic_summary": {
+            "allOf": [{"$ref": "#/$defs/trafficMetric"}],
+            "type": "object",
+            "required": ["contract_version", "unit", "basis", "composition_status", "ship_types", "remaining_types_share_pct", "comparison_policy_ko", "warning_ko"],
+            "properties": {
+              "contract_version": {"const": "chokepoint-traffic-v1"},
+              "unit": {"const": "estimated_trade_tonnes_per_day"},
+              "basis": {"const": "same_calendar_7d_mean_observed_only_no_imputation"},
+              "composition_status": {"enum": ["available", "unavailable_total", "incomplete_ship_types", "non_additive_source_totals"]},
+              "ship_types": {"type": "array", "items": {
+                "allOf": [{"$ref": "#/$defs/trafficMetric"}],
+                "required": ["metric_key", "label_ko", "share_pct"],
+                "properties": {
+                  "metric_key": {"enum": ["tanker", "dry_bulk", "container", "general_cargo"]},
+                  "label_ko": {"type": "string"},
+                  "share_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100}
+                }
+              }},
+              "remaining_types_share_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+              "comparison_policy_ko": {"type": "string"},
+              "warning_ko": {"type": "string"}
+            }
+          },
           "history": {
             "type": "array",
             "items": {

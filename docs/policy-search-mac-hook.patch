@@ -1,0 +1,45 @@
+diff --git a/scripts/run-policy-mac-temporary.js b/scripts/run-policy-mac-temporary.js
+index 16ff67be..002d0e2f 100644
+--- a/scripts/run-policy-mac-temporary.js
++++ b/scripts/run-policy-mac-temporary.js
+@@ -4,6 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+ const {spawnSync,spawn}=require('node:child_process');
+ const {remoteState}=require('./lib/policy-remote-guard');
+ const {resumeTime}=require('./lib/policy-mac-resume');
++const {searchCycle}=require('./lib/policy-search-cycle');
+ const {acquireLock,releaseLock}=require('./lib/policy-mac-lock');
+ const dir=path.join(os.homedir(),'Documents/policy-downloads/mac-20260930');
+ const lock=path.join(os.tmpdir(),'chokemonitor-policy-local.lock');
+@@ -37,7 +38,7 @@ async function main(){
+  fs.mkdirSync(dir,{recursive:true,mode:0o700});
+  if(fs.existsSync(path.join(dir,'STOP')))throw Error('STOP exists');
+  acquireLock(lock,state);
+- try { const previous=JSON.parse(fs.readFileSync(path.join(dir,'status.json'),'utf8')); for(const key of ['congress_last_success_at','rss_last_success_at','completed_at','archive_exit_code','archive_completed_at'])if(previous[key]!==undefined)state[key]=previous[key]; } catch(e) { if(e.code!=='ENOENT')console.warn('Previous status unavailable; DB checkpoints remain authoritative.'); }
++ try { const previous=JSON.parse(fs.readFileSync(path.join(dir,'status.json'),'utf8')); for(const key of ['congress_last_success_at','rss_last_success_at','completed_at','archive_exit_code','archive_completed_at','search_exit_code','search_completed_at','search_last_success_at'])if(previous[key]!==undefined)state[key]=previous[key]; } catch(e) { if(e.code!=='ENOENT')console.warn('Previous status unavailable; DB checkpoints remain authoritative.'); }
+  const heartbeat=setInterval(save,30000);
+  for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{halt=true;child?.kill('SIGTERM')});
+  try {
+@@ -52,7 +53,7 @@ async function main(){
+    continue;
+   }
+   delete state.pause_reason;delete state.retry_at;
+-  delete state.archive_exit_code;delete state.archive_completed_at;
++  delete state.archive_exit_code;delete state.archive_completed_at;delete state.search_exit_code;delete state.search_completed_at;
+   state.cycle_started_at=new Date().toISOString();state.status='running';save();
+   const {code,interrupted}=await runTask('scripts/sync-congress.js',[],{SYNC_MODE:'incremental',CONGRESS_NUMBER:'119',CONGRESS_NUMBERS:'119',MAX_BILLS:'100',MAX_DISCOVERY_PAGES:'4',DETAIL_CONCURRENCY:'2',CONGRESS_REQUEST_INTERVAL_MS:'1200',MAX_EMBEDDINGS:'100',PRUNE_TERMINAL_BILLS:'false',REFRESH_BILL_SEMANTIC_RELATIONS:'false'});
+   if(code===0)state.congress_last_success_at=new Date().toISOString();
+@@ -62,7 +63,13 @@ async function main(){
+    state.archive_exit_code=archived.code;state.archive_completed_at=new Date().toISOString();if(archived.code===0)state.rss_last_success_at=state.archive_completed_at;
+    if(archived.interrupted&&!halt&&!fs.existsSync(path.join(dir,'STOP')))continue;
+   }
+-  state.exit_code=code;state.completed_at=new Date().toISOString();state.status=code!==0?'failed':state.archive_exit_code!==undefined&&state.archive_exit_code!==0?'partial_archive_failed':'waiting';
++  const search=searchCycle(process.env,os.homedir());
++  if(search&&!halt&&!fs.existsSync(path.join(dir,'STOP'))&&remoteCheck()==='safe'){
++   const indexed=await runTask(search.script,search.args,search.env);
++   state.search_exit_code=indexed.code;state.search_completed_at=new Date().toISOString();if(indexed.code===0)state.search_last_success_at=state.search_completed_at;
++   if(indexed.interrupted&&!halt&&!fs.existsSync(path.join(dir,'STOP')))continue;
++  }
++  state.exit_code=code;state.completed_at=new Date().toISOString();state.status=code!==0?'failed':state.archive_exit_code!==undefined&&state.archive_exit_code!==0?'partial_archive_failed':state.search_exit_code!==undefined&&state.search_exit_code!==0?'partial_search_deferred':'waiting';
+   state.next_cycle_at=new Date(Date.now()+4*3600000).toISOString();save();
+   while(!halt&&!fs.existsSync(path.join(dir,'STOP'))&&Date.now()<Date.parse(state.next_cycle_at))await new Promise(r=>setTimeout(r,1000));
+  }}finally{clearInterval(heartbeat);state.status='stopped';save();releaseLock(lock,process.pid)}

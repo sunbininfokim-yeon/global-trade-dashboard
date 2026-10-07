@@ -441,7 +441,13 @@
             <p class="mypage-status hidden" id="mypage-password-status"></p>
 
             <p class="mypage-section-title">회원 탈퇴</p>
-            <p class="mypage-empty">회원 탈퇴 기능은 준비 중입니다. 필요하시면 문의해주세요.</p>
+            <p class="mypage-empty">탈퇴하면 즐겨찾기·알림 설정을 포함한 모든 데이터가 즉시 삭제되며 복구할 수 없습니다.</p>
+            <div class="mypage-field">
+                <label>비밀번호 확인</label>
+                <input type="password" id="mypage-delete-password" autocomplete="current-password">
+            </div>
+            <button type="button" class="mypage-btn is-danger" id="mypage-delete-account">회원 탈퇴</button>
+            <p class="mypage-status hidden" id="mypage-delete-status"></p>
         `;
 
         const nicknameStatus = el.querySelector('#mypage-nickname-status');
@@ -489,6 +495,32 @@
                 passwordStatus.textContent = err.message || '변경하지 못했습니다.';
                 passwordStatus.className = 'mypage-status is-error';
             } finally {
+                btn.disabled = false;
+            }
+        });
+
+        const deleteStatus = el.querySelector('#mypage-delete-status');
+        el.querySelector('#mypage-delete-account').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const pw = el.querySelector('#mypage-delete-password').value;
+            deleteStatus.className = 'mypage-status hidden';
+            if (!pw) {
+                deleteStatus.textContent = '비밀번호를 입력해주세요.';
+                deleteStatus.className = 'mypage-status is-error';
+                return;
+            }
+            if (!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+            btn.disabled = true;
+            deleteStatus.textContent = '탈퇴 처리 중…';
+            deleteStatus.className = 'mypage-status';
+            try {
+                await window.Auth.deleteAccount(pw);
+                // deleteAccount() signs out on success; the onChange
+                // subscription in render() re-renders this whole screen to
+                // the logged-out state, so there's nothing left to do here.
+            } catch (err) {
+                deleteStatus.textContent = err.message || '탈퇴하지 못했습니다.';
+                deleteStatus.className = 'mypage-status is-error';
                 btn.disabled = false;
             }
         });
