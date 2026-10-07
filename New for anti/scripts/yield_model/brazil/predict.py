@@ -141,7 +141,11 @@ def predict_one(cfg, year, oni, predicted):
 
     feats = blend_features(cfg, dailies, year)
     if not feats:
-        return None
+        # The model exists; the season's weather window has not started.
+        # Returning None here made run_forecast report "no trained model".
+        return {"key": cfg.key, "year": year, "error":
+                f"season {year} has no observed weather in the model window yet",
+                "weather_through": str(coverage.date())}
     feats["oni_season"] = oni_for(oni, year, ONI_WINDOW.get(cfg.key, ONI_SUMMER))
 
     notes = panel_features(cfg, feats, year, history, predicted)

@@ -1,18 +1,18 @@
 # US→KR L3 pipeline — 2026-10-07
 
 Headline: `high:downside`
-Tier B edges fired: 4
+Tier B edges fired: 7
 Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, cboe_options
 
 ## Channels
-- downside: high heat=7.8024 kr=['000660', '005930']
+- downside: high heat=22.4206 kr=['000660', '005930']
 - upside: quiet heat=0.0 kr=[]
 - vol_up: quiet heat=0.0 kr=[]
 - vol_down: quiet heat=0.0 kr=[]
 
 ## Hit-rate (overnight open, any driver ≤−2%)
 - alert days: 94 / 249
-- frac_neg alert=0.7979 vs baseline=0.494 (lift=0.3039)
+- frac_neg alert=0.7872 vs baseline=0.498 (lift=0.2892)
 - mean alert R=-0.022528 baseline=0.005192
 
 ## Recalibration suggestions

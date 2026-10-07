@@ -79,6 +79,20 @@ def enso_label(oni):
     return "neutral", oni
 
 
+def selected_forward(model):
+    """Forward-chaining scores of the feature set the trainer actually chose.
+
+    Older artifacts do not record the choice; the trainers pick the set with
+    the higher forward skill, so the same rule recovers it.
+    """
+    v = model["validation"]
+    sel = model.get("selected")
+    if sel is None:
+        sel = max(("all", "core"),
+                  key=lambda k: v.get(f"{k}_forward", {}).get("skill_vs_trend", -9))
+    return v.get(f"{sel}_forward", {})
+
+
 def last_actual(crop):
     """Most recent observed season, for a like-for-like comparison on screen."""
     path = os.path.join(HERE, f"us_{crop}_training.csv")
@@ -118,8 +132,11 @@ def main():
 
             with open(os.path.join(HERE, f"us_{crop}_model.json"), encoding="utf-8") as f:
                 model = json.load(f)
-            fwd = (model["validation"].get("core_forward")
-                   or model["validation"].get("all_forward", {}))
+            fwd = selected_forward(model)
+            ins = r.get("inseason")
+            # Corn and soy carry a skill for today's point in the season;
+            # wheat and cotton only their end-of-season number.
+            skill_now = ins["skill_now"] if ins else fwd.get("skill_vs_trend", float("nan"))
 
             # Corn/soy count provenance over July-August; wheat over its own
             # grain-fill window. Normalise the key so the frontend has one
@@ -141,7 +158,8 @@ def main():
                 },
                 "skill": {
                     "method": "forward-chaining, trend refit inside each fold",
-                    "skill_vs_trend_only": round(fwd.get("skill_vs_trend", float("nan")), 3),
+                    "skill_vs_trend_only": round(skill_now, 3),
+                    "end_of_season_skill": round(fwd.get("skill_vs_trend", float("nan")), 3),
                     "detrended_r2": round(fwd.get("detrended_r2", float("nan")), 3),
                     "sigma_used": round(r["sigma"], 2),
                     "model_sigma": round(r["base_sigma"], 2),
@@ -151,7 +169,19 @@ def main():
                     "train_window_years": model.get("train_window_years"),
                     # Below roughly 20% the weather term is barely beating a
                     # trend-only guess, and the panel should say so.
-                    "low_confidence": fwd.get("skill_vs_trend", 0) < 0.20,
+                    # Corn and soy are judged at today's date, so early-season
+                    # numbers show as a reference until the backtest says the
+                    # weather to date carries real information.
+                    "low_confidence": (ins["mode"] == "reference") if ins
+                                      else fwd.get("skill_vs_trend", 0) < 0.20,
+                },
+                "inseason": ins and {
+                    **ins,
+                    "skill_now": round(ins["skill_now"], 3),
+                    "scenario_spread_sd": round(ins["scenario_spread_sd"], 2),
+                    "percentiles": {k: round(v, 1) for k, v in r["percentiles"].items()},
+                    "skill_by_date": {k: round(v["skill_vs_trend"], 3)
+                                      for k, v in model["inseason"]["cutoffs"].items()},
                 },
                 "trained_years": model["trained_years"],
                 # The standardised weather inputs the model actually saw this

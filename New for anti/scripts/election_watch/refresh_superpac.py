@@ -8,7 +8,7 @@ import subprocess
 import sys
 from build_superpac import PUBLIC, ROOT, atomic_json
 from build_superpac_map import build
-from election_watch.superpac import now
+from election_watch.superpac import now, SourceError
 from election_watch.superpac_schedule import collection_plan
 
 
@@ -47,9 +47,10 @@ def main():
             results.append({'cycle': cycle, 'source': name, 'status': 'success' if code == 0 else 'failed', 'exit_code': code})
     # Source failures leave their last good files intact. Healthy sources still advance.
     try:
-        build(args.public, cadence=args.cadence)
+        from refresh_governor_matchups import ROSTERS
+        build(args.public, cadence=args.cadence, governor_rosters=json.loads(ROSTERS.read_text()) if ROSTERS.exists() else None)
         map_status = 'success'
-    except (ValueError, OSError, KeyError, AssertionError, TypeError):
+    except (ValueError, OSError, KeyError, AssertionError, TypeError, SourceError):
         map_status = 'failed'
     failed = map_status == 'failed' or any(r['status'] == 'failed' for r in results)
     atomic_json(args.public / 'usa_election_finance_refresh_status_v1.json', {

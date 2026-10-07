@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-07T06:06:28.573567+00:00",
+  "generated_at": "2026-10-07T15:35:32.752096+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 161,
-    "scored": 161,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 156,
+    "scored": 156,
     "selected": 40,
-    "indicators": 17
+    "indicators": 18
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 13,
+      "count": 14,
       "error": null,
       "mode": "live"
     },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -328,6 +328,20 @@
       "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "published_at": "2026-10-02T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "published_at": "2026-09-25T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -952,41 +966,6 @@
       },
       "rank_reasons": [
         "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "06fdfda7dc2bc85e",
-      "published_at": "2026-07-23T16:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/letter-from-the-governor-to-the-daily-mail",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Letter from the Governor to the Daily Mail",
-        "original_lang": "en",
-        "ko": "[GBR·안보] Letter from the Governor to the Daily Mail"
-      },
-      "summary": "Letter from Governor Andrew Bailey to the Daily Mail on the subject of AI and cyber-attacks",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,finance,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1729,6 +1708,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1741,17 +1755,6 @@
         "economy"
       ],
       "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Philip R. Lane: The outlook for the euro area economy",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf",
-      "country": "EUR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 2.064,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1777,14 +1780,36 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "PRA and FCA propose new captive insurance regime to drive UK growth and competitiveness",
-      "url": "https://www.bankofengland.co.uk/news/2026/july/pra-and-fca-propose-new-captive-insurance-regime-to-drive-uk-growth-and-competitiveness",
+      "title": "Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-legal-sub-committee-meeting-16-june-26",
       "country": "GBR",
       "domains": [
         "economy",
         "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-operations-sub-committee-meeting-16-june-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -2491,41 +2516,6 @@
       "site_slot": null
     },
     {
-      "id": "06fdfda7dc2bc85e",
-      "published_at": "2026-07-23T16:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/letter-from-the-governor-to-the-daily-mail",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Letter from the Governor to the Daily Mail",
-        "original_lang": "en",
-        "ko": "[GBR·안보] Letter from the Governor to the Daily Mail"
-      },
-      "summary": "Letter from Governor Andrew Bailey to the Daily Mail on the subject of AI and cyber-attacks",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,finance,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -3249,6 +3239,41 @@
         "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "aad1b905a15fde00",
+      "published_at": "2026-09-25T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {

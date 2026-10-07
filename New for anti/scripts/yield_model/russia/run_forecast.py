@@ -96,6 +96,15 @@ def main():
     for cfg in ALL:
         season = override or current_season(cfg)
         r = predict_one(cfg, season, oni)
+        final = False
+        if r is not None and "error" in r and override is None:
+            # After SEASON_ROLLOVER the new season has no weather yet. Until
+            # Rosstat publishes the season just finished, its weather-complete
+            # estimate is the most useful number to show -- not a blank panel.
+            prev = predict_one(cfg, season - 1, oni)
+            if (prev is not None and "error" not in prev
+                    and prev["last_actual"]["year"] < season - 1):
+                r, season, final = prev, season - 1, True
         if r is None:
             skipped.append((cfg.key, "no trained model"))
             continue
@@ -140,6 +149,9 @@ def main():
             "season_progress": r.get("season_progress"),
             "presentation": ("weather-driven forecast" if r["beats_trend"]
                              else "trend extrapolation"),
+            "season_status": "final_estimate" if final else "in_season",
+            **({"status_note_ko": f"{season} 시즌 종료 · Rosstat 발표 전 최종 추정치"}
+               if final else {}),
             "enso": {"state": label_enso, "oni_growing_season": oni_val},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
@@ -173,6 +185,13 @@ def main():
         flag = "" if r["beats_trend"] else "  [trend extrapolation]"
         log(f"{cfg.key:28} {r['point']:11,.0f} kg/ha "
             f"({r['weather_effect_pct']:+.1f}% weather){flag}")
+
+    shown = {v["season"] for v in payload["regions"].values()
+             if v.get("forecast_available")}
+    if len(shown) == 1:
+        # The panel title reads the top-level season; keep it on the season
+        # whose numbers are actually shown.
+        payload["season"] = shown.pop()
 
     payload["skipped"] = {k: w for k, w in skipped}
     if not payload["regions"]:

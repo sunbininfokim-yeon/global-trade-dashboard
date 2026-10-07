@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-10-07T05:56:03.285429+00:00",
+  "generated_at": "2026-10-07T13:18:54.387524+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,12 +18,11 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 1.75,
-    "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+    "score": 1.6,
+    "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음",
     "drivers": [
       "qra_net_borrowing_up",
-      "tga_cash_high",
-      "reporter_fima_focus"
+      "tga_cash_high"
     ],
     "qra": {
       "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
@@ -142,7 +141,7 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 3,
+        "articles_with_hits": 2,
         "top_indicators": [
           {
             "id": "fomc_liquidity",
@@ -152,28 +151,16 @@
               "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로",
               "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
             ]
-          },
-          {
-            "id": "fima",
-            "score": 1.2,
-            "label_ko": "FIMA 레포",
-            "evidence": [
-              "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
-            ]
           }
         ],
         "themes_ko": [
-          "FOMC·금리 유동성 (점수 7.65)",
-          "FIMA 레포 (점수 1.2)"
+          "FOMC·금리 유동성 (점수 7.65)"
         ],
         "hint_weights": {
-          "policy": 7.65,
-          "mixed": 1.2
+          "policy": 7.65
         },
-        "reporter_signals": [
-          "reporter_fima_focus"
-        ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
+        "reporter_signals": [],
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성",
         "per_article": [
           {
             "title": "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까",
@@ -210,36 +197,16 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
-            "published": "2026-09-08 16:45",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "fima",
-                "label_ko": "FIMA 레포",
-                "mentions": 1,
-                "hint": "mixed",
-                "evidence": [
-                  "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
           "reporter_liquidity_primary": "fomc_liquidity",
           "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
           "reporter_liquidity_themes": [
-            "FOMC·금리 유동성 (점수 7.65)",
-            "FIMA 레포 (점수 1.2)"
+            "FOMC·금리 유동성 (점수 7.65)"
           ],
-          "reporter_liquidity_signals": [
-            "reporter_fima_focus"
-          ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
+          "reporter_liquidity_signals": [],
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성"
         }
       }
     ],
@@ -248,23 +215,20 @@
       "qra_end_cash_bn": 950.0,
       "qra_vs_prior_bn": 68.0,
       "liquidity_bias": "tightening",
-      "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+      "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음",
       "beige_tone": null,
       "reporter_liquidity_primary": "fomc_liquidity",
       "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
       "reporter_liquidity_themes": [
-        "FOMC·금리 유동성 (점수 7.65)",
-        "FIMA 레포 (점수 1.2)"
+        "FOMC·금리 유동성 (점수 7.65)"
       ],
-      "reporter_liquidity_signals": [
-        "reporter_fima_focus"
-      ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
+      "reporter_liquidity_signals": [],
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-934500311935",
+      "id": "qra-10531164398",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -297,7 +261,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-552619393032",
+      "id": "fed-930747599113",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -328,7 +292,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-839839949035",
+      "id": "fed-247421438368",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -359,7 +323,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-600577394442",
+      "id": "fed-953871605874",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -390,7 +354,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-864831965370",
+      "id": "fed-736464641057",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -421,7 +385,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-956043342950",
+      "id": "fed-166992461838",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -452,7 +416,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-284488069640",
+      "id": "fed-41743514126",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -483,7 +447,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-804411320278",
+      "id": "fed-81801385196",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -514,7 +478,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-798036644415",
+      "id": "fed-563802518804",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -545,7 +509,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-647190108453",
+      "id": "fed-657614390803",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -576,7 +540,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-913033042989",
+      "id": "fed-76540637895",
       "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -607,7 +571,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-84109004455",
+      "id": "liq-ind-366823440300",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -619,11 +583,11 @@
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "FOMC·금리 유동성 · FIMA 레포",
+        "original": "FOMC·금리 유동성",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] FOMC·금리 유동성 · FIMA 레포"
+        "ko": "[유동성지표·양영빈] FOMC·금리 유동성"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -632,8 +596,7 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:fomc_liquidity",
-        "reporter_fima_focus"
+        "indicator:fomc_liquidity"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
@@ -645,14 +608,6 @@
           "evidence": [
             "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로",
             "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
-          ]
-        },
-        {
-          "id": "fima",
-          "score": 1.2,
-          "label_ko": "FIMA 레포",
-          "evidence": [
-            "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
           ]
         }
       ]
@@ -694,7 +649,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 2,
+    "reporter_indicator_hits": 1,
     "sources_ok": 5,
     "sources_failed": 0
   }
