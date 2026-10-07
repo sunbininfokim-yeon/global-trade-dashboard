@@ -1,5 +1,7 @@
 import { escapeHtml } from '../../ui.js';
-import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=2';
+import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=3';
+
+import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js';
 
 // Every figure here is independent expenditure: money outside groups spent of
 // their own accord to promote or attack a named candidate. The index says so
@@ -143,21 +145,22 @@ const sideColumn = (race, side, categories) => {
 };
 
 const raceBody = (race, view) => `
-    <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div>
+    <details class="elections-disclosure"><summary>정당별 누적 공시 · 본선·경선·과거 포함</summary><div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div></details>
+    ${spendingHistoryHtml(race, { federal_superpac_categories: view.categories, governor_independent_expenditure_categories: view.categories })}
     <p class="elections-panel-note">${escapeHtml(view.label)}${race.coverage_note_ko ? ` · ${race.coverage_note_ko}` : ''}</p>
     <p class="elections-panel-note">반대 지출은 그 후보를 떨어뜨리려 쓴 돈입니다. 상대 정당의 지지액으로 옮기지 않으며, 우세 판정에도 넣지 않습니다.</p>`;
 
 // "지지지출 우세" sits next to the party name wherever a badge appears, so the
 // badge cannot be read as an election result.
-const badgeCaption = '<span class="elections-spac-caption">지지지출 우세</span>';
+const badgeCaption = '<span class="elections-spac-caption">누적 지지지출 우세</span>';
 
-const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true) => {
+const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true, contestKnown = null) => {
     if (!race) return `
-        <section class="elections-spac-block">
-            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">해당 선거 없음</span></div>
-            ${showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : ''}
+        <section class="elections-spac-block" data-spac-office="${label === '주지사' ? 'governor' : 'senate'}">
+            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">${contestKnown === false ? '2026 선거 없음' : contestKnown === true ? '자금 자료 연결 대기' : '선거·자료 확인 대기'}</span></div>
+            ${contestKnown === false ? '' : candidateMatchupHtml(pollRace,null,contract,pollBoard,pollHealth,days,{showPolls})}
         </section>`;
-    const notRegular = (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
+    const notRegular = contestKnown === false || (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
     const polling = notRegular ? '<p class="elections-panel-note">2026 정기선거 없음 · 특별선거는 별도 확인. 아래 금액은 공시 기록입니다.</p>'
         : showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : '';
     const view = viewFor(race.office, contract);
@@ -165,11 +168,11 @@ const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, 
     const unsupported = race.status === 'unsupported';
     const missing = race.finance_missing === true;
     return `
-        <section class="elections-spac-block">
+        <section class="elections-spac-block" data-spac-office="${label === '주지사' ? 'governor' : 'senate'}">
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}${unverified ? ' · 2026 선거 미확인' : ''}</span>
                 ${missing ? '<span class="elections-spac-badge is-none">자금 자료 연결 대기</span>' : unsupported ? '<span class="elections-spac-badge is-none">주 공시 미수집</span>' : `${badgeCaption}${winnerBadge(race, view.categories)}`}</div>
             ${unverified ? '<p class="elections-panel-note">이 주의 해당 직위에 2026 선거가 있는지 검증 전입니다. 공시 금액은 선거자금 기록으로만 읽어주세요.</p>' : ''}
-            ${polling}
+            ${notRegular ? polling : candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls })}
             ${missing ? financeEvidenceHtml(null, contract) : unsupported ? '<p class="elections-panel-note">독립지출 금액은 수집 미지원이며, 0달러나 지출 없음으로 해석할 수 없습니다.</p>' : raceBody(race, view)}
         </section>`;
 };
@@ -209,7 +212,7 @@ const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, da
             ${mapped === false ? '<span class="elections-spac-unmapped-tag">지도 미대응</span>' : ''}
             ${winnerBadge(race, viewFor(race.office, contract).categories)}
         </button>
-        <div class="elections-spac-district-body">${showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : ''}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
+        <div class="elections-spac-district-body">${candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls })}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
     </div>`;
 
 const byDistrict = (a, b) => String(a.district ?? '').localeCompare(String(b.district ?? ''), undefined, { numeric: true });
@@ -246,7 +249,7 @@ export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, cont
     const mapped = pending ? house : house.filter((race) => isMapped(race));
     const unmapped = pending ? [] : house.filter((race) => !isMapped(race));
     return `
-            <p class="section-title">연방 하원 · 배지는 지지지출이 더 많은 정당입니다. 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
+            <p class="section-title">연방 하원 · 배지는 누적 공시 지지지출이 더 많은 정당입니다 (본선·경선·과거 포함). 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
             ${pending && house.length ? `<p class="elections-panel-note${failed ? ' is-warning' : ''}">${failed
         ? '선거구 지도 도형을 불러오지 못했습니다. 금액은 그대로 표시됩니다. 나갔다 다시 들어오면 재시도합니다.'
         : '선거구 지도를 불러오는 중입니다. 금액은 먼저 표시되고, 지도 위치는 도형이 도착하면 연결됩니다.'}</p>` : ''}
@@ -258,7 +261,7 @@ export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, cont
             ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}`;
 };
 
-export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true } = {}) => {
+export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true, contestIds = null } = {}) => {
     const merged = mergeRaces(state, races, pollBoard);
     const governor = merged.find((race) => race.office === 'governor');
     const senate = merged.find((race) => race.office === 'senate');
@@ -268,8 +271,8 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
         <p class="elections-spac-lede">외부 단체(슈퍼팩 등)가 특정 후보를 <strong>지지하거나 반대하려고 독자적으로 쓴 돈</strong>입니다.
             후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
-            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls)}
-            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls)}
+            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:governor`) : null)}
+            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:senate`) : null)}
         </section>
         <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days, { showPolls })}
         </section>

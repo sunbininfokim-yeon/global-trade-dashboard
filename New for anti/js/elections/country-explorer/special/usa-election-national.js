@@ -1,7 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal, pollSourceReady } from '../../data/usa-election-context.js?v=2';
 import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=2';
-import { electionOverviewHtml, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=3';
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
 
@@ -97,6 +97,7 @@ export const renderUsaElectionNational = (root, {
             <div class="elections-map-legend"><span><i class="is-blue"></i>블루</span><span><i class="is-red"></i>레드</span><span><i class="is-swing"></i>스윙 · 퍼플</span></div>
             <p class="elections-panel-note"><a href="${STATE_CLASSIFICATION_SOURCES.winner}" target="_blank" rel="noopener noreferrer">2024 대선 주별 승자</a>와 <a href="${STATE_CLASSIFICATION_SOURCES.swing}" target="_blank" rel="noopener noreferrer">Cook 경합주 7곳</a> 기준입니다. 이 지도 색을 민주·공화 의석으로 계산하지 않습니다.</p>
         </details>`;
+    bindElectionOverview(root, onStateOpen);
     root.querySelector('[data-election-back]')?.addEventListener('click', onBack);
     root.querySelector('[data-election-mode]')?.addEventListener('click', onToggle);
     root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange(Number(button.dataset.window))));

@@ -1,8 +1,21 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { pollSignal, pollSourceReady } from '../data/usa-election-context.js?v=2';
 
+import { electionRatingSummary } from '../data/election-overview.js?v=2';
+
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
     : party === 'GOP' ? [220, 38, 38, 225] : [71, 85, 105, 230];
+
+export const districtElectionColor = (raceId, rating, board, health, days = 7, now = Date.now()) => {
+    const signal = pollSignal(board?.races?.[raceId] || {election_date:'2026-11-03'},board,health,days,now);
+    if (signal.status === 'certified_result') return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
+    if (signal.status === 'awaiting_certified_result') return [71,85,105,230];
+    const r = rating?.races?.find((row) => row.race_id === raceId);
+    if (['solid_dem','likely_dem'].includes(r?.effective_rating)) return [96,165,250,115];
+    if (['solid_rep','likely_rep'].includes(r?.effective_rating)) return [248,113,113,115];
+    if (signal.party === 'DEM' || signal.party === 'REP') return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
+    return [71,85,105,230];
+};
 
 const eachCoordinate = (node, visit) => {
     if (!Array.isArray(node)) return;
@@ -42,7 +55,7 @@ const isHighlighted = (feature, highlightDistrict) => highlightDistrict != null
 // 또 읽다가 (실패 직후에는 캐시가 비어 있어서) 몰래 재요청이 나가고, 패널은 "도형 못 받음"인데
 // 지도는 그려지는 어긋남이 생긴다.
 export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null, fitView = true,
-    electionMode = false, pollBoard = null, pollHealth = null, windowDays = 7, isStale = null, geo: loaded }) => {
+    electionMode = false, pollBoard = null, pollHealth = null, windowDays = 7, ratings = null, country = null, onDistrictSelect = null, isStale = null, geo: loaded }) => {
     let geo = loaded;
     try {
         if (geo === undefined) geo = await loadCongressionalDistricts(stateId);
@@ -54,6 +67,7 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
     }
     if (isStale?.()) return null;
     if (!geo) return false;
+    const rating = electionMode ? electionRatingSummary(ratings,'house',country,stateId) : null;
     host.setElectionMap([
         ...host.worldBaseLayers({ id: `elections-usa-${stateId}-district-base`, landColor: [22, 32, 48, 255], lineColor: [71, 85, 105, 110] }),
         new host.layers.GeoJsonLayer({
@@ -61,7 +75,7 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
             // deck.gl caches accessor results, so the highlight has to be part
             // of the layer's update trigger or the repaint keeps the old fill.
             updateTriggers: { getFillColor: [highlightDistrict, electionMode, pollBoard?.fetched_at,
-                pollSourceReady(pollBoard, pollHealth), windowDays, Math.floor(Date.now() / 3600000)],
+                pollSourceReady(pollBoard, pollHealth), rating?.asOf, country?.ui_ready?.congress?.swing_seats, windowDays, Math.floor(Date.now() / 3600000)],
                 getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
             getLineColor: (feature) => (isHighlighted(feature, highlightDistrict) ? [255, 255, 255, 255] : [226, 232, 240, 205]),
             getLineWidth: (feature) => (isHighlighted(feature, highlightDistrict) ? 3 : 1),
@@ -70,11 +84,12 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
                 if (isHighlighted(feature, highlightDistrict)) return [255, 255, 255, 235];
                 if (!electionMode) return partyColor(feature.properties?.party_abbr);
                 const district = String(feature.properties?.district ?? '');
-                const race = pollBoard?.races?.[`USA:${stateId}:house:${district}`];
-                const party = pollSignal(race, pollBoard, pollHealth, windowDays).party;
-                return party === 'DEM' ? partyColor('DEM') : party === 'REP' ? partyColor('GOP') : [71, 85, 105, 230];
+                return districtElectionColor(`USA:${stateId}:house:${district}`,rating,pollBoard,pollHealth,windowDays);
             },
         }),
-    ], null, fitView ? viewForGeometry(geo) : null);
+    ], onDistrictSelect ? (info) => {
+        const district = info?.object?.properties?.district;
+        if (district != null && geo.features.some((f) => String(f.properties?.district) === String(district))) onDistrictSelect(String(district));
+    } : null, fitView ? viewForGeometry(geo) : null);
     return true;
 };
