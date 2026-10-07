@@ -604,6 +604,32 @@
       "commodity_scope": ["soybeans", "corn", "wheat"],
       "html": {"base": "https://www.bcr.com.ar", "item_href_re": "(?:https?://www\\.bcr\\.com\\.ar)?/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/[a-z0-9-]+", "max_items": 15},
       "notes": "Added 2026-09-26. Weekly research bulletin of Argentina's main grain exchange -- soybean, corn and wheat crop, crush and export analysis. An exchange, not a ministry: Argentina's agriculture secretariat has no feed, and BCR's crop estimates are the ones the market quotes. commodity_scope (2026-09-27): the bulletin also carries macro columns, and one that said 'petróleo' once was filed as an oil report -- only the three grains count from here."
+    },
+    {
+      "id": "us_federal_register_minerals",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "default_country": "USA",
+      "kind": "federal_register",
+      "url": "https://www.federalregister.gov/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.1,
+      "federal_register": {"terms": ["graphite", "\"rare earth\"", "manganese", "chromium", "platinum", "palladium"], "per_page": 15},
+      "notes": "Added 2026-10-07. Official U.S. rulemaking, trade-remedy and funding notices that name graphite, rare earths, manganese, chromium or the platinum-group metals (Commerce/USITC duties, Section 232, DOE/DoD awards). Uses the Federal Register JSON API, one query per term: the HTML search and its RSS sit behind a bot check, the API does not (probe 2026-10-07). The API matches full text, so most hits are not about the mineral; only documents whose title or abstract name a tracked commodity survive tagging. No commodity_hint on purpose."
+    },
+    {
+      "id": "us_eia_gasoline_diesel",
+      "agency": "U.S. Energy Information Administration",
+      "agency_ko": "미국 에너지정보청(EIA)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.eia.gov/petroleum/gasdiesel/includes/gas_diesel_rss.xml",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.0,
+      "commodity_hint": ["light_oils"],
+      "notes": "Added 2026-10-07. EIA's weekly retail Gasoline and Diesel Fuel Update (new item each Monday, probe 2026-10-07: newest 2026-10-06). Feeds the 경질유 window, where gasoline is the product with a weekly official price. commodity_hint applies only to a market-worded item. (EIA's This Week in Petroleum feed was probed too: its newest item is 2025-10-29, so it is not used.)"
     }
   ]
 }

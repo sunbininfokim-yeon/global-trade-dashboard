@@ -995,6 +995,58 @@ class ExporterSourcesTests(unittest.TestCase):
         self.assertIsNone(items["https://www.kemendag.go.id/b"].board)  # still a palm/cocoa report
 
 
+class FederalRegisterTests(unittest.TestCase):
+    BODY = json.dumps({"results": [
+        {"title": "Antidumping Duty Order on Active Anode Material (Natural and Artificial Graphite) From China",
+         "abstract": "Commerce issues an antidumping order on anode material made from graphite.",
+         "html_url": "https://www.federalregister.gov/documents/2026/09/30/x-graphite", "publication_date": "2026-09-30",
+         "agency_names": ["Commerce Department", "International Trade Administration"]},
+        {"title": "Agency Information Collection Activities", "abstract": "A form that lists many materials in passing.",
+         "html_url": "https://www.federalregister.gov/documents/2026/09/29/x-form", "publication_date": "2026-09-29",
+         "agency_names": ["Interior Department"]},
+        {"title": "", "html_url": "https://www.federalregister.gov/documents/x-empty"},
+    ]})
+
+    def test_parse_and_tag(self):
+        from commodity_reports.feeds import parse_federal_register
+        src = {"id": "fr", "agency": "FR", "agency_ko": "관보", "default_country": "USA", "kind": "federal_register"}
+        items = parse_federal_register(self.BODY, src)
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0].published_at[:10], "2026-09-30")
+        self.assertTrue(items[0].summary.startswith("Commerce Department; International Trade Administration:"))
+        self.assertEqual(parse_federal_register("not json", src), [])
+
+    def test_queries_one_per_term_and_duplicates_collapse(self):
+        from commodity_reports import build as build_mod
+        from commodity_reports.feeds import federal_register_urls
+        from commodity_reports.gemini import GeminiAnnotator
+        src = {"id": "us_federal_register_minerals", "agency": "FR", "agency_ko": "관보", "default_country": "USA",
+               "kind": "federal_register", "url": "https://www.federalregister.gov/", "enabled": True,
+               "federal_register": {"terms": ["graphite", "\"rare earth\""], "per_page": 5}}
+        urls = federal_register_urls(src)
+        self.assertEqual(len(urls), 2)
+        self.assertIn("conditions%5Bterm%5D=graphite", urls[0])
+        self.assertIn("per_page=5", urls[0])
+
+        calls = []
+
+        def fake_fetch_text(url, **kw):
+            calls.append(url)
+            return self.BODY
+
+        orig = build_mod.fetch_source
+        from commodity_reports import feeds
+        orig_text = feeds.fetch_text
+        feeds.fetch_text = fake_fetch_text
+        try:
+            res = feeds.fetch_source(src, user_agent="t", timeout=1, max_items=10)
+        finally:
+            feeds.fetch_text = orig_text
+        self.assertTrue(res["ok"])
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(res["count"], 2)  # the two queries return the same documents: de-duplicated by URL
+
+
 class CommodityScopeTests(unittest.TestCase):
     """commodity_scope: a narrow source is never filed under anything else."""
 
