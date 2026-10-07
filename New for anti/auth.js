@@ -112,6 +112,31 @@ const Auth = (() => {
         if (error) throw error;
     }
 
+    // 회원 탈퇴. Re-checks the password with the same call signIn uses -- so a
+    // stolen/left-open session alone can't delete the account -- then hands a
+    // fresh access token to the Worker, the only place holding the
+    // service_role key needed to remove the auth.users row itself. Every
+    // per-user table added this project (profiles, user_favorites,
+    // commodity_digest_source_prefs, commodity_report_notifications)
+    // references it `on delete cascade`, so that one deletion clears all of it.
+    async function deleteAccount(password) {
+        const user = currentUser();
+        if (!user || !user.email) throw new Error('로그인이 필요합니다.');
+        const { data, error } = await client.auth.signInWithPassword({ email: user.email, password });
+        if (error) throw new Error('비밀번호가 올바르지 않습니다.');
+        const token = data.session && data.session.access_token;
+        if (!token) throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+
+        const res = await fetch('/api/account/delete', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error || '탈퇴 처리 중 오류가 발생했습니다.');
+
+        await signOut();
+    }
+
     // Sends a reset-password email; the link in it brings them back here
     // with a recovery session already established (see the
     // 'PASSWORD_RECOVERY' handler above), which is what actually lets
@@ -542,7 +567,7 @@ const Auth = (() => {
         listFavorites, addFavorite, removeFavorite, setFavoriteNotifyEnabled,
         listDisabledCommoditySources, setCommoditySourceEnabled,
         commoditySourceFilterHtml, bindCommoditySourceFilter, bindCommodityFavoriteFilter,
-        changePassword, myProfile, updateNickname, resetPasswordForEmail,
+        changePassword, deleteAccount, myProfile, updateNickname, resetPasswordForEmail,
         billNotificationsPaused, setBillNotificationsPaused,
         mailingPreferences, setMailingPreference,
     };
