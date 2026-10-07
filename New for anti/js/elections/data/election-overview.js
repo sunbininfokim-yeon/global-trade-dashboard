@@ -134,6 +134,7 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     const retained = retainedMembers(country, office, rating, state);
     const counts = countMembers(retained);
     if (!counts) return null;
+    const retainedCounts = { ...counts };
     let pending = counts.unknown;
     delete counts.unknown;
     let single = 0, pollResolved = 0, certified = 0;
@@ -149,5 +150,5 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     }
     const total = retained.length + rating.contested;
     if (!state && total !== { house: 435, senate: 100, governor: 50 }[office]) return null;
-    return { counts, pending, total, retained: retained.length, single, pollResolved, certified };
+    return { counts, pending, total, retained: retained.length, retainedCounts, single, pollResolved, certified };
 };

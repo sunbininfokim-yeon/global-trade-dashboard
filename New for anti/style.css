@@ -6908,3 +6908,41 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-spac-cand { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .elections-spac-cand > span:first-child { overflow-wrap: break-word; }
 .elections-spac-cand .elections-spac-amts { flex-wrap: wrap; white-space: normal; }
+
+/* Election detail: selectable ratings, election scope and candidate matchup. */
+.elections-rating-tile { font: inherit; background: #172236; cursor: pointer; text-align: left; }
+.elections-rating-tile[aria-expanded="true"] { background: #263953; outline: 1px solid #cbd5e1; }
+.elections-rating-tile:focus-visible, .elections-contest-row:focus-visible { outline: 2px solid #38bdf8; }
+.elections-seat-card [data-rating-list][hidden] { display: none; }
+.elections-contest-row { display: grid; width: 100%; gap: 3px; text-align: left; color: #cbd5e1; background: transparent; border: 0; border-bottom: 1px solid #334155; padding: 9px 2px; cursor: pointer; font: inherit; font-size: 11px; }
+.elections-contest-row strong { color: #f1f5f9; }
+.elections-contest-row small { color: #94a3b8; }
+.elections-election-scope { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 8px; margin: 8px 0; border-radius: 6px; background: #1e293b; color: #e2e8f0; font-size: 12px; }
+.elections-election-scope small { grid-column: 1 / -1; color: #cbd5e1; font-size: 10px; }
+.elections-district-focus { border: 1px solid #38bdf8; border-radius: 9px; padding: 11px; margin-bottom: 12px; background: #0f2033; }
+.elections-district-focus > header { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.elections-district-focus h3 { margin: 0; color: #e0f2fe; font-size: 14px; }
+.elections-district-focus > header button { background: transparent; border: 0; color: #cbd5e1; font-size: 22px; cursor: pointer; }
+.elections-district-focus > p { font-size: 12px; color: #e2e8f0; }
+.elections-district-focus a, .elections-candidate-matchup a { color: #7dd3fc; }
+.elections-matchup-title { display: flex; flex-wrap: wrap; gap: 8px; color: #e2e8f0; font-size: 12px; }
+.elections-matchup-title span { color: #94a3b8; }
+.elections-matchup-versus { color: #e2e8f0; font-size: 12px; overflow-wrap: anywhere; }
+.elections-matchup-versus > span { color: #94a3b8; font-size: 10px; }
+.elections-matchup-candidates { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; }
+.elections-matchup-candidate { background: #172236; border-radius: 6px; padding: 8px; min-width: 0; border-top: 3px solid #64748b; }
+.elections-matchup-candidate.is-dem { border-top-color: #3b82f6; }
+.elections-matchup-candidate.is-gop { border-top-color: #ef4444; }
+.elections-matchup-candidate header { display: grid; gap: 3px; margin-bottom: 8px; font-size: 12px; color: #e2e8f0; overflow-wrap: anywhere; }
+.elections-matchup-candidate header span { font-size: 10px; color: #cbd5e1; }
+.elections-candidate-money { display: grid; gap: 5px; }
+.elections-candidate-money > div { display: grid; gap: 2px; padding: 6px; border: 1px solid #334155; border-radius: 4px; }
+.elections-candidate-money span { font-size: 10px; color: #94a3b8; }
+.elections-candidate-money strong { font-size: 12px; color: #e2e8f0; overflow-wrap: anywhere; }
+.elections-matchup-candidate small { display: block; margin-top: 5px; font-size: 9px; color: #94a3b8; }
+.elections-latest-poll { display: grid; gap: 5px; margin: 8px 0; padding: 8px; border-radius: 6px; background: #1e293b; font-size: 11px; color: #e2e8f0; }
+.elections-latest-poll span, .elections-latest-poll small { display: block; color: #cbd5e1; overflow-wrap: anywhere; }
+.elections-latest-poll a { color: #7dd3fc; }
+.elections-spending-history article { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid #334155; }
+.elections-spending-history small { color: #94a3b8; }
+.elections-state-polls .elections-map-legend { margin-bottom: 8px; }

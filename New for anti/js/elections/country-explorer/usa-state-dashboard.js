@@ -1,10 +1,11 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-// ?v=5: #463 이 이미 ?v=4 로 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
+// ?v=7: 이전 슈퍼팩 모듈이 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=6';
-import { electionOverviewHtml, evidenceSectionHtml } from './special/usa-election-overview.js';
-import { pollEvidenceHtml } from './special/usa-election-evidence.js?v=2';
-import { ELECTION_OFFICES } from '../data/election-overview.js';
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=7';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=3';
+import { pollEvidenceHtml, latestPollHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=3';
+import { candidateMatchupHtml } from './special/usa-candidate-matchup.js';
+import { ELECTION_OFFICES } from '../data/election-overview.js?v=2';
 
 export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null) => {
     const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
@@ -15,9 +16,24 @@ export const statePollEvidenceHtml = (stateId, board, health, days = 7, selected
             const district = office === 'house' ? String(race.district) : null;
             return `<article class="elections-race-card${district && district === String(selectedDistrict) ? ' is-selected' : ''}" data-poll-race="${escapeHtml(race.race_id)}">
                 ${district ? `<button class="elections-race-open" type="button" data-poll-district="${escapeHtml(district)}"><strong>하원 ${Number(district)}구</strong><span>지도에서 보기 →</span></button>` : ''}
-                ${pollEvidenceHtml(race, board, health, days)}</article>`;
+                ${latestPollHtml(race, board, health)}${pollEvidenceHtml(race, board, health, days)}</article>`;
         }).join('')}</section>`;
     }).join('') || '<p class="elections-muted">이 주의 여론조사 감시 자료가 아직 연결되지 않았습니다. 조사 자체가 없다는 뜻은 아닙니다.</p>';
+};
+
+export const districtFocusHtml = (state, district, financeRaces, contract, board, health, days = 7) => {
+    if (district == null) return '';
+    const key = String(district).padStart(2,'0');
+    const member = state.federal_delegation?.house_members?.find((m) => String(m.district ?? '00').padStart(2,'0') === key);
+    const id = `USA:${state.id}:house:${key}`;
+    const finance = (financeRaces || []).find((r) => r.race_id === id);
+    const poll = board?.races?.[id];
+    return `<section class="elections-district-focus" tabindex="-1"><header><h3>${escapeHtml(state.id)} · 하원 ${key === '00' ? '전역구' : Number(key) + '구'}</h3><button type="button" data-clear-district aria-label="선거구 선택 해제">×</button></header>
+        <p>현재 의원: ${member ? person(member) : '공석·현직 명부 미확인'}</p>
+        ${candidateMatchupHtml(poll, finance, contract, board, health, days)}
+        <p class="elections-panel-note">참고 · 공시 누적 합계 (본선·경선·과거 포함, 위 후보별 본선 금액과 별개)</p>
+        ${financeEvidenceHtml(finance,contract)}
+        <p class="elections-panel-note">${finance ? '아래 슈퍼팩 목록에서 경선·과거 공시와 정당별 누적 금액을 더 볼 수 있습니다.' : '이 선거구의 외부 지출 자료 연결 대기'}</p></section>`;
 };
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
@@ -153,13 +169,28 @@ export const renderUsaStateDashboard = (root, {
                 // A row without geometry still opens; it just clears the map's
                 // highlight rather than asking for one that cannot be drawn.
                 const district = button.dataset.spacDistrict;
-                onHighlightDistrict?.(wasOpen || district === undefined ? null : district);
+                selectDistrict(wasOpen || district === undefined ? null : district);
             }));
         };
 
-        // 슈퍼팩 섹션 본문. 폴은 위의 "여론조사" 섹션이 따로 보여 주므로 여기서는 끈다(showPolls:false).
+        const contestIds = () => latest.ratings ? new Set(Object.values(latest.ratings.offices || {}).flatMap((o) => o.races || []).map((r) => r.race_id)) : null;
+        const drawFocus = () => {
+            const target = root.querySelector('[data-district-focus]');
+            if (!target) return;
+            target.innerHTML = districtFocusHtml(state, latest.openDistrict, latest.financeRaces, latest.financeContract, latest.pollBoard, latest.pollHealth, latest.windowDays);
+            target.querySelector('[data-clear-district]')?.addEventListener('click', () => selectDistrict(null));
+        };
+        const selectDistrict = (district, { notify = true, focus = true } = {}) => {
+            latest.openDistrict = district;
+            drawFocus();
+            root.querySelectorAll('[data-district-key]').forEach((row) => row.classList.toggle('is-open', district != null && row.dataset.districtKey === String(district)));
+            root.querySelectorAll('[data-poll-race]').forEach((row) => row.classList.toggle('is-selected', district != null && row.dataset.pollRace === `USA:${state.id}:house:${district}`));
+            if (notify) onHighlightDistrict?.(district);
+            if (district != null && focus) root.querySelector('.elections-district-focus')?.focus({preventScroll:false});
+        };
+        // Separate polling section and duplicated evidence beside candidate spending.
         const financeSection = () => usaStateSuperPac(state, latest.financeRaces, mapped, latest.financeContract,
-            latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: false });
+            latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: true, contestIds: contestIds() });
 
         const bodyHtml = () => {
             const { pollBoard: board, pollHealth: health, windowDays: days, openDistrict: open } = latest;
@@ -171,8 +202,9 @@ export const renderUsaStateDashboard = (root, {
                 <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
                 ${statePollEvidenceHtml(state.id, board, health, days, open)}`;
             // 실패 안내는 접이식 섹션 **밖**에 둔다 -- 닫힌 <details> 안에 있으면 아무도 못 본다.
-            return electionOverviewHtml(country, latest.ratings, { state, board, health, days })
+            return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days })
                 + failureNote(latest.financeFailed)
+                + '<p class="elections-panel-note">하원 지도: 옅은 파랑 DEM · 옅은 빨강 GOP = Cook Solid/Likely 우세 가정. 진한 색 = 최근 조사상 우세. 회색 = 미정. 선거 후에는 공식 결과만 칠합니다.</p>'
                 + '<p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>'
                 + evidenceSectionHtml('poll', '여론조사', `감시 ${polledRaces.length}개 선거 · 누적 ${observationCount}건 · 최근 ${days}일`, pollContent, evidenceOpen.poll)
                 + evidenceSectionHtml('finance', '슈퍼팩 · 외부 독립지출', '주지사·상원·하원 후보별 공시', financeSection(), evidenceOpen.finance || (open != null && !evidenceOpen.poll));
@@ -185,11 +217,19 @@ export const renderUsaStateDashboard = (root, {
             skeleton.insertAdjacentHTML('afterend', bodyHtml());
             skeleton.remove();
             bodyPainted = true;
+            drawFocus();
+            bindElectionOverview(root, (id, district, office) => {
+                if (district != null) selectDistrict(district);
+                else {
+                    const section = root.querySelector('[data-evidence-section="finance"]'); if (section) section.open = true;
+                    root.querySelector(`[data-spac-office="${office}"]`)?.scrollIntoView({block:'start'});
+                }
+            });
             root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange?.(Number(button.dataset.window))));
             root.querySelectorAll('[data-poll-district]').forEach((button) => button.addEventListener('click', () => {
                 root.querySelectorAll('[data-poll-race]').forEach((row) => row.classList.remove('is-selected'));
                 button.closest('[data-poll-race]').classList.add('is-selected');
-                onHighlightDistrict?.(button.dataset.pollDistrict);
+                selectDistrict(button.dataset.pollDistrict);
             }));
             const house = root.querySelector('[data-spac-house]');
             if (house) bindHouse(house);
@@ -206,6 +246,7 @@ export const renderUsaStateDashboard = (root, {
         if (!loading) paintBody();
 
         return {
+            selectDistrict(district, options) { selectDistrict(district, options); },
             setFinance(next) {
                 latest = { ...latest, ...next };
                 if (!bodyPainted) paintBody();
@@ -220,7 +261,7 @@ export const renderUsaStateDashboard = (root, {
                 const openRace = house.querySelector('.elections-spac-district.is-open')?.dataset.raceId;
                 const scroll = root.scrollTop;
                 house.innerHTML = usaStateSuperPacHouse(state, latest.financeRaces, mapped, latest.financeContract,
-                    latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: false });
+                    latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: true, contestIds: contestIds() });
                 if (openRace) house.querySelector(`[data-race-id="${CSS.escape(openRace)}"]`)?.classList.add('is-open');
                 bindHouse(house);
                 root.scrollTop = scroll;
@@ -229,7 +270,7 @@ export const renderUsaStateDashboard = (root, {
     }
 
     root.innerHTML = `
-        ${header}
+        ${header}<div data-district-focus></div>
         <section class="elections-detail-section">
             <p class="section-title">1 · 주 행정부</p>
             <div class="elections-card-grid">
@@ -259,6 +300,13 @@ export const renderUsaStateDashboard = (root, {
     `;
     bindHeader();
     return {
+        selectDistrict(district) {
+            const target = root.querySelector('[data-district-focus]');
+            target.innerHTML = districtFocusHtml(state,district,null,null,null,null,windowDays);
+            target.querySelector('[data-clear-district]')?.addEventListener('click', () => {target.innerHTML='';onHighlightDistrict?.(null);});
+            target.querySelector('.elections-district-focus')?.focus();
+            onHighlightDistrict?.(district);
+        },
         setFinance() {},
         // 지도 소식이 오면 부제만 바꾼다 (본문은 주 자료라 도형과 무관하다).
         setMapped({ districtMapReady: ready }) {

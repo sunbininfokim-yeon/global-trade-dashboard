@@ -124,7 +124,7 @@ export const usaMidtermsModel = (country) => {
                 label: '상원',
                 current: currentOf(summary.senate_by_party, { total: 100 }),
                 contestedKo: Number.isFinite(summary.senate_up_in_2026)
-                    ? `${summary.senate_up_in_2026}석 개선` : '',
+                    ? `${summary.senate_up_in_2026}석 선거${Number.isFinite(summary.senate_special_up_in_2026) ? ` · 정기 ${summary.senate_regular_up_in_2026} + 특별 ${summary.senate_special_up_in_2026}` : ""}` : '',
                 seatNoteKo: '',
                 states: stateRows(states, 'senate'),
             },
