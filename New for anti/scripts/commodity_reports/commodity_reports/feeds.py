@@ -219,6 +219,9 @@ def _board_for(source: Dict[str, Any], title: str) -> Optional[str]:
 
 
 def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
+    # A feed whose item titles say nothing ("Data For 10/05/26") gets a label.
+    if source.get("title_prefix") and kw.get("title"):
+        kw["title"] = f"{source['title_prefix']}{kw['title']}"
     return RawReport(
         source_id=source["id"],
         agency=source.get("agency", source["id"]),
@@ -800,11 +803,14 @@ def parse_federal_register(body: str, source: Dict[str, Any]) -> List[RawReport]
         rows = json.loads(body).get("results") or []
     except (ValueError, AttributeError):
         return []
+    # Titles that name a mineral for an unrelated reason (feed additives,
+    # brake drums) -- a source-level exclusion, tuned from the real hits.
+    exclude = re.compile((source.get("federal_register") or {}).get("title_exclude") or r"(?!x)x", re.I)
     items: List[RawReport] = []
     for r in rows:
         title = strip_html(str(r.get("title") or "")).strip()
         url = str(r.get("html_url") or "").strip()
-        if not title or not url:
+        if not title or not url or exclude.search(title):
             continue
         abstract = strip_html(str(r.get("abstract") or "")).strip()
         agencies = "; ".join(r.get("agency_names") or [])

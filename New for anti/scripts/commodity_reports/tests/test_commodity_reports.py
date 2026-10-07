@@ -1015,6 +1015,12 @@ class FederalRegisterTests(unittest.TestCase):
         self.assertEqual(items[0].published_at[:10], "2026-09-30")
         self.assertTrue(items[0].summary.startswith("Commerce Department; International Trade Administration:"))
         self.assertEqual(parse_federal_register("not json", src), [])
+        # title_exclude drops a mineral-by-the-way title; title_prefix labels a bare feed title.
+        src2 = dict(src, federal_register={"title_exclude": "Information Collection"})
+        self.assertEqual(len(parse_federal_register(self.BODY, src2)), 1)
+        from commodity_reports.feeds import _raw_from
+        self.assertEqual(_raw_from({"id": "x", "title_prefix": "EIA: "}, title="Data For 10/05/26", url="u",
+                                   summary="", published_at=None).title, "EIA: Data For 10/05/26")
 
     def test_queries_one_per_term_and_duplicates_collapse(self):
         from commodity_reports import build as build_mod
