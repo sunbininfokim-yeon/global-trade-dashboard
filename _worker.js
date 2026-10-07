@@ -780,6 +780,7 @@ const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,
 const COMTRADE_TTL = {
     "2709": 172800,  // Oil: 48h
     "2711": 172800,  // Gas: 48h
+    "271012": 604800, // Light oils (naphtha, motor gasoline...): weekly
     "2701": 604800,  // Thermal coal: weekly
     "2704": 604800,  // Met coal: weekly
     "7108": 86400,   // Gold: 24h
@@ -2879,6 +2880,7 @@ const FUTURES_UNPRICED = {
     chromium: "거래되는 선물 계약이 없습니다",
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    light_oils: "무료로 확인 가능한 실시간 시세가 없습니다 (납사·휘발유 모두 Platts·Argus 유료 평가가)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
 };
@@ -3051,6 +3053,18 @@ async function handleUsPolicy(request, env) {
     const q = url.searchParams;
 
     try {
+        if (path === 'reports/quality') {
+            return await kvCachedJson(env, 'us:reports:quality:v1', 60, async () => {
+                const rows = await usFetch(env, 'data_sync_state', 'select=cursor,last_successful_at&sync_resource=eq.mailing:reports:mac&limit=1');
+                const row = rows[0];
+                const quality = { status: row?.cursor?.status || 'unknown', last_success_at: row?.last_successful_at || null };
+                for (const key of ['checked_at','source_generated_at','feeds_ok','feeds_failed','carried_over','skipped_undated','skipped_unclassified','reports']) {
+                    if (row?.cursor?.[key] !== undefined) quality[key] = row.cursor[key];
+                }
+                return { ok: true, body: quality };
+            });
+        }
+
         if (path === 'overview') {
             return await kvCachedJson(env, 'us:overview:v2', US_TTL.overview,
                 () => usOverview(env));
@@ -3073,7 +3087,7 @@ async function handleUsPolicy(request, env) {
         let m = path.match(/^congress\/bills\/(.+)$/);
         if (m) {
             const billId = decodeURIComponent(m[1]);
-            return await kvCachedJson(env, `us:bill:v3:${billId}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:bill:v4:${billId}`, US_TTL.detail,
                 () => usBillDetail(env, billId));
         }
 
@@ -3803,6 +3817,7 @@ async function usBillDetail(env, billId) {
     const bill = rows[0];
     // embedding is a 1536-float vector -- ~30KB of JSON per bill, useless to the
     // browser and expensive in KV. raw_source is the whole Congress.gov payload.
+    bill.embedding_quality = PolicyEvidence.embeddingQuality(bill);
     delete bill.embedding;
     delete bill.raw_source;
     for (const v of bill.bill_text_versions || []) delete v.raw_source;

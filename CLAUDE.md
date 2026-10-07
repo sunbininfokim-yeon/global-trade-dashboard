@@ -49,6 +49,14 @@ Cursor가 UI 파일을 열어 둔 채로 저장하면 오래된 버퍼가 진행
   게이트가 아니라 **좌표 오버라이드**다. 새로 들어오는 국가는 월드 GeoJSON에서
   중심점을 계산해 자동으로 클릭 가능해진다 — 국가명을 하드코딩하지 말 것.
 - 남극은 마스크로 가리지 않고 소스 features 에서 제거한다 (`loadWorldGeo`).
+- 원자재 메뉴는 에너지 / 금속·광물 / 농산물 / 모니터링 4열. 모니터링 = 작황 모니터(`climate`,
+  기상·작황만) + 수출통제 모니터(`export_controls`). 수출통제는 `export-controls.js` +
+  `export-controls.css` 독립 모듈(`window.ExportControls`)이고 app.js 와는
+  `exportControlsHost()` 어댑터로만 닿는다. 데이터는 `public/data/export_controls/`
+  의 manifest + 분류별 모듈(agri/energy/minerals) -- 한 파일로 합치지 말 것.
+  무역 지도(trade.js)의 통제 색칠도 같은 모듈을 쓴다.
+- deck `setProps({ onAfterRender: null })` 금지 -- deck 이 무조건 호출해서 렌더 루프가
+  죽고 지도가 통째로 빈다. 지울 땐 `() => {}`.
 - 매크로 모니터(`/macro_monitor`)만 베이스맵이 다르다: NASA VIIRS Black Marble
   야간광 타일(`mmNightBaseLayers`). 타일은 z0-5 를 `New for anti/public/night/`
   에 커밋해 두고(`tools/ops/fetch_night_tiles.py`), 그보다 확대하면

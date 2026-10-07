@@ -1,4 +1,4 @@
-"""Validate export_controls_v1.json against the weekly survey contract.
+"""Validate the export-control catalogue against the weekly survey contract.
 
 A row the screen paints has to be checkable again next Monday: dates parse,
 the commodity slug is one this survey watches, and `high` is not hanging off
@@ -7,23 +7,18 @@ a news homepage. The script prints one line per problem and exits 1.
 
 from __future__ import annotations
 
-import json
 import re
 import sys
 from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from .catalogue import DIRECTORY as CATALOGUE
+from .catalogue import load as load_catalogue
 from .universe import load as load_universe
-
-HERE = Path(__file__).resolve().parent
-# HERE is .../New for anti/scripts/export_controls
-# parents[1] is the inner "New for anti" directory, where public/data lives.
-CATALOGUE = HERE.parents[1] / "public" / "data" / "export_controls_v1.json"
 
 LEVELS = {"prohibited", "restricted", "watch", "lifted"}
 MEASURES = {"ban", "quota", "duty", "licensing", "state_trading", "levy", "min_price"}
-CATEGORIES = {"agri", "energy", "minerals"}
 CONFIDENCE = {"high", "medium", "low"}
 MONTH = re.compile(r"^\d{4}-\d{2}$")
 DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -61,8 +56,14 @@ def validate_document(doc, universe, today=None):
     today = today or date.today()
     errors = []
     keys = set(universe.get("commodity_keys") or [])
-    if doc.get("schema_version") != "export-controls-v1":
-        errors.append("schema_version must be export-controls-v1")
+    if doc.get("schema_version") != "export-controls-v2":
+        errors.append("schema_version must be export-controls-v2")
+    # Categories are whatever modules the manifest lists; adding a group is a
+    # new file plus a manifest line, not an edit here.
+    categories = set(doc.get("categories") or {})
+    if not categories:
+        errors.append("manifest lists no category modules")
+    module_of = doc.get("module_of") or {}
     if not MONTH.match(str(doc.get("as_of") or "")):
         errors.append("as_of must be YYYY-MM")
     if doc.get("status") not in {"curated_seed", "weekly_survey"}:
@@ -88,8 +89,10 @@ def validate_document(doc, universe, today=None):
 
         if not ISO3.match(str(c.get("iso") or "")):
             err("iso must be ISO3")
-        if c.get("category") not in CATEGORIES:
+        if c.get("category") not in categories:
             err("category")
+        elif module_of.get(cid, c.get("category")) != c.get("category"):
+            err(f"category {c.get('category')} filed in {module_of[cid]}.json")
         if c.get("level") not in LEVELS:
             err("level")
         if c.get("measure_type") not in MEASURES:
@@ -148,7 +151,7 @@ def main(argv=None):
     catalogue_path = CATALOGUE
     if argv:
         catalogue_path = Path(argv[0])
-    doc = json.loads(catalogue_path.read_text(encoding="utf-8"))
+    doc = load_catalogue(catalogue_path)
     errors = validate_document(doc, load_universe())
     if errors:
         print(f"{len(errors)} problem(s) in {catalogue_path}")

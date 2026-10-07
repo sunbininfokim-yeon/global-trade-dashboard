@@ -110,7 +110,8 @@ async function supabaseRequest(path, options = {}) {
   const config = supabaseConfig();
   const headers = {
     apikey: config.key,
-    Authorization: `Bearer ${config.key}`,
+    // New sb_secret keys are opaque API keys, not JWT bearer tokens.
+    ...(config.key.startsWith('eyJ') ? { Authorization: `Bearer ${config.key}` } : {}),
     Accept: 'application/json',
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers || {}),
@@ -344,7 +345,7 @@ async function queueRetryOrFail(queueId, attempts, errorMessage, maxAttempts = 1
 
 module.exports = {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty, mapWithConcurrency,
-  geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
+  embeddingInput, geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc,
   supabaseUpsert, updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
   reapStalePolicyQueue, queueRetryOrFail,

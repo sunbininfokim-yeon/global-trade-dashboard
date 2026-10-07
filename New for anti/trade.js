@@ -18,8 +18,7 @@
 // stopTradeAnim, tradeAnimRaf, tradeAnimPhase, clampGlobeView, currentViewState,
 // worldBaseLayers, worldGeo, worldGeoData, featureIsCountry, featureCountryName,
 // bowedPath, arcWidth, arcAlpha, MAX_RENDERED_ARCS, generateNodeData,
-// TRADE_MAP_VIEW, controlsFor, renderExportControlLegend, CONTROL_FILL,
-// CONTROL_LINE, exportControlsDoc, macroPanelEl, currentViewDesc,
+// TRADE_MAP_VIEW, macroPanelEl, currentViewDesc,
 // concentrationHtml, normCountryName, commodityReportsPanelEl. (ISO3_FALLBACK
 // stays in app.js, used only by its countryCode helper, which this file calls
 // but does not own.)
@@ -180,6 +179,7 @@ const focusTradeCountry = (countryName) => {
                     ${annualLabel ? `<span class="tm-period-badge">${annualLabel}</span>` : ''}
                     <button type="button" class="trade-focus-clear" id="trade-focus-clear">전체 지도</button>
                 </div>
+                ${subProductsCardHtml(currentCommodity)}
                 <div class="tm-annual">
                     <p class="trade-focus-sub">${annualLabel ? `${annualLabel} · ` : ''}수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
                     ${statsHtml}
@@ -192,6 +192,7 @@ const focusTradeCountry = (countryName) => {
             e.preventDefault();
             clearTradeFocus();
         });
+        bindSubProducts(newsContentEl);
         // 연간 / 월별 toggle, only where monthly data exists (trade-monthly.js).
         window.TradeMonthly?.attach(newsContentEl.querySelector('.trade-focus-card'),
             { commodity: currentCommodity, countryName, annualLabel });
@@ -220,9 +221,10 @@ const focusTradeCountry = (countryName) => {
         if (topExporterEl) topExporterEl.textContent = partner;
     }
 
-    const ctl = controlsFor(currentCommodity).get(target?.key || countryName);
+    // Export controls come from export-controls.js (window.ExportControls).
+    const ctl = window.ExportControls?.controlsFor(currentCommodity).get(target?.key || countryName);
     if (ctl && newsContentEl) {
-        const lv = exportControlsDoc?.levels?.[ctl.level]?.label_ko || ctl.level;
+        const lv = window.ExportControls.levelLabel(ctl.level);
         newsContentEl.insertAdjacentHTML('afterbegin', `
             <div class="ctl-card ctl-${ctl.level}">
                 <div class="ctl-head"><strong>${lv}</strong>
@@ -785,6 +787,68 @@ const reportDate = (iso, precision) => {
 // Long enough that the two-line clamp actually hides something worth opening.
 const SUMMARY_EXPAND_CHARS = 110;
 
+// Representative products inside one HS line (data.js TradeData[c].
+// subProducts -- 경질유 271012: 납사, 휘발유). The trade map cannot split
+// them, so the view lists them, badges each report with the one it is about,
+// and lets the reader narrow the reports to one.
+const subProductsOf = (commodity) => window.TradeData?.[commodity]?.subProducts || null;
+const subProductRegexes = new Map();
+const subProductOf = (item, commodity) => {
+    const subs = subProductsOf(commodity);
+    if (!subs?.length) return null;
+    const text = [item.title?.original, item.title?.en, item.title?.ko, item.summary].filter(Boolean).join(' ');
+    return subs.find((sp) => {
+        if (!subProductRegexes.has(sp.match)) subProductRegexes.set(sp.match, new RegExp(sp.match, 'i'));
+        return subProductRegexes.get(sp.match).test(text);
+    }) || null;
+};
+// { commodity, id } -- a filter only applies on the commodity it was set on.
+let reportsSubFilter = null;
+const activeSubFilter = () => (reportsSubFilter && reportsSubFilter.commodity === currentCommodity
+    && subProductsOf(currentCommodity) ? reportsSubFilter.id : null);
+
+const subProductsCardHtml = (commodity) => {
+    const subs = subProductsOf(commodity);
+    if (!subs?.length) return '';
+    const on = activeSubFilter();
+    return `<div class="subprod-card">
+        <p class="trade-rank-group-head">세부 품목</p>
+        ${subs.map((sp) => `<button type="button" class="subprod-row${on === sp.id ? ' is-on' : ''}" data-sub="${escapeFeedText(sp.id)}" aria-pressed="${on === sp.id}">
+            <strong>${escapeFeedText(sp.label)}</strong><span>${escapeFeedText(sp.desc || '')}</span>
+        </button>`).join('')}
+        <p class="subprod-note">무역 통계는 품목 구분 없이 합산 · 품목을 누르면 국가별 보고서를 그 품목만 봅니다</p>
+    </div>`;
+};
+
+const bindSubProducts = (host) => {
+    host?.querySelectorAll('.subprod-row[data-sub]').forEach((btn) => {
+        btn.addEventListener('click', () => setReportsSubFilter(btn.dataset.sub));
+    });
+};
+
+const setReportsSubFilter = async (id) => {
+    const commodity = currentCommodity;
+    reportsSubFilter = activeSubFilter() === id ? null : { commodity, id };
+    const on = activeSubFilter();
+    document.querySelectorAll('.subprod-row[data-sub]').forEach((b) => {
+        b.classList.toggle('is-on', b.dataset.sub === on);
+        b.setAttribute('aria-pressed', String(b.dataset.sub === on));
+    });
+    const pager = reportsPager;
+    if (!pager) return;
+    if (on) {
+        // A filter reads the whole window, not just the chunks paged so far.
+        while (pager.win.items.length < pager.win.total) {
+            const before = pager.win.items.length;
+            try { await loadMoreReports(pager.win); } catch (_) { break; }
+            if (pager.win.items.length === before) break;
+        }
+    }
+    if (reportsPager !== pager || currentCommodity !== commodity) return;
+    pager.firstShown = 0;
+    paintReportsPage();
+};
+
 const reportRowHtml = (item) => {
     const href = safeReportHref(item.url);
     const title = escapeFeedText(item.title?.ko || item.title?.original || '');
@@ -799,6 +863,8 @@ const reportRowHtml = (item) => {
     const scopeTag = item.scope === 'global'
         ? '<span class="rpt-scope">세계</span>'
         : '';
+    const sub = subProductOf(item, currentCommodity);
+    const subTag = sub ? `<span class="rpt-sub">${escapeFeedText(sub.label)}</span>` : '';
     const series = item.series_label_ko
         ? `<span class="rpt-series">${escapeFeedText(item.series_label_ko)}</span>`
         : '';
@@ -815,7 +881,7 @@ const reportRowHtml = (item) => {
         <div class="rpt-meta">
             ${agencyHref
                 ? `<a class="rpt-agency" href="${escapeFeedText(agencyHref)}" target="_blank" rel="noopener noreferrer" title="발간처 사이트로 이동">${agency}</a>`
-                : `<span class="rpt-agency">${agency}</span>`}${series}${scopeTag}
+                : `<span class="rpt-agency">${agency}</span>`}${series}${subTag}${scopeTag}
             ${date ? `<span class="rpt-date">${date}</span>` : ''}
         </div>
         ${head}
@@ -912,9 +978,20 @@ const paintReportsPage = () => {
     const live = document.getElementById('reports-slot');
     if (!live || !reportsPager) return;
     const { win, label, who } = reportsPager;
-    const { items, total } = win;
-    const hasMore = items.length < total;
-    const pages = paginateReports(live, items, win.breaks);
+    const { total } = win;
+    const subId = activeSubFilter();
+    const subLabel = subId ? subProductsOf(currentCommodity).find((sp) => sp.id === subId)?.label : null;
+    // A sub-product filter narrows the rows; paging then runs over those.
+    const items = subId ? win.items.filter((it) => subProductOf(it, currentCommodity)?.id === subId) : win.items;
+    const hasMore = !subId && items.length < total;
+    if (!items.length) {
+        live.innerHTML = `<div class="rpt-card">
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
+            <p class="empty-state">최근 12주 ${escapeFeedText(subLabel || '')} 관련 보고서가 없습니다 · 「세부 품목」에서 다시 누르면 전체 보기</p>
+        </div>`;
+        return;
+    }
+    const pages = paginateReports(live, items, subId ? [] : win.breaks);
     // Keep the reader on the same reports after a resize re-cuts the pages.
     const anchor = reportsPager.firstShown ?? 0;
     let page = pages.findIndex((idx) => idx.includes(anchor));
@@ -927,7 +1004,7 @@ const paintReportsPage = () => {
             <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
             <ul class="rpt-list">${rows}</ul>
             ${reportsPagerHtml(pages.length, page, hasMore)}
-            <p class="rpt-note">공식 기관 발표 · 최근 12주 총 ${total}건 · 제목을 누르면 발간처 원문으로 이동</p>
+            <p class="rpt-note">공식 기관 발표 · 최근 12주 ${subLabel ? `${escapeFeedText(subLabel)} ${items.length}건 (전체 ${total}건)` : `총 ${total}건`} · 제목을 누르면 발간처 원문으로 이동</p>
         </div>`;
 
     live.querySelectorAll('.rpt-more').forEach((btn) => {
@@ -1170,12 +1247,14 @@ const renderTradeWorldPanel = (arcs) => {
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
             <div id="futures-slot"></div>
+            ${subProductsCardHtml(currentCommodity)}
             <p class="trade-focus-sub">${typeof comtradePeriodLabel === 'function' && comtradePeriodLabel(arcs) ? `<span class="tm-period-badge">${comtradePeriodLabel(arcs)}</span> ` : ''}비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    bindSubProducts(newsContentEl);
     renderFuturesCard(currentCommodity);
     // No reports on the world view (stage 1) -- only once a country is
     // focused (stage 2, focusTradeCountry) does the right panel populate.
@@ -1477,8 +1556,9 @@ const renderMapLayers = (arcs, opts = {}) => {
     const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-    const tradeControls = controlsFor(currentCommodity);
-    renderExportControlLegend(tradeControls);
+    const EC = window.ExportControls;
+    const tradeControls = EC ? EC.controlsFor(currentCommodity) : new Map();
+    EC?.renderTradeLegend(tradeControls);
 
     const baseLayers = () => [
         ...worldBaseLayers({ id: 'trade' }),
@@ -1509,11 +1589,11 @@ const renderMapLayers = (arcs, opts = {}) => {
             lineWidthMinPixels: 1,
             getFillColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_FILL[c.level] || CONTROL_FILL.watch) : [0, 0, 0, 0];
+                return c ? (EC.FILL[c.level] || EC.FILL.watch) : [0, 0, 0, 0];
             },
             getLineColor: (f) => {
                 const c = tradeControls.get(featureCountryName(f));
-                return c ? (CONTROL_LINE[c.level] || CONTROL_LINE.watch) : [0, 0, 0, 0];
+                return c ? (EC.LINE[c.level] || EC.LINE.watch) : [0, 0, 0, 0];
             },
             updateTriggers: {
                 getFillColor: [currentCommodity, tradeControls.size],

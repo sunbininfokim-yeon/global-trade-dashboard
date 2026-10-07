@@ -31,6 +31,7 @@ from shipping_capacity.route_distances import attach_distance_evidence
 from shipping_capacity.official_cargo import collect_official_cargo
 from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
 from shipping_capacity.hormuz_bypass import collect_hormuz_bypass
+from shipping_capacity.chokepoint_trend import build_chokepoint_trend
 
 
 def load_json(path: Path) -> Any:
@@ -703,6 +704,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "hormuz_reconstruction.producer_exports",
                     "hormuz_reconstruction.importer_receipts",
                     "hormuz_reconstruction.sar_coverage",
+                    "chokepoint_trend.points[]",
                     "hormuz_bypass_monitor.route",
                     "hormuz_bypass_monitor.threat.events[]",
                     "hormuz_bypass_monitor.yanbu_port_activity.monthly[]",
@@ -1314,6 +1316,8 @@ def build_snapshot(
                 official_cargo=official_cargo,
             ),
             "live_display": live_display,
+            # Built from the full 730-day status; the screen gets only the result.
+            "chokepoint_trend": build_chokepoint_trend(chokepoints, live_status, live_display, official_cargo),
             "scenario_signal_comparison": scenario_signal_comparison,
             "live_fetch_errors": live_errors,
             "live_data_quality": {

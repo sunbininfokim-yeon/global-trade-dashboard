@@ -54,6 +54,7 @@ For each item return:
 - "ko": a faithful Korean translation of the headline.
 For items with "control": true, also return:
 - "measure": one of {measures} -- what the headline says was done. Use "other" if unclear.
+  A government restricting its own exports counts too: a ban (or its extension) on exporting a good is "export_ban"; a quota, licence, minimum export price, export duty or amended export policy is "export_restriction"; lifting or relaxing one is "suspension".
 - "items": the goods, materials or technologies the headline names, in lowercase English (e.g. "gallium", "rare earths", "drones", "lithium battery technology"). Empty if none are named. Do not infer items that are not in the headline.
 - "targets": ISO 3166 alpha-3 codes of the countries the measure is aimed at, or "EU" for the European Union. Empty if none are named.
 
