@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-07T15:50:50.281353+00:00",
+  "generated_at": "2026-10-07T16:20:27.220359+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,15 +17,15 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 35,
-    "sources_failed": 1,
-    "raw_items": 554,
-    "scored": 154,
-    "unclassified": 322,
-    "rejected": 56,
-    "published": 142,
-    "commodities": 26,
-    "buckets": 84
+    "sources_ok": 36,
+    "sources_failed": 2,
+    "raw_items": 628,
+    "scored": 171,
+    "unclassified": 371,
+    "rejected": 55,
+    "published": 159,
+    "commodities": 29,
+    "buckets": 97
   },
   "feed_status": [
     {
@@ -73,11 +73,11 @@
     },
     {
       "source_id": "us_eia_whats_new",
-      "ok": true,
-      "count": 10,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "TimeoutError: The read operation timed out",
       "mode": "live",
-      "archived": 2
+      "carried_over": 9
     },
     {
       "source_id": "br_conab",
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 42 reports linked, 9 read, 27 already known",
+      "note": "45 list pages, 42 reports linked, 8 read, 28 already known",
       "archived": 7
     },
     {
@@ -290,14 +290,28 @@
       "error": null,
       "mode": "live",
       "archived": 2
+    },
+    {
+      "source_id": "us_federal_register_minerals",
+      "ok": true,
+      "count": 76,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "us_eia_gasoline_diesel",
+      "ok": true,
+      "count": 1,
+      "error": null,
+      "mode": "live"
     }
   ],
   "translation": {
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 2,
-    "reused": 46,
+    "annotated": 1,
+    "reused": 47,
     "error": null
   },
   "boards": {
@@ -921,6 +935,12 @@
     "light_oils": {
       "BRA": [
         "937f667ad21463f2"
+      ],
+      "USA": [
+        "00abaa8d059c1ade"
+      ],
+      "GBR": [
+        "00abaa8d059c1ade"
       ]
     },
     "palm_oil": {
@@ -939,10 +959,17 @@
         "9fc6c0f2f5e3568a"
       ],
       "CHN": [
+        "21bf9a2b3735e197",
         "1b171ff4ac638164"
       ],
       "MYS": [
         "9fc6c0f2f5e3568a"
+      ],
+      "TWN": [
+        "21bf9a2b3735e197"
+      ],
+      "TUR": [
+        "21bf9a2b3735e197"
       ],
       "IDN": [
         "3cac3e995aa9e757",
@@ -963,6 +990,9 @@
     "soybeans": {
       "CHN": [
         "6e3880b1a989890a"
+      ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
       ],
       "USA": [
         "0466c9487c9388ef",
@@ -1004,7 +1034,8 @@
     },
     "gold": {
       "USA": [
-        "45b970c626da923e"
+        "45b970c626da923e",
+        "3ed4616b9308789b"
       ],
       "IDN": [
         "6d3e7543b7514565"
@@ -1019,12 +1050,16 @@
     },
     "lithium": {
       "USA": [
-        "44e05f03eab98000"
+        "44e05f03eab98000",
+        "52e76cbbdfd51fb7"
       ]
     },
     "coffee": {
       "IDN": [
         "58852feb849a95c0"
+      ],
+      "USA": [
+        "33ae87880c1a8866"
       ],
       "CHN": [
         "8566a0485af28101",
@@ -1053,6 +1088,28 @@
         "959d91c46a9a7514"
       ]
     },
+    "graphite": {
+      "IND": [
+        "3cbc48c76fcf7031",
+        "d293c0b8e58bb026",
+        "75fbe378785e717c"
+      ],
+      "USA": [
+        "3cbc48c76fcf7031",
+        "d293c0b8e58bb026",
+        "8c808c791d878054",
+        "01399109dc789f34",
+        "96c5f3e01435a59d",
+        "7048269299edaac8",
+        "75fbe378785e717c"
+      ],
+      "CHN": [
+        "8c808c791d878054",
+        "01399109dc789f34",
+        "96c5f3e01435a59d",
+        "7048269299edaac8"
+      ]
+    },
     "nickel": {
       "CAN": [
         "9a22d2cdf0982434"
@@ -1061,12 +1118,29 @@
     "aluminum": {
       "_global": [
         "c4debe37366d175b"
+      ],
+      "CHN": [
+        "3a01d9711f623efd"
+      ],
+      "USA": [
+        "3a01d9711f623efd"
       ]
     },
     "cobalt": {
       "_global": [
         "3663a7d940e42f4f",
         "7671b1c780a2ff75"
+      ]
+    },
+    "chromium": {
+      "USA": [
+        "c7b157036f5bf3ee"
+      ]
+    },
+    "rare_earths": {
+      "USA": [
+        "204f86b98ee1cef8",
+        "a7df51ca251e12b3"
       ]
     },
     "silver": {
@@ -1099,7 +1173,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.603,
+      "importance": 6.6,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1132,7 +1206,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.619,
+      "importance": 5.616,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1165,7 +1239,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.431,
+      "importance": 5.428,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1197,7 +1271,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.359,
+      "importance": 5.357,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1231,7 +1305,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.004,
+      "importance": 5.002,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1263,7 +1337,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.913,
+      "importance": 4.911,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1296,7 +1370,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.913,
+      "importance": 4.911,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1330,7 +1404,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.449,
+      "importance": 4.447,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1362,7 +1436,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.387,
+      "importance": 4.385,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1392,7 +1466,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.226,
+      "importance": 4.224,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1424,7 +1498,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.932,
+      "importance": 3.931,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1456,7 +1530,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.879,
+      "importance": 3.877,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1487,7 +1561,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.879,
+      "importance": 3.877,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1518,7 +1592,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.789,
+      "importance": 3.788,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1551,7 +1625,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.743,
+      "importance": 3.742,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1584,7 +1658,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.735,
+      "importance": 3.734,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1617,7 +1691,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.631,
+      "importance": 3.629,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1650,7 +1724,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.575,
+      "importance": 3.573,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1681,7 +1755,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.575,
+      "importance": 3.573,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1712,7 +1786,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.575,
+      "importance": 3.573,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1743,7 +1817,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.504,
+      "importance": 3.503,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1774,7 +1848,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.437,
+      "importance": 3.435,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1805,7 +1879,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.365,
+      "importance": 3.364,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1836,7 +1910,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.332,
+      "importance": 3.33,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -1900,7 +1974,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.243,
+      "importance": 3.242,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -1932,7 +2006,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.223,
+      "importance": 3.222,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1964,7 +2038,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.144,
+      "importance": 3.143,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1997,7 +2071,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.074,
+      "importance": 3.073,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2005,6 +2079,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.073,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -2029,7 +2134,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.074,
+      "importance": 3.073,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2061,7 +2166,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.074,
+      "importance": 3.073,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2092,7 +2197,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.936,
+      "importance": 2.935,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2124,7 +2229,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.517,
+      "importance": 2.516,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2243,7 +2348,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.445,
+      "importance": 2.444,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2274,7 +2379,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.436,
+      "importance": 2.435,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2403,7 +2508,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.274,
+      "importance": 2.273,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2468,7 +2573,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.208,
+      "importance": 2.207,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2509,7 +2614,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.205,
+      "importance": 2.204,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2541,7 +2646,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.013,
+      "importance": 2.012,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2581,6 +2686,38 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "00abaa8d059c1ade",
+      "title": {
+        "original": "Data For 10/05/26",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Summary Excerpt: Regular Gasoline Retail Price (Dollars per Gallon) 4.354 .. U.S. 4.147 ... East Coast 4.343 .... New England 4.363 .... Central Atlantic 3.959 .... Lower Atlantic 4.109 ... Midwest 3.911 ... Gulf Coast 4.417 ... Rocky Mountain 5.727 ... West Coast 5.116 ... West Coast less California States 6.227 .... California 4.020 .... Colorado 3.970 .... Florida 4.302 .... Massachusetts 4.200 .... Minnesota 4.380 .... New York 3.829 .... Ohio 3.874 .... Texas 5.424 .... Washington Cities 4.333 .... Boston 4.633 .... Chicago 3.859 .... Cleveland 3.979 .... Denver 3.836 .... Houston 6.209…",
+      "url": "http://www.eia.gov/petroleum/gasdiesel/",
+      "published_at": "2026-10-06T14:18:36+00:00",
+      "agency": "U.S. Energy Information Administration",
+      "agency_ko": "미국 에너지정보청(EIA)",
+      "source_id": "us_eia_gasoline_diesel",
+      "commodities": [
+        "light_oils"
+      ],
+      "countries": [
+        "USA",
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.857,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
       "id": "58852feb849a95c0",
       "title": {
         "original": "TEI 2026 Siapkan Zona Khusus Kopi, Teh, dan Kakao, Permudah Buyer di Area Pameran",
@@ -2604,7 +2741,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.751,
+      "importance": 1.75,
       "reasons": [
         "country_in_text"
       ],
@@ -2893,7 +3030,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.527,
+      "importance": 1.526,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2925,7 +3062,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.51,
+      "importance": 1.509,
       "reasons": [
         "country_in_text"
       ],
@@ -2955,7 +3092,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.51,
+      "importance": 1.509,
       "reasons": [
         "country_in_text"
       ],
@@ -2985,7 +3122,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.51,
+      "importance": 1.509,
       "reasons": [
         "country_in_text"
       ],
@@ -3015,7 +3152,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.489,
+      "importance": 1.488,
       "reasons": [
         "country_in_text"
       ],
@@ -3045,7 +3182,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.481,
+      "importance": 1.48,
       "reasons": [
         "country_in_text"
       ],
@@ -3074,7 +3211,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.475,
+      "importance": 1.474,
       "reasons": [
         "country_in_text"
       ],
@@ -3264,6 +3401,129 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "3cbc48c76fcf7031",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From India: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from India. The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
+      "url": "https://www.federalregister.gov/documents/2026/10/01/2026-20162/large-diameter-graphite-electrodes-from-india-preliminary-affirmative-critical-circumstances",
+      "published_at": "2026-10-01T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "IND",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.438,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "d293c0b8e58bb026",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From India: Preliminary Affirmative Determination of Sales at Less-Than-Fair-Value, Preliminary Affirmative Determination of Critical Circumstances, Postponement of Final Determination, and Extension of Provisional Measures",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that large diameter graphite electrodes (large graphite electrodes) from India are being, or are likely to be, sold in the United States at less-than-fair-value (LTFV). The period of investigation (POI) is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination.",
+      "url": "https://www.federalregister.gov/documents/2026/09/30/2026-20031/large-diameter-graphite-electrodes-from-india-preliminary-affirmative-determination-of-sales-at",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "IND",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.41,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "8c808c791d878054",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Determination of Sales at Less Than Fair Value and Preliminary Affirmative Determination of Critical Circumstances",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that large diameter graphite electrodes (LDGE) from the People's Republic of China (China) are being, or are likely to be, sold in the United States at less than fair value (LTFV). The period of investigation (POI) is July 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination.",
+      "url": "https://www.federalregister.gov/documents/2026/09/30/2026-20030/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.41,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "33ae87880c1a8866",
+      "title": {
+        "original": "The Safer Affordable Fuel-Efficient (SAFE) Vehicles Rule III for Model Years 2022 to 2031 Passenger Cars and Light Trucks",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Transportation Department; National Highway Traffic Safety Administration: NHTSA, on behalf of the U.S. Department of Transportation (DOT), is substantially recalibrating the Corporate Average Fuel Economy (CAFE) program to bring the program into compliance with the law and to remove previous regulatory distortions which have induced manufacturers to make design decisions that have neither aligned with market demand and the needs of American families nor have delivered the consistent improvements in the fuel economy performance of manufacturer fleets, as Congress intended. This recalibration…",
+      "url": "https://www.federalregister.gov/documents/2026/09/30/2026-19964/the-safer-affordable-fuel-efficient-safe-vehicles-rule-iii-for-model-years-2022-to-2031-passenger",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.41,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
       "id": "25541b98e1af190a",
       "title": {
         "original": "Canadian LNG project signs third international offtake deal",
@@ -3323,6 +3583,38 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "21bf9a2b3735e197",
+      "title": {
+        "original": "Tin Mill Products From China, Taiwan, and Turkey; Scheduling of the Final Phase of Countervailing Duty and Antidumping Duty Investigations",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "International Trade Commission: The Commission hereby gives notice of the scheduling of the final phase of antidumping and countervailing duty investigation Nos. 701-TA-792 and 731-TA-1786-1788 (Final) pursuant to the Tariff Act of 1930 to determine whether an industry in the United States is materially injured or threatened with material injury, or the establishment of an industry in the United States is materially retarded, by reason of imports of tin mill products from China, Taiwan, and Turkey, provided for in subheadings 7210.11.00, 7210.12.00, 7210.50.00, 7212.10.00, 7212.50.00, if of…",
+      "url": "https://www.federalregister.gov/documents/2026/09/28/2026-19811/tin-mill-products-from-china-taiwan-and-turkey-scheduling-of-the-final-phase-of-countervailing-duty",
+      "published_at": "2026-09-28T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "TWN",
+        "TUR",
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.357,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "aad561e1acbfd247",
@@ -3512,7 +3804,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.334,
+      "importance": 1.333,
       "reasons": [
         "country_in_text"
       ],
@@ -3583,7 +3875,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.308,
+      "importance": 1.307,
       "reasons": [
         "country_in_text"
       ],
@@ -3773,6 +4065,37 @@
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
+      "id": "01399109dc789f34",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
+      "url": "https://www.federalregister.gov/documents/2026/09/24/2026-19518/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
+      "published_at": "2026-09-24T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.26,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
       "id": "333bf7304a6961c5",
       "title": {
         "original": "Cochilco publica estudio sobre el mercado de concentrados y la industria mundial de fundiciones",
@@ -3826,7 +4149,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.243,
+      "importance": 1.242,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -3871,6 +4194,37 @@
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "96c5f3e01435a59d",
+      "title": {
+        "original": "Certain Brake Drums From the People's Republic of China: Preliminary Affirmative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that imports of compacted graphite iron (CGI) brake drums, from the People's Republic of China (China), constitute later-developed merchandise that is circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on certain brake drums (brake drums) from China. Interested parties are invited to comment on this preliminary determination.",
+      "url": "https://www.federalregister.gov/documents/2026/09/22/2026-19372/certain-brake-drums-from-the-peoples-republic-of-china-preliminary-affirmative-determination-of",
+      "published_at": "2026-09-22T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.217,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -4201,7 +4555,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.159,
+      "importance": 1.158,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4337,7 +4691,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.059,
+      "importance": 1.058,
       "reasons": [
         "country_in_text"
       ],
@@ -4381,7 +4735,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.051,
+      "importance": 1.05,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5311,7 +5665,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.994,
+      "importance": 0.993,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5460,11 +5814,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.95,
+      "importance": 0.949,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "929e1ee5c8475871",
+      "title": {
+        "original": "Canada celebrates progress on the McIlvenna Bay mine: production underway, jobs created, supply chains strengthened",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Located in Saskatchewan’s Flin Flon Greenstone Belt, one of Canada’s richest mineral regions, the McIlvenna Bay copper-zinc mine is one of Canada’s most significant new critical minerals mines, being developed by Eldorado Gold in close partnership with Indigenous partners. As a new source of minerals that are essential to clean energy technology, advanced manufacturing and national security, this project will strengthen Saskatchewan’s and Canada’s economic prosperity, supply chain security and industrial strength.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canada-celebrates-progress-on-the-mcilvenna-bay-mine-production-underway-jobs-created-supply-chains-strengthened.html",
+      "published_at": "2026-09-02T19:15:44+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gold",
+        "copper",
+        "zinc"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.917,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -5505,36 +5891,34 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
-      "id": "929e1ee5c8475871",
+      "id": "52e76cbbdfd51fb7",
       "title": {
-        "original": "Canada celebrates progress on the McIlvenna Bay mine: production underway, jobs created, supply chains strengthened",
+        "original": "Foreign-Trade Zone (FTZ) 126, Notification of Proposed Production Activity; Panasonic Energy Corporation of North America; (Lithium-Ion Battery Cells); Sparks, Nevada",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Located in Saskatchewan’s Flin Flon Greenstone Belt, one of Canada’s richest mineral regions, the McIlvenna Bay copper-zinc mine is one of Canada’s most significant new critical minerals mines, being developed by Eldorado Gold in close partnership with Indigenous partners. As a new source of minerals that are essential to clean energy technology, advanced manufacturing and national security, this project will strengthen Saskatchewan’s and Canada’s economic prosperity, supply chain security and industrial strength.",
-      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canada-celebrates-progress-on-the-mcilvenna-bay-mine-production-underway-jobs-created-supply-chains-strengthened.html",
-      "published_at": "2026-09-02T19:15:44+00:00",
-      "agency": "Natural Resources Canada",
-      "agency_ko": "캐나다 천연자원부",
-      "source_id": "ca_nrcan",
+      "summary": "Commerce Department; Foreign-Trade Zones Board",
+      "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17358/foreign-trade-zone-ftz-126-notification-of-proposed-production-activity-panasonic-energy-corporation",
+      "published_at": "2026-08-26T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
       "commodities": [
-        "gold",
-        "copper",
-        "zinc"
+        "lithium"
       ],
       "countries": [
-        "CAN"
+        "USA"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.917,
+      "importance": 0.84,
       "reasons": [
         "country_in_text"
       ],
-      "agency_url": "https://api.io.canada.ca/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "b87baa2603ba1ba3",
@@ -5559,7 +5943,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.766,
+      "importance": 0.765,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -5589,6 +5973,67 @@
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "3ed4616b9308789b",
+      "title": {
+        "original": "Establish Prices for 2026 United States Mint Numismatic Products",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Treasury Department; United States Mint: The United States Mint is announcing pricing for United States Mint numismatic gold and clad products in accordance with the table below:",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16409/establish-prices-for-2026-united-states-mint-numismatic-products",
+      "published_at": "2026-08-12T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.743,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "3a01d9711f623efd",
+      "title": {
+        "original": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the period or review (POR) January 1, 2024, through December 31, 2024.",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
+      "published_at": "2026-08-11T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.737,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "62948d40ba0908de",
@@ -5633,6 +6078,68 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "7048269299edaac8",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Countervailing Duty Determination, and Alignment of Final Determination With Final Antidumping Duty Determination",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to producers and exporters of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination.",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15397/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
+      "published_at": "2026-07-30T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.685,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "75fbe378785e717c",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From India: Preliminary Affirmative Countervailing Duty Determination and Alignment of Final Determination With Final Antidumping Duty Determination",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to producers and exporters of large diameter graphite electrodes (large graphite electrodes) from India. The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination.",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15396/large-diameter-graphite-electrodes-from-india-preliminary-affirmative-countervailing-duty",
+      "published_at": "2026-07-30T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "IND",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.685,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
       "id": "12b1ebd663809d68",
       "title": {
         "original": "商务部新闻发言人就对日相关出口管制措施答记者问",
@@ -5672,6 +6179,34 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "c7b157036f5bf3ee",
+      "title": {
+        "original": "Food Additives Permitted in Feed and Drinking Water of Animals; Chromium DL-methionine Chelate",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Health and Human Services Department; Food and Drug Administration: The Food and Drug Administration (FDA, we, or the Agency) is amending the regulations for food additives permitted in feed and drinking water of animals to provide for the safe use of chromium DL- methionine chelate as a nutritional source of chromium in cattle feed. This action is in response to a food additive petition filed by Zinpro Corp.",
+      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16942/food-additives-permitted-in-feed-and-drinking-water-of-animals-chromium-dl-methionine-chelate",
+      "published_at": "2026-08-19T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.628,
+      "reasons": [],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "05101536483c310c",
@@ -5737,7 +6272,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.601,
+      "importance": 0.6,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -5771,6 +6306,62 @@
       ],
       "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "204f86b98ee1cef8",
+      "title": {
+        "original": "Black Hills National Forest; Wyoming; Bear Lodge Rare Earth Project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Agriculture Department; Forest Service: The USDA Under Secretary, Natural Resources and Environment, through the Forest Service, Black Hills National Forest, intends to prepare an environmental impact statement (EIS) to analyze and disclose effects from the proposed Mine Plan of Operations (MPO), submitted by Rare Element Resources Inc. (proponent), for the development of the Bear Lodge Rare Earth Project. This EIS will evaluate potential impacts of the proposed open-pit mining for rare earth elements from National Forest System (NFS) lands and its associated infrastructure. The proposed…",
+      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15255/black-hills-national-forest-wyoming-bear-lodge-rare-earth-project",
+      "published_at": "2026-07-29T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.545,
+      "reasons": [],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
+    },
+    {
+      "id": "a7df51ca251e12b3",
+      "title": {
+        "original": "Notice Pursuant to the National Cooperative Research and Production Act of 1993-Consortium for Rare Earth Technologies",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Justice Department; Antitrust Division",
+      "url": "https://www.federalregister.gov/documents/2026/07/22/2026-14813/notice-pursuant-to-the-national-cooperative-research-and-production-act-of-1993-consortium-for-rare",
+      "published_at": "2026-07-22T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.528,
+      "reasons": [],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-07T16:20:27.220359+00:00"
     },
     {
       "id": "51fd0b97a38800e4",
