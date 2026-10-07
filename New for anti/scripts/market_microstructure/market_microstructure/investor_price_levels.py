@@ -379,21 +379,54 @@ def build_ticker_levels(
     }
 
 
-def default_kospi_universe(*, top_n: int = 10) -> list[tuple[str, str]]:
-    """KOSPI ordinary shares by Marcap (skip 우선주). Live listing."""
+class KospiUniverseError(RuntimeError):
+    """The requested KOSPI ranking could not be observed completely."""
+
+
+def _kospi_common_listing(*, minimum_n: int) -> pd.DataFrame:
+    """Fetch and validate the ordinary-share listing; never invent a universe."""
     import FinanceDataReader as fdr
 
-    kospi = fdr.StockListing("KOSPI")
+    try:
+        kospi = fdr.StockListing("KOSPI")
+    except Exception as exc:  # noqa: BLE001
+        raise KospiUniverseError(f"KOSPI listing failed: {type(exc).__name__}: {exc}") from exc
     if kospi is None or kospi.empty:
-        return [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+        raise KospiUniverseError("KOSPI listing is empty")
+    missing = {"Marcap", "Code", "Name"} - set(kospi.columns)
+    if missing:
+        raise KospiUniverseError(f"KOSPI listing missing columns: {', '.join(sorted(missing))}")
     df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
+    df["Marcap"] = pd.to_numeric(df["Marcap"], errors="coerce")
+    df["Code"] = df["Code"].astype(str).str.strip().str.zfill(6)
     names = df["Name"].astype(str)
-    df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
+    df = df[
+        np.isfinite(df["Marcap"]) & (df["Marcap"] > 0)
+        & df["Code"].str.fullmatch(r"\d{6}")
+        & names.str.strip().ne("")
+        & ~names.str.endswith("우") & ~names.str.contains("우선", na=False)
+    ].drop_duplicates(subset=["Code"])
+    if len(df) < minimum_n:
+        raise KospiUniverseError(
+            f"KOSPI listing has {len(df)} valid ordinary shares; need {minimum_n}"
+        )
+    return df.sort_values("Marcap", ascending=False).reset_index(drop=True)
+
+
+def default_kospi_universe(
+    *, top_n: int = 10, listing: pd.DataFrame | None = None,
+) -> list[tuple[str, str]]:
+    """KOSPI ordinary shares by Marcap; fail if the requested top-N is unavailable."""
+    if top_n < 1:
+        raise ValueError("top_n must be positive")
+    df = listing if listing is not None else _kospi_common_listing(minimum_n=top_n)
+    if len(df) < top_n:
+        raise KospiUniverseError(f"KOSPI listing has {len(df)} shares; need {top_n}")
     df = df.sort_values("Marcap", ascending=False).head(int(top_n))
     out: list[tuple[str, str]] = []
     for _, row in df.iterrows():
         out.append((str(row["Code"]).zfill(6), str(row["Name"])))
-    return out or [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+    return out
 
 
 def high_vol_kospi_universe(
@@ -401,24 +434,17 @@ def high_vol_kospi_universe(
     top_n: int = 10,
     pool: int = 100,
     lookback_days: int = 40,
+    listing: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     """시총 pool위(기본 100) 보통주 중 실현변동성 상위 top_n. 실측 FDR only."""
     import FinanceDataReader as fdr
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    kospi = fdr.StockListing("KOSPI")
-    if kospi is None or kospi.empty:
-        pairs = default_kospi_universe(top_n=top_n)
-        return {
-            "pairs": pairs,
-            "pool": pool,
-            "ranks": [],
-            "quality": "missing",
-            "note_ko": "KOSPI listing empty — fallback marcap",
-        }
-    df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
-    names = df["Name"].astype(str)
-    df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
+    if top_n < 1 or pool < top_n:
+        raise ValueError("pool must be at least top_n, and top_n must be positive")
+    df = listing if listing is not None else _kospi_common_listing(minimum_n=pool)
+    if len(df) < pool:
+        raise KospiUniverseError(f"KOSPI listing has {len(df)} shares; need pool={pool}")
     df = df.sort_values("Marcap", ascending=False).head(int(pool)).reset_index(drop=True)
     start = (pd.Timestamp.now().normalize() - pd.Timedelta(days=lookback_days + 20)).strftime(
         "%Y-%m-%d"
@@ -450,6 +476,13 @@ def high_vol_kospi_universe(
             got = fut.result()
             if got:
                 scored.append(got)
+    if len(scored) != len(jobs):
+        scored_codes = {c for _, c, _, _ in scored}
+        failed_codes = [c for c, _, _ in jobs if c not in scored_codes]
+        raise KospiUniverseError(
+            f"KOSPI high-vol screen incomplete: scored {len(scored)}/{len(jobs)}; "
+            f"unavailable tickers: {', '.join(failed_codes)}"
+        )
     scored.sort(key=lambda x: x[0], reverse=True)
     top = scored[: int(top_n)]
     pairs = [(c, n) for _, c, n, _ in top]
@@ -465,12 +498,12 @@ def high_vol_kospi_universe(
         for i, (v, c, n, rk) in enumerate(top)
     ]
     return {
-        "pairs": pairs or default_kospi_universe(top_n=top_n),
+        "pairs": pairs,
         "pool": int(pool),
         "lookback_days": lookback_days,
         "scored_n": len(scored),
         "ranks": ranks,
-        "quality": "observed" if pairs else "missing",
+        "quality": "observed",
         "source": "FinanceDataReader KOSPI Marcap + Close returns (live)",
         "note_ko": f"코스피 시총 {pool}위 내 보통주 → 실현변동성 상위 {top_n}",
     }
@@ -879,8 +912,14 @@ def build_investor_price_levels_report(
     high_vol_set: set[str] = set()
 
     if tickers is None:
+        # Both rankings must use the same observed listing. A source outage must
+        # propagate to the CLI before a reduced universe can replace the snapshot.
+        listing = _kospi_common_listing(
+            minimum_n=max(kospi_top_n or 10, high_vol_pool)
+            if universe_mode in ("high_vol", "both") else kospi_top_n or 10
+        )
         if universe_mode in ("marcap", "both"):
-            marcap_pairs = default_kospi_universe(top_n=kospi_top_n or 10)
+            marcap_pairs = default_kospi_universe(top_n=kospi_top_n or 10, listing=listing)
             marcap_set = {c for c, _ in marcap_pairs}
             universe_meta["marcap_top"] = {
                 "n": len(marcap_pairs),
@@ -893,7 +932,7 @@ def build_investor_price_levels_report(
 
         if universe_mode in ("high_vol", "both"):
             hv = high_vol_kospi_universe(
-                top_n=kospi_top_n or 10, pool=high_vol_pool
+                top_n=kospi_top_n or 10, pool=high_vol_pool, listing=listing
             )
             high_vol_pairs = list(hv["pairs"])
             high_vol_set = {c for c, _ in high_vol_pairs}
