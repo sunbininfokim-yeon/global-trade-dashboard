@@ -28,7 +28,7 @@
     shipping_chokepoints: {
       eyebrow: 'CHOKEPOINT MONITOR',
       title: '초크포인트 모니터',
-      desc: 'IMF PortWatch가 AIS로 포착한 최근 7일 추정 교역량을 52주 전 같은 7일과 비교합니다. 물리적 봉쇄율이 아니며, 공식 추정이 있는 해협은 함께 보여줍니다.'
+      desc: '공식 발표 물량과 AIS 포착 추정량을 구분해 봅니다. 통로를 선택하면 물량·통항 여건·시뮬레이션을 확인할 수 있습니다.'
     },
     shipping_scenarios: {
       eyebrow: 'SHOCK SIMULATOR',
@@ -349,7 +349,7 @@
           <small>실선 올해 · 점선 52주 전 같은 요일</small>
         </div>
         <div class="shipping-observed-type-controls" role="tablist" aria-label="선종 선택">
-          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === 'all'}">${label}</button>`).join('')}
+          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === (point.metricKey || 'all')}">${label}</button>`).join('')}
         </div>
         <div class="shipping-observed-window-controls" role="group" aria-label="그래프 기간 선택">
           ${CHOKEPOINT_RANGES.map(([days, label]) => `<button type="button" data-chokepoint-range="${days}" aria-pressed="${days === '90'}">${label}</button>`).join('')}
@@ -363,7 +363,7 @@
     const metricButtons = [...scope.querySelectorAll('[data-chokepoint-metric]')];
     const rangeButtons = [...scope.querySelectorAll('[data-chokepoint-range]')];
     if (!result || !metricButtons.length) return;
-    let metricKey = 'all';
+    let metricKey = metricButtons.some(button => button.dataset.chokepointMetric === point.metricKey) ? point.metricKey : 'all';
     let days = 90;
     let observedChart = null;
 
@@ -386,26 +386,25 @@
       const series = keys.map(key => ({ key, ...typeSeries(point, key, days) })).filter(item => item.rows.length);
       const dates = series[0]?.rows.map(row => row.date) || [];
       const metric = point.live?.metrics?.[metricKey] || {};
-      const recent = Number(metric.current_7d_mean_estimated_trade_tonnes);
-      const prior = Number(metric.prior_28d_mean_estimated_trade_tonnes);
-      const remaining = Number(metric.remaining_trade_volume_ratio);
+      const traffic = trafficSummaryOf(point);
+      const comparison = metricKey === 'all' ? traffic : asArray(traffic?.ship_types).find(row => row.metric_key === metricKey);
+      const recent = comparison ? comparison.current?.value : metric.current_7d_mean_estimated_trade_tonnes;
+      const prior = metric.prior_28d_mean_estimated_trade_tonnes;
       const anyPrior = series.some(item => item.hasPrior);
       result.innerHTML = `
         ${series.length
           ? '<div class="shipping-chart-wrap" style="grid-column:1 / -1"><canvas id="shipping-observed-type-chart"></canvas></div>'
           : '<div class="shipping-callout warning" style="grid-column:1 / -1"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
-        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">PortWatch AIS 기반 선종별 일별 추정 교역량(톤)입니다. 선종 기준이라 원유·LNG 같은 품목으로 나눌 수 없습니다. 품목별 공식 수치는 아래 EIA 그래프를 보세요.${anyPrior ? '' : ' 52주 전 자료가 없어 점선은 그리지 않았습니다.'}</p>
+        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">AIS 포착 기반 추정량(톤) · 원유 배럴이나 봉쇄율이 아닙니다. 품목별 발표값은 ‘공식 물량’ 탭에서 확인하세요.${anyPrior ? '' : ' 전년 이력 없음.'}</p>
         <div class="shipping-observed-value">
           <span>${metricKey === 'all' ? '전체 선종 최근 7일 일평균' : `${escapeHtml(SHIP_TYPE_LABELS[metricKey] || metricKey)} 최근 7일 일평균`}</span>
           <strong>${formatTonnes(recent)}/일</strong>
+          ${renderTrafficComparisons(comparison)}
           <small>직전 28일 대비 ${formatPct(metric.change_pct, 1)}</small>
-          ${finite(point.live?.metric_histories?.[metricKey]?.year_ago?.change_pct)
-            ? `<small>52주 전 같은 7일 대비 ${formatPct(point.live.metric_histories[metricKey].year_ago.change_pct, 1)}</small>` : ''}
         </div>
         <div class="shipping-observed-compare">
           <span>직전 28일 기준선</span>
           <b>${formatTonnes(prior)}/일</b>
-          ${finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
         </div>`;
       if (!series.length) return;
       const datasets = [];
@@ -484,7 +483,7 @@
           </div>
           <div class="shipping-hero-meta">
             <span>스냅샷 ${formatDate(data.generated_at)}</span>
-            ${source ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
+            ${source && target !== 'shipping_chokepoints' ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
           </div>
         </header>
         <nav class="shipping-tabs" aria-label="해운 데이터 화면">${tabs}</nav>
@@ -984,6 +983,105 @@
   const formatManBarrels = value => `${formatNumber(value, 0)}만 배럴/일`;
   const formatBcf = value => `${formatNumber(value, 1)} 십억 입방피트/일`;
 
+  const publicationPeriod = row => {
+    const quarter = /^([1-4])Q(\d{2})$/.exec(String(row?.period || ''));
+    return quarter ? `20${quarter[2]}년 ${quarter[1]}분기` : String(row?.period || row?.period_start || '기간 미상');
+  };
+
+  const publishedOfficialRows = official => [...new Map([
+    ...asArray(official?.reported_series),
+    ...asArray(official?.reference_cards),
+    ...asArray(official?.supplementary_reference_cards)
+  ].map(row => [row.id || [row.publisher, row.frequency, row.geography_scope, row.cargo_category, row.period_start].join(':'), row])).values()];
+
+  // Select a published value, not a new estimate. Sources and periods stay on
+  // every row; an unavailable recent period never becomes a synthetic zero.
+  const latestOfficialCargo = (point, category = 'total_oil') => publishedOfficialRows(point.officialCargo)
+    .filter(row => row.cargo_category === category && row.unit === (category === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day') && finite(row.value) && row.status !== 'not_reported')
+    .sort((a, b) => String(b.period_end || b.period_start || '').localeCompare(String(a.period_end || a.period_start || '')))[0] || null;
+
+  const officialVolumeChartData = (rows, category) => {
+    const unit = category === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day';
+    const scale = category === 'lng' ? 1 : 1e4;
+    const selected = rows.filter(row => row.cargo_category === category && row.unit === unit && row.period_start);
+    const dates = [...new Set(selected.map(row => row.period_start))].sort();
+    const labels = dates.map(date => {
+      const atDate = selected.filter(row => row.period_start === date);
+      return new Set(atDate.map(row => row.frequency)).size === 1 ? publicationPeriod(atDate[0]) : date.slice(0, 7);
+    });
+    const groups = new Map();
+    selected.forEach(row => {
+      const key = [row.publisher, row.frequency, row.unit, row.geography_scope].join(':');
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(row);
+    });
+    const datasets = [...groups.values()].map((group, index) => {
+      const first = group[0];
+      const values = dates.map(date => group.find(row => row.period_start === date) || null);
+      const color = first.publisher === 'EIA' ? '#38bdf8' : TREND_COLORS[(index + 2) % TREND_COLORS.length];
+      return {
+        ...solidLine(`${first.publisher} · ${FREQUENCY_LABELS[first.frequency] || first.frequency} 평균`,
+          values.map(row => row && finite(row.value) && row.status !== 'not_reported' ? Number(row.value) / scale : null), color),
+        tension: 0,
+        spanGaps: false,
+        showLine: values.filter(row => row && finite(row.value) && row.status !== 'not_reported').length > 1,
+        pointRadius: first.frequency === 'monthly' ? 6 : 4,
+        pointStyle: first.frequency === 'monthly' ? 'rectRot' : 'circle',
+        publishedRows: values
+      };
+    });
+    return { labels, datasets, unit };
+  };
+
+  const renderCompactOfficialCargo = (point, mount) => {
+    const rows = publishedOfficialRows(point.officialCargo);
+    const categories = [...OIL_SERIES.map(([key, label]) => [key, label]), ['lng', 'LNG']]
+      .filter(([key]) => rows.some(row => row.cargo_category === key && finite(row.value)));
+    if (!categories.length) {
+      mount.innerHTML = '<p class="shipping-note">연결된 공식 품목별 물량이 없습니다. AIS 통항 탭의 선종별 추정량을 참고하세요.</p>';
+      return;
+    }
+    let category = categories[0][0];
+    let chart = null;
+    mount.innerHTML = `
+      <div class="shipping-observed-window-controls" role="group" aria-label="공식 물량 품목 선택">
+        ${categories.map(([key, label]) => `<button type="button" data-official-category="${key}" aria-pressed="${key === category}">${escapeHtml(label)}</button>`).join('')}
+      </div>
+      <div data-official-volume-result aria-live="polite"></div>
+      <div class="shipping-chart-wrap"><canvas id="shipping-official-volume-chart" aria-label="공식 발표 기간별 일평균 물량 시계열" role="img"></canvas></div>
+      <p class="shipping-note">각 점은 발표 기간의 일평균입니다. 기관별 계열은 따로 표시하며, 일별 실측으로 보간하지 않습니다.</p>`;
+    const draw = () => {
+      mount.querySelectorAll('[data-official-category]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.officialCategory === category)));
+      const latest = latestOfficialCargo(point, category);
+      mount.querySelector('[data-official-volume-result]').innerHTML = latest ? definitionRows([
+        [latest.label_ko || category, formatOfficialValue(latest.value, latest.unit)],
+        ['기관 · 대상 기간', `${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}`],
+        ['집계 범위', escapeHtml(GEOGRAPHY_LABELS[latest.geography_scope] || latest.geography_scope || point.name_ko)],
+        ['발표일 · 원문', `${formatDate(latest.source_published_at)} ${sourceLink(latest.source_url)}`]
+      ]) : '';
+      if (chart) { chart.destroy(); activeCharts = activeCharts.filter(item => item !== chart); }
+      const config = officialVolumeChartData(rows, category);
+      const formatter = category === 'lng' ? formatBcf : formatManBarrels;
+      const options = lineChartOptions(formatter, { formatTick: value => formatNumber(value, category === 'lng' ? 1 : 0) });
+      options.scales.y.title = { display: true, text: category === 'lng' ? '십억 입방피트/일' : '만 배럴/일', color: INK.secondary };
+      options.scales.x.title = { display: true, text: '발표 대상 기간', color: INK.secondary };
+      options.plugins.tooltip.callbacks.title = contexts => {
+        const context = contexts[0];
+        return publicationPeriod(context?.dataset?.publishedRows?.[context.dataIndex]);
+      };
+      options.plugins.tooltip.callbacks.label = context => {
+        const row = context.dataset.publishedRows[context.dataIndex];
+        return row ? `${row.publisher}: ${formatOfficialValue(row.value, row.unit)} · ${GEOGRAPHY_LABELS[row.geography_scope] || row.geography_scope}` : '미보고';
+      };
+      chart = createChart(mount, 'shipping-official-volume-chart', { type: 'line', data: { labels: config.labels, datasets: config.datasets }, options });
+    };
+    mount.querySelectorAll('[data-official-category]').forEach(button => button.addEventListener('click', () => {
+      category = button.dataset.officialCategory;
+      draw();
+    }));
+    draw();
+  };
+
   const otherSeriesTable = rows => {
     // EIA quarterly oil and LNG are drawn above; the table keeps the rest.
     const others = rows.filter(row => !(row.publisher === 'EIA' && row.frequency === 'quarterly'));
@@ -1326,88 +1424,97 @@
   // (`chokepoint_trend`); this only draws.
   const TREND_COLORS = ['#38bdf8', '#f87171', '#fbbf24', '#34d399', '#a78bfa', '#f472b6', '#fb923c', '#94a3b8', '#2dd4bf'];
   const signedPct = (value, digits = 0) => finite(value) ? `${Number(value) > 0 ? '+' : ''}${formatPct(value, digits)}` : '—';
-  const trendSeverity = yoy => !finite(yoy) ? 'neutral' : yoy <= -25 ? 'negative' : yoy <= -10 ? 'warn' : yoy >= 5 ? 'rise' : 'positive';
-  const TREND_SEVERITY_STYLE = { rise: ' style="color:#38bdf8"' };
-  const AIS_GAP_LABELS = {
-    ais_undercount_likely: 'AIS 미포착 가능성 큼',
-    ais_above_official: 'AIS가 공식 추정보다 큼',
-    consistent: '공식 추정과 방향 일치'
-  };
 
+  const trafficSummaryOf = point => point.live?.traffic_summary?.contract_version === 'chokepoint-traffic-v1'
+    && point.live.traffic_summary.unit === 'estimated_trade_tonnes_per_day' ? point.live.traffic_summary : null;
+
+  // Read engine percentages only. Different comparison windows, native cargo
+  // units and source coverage are never recomputed or blended in the browser.
+  const renderTrafficComparisons = summary => `<div class="shipping-note" style="display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0" aria-label="AIS 포착량 기간별 변화율">
+    ${[['week', '전주'], ['month', '전월'], ['year', '전년']].map(([key, label]) => {
+      const comparison = summary?.comparisons?.[key];
+      const baseline = comparison?.baseline;
+      const title = comparison ? `${comparison.label_ko} · 기준 ${baseline?.start_date || '—'}~${baseline?.end_date || '—'}${comparison.status === 'zero_baseline' ? ' · 기준량 0으로 변화율 미산출' : comparison.status !== 'available' ? ' · 일별 자료 부족' : ''}` : '일별 비교 자료 없음';
+      return `<span title="${escapeHtml(title)}">${label} <b>${comparison?.status === 'available' ? signedPct(comparison.change_pct, 1) : '—'}</b></span>`;
+    }).join('')}
+  </div>`;
+
+  const renderTrafficComposition = summary => {
+    const rows = asArray(summary?.ship_types).filter(row => finite(row.current?.value)).slice(0, 3);
+    if (!rows.length) return '<p class="shipping-note">선종별 일별 자료 부족</p>';
+    return `<div aria-label="AIS 추정 화물중량 선종 구성" style="margin:8px 0">
+      ${rows.map(row => `<div style="margin:5px 0">
+        <div style="display:flex;justify-content:space-between;gap:5px;font-size:10px;color:#94a3b8">
+          <span>${escapeHtml(row.label_ko)}</span>
+          <span>${formatTonnes(row.current.value)}/일${finite(row.share_pct) ? ` · ${formatPct(row.share_pct, 1)}` : ''}</span>
+        </div>
+        ${finite(row.share_pct) ? `<div style="height:3px;background:#1e293b;margin-top:3px;border-radius:2px"><div style="height:3px;width:${Number(row.share_pct)}%;background:${SHIP_TYPE_COLORS[row.metric_key] || '#94a3b8'};border-radius:2px"></div></div>` : ''}
+      </div>`).join('')}
+      ${finite(summary.remaining_types_share_pct) ? `<small class="shipping-note">기타·미분류 ${formatPct(summary.remaining_types_share_pct, 1)}</small>` : '<small class="shipping-note">선종 비중 미산출 · 구성 자료 불충분</small>'}
+    </div>`;
+  };
   const renderChokepoints = (data, root, showAll = false) => {
+    destroyCharts();
     const allPoints = data.ui.chokepoints;
     const points = showAll
       ? allPoints
       : allPoints.filter(point => CORE_CHOKEPOINT_IDS.includes(point.id));
     const trendById = new Map(asArray(data.chokepoint_trend?.points).map(row => [row.chokepoint_id, row]));
     const trendOf = point => trendById.get(point.id) || {};
-    const ranked = [...points].filter(point => finite(trendOf(point).latest_yoy_pct))
-      .sort((a, b) => trendOf(a).latest_yoy_pct - trendOf(b).latest_yoy_pct);
-    const worst = ranked[0];
-    const best = ranked[ranked.length - 1];
-    const metricLabel = key => key === 'all' ? '전체 선종' : (SHIP_TYPE_LABELS[key] || key);
-
     const cards = points.map(point => {
       const display = point.display || {};
       const trend = trendOf(point);
-      const yoy = trend.latest_yoy_pct;
-      const gap = trend.official_vs_ais;
-      const latest = trend.official_latest;
+      const latest = latestOfficialCargo(point) || trend.official_latest;
+      const summary = trafficSummaryOf(point);
+      const officialPrimary = point.id === 'hormuz' && latest && finite(latest.value);
       const isStale = Boolean(display.is_stale);
-      const severity = trendSeverity(yoy);
       return `<article class="shipping-chokepoint-card" data-chokepoint="${escapeHtml(point.id)}"
                        role="button" tabindex="0" aria-expanded="false">
         <div class="shipping-chokepoint-head">
           <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
-          ${badge(isStale ? '기준일 경과' : '최근 신호', isStale ? 'neutral' : 'observed')}
+          ${badge(officialPrimary ? '공식 발표' : 'AIS 추정', officialPrimary ? 'estimated' : 'neutral')}
         </div>
-        ${bypassThreatensPoint(point) ? `<div style="margin:8px 0 2px">${badge('호르무즈 우회로 · 후티 봉쇄 위협 보도', 'estimated', '출처가 달린 수기 기록 기준. 상세에서 사건과 공식 경보를 확인')}</div>` : ''}
-        ${gap?.status === 'ais_undercount_likely' ? `<div style="margin:8px 0 2px">${badge('AIS 미포착 가능성 큼', 'estimated', `${gap.period} 공식 추정은 전년 대비 ${signedPct(gap.official_yoy_pct, 1)}, AIS 포착은 ${signedPct(gap.ais_yoy_pct, 1)}`)}</div>` : ''}
-        <strong class="shipping-change ${severity}"${TREND_SEVERITY_STYLE[severity] || ''}>${signedPct(yoy, 0)}</strong>
-        <p>전년 대비 · ${escapeHtml(metricLabel(trend.metric_key || point.metricKey))} AIS 포착 · 최근 7일 vs 52주 전</p>
-        ${definitionRows([
-          ['최근 7일 vs 직전 28일', signedPct(point.metric.change_pct, 1)],
-          ['최근 7일 추정 교역량', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-          ...(latest ? [[`공식 최신 · ${latest.publisher} ${latest.period}`, formatOfficialValue(latest.value, latest.unit)]] : []),
-          ...(gap && finite(gap.ais_yoy_pct) ? [[`${gap.period} 전년 대비 · 공식 / AIS`, `${signedPct(gap.official_yoy_pct, 0)} / ${signedPct(gap.ais_yoy_pct, 0)}`]] : [])
-        ])}
-        <p class="shipping-note">기준일 ${formatDate(trend.latest_date || display.latest_date || point.live.latest_date)}${isStale ? ` · ${formatNumber(display.stale_days, 0)}일 경과` : ''}</p>
+        <strong class="shipping-change" style="font-size:clamp(18px,2vw,26px)">${officialPrimary
+          ? formatOfficialValue(latest.value, latest.unit)
+          : `${formatTonnes(summary?.current?.value)}/일`}</strong>
+        <p>${officialPrimary ? `석유 전체 · ${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}` : '전체 선종 · AIS 포착 최근 7일 평균'}</p>
+        ${officialPrimary ? `<p class="shipping-note">전체 AIS 포착 ${formatTonnes(summary?.current?.value)}/일 · 최근 7일</p>` : ''}
+        ${renderTrafficComposition(summary)}
+        <small class="shipping-note">전체 AIS 포착량 변화</small>
+        ${renderTrafficComparisons(summary)}
+        ${trend.official_vs_ais?.status === 'ais_undercount_likely' ? '<small class="shipping-note">기관 자료 대비 AIS 미포착 유의</small>' : ''}
+        ${latest && !officialPrimary ? `<p class="shipping-note">석유 참고 ${formatOfficialValue(latest.value, latest.unit)}<br>${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}${latest.geography_scope === 'suez_canal_and_sumed_pipeline' ? ' · SUMED 포함' : ''}</p>` : ''}
+        <p class="shipping-note">${latest ? `발표 ${formatDate(latest.source_published_at)} · ` : ''}AIS 기준 ${formatDate(trend.latest_date || display.latest_date || point.live.latest_date)}${isStale ? ' · 갱신 지연' : ''}</p>
       </article>`;
     }).join('');
 
     const body = `
-      <div class="shipping-callout info"><strong>관측 이상 신호:</strong> PortWatch가 <em>AIS로 포착한</em> 통항의 최근 7일을 52주 전 같은 7일과 비교합니다. 0% 위는 증가, 아래는 감소입니다. 위협 해역에서는 선박이 AIS를 꺼 실제보다 크게 줄어 보일 수 있어, 공식 추정이 있는 통로는 함께 보여줍니다.</div>
-      ${worst ? `<div class="shipping-kpi-grid">
-        ${kpi('최대 위축 통로', escapeHtml(worst.name_ko), `전년 대비 ${signedPct(trendOf(worst).latest_yoy_pct, 0)} · AIS 포착`, { featured: true })}
-        ${best && trendOf(best).latest_yoy_pct > 0 ? kpi('최대 증가 통로', escapeHtml(best.name_ko), `전년 대비 ${signedPct(trendOf(best).latest_yoy_pct, 0)} · AIS 포착`) : kpi('증가 통로', '없음', '전년 대비 증가한 통로 없음')}
-        ${kpi('모니터 대상', `${formatNumber(points.length)}개 통로`, showAll ? '전체 PortWatch 공개 신호' : '차단 시 우회·대기 영향 중심')}
-      </div>` : ''}
-      ${panel('LIVE SIGNAL', '통로별 전년 대비 추정 교역량 (7일 이동평균)', `
+      <p class="shipping-note">규모·선종 비중·변화율은 AIS 포착 추정 화물중량 기준입니다. 공식 석유 물량은 별도 기간 평균이며, AIS 감소율은 실제 석유 감소율·봉쇄율이 아닙니다.<br>비교 기준: 최근 7일 평균 ↔ 전주 7일 / 전월 같은 시점 7일 / 전년 같은 요일 7일. 전월은 달 전체 평균이 아닙니다.</p>
+      <div class="shipping-panel-tools" style="justify-content:space-between;flex-wrap:wrap;margin-bottom:12px">
+        <span class="shipping-note">${showAll ? '전체' : '핵심'} ${formatNumber(points.length)}개 통로 · 클릭하면 상세</span>
+        <button type="button" class="shipping-secondary-control" id="shipping-chokepoint-scope-toggle" aria-pressed="${showAll}">
+          ${showAll ? '핵심 5개만 보기' : `전체 ${formatNumber(allPoints.length)}개 통로 보기`}
+        </button>
+      </div>
+      <div class="shipping-chokepoint-grid">${cards}</div>
+      <div id="shipping-chokepoint-detail"></div>
+      <details id="shipping-ais-overview" style="margin-top:18px">
+        <summary class="shipping-secondary-control">AIS 포착량 변화 비교 · 보조지표</summary>
+        ${panel('AIS SIGNAL', 'AIS 포착 추정 물량 · 전년 대비', `
         <div class="shipping-chart-wrap tall"><canvas id="shipping-chokepoint-chart"></canvas></div>
-        <p class="shipping-note">선은 AIS 포착 기준 전년 대비(%)입니다. ◆ 표시는 같은 해협의 EIA 공식 분기 추정치의 전년 대비이며, 분기 가운데 날짜에 찍었습니다. 범례를 눌러 통로를 켜고 끌 수 있습니다 — 호르무즈를 끄면 나머지 통로의 움직임이 크게 보입니다.</p>
-        <div class="shipping-legend">
-          <span><i style="background:#f87171"></i>위험 · 전년 대비 25% 이상 감소</span>
-          <span><i style="background:#fbbf24"></i>주의 · 10–25% 감소</span>
-          <span><i style="background:#34d399"></i>정상 범위</span>
-          <span><i style="background:#38bdf8"></i>증가 · 5% 이상</span>
-        </div>`,
+        <p class="shipping-note">최근 7일과 52주 전 같은 7일의 AIS 포착 추정량 비교입니다. 호르무즈는 탱커, 나머지는 전체 선종입니다. 공식 석유 물량과 별개 지표입니다.</p>`,
         `<div class="shipping-panel-tools">
           ${popover('choke-def', '용어', '초크포인트 지표 읽는 법', `
             ${definitionRows([
               ['전년 대비', '최근 7일 평균 ÷ 52주 전 같은 요일 7일 평균 − 1 (AIS 포착 기준)'],
               ['최근 7일 vs 직전 28일', '단기 변화. 이미 붕괴한 기준선 안의 등락이라 전년 대비와 함께 봐야 함'],
               ['AIS 미포착 가능성 큼', '같은 분기 전년 대비로 AIS가 남긴 비율이 공식 추정이 남긴 비율의 절반 미만'],
-              ['색 구간', '25% 이상 감소 위험 · 10–25% 주의 · 5% 이상 증가']
+              ['지표 한계', 'AIS 누락·조작과 집계 방식의 영향을 받으며 실제 봉쇄율이 아님']
             ])}
-            <p class="shipping-note">색 구간은 이 화면이 정한 표시 기준이며 PortWatch 등급이 아닙니다. 모든 값은 엔진이 계산한 스냅샷 값을 그대로 씁니다. 톤과 배럴을 서로 환산하지 않습니다.</p>`)}
-          <button type="button" class="shipping-secondary-control" id="shipping-chokepoint-scope-toggle" aria-pressed="${showAll}">
-            ${showAll ? '핵심 5개만 보기' : `전체 ${formatNumber(allPoints.length)}개 통로 보기`}
-          </button>
+            <p class="shipping-note">톤과 배럴을 환산하거나 공식 발표와의 차이를 미포착 물량으로 계산하지 않습니다.</p>`)}
           ${badge('PortWatch AIS 추정', 'estimated')}
         </div>`)}
-      <div class="shipping-chokepoint-grid">${cards}</div>
-      <div id="shipping-chokepoint-detail"></div>
-      <p class="shipping-note">호르무즈는 탱커, 나머지 통로는 전체 추정 교역량을 대표 지표로 씁니다. 전년 대비는 AIS에 포착된 통항 기준이며 시나리오 봉쇄율과 같은 숫자가 아닙니다.</p>`;
+      </details>`;
 
     root.innerHTML = pageShell('shipping_chokepoints', body, data);
 
@@ -1424,33 +1531,29 @@
       const byDate = new Map(asArray(trend.dates).map((day, i) => [day, trend.yoy_pct[i]]));
       const name = `${point.name_ko}${trend.metric_key && trend.metric_key !== 'all' ? ` (AIS ${SHIP_TYPE_LABELS[trend.metric_key] || trend.metric_key})` : ''}`;
       datasets.push({ ...solidLine(name, labels.map(day => finite(byDate.get(day)) ? Number(byDate.get(day)) : null), color), borderWidth: 2 });
-      const gap = trend.official_vs_ais;
-      const quarter = gap && /^([1-4])Q(\d{2})$/.exec(gap.period || '');
-      if (quarter) {
-        const mid = `20${quarter[2]}-${String(Number(quarter[1]) * 3 - 1).padStart(2, '0')}-15`;
-        const at = labels.indexOf(mid);
-        if (at >= 0) {
-          datasets.push({
-            label: `${point.name_ko} EIA ${gap.period} 공식`, data: labels.map((_, i) => i === at ? gap.official_yoy_pct : null),
-            borderColor: color, backgroundColor: color, showLine: false, pointStyle: 'rectRot', pointRadius: 7, pointHoverRadius: 9
-          });
-        }
-      }
     });
-    if (datasets.length) {
+    let overviewChart = null;
+    root.querySelector('#shipping-ais-overview')?.addEventListener('toggle', event => {
+      if (!event.target.open || overviewChart || !datasets.length) return;
       const options = lineChartOptions(value => signedPct(value, 1), { formatTick: value => `${value > 0 ? '+' : ''}${formatNumber(value, 0)}%` });
       options.scales.y.beginAtZero = false;
       options.scales.y.grid = { color: ctx => ctx.tick?.value === 0 ? 'rgba(248, 250, 252, 0.45)' : GRID_LINE, lineWidth: ctx => ctx.tick?.value === 0 ? 1.5 : 1 };
       options.scales.x.ticks.callback = function (value) { return String(this.getLabelForValue(value)).slice(5); };
-      // ◆ official points are explained in the note; keep the legend to lines.
-      options.plugins.legend.labels.filter = item => !String(item.text).includes('공식');
-      createChart(root, 'shipping-chokepoint-chart', { type: 'line', data: { labels, datasets }, options });
-    }
+      overviewChart = createChart(root, 'shipping-chokepoint-chart', { type: 'line', data: { labels, datasets }, options });
+    });
 
-    // Detail: location on the left third, daily series on the right two.
+    // Location stays visible. Only one information layer is mounted at a
+    // time; the simulator/grid and research appendix load on demand.
     const detail = root.querySelector('#shipping-chokepoint-detail');
     const cardEls = [...root.querySelectorAll('[data-chokepoint]')];
     let openId = null;
+
+    const clearDetailCharts = () => {
+      const owned = new Set(activeCharts.filter(chart => chart.canvas && detail.contains(chart.canvas)));
+      owned.forEach(chart => { try { chart.destroy(); } catch (_) { /* already gone */ } });
+      activeCharts = activeCharts.filter(chart => !owned.has(chart));
+      officialCharts = officialCharts.filter(chart => !owned.has(chart));
+    };
 
     const openDetail = async id => {
       openId = openId === id ? null : id;
@@ -1459,48 +1562,81 @@
         card.classList.toggle('is-active', on);
         card.setAttribute('aria-expanded', String(on));
       });
+      clearDetailCharts();
       if (!openId) { detail.innerHTML = ''; return; }
 
       const point = points.find(p => p.id === openId);
-      const shortfallPct = point.shortfall === null ? null : point.shortfall * 100;
       const risk = point.risk_context || {};
+      const hasOfficial = publishedOfficialRows(point.officialCargo).some(row => finite(row.value));
+      const tabs = [['official', '공식 물량'], ['ais', 'AIS 통항'], ['conditions', '통항 여건'], ['simulator', '시뮬레이션']];
+      let activeTab = hasOfficial ? 'official' : 'ais';
 
       detail.innerHTML = `
         <div class="shipping-detail-grid">
           ${panel('LOCATION', point.name_ko, '<div id="shipping-minimap"><p class="shipping-empty">지도를 불러오는 중…</p></div>')}
-          ${panel('OBSERVED TRADE BY TYPE', '선종별 추정 교역량', `
-            ${definitionRows([
-              ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
-              ['최근 7일 평균', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
-              // Signed change, not the floored shortfall: a rise inside an
-              // already collapsed baseline must not read as "0%, 100% left".
-              ['직전 28일 대비', finite(point.metric.change_pct)
-                ? `${Number(point.metric.change_pct) > 0 ? '+' : ''}${formatPct(point.metric.change_pct, 1)}${shortfallPct > 0 ? ` (잔존 ${formatPct((point.remaining || 0) * 100, 0)})` : ''}`
-                : '—'],
-              ['52주 전 같은 7일 대비', (() => {
-                const yearAgo = point.live?.metric_histories?.[point.metricKey]?.year_ago;
-                return finite(yearAgo?.change_pct)
-                  ? `${Number(yearAgo.change_pct) > 0 ? '+' : ''}${formatPct(yearAgo.change_pct, 1)} (${formatTonnes(yearAgo.year_ago_7d_mean)}/일 → ${formatTonnes(yearAgo.recent_7d_mean)}/일)`
-                  : '비교 자료 없음';
-              })()]
-            ])}
-            <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명이 제공되지 않았습니다.')}</p>
-            <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>
-            ${renderObservedTypeComparison(point)}`,
-            badge('PortWatch 추정', 'observed', '일별 값은 공개된 선종별 이력이 있을 때만 표시'))}
+          ${panel('CHOKEPOINT DETAIL', '물량과 통항 여건', `
+            <div class="shipping-observed-type-controls" role="tablist" aria-label="초크포인트 상세 정보">
+              ${tabs.map(([key, label]) => `<button type="button" id="shipping-detail-tab-${key}" data-choke-detail-tab="${key}" role="tab" aria-selected="${key === activeTab}" aria-controls="shipping-detail-pane-${key}">${label}</button>`).join('')}
+            </div>
+            ${tabs.map(([key]) => `<div id="shipping-detail-pane-${key}" role="tabpanel" aria-labelledby="shipping-detail-tab-${key}"${key === activeTab ? '' : ' hidden'}></div>`).join('')}`)}
         </div>
-        <div id="shipping-official-cargo"></div>
-        <div id="shipping-inline-simulator"></div>`;
+        <details id="shipping-choke-appendix" style="margin-top:14px">
+          <summary class="shipping-secondary-control">자료·방법 자세히 · 원자료 / 우회로 / 미포착 분석</summary>
+          <div id="shipping-official-cargo"></div>
+        </details>`;
+
+      const mounted = new Set();
+      const showTab = async key => {
+        if (openId !== point.id) return;
+        activeTab = key;
+        detail.querySelectorAll('[data-choke-detail-tab]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokeDetailTab === key)));
+        tabs.forEach(([paneKey]) => { detail.querySelector(`#shipping-detail-pane-${paneKey}`).hidden = paneKey !== key; });
+        if (mounted.has(key)) {
+          activeCharts.filter(chart => chart.canvas && detail.querySelector(`#shipping-detail-pane-${key}`).contains(chart.canvas)).forEach(chart => chart.resize());
+          return;
+        }
+        mounted.add(key);
+        const pane = detail.querySelector(`#shipping-detail-pane-${key}`);
+        if (key === 'official') renderCompactOfficialCargo(point, pane);
+        if (key === 'ais') {
+          pane.innerHTML = `${trendOf(point).official_vs_ais?.status === 'ais_undercount_likely'
+            ? '<p class="shipping-note"><strong>AIS 포착 커버리지 주의:</strong> 공식 발표와 괴리가 큽니다. 이 감소율을 실제 석유 감소율로 해석하지 마세요.</p>' : ''}${renderObservedTypeComparison(point)}`;
+          bindObservedTypeComparison(pane, point);
+        }
+        if (key === 'conditions') {
+          pane.innerHTML = `
+            <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명 없음')}</p>
+            ${renderTransitAssessment(point.officialCargo?.transit_assessment)}
+            ${bypassThreatensPoint(point) ? '<p class="shipping-note">후티 위협·우회로 사건 기록은 ‘자료·방법 자세히’에서 출처와 검토일을 확인하세요.</p>' : ''}`;
+        }
+        if (key === 'simulator') {
+          // Check again after the shared fetch: closing/changing the detail
+          // while the grid loads must not create charts on detached nodes.
+          pane.innerHTML = '<p class="shipping-note">시나리오 데이터를 불러오는 중…</p>';
+          try {
+            await loadScenarioGrid(data);
+            if (openId !== point.id || !detail.contains(pane) || !pane.isConnected) return;
+            if (activeTab !== key) { mounted.delete(key); return; }
+            await renderScenarioSimulatorInto(data, pane, point.id);
+          } catch (error) {
+            if (detail.contains(pane)) {
+              mounted.delete(key);
+              pane.innerHTML = '<p class="shipping-note">시나리오 데이터를 불러오지 못했습니다. 탭을 다시 선택해 재시도하세요.</p>';
+            }
+          }
+        }
+      };
+      detail.querySelectorAll('[data-choke-detail-tab]').forEach(button => button.addEventListener('click', () => showTab(button.dataset.chokeDetailTab)));
+      let appendixMounted = false;
+      detail.querySelector('#shipping-choke-appendix').addEventListener('toggle', event => {
+        if (!event.target.open || appendixMounted || openId !== point.id) return;
+        appendixMounted = true;
+        renderOfficialCargoInto(detail.querySelector('#shipping-official-cargo'), point);
+      });
 
       detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       renderMiniMap(detail.querySelector('#shipping-minimap'), point);
-      bindObservedTypeComparison(detail, point);
-      renderOfficialCargoInto(detail.querySelector('#shipping-official-cargo'), point);
-      renderScenarioSimulatorInto(
-        data,
-        detail.querySelector('#shipping-inline-simulator'),
-        point.id
-      );
+      await showTab(activeTab);
     };
 
     cardEls.forEach(card => {
@@ -1512,6 +1648,7 @@
     });
 
     bindPopovers(root);
+    bindTabs(root);
   };
 
   // What each scenario KPI actually counts. Shown on click, because the labels
@@ -1524,6 +1661,15 @@
     trapped: ['선적 후 억류 DWT', '화물을 실은 채 통로 안쪽에 <strong>묶인 선복량</strong>입니다. 대표 선형 DWT로 환산한 값이며, AIS로 센 실제 척수가 아닙니다.'],
     insurance: ['보험 제외 DWT', '전쟁위험 보험·안전 정책 때문에 <strong>해당 구간에 투입할 수 없다고 가정한 선복량</strong>입니다. 관측이 아니라 시나리오 가정입니다.'],
     traffic: ['트래픽 변화', '영향 항로 전체에서 <strong>실제로 배송 가능한 화물 흐름의 변화율</strong>입니다. 필요 선복량 대비 실제 공급 가능량을 화물 기준으로 가중평균한 값입니다.']
+  };
+
+  const scenarioPresetControls = (preset, closureOptions, durationOptions) => {
+    const closure = Math.round(Number(preset.closure_fraction || 0) * 100);
+    const duration = Number(preset.duration_days);
+    return {
+      closure: closureOptions.includes(closure) ? closure : closureOptions[0],
+      duration: durationOptions.includes(duration) ? duration : durationOptions.at(-1)
+    };
   };
 
   const renderRerouteReceivers = (receivers, scenarioId, horizonDays = 28) => {
@@ -1644,9 +1790,7 @@
     }
 
     const initial = baseScenarios.find(item => item.id === 'hormuz_effective_80pct_28d') || baseScenarios[0];
-    const initialClosure = closureOptions.includes(80) ? 80 : Math.round(Number(initial.closure_fraction || 0) * 100);
-    const initialDuration = durationOptions.includes(Number(initial.duration_days))
-      ? Number(initial.duration_days) : durationOptions.at(-1);
+    const {closure: initialClosure, duration: initialDuration} = scenarioPresetControls(initial, closureOptions, durationOptions);
 
     mount.innerHTML = panel('SHOCK SIMULATOR', '봉쇄·통항제약 시뮬레이터', `
       <div class="shipping-callout warning"><strong>가정 기반 스트레스입니다.</strong> PortWatch 관측 신호와 물리 봉쇄율을 동일시하지 않습니다.</div>
@@ -1750,7 +1894,16 @@
       bindScenarioKpis(resultEl);
     };
 
-    [presetEl, closureEl, durationEl].forEach(el => el?.addEventListener('change', update));
+    presetEl?.addEventListener('change', () => {
+      const preset = baseScenarios.find(item => item.id === presetEl.value);
+      if (preset) {
+        const defaults = scenarioPresetControls(preset, closureOptions, durationOptions);
+        closureEl.value = String(defaults.closure);
+        durationEl.value = String(defaults.duration);
+      }
+      update();
+    });
+    [closureEl, durationEl].forEach(el => el?.addEventListener('change', update));
     update();
   };
 
