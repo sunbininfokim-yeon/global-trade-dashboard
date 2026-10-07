@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild only the artifact bundle from existing, matching diagnostics.
+"""Rebuild observation presentation from existing, matching diagnostics.
 
 No network, collection, model fitting, or scenario recalculation occurs here.
 Source observation timestamps remain unchanged.
@@ -29,7 +29,7 @@ def main():
         raise SystemExit(f"Contract failures: {failures}")
     for key, name in names.items():
         (args.data_dir / name).write_text(json.dumps(bundle[key], ensure_ascii=False, indent=2) + "\n")
-    print(f"Updated observation summaries only; bundle {bundle['screen']['bundle_id']}")
+    print(f"Updated observation presentation only; bundle {bundle['screen']['bundle_id']}")
 
 
 if __name__ == "__main__":

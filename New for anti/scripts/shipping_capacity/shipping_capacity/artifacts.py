@@ -12,6 +12,7 @@ from shipping_capacity.traffic_summary import CONTRACT_VERSION, build_traffic_su
 
 
 SCREEN_HISTORY_POINT_LIMIT = 180
+SCREEN_METRIC_HISTORY_POINT_LIMIT = 730
 # 52 weeks, so each prior-year point falls on the same weekday. Only the ship
 # types the chokepoint screen draws get one; the 730-day source stays in
 # diagnostics.
@@ -54,6 +55,7 @@ def _bundle_id(snapshot: dict[str, Any]) -> str:
         "route_ids": [row["id"] for row in snapshot.get("routes", [])],
         "scenario_ids": [row["id"] for row in snapshot.get("scenarios", [])],
         "traffic_contract_version": CONTRACT_VERSION,
+        "screen_metric_history_point_limit": SCREEN_METRIC_HISTORY_POINT_LIMIT,
     }
     encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()[:20]
@@ -99,7 +101,7 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
 def _screen_chokepoints_live(
     live_status: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    """Keep the public screen artifact compact while diagnostics retain 730 days."""
+    """Keep summaries compact; expose up to two years for the charted metrics."""
 
     screen_status: dict[str, dict[str, Any]] = {}
     for chokepoint_id, status in live_status.items():
@@ -114,8 +116,9 @@ def _screen_chokepoints_live(
             if not isinstance(metric_status, dict):
                 continue
             full_metric_history = metric_status.get("history", [])
+            metric_limit = SCREEN_METRIC_HISTORY_POINT_LIMIT if metric_key in YEAR_AGO_METRICS else SCREEN_HISTORY_POINT_LIMIT
             metric_history = (
-                full_metric_history[-SCREEN_HISTORY_POINT_LIMIT:]
+                full_metric_history[-metric_limit:]
                 if isinstance(full_metric_history, list)
                 else []
             )
@@ -156,7 +159,7 @@ def _screen_chokepoints_live(
                     if isinstance(full_metric_history, list)
                     else 0
                 ),
-                "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+                "history_screen_point_limit": metric_limit,
             }
         screen_status[chokepoint_id] = {
             **status,
