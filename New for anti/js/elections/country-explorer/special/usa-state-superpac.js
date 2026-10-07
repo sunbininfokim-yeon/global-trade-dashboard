@@ -252,7 +252,7 @@ export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, cont
             <p class="section-title">연방 하원 · 배지는 누적 공시 지지지출이 더 많은 정당입니다 (본선·경선·과거 포함). 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
             ${pending && house.length ? `<p class="elections-panel-note${failed ? ' is-warning' : ''}">${failed
         ? '선거구 지도 도형을 불러오지 못했습니다. 금액은 그대로 표시됩니다. 나갔다 다시 들어오면 재시도합니다.'
-        : '선거구 지도를 불러오는 중입니다. 금액은 먼저 표시되고, 지도 위치는 도형이 도착하면 연결됩니다.'}</p>` : ''}
+        : '선거구 지도를 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span> 금액은 먼저 표시되고, 지도 위치는 도형이 도착하면 연결됩니다.'}</p>` : ''}
             <div class="elections-spac-district-list">
                 ${mapped.map((race) => districtRow(race, pending ? null : true, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
                 ${unmapped.map((race) => districtRow(race, false, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
