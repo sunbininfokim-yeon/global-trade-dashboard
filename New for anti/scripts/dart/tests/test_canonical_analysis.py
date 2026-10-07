@@ -22,6 +22,8 @@ SPECS = {
     "TOTAL_ASSETS": {"nature": "balance", "statement": "BS", "source_ids": ["assets"], "sec_concepts": ["Assets"]},
     "TOTAL_LIABILITIES": {"nature": "balance", "statement": "BS", "source_ids": ["liab"], "sec_concepts": ["Liabilities"]},
     "EQUITY": {"nature": "balance", "statement": "BS", "source_ids": ["equity"], "sec_concepts": ["StockholdersEquity"]},
+    "LEASE_LIABILITIES": {"nature": "balance", "statement": "BS", "source_ids": ["lease"], "sec_concepts": ["LeaseLiability"]},
+    "CONTRACT_LIABILITIES": {"nature": "balance", "statement": "BS", "source_ids": ["contract"], "sec_concepts": ["ContractWithCustomerLiability"]},
 }
 
 
@@ -90,6 +92,61 @@ class CanonicalAnalysisTest(unittest.TestCase):
         self.assertNotIn("fcf", visible["card_registry"])
         self.assertTrue(all("fcf" not in view["card_refs"] for view in visible["views"].values()))
         self.assertEqual(company["valuation"]["status"], "not_applicable")
+
+    def test_p2_shipping_lease_adjustment_requires_same_reported_balance_basis(self):
+        filings = {
+            "11011": [
+                dart_row("11011", "liab", "BS", 300),
+                dart_row("11011", "equity", "BS", 100),
+                dart_row("11011", "lease", "BS", 80),
+            ]
+        }
+        canonical = adapt_dart_filings(filings, account_specs=SPECS, fiscal_year_end="2025-12-31")
+        company = analyze_canonical_facts(canonical, corp={"name": "해운사", "industry_kit": "shipping"})
+        adjustment = company["industry"]["adjusted_metrics"]["debt_ratio_ex_lease"]
+        self.assertEqual(adjustment["value"], 220)
+        self.assertEqual(adjustment["basis"]["status"], "reported_balance_facts")
+        self.assertEqual(adjustment["basis"]["currency"], "KRW")
+
+        # A single currency-mixed fact must not change the reported leverage.
+        canonical["series"]["LEASE_LIABILITIES"]["annual"]["unit"]["currency"] = "USD"
+        blocked = analyze_canonical_facts(canonical, corp={"name": "해운사", "industry_kit": "shipping"})
+        self.assertNotIn("debt_ratio_ex_lease", blocked["industry"]["adjusted_metrics"])
+        self.assertEqual(
+            blocked["industry"]["adjustment_status"][0]["reason"],
+            "incompatible:balance_period_scope_currency_or_unit",
+        )
+
+    def test_p2_shipbuilding_backlog_uses_only_p1_structured_reported_row(self):
+        canonical = adapt_dart_filings(
+            {"11011": [dart_row("11011", "rev", "IS", 100)]},
+            account_specs=SPECS,
+            fiscal_year_end="2025-12-31",
+        )
+        rows = [{
+            "disclosure_type": "backlog_order_book",
+            "is_structured_reported": True,
+            "segment_id": "yard",
+            "segment_name": "조선",
+            "value": 900,
+            "unit": {"kind": "currency", "currency": "KRW", "scale": 1},
+            "fiscal_year": 2025,
+            "period_end": "2025-12-31",
+            "fs_div": "CFS",
+            "report_id": "receipt-11011",
+            "report_type": "business_report",
+            "source_table": "수주현황",
+            "source_row_id": "yard-1",
+        }]
+        company = analyze_canonical_facts(
+            canonical,
+            corp={"name": "조선사", "industry_kit": "shipbuilding"},
+            p1_structured_disclosures=rows,
+        )
+        backlog = company["industry"]["disclosures"]["backlog_order_book"]
+        self.assertEqual(backlog["status"], "reported")
+        self.assertEqual(backlog["value"][0]["value"], 900)
+        self.assertEqual(backlog["provenance"]["acceptance"], "structured_reported_rows_only")
 
     def test_sec_and_dart_sign_and_period_semantics_match(self):
         codes = ("11013", "11012", "11014", "11011")

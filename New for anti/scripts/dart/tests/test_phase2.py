@@ -79,6 +79,28 @@ class TestIndustryKits(unittest.TestCase):
         self.assertIsNone(incomplete["value"])
         self.assertEqual(incomplete["reason"], "missing:aggregation_components:1/2")
 
+    def test_high_debt_without_reported_lease_does_not_claim_ifrs16_explains_leverage(self):
+        from dart_kfa.industry import apply_industry_layer
+
+        industry = apply_industry_layer(
+            corp={"industry_kit": "shipping"},
+            metrics={"debt_ratio": {"value": 500}},
+            amounts={"LEASE_LIABILITIES": None},
+        )
+        self.assertNotIn("lease_inflates_leverage", {flag["id"] for flag in industry["flags"]})
+        self.assertIn("LEASE_LIABILITIES", industry["adjustment_status"][0]["reason"])
+
+    def test_non_lease_kit_does_not_emit_lease_adjustment_merely_because_a_value_exists(self):
+        from dart_kfa.industry import apply_industry_layer
+
+        industry = apply_industry_layer(
+            corp={"industry_kit": "semiconductor"},
+            metrics={},
+            amounts={"TOTAL_LIABILITIES": 300, "EQUITY": 100, "LEASE_LIABILITIES": 80},
+        )
+        self.assertEqual(industry["adjusted_metrics"], {})
+        self.assertEqual(industry["adjustment_status"], [])
+
     def test_shipbuilding_contract_liab(self):
         c = analyze_payload(
             load_fixture(FIX_YARD),
