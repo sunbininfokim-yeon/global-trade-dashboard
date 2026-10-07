@@ -89,6 +89,7 @@ jobs:
       # step here is honestly reflected downstream, not silently papered
       # over.
       - name: Conc history append
+        id: conc_history
         continue-on-error: true
         run: |
           python build_conc_history.py --append-only --print-stats || \
@@ -98,6 +99,7 @@ jobs:
         run: python build_us_kr_l3.py --live --print-stats
 
       - name: Market microstructure snapshot
+        id: micro_snapshot
         continue-on-error: true
         env:
           KRX_API: ${{ secrets.KRX_API }}
@@ -158,11 +160,13 @@ jobs:
       # the committed file, so a stalled or partial source never erases the
       # days already published; a failed checkout leaves the file untouched.
       - name: KRX derivatives microstructure history
+        id: krx_flow
         if: steps.krx15007_checkout.outcome == 'success'
         continue-on-error: true
         run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
 
       - name: Investor × price levels (real data; marcap + high-vol in top100)
+        id: investor_levels
         continue-on-error: true
         env:
           KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
@@ -172,6 +176,7 @@ jobs:
         run: python publish_deposit_credit.py
 
       - name: Alert levels
+        id: alert_levels
         continue-on-error: true
         run: python build_alert_levels.py --live
 
@@ -223,3 +228,41 @@ jobs:
             git pull --rebase --autostash
           done
           git push
+
+      # continue-on-error keeps one blocked source from stopping the day's
+      # commit, but it also makes a failed step report as success -- on
+      # 2026-10-06/07 the investor-levels step was silently wrong for two days
+      # under a green run. This runs after the commit, so the data that did
+      # refresh is already published; it only turns the run red (and writes
+      # the list to the run summary) when a step marked continue-on-error
+      # actually failed. A step that the workflow skipped is not a failure.
+      - name: Report steps that failed but were allowed to continue
+        if: always()
+        env:
+          CONC_HISTORY: ${{ steps.conc_history.outcome }}
+          MICRO_SNAPSHOT: ${{ steps.micro_snapshot.outcome }}
+          KRX_CHECKOUT: ${{ steps.krx15007_checkout.outcome }}
+          KRX_FLOW: ${{ steps.krx_flow.outcome }}
+          INVESTOR_LEVELS: ${{ steps.investor_levels.outcome }}
+          ALERT_LEVELS: ${{ steps.alert_levels.outcome }}
+        run: |
+          failed=()
+          [ "$CONC_HISTORY" = "failure" ]    && failed+=("Conc history append")
+          [ "$MICRO_SNAPSHOT" = "failure" ]  && failed+=("Market microstructure snapshot")
+          [ "$KRX_CHECKOUT" = "failure" ]    && failed+=("Checkout krx-month-paste")
+          [ "$KRX_FLOW" = "failure" ]        && failed+=("KRX derivatives microstructure history")
+          [ "$INVESTOR_LEVELS" = "failure" ] && failed+=("Investor × price levels")
+          [ "$ALERT_LEVELS" = "failure" ]    && failed+=("Alert levels")
+          if [ "${#failed[@]}" -eq 0 ]; then
+            echo "No continue-on-error step failed."
+            exit 0
+          fi
+          {
+            echo "### Steps that failed but did not stop the run"
+            echo "The rest of the day was committed. These outputs were **not refreshed** by this run:"
+            for s in "${failed[@]}"; do echo "- $s"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+          for s in "${failed[@]}"; do
+            echo "::error title=Not refreshed::$s failed (continue-on-error); its output was not updated by this run"
+          done
+          exit 1
