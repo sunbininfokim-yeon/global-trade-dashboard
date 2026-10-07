@@ -15,6 +15,7 @@ from .view_engine import attach_unified_views, build_unified_views, get_view_def
 from .canonical_analysis import analyze_canonical_facts
 from .currency import build_currency_contract
 from .snapshot_adapter import build_kfa_snapshot, build_kfa_snapshot_from_dart_filings
+from .p1_disclosures import build_p1_disclosures, compute_receivables_to_sales, compute_strict_ebitda, resolve_latest_endpoint
 
 __all__ = [
     "attach_unified_views",
@@ -24,4 +25,8 @@ __all__ = [
     "build_currency_contract",
     "build_kfa_snapshot",
     "build_kfa_snapshot_from_dart_filings",
+    "build_p1_disclosures",
+    "compute_receivables_to_sales",
+    "compute_strict_ebitda",
+    "resolve_latest_endpoint",
 ]
