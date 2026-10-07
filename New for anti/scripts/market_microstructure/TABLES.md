@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 2.947 | 72.74 | 24.114 |
-| overseas | 26 | 0.012 | 0.3 | 0.1 |
-| sector | 8 | 0.577 | 14.23 | 4.718 |
-| single_stock | 16 | 0.516 | 12.73 | 4.22 |
+| index | 53 | 3.11 | 72.86 | 25.449 |
+| overseas | 26 | 0.013 | 0.3 | 0.106 |
+| sector | 8 | 0.6 | 14.06 | 4.91 |
+| single_stock | 16 | 0.546 | 12.78 | 4.465 |
 
 ## 10. Short interest
 
