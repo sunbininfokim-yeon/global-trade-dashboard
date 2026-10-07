@@ -13,6 +13,7 @@ from .ma_metrics import compute_ma_metrics
 from .metrics import compute_metrics, load_metrics_spec
 from .narrative import narratives_ko
 from .p1_disclosures import build_p1_disclosures
+from .p1_models import build_p1_models
 from .validate import validate_accounts
 from .valuation import build_seeded_scenarios, run_valuation_bundle, seed_from_statements
 from .view_engine import build_unified_views
@@ -68,6 +69,7 @@ def analyze_canonical_facts(
     share_metadata: dict[str, Any] | None = None,
     p1_structured_disclosures: Iterable[Mapping[str, Any]] | None = None,
     p1_annual_history: Iterable[Mapping[str, Any]] | None = None,
+    p1_model_inputs: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
     if canonical.get("schema_version") != "canonical-financial-facts/1":
@@ -256,6 +258,12 @@ def analyze_canonical_facts(
         canonical,
         structured_disclosures=p1_structured_disclosures,
         annual_history=p1_annual_history,
+    )
+    output["p1_models"] = build_p1_models(
+        canonical,
+        p1_disclosures=output["p1_disclosures"],
+        entity_policy=entity_policy,
+        inputs=p1_model_inputs,
     )
     view_inputs = {"valuation_assumptions": valuation_assumptions} if valuation_assumptions else {}
     output["unified_views"] = build_unified_views(output, user_inputs=view_inputs)
