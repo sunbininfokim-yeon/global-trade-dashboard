@@ -3053,6 +3053,18 @@ async function handleUsPolicy(request, env) {
     const q = url.searchParams;
 
     try {
+        if (path === 'reports/quality') {
+            return await kvCachedJson(env, 'us:reports:quality:v1', 60, async () => {
+                const rows = await usFetch(env, 'data_sync_state', 'select=cursor,last_successful_at&sync_resource=eq.mailing:reports:mac&limit=1');
+                const row = rows[0];
+                const quality = { status: row?.cursor?.status || 'unknown', last_success_at: row?.last_successful_at || null };
+                for (const key of ['checked_at','source_generated_at','feeds_ok','feeds_failed','carried_over','skipped_undated','skipped_unclassified','reports']) {
+                    if (row?.cursor?.[key] !== undefined) quality[key] = row.cursor[key];
+                }
+                return { ok: true, body: quality };
+            });
+        }
+
         if (path === 'overview') {
             return await kvCachedJson(env, 'us:overview:v2', US_TTL.overview,
                 () => usOverview(env));
@@ -3075,7 +3087,7 @@ async function handleUsPolicy(request, env) {
         let m = path.match(/^congress\/bills\/(.+)$/);
         if (m) {
             const billId = decodeURIComponent(m[1]);
-            return await kvCachedJson(env, `us:bill:v3:${billId}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:bill:v4:${billId}`, US_TTL.detail,
                 () => usBillDetail(env, billId));
         }
 
@@ -3805,6 +3817,7 @@ async function usBillDetail(env, billId) {
     const bill = rows[0];
     // embedding is a 1536-float vector -- ~30KB of JSON per bill, useless to the
     // browser and expensive in KV. raw_source is the whole Congress.gov payload.
+    bill.embedding_quality = PolicyEvidence.embeddingQuality(bill);
     delete bill.embedding;
     delete bill.raw_source;
     for (const v of bill.bill_text_versions || []) delete v.raw_source;
