@@ -58,6 +58,24 @@ const Auth = (() => {
         renderAuthButton();
     }
 
+    async function mailingPreferences() {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { data, error } = await client.from('mailing_preferences')
+            .select('policy_enabled,commodity_enabled').eq('user_id', user.id).maybeSingle();
+        if (error) throw error;
+        return data || { policy_enabled: true, commodity_enabled: true };
+    }
+
+    async function setMailingPreference(kind, enabled) {
+        if (!currentUser()) throw new Error('로그인이 필요합니다.');
+        if (!['policy', 'commodity'].includes(kind) || typeof enabled !== 'boolean') {
+            throw new Error('수신 설정 값이 올바르지 않습니다.');
+        }
+        const { error } = await client.rpc('set_my_mailing_preference', { p_kind: kind, p_enabled: enabled });
+        if (error) throw error;
+    }
+
     function currentUser() {
         return session ? session.user : null;
     }
@@ -526,6 +544,7 @@ const Auth = (() => {
         commoditySourceFilterHtml, bindCommoditySourceFilter, bindCommodityFavoriteFilter,
         changePassword, myProfile, updateNickname, resetPasswordForEmail,
         billNotificationsPaused, setBillNotificationsPaused,
+        mailingPreferences, setMailingPreference,
     };
 })();
 

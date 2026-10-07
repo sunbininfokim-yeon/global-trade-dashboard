@@ -211,3 +211,14 @@ test('semantic provider failure preserves evidence-based results and marks degra
  const r=await w.fetch(new Request('https://test/api/us/search?q=nickel,battery'),{...env,POLICY_EMBEDDING_PROXY_URL:'https://embedding.test',POLICY_EMBEDDING_PROXY_TOKEN:'test'},{});
  const data=await r.json();assert.equal(data.items[0].matched_condition_count,2);assert.equal(data.semantic_available,false);
 });
+test('bill detail returns freshness without leaking source hashes or vector values',async()=>{
+ const source={embedding_current_input_hash:'new',embedding_provenance:{input_hash:'old',model:'gemini-embedding-001',dimensions:1536}};
+ const w=worker(async url=>Response.json(new URL(url).pathname.endsWith('/bill_relations')?[]:[{...structuredClone(fixture),embedding:[1],embedding_model:'gemini-embedding-001',raw_source:source}]));
+ const r=await w.fetch(new Request('https://test/api/us/congress/bills/119-hr-3633'),env,{});const bill=await r.json();
+ assert.equal(bill.embedding_quality.status,'stale');assert.equal(bill.raw_source,undefined);assert.equal(bill.embedding,undefined);assert.ok(!JSON.stringify(bill).includes('input_hash'));
+});
+test('RSS health response exposes whitelisted source counters, never arbitrary sync cursor fields',async()=>{
+ const w=worker(async()=>Response.json([{last_successful_at:'2026-10-05',cursor:{status:'partial',feeds_ok:29,feeds_failed:1,api_key:'private',recipient:'private@example.com',reason:'internal'}}]));
+ const r=await w.fetch(new Request('https://test/api/us/reports/quality'),env,{});const q=await r.json();
+ assert.equal(q.feeds_ok,29);assert.equal(q.feeds_failed,1);assert.equal(q.last_success_at,'2026-10-05');assert.equal(q.api_key,undefined);assert.equal(q.recipient,undefined);assert.equal(q.reason,undefined);
+});

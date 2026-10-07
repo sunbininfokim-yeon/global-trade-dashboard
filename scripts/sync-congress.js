@@ -6,7 +6,7 @@ const { committeeHierarchy } = require('./lib/committee-hierarchy');
 const PolicyEvidence = require('../New for anti/policy-evidence.js');
 const {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty,
-  geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, mapWithConcurrency, parseDateOnly, parseTimestamp, requireEnv, slug,
+  embeddingInput, geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, mapWithConcurrency, parseDateOnly, parseTimestamp, requireEnv, slug,
   startSyncRun, supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert,
   updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue, reapStalePolicyQueue, queueRetryOrFail,
 } = require('./lib/sync-utils');
@@ -306,8 +306,18 @@ function committeeData(value, congress) {
   return committeeCode && committeeChamber ? { id: `${congress}-${committeeChamber}-${committeeCode}`, committeeCode, committeeChamber } : null;
 }
 
+function prepareEmbedding(row, previous) {
+  const inputHash = crypto.createHash('sha256').update(embeddingInput(`${row.title}\n\n${row.summary || ''}`)).digest('hex');
+  const changed = previous && (previous.title !== row.title || previous.summary !== row.summary);
+  row.raw_source.embedding_current_input_hash = inputHash;
+  row.raw_source.embedding_provenance = previous?.embedding_provenance || null;
+  row.raw_source.embedding_refresh_required = Boolean(previous?.embedding_refresh_required || (previous?.embedding && changed) || (previous?.embedding_provenance?.input_hash && previous.embedding_provenance.input_hash !== inputHash));
+  return !previous?.embedding || row.raw_source.embedding_refresh_required;
+}
+
 async function saveBundle(data) {
-  const previous = (await supabaseGet('bills', { select: 'title,summary,current_status,embedding', bill_id: `eq.${data.billId}`, limit: '1' }))?.[0];
+  const previous = (await supabaseGet('bills', { select: 'title,summary,current_status,embedding,embedding_provenance:raw_source->embedding_provenance,embedding_refresh_required:raw_source->embedding_refresh_required', bill_id: `eq.${data.billId}`, limit: '1' }))?.[0];
+  prepareEmbedding(data.row, previous);
   if (data.policyArea) await supabaseUpsert('policy_areas', [data.policyArea], 'policy_area_id');
   await supabaseUpsert('bills', [data.row], 'bill_id');
   for (const summary of data.summaries) {
@@ -398,7 +408,7 @@ async function saveBundle(data) {
   // current title/summary to decide whether a subscriber should be queued.
   await queue(data.billId, data.row, { policy_area: data.row.policy_area_id, bill: data.billId });
   return {
-    shouldEmbed: data.detailLevel !== 'index' && (!previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary),
+    shouldEmbed: data.detailLevel !== 'index' && (!previous?.embedding || data.row.raw_source.embedding_refresh_required),
     terminal: ['failed', 'vetoed'].includes(data.row.current_stage),
   };
 }
@@ -439,8 +449,12 @@ async function embed(items) {
       const group = selected.slice(start, start + 50); const vectors = await geminiEmbeddings(group.map((item) => `${item.row.title}\n\n${item.row.summary || ''}`), key);
       for (let index = 0; index < group.length; index += 1) {
         const embeddingModel = geminiModelName();
+        const embeddedAt = new Date().toISOString();
         await supabasePatch('bills', `bill_id=eq.${encodeURIComponent(group[index].billId)}`, {
-          embedding: vectors[index], embedding_model: embeddingModel, embedded_at: new Date().toISOString(),
+          embedding: vectors[index], embedding_model: embeddingModel, embedded_at: embeddedAt,
+          raw_source: { ...group[index].row.raw_source, embedding_refresh_required: false, embedding_provenance: {
+            input_hash: group[index].row.raw_source.embedding_current_input_hash, model: embeddingModel, dimensions: 1536, embedded_at: embeddedAt,
+          } },
         });
         embedded.push({ billId: group[index].billId, embedding: vectors[index], embeddingModel });
       }
@@ -572,5 +586,5 @@ async function run() {
     throw error;
   }
 }
-module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions };
+module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions, prepareEmbedding };
 if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });

@@ -1,0 +1,25 @@
+{
+  "schema": "usa_election_polls_index_v1",
+  "as_of": "2026-09-30",
+  "as_of_timezone": "UTC",
+  "pipeline_role": "ui_read_model",
+  "measure": "reported_vote_intention",
+  "unit": "percent",
+  "finance_index": "usa_election_finance_index_v1.json",
+  "live_board_file": "usa_election_live_polls_v1.json",
+  "archive_role_ko": "cycles는 원문 대조 전사 기록, 실시간 지도는 live_board_file을 사용합니다.",
+  "cycles": {
+    "2026": {
+      "path": "usa_election_polls/2026/national-8f6131aa9df9a9ed.json"
+    }
+  },
+  "stale_after_days": 45,
+  "limitations_ko": [
+    "선정된 주·지역구의 검증 완료 자료만 포함합니다. 전국 조사 전체 목록이 아닙니다.",
+    "자료 없음은 지지율 0이나 해당 선거가 없다는 뜻이 아닙니다.",
+    "지역구별 기업 입지·경합도와 선거 일정·최종 후보 명부는 이 자료에서 검증하지 않았습니다.",
+    "경선·가상 대결·조사 대상이 다른 결과는 합산하거나 평균 내지 않습니다.",
+    "신규 원문 감시는 자동화할 수 있으나 결과 편입은 원문 검토 후 수행합니다.",
+    "최근 기준은 조사 종료 후 45일이라는 운영 규칙이며 정확도 등급이 아닙니다."
+  ]
+}
