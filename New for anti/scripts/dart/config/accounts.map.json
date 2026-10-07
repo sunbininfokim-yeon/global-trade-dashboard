@@ -231,11 +231,24 @@
         "비유동리스부채"
       ],
       "sj": "BS",
-      "note": "If only current/noncurrent split exists, prefer summed custom extract later."
+      "aggregation": {
+        "total_ids": [
+          "ifrs-full_LeaseLiabilities",
+          "us-gaap_OperatingLeaseLiability",
+          "us-gaap_LeaseLiability"
+        ],
+        "component_ids": [
+          "ifrs-full_CurrentLeaseLiabilities",
+          "ifrs-full_NoncurrentLeaseLiabilities"
+        ],
+        "required_components": 2
+      },
+      "note": "Use a reported total; otherwise sum current and noncurrent only when both components are present."
     },
     "CONTRACT_LIABILITIES": {
       "ids": [
         "ifrs-full_CurrentContractLiabilities",
+        "ifrs-full_NoncurrentContractLiabilities",
         "ifrs-full_ContractLiabilities"
       ],
       "names": [
@@ -243,7 +256,15 @@
         "선수금",
         "초과청구공사"
       ],
-      "sj": "BS"
+      "sj": "BS",
+      "aggregation": {
+        "total_ids": ["ifrs-full_ContractLiabilities"],
+        "component_ids": [
+          "ifrs-full_CurrentContractLiabilities",
+          "ifrs-full_NoncurrentContractLiabilities"
+        ],
+        "required_components": 2
+      }
     },
     "DEPRECIATION": {
       "ids": [

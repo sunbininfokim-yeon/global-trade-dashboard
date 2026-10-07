@@ -46,25 +46,30 @@ test('Hormuz main value is the latest official oil average, not a big -99% headl
 
 test('Suez headline is all-ship AIS tonnes; SUMED oil is only a separate reference', () => {
   const html = card(renderList(), 'suez');
-  assert.match(html, /<strong class="shipping-change[^>]*>1\.53M t\/일/);
+  const summary = api.trafficSummaryOf(point('suez'));
+  const millions = (summary.current.value / 1e6).toFixed(2).replace('.', '\\.');
+  assert.match(html, new RegExp(`<strong class="shipping-change[^>]*>${millions}M t/일`));
   assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>580만 배럴\/일/);
   assert.match(html, /석유 참고 580만 배럴\/일/);
   assert.match(html, /SUMED 포함/);
-  assert.ok(html.indexOf('유조선') < html.indexOf('벌크선'));
-  assert.ok(html.indexOf('벌크선') < html.indexOf('컨테이너선'));
-  assert.match(html, /41\.8%/);
-  assert.match(html, /29\.6%/);
-  assert.match(html, /27\.0%/);
+  // The top three ship types render in the engine's ranked order with its shares.
+  const types = summary.ship_types.filter(row => Number.isFinite(row.current?.value)).slice(0, 3);
+  for (let i = 1; i < types.length; i++) {
+    assert.ok(html.indexOf(types[i - 1].label_ko) < html.indexOf(types[i].label_ko));
+  }
+  for (const row of types) assert.ok(html.includes(`${row.share_pct.toFixed(1)}%`));
   assert.doesNotMatch(html, /TEU/);
 });
 
 test('small comparisons render engine values without treating prior 28 days as a month', () => {
   const summary = api.trafficSummaryOf(point('suez'));
   const html = api.renderTrafficComparisons(summary);
-  assert.match(html, /전주 <b>-6\.8%/);
-  assert.match(html, /전월 <b>\+5\.6%/);
-  assert.match(html, /전년 <b>\+0\.7%/);
-  assert.match(html, /2026-08-21~2026-08-27/);
+  const pct = v => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`;
+  const { week, month, year } = summary.comparisons;
+  assert.ok(html.includes(`전주 <b>${pct(week.change_pct)}`));
+  assert.ok(html.includes(`전월 <b>${pct(month.change_pct)}`));
+  assert.ok(html.includes(`전년 <b>${pct(year.change_pct)}`));
+  assert.ok(html.includes(`${week.baseline.start_date}~${week.baseline.end_date}`));
   const mutated = plain(summary);
   mutated.comparisons.week.change_pct = 123.4;
   assert.match(api.renderTrafficComparisons(mutated), /전주 <b>\+123\.4%/);

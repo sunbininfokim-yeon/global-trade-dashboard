@@ -1,0 +1,535 @@
+{
+  "schema": "usa_poll_priorities_v1",
+  "cycle": 2026,
+  "reviewed_on": "2026-10-06",
+  "requested_states": [
+    "NY",
+    "TN",
+    "GA",
+    "FL",
+    "AZ",
+    "MI",
+    "NV",
+    "NC",
+    "PA",
+    "WI",
+    "TX"
+  ],
+  "state_names": {
+    "GA": "Georgia",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "MI": "Michigan",
+    "AL": "Alabama"
+  },
+  "priority_order": [
+    "requested_states",
+    "cook_toss_up_and_lean",
+    "korean_company_facilities"
+  ],
+  "company_scope_ko": "공식 주소를 검토한 주요 생산·배터리 사업장 11곳의 1차 목록. 미국 내 한국기업 전체 명부가 아니며 시설 현재 가동 여부·고용 규모·정치적 영향은 추정하지 않습니다.",
+  "company_sites": [
+    {
+      "id": "hyundai-metaplant-ga",
+      "name_ko": "현대차그룹 메타플랜트",
+      "state": "GA",
+      "address": "1500 Genesis Dr, Ellabell, GA 31308",
+      "address_source_url": "https://www.hmgma.com/",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "address_alternatives": [
+        {
+          "address": "9730 Hwy 280 E, Ellabell, GA 31308",
+          "source_url": "https://www.osha.gov/ords/imis/establishment.inspection_detail?id=1870541.015",
+          "reviewed_on": "2026-10-06",
+          "basis_ko": "2026 OSHA 현장 점검의 같은 사업장 Site Address. 회사 현행 주소도 함께 보존."
+        }
+      ],
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "source_url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/ArcGIS/rest/services/FRS_INTERESTS/FeatureServer/0/query?where=PRIMARY_NAME+LIKE+%27%25HYUNDAI%25METAPLANT%25%27+AND+STATE_CODE%3D%27GA%27&outFields=REGISTRY_ID%2CPRIMARY_NAME%2CLOCATION_ADDRESS%2CCITY_NAME%2CSTATE_CODE%2CLATITUDE83%2CLONGITUDE83%2CACCURACY_VALUE%2CCOLLECT_MTH_DESC%2CREF_POINT_DESC%2CUPDATE_DATE&returnGeometry=false&f=json",
+        "source_role": "government_facility_registry",
+        "record_id": "110072110111",
+        "legal_entity": "HYUNDAI MOTOR GROUP METAPLANT AMERICA, LLC",
+        "matched_state": "GA",
+        "input_address_sha256": "2d1b2d11478e73b0cf4cf77e514f63659aa09558263ca9630b3de186106b1ce2",
+        "coordinates": [
+          -81.45723799999999,
+          32.167963
+        ],
+        "alternative_coordinates": [],
+        "coordinate_datum": "NAD83 (EPA LATITUDE83/LONGITUDE83)",
+        "coordinate_method": "UNKNOWN",
+        "accuracy_m": null,
+        "uncertainty_buffer_m": 500,
+        "uncertainty_buffer_basis_ko": "선거구 경계 오판 방지를 위한 보수적 검토 반경. EPA의 측정 정확도 수치가 아닙니다.",
+        "response_sha256": "644032aa9e2600d3b4181c635746f8debe6b049fa6428530108e71ac356766e7",
+        "facility_records": [
+          {
+            "REGISTRY_ID": "110072110111",
+            "PRIMARY_NAME": "HYUNDAI MOTOR GROUP METAPLANT AMERICA, LLC",
+            "LOCATION_ADDRESS": "1500 GENESIS DRIVE",
+            "CITY_NAME": "ELLABELL",
+            "STATE_CODE": "GA",
+            "LATITUDE83": 32.167963,
+            "LONGITUDE83": -81.45723799999999,
+            "ACCURACY_VALUE": null,
+            "COLLECT_MTH_DESC": "UNKNOWN",
+            "REF_POINT_DESC": "CENTER OF A FACILITY OR STATION",
+            "UPDATE_DATE": null
+          }
+        ],
+        "identity_review_ko": "공식 기업명·주·시설 주소를 EPA 시설 등록 원문과 대조. 과거 법인명/도로명은 검토한 동일 사업장만 사용. 프로그램 중복 행은 별도 시설로 세지 않음.",
+        "limitations_ko": "시설 대표점 기준이며 부지 전체를 뜻하지 않음. NAD83 좌표를 GeoJSON에 대조할 때 수 m의 좌표계 차이는 검토 반경에 포함. UNKNOWN 및 정확도 미공시는 그대로 유지."
+      }
+    },
+    {
+      "id": "kia-west-point-ga",
+      "name_ko": "기아 조지아 공장",
+      "state": "GA",
+      "address": "7777 Kia Pkwy, West Point, GA 31833",
+      "address_source_url": "https://www.kiageorgia.com/",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "matched",
+        "input_address_sha256": "7dc8e15a8f036529b8df6253c6660f8939886b1b77e579c0027c301c3555d520",
+        "request_url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=7777+Kia+Pkwy%2C+West+Point%2C+GA+31833&benchmark=Public_AR_Current&format=json",
+        "query_address": "7777 Kia Pkwy, West Point, GA 31833",
+        "retrieved_on": "2026-10-06",
+        "matched_address": "7777 KIA PKWY, WEST POINT, GA, 31833",
+        "matched_state": "GA",
+        "coordinates": [
+          -85.113688580437,
+          32.923488877617
+        ],
+        "tiger_line": {
+          "side": "L",
+          "tigerLineId": "624671516"
+        },
+        "benchmark": {
+          "isDefault": true,
+          "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+          "id": "4",
+          "benchmarkName": "Public_AR_Current"
+        },
+        "response_sha256": "754af3fe9d8ded2083c4b74b4555e55cdd6a5e6addd3acb65f2f54fba0073f5b",
+        "coordinate_method": "Census address-range interpolation"
+      }
+    },
+    {
+      "id": "sk-battery-commerce-ga",
+      "name_ko": "SK 배터리 아메리카",
+      "state": "GA",
+      "address": "1760 SK Blvd, Commerce, GA 30529",
+      "address_source_url": "https://www.skbatteryamerica.com/company/global.html",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "address_alternatives": [
+        {
+          "address": "1760 Steve Reynolds Industrial Pkwy, Commerce, GA 30529",
+          "source_url": "https://ghgdata.epa.gov/ghgp/html/2023.do?et=undefined&id=1014548",
+          "reviewed_on": "2026-10-06",
+          "basis_ko": "EPA 사업장 보고서가 같은 법인과 소재지를 구 도로명으로 표기. 회사 현행 주소도 함께 보존."
+        }
+      ],
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "source_url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/ArcGIS/rest/services/FRS_INTERESTS/FeatureServer/0/query?where=REGISTRY_ID%3D%27110070566594%27&outFields=REGISTRY_ID%2CPRIMARY_NAME%2CLOCATION_ADDRESS%2CCITY_NAME%2CSTATE_CODE%2CLATITUDE83%2CLONGITUDE83%2CACCURACY_VALUE%2CCOLLECT_MTH_DESC%2CREF_POINT_DESC%2CUPDATE_DATE&returnGeometry=false&f=json",
+        "source_role": "government_facility_registry",
+        "record_id": "110070566594",
+        "legal_entity": "SK BATTERY AMERICA, INC.",
+        "matched_state": "GA",
+        "input_address_sha256": "ce7caff030e4aeeff16e33a3e8d0c6a3b12141ef13b73b89fe93cc797ff987f2",
+        "coordinates": [
+          -83.479591,
+          34.237807
+        ],
+        "alternative_coordinates": [],
+        "coordinate_datum": "NAD83 (EPA LATITUDE83/LONGITUDE83)",
+        "coordinate_method": "GDT-ADDRESS MATCHING (GEOCODING)",
+        "accuracy_m": null,
+        "uncertainty_buffer_m": 500,
+        "uncertainty_buffer_basis_ko": "선거구 경계 오판 방지를 위한 보수적 검토 반경. EPA의 측정 정확도 수치가 아닙니다.",
+        "response_sha256": "42196c1def4f72aca29dd3c82ae190bc39891e804fad4629f46f833f92d8e268",
+        "facility_records": [
+          {
+            "REGISTRY_ID": "110070566594",
+            "PRIMARY_NAME": "SK BATTERY AMERICA, INC.",
+            "LOCATION_ADDRESS": "1760 STEVE REYNOLDS IND PKWY",
+            "CITY_NAME": "COMMERCE",
+            "STATE_CODE": "GA",
+            "LATITUDE83": 34.237807,
+            "LONGITUDE83": -83.479591,
+            "ACCURACY_VALUE": null,
+            "COLLECT_MTH_DESC": "GDT-ADDRESS MATCHING (GEOCODING)",
+            "REF_POINT_DESC": "ENTRANCE POINT OF A FACILITY OR STATION",
+            "UPDATE_DATE": null
+          }
+        ],
+        "identity_review_ko": "공식 기업명·주·시설 주소를 EPA 시설 등록 원문과 대조. 과거 법인명/도로명은 검토한 동일 사업장만 사용. 프로그램 중복 행은 별도 시설로 세지 않음. EPA의 구 주소 1760 Steve Reynolds Industrial Parkway는 검토한 주소 별칭과 일치.",
+        "limitations_ko": "시설 대표점 기준이며 부지 전체를 뜻하지 않음. NAD83 좌표를 GeoJSON에 대조할 때 수 m의 좌표계 차이는 검토 반경에 포함. UNKNOWN 및 정확도 미공시는 그대로 유지."
+      }
+    },
+    {
+      "id": "hyundai-sk-jv-ga",
+      "name_ko": "현대차·SK 배터리 합작 사업장",
+      "state": "GA",
+      "address": "5098 US Highway 411, Kingston, GA 30145",
+      "address_source_url": "https://www.skbatteryamerica.com/company/global.html",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "matched",
+        "input_address_sha256": "5c92462f892edd5f73e4301e4cc85357caed60d096ca03e55726504eb06cf4bc",
+        "request_url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=5098+US+Highway+411%2C+Kingston%2C+GA+30145&benchmark=Public_AR_Current&format=json",
+        "query_address": "5098 US Highway 411, Kingston, GA 30145",
+        "retrieved_on": "2026-10-06",
+        "matched_address": "5098 US HWY 411, KINGSTON, GA, 30145",
+        "matched_state": "GA",
+        "coordinates": [
+          -84.909238701492,
+          34.221818666923
+        ],
+        "tiger_line": {
+          "side": "R",
+          "tigerLineId": "606796941"
+        },
+        "benchmark": {
+          "isDefault": true,
+          "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+          "id": "4",
+          "benchmarkName": "Public_AR_Current"
+        },
+        "response_sha256": "b7272b94a3c405c1f0472c64e560f5b324f32d1d27f6cf8d6c38d86f0ddbb9e0",
+        "coordinate_method": "Census address-range interpolation"
+      }
+    },
+    {
+      "id": "qcells-dalton-ga",
+      "name_ko": "한화 큐셀 Dalton 공장",
+      "state": "GA",
+      "address": "300 Nexus Drive, Dalton, GA 30721",
+      "address_source_url": "https://us-qcells.com/our-locations/",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "matched",
+        "input_address_sha256": "ab084624b6646c397b75a5206b4d22c1e98842127a51865daae30cc873d69348",
+        "request_url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=300+Nexus+Drive%2C+Dalton%2C+GA+30721&benchmark=Public_AR_Current&format=json",
+        "query_address": "300 Nexus Drive, Dalton, GA 30721",
+        "retrieved_on": "2026-10-06",
+        "matched_address": "300 NEXUS DR, DALTON, GA, 30721",
+        "matched_state": "GA",
+        "coordinates": [
+          -84.982626398233,
+          34.665035935145
+        ],
+        "tiger_line": {
+          "side": "R",
+          "tigerLineId": "648142977"
+        },
+        "benchmark": {
+          "isDefault": true,
+          "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+          "id": "4",
+          "benchmarkName": "Public_AR_Current"
+        },
+        "response_sha256": "80d015a6688ab55398516f7e1fb23d464513992752b6158760f7f457bafbd9b3",
+        "coordinate_method": "Census address-range interpolation"
+      }
+    },
+    {
+      "id": "lg-clarksville-tn",
+      "name_ko": "LG전자 Clarksville 공장",
+      "state": "TN",
+      "address": "101 Life's Good Way, Clarksville, TN 37040",
+      "address_source_url": "https://b2bmkt.lge.com/factorytour",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "source_url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/ArcGIS/rest/services/FRS_INTERESTS/FeatureServer/0/query?where=PRIMARY_NAME+LIKE+%27LG+ELECTRONICS%25%27+AND+STATE_CODE%3D%27TN%27&outFields=REGISTRY_ID%2CPRIMARY_NAME%2CLOCATION_ADDRESS%2CCITY_NAME%2CSTATE_CODE%2CLATITUDE83%2CLONGITUDE83%2CACCURACY_VALUE%2CCOLLECT_MTH_DESC%2CREF_POINT_DESC%2CUPDATE_DATE&returnGeometry=false&f=json",
+        "source_role": "government_facility_registry",
+        "record_id": "110070262755",
+        "legal_entity": "LG ELECTRONICS U.S.A., INC.",
+        "matched_state": "TN",
+        "input_address_sha256": "738a2be764297b65cbdc53f5373f0f003094485c99b21d02c94033f4d11cda62",
+        "coordinates": [
+          -87.250312,
+          36.632022
+        ],
+        "alternative_coordinates": [],
+        "coordinate_datum": "NAD83 (EPA LATITUDE83/LONGITUDE83)",
+        "coordinate_method": "UNKNOWN",
+        "accuracy_m": null,
+        "uncertainty_buffer_m": 500,
+        "uncertainty_buffer_basis_ko": "선거구 경계 오판 방지를 위한 보수적 검토 반경. EPA의 측정 정확도 수치가 아닙니다.",
+        "response_sha256": "53618c5e189bf57d741c952180d8c286dc66b2fc36f22c3ad06fe7c0a4f71866",
+        "facility_records": [
+          {
+            "REGISTRY_ID": "110070262755",
+            "PRIMARY_NAME": "LG ELECTRONICS U.S.A., INC.",
+            "LOCATION_ADDRESS": "101 LIFE'S GOOD WAY",
+            "CITY_NAME": "CLARKSVILLE",
+            "STATE_CODE": "TN",
+            "LATITUDE83": 36.632022,
+            "LONGITUDE83": -87.250312,
+            "ACCURACY_VALUE": null,
+            "COLLECT_MTH_DESC": "UNKNOWN",
+            "REF_POINT_DESC": null,
+            "UPDATE_DATE": null
+          }
+        ],
+        "identity_review_ko": "공식 기업명·주·시설 주소를 EPA 시설 등록 원문과 대조. 과거 법인명/도로명은 검토한 동일 사업장만 사용. 프로그램 중복 행은 별도 시설로 세지 않음.",
+        "limitations_ko": "시설 대표점 기준이며 부지 전체를 뜻하지 않음. NAD83 좌표를 GeoJSON에 대조할 때 수 m의 좌표계 차이는 검토 반경에 포함. UNKNOWN 및 정확도 미공시는 그대로 유지."
+      }
+    },
+    {
+      "id": "hankook-clarksville-tn",
+      "name_ko": "한국타이어 Tennessee 공장",
+      "state": "TN",
+      "address": "2950 International Blvd, Clarksville, TN 37043",
+      "address_source_url": "https://www.hankooktire.com/global/en/company/global-network.html",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "matched",
+        "input_address_sha256": "ba4453030d4d73c31d55187e8705e8d6b67f352787ea67647f6e2e402e0aa752",
+        "request_url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=2950+International+Blvd%2C+Clarksville%2C+TN+37043&benchmark=Public_AR_Current&format=json",
+        "query_address": "2950 International Blvd, Clarksville, TN 37043",
+        "retrieved_on": "2026-10-06",
+        "matched_address": "2950 INTERNATIONAL BLVD, CLARKSVILLE, TN, 37040",
+        "matched_state": "TN",
+        "coordinates": [
+          -87.240099967903,
+          36.561009331426
+        ],
+        "tiger_line": {
+          "side": "R",
+          "tigerLineId": "658753188"
+        },
+        "benchmark": {
+          "isDefault": true,
+          "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+          "id": "4",
+          "benchmarkName": "Public_AR_Current"
+        },
+        "response_sha256": "9a91438596664d7eefcf46507b02d32132e3869ffa79edd9f647b7f9bfce114c",
+        "coordinate_method": "Census address-range interpolation"
+      }
+    },
+    {
+      "id": "sk-on-stanton-tn",
+      "name_ko": "SK On Tennessee 사업장",
+      "state": "TN",
+      "address": "2022 Battery Park Dr, Stanton, TN 38069",
+      "address_source_url": "https://www.skbatteryamerica.com/company/global.html",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "source_url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/ArcGIS/rest/services/FRS_INTERESTS/FeatureServer/0/query?where=CITY_NAME%3D%27STANTON%27+AND+STATE_CODE%3D%27TN%27&outFields=REGISTRY_ID%2CPRIMARY_NAME%2CLOCATION_ADDRESS%2CCITY_NAME%2CSTATE_CODE%2CLATITUDE83%2CLONGITUDE83%2CACCURACY_VALUE%2CCOLLECT_MTH_DESC%2CREF_POINT_DESC%2CUPDATE_DATE&returnGeometry=false&f=json",
+        "source_role": "government_facility_registry",
+        "record_id": "110072106820,110072101418",
+        "legal_entity": "SK ON TENNESSEE",
+        "matched_state": "TN",
+        "input_address_sha256": "b07e7c9648d954f31c8b7cff89cf32e310e94c1d029f5f974ba94519653c0790",
+        "coordinates": [
+          -89.419484,
+          35.419971
+        ],
+        "alternative_coordinates": [
+          [
+            -89.41611999999999,
+            35.426398999999996
+          ]
+        ],
+        "coordinate_datum": "NAD83 (EPA LATITUDE83/LONGITUDE83)",
+        "coordinate_method": "UNKNOWN",
+        "accuracy_m": null,
+        "uncertainty_buffer_m": 500,
+        "uncertainty_buffer_basis_ko": "선거구 경계 오판 방지를 위한 보수적 검토 반경. EPA의 측정 정확도 수치가 아닙니다.",
+        "response_sha256": "92778ba5e006563347a66bd88140379440485807b8ea37156c7a666f46612c2c",
+        "facility_records": [
+          {
+            "REGISTRY_ID": "110072106820",
+            "PRIMARY_NAME": "SK ON TENNESSEE",
+            "LOCATION_ADDRESS": "2022 BATTERY PARK DRIVE",
+            "CITY_NAME": "STANTON",
+            "STATE_CODE": "TN",
+            "LATITUDE83": 35.419971,
+            "LONGITUDE83": -89.419484,
+            "ACCURACY_VALUE": null,
+            "COLLECT_MTH_DESC": "UNKNOWN",
+            "REF_POINT_DESC": null,
+            "UPDATE_DATE": null
+          },
+          {
+            "REGISTRY_ID": "110072101418",
+            "PRIMARY_NAME": "SK ON TENNESSEE, LLC",
+            "LOCATION_ADDRESS": "2022 BATTERY PARK DRIVE",
+            "CITY_NAME": "STANTON",
+            "STATE_CODE": "TN",
+            "LATITUDE83": 35.426398999999996,
+            "LONGITUDE83": -89.41611999999999,
+            "ACCURACY_VALUE": null,
+            "COLLECT_MTH_DESC": null,
+            "REF_POINT_DESC": null,
+            "UPDATE_DATE": null
+          }
+        ],
+        "identity_review_ko": "공식 기업명·주·시설 주소를 EPA 시설 등록 원문과 대조. 과거 법인명/도로명은 검토한 동일 사업장만 사용. 프로그램 중복 행은 별도 시설로 세지 않음. 동일한 2022 Battery Park Drive의 두 시설 등록 점을 모두 대조하고 선거구가 다르면 보류.",
+        "limitations_ko": "시설 대표점 기준이며 부지 전체를 뜻하지 않음. NAD83 좌표를 GeoJSON에 대조할 때 수 m의 좌표계 차이는 검토 반경에 포함. UNKNOWN 및 정확도 미공시는 그대로 유지."
+      }
+    },
+    {
+      "id": "samsung-austin-tx",
+      "name_ko": "삼성 Austin 반도체",
+      "state": "TX",
+      "address": "12100 Samsung Blvd, Austin, TX 78754",
+      "address_source_url": "https://semiconductor.samsung.com/privacy/",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "input_address_sha256": "74b17cbbccad414d1e7937147a9e9fb02074b6f523f3880e62c8a775c10b79e4",
+        "source_url": "https://records.tceq.texas.gov/cs/idcplg?IdcService=TCEQ_EXTERNAL_SEARCH_GET_FILE&Rendition=Web&dID=6445516",
+        "record_id": "RN100518026/dID6445516",
+        "source_role": "government_facility_filing",
+        "legal_entity": "SAMSUNG AUSTIN SEMICONDUCTOR",
+        "matched_state": "TX",
+        "coordinates": [
+          -97.63139,
+          30.375
+        ],
+        "coordinate_method": "TCEQ permit applicant-reported facility coordinates",
+        "source_page": 1,
+        "accuracy_m": null,
+        "note_ko": "공식 주소와 환경 인허가 문서의 시설명·주소·좌표를 대조. 좌표 현장 정확도와 현재 시설 가동 여부 미평가."
+      }
+    },
+    {
+      "id": "lg-energy-holland-mi",
+      "name_ko": "LG에너지솔루션 Michigan",
+      "state": "MI",
+      "address": "1 LG Way, Holland, MI 49423",
+      "address_source_url": "https://www.lgensol.com/en/company/network-all",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "hold",
+        "retrieved_on": "2026-10-06",
+        "reason": "address_no_unique_match"
+      },
+      "coordinate_review": {
+        "reviewed_on": "2026-10-06",
+        "source_url": "https://services.arcgis.com/cJ9YHowT8TU7DUyn/ArcGIS/rest/services/FRS_INTERESTS/FeatureServer/0/query?where=REGISTRY_ID%3D%27110044813137%27&outFields=REGISTRY_ID%2CPRIMARY_NAME%2CLOCATION_ADDRESS%2CCITY_NAME%2CSTATE_CODE%2CLATITUDE83%2CLONGITUDE83%2CACCURACY_VALUE%2CCOLLECT_MTH_DESC%2CREF_POINT_DESC%2CUPDATE_DATE&returnGeometry=false&f=json",
+        "source_role": "government_facility_registry",
+        "record_id": "110044813137",
+        "legal_entity": "LG CHEM MICHIGAN INC",
+        "matched_state": "MI",
+        "input_address_sha256": "8e6e260212e959c7d4a31c352c6c7622bf49bd631c71e2b5eea5a4d45b643af0",
+        "coordinates": [
+          -86.069341,
+          42.756229999999995
+        ],
+        "alternative_coordinates": [],
+        "coordinate_datum": "NAD83 (EPA LATITUDE83/LONGITUDE83)",
+        "coordinate_method": "INTERPOLATION-PHOTO",
+        "accuracy_m": 10,
+        "uncertainty_buffer_m": 200,
+        "uncertainty_buffer_basis_ko": "선거구 경계 오판 방지를 위한 보수적 검토 반경. EPA의 측정 정확도 수치가 아닙니다.",
+        "response_sha256": "594909184f64a6c59b41c392a6546f5ea23d38a8985a4e0dfb949a8b157210c2",
+        "facility_records": [
+          {
+            "REGISTRY_ID": "110044813137",
+            "PRIMARY_NAME": "LG CHEM MICHIGAN INC",
+            "LOCATION_ADDRESS": "1 LG WAY",
+            "CITY_NAME": "HOLLAND",
+            "STATE_CODE": "MI",
+            "LATITUDE83": 42.756229999999995,
+            "LONGITUDE83": -86.069341,
+            "ACCURACY_VALUE": 10,
+            "COLLECT_MTH_DESC": "INTERPOLATION-PHOTO",
+            "REF_POINT_DESC": "CENTER OF FACILITY",
+            "UPDATE_DATE": 1477406055000
+          }
+        ],
+        "identity_review_ko": "공식 기업명·주·시설 주소를 EPA 시설 등록 원문과 대조. 과거 법인명/도로명은 검토한 동일 사업장만 사용. 프로그램 중복 행은 별도 시설로 세지 않음. EPA 상세 원문의 운영자 LG Energy Solution Michigan을 구 시설명 LG Chem Michigan과 대조.",
+        "limitations_ko": "시설 대표점 기준이며 부지 전체를 뜻하지 않음. NAD83 좌표를 GeoJSON에 대조할 때 수 m의 좌표계 차이는 검토 반경에 포함. UNKNOWN 및 정확도 미공시는 그대로 유지.",
+        "identity_source_url": "https://frs-public.epa.gov/ords/frs_public2/fii_query_dtl.disp_program_facility?p_registry_id=110044813137"
+      }
+    },
+    {
+      "id": "hyundai-montgomery-al",
+      "name_ko": "현대차 Alabama 공장",
+      "state": "AL",
+      "address": "700 Hyundai Blvd, Montgomery, AL 36105",
+      "address_source_url": "https://www.hmmausa.com/our-company/about-hmma/",
+      "address_reviewed_on": "2026-10-06",
+      "site_type": "manufacturing_or_battery_facility",
+      "operating_status": "not_assessed",
+      "geocoding": {
+        "status": "matched",
+        "input_address_sha256": "7cc487f6469f8ef63341334fb36d4bd882114d694dec2f5f6adf993e5d86bb6e",
+        "request_url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=700+Hyundai+Blvd%2C+Montgomery%2C+AL+36105&benchmark=Public_AR_Current&format=json",
+        "query_address": "700 Hyundai Blvd, Montgomery, AL 36105",
+        "retrieved_on": "2026-10-06",
+        "matched_address": "700 HYUNDAI BLVD, MONTGOMERY, AL, 36105",
+        "matched_state": "AL",
+        "coordinates": [
+          -86.33664084643,
+          32.277632400274
+        ],
+        "tiger_line": {
+          "side": "R",
+          "tigerLineId": "641829984"
+        },
+        "benchmark": {
+          "isDefault": true,
+          "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+          "id": "4",
+          "benchmarkName": "Public_AR_Current"
+        },
+        "response_sha256": "4b54364af9c172ab48792859cdd92c67358556cb0f448b6f459031e59b16af27",
+        "coordinate_method": "Census address-range interpolation"
+      }
+    }
+  ]
+}

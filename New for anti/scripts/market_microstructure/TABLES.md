@@ -1,4 +1,4 @@
-# Market microstructure tables — 2026-10-02
+# Market microstructure tables — 2026-10-06
 
 공개 상품 AUM·거래대금 기반 추정. 증권사 고객 레버리지 공시가 아님. 투자 권유 아님.
 
@@ -14,9 +14,9 @@
 
 | metric | value | source | quality |
 |--------|------:|--------|---------|
-| Conc_top2 (005930+000660) % | 51.2304 | KRX OpenAPI sto/stk_bydd_trd basDd=20261002 | observed |
-| Conc_top5 % | 58.7182 | KRX OpenAPI sto/stk_bydd_trd basDd=20261002 | observed |
-| Conc_top10 % | 64.5569 | KRX OpenAPI sto/stk_bydd_trd basDd=20261002 | observed |
+| Conc_top2 (005930+000660) % | 50.4136 | KRX OpenAPI sto/stk_bydd_trd basDd=20261006 | observed |
+| Conc_top5 % | 58.0543 | KRX OpenAPI sto/stk_bydd_trd basDd=20261006 | observed |
+| Conc_top10 % | 63.9757 | KRX OpenAPI sto/stk_bydd_trd basDd=20261006 | observed |
 | Top5 tickers | 005930, 000660, 005935, 402340, 009150 | | |
 | Top10 tickers | 005930, 000660, 005935, 402340, 009150, 373220, 005380, 207940, 105560, 032830 | | |
 
@@ -26,30 +26,30 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | actor | net_krw | scope | quality |
 |-------|--------:|-------|---------|
-| foreign | -309480764000 | covered_underlyings_spot | estimated |
-| retail | -1444691957000 | covered_underlyings_spot | estimated |
-| institution | 309546937000 | covered_underlyings_spot | estimated |
+| foreign | -1953164586000 | covered_underlyings_spot | estimated |
+| retail | 1294828391000 | covered_underlyings_spot | estimated |
+| institution | -310832277000 | covered_underlyings_spot | estimated |
 
 ## 3. Leveraged ETF AUM (paper: leverage reset)
 
 | metric | KRW | USD | source | quality |
 |--------|----:|----:|--------|---------|
-| total levered ETF AUM | 0 | 0.00 | KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20261002 | observed |
-| KR single-stock LETF AUM (listed) | 0 | 0.00 | sum products | observed |
+| total levered ETF AUM | 25,991,804,375,949 | 18,565,574,554.25 | KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20261006 | observed |
+| KR single-stock LETF AUM (listed) | 6,375,976,028,355 | 4,554,268,591.68 | sum products | observed |
 
 ## 4. Stock LETF turnover & leverage exposure
 
 | ticker | LETF AUM | ADV spot | LETF turnover / ADV | lev_exposure % free float | short_ratio % |
 |--------|---------:|---------:|--------------------:|--------------------------:|--------------:|
-| 000660 | 0 | 3,741,057,167,691 | 0.0637 | 0.0 | None |
-| 005930 | 0 | 3,167,442,236,500 | 0.0424 | 0.0 | None |
+| 000660 | 3,827,505,465,919 | 5,039,382,094,519 | 0.0535 | 0.8209 | None |
+| 005930 | 2,548,470,562,436 | 3,535,153,621,870 | 0.0363 | 0.4579 | None |
 
 ## 4b. Flow tangle (수급이 어떻게 꼬였는지)
 
 | ticker | day_R | wag_the_dog | long_aum% | inv_aum% | inv_tv% | retail_net | foreign_net | realized IR% |
 |--------|------:|:-----------:|----------:|---------:|--------:|-----------:|------------:|-------------:|
-| 000660 | 0.0044 | mid | None | None | 17.5 | -832538861000 | -212620772000 | 0.0 |
-| 005930 | 0.0 | low | None | None | 3.0 | -612153096000 | -96859992000 | 0.0 |
+| 000660 | -0.0369 | mid | 97.3 | 2.7 | 16.4 | 948404295000 | -1391709258000 | 5.9076 |
+| 005930 | -0.014499999999999999 | low | 99.2 | 0.8 | 4.5 | 346424096000 | -561455328000 | 2.1256 |
 
 해석 힌트: `wag_the_dog=high`면 LETF 거래가 현물을 잠식. 인버스 거래비중(`inv_tv%`)이 AUM 비중보다 크면 하락일에 리밸런싱 압력이 비대칭.
 
@@ -57,22 +57,22 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | underlying | product | L | AUM | trading_value | structure |
 |------------|---------|--:|----:|--------------:|-----------|
-| 000660 | 0193T0 KODEX SK하이닉스단일종목레버리지 | 2.0 | 0 | 139,328,824,601 | cash |
-| 000660 | 0195S0 TIGER SK하이닉스단일종목레버리지 | 2.0 | 0 | 55,523,493,186 | cash |
-| 000660 | 0194T0 ACE SK하이닉스단일종목레버리지 | 2.0 | 0 | 305,198,847 | cash |
-| 000660 | 0192L0 RISE SK하이닉스단일종목레버리지 | 2.0 | 0 | 119,231,775 | cash |
-| 000660 | 0197W0 SOL SK하이닉스단일종목레버리지 | 2.0 | 0 | 783,444,710 | cash |
-| 000660 | 0194R0 KIWOOM SK하이닉스선물단일종목레버리지 | 2.0 | 0 | 118,684,257 | futures |
-| 000660 | 0198D0 1Q SK하이닉스선물단일종목레버리지 | 2.0 | 0 | 318,026,165 | futures |
-| 000660 | 0197X0 SOL SK하이닉스선물단일종목인버스2X | -2.0 | 0 | 41,688,321,878 | futures |
-| 005930 | 0193W0 KODEX 삼성전자단일종목레버리지 | 2.0 | 0 | 74,664,870,256 | cash |
-| 005930 | 0195R0 TIGER 삼성전자단일종목레버리지 | 2.0 | 0 | 51,848,480,189 | cash |
-| 005930 | 0194M0 ACE 삼성전자단일종목레버리지 | 2.0 | 0 | 444,984,605 | cash |
-| 005930 | 0192M0 RISE 삼성전자단일종목레버리지 | 2.0 | 0 | 395,135,605 | cash |
-| 005930 | 0193K0 PLUS 삼성전자단일종목레버리지 | 2.0 | 0 | 54,005,210 | cash |
-| 005930 | 0194N0 KIWOOM 삼성전자선물단일종목레버리지 | 2.0 | 0 | 2,708,787,095 | futures |
-| 005930 | 0198B0 1Q 삼성전자선물단일종목레버리지 | 2.0 | 0 | 59,182,530 | futures |
-| 005930 | 0193L0 PLUS 삼성전자선물단일종목인버스2X | -2.0 | 0 | 4,099,559,737 | futures |
+| 000660 | 0193T0 KODEX SK하이닉스단일종목레버리지 | 2.0 | 2,153,298,226,045 | 155,210,670,399 | cash |
+| 000660 | 0195S0 TIGER SK하이닉스단일종목레버리지 | 2.0 | 1,412,818,386,453 | 68,101,328,640 | cash |
+| 000660 | 0194T0 ACE SK하이닉스단일종목레버리지 | 2.0 | 49,355,886,899 | 350,186,537 | cash |
+| 000660 | 0192L0 RISE SK하이닉스단일종목레버리지 | 2.0 | 35,637,907,799 | 351,803,262 | cash |
+| 000660 | 0197W0 SOL SK하이닉스단일종목레버리지 | 2.0 | 38,734,905,280 | 1,183,617,992 | cash |
+| 000660 | 0194R0 KIWOOM SK하이닉스선물단일종목레버리지 | 2.0 | 11,985,294,495 | 146,839,647 | futures |
+| 000660 | 0198D0 1Q SK하이닉스선물단일종목레버리지 | 2.0 | 22,433,375,909 | 169,493,550 | futures |
+| 000660 | 0197X0 SOL SK하이닉스선물단일종목인버스2X | -2.0 | 103,241,483,039 | 44,318,171,189 | futures |
+| 005930 | 0193W0 KODEX 삼성전자단일종목레버리지 | 2.0 | 1,503,122,402,357 | 82,052,857,823 | cash |
+| 005930 | 0195R0 TIGER 삼성전자단일종목레버리지 | 2.0 | 911,662,136,704 | 38,624,885,116 | cash |
+| 005930 | 0194M0 ACE 삼성전자단일종목레버리지 | 2.0 | 42,454,248,124 | 258,838,315 | cash |
+| 005930 | 0192M0 RISE 삼성전자단일종목레버리지 | 2.0 | 29,882,478,377 | 973,853,425 | cash |
+| 005930 | 0193K0 PLUS 삼성전자단일종목레버리지 | 2.0 | 14,452,809,832 | 88,689,280 | cash |
+| 005930 | 0194N0 KIWOOM 삼성전자선물단일종목레버리지 | 2.0 | 9,235,043,102 | 330,291,520 | futures |
+| 005930 | 0198B0 1Q 삼성전자선물단일종목레버리지 | 2.0 | 16,338,666,053 | 98,661,710 | futures |
+| 005930 | 0193L0 PLUS 삼성전자선물단일종목인버스2X | -2.0 | 21,322,777,887 | 5,815,357,284 | futures |
 
 ## 4d. Global leverage stack (HK + crypto, venue-separated)
 
@@ -80,11 +80,11 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | venue | metric | USD |
 |-------|--------|----:|
-| KR single-stock LETF | notional AUM×\|L\| | 0.0 |
+| KR single-stock LETF | notional AUM×\|L\| | 9108537183.36 |
 | HK CSOP swap LETF | notional AUM×\|L\| | None |
 | Crypto Binance perps | OI notional | None |
 | Crypto Binance perps | 24h quote volume | 0.0 |
-| Stack (KR+HK+crypto OI) | sum (reference only) | 198876645000.0 |
+| Stack (KR+HK+crypto OI) | sum (reference only) | 230510406255.36 |
 
 | underlying | HK notional USD | Crypto OI USD | HK/spot ADV | Crypto OI/spot ADV |
 |------------|----------------:|--------------:|------------:|-------------------:|
@@ -109,22 +109,22 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | ticker | R | TR_abs | IR % | band |
 |--------|--:|-------:|-----:|------|
-| 000660 | -0.05 | 0 | 0.0 | low |
-| 000660 | -0.1 | 0 | 0.0 | low |
-| 000660 | 0.05 | 0 | 0.0 | low |
-| 000660 | 0.0044 | 0 | 0.0 | low |
-| 005930 | -0.05 | 0 | 0.0 | low |
-| 005930 | -0.1 | 0 | 0.0 | low |
-| 005930 | 0.05 | 0 | 0.0 | low |
-| 005930 | 0.0 | 0 | 0.0 | low |
+| 000660 | -0.05 | 403,398,843,200 | 8.0049 | watch |
+| 000660 | -0.1 | 806,797,686,399 | 16.0099 | high |
+| 000660 | 0.05 | 403,398,843,200 | 8.0049 | watch |
+| 000660 | -0.0369 | 297,708,346,281 | 5.9076 | watch |
+| 005930 | -0.05 | 259,111,611,821 | 7.3296 | watch |
+| 005930 | -0.1 | 518,223,223,642 | 14.6591 | high |
+| 005930 | 0.05 | 259,111,611,821 | 7.3296 | watch |
+| 005930 | -0.014499999999999999 | 75,142,367,428 | 2.1256 | low |
 
 ## 6. Paper calibration
 
 | field | paper_anchor | model_value | delta_pct | quality |
 |-------|-------------:|------------:|----------:|---------|
-| levered_etf_aum_usd | 26000000000.0 | 0.0 | -100.00 | observed |
-| leverage_exposure_pct_aum_over_ff | 2.1 | 0.0 | -100.00 | estimated |
-| leverage_exposure_pct_notional | None | 0.0 |  | estimated |
+| levered_etf_aum_usd | 26000000000.0 | 18565574554.25 | -28.59 | observed |
+| leverage_exposure_pct_aum_over_ff | 2.1 | 0.6055 | -71.17 | estimated |
+| leverage_exposure_pct_notional | None | 0.6234 |  | estimated |
 
 ## 7. Deposit & credit (Naver / FreeSIS-style)
 
@@ -132,9 +132,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 1046376.66 | 2026-10-01 | observed |
-| 신용잔고 | 334808.43 | 2026-10-01 | observed |
-| 신용/예탁금 % | 31.997 |  |  |
+| 고객예탁금 | 1008421.94 | 2026-10-02 | observed |
+| 신용잔고 | 336282.38 | 2026-10-02 | observed |
+| 신용/예탁금 % | 33.347 |  |  |
 
 ## 8. KOSPI market investor flows
 

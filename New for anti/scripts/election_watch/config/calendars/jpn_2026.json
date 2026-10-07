@@ -1,7 +1,7 @@
 {
   "iso3": "JPN",
   "year": 2026,
-  "as_of": "2026-09-18",
+  "as_of": "2026-10-01",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -78,6 +78,16 @@
       "grade": "aggregator_cross_check",
       "retrieved": "2026-08-08",
       "note": "MIC/pref SOS 미확인 건은 grade=aggregator; 후쿠시마는 현선관위 유지"
+    },
+    {
+      "id": "okinawa_gov_2026_count",
+      "org": "沖縄県",
+      "url": "https://www.pref.okinawa.lg.jp/_res/projects/default_project/_page_/001/040/303/chijisenkaihyou_teisei.pdf",
+      "covers": [
+        "okinawa_governor_2026-09-13"
+      ],
+      "retrieved": "2026-10-01",
+      "note": "令和8年9月13日執行 開票速報 最終 9月16日訂正"
     }
   ],
   "notes": [
@@ -343,15 +353,22 @@
       "type": "local",
       "label_ko": "오키나와현 지사",
       "date": "2026-09-13",
-      "status": "scheduled",
+      "status": "completed",
       "level": "prefecture_governor",
-      "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
+      "notes": "임기만료 선거. 고시 2026-08-27, 투개표 2026-09-13. 현 개표속보 최종(9월16일 정정): 고자 423,124 · 다마키 276,060 · 겸도 4,657 · 히가 3,542 · 야라 2,467 · 스에요시 2,270. 유효 712,120 · 무효 5,584 · 투표총수 717,704.",
       "sources": [
-        "go2senkyo_2026"
+        "okinawa_gov_2026_count",
+        "https://ja.wikipedia.org/wiki/2026年沖縄県知事選挙"
       ],
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
-      "contested_ko": "도도부현 지사 1인"
+      "contested_ko": "도도부현 지사 1인",
+      "result": "古謝玄太 당선 (423,124 / 유효 712,120)",
+      "winner": {
+        "name_ja": "古謝玄太",
+        "name_ko": "고자 겐타",
+        "party": "無所属"
+      }
     },
     {
       "id": "jpn-2026-national-by-oct",

@@ -111,7 +111,11 @@ def evaluate_flags(
         elif when == "earnings_quality_low":
             hit = eq is not None and eq < 0.8
         elif when == "lease_liabilities_present_or_high_debt":
-            hit = (lease is not None and lease > 0) or (debt is not None and debt >= 150)
+            # A high reported debt ratio does not prove that lease liabilities
+            # explain it.  This industry-specific warning is only useful when
+            # the lease balance itself is available; otherwise it would turn a
+            # generic leverage concern into an unsupported IFRS 16 story.
+            hit = lease is not None and lease > 0
         elif when == "operating_margin_very_high":
             hit = om is not None and om >= 25
         if hit:
@@ -123,6 +127,157 @@ def evaluate_flags(
                 }
             )
     return out
+
+
+def _adjusted_view_ids(kit: dict[str, Any]) -> set[str]:
+    return {
+        str(item.get("id"))
+        for item in (kit.get("adjusted_views") or [])
+        if isinstance(item, dict) and item.get("id")
+    }
+
+
+def _reported_balance_basis(
+    *,
+    account_ids: tuple[str, ...],
+    amounts: dict[str, float | None],
+    fact_cells: dict[str, dict[str, Any]] | None,
+) -> tuple[dict[str, Any] | None, str | None]:
+    """Accept an adjustment only on a consistent reported balance-sheet basis.
+
+    The legacy row engine has no canonical period lineage, so it remains
+    usable but clearly marked as legacy.  The canonical path requires all
+    inputs to be reported balance facts with one period, scope and currency.
+    This prevents a current-only lease tag, an interim liability, or a
+    currency-mixed input from changing an industry adjustment silently.
+    """
+    missing = [account_id for account_id in account_ids if amounts.get(account_id) is None]
+    if missing:
+        return None, "missing:" + ",".join(missing)
+    if fact_cells is None:
+        return {
+            "status": "legacy_row_resolution",
+            "input_accounts": list(account_ids),
+            "period": None,
+            "currency": None,
+        }, None
+
+    facts: list[dict[str, Any]] = []
+    for account_id in account_ids:
+        fact = fact_cells.get(account_id)
+        if not isinstance(fact, dict):
+            return None, f"missing:canonical_fact:{account_id}"
+        if fact.get("availability") != "available" or fact.get("value") is None:
+            return None, f"missing:reported_balance:{account_id}"
+        if fact.get("nature") != "balance":
+            return None, f"incompatible:not_balance:{account_id}"
+        if fact.get("quality") != "reported":
+            return None, f"incompatible:fact_quality:{account_id}:{fact.get('quality')}"
+        facts.append(fact)
+
+    def signature(fact: dict[str, Any]) -> tuple[Any, ...]:
+        unit = fact.get("unit") or {}
+        return (
+            fact.get("fiscal_year"), fact.get("fiscal_quarter"), fact.get("period_end"),
+            fact.get("fs_div"), unit.get("kind"), unit.get("currency"), unit.get("scale"),
+        )
+
+    signatures = {signature(fact) for fact in facts}
+    if len(signatures) != 1:
+        return None, "incompatible:balance_period_scope_currency_or_unit"
+    first = facts[0]
+    unit = first.get("unit") or {}
+    return {
+        "status": "reported_balance_facts",
+        "input_accounts": list(account_ids),
+        "period": {
+            "fiscal_year": first.get("fiscal_year"),
+            "fiscal_quarter": first.get("fiscal_quarter"),
+            "period_end": first.get("period_end"),
+            "fs_div": first.get("fs_div"),
+        },
+        "currency": unit.get("currency"),
+    }, None
+
+
+def _adjusted_debt_ratio(
+    *,
+    deduction_account: str,
+    deduction_label: str,
+    amounts: dict[str, float | None],
+    fact_cells: dict[str, dict[str, Any]] | None,
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    account_ids = ("TOTAL_LIABILITIES", "EQUITY", deduction_account)
+    basis, reason = _reported_balance_basis(
+        account_ids=account_ids, amounts=amounts, fact_cells=fact_cells,
+    )
+    status = {
+        "id": f"leverage_ex_{'lease' if deduction_account == 'LEASE_LIABILITIES' else 'contract'}",
+        "status": "available" if basis else "unavailable",
+        "reason": reason,
+        "formula": f"(TOTAL_LIABILITIES - {deduction_account}) / EQUITY * 100",
+        "basis": basis,
+    }
+    if basis is None:
+        return None, status
+    equity = amounts.get("EQUITY")
+    total_liab = amounts.get("TOTAL_LIABILITIES")
+    deduction = amounts.get(deduction_account)
+    if equity in (None, 0) or total_liab is None or deduction is None:
+        status.update({"status": "unavailable", "reason": "invalid:equity_zero_or_missing"})
+        return None, status
+    value = round(100.0 * (total_liab - deduction) / equity, 4)
+    key = "debt_ratio_ex_lease" if deduction_account == "LEASE_LIABILITIES" else "debt_ratio_ex_contract_liab"
+    label = f"부채비율({deduction_label} 제외)"
+    return {
+        "value": value,
+        "unit": "pct",
+        "label": label,
+        "reason": None,
+        "formula": status["formula"],
+        "basis": basis,
+    }, status
+
+
+def _industry_disclosures(
+    *,
+    kit: dict[str, Any],
+    p1_disclosures: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Expose only P1's structured, reported note outputs to an industry kit."""
+    current = ((p1_disclosures or {}).get("current") or {})
+
+    def item(key: str, *, applicable: bool) -> dict[str, Any]:
+        if not applicable:
+            return {
+                "status": "not_applicable", "value": None,
+                "reason": "not_applicable:industry_disclosure_not_prioritised",
+                "acceptance": "structured_reported_rows_only",
+            }
+        raw = current.get(key) if isinstance(current, dict) else None
+        if not isinstance(raw, dict):
+            return {
+                "status": "unavailable", "value": None,
+                "reason": "missing:p1_structured_disclosure_addon",
+                "acceptance": "structured_reported_rows_only",
+            }
+        return {
+            "status": raw.get("status"),
+            "value": raw.get("value"),
+            "reason": raw.get("reason"),
+            "provenance": raw.get("provenance"),
+            "acceptance": "structured_reported_rows_only",
+        }
+
+    watch = {str(value) for value in (kit.get("watch_notes") or [])}
+    return {
+        # Segment profitability can matter in any diversified issuer, but it
+        # still requires a structured reported table rather than note prose.
+        "segment_profit": item("segment_profit", applicable=True),
+        # Order backlog is relevant only where the kit declares construction
+        # backlog as a primary accounting risk (currently shipbuilding).
+        "backlog_order_book": item("backlog_order_book", applicable="construction_backlog" in watch),
+    }
 
 
 from .peers import (
@@ -138,7 +293,41 @@ def apply_industry_layer(
     corp: dict[str, Any] | None,
     metrics: dict[str, Any],
     amounts: dict[str, float | None],
+    entity_policy: dict[str, Any] | None = None,
+    fact_cells: dict[str, dict[str, Any]] | None = None,
+    p1_disclosures: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if (entity_policy or {}).get("is_financial_entity"):
+        entity_class = entity_policy.get("entity_class") or "financial_suspected"
+        label = {"bank": "은행·금융지주", "insurance": "보험", "financial_other": "기타 금융", "financial_suspected": "금융업 의심"}.get(entity_class, "금융업")
+        return {
+            "industry_kit": entity_class,
+            "label_ko": label,
+            "notes_ko": ["금융업은 산업기업 현금흐름·순차입·유동성·DCF 지표를 적용하지 않습니다."],
+            "watch_notes": [],
+            "ma_focus": [],
+            "priority_metrics": ["roe", "roa"],
+            "mti_export_items": [],
+            "flags": [],
+            "adjusted_metrics": {},
+            "adjustment_status": [],
+            "disclosures": {
+                "segment_profit": {
+                    "status": "not_applicable", "value": None,
+                    "reason": "not_applicable:financial_entity_industrial_disclosure",
+                    "acceptance": "structured_reported_rows_only",
+                },
+                "backlog_order_book": {
+                    "status": "not_applicable", "value": None,
+                    "reason": "not_applicable:financial_entity_industrial_disclosure",
+                    "acceptance": "structured_reported_rows_only",
+                },
+            },
+            "models_hint_ko": [],
+            "sources": [entity_policy.get("evidence")],
+            "background": {},
+            "bok_peer": {"asof": None, "source_ko": None, "row": None, "vs": {"available": False, "metrics": {}}},
+        }
     kits_doc = load_industry_kits()
     kit_id = resolve_kit_id(corp, kits_doc)
     try:
@@ -153,27 +342,29 @@ def apply_industry_layer(
         if mid not in prioritized:
             prioritized[mid] = cell
 
-    lease = amounts.get("LEASE_LIABILITIES")
-    contract = amounts.get("CONTRACT_LIABILITIES")
-    equity = amounts.get("EQUITY")
-    total_liab = amounts.get("TOTAL_LIABILITIES")
     adjustments: dict[str, Any] = {}
-    if lease is not None and total_liab is not None and equity not in (None, 0):
-        adj_liab = total_liab - lease
-        adjustments["debt_ratio_ex_lease"] = {
-            "value": round(100.0 * adj_liab / equity, 4),
-            "unit": "pct",
-            "label": "부채비율(리스제외)",
-            "reason": None,
-        }
-    if contract is not None and total_liab is not None and equity not in (None, 0):
-        adj_liab = total_liab - contract
-        adjustments["debt_ratio_ex_contract_liab"] = {
-            "value": round(100.0 * adj_liab / equity, 4),
-            "unit": "pct",
-            "label": "부채비율(계약부채·선수금 제외)",
-            "reason": None,
-        }
+    adjustment_status: list[dict[str, Any]] = []
+    requested_adjustments = _adjusted_view_ids(kit)
+    if "leverage_ex_lease" in requested_adjustments:
+        cell, status = _adjusted_debt_ratio(
+            deduction_account="LEASE_LIABILITIES",
+            deduction_label="리스부채",
+            amounts=amounts,
+            fact_cells=fact_cells,
+        )
+        adjustment_status.append(status)
+        if cell is not None:
+            adjustments["debt_ratio_ex_lease"] = cell
+    if "leverage_ex_contract" in requested_adjustments:
+        cell, status = _adjusted_debt_ratio(
+            deduction_account="CONTRACT_LIABILITIES",
+            deduction_label="계약부채·선수금",
+            amounts=amounts,
+            fact_cells=fact_cells,
+        )
+        adjustment_status.append(status)
+        if cell is not None:
+            adjustments["debt_ratio_ex_contract_liab"] = cell
 
     peers_doc = load_bok_peers()
     peer_row = resolve_peer_row(kit=kit, corp=corp, peers_doc=peers_doc)
@@ -190,6 +381,8 @@ def apply_industry_layer(
         "mti_export_items": kit.get("mti_export_items") or [],
         "flags": evaluate_flags(kit, metrics=metrics, amounts=amounts),
         "adjusted_metrics": adjustments,
+        "adjustment_status": adjustment_status,
+        "disclosures": _industry_disclosures(kit=kit, p1_disclosures=p1_disclosures),
         "models_hint_ko": kit.get("adjusted_views") or [],
         "sources": kit.get("sources") or [],
         "background": bg,

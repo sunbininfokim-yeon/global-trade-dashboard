@@ -246,6 +246,19 @@
         return { groups, sourceIds: allSourceIds };
     }
 
+    function reportQualityText(doc, now = Date.now()) {
+        const feeds = Array.isArray(doc.feed_status) ? doc.feed_status : [];
+        const items = Array.isArray(doc.items) ? doc.items : [];
+        const generated = Date.parse(doc.generated_at || '');
+        const freshness = !Number.isFinite(generated) || generated > now + 5 * 60000 ? '수집 시각 미확인'
+            : now - generated > 12 * 3600000 ? '수집 자료 갱신 지연' : '최근 수집 자료';
+        const failed = feeds.filter(f => !f.ok).length;
+        const carried = feeds.reduce((n, f) => n + (Number(f.carried_over) || 0), 0);
+        const undated = items.filter(i => !i.published_at || !Number.isFinite(Date.parse(i.published_at))).length;
+        const unclassified = Number.isInteger(doc.stats?.unclassified) ? doc.stats.unclassified : '집계 미확인';
+        return `${freshness} · 소스 ${feeds.length ? `${feeds.filter(f => f.ok).length}/${feeds.length} 응답` : '상태 미확인'} · 수집 실패 ${failed} · 이전 자료 보존 ${carried} · 발행일 미확인 ${undated} · 주제 미분류 ${unclassified}. 수집 실패나 미확인은 기관의 미발행을 뜻하지 않습니다.`;
+    }
+
     async function renderMailing() {
         const el = panel('mailing');
         el.innerHTML = `
@@ -256,7 +269,7 @@
             </div>
 
             <p class="mypage-section-title">법안</p>
-            <p class="mypage-empty">즐겨찾기한 법안·행정명령의 단계가 바뀌면 매일 오전 11시 17분(KST) 확인 후 자동으로 메일이 발송됩니다.</p>
+            <p class="mypage-empty">법안별 변경 알림을 받을지 설정합니다. 수신 설정과 실제 발송 상태는 다릅니다. 변경이 없는 법안은 반복 발송 대상이 아닙니다. 다음날 오전 7시 이전 알림은 새 발송기로 전환 준비 중입니다.</p>
             <div class="mypage-switch-row">
                 <div class="mypage-switch-label">알림 일시정지<small>즐겨찾기는 그대로 두고 메일만 끕니다</small></div>
                 <label class="mypage-switch">
@@ -268,7 +281,8 @@
             <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…</p></div>
 
             <p class="mypage-section-title">원자재</p>
-            <p class="mypage-empty">박스 제목을 체크한 원자재만 최근 8일 이내 리포트를 매주 월요일 오전 8시(KST)에 보내드립니다. 체크 안 한 원자재는 그 안의 기관 체크와 상관없이 메일이 가지 않습니다. 아래 기관 체크는 즐겨찾기한 원자재 안에서 어느 기관 소식만 뺄지 고르는 용도입니다.</p>
+            <p class="mypage-empty">박스 제목을 체크한 원자재만 최근 8일 이내 리포트를 매주 월요일 오전 8시(KST) 발송 대상으로 확인합니다. 실행 지연에 따라 도착 시각은 늦어질 수 있습니다. 체크 안 한 원자재는 그 안의 기관 체크와 상관없이 메일이 가지 않습니다. 아래 기관 체크는 즐겨찾기한 원자재 안에서 어느 기관 소식만 뺄지 고르는 용도입니다.</p>
+            <p class="mypage-empty" id="mypage-report-quality"></p>
             <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
 
             <p class="mypage-section-title">시장 미시구조</p>
@@ -284,7 +298,7 @@
             const paused = await window.Auth.billNotificationsPaused();
             if (token !== renderToken) return;
             pauseToggle.checked = paused;
-            billTile.querySelector('.v').textContent = paused ? '일시정지됨' : '켜짐 · 매일 11:17';
+            billTile.querySelector('.v').textContent = paused ? '일시정지됨' : '수신 설정 켜짐';
         } catch (err) {
             if (token !== renderToken) return;
             billTile.querySelector('.v').textContent = '불러오지 못함';
@@ -295,7 +309,7 @@
             pauseStatus.className = 'mypage-status hidden';
             try {
                 await window.Auth.setBillNotificationsPaused(next);
-                billTile.querySelector('.v').textContent = next ? '일시정지됨' : '켜짐 · 매일 11:17';
+                billTile.querySelector('.v').textContent = next ? '일시정지됨' : '수신 설정 켜짐';
             } catch (err) {
                 pauseToggle.checked = !next;
                 pauseStatus.textContent = err.message || '저장하지 못했습니다.';
@@ -319,15 +333,19 @@
 
         const container = el.querySelector('#mypage-source-filter');
         try {
-            const [reportsRes, disabled] = await Promise.all([
+            const [reportsRes, disabled, macQuality] = await Promise.all([
                 fetch('/public/data/commodity_reports_v1.json', { cache: 'no-cache' }).then((r) => r.json()),
                 window.Auth.listDisabledCommoditySources(),
+                fetch('/api/us/reports/quality', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
             ]);
             if (token !== renderToken) return;
+            const macDate = macQuality?.last_success_at ? new Date(macQuality.last_success_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미확인';
+            const macLabel = ({succeeded:'수집·DB 보관 완료',partial:'일부 자료만 수집·보관',failed:'마지막 시도 실패'})[macQuality?.status] || '수집 상태 미확인';
+            el.querySelector('#mypage-report-quality').textContent = `맥 DB 보관: ${macLabel} · 마지막 성공 ${macDate}. 게시된 RSS 자료: ${reportQualityText(reportsRes)}`;
             const { groups } = groupSourcesByCommodity(reportsRes);
             const updateCommodityTile = () => {
                 commodityTile.querySelector('.v').textContent = favoritedCommodityKeys.size
-                    ? `월 08:00 · ${favoritedCommodityKeys.size}개 즐겨찾기`
+                    ? `예약 월 08:00 · ${favoritedCommodityKeys.size}개 즐겨찾기`
                     : '즐겨찾기 없음 · 발송 안 됨';
             };
             updateCommodityTile();
@@ -423,7 +441,13 @@
             <p class="mypage-status hidden" id="mypage-password-status"></p>
 
             <p class="mypage-section-title">회원 탈퇴</p>
-            <p class="mypage-empty">회원 탈퇴 기능은 준비 중입니다. 필요하시면 문의해주세요.</p>
+            <p class="mypage-empty">탈퇴하면 즐겨찾기·알림 설정을 포함한 모든 데이터가 즉시 삭제되며 복구할 수 없습니다.</p>
+            <div class="mypage-field">
+                <label>비밀번호 확인</label>
+                <input type="password" id="mypage-delete-password" autocomplete="current-password">
+            </div>
+            <button type="button" class="mypage-btn is-danger" id="mypage-delete-account">회원 탈퇴</button>
+            <p class="mypage-status hidden" id="mypage-delete-status"></p>
         `;
 
         const nicknameStatus = el.querySelector('#mypage-nickname-status');
@@ -471,6 +495,32 @@
                 passwordStatus.textContent = err.message || '변경하지 못했습니다.';
                 passwordStatus.className = 'mypage-status is-error';
             } finally {
+                btn.disabled = false;
+            }
+        });
+
+        const deleteStatus = el.querySelector('#mypage-delete-status');
+        el.querySelector('#mypage-delete-account').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const pw = el.querySelector('#mypage-delete-password').value;
+            deleteStatus.className = 'mypage-status hidden';
+            if (!pw) {
+                deleteStatus.textContent = '비밀번호를 입력해주세요.';
+                deleteStatus.className = 'mypage-status is-error';
+                return;
+            }
+            if (!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+            btn.disabled = true;
+            deleteStatus.textContent = '탈퇴 처리 중…';
+            deleteStatus.className = 'mypage-status';
+            try {
+                await window.Auth.deleteAccount(pw);
+                // deleteAccount() signs out on success; the onChange
+                // subscription in render() re-renders this whole screen to
+                // the logged-out state, so there's nothing left to do here.
+            } catch (err) {
+                deleteStatus.textContent = err.message || '탈퇴하지 못했습니다.';
+                deleteStatus.className = 'mypage-status is-error';
                 btn.disabled = false;
             }
         });

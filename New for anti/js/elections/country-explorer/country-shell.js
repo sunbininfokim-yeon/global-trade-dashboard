@@ -169,7 +169,7 @@ const sectionContent = (country, section, status) => {
 // and its short subnational summary sits in the right pane permanently.
 const MAP_SECTION = 'subnational_map';
 
-export const renderCountryShell = (root, { country, manifest, onBack, modal, host, onRoute }) => {
+export const renderCountryShell = (root, { country, manifest, onBack, modal, host, onRoute, onElectionMode }) => {
     const tabs = sectionsFor(country.iso3);
     const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
     let active = null;
@@ -210,7 +210,8 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
         const mapStatus = hasMapBlock ? effectiveStatus(manifest, country, MAP_SECTION) : null;
         root.className = 'panel-section elections-country';
         root.innerHTML = `
-            <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back>← 세계 지도</button></div>
+            <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back>← 세계 지도</button>
+                ${country.iso3 === 'USA' ? '<button class="elections-button" type="button" data-election-mode aria-pressed="false">선거·슈퍼팩</button>' : ''}</div>
             <div class="panel-header"><h2>${escapeHtml(country.name_ko || country.iso3)}</h2><p>확보된 공개 데이터만 표시합니다.</p></div>
             ${overview(country)}
             <p class="section-title">권력 구조 · 블록을 누르면 지도 위에 펼쳐집니다</p>
@@ -230,6 +231,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             modal.close();
             onBack();
         });
+        root.querySelector('[data-election-mode]')?.addEventListener('click', () => { modal.close(); onElectionMode?.(); });
         root.querySelectorAll('[data-election-tab]').forEach((button) => button.addEventListener('click', () => {
             const key = button.dataset.electionTab;
             if (key === MAP_SECTION) {
