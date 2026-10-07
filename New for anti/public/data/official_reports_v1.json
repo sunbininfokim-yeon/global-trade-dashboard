@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-04T23:14:16.803509+00:00",
+  "generated_at": "2026-10-06T23:52:22.712667+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 170,
-    "scored": 170,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 155,
+    "scored": 155,
     "selected": 40,
-    "indicators": 13
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 22,
+      "count": 13,
       "error": null,
       "mode": "live"
     },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -212,6 +212,20 @@
         "finance",
         "economy"
       ],
+      "title": "Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261005~1d8d998ef4.en.html",
+      "published_at": "2026-10-05T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.64
+    },
+    {
+      "series_id": "EU_ECB_POLICY",
+      "label_ko": "ECB 정책",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
       "title": "ECB amends monetary policy implementation guidelines as part of regular review",
       "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
       "published_at": "2026-09-29T08:00:00+00:00",
@@ -241,6 +255,48 @@
         "economy",
         "finance"
       ],
+      "title": "Monetary Base and the Bank of Japan's Transactions (Sept.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan's Transactions with the Government (Sept.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Market Operations by the Bank of Japan (Sept.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
       "published_at": "2026-10-02T08:00:00+00:00",
@@ -258,20 +314,6 @@
       "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "published_at": "2026-10-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "published_at": "2026-09-25T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -487,41 +529,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2c49d640f007c948",
-      "published_at": "2026-09-15T06:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/intl_finance/cooperate/coop260915a.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia",
-        "original_lang": "en",
-        "ko": "[JPN·외교] Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.862,
-        "final": 2.862
-      },
-      "rank_reasons": [
-        "domains:economy,finance,diplomacy"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "98bf837ee1b53a46",
       "published_at": "2026-07-29T18:00:00+00:00",
       "source": {
@@ -690,6 +697,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "ce348568bb2483bc",
+      "published_at": "2026-10-05T08:00:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261005~1d8d998ef4.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "2af4c3204b0dd386",
@@ -902,146 +944,6 @@
       "site_slot": null
     },
     {
-      "id": "ad4a7b2030e6aad7",
-      "published_at": "2026-09-26T03:29:32+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-advances-a-fair-and-reciprocal-relationship-with-china-while-hosting-historic-state-visit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit",
-        "original_lang": "en",
-        "ko": "[USA·외교] Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit"
-      },
-      "summary": "DELIVERING FOR AMERICANS: This week, President Donald J. Trump and First Lady Melania Trump hosted President Xi Jinping and Madame Peng Liyuan of the People’s Republic of China for a reciprocal State Visit. During the visit, President Trump advanced the U.S.-China relationship an",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "865d3f6fd6509e4c",
-      "published_at": "2026-09-25T20:10:42+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/09/president-trump-first-lady-conclude-historic-china-state-visit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump, First Lady Conclude Historic China State Visit",
-        "original_lang": "en",
-        "ko": "[USA·외교] President Trump, First Lady Conclude Historic China State Visit"
-      },
-      "summary": "Today, President Donald J. Trump and First Lady Melania Trump concluded a historic state visit with His Excellency Xi Jinping, President of the People’s Republic of China, and Madame Peng Liyuan. This marked the first visit to the White House by a Chinese President in more than a",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "2d5d4b8f14cca831",
-      "published_at": "2026-09-25T19:47:32+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/gold-star-mothers-and-familys-day-2026/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Gold Star Mother’s And Family’s Day, 2026",
-        "original_lang": "en",
-        "ko": "[USA·안보] Gold Star Mother’s And Family’s Day, 2026"
-      },
-      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION America is free, strong, secure, and prosperous due to the courage of the heroes in uniform who are willing to lay down their lives in the defense of our Republic. The supreme sacrifice paid by every fallen warrior i",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f4a12dbf3421be19",
-      "published_at": "2026-09-25T16:24:18+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-state-visit-of-president-xi-jinping-and-madame-peng-liyuan/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan",
-        "original_lang": "en",
-        "ko": "[USA·외교] First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan"
-      },
-      "summary": "“Art and culture have a remarkable ability to transcend borders, connect generations, and offer us a deeper appreciation for one another. It was an honor to welcome President Xi Jinping and Madame Peng Liyuan and share with them the history, artistry, and traditions that help mak",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -1222,6 +1124,74 @@
       "site_slot": null
     },
     {
+      "id": "eeaa46bc5d3129fb",
+      "published_at": "2026-10-05T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/gap/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Output Gap, Potential Growth Rate, and Labor Market Indicators",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Output Gap, Potential Growth Rate, and Labor Market Indicators"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "eb46f08653978532",
+      "published_at": "2026-10-05T00:20:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Opening Remarks by Deputy Governor UCHIDA at the ECONDAT 2026 Fall Meeting (AI, Big Data, and Monetary Policy)",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Opening Remarks by Deputy Governor UCHIDA at the ECONDAT 2026 Fall Meeting (AI, Big Data, and Monetary Policy)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "0e9e2aac6e07abd2",
       "published_at": "2026-09-30T07:00:00+00:00",
       "source": {
@@ -1250,6 +1220,41 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "1333cf6b2f7f6b4c",
+      "published_at": "2026-10-05T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1536,39 +1541,109 @@
       "site_slot": null
     },
     {
-      "id": "899c396a979b1603",
-      "published_at": "2026-08-20T15:00:00+00:00",
+      "id": "4e5f05957b8f6b0e",
+      "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820b.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+        "original": "Monetary Base and the Bank of Japan's Transactions (Sept.)",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch"
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Sept.)"
       },
-      "summary": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "4034f0bfee12ba8e",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (Sept.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Sept.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "a4b0d3661a2ae6aa",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (Sept.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Sept.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "0b6fc03efe6dd90e",
@@ -1639,41 +1714,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1691,17 +1731,6 @@
     {
       "title": "Philip R. Lane: The outlook for the euro area economy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf",
-      "country": "EUR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 2.064,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Philip R. Lane: The Outlook for the Euro Area Economy",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf",
       "country": "EUR",
       "domains": [
         "economy",
@@ -1741,6 +1770,17 @@
         "finance"
       ],
       "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the UK Money Markets Code Sub-Committee – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/uk-money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -2021,41 +2061,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2c49d640f007c948",
-      "published_at": "2026-09-15T06:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/intl_finance/cooperate/coop260915a.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia",
-        "original_lang": "en",
-        "ko": "[JPN·외교] Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.862,
-        "final": 2.862
-      },
-      "rank_reasons": [
-        "domains:economy,finance,diplomacy"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "98bf837ee1b53a46",
       "published_at": "2026-07-29T18:00:00+00:00",
       "source": {
@@ -2224,6 +2229,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "ce348568bb2483bc",
+      "published_at": "2026-10-05T08:00:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261005~1d8d998ef4.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "2af4c3204b0dd386",
@@ -2436,146 +2476,6 @@
       "site_slot": null
     },
     {
-      "id": "ad4a7b2030e6aad7",
-      "published_at": "2026-09-26T03:29:32+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-advances-a-fair-and-reciprocal-relationship-with-china-while-hosting-historic-state-visit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit",
-        "original_lang": "en",
-        "ko": "[USA·외교] Fact Sheet: President Donald J. Trump Advances a Fair and Reciprocal Relationship with China While Hosting Historic State Visit"
-      },
-      "summary": "DELIVERING FOR AMERICANS: This week, President Donald J. Trump and First Lady Melania Trump hosted President Xi Jinping and Madame Peng Liyuan of the People’s Republic of China for a reciprocal State Visit. During the visit, President Trump advanced the U.S.-China relationship an",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "865d3f6fd6509e4c",
-      "published_at": "2026-09-25T20:10:42+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/09/president-trump-first-lady-conclude-historic-china-state-visit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump, First Lady Conclude Historic China State Visit",
-        "original_lang": "en",
-        "ko": "[USA·외교] President Trump, First Lady Conclude Historic China State Visit"
-      },
-      "summary": "Today, President Donald J. Trump and First Lady Melania Trump concluded a historic state visit with His Excellency Xi Jinping, President of the People’s Republic of China, and Madame Peng Liyuan. This marked the first visit to the White House by a Chinese President in more than a",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "2d5d4b8f14cca831",
-      "published_at": "2026-09-25T19:47:32+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/09/gold-star-mothers-and-familys-day-2026/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Gold Star Mother’s And Family’s Day, 2026",
-        "original_lang": "en",
-        "ko": "[USA·안보] Gold Star Mother’s And Family’s Day, 2026"
-      },
-      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION America is free, strong, secure, and prosperous due to the courage of the heroes in uniform who are willing to lay down their lives in the defense of our Republic. The supreme sacrifice paid by every fallen warrior i",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f4a12dbf3421be19",
-      "published_at": "2026-09-25T16:24:18+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-state-visit-of-president-xi-jinping-and-madame-peng-liyuan/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan",
-        "original_lang": "en",
-        "ko": "[USA·외교] First Lady Melania Trump Highlights Art, Culture, and the Next Generation During State Visit of President Xi Jinping and Madame Peng Liyuan"
-      },
-      "summary": "“Art and culture have a remarkable ability to transcend borders, connect generations, and offer us a deeper appreciation for one another. It was an honor to welcome President Xi Jinping and Madame Peng Liyuan and share with them the history, artistry, and traditions that help mak",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -2756,6 +2656,74 @@
       "site_slot": null
     },
     {
+      "id": "eeaa46bc5d3129fb",
+      "published_at": "2026-10-05T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/gap/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Output Gap, Potential Growth Rate, and Labor Market Indicators",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Output Gap, Potential Growth Rate, and Labor Market Indicators"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "eb46f08653978532",
+      "published_at": "2026-10-05T00:20:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Opening Remarks by Deputy Governor UCHIDA at the ECONDAT 2026 Fall Meeting (AI, Big Data, and Monetary Policy)",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Opening Remarks by Deputy Governor UCHIDA at the ECONDAT 2026 Fall Meeting (AI, Big Data, and Monetary Policy)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "0e9e2aac6e07abd2",
       "published_at": "2026-09-30T07:00:00+00:00",
       "source": {
@@ -2784,6 +2752,41 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "1333cf6b2f7f6b4c",
+      "published_at": "2026-10-05T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -3070,39 +3073,109 @@
       "site_slot": null
     },
     {
-      "id": "899c396a979b1603",
-      "published_at": "2026-08-20T15:00:00+00:00",
+      "id": "4e5f05957b8f6b0e",
+      "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820b.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+        "original": "Monetary Base and the Bank of Japan's Transactions (Sept.)",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch"
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Sept.)"
       },
-      "summary": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "4034f0bfee12ba8e",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (Sept.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Sept.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "a4b0d3661a2ae6aa",
+      "published_at": "2026-10-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (Sept.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (Sept.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "0b6fc03efe6dd90e",
@@ -3160,41 +3233,6 @@
         "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
