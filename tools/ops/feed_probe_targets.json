@@ -5,33 +5,29 @@
  "targets": [
   {
    "group": "prod",
-   "id": "prod_index_ec_monitor_only",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/?probe=ec",
+   "id": "prod_pipeline_route_get",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/trade-pipeline/query",
+   "show_body": 300
+  },
+  {
+   "group": "prod",
+   "id": "prod_comtrade_annual",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/comtrade?hs=271012",
+   "show_body": 200
+  },
+  {
+   "group": "prod",
+   "id": "prod_comtrade_monthly",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/comtrade?hs=2709&freq=M&period=202606&reporters=842&partners=0",
+   "show_body": 400
+  },
+  {
+   "group": "prod",
+   "id": "prod_index",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/",
    "find": [
-    "trade.js?v=ec-monitor-only-1",
-    "app.js?v=138",
+    "data-target=\"light_oils\"",
     "data-target=\"export_controls\""
-   ]
-  },
-  {
-   "group": "prod",
-   "id": "prod_trade_js",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/trade.js?v=ec-monitor-only-1",
-   "find": [
-    "trade-export-controls",
-    "renderTradeLegend",
-    "ctl-card",
-    "REPORT_BOARDS_BY_COUNTRY = {}",
-    "수출통제 모니터 only"
-   ]
-  },
-  {
-   "group": "prod",
-   "id": "prod_app_js",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/app.js?v=138",
-   "find": [
-    "window.ExportControls?.load().then",
-    "window.ExportControls?.mount("
    ]
   },
   {
