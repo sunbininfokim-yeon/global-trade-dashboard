@@ -138,7 +138,26 @@ def apply_industry_layer(
     corp: dict[str, Any] | None,
     metrics: dict[str, Any],
     amounts: dict[str, float | None],
+    entity_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if (entity_policy or {}).get("is_financial_entity"):
+        entity_class = entity_policy.get("entity_class") or "financial_suspected"
+        label = {"bank": "은행·금융지주", "insurance": "보험", "financial_other": "기타 금융", "financial_suspected": "금융업 의심"}.get(entity_class, "금융업")
+        return {
+            "industry_kit": entity_class,
+            "label_ko": label,
+            "notes_ko": ["금융업은 산업기업 현금흐름·순차입·유동성·DCF 지표를 적용하지 않습니다."],
+            "watch_notes": [],
+            "ma_focus": [],
+            "priority_metrics": ["roe", "roa"],
+            "mti_export_items": [],
+            "flags": [],
+            "adjusted_metrics": {},
+            "models_hint_ko": [],
+            "sources": [entity_policy.get("evidence")],
+            "background": {},
+            "bok_peer": {"asof": None, "source_ko": None, "row": None, "vs": {"available": False, "metrics": {}}},
+        }
     kits_doc = load_industry_kits()
     kit_id = resolve_kit_id(corp, kits_doc)
     try:
