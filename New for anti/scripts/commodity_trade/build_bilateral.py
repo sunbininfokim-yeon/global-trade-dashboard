@@ -249,6 +249,7 @@ def main(argv=None):
             counts[v['status']] = counts.get(v['status'], 0) + 1
         print(json.dumps({'planned_jobs': len(jobs), 'network_requests': provider.calls,
                           'published_parts': len(manifest['entries']), 'statuses': counts,
+                          'unfinished_jobs': len(r['unfinished']) if args.fetch else len(jobs),
                           'stop_reason': stop_reason}, ensure_ascii=False))
         return 3 if stop_reason == 'rate_limited' else 2 if stop_reason else 0
 
