@@ -14,7 +14,7 @@ import sys
 from datetime import datetime, timezone
 
 from .collect import current_season, load_oni
-from .predict import predict_one
+from .predict import MODELS, predict_one
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,33 @@ def enso_label(oni):
     if oni <= -0.5:
         return "La Nina", oni
     return "neutral", oni
+
+
+def backtest_skill(key):
+    """Skill block from the trained model file, for regions with no forecast.
+
+    Off-season (after SEASON_ROLLOVER) the new season has no observed weather,
+    so predict_one() errors for every region. The trained model's backtest
+    still holds, and build_registry.py grades a country only on regions that
+    carry `skill` -- so the skeleton keeps it.
+    """
+    path = os.path.join(MODELS, f"{key}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        model = json.load(f)
+    skill_vs = model.get("recent_skill_vs_trend")
+    weather = model.get("weather_skill", skill_vs)
+    beats = bool(model.get("beats_trend"))
+    return {
+        "method": ("forward chaining, trend refit inside each fold, "
+                   "scored on recent folds"),
+        "skill_vs_trend_only": round(skill_vs, 3) if skill_vs is not None else None,
+        "weather_skill": round(weather, 3) if weather is not None else None,
+        "beats_trend": beats,
+        "low_confidence": bool((not beats) or (skill_vs is not None and skill_vs < 0.20)),
+        "note_ko": "이번 시즌 예측 없음, 학습 모델 백테스트 기준",
+    }
 
 
 def main():
@@ -83,6 +110,9 @@ def main():
                 "season": season,
                 "unit": cfg.target_unit,
             }
+            skill = backtest_skill(cfg.key)
+            if skill is not None:
+                payload["regions"][cfg.key]["skill"] = skill
             continue
 
         skill_vs = r["skill_vs_trend"]
