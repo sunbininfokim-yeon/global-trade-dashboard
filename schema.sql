@@ -1,8 +1,13 @@
 -- Phase 2-1: United States federal policy data
 -- Sources: Congress.gov API, Federal Register API
 -- PostgreSQL 17 / Supabase / pgvector
--- Canonical fresh-install schema. Run this file once after resetting an existing
--- project database; do not layer old migration files on top of it.
+-- Canonical POLICY fresh-install schema. Run once after resetting the policy DB;
+-- do not replay older policy migrations on top of it.
+-- Auth/favorites/mailing are separate application modules: this file does NOT
+-- install profiles or user_favorites. After their 20260904 migrations, install
+-- supabase/migrations/20260911010000_mailing_outbox.sql, then its lifecycle and
+-- 20261002 event/subscription migrations in order (see mailing README).
+-- See services/mailing/README.md for the existing-production cutover order.
 --
 -- Design rules:
 --   * Normalize fields required for filtering, navigation, and relationships.

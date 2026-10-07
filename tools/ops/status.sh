@@ -49,6 +49,35 @@ else
 fi
 echo
 
+echo "=== comtrade 연간 데이터 상태 ==="
+COMTRADE_STATUS_URL="https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/comtrade/status"
+COMTRADE_RESP="$(curl -fsS --max-time 5 "$COMTRADE_STATUS_URL" 2>/dev/null || true)"
+if [[ -n "$COMTRADE_RESP" ]]; then
+  echo "$COMTRADE_RESP" | node -e '
+    let d = "";
+    process.stdin.on("data", (c) => (d += c));
+    process.stdin.on("end", () => {
+      try {
+        const j = JSON.parse(d);
+        console.log(`발행: ${j.published}년` + (j.next ? ` (다음 후보 ${j.next}년)` : " (마지막 연도)"));
+        console.log(`화면 표시: ${j.display}`);
+        if (j.next) {
+          console.log(`${j.next}년 캐시: ${j.cached[j.next]}/${j.commodities}개 원자재`);
+          const partial = j.partial[j.next] || [];
+          if (partial.length) console.log(`  부분 캐시(재시도 필요): ${partial.join(", ")}`);
+          console.log(`신고국 수 — ${j.published}년: ${j.reporters[j.published]}, ${j.next}년: ${j.reporters[j.next] ?? 0}`);
+        }
+        if (j.next_rule) console.log(`승격 규칙: ${j.next_rule}`);
+      } catch (e) {
+        console.log("(응답 파싱 실패 -- 원문 확인: " + process.argv[1] + ")");
+      }
+    });
+  ' "$COMTRADE_STATUS_URL" 2>/dev/null || echo "(파싱 실패 -- 원문: $COMTRADE_STATUS_URL)"
+else
+  echo "(네트워크 없음 또는 응답 없음 -- 건너뜀. 직접 확인: curl $COMTRADE_STATUS_URL)"
+fi
+echo
+
 echo "=== ops docs ==="
 ls -1 docs/ops 2>/dev/null || true
 echo

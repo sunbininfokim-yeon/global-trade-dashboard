@@ -1,7 +1,7 @@
 {
   "schema": "elections_calendar_master_v1",
-  "as_of": "2026-09-19",
-  "generated_at": "2026-09-19T00:14:36.109195+00:00",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-01T09:13:55.076237+00:00",
   "sources": [
     "config/calendars/*_2026.json (board tracked countries)",
     "https://en.wikipedia.org/wiki/2026_national_electoral_calendar",
@@ -2264,15 +2264,22 @@
       "type": "local",
       "label_ko": "오키나와현 지사",
       "date": "2026-09-13",
-      "status": "scheduled",
+      "status": "completed",
       "level": "prefecture_governor",
-      "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
+      "notes": "임기만료 선거. 고시 2026-08-27, 투개표 2026-09-13. 현 개표속보 최종(9월16일 정정): 고자 423,124 · 다마키 276,060 · 겸도 4,657 · 히가 3,542 · 야라 2,467 · 스에요시 2,270. 유효 712,120 · 무효 5,584 · 투표총수 717,704.",
       "sources": [
-        "go2senkyo_2026"
+        "okinawa_gov_2026_count",
+        "https://ja.wikipedia.org/wiki/2026年沖縄県知事選挙"
       ],
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
+      "result": "古謝玄太 당선 (423,124 / 유효 712,120)",
+      "winner": {
+        "name_ja": "古謝玄太",
+        "name_ko": "고자 겐타",
+        "party": "無所属"
+      },
       "iso3": "JPN"
     },
     {
@@ -2286,10 +2293,15 @@
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "방사모로 의회 80석 중 78석",
-      "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거.",
+      "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거. RBOC가 2026-09-16 80석 당선자를 공표(방사모로 정부). 정당명부 숫자는 Comelec 캔버스 보도·위키가 같음. 지역구 정당별은 GMA(BFP 17·UBJP 7·SIAP 6 등)와 AA(BFP 15·UBJP 9·SIAP 6 등)가 어긋나 하나를 고르지 않음. 대진 파일은 지역구 원문이 갖춰지면.",
       "sources": [
-        "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election"
+        "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election",
+        "https://en.wikipedia.org/wiki/Results_of_the_2026_Bangsamoro_Parliament_election",
+        "https://bangsamoro.gov.ph/2026/09/16/",
+        "https://www.gmanetwork.com/news/topstories/regions/1002689/all-winners-of-first-barmm-parliamentary-polls-proclaimed-comelec/story/",
+        "https://www.aa.com.tr/en/asia-pacific/election-results-proclaimed-in-southern-philippines-majority-muslim-bangsamoro-region/4059499"
       ],
+      "result": "COMELEC RBOC 공표. 정당명부 40석: BFP 16 · UBJP 15 · BGC 8 · Raayat 1. 지역구 32석 정당별은 보도 불일치로 불명.",
       "iso3": "PHL"
     },
     {
@@ -2301,19 +2313,21 @@
         "2026-09-18",
         "2026-09-20"
       ],
-      "status": "scheduled",
-      "notes": "450 seats; decree day 09-20; voting 18–20 Sep.",
+      "status": "completed",
+      "notes": "투표 2026-09-18–20. ЦИК 2026-09-25 결과 확정(의장 팜필로바 발표, TASS). 국가두마 공지 같은 좌석. 소·비 구분 숫자는 이 출처에 없어 넣지 않음. 득표율은 TASS 본문이 DEG와 전체 집계를 섞어 보여 의석만 적음.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
-        "tass_2026-06-16",
-        "invest_lens_elections"
+        "tass_duma_results_2026-09-25",
+        "duma_news_64124",
+        "kommersant_cik_2026-09-25"
       ],
       "market_significance_invest_lens": 1,
       "system_id": "rus-duma",
       "level": "national",
       "chamber": "duma",
       "contested_ko": "국가두마 450석 전원",
+      "result": "UR 349 · CPRF 37 · LDPR 23 · NL 19 · SR 17 · Rodina 1 · 무소속 4 (450). 투표율 59.80%.",
       "iso3": "RUS"
     },
     {
@@ -2375,15 +2389,22 @@
       "label_ko": "크라쿠프 시장 조기선거",
       "label_en": "Kraków mayor early election",
       "date": "2026-09-27",
-      "status": "scheduled",
+      "status": "tentative",
       "system_id": "pol-local",
       "level": "subnational",
       "chamber": "없음",
       "contested_ko": "크라쿠프 시장 1인",
-      "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 전국 지방 회차가 아닌 임기 중 조기선거.",
+      "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 1차 2026-09-27, 결선 2026-10-11. 보도(Fakt·Gazeta Prawna)와 위키가 PKW 전 구역 숫자를 전함. wybory.gov.pl 원문 표를 이번 실행에서 열지 못해 status=tentative. 시장 당선은 결선 후.",
       "sources": [
-        "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
+        "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf",
+        "https://wybory.gov.pl/wojtburmistrz_2024_2029/",
+        "https://en.wikipedia.org/wiki/2026_Kraków_mayoral_election",
+        "https://www.fakt.pl/polityka/wybory-w-krakowie-kto-wygral-pkw-podala-oficjalne-wyniki/nm463fd",
+        "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/11320139,oficjalne-wyniki-wyborow-w-krakowie-gibala-pierwszy-ale-bedzie-druga.html"
       ],
+      "first_round_date": "2026-09-27",
+      "runoff_date": "2026-10-11",
+      "result": "1차(보도·PKW 인용): Gibała 93,042 (36.38%) · Piątkowska 76,514 (29.91%). 당선자 없음. 결선 2026-10-11.",
       "iso3": "POL"
     },
     {
@@ -6117,15 +6138,22 @@
         "type": "local",
         "label_ko": "오키나와현 지사",
         "date": "2026-09-13",
-        "status": "scheduled",
+        "status": "completed",
         "level": "prefecture_governor",
-        "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
+        "notes": "임기만료 선거. 고시 2026-08-27, 투개표 2026-09-13. 현 개표속보 최종(9월16일 정정): 고자 423,124 · 다마키 276,060 · 겸도 4,657 · 히가 3,542 · 야라 2,467 · 스에요시 2,270. 유효 712,120 · 무효 5,584 · 투표총수 717,704.",
         "sources": [
-          "go2senkyo_2026"
+          "okinawa_gov_2026_count",
+          "https://ja.wikipedia.org/wiki/2026年沖縄県知事選挙"
         ],
         "system_id": "jpn-prefecture-governor",
         "chamber": "없음",
         "contested_ko": "도도부현 지사 1인",
+        "result": "古謝玄太 당선 (423,124 / 유효 712,120)",
+        "winner": {
+          "name_ja": "古謝玄太",
+          "name_ko": "고자 겐타",
+          "party": "無所属"
+        },
         "iso3": "JPN",
         "label_en": "Local"
       },
@@ -6140,10 +6168,15 @@
         "level": "subnational",
         "chamber": "없음",
         "contested_ko": "방사모로 의회 80석 중 78석",
-        "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거.",
+        "notes": "전국 총선이 아님. 자치구 첫 정기 의회 선거. RBOC가 2026-09-16 80석 당선자를 공표(방사모로 정부). 정당명부 숫자는 Comelec 캔버스 보도·위키가 같음. 지역구 정당별은 GMA(BFP 17·UBJP 7·SIAP 6 등)와 AA(BFP 15·UBJP 9·SIAP 6 등)가 어긋나 하나를 고르지 않음. 대진 파일은 지역구 원문이 갖춰지면.",
         "sources": [
-          "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election"
+          "https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election",
+          "https://en.wikipedia.org/wiki/Results_of_the_2026_Bangsamoro_Parliament_election",
+          "https://bangsamoro.gov.ph/2026/09/16/",
+          "https://www.gmanetwork.com/news/topstories/regions/1002689/all-winners-of-first-barmm-parliamentary-polls-proclaimed-comelec/story/",
+          "https://www.aa.com.tr/en/asia-pacific/election-results-proclaimed-in-southern-philippines-majority-muslim-bangsamoro-region/4059499"
         ],
+        "result": "COMELEC RBOC 공표. 정당명부 40석: BFP 16 · UBJP 15 · BGC 8 · Raayat 1. 지역구 32석 정당별은 보도 불일치로 불명.",
         "iso3": "PHL"
       },
       {
@@ -6162,19 +6195,21 @@
           "2026-09-18",
           "2026-09-20"
         ],
-        "status": "scheduled",
-        "notes": "450 seats; decree day 09-20; voting 18–20 Sep.",
+        "status": "completed",
+        "notes": "투표 2026-09-18–20. ЦИК 2026-09-25 결과 확정(의장 팜필로바 발표, TASS). 국가두마 공지 같은 좌석. 소·비 구분 숫자는 이 출처에 없어 넣지 않음. 득표율은 TASS 본문이 DEG와 전체 집계를 섞어 보여 의석만 적음.",
         "sources": [
           "kremlin_decree_2026-06-16",
           "cikrf",
-          "tass_2026-06-16",
-          "invest_lens_elections"
+          "tass_duma_results_2026-09-25",
+          "duma_news_64124",
+          "kommersant_cik_2026-09-25"
         ],
         "market_significance_invest_lens": 1,
         "system_id": "rus-duma",
         "level": "national",
         "chamber": "duma",
         "contested_ko": "국가두마 450석 전원",
+        "result": "UR 349 · CPRF 37 · LDPR 23 · NL 19 · SR 17 · Rodina 1 · 무소속 4 (450). 투표율 59.80%.",
         "iso3": "RUS",
         "label_en": "State Duma decree day"
       },
@@ -6240,15 +6275,22 @@
         "label_ko": "크라쿠프 시장 조기선거",
         "label_en": "Kraków mayor early election",
         "date": "2026-09-27",
-        "status": "scheduled",
+        "status": "tentative",
         "system_id": "pol-local",
         "level": "subnational",
         "chamber": "없음",
         "contested_ko": "크라쿠프 시장 1인",
-        "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 전국 지방 회차가 아닌 임기 중 조기선거.",
+        "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 1차 2026-09-27, 결선 2026-10-11. 보도(Fakt·Gazeta Prawna)와 위키가 PKW 전 구역 숫자를 전함. wybory.gov.pl 원문 표를 이번 실행에서 열지 못해 status=tentative. 시장 당선은 결선 후.",
         "sources": [
-          "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
+          "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf",
+          "https://wybory.gov.pl/wojtburmistrz_2024_2029/",
+          "https://en.wikipedia.org/wiki/2026_Kraków_mayoral_election",
+          "https://www.fakt.pl/polityka/wybory-w-krakowie-kto-wygral-pkw-podala-oficjalne-wyniki/nm463fd",
+          "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/11320139,oficjalne-wyniki-wyborow-w-krakowie-gibala-pierwszy-ale-bedzie-druga.html"
         ],
+        "first_round_date": "2026-09-27",
+        "runoff_date": "2026-10-11",
+        "result": "1차(보도·PKW 인용): Gibała 93,042 (36.38%) · Piątkowska 76,514 (29.91%). 당선자 없음. 결선 2026-10-11.",
         "iso3": "POL"
       },
       {

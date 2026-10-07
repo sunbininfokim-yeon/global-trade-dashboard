@@ -321,7 +321,7 @@
     return `<div class="policy-condition-search">
       ${!opts.compact ? '<div class="policy-search-order" aria-label="검색 결과 정렬"><button type="button" data-search-order="matches" aria-pressed="true">연관도 높은 순</button><button type="button" data-search-order="latest" aria-pressed="false">최신순</button></div>' : ''}
       <div class="policy-search-lanes">${groups.length ? groups.map(group => searchGroupBlock(group, opts)).join('') : empty('검색 결과가 없습니다')}</div>
-      ${!opts.compact && body.search_mode === 'conditions' ? `<small class="policy-search-scope">${body.match_basis === 'official_text_and_citations' ? '공식 제목·요약·본문·인용 문서 기준' : '제목·요약 기준'}${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 단어·유사 표현 검색' : ''}</small>` : ''}
+      ${!opts.compact && ['conditions', 'hybrid'].includes(body.search_mode) ? `<small class="policy-search-scope">${body.match_basis === 'official_text_and_citations' ? '공식 제목·요약·본문·인용 문서 기준' : '제목·요약 기준'}${body.candidate_limited || body.result_limited ? ' · 표시된 결과 내 정렬' : ''}${body.semantic_available === false ? ' · 의미 검색을 사용할 수 없어 단어·유사 표현으로 보완' : ''}</small>` : ''}
     </div>`;
   }
 
@@ -464,8 +464,10 @@
       return `<li class="policy-stage-step${failed ? ' is-failed' : ''}${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${failed ? esc(setback.label) : observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
     const alert = lifecycle.procedural_alert;
+    const voteSource = alert?.evidence?.source_url;
+    const sourceLink = /^https:\/\/(?:www\.)?(?:senate\.gov|congress\.gov|clerk\.house\.gov)\//i.test(voteSource || '') ? `<a href="${esc(voteSource)}" target="_blank" rel="noopener noreferrer">공식 표결 근거</a>` : '';
     return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
-      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(setback ? `${CHAMBER_LABELS[alert.chamber]} ${setback.label} — ${setback.note}` : alert.label + ' — 법안 통과 여부와 별도입니다.')}</p>` : ''}
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(setback ? `${CHAMBER_LABELS[alert.chamber]} ${setback.label} — ${setback.note}` : alert.label + ' — 법안 통과 여부와 별도입니다.')} ${sourceLink}</p>` : ''}
       <p class="policy-notice">${esc(lifecycle.note)}</p>
       ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
@@ -959,6 +961,7 @@
         ${lawLabel ? `<span class="policy-tag is-law">${lawLabel}</span>` : ''}
       </div>
       ${stageRail(bill)}
+      ${bill.embedding_quality ? `<p class="policy-notice">의미 검색: ${esc(({current: '현재 제목·요약 반영', stale: '제목·요약 변경 후 갱신 대기', unknown: '벡터 있음 · 최신성 미확인', not_embedded: '벡터 없음 · 단어 검색 가능'})[bill.embedding_quality.status] || '최신성 미확인')}${bill.embedding_quality.embedded_at ? ` · 생성 ${esc(String(bill.embedding_quality.embedded_at).slice(0, 10))}` : ''}</p>` : ''}
       ${bill.current_status ? `<p class="policy-prose">${esc(bill.current_status)}</p>` : ''}
       ${bill.summary ? `<p class="policy-prose">${esc(bill.summary)}</p>` : ''}
       <div class="policy-subblock"><h4>표결</h4>${voteBody}</div>

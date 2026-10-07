@@ -317,7 +317,7 @@
     "from_statements": {
       "capex_to_sales": 0.0417,
       "da_to_sales": 0.0335,
-      "sales_to_nwc": 0.2356,
+      "operating_nwc_to_sales": 0.2356,
       "tax_rate": null,
       "ebit_margin": 0.165,
       "quality_tier": "quality_compounder"

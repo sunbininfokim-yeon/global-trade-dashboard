@@ -1,4 +1,5 @@
 import { loadAdmin1 } from '../data/geo-service.js';
+import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];
@@ -109,7 +110,7 @@ const stateIndex = (country) => new Map(
     (country?.ui_ready?.state_drilldown?.states || []).map((state) => [state.map_feature_code, state]),
 );
 
-export const renderCountryMap = async ({ host, country, selectedStateId = null, isStale = null, onStateOpen }) => {
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, onStateOpen }) => {
     const geo = withRelocatedExclaves(await loadAdmin1(country.iso3), country.iso3);
     if (isStale?.()) return;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
@@ -120,10 +121,15 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         filled: true,
         pickable: country.iso3 === 'USA',
         lineWidthMinPixels: 1,
+        updateTriggers: { getFillColor: [selectedStateId, electionMode] },
         getLineColor: [203, 213, 225, 190],
         getFillColor: (feature) => {
             const state = usaStates?.get(feature.properties?.code);
             if (state?.id === selectedStateId) return selected;
+            if (country.iso3 === 'USA' && electionMode) {
+                const stateId = feature.properties?.code?.replace(/^US-/, '');
+                return classColors[stateClass2024(stateId)];
+            }
             return state ? partyColor(state.governor?.abbr) : neutral;
         },
     });
