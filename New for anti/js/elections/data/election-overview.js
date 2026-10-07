@@ -1,4 +1,5 @@
 import { normalizeParty, stateClass2024, STATE_CLASSIFICATION_SOURCES, pollSignal, raceClosedByDate } from './usa-election-context.js?v=2';
+import { electionMatchup, pollMatchesMatchup } from './election-matchups.js';
 
 export const ELECTION_OFFICES = [['governor', '주지사'], ['senate', '연방 상원'], ['house', '연방 하원']];
 const DAY = 86400000;
@@ -135,20 +136,30 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     const counts = countMembers(retained);
     if (!counts) return null;
     const retainedCounts = { ...counts };
+    let contestedCurrentCounts = null;
+    if (office === 'senate') {
+        const states = state ? [state] : country?.ui_ready?.state_drilldown?.states;
+        const contested = rating.races.flatMap((r) => states.find((s) => s.id === r.state)?.federal_delegation?.senators?.filter((m) => m.senate_class === r.senate_class) || []);
+        if (contested.length !== rating.contested) return null;
+        contestedCurrentCounts = countMembers(contested);
+    }
     let pending = counts.unknown;
     delete counts.unknown;
     let single = 0, pollResolved = 0, certified = 0;
     for (const race of rating.races) {
-        const signal = pollSignal(board?.races?.[race.race_id] || { election_date: '2026-11-03' }, board, health, days, now);
+        const pollRace = board?.races?.[race.race_id];
+        const raceState = state || country?.ui_ready?.state_drilldown?.states?.find((s) => s.id === race.state);
+        const ballot = electionMatchup(raceState, race.race_id, pollRace, now);
+        const signal = pollSignal(pollRace || { election_date: '2026-11-03' }, board, health, days, now);
         const party = partyKey(signal.party);
         if (signal.status === 'certified_result' && ['DEM', 'GOP', 'IND'].includes(party)) { counts[party]++; certified++; }
         else if (signal.status === 'awaiting_certified_result') pending++;
         else if (stableParty(race.effective_rating)) counts[stableParty(race.effective_rating)]++;
-        else if (['poll_lead', 'single_poll_lead'].includes(signal.status) && ['DEM', 'GOP'].includes(party)) {
+        else if (pollMatchesMatchup(pollRace, ballot) && ['poll_lead', 'single_poll_lead'].includes(signal.status) && ['DEM', 'GOP'].includes(party)) {
             counts[party]++; pollResolved++; if (signal.status === 'single_poll_lead') single++;
         } else pending++;
     }
     const total = retained.length + rating.contested;
     if (!state && total !== { house: 435, senate: 100, governor: 50 }[office]) return null;
-    return { counts, pending, total, retained: retained.length, retainedCounts, single, pollResolved, certified };
+    return { counts, pending, total, retained: retained.length, retainedCounts, contestedCurrentCounts, single, pollResolved, certified };
 };

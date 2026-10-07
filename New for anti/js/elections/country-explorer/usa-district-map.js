@@ -1,19 +1,20 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { pollSignal, pollSourceReady } from '../data/usa-election-context.js?v=2';
 
-import { electionRatingSummary } from '../data/election-overview.js?v=2';
+import { electionRatingSummary } from '../data/election-overview.js?v=3';
+import { electionMatchup, pollMatchesMatchup } from '../data/election-matchups.js';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
     : party === 'GOP' ? [220, 38, 38, 225] : [71, 85, 105, 230];
 
-export const districtElectionColor = (raceId, rating, board, health, days = 7, now = Date.now()) => {
+export const districtElectionColor = (raceId, rating, board, health, days = 7, now = Date.now(), matchup = null) => {
     const signal = pollSignal(board?.races?.[raceId] || {election_date:'2026-11-03'},board,health,days,now);
     if (signal.status === 'certified_result') return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
     if (signal.status === 'awaiting_certified_result') return [71,85,105,230];
     const r = rating?.races?.find((row) => row.race_id === raceId);
     if (['solid_dem','likely_dem'].includes(r?.effective_rating)) return [96,165,250,115];
     if (['solid_rep','likely_rep'].includes(r?.effective_rating)) return [248,113,113,115];
-    if (signal.party === 'DEM' || signal.party === 'REP') return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
+    if (pollMatchesMatchup(board?.races?.[raceId],matchup) && (signal.party === 'DEM' || signal.party === 'REP')) return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
     return [71,85,105,230];
 };
 
@@ -68,6 +69,7 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
     if (isStale?.()) return null;
     if (!geo) return false;
     const rating = electionMode ? electionRatingSummary(ratings,'house',country,stateId) : null;
+    const state = country?.ui_ready?.state_drilldown?.states?.find((s) => s.id === stateId);
     host.setElectionMap([
         ...host.worldBaseLayers({ id: `elections-usa-${stateId}-district-base`, landColor: [22, 32, 48, 255], lineColor: [71, 85, 105, 110] }),
         new host.layers.GeoJsonLayer({
@@ -75,7 +77,7 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
             // deck.gl caches accessor results, so the highlight has to be part
             // of the layer's update trigger or the repaint keeps the old fill.
             updateTriggers: { getFillColor: [highlightDistrict, electionMode, pollBoard?.fetched_at,
-                pollSourceReady(pollBoard, pollHealth), rating?.asOf, country?.ui_ready?.congress?.swing_seats, windowDays, Math.floor(Date.now() / 3600000)],
+                pollSourceReady(pollBoard, pollHealth), rating?.asOf, country?.ui_ready?.congress?.swing_seats, state?.election_matchups, windowDays, Math.floor(Date.now() / 3600000)],
                 getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
             getLineColor: (feature) => (isHighlighted(feature, highlightDistrict) ? [255, 255, 255, 255] : [226, 232, 240, 205]),
             getLineWidth: (feature) => (isHighlighted(feature, highlightDistrict) ? 3 : 1),
@@ -84,7 +86,8 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
                 if (isHighlighted(feature, highlightDistrict)) return [255, 255, 255, 235];
                 if (!electionMode) return partyColor(feature.properties?.party_abbr);
                 const district = String(feature.properties?.district ?? '');
-                return districtElectionColor(`USA:${stateId}:house:${district}`,rating,pollBoard,pollHealth,windowDays);
+                const id = `USA:${stateId}:house:${district}`;
+                return districtElectionColor(id,rating,pollBoard,pollHealth,windowDays,Date.now(),electionMatchup(state,id,pollBoard?.races?.[id]));
             },
         }),
     ], onDistrictSelect ? (info) => {
