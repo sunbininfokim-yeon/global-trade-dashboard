@@ -768,6 +768,19 @@ body {
     font-weight: 600;
     white-space: nowrap;
 }
+/* 주를 누른 즉시 보이는 자리표시 -- 금액·폴 자료가 오면 이 자리에서 본문으로 바뀐다 */
+.elections-spac-skeleton { display: flex; flex-direction: column; gap: 8px; }
+.elections-spac-skeleton > i {
+    display: block;
+    height: 54px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, rgba(51, 65, 85, 0.35) 25%, rgba(71, 85, 105, 0.5) 50%, rgba(51, 65, 85, 0.35) 75%);
+    background-size: 200% 100%;
+    animation: elections-skeleton 1.3s ease-in-out infinite;
+}
+@keyframes elections-skeleton { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .elections-spac-skeleton > i { animation: none; } }
+.elections-panel-note.is-warning { color: #fbbf24; }
 .elections-spac-lede {
     margin: 0 0 10px;
     padding: 9px 10px;

@@ -47,7 +47,7 @@ export const summarizeNationalRaces = (board, health, days = 7, now = Date.now()
 };
 
 export const renderUsaElectionNational = (root, {
-    board, health, indexes = {}, contract, forecast = null, days = 7, onBack, onToggle, onWindowChange, onStateOpen,
+    board, health, indexes = {}, contract, forecast = null, days = 7, onBack, onToggle, onWindowChange, onStateOpen, onStatePrefetch,
 }) => {
     const races = selectNationalRaces(board, days, health);
     const summary = summarizeNationalRaces(board, health, days);
@@ -133,4 +133,23 @@ export const renderUsaElectionNational = (root, {
     root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange(Number(button.dataset.window))));
     root.querySelectorAll('[data-open-state]').forEach((button) => button.addEventListener('click', () =>
         onStateOpen(button.dataset.openState, button.dataset.openDistrict || null)));
+    // 누르기 전에 그 주의 자료를 미리 받는다. 지나가다 스친 것까지 받지 않도록 150ms 머문 뒤에만,
+    // 한 주는 한 번만. 터치 기기는 hover 가 없으므로 touchstart 도 같은 신호로 본다.
+    if (onStatePrefetch) {
+        const warmed = new Set();
+        root.querySelectorAll('[data-open-state]').forEach((button) => {
+            let timer = null;
+            const arm = () => {
+                const id = button.dataset.openState;
+                if (!id || warmed.has(id) || timer) return;
+                timer = setTimeout(() => { timer = null; warmed.add(id); onStatePrefetch(id); }, 150);
+            };
+            const disarm = () => { if (timer) { clearTimeout(timer); timer = null; } };
+            button.addEventListener('pointerenter', arm);
+            button.addEventListener('pointerleave', disarm);
+            button.addEventListener('focus', arm);
+            button.addEventListener('blur', disarm);
+            button.addEventListener('touchstart', () => { const id = button.dataset.openState; if (id && !warmed.has(id)) { warmed.add(id); onStatePrefetch(id); } }, { passive: true });
+        });
+    }
 };
