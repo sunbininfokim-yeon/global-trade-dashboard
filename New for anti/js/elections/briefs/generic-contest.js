@@ -184,7 +184,7 @@ const columnHtml = (column, colors, names, { finished }) => `
 // 창을 열 때는 파일이 아직 안 왔다. 빈 창을 띄우고 내용만 채운다 -- 전망 칸과 같은 방식이다.
 export const contestSkeleton = (event) => `
     <div class="elections-brief" data-contest-root>
-        <p class="elections-muted">${escapeHtml(`${event?.label_ko || '선거'} 대진을 불러오는 중입니다.`)}</p>
+        <p class="elections-muted">${escapeHtml(`${event?.label_ko || '선거'} 대진을 불러오는 중입니다.`)}<span class="inline-spinner" aria-hidden="true"></span></p>
     </div>`;
 
 export const contestHtml = (contest, event) => {

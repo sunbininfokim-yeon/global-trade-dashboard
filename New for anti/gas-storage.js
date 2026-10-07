@@ -54,6 +54,10 @@
         slot.dataset.gasStorage = '1';
         slot.className = 'stock-card';
         slot.textContent = '천연가스 재고를 불러오는 중…';
+        const slotSpinner = document.createElement('span');
+        slotSpinner.className = 'inline-spinner';
+        slotSpinner.setAttribute('aria-hidden', 'true');
+        slot.appendChild(slotSpinner);
         host.appendChild(slot);
         try {
             pending ||= fetch('/public/data/gas_storage_v1.json', {cache:'no-cache'}).then(r => {

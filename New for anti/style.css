@@ -5406,6 +5406,22 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .mm-cpi-panel-error span { color: #64748b; }
 .mm-cpi-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(148,163,184,.2); border-top-color: #38bdf8; animation: mm-cpi-spin .8s linear infinite; }
 
+/* Drop-in spinner for a plain "...불러오는 중" text node, not just a flex
+   row like .mm-cpi-spinner needs (flex items get blockified, which is the
+   only reason a width/height span works there) -- inline-block carries its
+   own sizing wherever it lands, so this one also works inside a bare <p>. */
+.inline-spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+    vertical-align: -1px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(148, 163, 184, 0.25);
+    border-top-color: #38bdf8;
+    animation: mm-cpi-spin 0.8s linear infinite;
+}
+
 /* --- Auth (signup/login) ------------------------------------------------ */
 .auth-container { display: flex; align-items: center; gap: 10px; margin-left: 16px; }
 .auth-email { font-size: 12px; color: var(--text-secondary); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
