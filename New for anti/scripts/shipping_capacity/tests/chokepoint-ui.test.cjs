@@ -19,7 +19,7 @@ const context = vm.createContext({
 const marker = 'window.ShippingDashboard = { render, unmount, loadData: loadShippingData };';
 assert.ok(source.includes(marker));
 vm.runInContext(source.replace(marker, `${marker}
-  window.__chokeTest = {normalizeSnapshot, latestOfficialCargo, officialVolumeChartData, publishedOfficialRows, publicationPeriod, renderChokepoints, renderObservedTypeComparison, scenarioPresetControls, trafficSummaryOf, renderTrafficComparisons, renderTrafficComposition};`), context);
+  window.__chokeTest = {normalizeSnapshot, latestOfficialCargo, officialVolumeChartData, publishedOfficialRows, publicationPeriod, renderChokepoints, renderObservedTypeComparison, typeSeries, typeChartOptions, scenarioPresetControls, trafficSummaryOf, renderTrafficComparisons, renderTrafficComposition};`), context);
 const api = context.window.__chokeTest;
 const normalized = api.normalizeSnapshot(snapshot);
 const point = id => normalized.ui.chokepoints.find(row => row.id === id);
@@ -31,6 +31,38 @@ const renderList = () => {
   return root.innerHTML;
 };
 const card = (html, id) => html.match(new RegExp(`<article[^>]*data-chokepoint="${id}"[\\s\\S]*?<\\/article>`))[0];
+
+test('ship-type chart supports 3/6 months and 1/2 years from real published history', () => {
+  const p = point('suez');
+  const html = api.renderObservedTypeComparison(p);
+  for (const [days, label] of [[90, '3개월'], [180, '6개월'], [365, '1년'], [730, '2년']]) {
+    assert.match(html, new RegExp(`data-chokepoint-range="${days}"[^>]*>${label}`));
+    const series = api.typeSeries(p, 'container', days);
+    assert.equal(series.rows.length, days);
+    assert.equal(series.rows.at(-1).date, p.live.metric_histories.container.history.at(-1).date);
+    assert.equal(series.rows[0].date, p.live.metric_histories.container.history.at(-days).date);
+  }
+  const twoYears = api.typeSeries(p, 'container', 730);
+  assert.equal(twoYears.rows[0].prior, null); // No invented third year.
+  assert.ok(twoYears.hasPrior);
+  assert.match(html, /실선 선택 기간/);
+});
+
+test('long ship-type range never pads missing history or fills unavailable prior-year values', () => {
+  const p = {live:{metric_histories:{container:{history:[{date:'2026-10-01',value:5},{date:'2026-10-02',value:null}],year_ago:{values:[null,3]}}}}};
+  const series = plain(api.typeSeries(p, 'container', 730));
+  assert.equal(series.rows.length, 2);
+  assert.equal(series.rows[0].prior, null);
+  assert.equal(series.rows[1].value, null);
+});
+
+test('long-range axis uses unambiguous year-month ticks with mobile-safe density', () => {
+  const options = api.typeChartOptions(['2024-10-05', '2025-10-05'], 730);
+  assert.equal(options.scales.x.ticks.maxTicksLimit, 4);
+  assert.equal(options.scales.x.ticks.callback(0), '2024-10');
+  assert.equal(options.scales.x.ticks.callback(1), '2025-10');
+  assert.equal(api.typeChartOptions([], 90).scales.x.ticks.maxTicksLimit, 8);
+});
 
 test('Hormuz main value is the latest official oil average, not a big -99% headline', () => {
   const html = card(renderList(), 'hormuz');
