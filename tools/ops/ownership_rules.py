@@ -14,6 +14,16 @@ POLLING_PATHS = frozenset({
 ELECTION_UI_BRANCH = 'codex/usa-election-ui'
 ELECTION_UI_PATHS = frozenset({'New for anti/index.html', 'New for anti/style.css'})
 
+# User requested monthly acquisition and existing Cloudflare-key integration
+# on 2026-10-07. No UI, wrangler settings or shared deployment workflow grant.
+COMMODITY_BRANCH = 'codex/commodity-monthly-automation'
+COMMODITY_PATHS = frozenset({
+    '_worker.js',
+    '.github/workflows/commodity_trade_refresh.yml',
+    '.github/workflows/commodity_trade_watchdog.yml',
+})
+
 
 def scoped_paths(branch):
-    return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS}.get(branch, frozenset())
+    return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
+            COMMODITY_BRANCH: COMMODITY_PATHS}.get(branch, frozenset())

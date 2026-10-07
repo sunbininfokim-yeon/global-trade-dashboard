@@ -29,6 +29,16 @@ class PollingScopeTests(unittest.TestCase):
         self.assertFalse(scoped_paths('codex/usa-election-ui-extra'))
         self.assertNotIn('.github/workflows/deploy.yml', scoped_paths('codex/usa-election-ui'))
 
+    def test_monthly_acquisition_scope_does_not_allow_ui_or_deployment(self):
+        self.assertEqual(scoped_paths('codex/commodity-monthly-automation'), {
+            '_worker.js', '.github/workflows/commodity_trade_refresh.yml',
+            '.github/workflows/commodity_trade_watchdog.yml'})
+        self.assertFalse(scoped_paths('codex/commodity-monthly-automation-extra'))
+        for path in ('New for anti/app.js', 'New for anti/trade-monthly.js',
+                     'wrangler.jsonc', '.github/workflows/deploy.yml',
+                     '.github/workflows/ownership_guard.yml'):
+            self.assertNotIn(path, scoped_paths('codex/commodity-monthly-automation'))
+
 
 if __name__ == '__main__':
     unittest.main()
