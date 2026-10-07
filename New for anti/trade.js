@@ -26,13 +26,32 @@
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
 
+// Re-centers the globe so the focused country lands in the middle of
+// whatever map width is left once the side panels take theirs. #map is
+// absolutely positioned inside .map-pane (flex-grow:1 between the two fixed-
+// width panes -- see style.css), and deck.gl sizes its canvas to that
+// container's actual rendered width, so setting longitude/latitude alone is
+// enough: no manual pixel-offset math needed, as long as the panel's final
+// display has already been applied (synchronous) before this runs.
+const centerMapOnCountry = (countryName) => {
+    const coords = resolveCountry(countryName)?.coordinates;
+    if (!coords || typeof deckgl === 'undefined' || !deckgl) return;
+    currentViewState = clampGlobeView({ ...currentViewState, longitude: coords[0], latitude: coords[1] });
+    deckgl.setProps({ viewState: currentViewState });
+};
+
 // The right dashboard (rankings, rig count, gas storage, RSS reports) only
 // makes sense once a country is focused (stage 2), and even then only for
 // commodities that actually have RSS reports for that country -- see
 // renderCommodityReports, the only place this is ever flipped back on.
+// Both branches settle the map's final visible width, so re-center here --
+// once immediately (no reports yet) and once more if reports arrive and
+// widen the right panel in (tradeFocusCountry is null from clearTradeFocus,
+// so recentring never fires when there is no country to center on).
 const setRightDashboardVisible = (visible) => {
     const el = document.getElementById('right-pane');
     if (el) el.style.display = visible ? 'flex' : 'none';
+    if (tradeFocusCountry) centerMapOnCountry(tradeFocusCountry);
 };
 
 /** Clear trade country focus and redraw world flows. */

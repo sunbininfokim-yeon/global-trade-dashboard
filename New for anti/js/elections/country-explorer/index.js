@@ -1,12 +1,12 @@
 import { renderCountryShell } from './country-shell.js?v=3';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=4';
-import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=5';
+import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=6';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=4';
 import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract, loadUsaElectionFinance, prefetchStateFinance } from '../data/finance-service.js?v=3';
-import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=5';
+import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=6';
 import { loadLivePolls } from '../data/poll-service.js?v=2';
 import { loadUsaElectionRatings } from '../data/rating-service.js';
 import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=4';
