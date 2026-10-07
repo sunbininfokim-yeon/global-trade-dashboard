@@ -749,9 +749,12 @@ class ExportControlBoardTests(unittest.TestCase):
             self.assertIsNone(it["title"]["ko"])
             self.assertEqual(it["agency_url"], "https://aqygzj.mofcom.gov.cn/")
             self.assertTrue(it["url"].startswith("http"))
-        # A notice naming rare earths also lands on that commodity's China window.
+        # Tagged rare earths, but board_only: export controls are shown in the
+        # 수출통제 모니터 only (2026-10-07), never on a commodity window.
         rare = [it for it in board if "稀土" in it["title"]["original"]][0]
-        self.assertIn(rare["id"], doc["index"]["rare_earths"]["CHN"])
+        self.assertIn("rare_earths", rare["commodities"])
+        indexed = {rid for b in doc["index"].values() for ids in b.values() for rid in ids}
+        self.assertNotIn(rare["id"], indexed)
 
 
 class GeminiAnnotatorTests(unittest.TestCase):
