@@ -43,13 +43,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Archiving is for the mailing queue; a Supabase outage must not stop
+      # the 4h report refresh itself, so the commit below still runs.
       - name: Archive report metadata for mailing
+        id: archive
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/archive-mailing-reports.js --skip-undated --skip-unclassified
       - name: Preserve snapshot if archiving fails
-        if: failure()
+        if: steps.archive.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: commodity-mailing-recovery
