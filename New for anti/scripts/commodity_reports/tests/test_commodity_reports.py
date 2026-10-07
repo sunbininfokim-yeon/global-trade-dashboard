@@ -1016,7 +1016,7 @@ class FederalRegisterTests(unittest.TestCase):
         self.assertTrue(items[0].summary.startswith("Commerce Department; International Trade Administration:"))
         self.assertEqual(parse_federal_register("not json", src), [])
         # title_exclude drops a mineral-by-the-way title; title_prefix labels a bare feed title.
-        src2 = dict(src, federal_register={"title_exclude": "Information Collection"})
+        src2 = dict(src, title_exclude="Information Collection")
         self.assertEqual(len(parse_federal_register(self.BODY, src2)), 1)
         from commodity_reports.feeds import _raw_from
         self.assertEqual(_raw_from({"id": "x", "title_prefix": "EIA: "}, title="Data For 10/05/26", url="u",
@@ -1051,6 +1051,34 @@ class FederalRegisterTests(unittest.TestCase):
         self.assertTrue(res["ok"])
         self.assertEqual(len(calls), 2)
         self.assertEqual(res["count"], 2)  # the two queries return the same documents: de-duplicated by URL
+
+
+class TitleExcludeCarriedTests(unittest.TestCase):
+    def test_exclusion_also_removes_a_report_carried_from_an_earlier_build(self):
+        from commodity_reports import build as build_mod
+        from commodity_reports.gemini import GeminiAnnotator
+        import json as _json, tempfile
+        now = datetime(2026, 10, 7, tzinfo=timezone.utc)
+        prev = {"items": [
+            {"source_id": "us_federal_register_minerals", "url": "https://fr.example/brake",
+             "title": {"original": "Certain Brake Drums From China: graphite determination"}, "summary": "",
+             "published_at": "2026-09-22T00:00:00+00:00"},
+            {"source_id": "us_federal_register_minerals", "url": "https://fr.example/ore",
+             "title": {"original": "Rare earth ore project in Wyoming"}, "summary": "",
+             "published_at": "2026-09-23T00:00:00+00:00"},
+        ]}
+        orig = build_mod.fetch_source, build_mod.fetch_fas_gain_pages
+        build_mod.fetch_source = lambda s, **kw: {"source_id": s["id"], "ok": False, "items": [], "count": 0, "error": "down"}
+        build_mod.fetch_fas_gain_pages = lambda s, **kw: build_mod.fetch_source(s)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                pp = Path(tmp) / "prev.json"
+                pp.write_text(_json.dumps(prev), encoding="utf-8")
+                doc = build_commodity_reports(fetch_live=True, now=now, annotator=GeminiAnnotator(""), previous_path=pp)
+        finally:
+            build_mod.fetch_source, build_mod.fetch_fas_gain_pages = orig
+        titles = [it["title"]["original"] for it in doc["items"] if it["source_id"] == "us_federal_register_minerals"]
+        self.assertEqual(titles, ["Rare earth ore project in Wyoming"])
 
 
 class CommodityScopeTests(unittest.TestCase):

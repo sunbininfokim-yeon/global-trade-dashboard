@@ -803,9 +803,9 @@ def parse_federal_register(body: str, source: Dict[str, Any]) -> List[RawReport]
         rows = json.loads(body).get("results") or []
     except (ValueError, AttributeError):
         return []
-    # Titles that name a mineral for an unrelated reason (feed additives,
-    # brake drums) -- a source-level exclusion, tuned from the real hits.
-    exclude = re.compile((source.get("federal_register") or {}).get("title_exclude") or r"(?!x)x", re.I)
+    # (title_exclude is also applied in build.py, so reports carried over from
+    # an earlier build are filtered the same way.)
+    exclude = re.compile(source.get("title_exclude") or r"(?!x)x", re.I)
     items: List[RawReport] = []
     for r in rows:
         title = strip_html(str(r.get("title") or "")).strip()

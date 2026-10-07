@@ -616,7 +616,8 @@
       "enabled": true,
       "weight": 1.1,
       "commodity_scope": ["graphite", "rare_earths", "manganese", "chromium", "platinum"],
-      "federal_register": {"terms": ["graphite", "\"rare earth\"", "manganese", "chromium", "platinum", "palladium"], "per_page": 15, "title_exclude": "Food Additives|Brake Drums|Numismatic"},
+      "federal_register": {"terms": ["graphite", "\"rare earth\"", "manganese", "chromium", "platinum", "palladium"], "per_page": 15},
+      "title_exclude": "Food Additives|Brake Drums|Numismatic",
       "notes": "Added 2026-10-07. Official U.S. rulemaking, trade-remedy and funding notices that name graphite, rare earths, manganese, chromium or the platinum-group metals (Commerce/USITC duties, Section 232, DOE/DoD awards). Uses the Federal Register JSON API, one query per term: the HTML search and its RSS sit behind a bot check, the API does not (probe 2026-10-07). The API matches full text, so most hits are not about the mineral; only documents whose title or abstract name a tracked commodity survive tagging. No commodity_hint on purpose. commodity_scope keeps a hit that also names coffee, gold or tin out of those windows; the first real run (2026-10-07) pulled in a fuel-economy rule, Mint coin prices and a feed additive, hence title_exclude."
     },
     {
