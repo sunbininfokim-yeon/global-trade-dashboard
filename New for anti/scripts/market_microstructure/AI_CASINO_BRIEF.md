@@ -8,9 +8,9 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버).
 
-- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 34.9% 수준
+- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 20.9% 수준
 - ETF 시장 안에서는 레버·인버스가 약 26.8%
-- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 4.46% — 나머지는 지수/섹터 레버
+- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 2.67% — 나머지는 지수/섹터 레버
 - 하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)
 - 삼전: 현물 100원 대비 레버 ETF 약 4원
 - 레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.
@@ -37,10 +37,10 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 | metric | value |
 |--------|------:|
 | 레버+인버스 / 전체 ETF % | 26.8 |
-| 레버+인버스 / KOSPI % | 34.9 |
-| 단일종목 LETF / KOSPI % | 4.46 |
+| 레버+인버스 / KOSPI % | 20.9 |
+| 단일종목 LETF / KOSPI % | 2.67 |
 | 레버 TV 조 | 4.27 |
-| KOSPI TV 조 | 12.22 |
+| KOSPI TV 조 | 20.47 |
 
 ## Product UX (목록 vs 검색)
 
@@ -79,7 +79,7 @@ paper-style AUM/FF = 0.6055% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.14
 
 ### Foreign vs retail / 외인 vs 개인
 
-**foreign -1.95조 · retail 1.29조**
+**foreign -1.43조 · retail 1.15조**
 
 scope=covered_underlyings_spot · quality=estimated
 
