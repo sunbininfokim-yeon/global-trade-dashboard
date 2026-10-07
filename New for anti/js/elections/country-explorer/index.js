@@ -1,15 +1,15 @@
 import { renderCountryShell } from './country-shell.js?v=3';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=4';
-import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=4';
+import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=5';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=4';
 import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract, loadUsaElectionFinance, prefetchStateFinance } from '../data/finance-service.js?v=3';
-import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=4';
+import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=5';
 import { loadLivePolls } from '../data/poll-service.js?v=2';
-import { loadUsaMidtermsForecast } from '../data/forecast-service.js';
-import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=3';
+import { loadUsaElectionRatings } from '../data/rating-service.js';
+import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=4';
 import { loadCongressionalDistricts, prefetchCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
@@ -20,6 +20,10 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
     let shell = null;
     let usaElectionMode = false;
     let pollWindowDays = 7;
+    const evidenceOpen = { poll: false, finance: false };
+    const rememberEvidence = () => host.roots.country.querySelectorAll('[data-evidence-section]').forEach((section) => {
+        evidenceOpen[section.dataset.evidenceSection] = section.open;
+    });
     // Bumped on every navigation, so a map that finishes loading after the
     // user has already moved on (back to world, another country) is dropped
     // instead of painting over the screen they're now on.
@@ -64,6 +68,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             await renderWorldElectionMap(host, bundle.countries, onCountryOpen);
         },
         async showCountry(iso3, { electionMode = false } = {}) {
+            rememberEvidence();
             stopDisplayRefresh();
             const country = bundle.countries.get(iso3);
             if (!country) return;
@@ -83,14 +88,14 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 // 전국 자금 파일은 폴과 상관없이 필요하다. 폴이 와서 감시 주 목록을 알게 된 뒤에야 받기
                 // 시작하면 한 번 더 기다리므로, 폴과 같이 미리 받기 시작한다.
                 loadUsaElectionFinance();
-                const [polls, contract, forecast] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract(), loadUsaMidtermsForecast()]);
+                const [polls, contract, ratings] = await Promise.all([loadLivePolls(), loadFinanceDisplayContract(), loadUsaElectionRatings()]);
                 const entries = await Promise.all(nationalMonitoringStates(polls.board)
                     .map(async (id) => [id, await loadStateFinanceIndex(id)]));
                 if (isStale()) return;
                 shell = null;
                 onRoute?.({ country: iso3, view: 'finance' });
                 renderUsaElectionNational(host.roots.country, {
-                    ...polls, contract, forecast, indexes: Object.fromEntries(entries), days: pollWindowDays,
+                    country, ...polls, contract, ratings, evidenceOpen, indexes: Object.fromEntries(entries), days: pollWindowDays,
                     onBack, onToggle: () => this.showCountry('USA'),
                     onWindowChange: (days) => { pollWindowDays = days; this.showCountry('USA', { electionMode: true }); },
                     onStateOpen: (stateId, district) => this.showUsaState(stateId, { financeMode: true, district }),
@@ -133,6 +138,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             });
         },
         async showUsaState(stateId, { financeMode = false, district = null } = {}) {
+            rememberEvidence();
             stopDisplayRefresh();
             // The state dashboard replaces the right pane wholesale, so any
             // country block still open would be describing the wrong screen.
@@ -144,6 +150,8 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             const seq = ++navSeq;
             const isStale = () => seq !== navSeq;
             const route = { country: 'USA', state: stateId, view: financeMode ? 'finance' : null, district: financeMode ? district : null };
+            // 사용자가 지금 고른 선거구. 7일/14일 전환이나 자동 갱신으로 화면을 다시 그려도 이 선택을 잇는다.
+            let activeDistrict = district;
             onRoute?.(route);
             let polls = { board: null, health: null };
             const openState = (nextStateId) => this.showUsaState(nextStateId, { financeMode });
@@ -151,15 +159,16 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // 1) 누른 즉시 우측 패널부터 바꾼다. 예전에는 금액 → 도형 → 지도를 순서대로 다 기다린
             //    뒤에야 패널이 바뀌어서, 캘리포니아는 6초 가까이 이전 화면 그대로였다.
             const view = renderUsaStateDashboard(host.roots.country, {
-                state, financeMode, loading: financeMode, districtMapReady: undefined,
+                state, country: usa, evidenceOpen, financeMode, loading: financeMode, districtMapReady: undefined,
                 windowDays: pollWindowDays,
                 openDistrict: financeMode ? district : null,
-                onWindowChange: (days) => { pollWindowDays = days; this.showUsaState(stateId, { financeMode: true, district }); },
+                onWindowChange: (days) => { pollWindowDays = days; this.showUsaState(stateId, { financeMode: true, district: activeDistrict }); },
                 onBackToUsa: () => this.showCountry('USA', { electionMode: usaElectionMode || financeMode }),
                 onToggleFinance: () => this.showUsaState(stateId, { financeMode: !financeMode }),
                 // Only the map is redrawn, and only its colours: fitView stays
                 // off so clicking a district never moves the camera.
                 onHighlightDistrict: (next) => {
+                    activeDistrict = next;
                     onRoute?.({ ...route, district: next });
                     return renderUsaDistrictMap({ host, stateId, highlightDistrict: next, fitView: false,
                         electionMode: financeMode, pollBoard: polls.board, pollHealth: polls.health, windowDays: pollWindowDays, isStale });
@@ -178,19 +187,19 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // 3) 자료는 한꺼번에 받기 시작한다. 이전에는 금액이 끝난 뒤에야 도형을 받기 시작했다.
             const pollsPromise = financeMode ? loadLivePolls() : Promise.resolve(polls);
             const financePromise = financeMode
-                ? Promise.all([loadStateFinance(stateId), loadFinanceDisplayContract()]) : null;
+                ? Promise.all([loadStateFinance(stateId), loadFinanceDisplayContract(), loadUsaElectionRatings()]) : null;
 
-            // 패널: 금액·폴이 오면 바로 그린다. 도형을 기다리지 않는다.
+            // 패널: 금액·폴·등급이 오면 바로 그린다. 도형을 기다리지 않는다.
             const panelDone = financeMode ? (async () => {
-                const [[financeResult, contract], loaded] = await Promise.all([financePromise, pollsPromise]);
+                const [[financeResult, contract, ratings], loaded] = await Promise.all([financePromise, pollsPromise]);
                 polls = loaded;
                 if (isStale()) return;
                 view.setFinance({
                     financeRaces: financeResult?.races ?? null, financeFailed: financeResult?.failed ?? 0,
-                    financeContract: contract, pollBoard: loaded.board, pollHealth: loaded.health,
+                    financeContract: contract, ratings, pollBoard: loaded.board, pollHealth: loaded.health,
                     windowDays: pollWindowDays, openDistrict: district,
                 });
-                watchDisplay(loaded, seq, () => this.showUsaState(stateId, { financeMode: true, district }));
+                watchDisplay(loaded, seq, () => this.showUsaState(stateId, { financeMode: true, district: activeDistrict }));
             })() : Promise.resolve();
 
             // 지도: 도형이 오면 패널의 하원 구획(어느 선거구가 지도에 있는지)과 부제를 먼저 갱신하고,
@@ -216,9 +225,9 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 const loaded = await pollsPromise;
                 polls = loaded;
                 if (isStale()) return;
-                // `isStale` 를 넘겨서, 도형이 늦게 오는 사이 사용자가 나갔다면 지도를 건드리지 않는다.
                 if (geo === undefined) return;   // 못 받았다: 지도는 선택한 주가 칠해진 미국 지도 그대로
-                const drawn = await renderUsaDistrictMap({ host, stateId, highlightDistrict: financeMode ? district : null,
+                // `isStale` 를 넘겨서, 도형이 늦게 오는 사이 사용자가 나갔다면 지도를 건드리지 않는다.
+                const drawn = await renderUsaDistrictMap({ host, stateId, highlightDistrict: financeMode ? activeDistrict : null,
                     electionMode: financeMode, pollBoard: loaded.board, pollHealth: loaded.health, windowDays: pollWindowDays, isStale, geo });
                 if (drawn) mapShows = `districts:${stateId}`;
             })();

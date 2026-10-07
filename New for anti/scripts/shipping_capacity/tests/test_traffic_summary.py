@@ -103,12 +103,13 @@ class TrafficSummaryTests(unittest.TestCase):
         data["metric_histories"] = {}
         self.assertIsNone(build_traffic_summary(data)["current"]["value"])
 
-    def test_summary_survives_180_day_screen_trim(self):
+    def test_summary_survives_screen_trim_with_two_year_chart_history(self):
         data = status()
         data["traffic_summary"] = build_traffic_summary(data)
         screen = _screen_chokepoints_live({"suez": data})["suez"]
         self.assertEqual(screen["traffic_summary"], data["traffic_summary"])
-        self.assertEqual(len(screen["metric_histories"]["all"]["history"]), 180)
+        self.assertEqual(len(screen["history"]), 0)
+        self.assertEqual(len(screen["metric_histories"]["all"]["history"]), 730)
         self.assertEqual(screen["traffic_summary"]["comparisons"]["year"]["change_pct"], 0)
 
     def test_cached_refresh_preserves_backtest_records_and_rejects_mixed_bundle(self):

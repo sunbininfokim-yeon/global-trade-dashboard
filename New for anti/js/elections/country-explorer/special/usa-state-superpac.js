@@ -151,15 +151,15 @@ const raceBody = (race, view) => `
 // badge cannot be read as an election result.
 const badgeCaption = '<span class="elections-spac-caption">지지지출 우세</span>';
 
-const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days) => {
+const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true) => {
     if (!race) return `
         <section class="elections-spac-block">
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">해당 선거 없음</span></div>
-            ${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}
+            ${showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : ''}
         </section>`;
     const notRegular = (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
     const polling = notRegular ? '<p class="elections-panel-note">2026 정기선거 없음 · 특별선거는 별도 확인. 아래 금액은 공시 기록입니다.</p>'
-        : pollEvidenceHtml(pollRace, pollBoard, pollHealth, days);
+        : showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : '';
     const view = viewFor(race.office, contract);
     const unverified = pollRace?.schedule_status === 'watch_slot_unverified';
     const unsupported = race.status === 'unsupported';
@@ -201,7 +201,7 @@ const districtLabel = (race, mapped) => {
 // null 이면 "지도 미대응"이라고 단정하지 않는다 -- 도형(캘리포니아는 16MB)은 금액 자료보다
 // 늦게 도착하는 것이 보통이라, 그 사이를 미대응으로 칠하면 도형이 오자마자 라벨이 뒤집힌다.
 // 이 상태의 행은 열고 닫기만 되고 지도 강조는 걸지 않는다(걸 지도가 아직 없다).
-const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, days) => `
+const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, days, showPolls = true) => `
     <div class="elections-spac-district${mapped === false ? ' is-unmapped' : ''}" data-race-id="${escapeHtml(race.race_id ?? '')}" data-district-key="${escapeHtml(race.district ?? '')}">
         <button class="elections-spac-district-head" type="button" data-spac-toggle
             ${mapped ? `data-spac-district="${escapeHtml(race.district ?? '')}"` : ''}>
@@ -209,7 +209,7 @@ const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, da
             ${mapped === false ? '<span class="elections-spac-unmapped-tag">지도 미대응</span>' : ''}
             ${winnerBadge(race, viewFor(race.office, contract).categories)}
         </button>
-        <div class="elections-spac-district-body">${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
+        <div class="elections-spac-district-body">${showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : ''}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
     </div>`;
 
 const byDistrict = (a, b) => String(a.district ?? '').localeCompare(String(b.district ?? ''), undefined, { numeric: true });
@@ -234,7 +234,7 @@ const mergeRaces = (state, races, pollBoard) => {
 
 // 하원 구획만 따로 그린다. 선거구 도형은 금액 자료보다 늦게 오는 일이 많아서, 패널을 먼저
 // 그린 뒤 도형이 오면 이 구획만 갈아끼운다 (usa-state-dashboard 의 setMapped).
-export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7) => {
+export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true } = {}) => {
     races = mergeRaces(state, races, pollBoard);
     const house = races.filter((race) => race.office === 'house').sort(byDistrict);
     const pollFor = (race) => pollBoard?.races?.[race?.race_id] || null;
@@ -251,14 +251,14 @@ export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, cont
         ? '선거구 지도 도형을 불러오지 못했습니다. 금액은 그대로 표시됩니다. 나갔다 다시 들어오면 재시도합니다.'
         : '선거구 지도를 불러오는 중입니다. 금액은 먼저 표시되고, 지도 위치는 도형이 도착하면 연결됩니다.'}</p>` : ''}
             <div class="elections-spac-district-list">
-                ${mapped.map((race) => districtRow(race, pending ? null : true, contract, pollFor(race), pollBoard, pollHealth, days)).join('')}
-                ${unmapped.map((race) => districtRow(race, false, contract, pollFor(race), pollBoard, pollHealth, days)).join('')}
+                ${mapped.map((race) => districtRow(race, pending ? null : true, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
+                ${unmapped.map((race) => districtRow(race, false, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
             </div>
             ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
             ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}`;
 };
 
-export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7) => {
+export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true } = {}) => {
     const merged = mergeRaces(state, races, pollBoard);
     const governor = merged.find((race) => race.office === 'governor');
     const senate = merged.find((race) => race.office === 'senate');
@@ -268,10 +268,10 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
         <p class="elections-spac-lede">외부 단체(슈퍼팩 등)가 특정 후보를 <strong>지지하거나 반대하려고 독자적으로 쓴 돈</strong>입니다.
             후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
-            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days)}
-            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days)}
+            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls)}
+            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls)}
         </section>
-        <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days)}
+        <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days, { showPolls })}
         </section>
         <p class="elections-panel-note">배지는 지지 지출이 더 많은 정당일 뿐, 개표 결과나 당선 전망이 아닙니다.</p>`;
 };

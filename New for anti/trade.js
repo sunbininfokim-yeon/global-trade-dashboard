@@ -221,20 +221,8 @@ const focusTradeCountry = (countryName) => {
         if (topExporterEl) topExporterEl.textContent = partner;
     }
 
-    // Export controls come from export-controls.js (window.ExportControls).
-    const ctl = window.ExportControls?.controlsFor(currentCommodity).get(target?.key || countryName);
-    if (ctl && newsContentEl) {
-        const lv = window.ExportControls.levelLabel(ctl.level);
-        newsContentEl.insertAdjacentHTML('afterbegin', `
-            <div class="ctl-card ctl-${ctl.level}">
-                <div class="ctl-head"><strong>${lv}</strong>
-                    <span class="ctl-since">${ctl.since || ''}~</span></div>
-                <div class="ctl-measure">${ctl.measure_ko || ''}</div>
-                <div class="ctl-src">${ctl.source || ''}
-                    ${ctl.url ? `<a href="${ctl.url}" target="_blank" rel="noopener">원문 ↗</a>` : ''}
-                    · 신뢰도 ${ctl.confidence || '—'}</div>
-            </div>`);
-    }
+    // Export controls live in the 수출통제 모니터 only (2026-10-07), not on
+    // a commodity's country card.
 
     currentViewDesc.textContent = `${displayName} ${roleKo} · ${focused.length}개 루트 · 배경 클릭 또는 「전체 지도」로 초기화`;
     renderMapLayers(arcs, { focus: countryName, asExporter, focused, inboundKeys, keepView: true });
@@ -1068,6 +1056,9 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const slot = document.getElementById('reports-slot');
     if (!slot || !commodity) return;
     const iso3 = countryName ? countryCode(countryName) : null;
+    // Country boxes for pipeline boards. Empty since 2026-10-07: China's
+    // export-control notices moved to the 수출통제 모니터, the only place
+    // export controls are shown.
     const boardSpec = REPORT_BOARDS_BY_COUNTRY[iso3] || null;
     const [win, board] = await Promise.all([
         loadCommodityReports(commodity, iso3),
@@ -1118,13 +1109,7 @@ const renderCommodityReports = async (commodity, countryName = null) => {
 // commodity window -- but they are the news for anyone trading with China.
 // The pipeline's export_controls board is every regulator's notices; a
 // country's screen shows its own regulators' (control.issuer).
-const REPORT_BOARDS_BY_COUNTRY = {
-    CHN: {
-        board: 'export_controls', issuer: 'CHN',
-        title: '중국 수출통제 공고 (원문)',
-        note: '상무부 산업안전·수출입통제국 발표 · 중국어 원문(번역은 Gemini) · 제목을 누르면 원문으로 이동',
-    },
-};
+const REPORT_BOARDS_BY_COUNTRY = {};
 // control.measure (pipeline gemini.MEASURES) in Korean.
 const CONTROL_MEASURE_KO = {
     entity_list: '통제명단', export_restriction: '수출통제', export_ban: '수출금지',
@@ -1556,9 +1541,8 @@ const renderMapLayers = (arcs, opts = {}) => {
     const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-    const EC = window.ExportControls;
-    const tradeControls = EC ? EC.controlsFor(currentCommodity) : new Map();
-    EC?.renderTradeLegend(tradeControls);
+    // No export-control colouring or legend on the trade map: controls are
+    // shown in the 수출통제 모니터 only (2026-10-07).
 
     const baseLayers = () => [
         ...worldBaseLayers({ id: 'trade' }),
@@ -1578,27 +1562,6 @@ const renderMapLayers = (arcs, opts = {}) => {
                 : [0, 0, 0, 0]),
             pickable: false,
             updateTriggers: { getFillColor: [focus], getLineColor: [focus] },
-        }),
-        // Countries under an export control on this commodity.
-        new GeoJsonLayer({
-            id: 'trade-export-controls',
-            data: worldGeo(),
-            stroked: true,
-            filled: true,
-            pickable: false,
-            lineWidthMinPixels: 1,
-            getFillColor: (f) => {
-                const c = tradeControls.get(featureCountryName(f));
-                return c ? (EC.FILL[c.level] || EC.FILL.watch) : [0, 0, 0, 0];
-            },
-            getLineColor: (f) => {
-                const c = tradeControls.get(featureCountryName(f));
-                return c ? (EC.LINE[c.level] || EC.LINE.watch) : [0, 0, 0, 0];
-            },
-            updateTriggers: {
-                getFillColor: [currentCommodity, tradeControls.size],
-                getLineColor: [currentCommodity, tradeControls.size],
-            },
         }),
         new GeoJsonLayer({
             id: 'trade-countries-pick',

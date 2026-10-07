@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from market_microstructure.investor_price_levels import (  # noqa: E402
+    KospiUniverseError,
     build_investor_price_levels_report,
     markdown_investor_price_levels,
 )
@@ -84,16 +85,24 @@ def main() -> int:
         except (json.JSONDecodeError, OSError, AttributeError):
             previous_index_levels = None
 
-    rep = build_investor_price_levels_report(
-        pairs,
-        page_size=args.page_size,
-        n_bins=args.bins,
-        kospi_top_n=args.top,
-        universe_mode=args.universe if not pairs else "custom",
-        high_vol_pool=args.pool,
-        krx_root=args.krx_month_paste,
-        previous_index_levels=previous_index_levels,
-    )
+    try:
+        rep = build_investor_price_levels_report(
+            pairs,
+            page_size=args.page_size,
+            n_bins=args.bins,
+            kospi_top_n=args.top,
+            universe_mode=args.universe if not pairs else "custom",
+            high_vol_pool=args.pool,
+            krx_root=args.krx_month_paste,
+            previous_index_levels=previous_index_levels,
+        )
+    except KospiUniverseError as exc:
+        message = f"{exc}; existing investor-price snapshot kept unchanged"
+        print(f"ERROR: {message}", file=sys.stderr)
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            escaped = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+            print(f"::error title=KOSPI universe unavailable::{escaped}", file=sys.stderr)
+        return 1
     # Refuse to ship if everything missing
     ok_n = sum(1 for t in (rep.get("tickers") or {}).values() if t.get("quality") == "observed")
     if ok_n == 0 and (rep.get("kospi_index_levels") or {}).get("quality") != "observed":

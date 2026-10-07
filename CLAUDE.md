@@ -54,7 +54,10 @@ Cursor가 UI 파일을 열어 둔 채로 저장하면 오래된 버퍼가 진행
   `export-controls.css` 독립 모듈(`window.ExportControls`)이고 app.js 와는
   `exportControlsHost()` 어댑터로만 닿는다. 데이터는 `public/data/export_controls/`
   의 manifest + 분류별 모듈(agri/energy/minerals) -- 한 파일로 합치지 말 것.
-  무역 지도(trade.js)의 통제 색칠도 같은 모듈을 쓴다.
+  **수출통제는 수출통제 모니터에서만 보인다 (2026-10-07 사용자 지시).** 무역 지도의 통제
+  색칠·범례, 국가 카드의 통제 카드, 보고서 패널의 중국 공고 박스는 없앴고, 파이프라인의
+  수출통제 공고 소스(MOFCOM 수출통제국·OFAC·BIS)는 `board_only` 라 품목 보고서 창에도
+  안 뜬다. 다른 화면에 다시 붙이지 말 것.
 - deck `setProps({ onAfterRender: null })` 금지 -- deck 이 무조건 호출해서 렌더 루프가
   죽고 지도가 통째로 빈다. 지울 땐 `() => {}`.
 - 매크로 모니터(`/macro_monitor`)만 베이스맵이 다르다: NASA VIIRS Black Marble

@@ -286,7 +286,7 @@
   // Daily PortWatch series by ship type as lines: all three types together, or
   // one type alone. A dashed line is the same weekday 52 weeks earlier, which
   // the engine aligns (`metric_histories.<type>.year_ago`); the UI only draws.
-  const CHOKEPOINT_RANGES = [['90', '3개월'], ['180', '6개월']];
+  const CHOKEPOINT_RANGES = [['90', '3개월'], ['180', '6개월'], ['365', '1년'], ['730', '2년']];
 
   // Axis and tooltip in tonnes at the scale of the data: a 50K t/day strait
   // must not print every tick as "0.1M".
@@ -336,6 +336,17 @@
     return { rows, hasPrior: rows.some(row => row.prior !== null) };
   };
 
+  const typeChartOptions = (dates, days) => {
+    const options = lineChartOptions(value => `${formatTonnes(value)}/일`, { formatTick: formatTonnes });
+    if (days > 180) {
+      // Keep full ISO dates in labels/tooltips, but use fewer year-month axis
+      // ticks so two-year ranges remain readable on narrow screens.
+      options.scales.x.ticks.maxTicksLimit = 4;
+      options.scales.x.ticks.callback = value => String(dates[value] || '').slice(0, 7);
+    }
+    return options;
+  };
+
   const renderObservedTypeComparison = point => {
     const available = CHOKEPOINT_METRIC_TABS.filter(([key]) => point.live?.metrics?.[key]);
     if (!available.length) return '';
@@ -346,7 +357,7 @@
             <span>SHIP TYPE COMPARISON</span>
             <h3>선종별 추정 교역량</h3>
           </div>
-          <small>실선 올해 · 점선 52주 전 같은 요일</small>
+          <small>실선 선택 기간 · 점선 52주 전 같은 요일</small>
         </div>
         <div class="shipping-observed-type-controls" role="tablist" aria-label="선종 선택">
           ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === (point.metricKey || 'all')}">${label}</button>`).join('')}
@@ -391,11 +402,12 @@
       const recent = comparison ? comparison.current?.value : metric.current_7d_mean_estimated_trade_tonnes;
       const prior = metric.prior_28d_mean_estimated_trade_tonnes;
       const anyPrior = series.some(item => item.hasPrior);
+      const coverage = dates.length ? `표시 이력 ${formatDate(dates[0])}~${formatDate(dates[dates.length - 1])} · ${dates.length}개 일별 지점${dates.length < days ? ' · 선택 기간보다 이력이 짧습니다.' : ''}` : '';
       result.innerHTML = `
         ${series.length
           ? '<div class="shipping-chart-wrap" style="grid-column:1 / -1"><canvas id="shipping-observed-type-chart"></canvas></div>'
           : '<div class="shipping-callout warning" style="grid-column:1 / -1"><strong>선종별 일별 이력이 아직 발행되지 않았습니다.</strong> 아래 7일·28일 평균만 공개되어 있으며, 평균값을 연결해 일별 그래프를 만들지 않습니다.</div>'}
-        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">AIS 포착 기반 추정량(톤) · 원유 배럴이나 봉쇄율이 아닙니다. 품목별 발표값은 ‘공식 물량’ 탭에서 확인하세요.${anyPrior ? '' : ' 전년 이력 없음.'}</p>
+        <p class="shipping-note" style="grid-column:1 / -1;margin-top:4px">${escapeHtml(coverage)}<br>AIS 포착 기반 추정량(톤) · 원유 배럴이나 봉쇄율이 아닙니다. 품목별 발표값은 ‘공식 물량’ 탭에서 확인하세요.${anyPrior ? ' 점선은 전년 관측자료가 있는 구간만 표시합니다.' : ' 전년 이력 없음.'}</p>
         <div class="shipping-observed-value">
           <span>${metricKey === 'all' ? '전체 선종 최근 7일 일평균' : `${escapeHtml(SHIP_TYPE_LABELS[metricKey] || metricKey)} 최근 7일 일평균`}</span>
           <strong>${formatTonnes(recent)}/일</strong>
@@ -416,8 +428,8 @@
       });
       observedChart = createChart(result, 'shipping-observed-type-chart', {
         type: 'line',
-        data: { labels: dates.map(date => String(date).slice(5)), datasets },
-        options: lineChartOptions(value => `${formatTonnes(value)}/일`, { formatTick: formatTonnes })
+        data: { labels: dates.map(date => days > 180 ? String(date) : String(date).slice(5)), datasets },
+        options: typeChartOptions(dates, days)
       });
     };
 

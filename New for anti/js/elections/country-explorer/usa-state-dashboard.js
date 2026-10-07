@@ -1,5 +1,24 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=4';
+// ?v=5: #463 이 이미 ?v=4 로 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
+// 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=5';
+import { electionOverviewHtml, evidenceSectionHtml } from './special/usa-election-overview.js';
+import { pollEvidenceHtml } from './special/usa-election-evidence.js?v=2';
+import { ELECTION_OFFICES } from '../data/election-overview.js';
+
+export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null) => {
+    const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
+    return ELECTION_OFFICES.map(([office, label]) => {
+        const selected = races.filter((r) => r.office === office).sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
+        if (!selected.length) return '';
+        return `<section class="elections-state-polls"><h3>${label}</h3>${selected.map((race) => {
+            const district = office === 'house' ? String(race.district) : null;
+            return `<article class="elections-race-card${district && district === String(selectedDistrict) ? ' is-selected' : ''}" data-poll-race="${escapeHtml(race.race_id)}">
+                ${district ? `<button class="elections-race-open" type="button" data-poll-district="${escapeHtml(district)}"><strong>하원 ${Number(district)}구</strong><span>지도에서 보기 →</span></button>` : ''}
+                ${pollEvidenceHtml(race, board, health, days)}</article>`;
+        }).join('')}</section>`;
+    }).join('') || '<p class="elections-muted">이 주의 여론조사 감시 자료가 아직 연결되지 않았습니다. 조사 자체가 없다는 뜻은 아닙니다.</p>';
+};
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 // Returns safe HTML, not plain text: a bioguideId (present on every House/
@@ -91,7 +110,7 @@ const failureNote = (failed) => (failed > 0
 // 올 때까지 이전 화면 그대로였다. 지금은 주를 누른 즉시 패널이 바뀌고, 금액은 도착하는 대로,
 // 도형은 마지막에 붙는다.
 export const renderUsaStateDashboard = (root, {
-    state, districtMapReady, onBackToUsa,
+    state, country = null, ratings = null, evidenceOpen = {}, districtMapReady, onBackToUsa,
     financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, openDistrict = null,
     pollBoard = null, pollHealth = null, windowDays = 7, onWindowChange,
     onToggleFinance, onHighlightDistrict, loading = false, financeFailed = 0,
@@ -116,7 +135,7 @@ export const renderUsaStateDashboard = (root, {
         // 그릴 때 쓴다 -- 작은 주는 도형이 금액보다 먼저 도착한다.
         let mapped = loading ? MAPPING_PENDING : mappedDistricts;
         let bodyPainted = false;
-        let latest = { financeRaces, financeContract, pollBoard, pollHealth, windowDays, openDistrict, financeFailed };
+        let latest = { financeRaces, financeContract, pollBoard, pollHealth, windowDays, openDistrict, financeFailed, ratings };
 
         const bindHouse = (scope) => {
             // Opening a district is a local DOM change, not a re-render: the list
@@ -127,7 +146,7 @@ export const renderUsaStateDashboard = (root, {
                 const wasOpen = wrap.classList.contains('is-open');
                 root.querySelectorAll('.elections-spac-district.is-open').forEach((row) => row.classList.remove('is-open'));
                 if (!wasOpen) wrap.classList.add('is-open');
-                // 도형이 아직 안 온 행은 열고 닫기만 한다 -- 강조할 지도가 아직 없다.
+                // 도형이 아직 안 온(또는 못 받은) 행은 열고 닫기만 한다 -- 강조할 지도가 없다.
                 if (mapped === MAPPING_PENDING || mapped === MAPPING_FAILED) return;
                 // A row without geometry still opens; it just clears the map's
                 // highlight rather than asking for one that cannot be drawn.
@@ -136,34 +155,52 @@ export const renderUsaStateDashboard = (root, {
             }));
         };
 
-        const openByDistrict = (district) => {
-            if (district == null) return;
-            const wrap = root.querySelector(`[data-district-key="${CSS.escape(String(district))}"]`);
-            wrap?.classList.add('is-open');
+        // 슈퍼팩 섹션 본문. 폴은 위의 "여론조사" 섹션이 따로 보여 주므로 여기서는 끈다(showPolls:false).
+        const financeSection = () => usaStateSuperPac(state, latest.financeRaces, mapped, latest.financeContract,
+            latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: false });
+
+        const bodyHtml = () => {
+            const { pollBoard: board, pollHealth: health, windowDays: days, openDistrict: open } = latest;
+            const polledRaces = Object.values(board?.races || {}).filter((r) => r.state === state.id);
+            const observationCount = polledRaces.reduce((n, r) => n + (r.observations?.length || 0), 0);
+            const pollContent = `<div class="elections-window-switch" role="group" aria-label="최근 여론조사 집계 기간">
+                <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${days === 7}">7일</button>
+                <button type="button" data-window="14" aria-pressed="${days === 14}">14일</button></div>
+                <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
+                ${statePollEvidenceHtml(state.id, board, health, days, open)}`;
+            // 실패 안내는 접이식 섹션 **밖**에 둔다 -- 닫힌 <details> 안에 있으면 아무도 못 본다.
+            return electionOverviewHtml(country, latest.ratings, { state, board, health, days })
+                + failureNote(latest.financeFailed)
+                + '<p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>'
+                + evidenceSectionHtml('poll', '여론조사', `감시 ${polledRaces.length}개 선거 · 누적 ${observationCount}건 · 최근 ${days}일`, pollContent, evidenceOpen.poll)
+                + evidenceSectionHtml('finance', '슈퍼팩 · 외부 독립지출', '주지사·상원·하원 후보별 공시', financeSection(), evidenceOpen.finance || (open != null && !evidenceOpen.poll));
         };
 
         const paintBody = () => {
-            const html = failureNote(latest.financeFailed)
-                + usaStateSuperPac(state, latest.financeRaces, mapped, latest.financeContract, latest.pollBoard, latest.pollHealth, latest.windowDays);
             const skeleton = root.querySelector('.elections-spac-skeleton');
             if (!skeleton) return;
             // 형제 노드 구조를 그대로 둔다(래퍼를 씌우면 패널의 간격 규칙이 깨진다).
-            skeleton.insertAdjacentHTML('afterend', html);
+            skeleton.insertAdjacentHTML('afterend', bodyHtml());
             skeleton.remove();
             bodyPainted = true;
+            root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange?.(Number(button.dataset.window))));
+            root.querySelectorAll('[data-poll-district]').forEach((button) => button.addEventListener('click', () => {
+                root.querySelectorAll('[data-poll-race]').forEach((row) => row.classList.remove('is-selected'));
+                button.closest('[data-poll-race]').classList.add('is-selected');
+                onHighlightDistrict?.(button.dataset.pollDistrict);
+            }));
             const house = root.querySelector('[data-spac-house]');
             if (house) bindHouse(house);
             // A district named in the URL opens without a click; the map was
             // already drawn with that highlight, so this does not re-report it.
-            openByDistrict(latest.openDistrict);
+            if (latest.openDistrict != null) {
+                root.querySelector(`[data-district-key="${CSS.escape(String(latest.openDistrict))}"]`)
+                    ?.classList.add('is-open');
+            }
         };
 
-        root.innerHTML = header + `<div class="elections-window-switch" role="group" aria-label="최근 여론조사 집계 기간">
-            <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${windowDays === 7}">7일</button>
-            <button type="button" data-window="14" aria-pressed="${windowDays === 14}">14일</button></div>`
-            + skeletonHtml();
+        root.innerHTML = header + skeletonHtml();
         bindHeader();
-        root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange?.(Number(button.dataset.window))));
         if (!loading) paintBody();
 
         return {
@@ -181,7 +218,7 @@ export const renderUsaStateDashboard = (root, {
                 const openRace = house.querySelector('.elections-spac-district.is-open')?.dataset.raceId;
                 const scroll = root.scrollTop;
                 house.innerHTML = usaStateSuperPacHouse(state, latest.financeRaces, mapped, latest.financeContract,
-                    latest.pollBoard, latest.pollHealth, latest.windowDays);
+                    latest.pollBoard, latest.pollHealth, latest.windowDays, { showPolls: false });
                 if (openRace) house.querySelector(`[data-race-id="${CSS.escape(openRace)}"]`)?.classList.add('is-open');
                 bindHouse(house);
                 root.scrollTop = scroll;

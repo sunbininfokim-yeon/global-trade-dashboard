@@ -132,9 +132,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 1008421.94 | 2026-10-02 | observed |
-| 신용잔고 | 336282.38 | 2026-10-02 | observed |
-| 신용/예탁금 % | 33.347 |  |  |
+| 고객예탁금 | 1010486.27 | 2026-10-06 | observed |
+| 신용잔고 | 335591.43 | 2026-10-06 | observed |
+| 신용/예탁금 % | 33.211 |  |  |
 
 ## 8. KOSPI market investor flows
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 3.064 | 72.09 | 19.388 |
-| overseas | 26 | 0.013 | 0.3 | 0.082 |
-| sector | 8 | 0.801 | 18.84 | 5.067 |
-| single_stock | 16 | 0.372 | 8.76 | 2.357 |
+| index | 53 | 2.947 | 72.74 | 24.114 |
+| overseas | 26 | 0.012 | 0.3 | 0.1 |
+| sector | 8 | 0.577 | 14.23 | 4.718 |
+| single_stock | 16 | 0.516 | 12.73 | 4.22 |
 
 ## 10. Short interest
 
