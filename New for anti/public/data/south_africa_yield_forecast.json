@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-10T05:04:44.196422+00:00",
+  "generated_at": "2026-10-02T22:50:49.836621+00:00",
   "season": 2026,
   "country": "South Africa",
   "forecast_available": true,
-  "source_note": "Commercial maize yield labels: Crop Estimates Committee via SAGIS. Climate: Google Earth Engine CHIRPS daily precipitation and ERA5-Land daily temperature, VPD and 0-100 cm soil moisture.",
+  "source_note": "Commercial maize yield labels: Crop Estimates Committee via SAGIS. Climate: NASA POWER daily precipitation, maximum temperature, VPD and root-zone soil wetness at six belt locations.",
   "methodology_note": "A national commercial-maize yield target is paired with a fixed, mean-2023-2025-production-weighted six-location climate proxy over Free State, North West and Mpumalanga. Feature selection stops in 2015; 2016-2025 is an untouched holdout. Full-history and rolling-20 trend forecasts are equally weighted. The current CEC estimate is shown only as an external comparison and is excluded from training.",
   "regions": {
     "commercial_maize_belt": {
@@ -19,18 +19,18 @@
         "corn": {
           "label_ko": "옥수수",
           "unit": "kg/ha",
-          "point": 6311.8,
+          "point": 6207.8,
           "range_68": [
-            5877.2,
-            6746.4
+            5582.0,
+            6833.7
           ],
           "range_95": [
-            4743.3,
-            7880.2
+            4435.1,
+            7980.6
           ],
           "trend": 6699.8,
-          "weather_effect": -388.0,
-          "weather_effect_pct": -5.79,
+          "weather_effect": -491.9,
+          "weather_effect_pct": -7.34,
           "last_actual": {
             "year": 2025,
             "yield": 6412.0
@@ -46,15 +46,15 @@
           },
           "skill": {
             "method": "forward chaining; log trend refit inside every fold",
-            "skill_vs_trend_only": 0.153,
-            "detrended_r2": 0.112,
+            "skill_vs_trend_only": 0.192,
+            "detrended_r2": 0.192,
             "evaluation_period": "untouched holdout 2016-2025",
             "holdout_folds": 10,
             "beats_trend": true,
             "low_confidence": true,
             "operational_choice": "trend_ensemble_ridge_weather",
             "selected_feature_set": "water_demand",
-            "sigma_used": 434.6,
+            "sigma_used": 625.8,
             "model_warnings": [
               "Selected weather predictors are strongly correlated; coefficient signs are not causal.",
               "The untouched evaluation set contains only ten seasons (2016-2025)."
@@ -79,21 +79,21 @@
                   },
                   "development": {
                     "n_folds": 9,
-                    "rmse_kg_ha": 691.1696512563001,
-                    "baseline_rmse_kg_ha": 954.5228069655903,
-                    "skill_vs_trend": 0.2759003281927699
+                    "rmse_kg_ha": 713.7412059872178,
+                    "baseline_rmse_kg_ha": 954.5228069654785,
+                    "skill_vs_trend": 0.2522533764737681
                   },
                   "holdout": {
                     "n_folds": 10,
-                    "rmse_kg_ha": 882.6420451404093,
-                    "baseline_rmse_kg_ha": 831.8851205531421,
-                    "skill_vs_trend": -0.061014343607345145
+                    "rmse_kg_ha": 615.5488020510413,
+                    "baseline_rmse_kg_ha": 831.8851205531026,
+                    "skill_vs_trend": 0.2600555210775064
                   }
                 },
-                "operational_ridge_holdout_rmse_kg_ha": 705.0164403601136,
+                "operational_ridge_holdout_rmse_kg_ha": 672.564129204136,
                 "adoption_rule": "holdout skill >=10% and RMSE at least 5% below Ridge",
-                "adopted": false,
-                "decision": "reject_overfit"
+                "adopted": true,
+                "decision": "adopt"
               }
             }
           },
@@ -103,40 +103,40 @@
           ],
           "government_outlook": {
             "season": "2025/26",
-            "yield_kg_ha": 6392.3,
-            "production_t": 17362640.0,
-            "area_ha": 2716200.0,
+            "yield_kg_ha": 6432.3,
+            "production_t": 17522840.0,
+            "area_ha": 2724200.0,
             "status": "CEC estimate; excluded from model training"
           },
           "production": {
             "unit": "metric_tons",
-            "area_ha": 2716200.0,
+            "area_ha": 2724200.0,
             "area_source": "CEC planted area; production estimate excluded from model",
-            "point": 17144009.0,
+            "point": 16911369.0,
             "range_68": [
-              15963516.0,
-              18324502.0
+              15206450.0,
+              18616289.0
             ],
             "range_95": [
-              12883767.0,
-              21404250.0
+              12082093.0,
+              21740646.0
             ]
           },
           "trend_components": [
             {
               "name": "full_history",
               "trend": 7097.3,
-              "point": 6480.9
+              "point": 6477.6
             },
             {
               "name": "rolling_20",
               "trend": 6302.2,
-              "point": 6142.6
+              "point": 5938.0
             }
           ],
           "diagnostics": {
-            "root_sm_critical_z": 0.404,
-            "vpd_critical_kpa_z": 0.277
+            "root_sm_critical_z": -0.764,
+            "vpd_critical_kpa_z": 0.73
           }
         }
       }

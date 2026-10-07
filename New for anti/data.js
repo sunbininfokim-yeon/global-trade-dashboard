@@ -75,6 +75,11 @@
             id: "rubber",
             name_ko: "천연고무",
             aliases: ["rubber", "natural rubber", "천연고무", "고무", "tsr", "rss", "4001"]
+        },
+        "light_oils": {
+            id: "light_oils",
+            name_ko: "경질유",
+            aliases: ["light_oils", "light oils", "경질유", "naphtha", "납사", "나프타", "gasoline", "휘발유", "271012"]
         }
     };
 
@@ -244,7 +249,16 @@
             { symbol: "UK10Y", name: "UK10Y" },
             { symbol: "^SOX", name: "SOX" },
             { symbol: "^KS11", name: "KOSPI" },
-            { symbol: "KRW=X", name: "KRW_USD" }
+            { symbol: "KRW=X", name: "KRW_USD" },
+            // Wheat/corn/soybeans/sugar: IMF's monthly PWHEAMTUSDM/PMAIZMTUSDM/
+            // PSOYBUSDM/PSUGAISAUSDM (fetched above into macroData already)
+            // lag real-world prices by weeks, so overwrite with Yahoo futures
+            // when available -- displayed in Yahoo's own quoting units
+            // (cents/bushel for wheat/corn/soybeans, cents/lb for sugar).
+            { symbol: "ZW=F", name: "WHEAT" },
+            { symbol: "ZC=F", name: "CORN" },
+            { symbol: "ZS=F", name: "SOYBEANS" },
+            { symbol: "SB=F", name: "SUGAR" }
         ];
 
         const fetchCnbcQuote = async (symbol) => {
@@ -295,7 +309,7 @@
             }
         }));
     } catch(e) {
-        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD/WHEAT/CORN/SOYBEANS/SUGAR):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.
@@ -437,6 +451,14 @@
         gas: {
             hsCode: "2711",
             colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        // Light oils, HS 271012: naphtha, motor gasoline, aviation spirit and
+        // light solvents in one six-digit line -- only national 8-digit codes
+        // split them. The map is the line as a whole; the view lists its
+        // representative products (TradeData.light_oils.subProducts).
+        light_oils: {
+            hsCode: "271012",
+            colorScheme: { source: [217, 70, 239], target: [232, 121, 249] }
         },
         thermal_coal: {
             hsCode: "2701",
@@ -897,8 +919,28 @@
                 "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
             }
         },
+        light_oils: {
+            title: "에너지: 경질유 (HS 271012)",
+            desc: "납사·휘발유 등 경질유 무역 흐름 · HS 271012",
+            // Shown in the map's source note (app.js comtradeSourceText).
+            hsNote: "HS 271012 경질유: 납사·휘발유 등 합산(제품별 구분 불가)",
+            // Representative products inside the line. The trade map cannot
+            // split them; the view describes each and tags each report with
+            // the one it is about (trade.js). `match` is tested against the
+            // report's title (original, English and Korean).
+            subProducts: [
+                { id: "naphtha", label: "납사", desc: "석유화학 원료(에틸렌·프로필렌), 휘발유 배합 원료. 한국·일본·대만 등 아시아가 주 수입처",
+                  match: "naphtha|납사|나프타|石脑油|ナフサ" },
+                { id: "gasoline", label: "휘발유", desc: "자동차 연료. 경질유 교역에서 가장 큰 몫",
+                  match: "gasoline|petrol(?!eum|ochem)|motor spirit|휘발유|汽油|ガソリン" },
+            ],
+            totalVolume: "—",
+            topExporter: "—",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 271012)
+            news: defaultNews("light oils")
+        },
         oil: {
-            title: "글로벌 에너지: 원유",
+            title: "에너지: 원유",
             desc: "전 세계 주요 산유국 및 소비국 간 원유 물동량 흐름",
             totalVolume: "98.5 Million bpd",
             topExporter: "사우디아라비아",
@@ -921,7 +963,7 @@
             }
         },
         gas: {
-            title: "글로벌 에너지: 천연가스 (Natural Gas)",
+            title: "에너지: 천연가스 (Natural Gas)",
             desc: "전 세계 주요 LNG 및 파이프라인 가스 물동량 흐름",
             totalVolume: "4.04 Trillion cubic meters",
             topExporter: "미국 / 카타르",
@@ -943,7 +985,7 @@
             }
         },
         gold: {
-            title: "글로벌 귀금속: 금 (Gold)",
+            title: "귀금속: 금 (Gold)",
             desc: "스위스 정련소 및 주요 소비국 간의 금 무역 흐름",
             totalVolume: "4,741 Tonnes",
             topExporter: "스위스",
@@ -951,7 +993,7 @@
             news: defaultNews("Gold")
         },
         silver: {
-            title: "글로벌 귀금속: 은 (Silver)",
+            title: "귀금속: 은 (Silver)",
             desc: "산업용 및 투자용 은 글로벌 무역 흐름",
             totalVolume: "32,000 Tonnes",
             topExporter: "멕시코 / 페루",
@@ -959,7 +1001,7 @@
             news: defaultNews("Silver")
         },
         copper: {
-            title: "글로벌 비철금속: 구리 (Copper)",
+            title: "비철금속: 구리 (Copper)",
             desc: "전기차/인프라 핵심 소재인 구리의 물동량 (정광 및 제련)",
             totalVolume: "26.5 Million Tonnes",
             topExporter: "칠레",
@@ -967,7 +1009,7 @@
             news: defaultNews("Copper")
         },
         zinc: {
-            title: "글로벌 비철금속: 아연 (Zinc)",
+            title: "비철금속: 아연 (Zinc)",
             desc: "도금용 주요 소재 아연 무역 흐름",
             totalVolume: "13.2 Million Tonnes",
             topExporter: "호주",
@@ -975,7 +1017,7 @@
             news: defaultNews("Zinc")
         },
         aluminum: {
-            title: "글로벌 비철금속: 알루미늄",
+            title: "비철금속: 알루미늄",
             desc: "경량화 핵심 소재 알루미늄 무역 흐름",
             totalVolume: "68.9 Million Tonnes",
             topExporter: "중국 (가공품)",
@@ -983,7 +1025,7 @@
             news: defaultNews("Aluminum")
         },
         nickel: {
-            title: "글로벌 전략광물: 니켈",
+            title: "전략광물: 니켈",
             desc: "스테인리스·배터리용 니켈 무역 흐름",
             totalVolume: "3.6 Million Tonnes",
             topExporter: "인도네시아",
@@ -991,7 +1033,7 @@
             news: defaultNews("nickel")
         },
         cobalt: {
-            title: "글로벌 전략광물: 코발트",
+            title: "전략광물: 코발트",
             desc: "배터리 양극재용 코발트 무역 흐름",
             totalVolume: "0.23 Million Tonnes",
             topExporter: "콩고민주공화국",
@@ -999,7 +1041,7 @@
             news: defaultNews("cobalt")
         },
         lithium: {
-            title: "글로벌 전략광물: 리튬",
+            title: "전략광물: 리튬",
             desc: "탄산리튬 기준 무역 흐름",
             totalVolume: "1.0 Million Tonnes LCE",
             topExporter: "칠레 / 호주",
@@ -1007,7 +1049,7 @@
             news: defaultNews("lithium")
         },
         graphite: {
-            title: "글로벌 전략광물: 흑연",
+            title: "전략광물: 흑연",
             desc: "음극재용 천연흑연 무역 흐름",
             totalVolume: "1.6 Million Tonnes",
             topExporter: "중국",
@@ -1015,7 +1057,7 @@
             news: defaultNews("graphite")
         },
         rare_earths: {
-            title: "글로벌 전략광물: 희토류",
+            title: "전략광물: 희토류",
             desc: "희토류 화합물 무역 흐름",
             totalVolume: "0.35 Million Tonnes",
             topExporter: "중국",
@@ -1023,7 +1065,7 @@
             news: defaultNews("rare_earths")
         },
         iron_ore: {
-            title: "글로벌 철강원료: 철광석",
+            title: "철강원료: 철광석",
             desc: "제철용 철광석 무역 흐름",
             totalVolume: "1,600 Million Tonnes",
             topExporter: "호주",
@@ -1031,7 +1073,7 @@
             news: defaultNews("iron_ore")
         },
         manganese: {
-            title: "글로벌 철강원료: 망간",
+            title: "철강원료: 망간",
             desc: "합금철용 망간광 무역 흐름",
             totalVolume: "20 Million Tonnes",
             topExporter: "남아프리카공화국",
@@ -1039,7 +1081,7 @@
             news: defaultNews("manganese")
         },
         chromium: {
-            title: "글로벌 철강원료: 크롬",
+            title: "철강원료: 크롬",
             desc: "스테인리스용 크롬광 무역 흐름",
             totalVolume: "41 Million Tonnes",
             topExporter: "남아프리카공화국",
@@ -1047,7 +1089,7 @@
             news: defaultNews("chromium")
         },
         tin: {
-            title: "글로벌 산업금속: 주석",
+            title: "산업금속: 주석",
             desc: "납땜·도금용 주석 무역 흐름",
             totalVolume: "0.38 Million Tonnes",
             topExporter: "인도네시아",
@@ -1055,7 +1097,7 @@
             news: defaultNews("tin")
         },
         lead: {
-            title: "글로벌 산업금속: 납",
+            title: "산업금속: 납",
             desc: "축전지용 납 무역 흐름",
             totalVolume: "4.5 Million Tonnes",
             topExporter: "중국",
@@ -1063,7 +1105,7 @@
             news: defaultNews("lead")
         },
         platinum: {
-            title: "글로벌 귀금속: 백금족",
+            title: "귀금속: 백금족",
             desc: "백금·팔라듐 무역 흐름",
             totalVolume: "0.4 Thousand Tonnes",
             topExporter: "남아프리카공화국",
@@ -1071,7 +1113,7 @@
             news: defaultNews("platinum")
         },
         wheat: {
-            title: "글로벌 농산물: 밀 (Wheat)",
+            title: "농산물: 밀 (Wheat)",
             desc: "글로벌 주요 식량 자원인 밀의 무역 흐름",
             totalVolume: "215 Million Tonnes",
             topExporter: "러시아",
@@ -1079,7 +1121,7 @@
             news: defaultNews("Wheat")
         },
         corn: {
-            title: "글로벌 농산물: 옥수수 (Corn)",
+            title: "농산물: 옥수수 (Corn)",
             desc: "사료 및 바이오연료용 옥수수 무역 흐름",
             totalVolume: "190 Million Tonnes",
             topExporter: "미국",
@@ -1087,7 +1129,7 @@
             news: defaultNews("Corn")
         },
         soybeans: {
-            title: "글로벌 농산물: 대두 (Soybeans)",
+            title: "농산물: 대두 (Soybeans)",
             desc: "단백질 사료 및 식용유의 핵심, 대두 무역 흐름",
             totalVolume: "172 Million Tonnes",
             topExporter: "브라질",
@@ -1095,7 +1137,7 @@
             news: defaultNews("Soybeans")
         },
         rubber: {
-            title: "글로벌 농산물: 천연고무 (Natural Rubber)",
+            title: "농산물: 천연고무 (Natural Rubber)",
             desc: "타이어 원료인 천연고무(HS 4001), 태국·인도네시아·베트남·코트디부아르발 수출입 무역 흐름",
             totalVolume: "생산 ~14.5 Million Tonnes",
             topExporter: "태국",
@@ -1103,7 +1145,7 @@
             news: defaultNews("Rubber")
         },
         palm_oil: {
-            title: "글로벌 농산물: 팜유 (Palm Oil)",
+            title: "농산물: 팜유 (Palm Oil)",
             desc: "세계 최대 식물성 기름, 인도네시아·말레이시아발 팜유 수출입 무역 흐름",
             totalVolume: "~45 Million Tonnes",
             topExporter: "인도네시아",
@@ -1111,7 +1153,7 @@
             news: defaultNews("Palm Oil")
         },
         sugar: {
-            title: "글로벌 농산물: 설탕 (Sugar)",
+            title: "농산물: 설탕 (Sugar)",
             desc: "사탕수수 기반 설탕 수출입 무역 흐름",
             totalVolume: "64 Million Tonnes",
             topExporter: "브라질",
@@ -1119,7 +1161,7 @@
             news: defaultNews("Sugar")
         },
         coffee: {
-            title: "글로벌 농산물: 커피 (Coffee)",
+            title: "농산물: 커피 (Coffee)",
             desc: "전 세계 원두(아라비카/로부스타) 수출입 무역 흐름",
             totalVolume: "140 Million Bags",
             topExporter: "브라질 / 에티오피아",

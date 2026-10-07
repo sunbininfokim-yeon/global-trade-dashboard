@@ -5,10 +5,10 @@
   const IMG = '/public/tutorial/';
 
   const TABS = [
-    { id: 'commodities', label: '원자재', sub: '작황 · 무역 흐름 · RSS', hue: 'amber' },
-    { id: 'finance', label: '금융', sub: '매크로 · 미시구조 · 계산기', hue: 'sky' },
-    { id: 'politics', label: '정치 & 정책', sub: '법안 · 선거 · 슈퍼팩', hue: 'violet' },
-    { id: 'shipping', label: '해운', sub: '선대 · 항로 · 초크포인트', hue: 'teal' },
+    { id: 'commodities', label: '원자재', sub: '작황&nbsp;· 무역 흐름&nbsp;· RSS', hue: 'amber' },
+    { id: 'finance', label: '금융', sub: '매크로&nbsp;· 미시구조&nbsp;· 계산기', hue: 'sky' },
+    { id: 'politics', label: '정치 & 정책', sub: '법안&nbsp;· 선거&nbsp;· 슈퍼팩', hue: 'violet' },
+    { id: 'shipping', label: '해운', sub: '선대&nbsp;· 항로&nbsp;· 초크포인트', hue: 'teal' },
   ];
 
   const shot = (href, src, alt, cls = '') => `
@@ -47,108 +47,143 @@
   const sub = (title, text) => `
     <div class="tut-block tut-sub"><h3>${title}</h3>${text ? `<p class="tut-muted">${text}</p>` : ''}</div>`;
 
+  // Numbered step heading; its id is what the jump chips scroll to.
+  const stepHead = (n, title, text) => `
+    <div class="tut-block tut-sub tut-step" id="tut-step-${n}">
+      <div class="tut-step-h"><span class="tut-step-n">0${n}</span><h3>${title}</h3></div>
+      ${text ? `<p class="tut-muted">${text}</p>` : ''}
+    </div>`;
+
+  const jumps = (names) => `
+    <nav class="tut-jump" aria-label="단계 바로가기">${names.map((t, i) => `
+      <button type="button" data-tut-jump="${i + 1}"><span class="tut-jump-n">${i + 1}</span>${t}</button>`).join('')}
+    </nav>`;
+
   const PANELS = {
     commodities: () => `
-      ${head('COMMODITY FLOWS', '원자재 — 작황부터 무역 흐름까지',
-        '원자재 메뉴는 두 가지를 봅니다. 산지의 날씨와 작황을 보는 <b>작황 모니터</b>, 그리고 품목별로 누가 누구에게 파는지를 그리는 <b>무역 흐름</b>입니다.')}
+      ${head('COMMODITY FLOWS', '원자재 — 네 단계로 따라가기',
+        '산지 작황을 보고, 품목의 무역 흐름을 읽고, 챙길 리포트는 별로 담아 메일로 받습니다. 나라를 누르면 그 나라 데이터로 들어갑니다.')}
+      ${jumps(['작황 모니터', '무역 흐름', '★ → 메일', '국가별 화면'])}
 
-      ${sub('작황 모니터', '세계 전체를 한 번에 보는 화면과, 나라 하나를 파고드는 화면 두 단계입니다. 지도에서 나라를 누르면 내려가고, 빈 바다를 누르면 올라옵니다.')}
+      ${stepHead(1, '작황 모니터 — 세계에서 나라로', '지도에서 나라를 누르면 내려가고, 빈 바다를 누르면 올라옵니다. 원자재 메뉴의 모니터링 열에 있습니다.')}
       <div class="tut-block tut-two">
         ${card('WORLD VIEW', `${shot('/climate', 'climate-world.webp', '작황 모니터 세계 화면')}
-          <h4>전체 화면</h4><p>전 세계 산지를 한 번에. 색으로 작황 이상과 수출통제가 어디에 몰려 있는지 먼저 봅니다.</p>`)}
+          <h4>전체 화면</h4><p>작황 모델이 있는 산지국과 해수면 수온 편차를 색으로 먼저 봅니다. 수출통제는 바로 옆 수출통제 모니터로 옮겼습니다.</p>`)}
         ${card('COUNTRY VIEW', `${shot('/climate', 'climate-country.webp', '브라질을 누른 국가별 작황 화면')}
-          <h4>국가별 화면</h4><p>산지별 기상·작황 예측이 왼쪽 패널에 붙습니다. 나라 안에서 다시 지역을 고를 수 있습니다.</p>`)}
+          <h4>국가별 화면</h4><p>산지별 기상·작황 예측이 왼쪽 패널에 붙고, 나라 안에서 지역을 다시 고릅니다.</p>`)}
       </div>
 
+      ${stepHead(2, '원자재 무역 흐름 — 누가 누구에게 파나', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 그려집니다. UN Comtrade <b>최신 연간 통계</b> 기준이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다.')}
       <div class="tut-block">
-        <h3>즐겨찾기 → 메일로 받기</h3>
+        <div class="tut-strip">
+          <p><b>에너지 4</b> 원유&nbsp;· 천연가스&nbsp;· 석탄 2종</p>
+          <p><b>금속 16</b> 금&nbsp;· 은&nbsp;· 구리&nbsp;· 니켈&nbsp;· 리튬&nbsp;· 희토류 …</p>
+          <p><b>농산물 5</b> 밀&nbsp;· 옥수수&nbsp;· 대두&nbsp;· 설탕&nbsp;· 커피</p>
+        </div>
+        ${shot('/oil', 'oil-flows.webp', '원유 무역 흐름 세계 지도', 'tut-shot-natural')}
+        <div class="tut-facts">
+          <p><b>왼쪽 순위</b> 글로벌 물동량, 최대 수출국, 주요 수출국·수입국 비중</p>
+          <p><b>선 굵기·밝기</b> 물동량 낮음·중간·높음. 주황색 나라는 수출 제한</p>
+          <p><b>마우스</b> 올리면 교역량, 누르면 그 나라 노선만, 배경은 처음으로</p>
+        </div>
+      </div>
+
+      ${stepHead(3, '★ 즐겨찾기 → 메일로 받기', '')}
+      <div class="tut-block tut-callout">
         ${steps([
           ['로그인', '헤더 오른쪽에서 가입·로그인합니다.'],
-          ['리포트에서 ★', '아래 산지 리포트 카드에서 별을 누르면 담깁니다.'],
-          ['마이페이지에서 확인', '출처별로 모입니다. 항목별로 메일만 끌 수 있습니다.'],
-          ['바뀌면 메일 수신', '계정 단위 전체 일시정지도 됩니다.'],
+          ['리포트에서 ★', '4번 국가별 화면 오른쪽 리포트 목록에서 별을 누릅니다.'],
+          ['마이페이지', '출처별로 모이고, 항목별로 메일만 끌 수 있습니다.'],
+          ['바뀌면 메일', '계정 단위 전체 일시정지도 됩니다.'],
         ], 'tut-steps-4')}
       </div>
 
-      <div class="tut-rule"></div>
-
-      ${sub('원자재 무역 흐름', '품목을 고르면 수출국에서 수입국으로 가는 흐름선이 지도 위에 그려집니다. 기준은 UN Comtrade의 <b>최신 연간 통계</b>이고, 아직 신고하지 않은 나라는 그 전 해 값으로 채웁니다. 나라를 고르면 월별 데이터가 있는 경우 연간·월별을 바꿔 볼 수 있습니다.')}
+      ${stepHead(4, '나라를 누르면 — 국가별 화면', '그 나라 데이터가 지도 양옆에 붙습니다. 아래는 천연가스에서 미국을 누른 화면입니다.')}
       <div class="tut-block">
-        ${card('TRADE FLOWS · 밀', `${noShot('/wheat', '밀 무역 흐름 지도', 'tut-noshot-wide')}
-          <div class="tut-facts">
-            <p><b>굵기·밝기</b> 물동량 (낮음·중간·높음)</p>
-            <p><b>주황색 나라</b> 수출 제한이 걸린 곳</p>
-            <p><b>올리면</b> 교역량 · <b>누르면</b> 그 나라 노선만 · <b>배경</b> 처음으로</p>
-          </div>`)}
-      </div>
-      <div class="tut-block">
-        <div class="tut-strip">
-          <p><b>에너지 4</b> 원유 · 천연가스 · 석탄 2종</p>
-          <p><b>금속 16</b> 금 · 은 · 구리 · 니켈 · 리튬 · 희토류 …</p>
-          <p><b>농산물 5</b> 밀 · 옥수수 · 대두 · 설탕 · 커피</p>
+        <div class="tut-marked">
+          ${shot('/gas', 'gas-usa-country.webp', '천연가스 미국 국가별 화면과 EIA 저장 통계', 'tut-shot-natural')}
+          <span class="tut-mark" style="left: 1.2%" aria-hidden="true">A</span>
+          <span class="tut-mark" style="left: 52.2%" aria-hidden="true">B</span>
+          <span class="tut-mark" style="left: 77%" aria-hidden="true">C</span>
         </div>
-      </div>
-
-      <div class="tut-block">
-        <h3>나라를 누르면 갈라지는 두 갈래</h3>
-        <div class="tut-two">
-          ${card('RSS REPORTS · 원유 × 미국', `${shot('/oil', 'oil-reports.webp', '미국 원유 주요 보고서 카드', 'tut-shot-43')}
-            <h4>산지 리포트</h4>
-            <p>그 품목·나라에 연결된 기관 발표가 오른쪽에 열립니다. 미국 원유라면 에너지정보청(EIA) 단기 에너지 전망 같은 글이 뜨고, 제목을 누르면 원문으로 갑니다.</p>`)}
-          ${card('CONCENTRATION · 원유 × 미국', `${noShot('/oil', '공급망 집중도 패널', 'tut-noshot-43')}
-            <h4>병목망 집중도</h4>
-            <p>미국은 원유 순수입국이라 공급처 기준으로 잽니다. 상위 3개국(캐나다 68.0 · 멕시코 6.7 · 사우디 5.3)이 CR3 80.0%, HHI 0.476으로 '높음'. 거버넌스 가중치를 넣지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>`)}
+        <div class="tut-facts">
+          <p><b class="tut-key">A</b> <b>교역&nbsp;· 집중도</b> 수출·수입·순수지, 연간·월별 전환. 판로 상위 3개국 CR3 28.7%&nbsp;· HHI 0.060 '낮음'</p>
+          <p><b class="tut-key">B</b> <b>기관 리포트</b> 그 품목·나라에 연결된 발표 목록. 제목을 누르면 원문, ★로 담기</p>
+          <p><b class="tut-key">C</b> <b>저장 통계</b> 천연가스는 EIA 지역별 지하 저장(Bcf)과 전주 대비</p>
         </div>
+        <p class="tut-fine">집중도는 상대국의 정치적 신뢰도를 넣지 않은 순수 집중도이고, 위험도 자체는 아닙니다.</p>
       </div>`,
 
     finance: () => `
       ${head('MACRO &amp; MICROSTRUCTURE', '금융 — 보는 화면과 계산하는 화면',
         '금융 메뉴는 성격이 다른 두 묶음입니다. 시장을 보는 화면(매크로 모니터, 시장 미시구조)과, 직접 숫자를 넣어 계산하는 화면(계산기 두 개)입니다.')}
 
+      ${sub('매크로 모니터 — 나라별 핵심 지표를 한 화면에', '야간광 지도에서 나라를 누르면 그 나라 창이 열립니다. 미국·한국·일본·중국·유로존 등 <b>19개국</b>의 유동성·금리·환율·주식·성장·물가 지표를 여섯 탭으로 모아 보여 줍니다. 나라마다 구할 수 있는 지표가 달라 카드 수는 다릅니다.')}
       <div class="tut-block">
-        <h3>매크로 모니터 — 미국 국채 발행 계획(QRA)</h3>
-        <div class="tut-media">
+        ${card('6 TABS&nbsp;· 미국 예시', `<div class="tut-facts">
+            <p><b>유동성</b> 연준 총자산&nbsp;· 역레포(RRP)&nbsp;· TGA&nbsp;· QRA 국채 발행</p>
+            <p><b>금리</b> 기준금리(EFFR)&nbsp;· 2년·10년 국채&nbsp;· 10Y−3M 스프레드&nbsp;· 하이일드 OAS</p>
+            <p><b>환율</b> 달러지수(DXY)&nbsp;· EUR/USD&nbsp;· USD/JPY</p>
+            <p><b>주식</b> S&amp;P 500&nbsp;· 나스닥 100&nbsp;· 러셀 2000&nbsp;· VIX</p>
+            <p><b>성장</b> 실질GDP&nbsp;· GDPNow&nbsp;· ISM&nbsp;· 비농업고용&nbsp;· 실업률</p>
+            <p><b>물가</b> CPI&nbsp;· 근원 CPI&nbsp;· PCE&nbsp;· 10년 기대인플레(BEI)</p>
+          </div>`)}
+      </div>
+      <div class="tut-block">
+        ${card('예시&nbsp;· 미국 유동성 → QRA 발행', `<div class="tut-media">
           ${shot('/macro_monitor', 'qra.webp', 'QRA 발행 비교 패널')}
           <div class="tut-media-text">
-            <p>야간광 지도에서 <b>미국</b>을 누르면 나라 창이 열립니다. <b>유동성</b> 탭의 'QRA 발행' 카드를 누르면 재무부가 분기마다 공시하는 국채 순발행 계획이 세 줄로 비교됩니다.</p>
+            <p>카드를 누르면 그 지표의 차트가 열립니다. QRA는 재무부가 분기마다 공시하는 국채 순발행 계획으로, 세 줄을 나란히 비교합니다.</p>
             ${feats([
               ['전분기 실적', '지난 분기에 실제로 찍은 양.'],
               ['직전 공시 예측', '지난번 발표 때 이번 분기로 잡았던 양.'],
               ['당기 공시', '이번 발표에서 새로 잡은 양. 예측보다 크면 시중 유동성을 더 빨아들이는 쪽입니다.'],
             ])}
-            <p class="tut-fine">'추이'와 '만기별' 탭으로 T-bill과 쿠폰채 비중도 나눠 봅니다.</p>
+            <p class="tut-fine">다른 카드도 같은 방식으로 추이·이동평균·구성 같은 보기를 고릅니다.</p>
           </div>
-        </div>
+        </div>`)}
       </div>
 
-      ${sub('시장 미시구조 — 어느 가격에서, 누가, 무슨 돈으로', "'가격대별 체결' 탭 하나에 세 가지가 겹쳐 있습니다. 어느 가격대에서 누가 사고팔았는지, 그리고 그 사이 빌린 돈이 얼마나 늘고 줄었는지.")}
+      ${sub('시장 미시구조 — 파생과 외국인이 코스피를 얼마나 움직이나', '두 질문으로 나뉩니다. 파생상품(선물·옵션·레버리지 ETF)이 코스피에 얼마나 힘을 싣는지, 그리고 외국인·해외 거래가 코스피에 어떻게 번지는지.')}
+      <div class="tut-block tut-two">
+        ${card('DERIVATIVES → KOSPI&nbsp;· 파생 영향력', feats([
+          ['파생 수급', '외국인 K200 선물·콜·풋 순매수, 풋/콜 비율, 선물 거래대금.'],
+          ['수급 불균형', '레버리지·인버스 ETF가 코스피 현물 대비 얼마나 큰지, 그중 삼성전자·SK하이닉스 단일종목 비중, 상위 종목 집중도.'],
+          ['해외 LETF', '해외에 상장된 삼성전자·SK하이닉스 레버리지 상품의 거래와 추정 리밸런싱.'],
+        ]))}
+        ${card('FOREIGN FLOW → KOSPI&nbsp;· 외국인 파급', feats([
+          ['해외-국내 선행', '미국 옵션 시장의 흐름과 VIX가 한국으로 넘어오는지 봅니다.'],
+          ['가격대별 체결', '외국인·개인·기관이 어느 가격대에서 사고팔았는지 (아래 예시).'],
+          ['종가일 수급', '시총 상위 종목마다 그날 외국인이 몇 주를 순매수했는지.'],
+        ]))}
+      </div>
       <div class="tut-block">
-        ${card('VOLUME PROFILE · 가격대별 누적 수급', `${shot('/fin_derivatives', 'ms-levels-3m.webp', '가격대별 누적 수급 차트: 투자자별 가격대 막대, 종가, 예탁금·신용공여 추이', 'tut-shot-natural')}
+        ${card('예시&nbsp;· 가격대별 체결 — 누가 어느 가격에서 샀나', `${shot('/fin_derivatives', 'ms-levels-3m.webp', '가격대별 누적 수급 차트: 투자자별 가격대 막대, 종가, 예탁금·신용공여 추이', 'tut-shot-natural')}
           <div class="tut-two tut-two-tight">
             ${feats([
               ['막대', '가격대마다 <b>개인</b>(파랑)·<b>외국인</b>(분홍)·<b>기관</b>(보라)이 순매수(오른쪽)·순매도(왼쪽)한 금액.'],
               ['흰 선', '같은 기간의 종가. 막대와 같은 세로축(가격)을 씁니다.'],
-              ['점선 네 개', "'예탁금 · 신용공여' 버튼을 켜면 투자자 예탁금·신용융자·미수금·반대매매가 같은 날짜축에 겹쳐집니다."],
+              ['점선 네 개', "'예탁금&nbsp;· 신용공여' 버튼을 켜면 투자자 예탁금·신용융자·미수금·반대매매가 같은 날짜축에 겹쳐집니다."],
             ])}
             ${feats([
-              ['종목 · 기간', '위 칩으로 코스피 지수나 종목을, 아래 버튼으로 1·2·3·6개월·전체를 고릅니다.'],
+              ['종목&nbsp;· 기간', '위 칩으로 코스피 지수나 종목을, 아래 버튼으로 1·2·3·6개월·전체를 고릅니다.'],
               ['점선은 기울기만', '네 값은 규모가 100배 넘게 차이 나서 각자의 범위로 그렸습니다. 선끼리 높이를 비교하지 마세요.'],
               ['매집도가 아닙니다', '실측 일별 수급을 종가 가격대에 쌓은 것이고, 체결 단위 데이터는 공개되지 않습니다.'],
             ])}
           </div>`)}
       </div>
       <div class="tut-block tut-two">
-        ${card('WHO · WHEN', `${shot('/fin_derivatives', 'ms-flows.webp', '종가일 수급 표')}
+        ${card('WHO&nbsp;· WHEN', `${shot('/fin_derivatives', 'ms-flows.webp', '종가일 수급 표')}
           <h4>종가일 수급</h4><p>시총 상위 종목마다 그날 <b>개인·외국인·기관</b>이 몇 주를 순매수했는지. 행의 '그 주 →'를 누르면 그 주의 날짜별 흐름이 열립니다.</p>`)}
-        ${card('CREDIT · MARGIN', `${shot('/fin_derivatives', 'ms-credit.webp', '투자자 예탁금·신용공여 카드')}
-          <h4>투자자 예탁금 · 신용공여</h4><p>대기 중인 돈(예탁금)과 빌려서 산 돈(<b>신용융자 · 미수금</b>), 강제 청산(<b>반대매매</b>)의 최신 값. 금융투자협회 FreeSIS 공개 집계라 시장 전체 합계이고, 종목별 숫자는 아닙니다.</p>`)}
+        ${card('CREDIT&nbsp;· MARGIN', `${shot('/fin_derivatives', 'ms-credit.webp', '투자자 예탁금·신용공여 카드')}
+          <h4>투자자 예탁금&nbsp;· 신용공여</h4><p>대기 중인 돈(예탁금)과 빌려서 산 돈(<b>신용융자&nbsp;· 미수금</b>), 강제 청산(<b>반대매매</b>)의 최신 값. 금융투자협회 FreeSIS 공개 집계라 시장 전체 합계이고, 종목별 숫자는 아닙니다.</p>`)}
       </div>
 
       <div class="tut-block">
         <h3>계산기 두 개</h3>
         <div class="tut-two">
           ${card('COMPANY VALUATION', `<h4>기업 가치 계산기</h4>
-            <p>종목을 검색하면 OpenDART 연결재무제표를 불러와 최근 회계연도들을 나란히 놓습니다. 회계상 이익과 실제 현금흐름(영업활동현금흐름 · 이익의 질)을 나눠 봅니다.</p>
+            <p>종목을 검색하면 OpenDART 연결재무제표를 불러와 최근 회계연도들을 나란히 놓습니다. 회계상 이익과 실제 현금흐름(영업활동현금흐름&nbsp;· 이익의 질)을 나눠 봅니다.</p>
             <a class="tut-link" href="/fin_valuation" target="_blank" rel="noopener">기업 가치 계산기 열기 ↗</a>`)}
           ${card('PORTFOLIO LAB', `<h4>포트폴리오 계산기</h4>
             <p>과거 전략을 돌려보는 <b>시나리오 백테스트</b>와, 지금 보유 자산의 위험 쏠림을 보는 <b>직접 입력</b> 두 모드입니다. 어느 쪽도 수익 예측이 아닙니다.</p>
@@ -173,11 +208,11 @@
 
       ${sub('정책 — 상임위에서 법안으로', '발의된 법안은 먼저 소관 상임위로 갑니다. 그래서 주요 상임위 화면에서 시작하면 지금 어떤 법안이 어느 단계에 걸려 있는지 한 번에 보입니다.')}
       <div class="tut-block tut-two">
-        ${card('COMMITTEE → BILL · 하원 세입위원회', `${shot('/policy/us/bill/119-hres-1156', 'policy-bill.webp', '하원 세입위원회를 거친 법안 상세 화면')}
+        ${card('COMMITTEE → BILL&nbsp;· 하원 세입위원회', `${shot('/policy/us/bill/119-hres-1156', 'policy-bill.webp', '하원 세입위원회를 거친 법안 상세 화면')}
           <h4>상임위를 거친 법안 한 건</h4><p>법안을 열면 지금 단계가 <b>발의 → 위원회 회부·심사 → 상임위 보고 → 본회의 통과</b> 레일로 보이고, 오른쪽에 회부 위원회·분류·법안 원문(PDF)이 붙습니다. 표결이 있었다면 찬반 수까지 나옵니다. 위쪽 경로에서 위원회 이름을 누르면 그 상임위의 소관 법안 목록으로 올라갑니다.</p>`)}
-        ${card('SEARCH · "수출통제"', `${shot(`/policy/us/search/${encodeURIComponent('수출통제')}`, 'policy-search.webp', '정책 검색 결과: 수출통제')}
-          <h4>제정법안 · 발의법안 · 행정명령</h4><p>검색 결과는 세 칸으로 갈립니다. 통과된 <b>제정법안</b>, 아직 진행 중인 <b>발의법안</b>, 그리고 <b>행정명령</b>. 발의법안에는 지금 단계(회부 · 위원회 심사 등)가 함께 붙습니다.</p>
-          ${chips(['발의 · 회부', '위원회 심사', '발의원 본회의 통과', '제정'], ['발의 · 회부', '위원회 심사', '발의원 본회의 통과', '제정'])}`)}
+        ${card('SEARCH&nbsp;· "수출통제"', `${shot(`/policy/us/search/${encodeURIComponent('수출통제')}`, 'policy-search.webp', '정책 검색 결과: 수출통제')}
+          <h4>제정법안&nbsp;· 발의법안&nbsp;· 행정명령</h4><p>검색 결과는 세 칸으로 갈립니다. 통과된 <b>제정법안</b>, 아직 진행 중인 <b>발의법안</b>, 그리고 <b>행정명령</b>. 발의법안에는 지금 단계(회부&nbsp;· 위원회 심사 등)가 함께 붙습니다.</p>
+          ${chips(['발의&nbsp;· 회부', '위원회 심사', '발의원 본회의 통과', '제정'], ['발의&nbsp;· 회부', '위원회 심사', '발의원 본회의 통과', '제정'])}`)}
       </div>
       <div class="tut-block tut-two tut-two-plain">
         <div>
@@ -202,9 +237,9 @@
 
       ${sub('정치 — 권력 구조와 선거 돈', '세계 선거 지도에서 나라를 고르면 행정부·의회·정당 블록이 열립니다. 미국은 주를 누르면 그 주의 선거와 외부 지출까지 내려갑니다.')}
       <div class="tut-block tut-two">
-        ${card('EXECUTIVE · 백악관', `${shot('/politics/USA/executive', 'us-executive.webp', '미국 행정부 창')}
+        ${card('EXECUTIVE&nbsp;· 백악관', `${shot('/politics/USA/executive', 'us-executive.webp', '미국 행정부 창')}
           <h4>백악관 — 누가 어디에 앉아 있나</h4><p>대통령·부통령·비서실장, 국가안보회의(NSC)·국가경제위원회(NEC)·무역대표부(USTR) 같은 직속 위원회의 수장, 그리고 분야별 특별보좌관까지 한 창에 모입니다.</p>`)}
-        ${card('SUPER PAC · 캘리포니아', `${shot('/politics/USA/CA?view=finance', 'us-ca-superpac.webp', '캘리포니아 외부 독립지출 화면')}
+        ${card('SUPER PAC&nbsp;· 캘리포니아', `${shot('/politics/USA/CA?view=finance', 'us-ca-superpac.webp', '캘리포니아 외부 독립지출 화면')}
           <h4>외부 독립지출 — 후보 밖에서 쓴 돈</h4><p>슈퍼팩 같은 외부 단체가 특정 후보를 <b>지지</b>하거나 <b>반대</b>하려고 쓴 돈입니다. 후보 캠프의 후원금이 아닙니다. 주 화면에서 '선거' 버튼을 켜면 나옵니다.</p>`)}
       </div>
       <div class="tut-block">
@@ -212,7 +247,7 @@
           ${shot('/politics', 'elections.webp', '세계 선거 지도와 일정')}
           <div>
             <div class="tut-label">ELECTION CALENDAR</div>
-            <h4>선거 일정 · 결과</h4>
+            <h4>선거 일정&nbsp;· 결과</h4>
             <p>왼쪽 날짜순 일정과 지도가 연동됩니다. 선거 유형별로 색이 다르고, 끝난 선거는 결과로 이어집니다.</p>
           </div>
         </div>
@@ -284,6 +319,10 @@
       const bar = host.querySelector('.tut-tabbar');
       if (bar && host.scrollTop > bar.offsetTop) host.scrollTop = bar.offsetTop;
     };
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    host.querySelectorAll('[data-tut-jump]').forEach((b) => b.addEventListener('click', () => {
+      host.querySelector(`#tut-step-${b.dataset.tutJump}`)?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    }));
     tabs.forEach((b, i) => {
       b.addEventListener('click', () => select(b.dataset.tutTab, false));
       b.addEventListener('keydown', (e) => {

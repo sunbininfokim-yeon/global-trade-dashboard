@@ -1,5 +1,5 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-import { usaStateSuperPac } from './special/usa-state-superpac.js';
+import { usaStateSuperPac } from './special/usa-state-superpac.js?v=3';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 // Returns safe HTML, not plain text: a bioguideId (present on every House/
@@ -67,6 +67,7 @@ const chamberCard = (label, chamber) => {
 export const renderUsaStateDashboard = (root, {
     state, districtMapReady, onBackToUsa,
     financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, openDistrict = null,
+    pollBoard = null, pollHealth = null, windowDays = 7, onWindowChange,
     onToggleFinance, onHighlightDistrict,
 }) => {
     const legislature = state.state_legislature || {};
@@ -76,16 +77,20 @@ export const renderUsaStateDashboard = (root, {
     const header = `
         <div class="elections-country-actions">
             <button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button>
-            <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거</button>
+            <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거·슈퍼팩</button>
         </div>
         <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${financeMode
-            ? '외부 독립지출 · 후보별 지지·반대 금액'
+            ? '여론조사 · 외부 독립지출 · 후보별 지지·반대 금액'
             : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
 
     if (financeMode) {
-        root.innerHTML = header + usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract);
+        root.innerHTML = header + `<div class="elections-window-switch" role="group" aria-label="최근 여론조사 집계 기간">
+            <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${windowDays === 7}">7일</button>
+            <button type="button" data-window="14" aria-pressed="${windowDays === 14}">14일</button></div>`
+            + usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract, pollBoard, pollHealth, windowDays);
         root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
         root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
+        root.querySelectorAll('[data-window]').forEach((button) => button.addEventListener('click', () => onWindowChange?.(Number(button.dataset.window))));
         // Opening a district is a local DOM change, not a re-render: the list
         // runs to 50+ rows and rebuilding it would throw away the scroll
         // position on every click. Only the map is told to change.

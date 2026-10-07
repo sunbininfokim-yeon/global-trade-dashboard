@@ -13,7 +13,7 @@ Only region means are stored, not grids. Ten regions x ~530 months is about
 100KB; the equivalent gridded history would be tens of megabytes and says
 nothing extra at this zoom.
 
-Source: NOAA OISST v2.1 via NOAA CoastWatch ERDDAP (open access).
+Source: NOAA OISST v2.1 via NOAA PSL THREDDS (open access; see psl_oisst.py).
 
 Usage:
     python3 build_sst_regions.py            # write public/data/sst_regions_v1.json
@@ -25,18 +25,18 @@ import os
 import statistics
 import sys
 import time
-import urllib.parse
-import urllib.request
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
+
+import psl_oisst
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sst_regions_v1.json"))
-ERDDAP = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/ncdcOisst21Agg.csv"
+N_MONTHS = None      # length of the monthly file's time axis, set in main()
 
 START = "1982-01-01"
 
 # lat/lon box per region, plus why a crop-and-trade dashboard cares.
-# Longitudes are 0-360 to match the ERDDAP axis.
+# Longitudes are 0-360 to match the file axis.
 REGIONS = [
     {
         "id": "subpolar_atlantic", "label_ko": "북대서양 아북극 (블루 블롭)",
@@ -109,32 +109,31 @@ REGIONS = [
 
 
 def fetch_series(region):
-    """Monthly means for one box. ERDDAP averages nothing, so we do it here."""
+    """Monthly anomaly for one box: PSL monthly mean minus its 1991-2020 ltm.
+
+    Two small requests per region. (Stitching the daily files year by year was
+    tried first: ~40s per yearly request, 30 min per region -- a timeout.)
+    """
     lat, lon = region["lat"], region["lon"]
-    # OISST is daily. Sampling every 30th day gives a monthly series for a
-    # thirtieth of the transfer -- pulling every day would be ~200MB per region
-    # to compute a monthly mean. And the end is (last), not today: the product
-    # runs about two weeks behind and a date past the axis maximum is a 404.
-    q = (f"anom[({START}):30:(last)][(0.0)]"
-         f"[({lat[0]}):8:({lat[1]})][({lon[0]}):8:({lon[1]})]")
-    url = f"{ERDDAP}?{urllib.parse.quote(q, safe='()[]:,.-')}"
-    req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
-    with urllib.request.urlopen(req, timeout=600) as r:
-        text = r.read().decode("utf-8", "replace")
+    i = (psl_oisst.lat_index(lat[0]), 8, psl_oisst.lat_index(lat[1]))
+    j = (psl_oisst.lon_index(lon[0]), 8, psl_oisst.lon_index(lon[1]))
+    n = N_MONTHS
+    dates, _, _, mean = psl_oisst.fetch_var(psl_oisst.MONTHLY_MEAN, "sst", (0, 1, n - 1), i, j)
+    _, _, _, ltm = psl_oisst.fetch_var(psl_oisst.MONTHLY_LTM, "sst", (0, 1, 11), i, j)
 
-    by_month = {}
-    for line in text.splitlines()[2:]:
-        parts = line.split(",")
-        if len(parts) < 5 or not parts[4].strip() or parts[4].strip() == "NaN":
+    out = []
+    for ti, d in enumerate(dates):
+        if d.isoformat() < START:
             continue
-        month = parts[0][:7]
-        try:
-            by_month.setdefault(month, []).append(float(parts[4]))
-        except ValueError:
-            continue
-
-    return [[m, round(statistics.fmean(v), 2)]
-            for m, v in sorted(by_month.items()) if v]
+        vals = []
+        for (t, ii), row in mean.items():
+            if t != ti:
+                continue
+            clim = ltm.get((d.month - 1, ii)) or []
+            vals += [v - c for v, c in zip(row, clim) if v is not None and c is not None]
+        if vals:
+            out.append([d.strftime("%Y-%m"), round(statistics.fmean(vals), 2)])
+    return out
 
 
 def linear_trend(series):
@@ -152,7 +151,9 @@ def linear_trend(series):
 
 
 def main():
+    global N_MONTHS
     check = "--check" in sys.argv
+    N_MONTHS = psl_oisst.time_length_of(psl_oisst.MONTHLY_MEAN)
     regions = REGIONS[:1] if check else REGIONS
     out = []
 
@@ -187,9 +188,9 @@ def main():
     doc = {
         "schema_version": "sst-regions-v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "NOAA OISST v2.1 (NOAA CoastWatch ERDDAP)",
-        "source_url": ERDDAP,
-        "baseline": "1971-2000 climatology (OISST v2.1)",
+        "source": psl_oisst.SOURCE,
+        "source_url": psl_oisst.MONTHLY_MEAN,
+        "baseline": psl_oisst.BASELINE,
         "start": START,
         "note_ko": "해역 평균 월별 편차입니다. 격자가 아니라 박스 평균이므로 "
                    "해역 내부의 세부 구조는 표현하지 않습니다.",

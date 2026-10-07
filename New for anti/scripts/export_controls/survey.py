@@ -18,7 +18,9 @@ from datetime import date
 from pathlib import Path
 
 from .universe import load as load_universe
-from .validate import CATALOGUE, validate_document
+from . import report
+from .catalogue import load as load_catalogue
+from .validate import validate_document
 
 HERE = Path(__file__).resolve().parent
 WEEKS = HERE / "surveys" / "weeks.json"
@@ -88,7 +90,7 @@ def load_questions():
     return json.loads(QUESTIONS.read_text(encoding="utf-8")).get("questions") or []
 
 
-def record_week(doc, universe, today=None):
+def record_week(doc, universe, today=None, report_counts=None):
     today = today or date.today()
     questions = load_questions()
     rows, unchecked = coverage(doc, universe)
@@ -109,6 +111,8 @@ def record_week(doc, universe, today=None):
         "open_questions": questions,
         "note_ko": "행이 없다고 통제가 없는 것이 아니다. unchecked 는 아직 원문을 보지 않은 쌍이다.",
     }
+    if report_counts is not None:
+        entry["report"] = report_counts
     WEEKS.parent.mkdir(parents=True, exist_ok=True)
     log = {"schema_version": "export-controls-survey-log-v1", "weeks": []}
     if WEEKS.exists():
@@ -122,8 +126,9 @@ def record_week(doc, universe, today=None):
     return entry
 
 
-def main():
-    doc = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    doc = load_catalogue()
     universe = load_universe()
     errors = validate_document(doc, universe)
     if errors:
@@ -131,7 +136,16 @@ def main():
         for line in errors:
             print(f"  {line}")
         return 1
-    entry = record_week(doc, universe)
+    # The result table (report.py): deadlines, source links, this week's
+    # notices as catalogue candidates. --no-links skips the network check.
+    today = date.today()
+    preview = record_week(doc, universe, today=today)
+    links = [] if "--no-links" in argv else report.link_checks(doc)
+    rep = report.build(doc, universe, today=today, entry=preview, links=links)
+    entry = record_week(doc, universe, today=today, report_counts=report.summary_counts(rep))
+    rep["entry"] = entry
+    path = report.write(rep)
+    print(f"report {path.name}: {report.summary_counts(rep)}")
     print(
         f"{entry['week']} controls={entry['control_count']} "
         f"live={entry['pairs']['live']} lifted={entry['pairs']['lifted']} "

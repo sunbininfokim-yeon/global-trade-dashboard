@@ -1,7 +1,10 @@
 """Classify White House / EOP seats as filled, unconfirmed, or vacant.
 
 Vacant is only when an official body says the seat is empty. A page without a
-name is unconfirmed, not vacant. Media names are not promoted.
+name is unconfirmed, not vacant. A single media report is not promoted; a name
+backed by two independent reliable outlets (at least one citing an official)
+fills the seat as source_grade "reported_reliable", labelled 보도 기준 and kept
+out of the official name_en field.
 """
 from __future__ import annotations
 
@@ -24,8 +27,87 @@ CEA_CHAIR_RE = re.compile(
 POLICY_KO = (
     "공석은 공식 기관이 공석·의장석 공석이라고 적을 때만. "
     "공식 페이지에 이름이 없으면 미확인이지 공석이 아니다. "
-    "언론 보도 이름은 자동 승격하지 않는다."
+    "언론 보도 하나로는 승격하지 않는다. 서로 다른 신뢰 매체 2곳 이상(그중 하나는 "
+    "정부 관계자 확인 인용)이 같은 이름을 대면 '보도 기준'(reported_reliable)으로 채우고, "
+    "공식 원문이 이름을 적으면 그쪽이 덮어쓴다."
 )
+
+REPORTED_FILLS: Dict[str, Dict[str, Any]] = {
+    "vp_chief_of_staff": {
+        "name_en": "Nick Luna",
+        "role_en": "Assistant to the President and Chief of Staff to the Vice President",
+        "status_ko": "보도 기준",
+        "since": "2026-08",
+        "predecessor": {
+            "name_en": "Jacob B. Reses",
+            "term": "2025-01-20 ~ 2026-08",
+            "departure_source_url": "https://www.foxnews.com/politics/vice-president-jd-vances-chief-staff-set-depart-white-house-role",
+        },
+        "sources": [
+            {
+                "org": "Federal News Network (Leadership Connect)",
+                "date": "2026-08-28",
+                "url": "https://federalnewsnetwork.com/leadership-connect/2026/08/federal-movers-shakers-august-28/",
+                "claim": "Assistant to the President and Chief of Staff to the Vice President, Presidential Appointment",
+            },
+            {
+                "org": "Punchbowl News",
+                "date": "2026-06-16",
+                "url": "https://punchbowl.news/article/white-house/nick-luna-vance/",
+                "claim": "Luna to replace Jacob Reses as Vance's chief of staff",
+            },
+        ],
+        "note_ko": (
+            "부통령실은 WHO 급여명부 밖이고 공식 부통령실 명부가 없다. "
+            "Federal News Network(2026-08-28, Leadership Connect 인사 기록)와 Punchbowl(2026-06-16)이 "
+            "Nick Luna 취임을 전한다. 전임 Jacob B. Reses는 2026-06-11 부통령 성명과 함께 여름 말 퇴임 발표. "
+            "공식 원문이 아니므로 '보도 기준'."
+        ),
+    },
+    "ceq": {
+        "name_en": "Rachael McNitt",
+        "role_en": "Acting Chair, Council on Environmental Quality",
+        "status_ko": "직무대행 · 보도 기준",
+        "since": "2026-07-07",
+        "predecessor": {
+            "name_en": "Katherine Scarlett",
+            "term": "2025-09-18 ~ 2026-07-07",
+            "confirmation_url": "https://www.whitehouse.gov/releases/2025/09/katherine-scarlett-confirmed-as-13th-chair-of-the-council-on-environmental-quality/",
+            "last_official_roster_url": "https://www.whitehouse.gov/wp-content/uploads/2026/04/CEQ-Employee-List-April-2026-FINAL.pdf.pdf",
+        },
+        "sources": [
+            {
+                "org": "The Hill",
+                "date": "2026-07-07",
+                "url": "https://thehill.com/policy/energy-environment/5957787-ceq-white-house-environment/",
+                "claim": "McNitt serving as acting chair, per an administration official",
+            },
+            {
+                "org": "E&E News (POLITICO)",
+                "date": "2026-07-07",
+                "url": "https://www.eenews.net/articles/ceq-chair-leaving-the-administration/",
+                "claim": "McNitt will perform the duties of chair, per a White House official",
+            },
+        ],
+        "note_ko": (
+            "Katherine Scarlett: 2025-09-18 상원 인준(백악관 발표), 2026-04 CEQ 공식 직원명단에 Chairman. "
+            "2026-07-07 퇴임(The Hill·E&E News, 정부 관계자 확인). 그 뒤 비서실장 Rachael McNitt이 "
+            "직무대행이라고 두 매체가 정부 관계자를 인용해 보도. 4월 이후 CEQ 공식 명단이 없어 '보도 기준'. "
+            "후임 지명은 확인되지 않았다."
+        ),
+    },
+}
+
+
+def reported_fill(office_id: str) -> Optional[Dict[str, Any]]:
+    fill = REPORTED_FILLS.get(office_id)
+    if not fill or len(fill.get("sources") or []) < 2:
+        return None
+    return fill
+
+
+def reported_ui_ko(fill: Dict[str, Any]) -> str:
+    return f"{fill['name_en']} · {fill['status_ko']}"
 
 
 def parse_cea_chair(html: str) -> Optional[Dict[str, Any]]:
@@ -101,18 +183,22 @@ def build_office_status(
     ceq_html: Optional[str] = None,
 ) -> Dict[str, Any]:
     cea = cea or {}
+    vp_fill = reported_fill("vp_chief_of_staff")
+    ceq_fill = None if ceq_names_chair(ceq_html or "") else reported_fill("ceq")
     offices = [
         {
             "id": "vp_chief_of_staff",
             "office_ko": "부통령 비서실장",
-            "seat_status": "incumbent_unconfirmed",
+            "seat_status": "filled_reported" if vp_fill else "incumbent_unconfirmed",
             "vacant": False,
-            "ui_ko": "미확인 (공석 아님)",
+            "ui_ko": reported_ui_ko(vp_fill) if vp_fill else "미확인 (공석 아님)",
             "display": "unconfirmed_not_vacant",
             "name_en": None,
-            "note_ko": (
+            "source_grade": "reported_reliable" if vp_fill else None,
+            "reported": vp_fill,
+            "note_ko": vp_fill["note_ko"] if vp_fill else (
                 "부통령실은 WHO 급여명부에 없다. 공식 부통령실 명부를 못 잡아 현직을 넣지 않는다. "
-                "백악관이 공석이라고 밝힌 적은 없다. 언론 후임은 승격하지 않는다."
+                "백악관이 공석이라고 밝힌 적은 없다."
             ),
         },
         {
@@ -131,16 +217,17 @@ def build_office_status(
         {
             "id": "ceq",
             "office_ko": "환경품질위원회 의장",
-            "seat_status": "incumbent_unconfirmed",
+            "seat_status": "filled_reported" if ceq_fill else "incumbent_unconfirmed",
             "vacant": False,
-            "ui_ko": "미확인 (공석 아님)",
+            "ui_ko": reported_ui_ko(ceq_fill) if ceq_fill else "미확인 (공석 아님)",
             "display": "unconfirmed_not_vacant",
             "name_en": None,
             "source_url": CEQ_URL,
-            "note_ko": (
-                "whitehouse.gov/ceq/ About에 의장 이름이 없다. 공석 선언은 없다. "
-                "언론 직무대행은 넣지 않는다."
-                + ("" if not ceq_names_chair(ceq_html or "") else " (파서가 의장명을 본 경우 이 칸을 갱신해야 한다.)")
+            "source_grade": "reported_reliable" if ceq_fill else None,
+            "reported": ceq_fill,
+            "note_ko": ceq_fill["note_ko"] if ceq_fill else (
+                "whitehouse.gov/ceq/ About에 의장 이름이 없다. 공석 선언은 없다."
+                + ("" if not ceq_names_chair(ceq_html or "") else " (파서가 의장명을 봤다. 이 칸을 공식 이름으로 갱신해야 한다.)")
             ),
         },
         {
@@ -170,8 +257,9 @@ def build_office_status(
             "display": "unconfirmed_not_vacant",
             "name_en": None,
             "note_ko": (
-                "WHMO 국장은 군 파견 보직이라 WHO 민간 급여명부에 없다. "
-                "백악관 공식 국장 페이지를 못 잡았다. 위키 이름은 쓰지 않는다. 공석으로 단정하지 않는다."
+                "WHMO 국장은 WHO 2026-07-01 급여명부에 없다. 백악관 공식 국장 페이지도 없다. "
+                "2025 이후 임명을 전한 신뢰 매체 보도를 찾지 못했다. 위키백과 표의 무출처 이름은 쓰지 않는다. "
+                "공석으로 단정하지 않는다."
             ),
         },
         {
@@ -259,16 +347,28 @@ def apply_office_status(eop: Dict[str, Any], status: Dict[str, Any]) -> List[str
             heads.append(payload)
             changes.append("eop_office_heads.ondcp added Sara Carter")
 
+    ceq_row = by_id.get("ceq") or {}
+    ceq_fill = ceq_row.get("reported")
     for head in heads:
         if head.get("id") == "ceq":
-            head["name_en"] = None
-            head["status"] = "unconfirmed"
             head["vacant"] = False
-            head["source_grade"] = "official_page_no_incumbent"
             head["source"] = "wh_ceq"
             head["official_url"] = CEQ_URL
-            head["note_ko"] = (by_id.get("ceq") or {}).get("note_ko")
-            changes.append("eop_office_heads.ceq unconfirmed_not_vacant")
+            head["note_ko"] = ceq_row.get("note_ko")
+            if ceq_fill:
+                if head.get("name_en") != ceq_fill["name_en"]:
+                    changes.append(f"eop_office_heads.ceq -> {ceq_fill['name_en']} reported_reliable")
+                head["name_en"] = ceq_fill["name_en"]
+                head["status"] = ceq_fill["status_ko"]
+                head["since"] = ceq_fill["since"]
+                head["source_grade"] = "reported_reliable"
+                head["reported"] = ceq_fill
+            else:
+                head["name_en"] = None
+                head["status"] = "unconfirmed"
+                head["source_grade"] = "official_page_no_incumbent"
+                head.pop("reported", None)
+                changes.append("eop_office_heads.ceq unconfirmed_not_vacant")
 
     missing = set(eop.get("missing") or [])
     missing.discard("official_cea_whitehouse_page")
@@ -279,8 +379,24 @@ def apply_office_status(eop: Dict[str, Any], status: Dict[str, Any]) -> List[str
 
     vp = next((row for row in eop.get("core") or [] if row.get("id") == "vp_chief_of_staff"), None)
     if vp:
-        vp["status"] = "unconfirmed"
+        vp_row = by_id.get("vp_chief_of_staff") or {}
+        vp_fill = vp_row.get("reported")
         vp["vacant"] = False
-        vp["ui_ko"] = "미확인 (공석 아님)"
-        vp["note_ko"] = (by_id.get("vp_chief_of_staff") or {}).get("note_ko")
+        vp["ui_ko"] = vp_row.get("ui_ko") or "미확인 (공석 아님)"
+        vp["note_ko"] = vp_row.get("note_ko")
+        vp.pop("reported_successor_unconfirmed", None)
+        if vp_fill:
+            if vp.get("name_en") != vp_fill["name_en"]:
+                changes.append(f"core.vp_chief_of_staff -> {vp_fill['name_en']} reported_reliable")
+            vp["name_en"] = vp_fill["name_en"]
+            vp["status"] = vp_fill["status_ko"]
+            vp["since"] = vp_fill["since"]
+            vp["source_grade"] = "reported_reliable"
+            vp["official_url"] = None
+            vp["reported"] = vp_fill
+            vp["predecessor"] = vp_fill["predecessor"]
+        else:
+            vp["name_en"] = None
+            vp["status"] = "unconfirmed"
+            vp.pop("reported", None)
     return changes

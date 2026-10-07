@@ -19,15 +19,16 @@
       2022,
       2023,
       2024,
-      2025
+      2025,
+      2026
     ]
   },
   "trained_years": [
     1994,
-    2025
+    2026
   ],
-  "n_seasons": 32,
-  "detrended_residual_cv": 0.12730080684524628,
+  "n_seasons": 33,
+  "detrended_residual_cv": 0.1250432928385271,
   "anomaly": {
     "window_years": 20,
     "minimum_prior_years": 10,
@@ -87,97 +88,97 @@
   "trend": {
     "form": "log_linear",
     "log_poly_coef": [
-      0.020863134669984136,
-      -34.11442346069549
+      0.021035768187484677,
+      -34.46038825225944
     ]
   },
   "scaler": {
     "mean": [
-      -0.017114475858101275,
-      0.13153873596638593,
-      0.2210225357202823,
-      -0.2986006237176271,
-      0.22294821315870855,
-      0.00843703699412475,
-      0.27563093375303155,
-      -0.054999459204562964
+      -0.0026985483913070365,
+      0.13359297889406568,
+      0.2427887943660917,
+      -0.3092172228764752,
+      0.22803641727371327,
+      0.027416514043234176,
+      0.309403048969275,
+      0.024098450543705716
     ],
     "scale": [
-      1.1073056481412784,
-      0.9755538179420992,
-      1.03172458181352,
-      0.9647336816321819,
-      1.3432639372710304,
-      1.0701022733492236,
-      1.3024739726372487,
-      1.0401746393456295
+      1.0934444101336187,
+      0.9607292729316282,
+      1.0234060887662388,
+      0.9519004675953088,
+      1.3230680119103146,
+      1.0592192223587995,
+      1.2967378332476749,
+      1.1177584053436664
     ]
   },
   "ridge": {
     "alpha": 34.551072945922215,
     "coef": [
-      -0.008852021310218788,
-      -0.004886743975468199,
-      -0.03935665360975495,
-      -0.0020842488578675456,
-      -0.0016217931446438623,
-      0.010598341647179082,
-      -0.006224137636590116,
-      -0.007312381673065337
+      -0.008400330418539884,
+      -0.004776554512516633,
+      -0.03916668815942111,
+      -0.0025059277984899497,
+      -0.0020938654571055694,
+      0.011254348664243553,
+      -0.005400070150201025,
+      -0.005637129716661791
     ],
-    "intercept": -2.6474407924976278e-17
+    "intercept": -1.3059603100275554e-14
   },
   "top_effects": [
     {
       "feature": "heat_excess_jul_z20",
-      "effect_pct_per_sd": -3.86
+      "effect_pct_per_sd": -3.84
     },
     {
       "feature": "sm_heading_z20",
-      "effect_pct_per_sd": 1.07
+      "effect_pct_per_sd": 1.13
     },
     {
       "feature": "rain_growing_z20",
-      "effect_pct_per_sd": -0.88
+      "effect_pct_per_sd": -0.84
     },
     {
       "feature": "oni_summer_z20",
-      "effect_pct_per_sd": -0.73
+      "effect_pct_per_sd": -0.56
     },
     {
       "feature": "rain_winter_z20",
-      "effect_pct_per_sd": -0.62
+      "effect_pct_per_sd": -0.54
     },
     {
       "feature": "gdd0_growing_z20",
-      "effect_pct_per_sd": -0.49
+      "effect_pct_per_sd": -0.48
     },
     {
       "feature": "frost_sep_z20",
-      "effect_pct_per_sd": -0.21
+      "effect_pct_per_sd": -0.25
     },
     {
       "feature": "sm_preseason_z20",
-      "effect_pct_per_sd": -0.16
+      "effect_pct_per_sd": -0.21
     }
   ],
   "uncertainty": {
     "basis": "absolute errors from forward-chaining predictions",
-    "absolute_error_q68_kg_ha": 321.2187670343046,
-    "absolute_error_q95_kg_ha": 823.8421429744012,
-    "n_forward_errors": 14
+    "absolute_error_q68_kg_ha": 411.33722535599964,
+    "absolute_error_q95_kg_ha": 823.8421429743994,
+    "n_forward_errors": 15
   },
   "validation": {
     "weather": {
-      "rmse": 450.7827224687062,
-      "mae": 342.1133315952398,
-      "baseline_rmse": 406.40206167117077,
-      "skill_vs_trend": -0.10920382789161343,
-      "recent_rmse": 462.01215311493524,
-      "recent_baseline_rmse": 391.7466130573687,
-      "recent_skill_vs_trend": -0.17936476721312888,
-      "detrended_r2": -0.35620303251395624,
-      "recent_trend_bias": -73.409112117635,
+      "rmse": 442.2863781606158,
+      "mae": 336.5716639562497,
+      "baseline_rmse": 400.1002611437712,
+      "skill_vs_trend": -0.10543886398935776,
+      "recent_rmse": 468.1532938962022,
+      "recent_baseline_rmse": 385.77513939168097,
+      "recent_skill_vs_trend": -0.21353930332167392,
+      "detrended_r2": -0.3500741605748494,
+      "recent_trend_bias": -48.135252012438784,
       "features": [
         "rain_growing_z20",
         "gdd0_growing_z20",
@@ -198,19 +199,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil": {
-      "rmse": 442.1500578263875,
-      "mae": 341.67186060468975,
-      "baseline_rmse": 406.40206167117077,
-      "skill_vs_trend": -0.0879621427317987,
-      "recent_rmse": 442.44123297339365,
-      "recent_baseline_rmse": 391.7466130573687,
-      "recent_skill_vs_trend": -0.12940665784033478,
-      "detrended_r2": -0.3047567707147576,
-      "recent_trend_bias": -73.409112117635,
+      "rmse": 434.0027790649632,
+      "mae": 333.28608975801774,
+      "baseline_rmse": 400.1002611437712,
+      "skill_vs_trend": -0.08473505571897011,
+      "recent_rmse": 444.3666319476557,
+      "recent_baseline_rmse": 385.77513939168097,
+      "recent_skill_vs_trend": -0.15187990767981097,
+      "detrended_r2": -0.2999765505766294,
+      "recent_trend_bias": -48.135252012438784,
       "features": [
         "rain_growing_z20",
         "gdd0_growing_z20",
@@ -234,19 +236,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil_drivers": {
-      "rmse": 443.0829117635492,
-      "mae": 350.39252851307384,
-      "baseline_rmse": 406.40206167117077,
-      "skill_vs_trend": -0.09025753939717407,
-      "recent_rmse": 432.42662669416177,
-      "recent_baseline_rmse": 391.7466130573687,
-      "recent_skill_vs_trend": -0.10384266840064749,
-      "detrended_r2": -0.3102681641696625,
-      "recent_trend_bias": -73.409112117635,
+      "rmse": 436.21654631266887,
+      "mae": 345.8529872439228,
+      "baseline_rmse": 400.1002611437712,
+      "skill_vs_trend": -0.09026808696813049,
+      "recent_rmse": 436.848359241527,
+      "recent_baseline_rmse": 385.77513939168097,
+      "recent_skill_vs_trend": -0.13239116426834063,
+      "detrended_r2": -0.31327224971167666,
+      "recent_trend_bias": -48.135252012438784,
       "features": [
         "rain_growing_z20",
         "gdd0_growing_z20",
@@ -271,7 +274,8 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     }
   }

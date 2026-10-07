@@ -1,12 +1,69 @@
 {
   "schema": "usa_eop_refresh_report_v1",
-  "generated_at": "2026-09-12T07:36:53.379454+00:00",
-  "fetch_requested": false,
-  "fetch": {},
-  "cabinet_count": 0,
-  "staff_as_of": null,
-  "assistant_ids": [],
-  "changes": [],
+  "generated_at": "2026-10-01T16:53:43.278441+00:00",
+  "fetch_requested": true,
+  "fetch": {
+    "cabinet_fetched": true,
+    "admin_fetched": true,
+    "cea_fetched": true,
+    "ceq_fetched": true,
+    "ondcp_fetched": true,
+    "staff_pdf": "/home/runner/work/global-trade-dashboard/global-trade-dashboard/New for anti/scripts/election_watch/raw/usa/wh_staff_report_latest.pdf",
+    "staff_url": "https://www.whitehouse.gov/wp-content/uploads/2026/07/2026-Annual-Report-to-Congress-on-White-House-Staff.pdf"
+  },
+  "cabinet_count": 21,
+  "staff_as_of": "2026-07-01",
+  "assistant_ids": [
+    "border_czar",
+    "cabinet_secretary",
+    "communications_director",
+    "dcos_operations",
+    "dcos_personnel",
+    "dpc_director",
+    "flotus_cos",
+    "homeland_security_advisor",
+    "legislative_affairs",
+    "nec_director",
+    "nedc",
+    "nsa",
+    "oa",
+    "peace_envoy",
+    "policy_assistant",
+    "press_secretary",
+    "speechwriting",
+    "staff_secretary",
+    "trade_counselor",
+    "wh_chief_of_staff",
+    "wh_counsel"
+  ],
+  "payroll_row_count": 411,
+  "topical_advisor_count": 20,
+  "unscoped_senior_advisor_count": 5,
+  "topical_counts": {
+    "topical": 20,
+    "unscoped_senior_advisors": 5,
+    "by_domain": {
+      "ai_crypto": 1,
+      "border": 1,
+      "coalition": 1,
+      "digital_assets": 2,
+      "economic_policy": 1,
+      "faith": 3,
+      "homeland_security": 1,
+      "international_economy": 1,
+      "jewish_outreach": 1,
+      "national_security": 1,
+      "pardon": 1,
+      "peace": 1,
+      "presidential_policy": 1,
+      "trade": 3,
+      "ukraine": 1
+    },
+    "official_not_on_payroll": 1
+  },
+  "changes": [
+    "topical_advisors 20 -> 20"
+  ],
   "errors": [],
-  "policy_ko": "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. 부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다."
+  "policy_ko": "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. 공식 원문에 이름이 없는 자리는 신뢰 매체 2곳 이상이 같은 이름을 댈 때만 '보도 기준'(reported_reliable)으로 채운다. 공식 이름 칸(office_status.name_en)에는 넣지 않는다. 주제별 보좌관은 WHO 급여명부 직함의 포트폴리오 키워드로만 분류한다."
 }

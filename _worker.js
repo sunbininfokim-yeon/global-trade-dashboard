@@ -1,3 +1,4 @@
+import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
 import PolicyEvidence from './New for anti/policy-evidence.js';
 
 export default {
@@ -586,7 +587,11 @@ async function handleCommodityReports(request, env) {
     const url = new URL(request.url);
     const commodity = (url.searchParams.get('commodity') || '').trim();
     const country = (url.searchParams.get('country') || '').trim().toUpperCase();
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 30);
+    // The panel pages through a window's whole history (everything inside the
+    // pipeline's archive horizon), a chunk at a time: `offset` picks up where
+    // the last chunk ended and `total` tells the panel whether more is left.
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 100);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
 
     const doc = await loadStaticJson(env, url.origin, 'commodity_reports_v1.json');
     if (!doc) {
@@ -597,6 +602,35 @@ async function handleCommodityReports(request, env) {
             }),
             { status: 404, headers: JSON_HEADERS }
         );
+    }
+
+    // A named board (pipeline "boards"): a list fed by its sources whatever
+    // the commodity. export_controls is every regulator's notices (MOFCOM's
+    // export-control bureau today); ?issuer=CHN narrows it to one country's
+    // regulators, ?measure=entity_list to one kind of measure.
+    const board = (url.searchParams.get('board') || '').trim();
+    if (board) {
+        const issuer = (url.searchParams.get('issuer') || '').trim().toUpperCase();
+        const measure = (url.searchParams.get('measure') || '').trim();
+        const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+        const known = ((doc.boards || {})[board] || []).filter((id) => {
+            const it = byId.get(id);
+            if (!it) return false;
+            if (issuer && (it.control?.issuer || '').toUpperCase() !== issuer) return false;
+            if (measure && it.control?.measure !== measure) return false;
+            return true;
+        });
+        const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            board,
+            issuer: issuer || null,
+            measure: measure || null,
+            total: known.length,
+            offset,
+            count: items.length,
+            items,
+        });
     }
 
     // No commodity named: hand back the board itself, so a caller can see
@@ -632,13 +666,16 @@ async function handleCommodityReports(request, env) {
         }
     }
 
-    const items = ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    const known = ids.filter((id) => byId.has(id));
+    const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
     return jsonWithCache({
         generated_at: doc.generated_at,
         commodity,
         commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
         country: country || null,
         country_name: country ? (doc.country_names || {})[country] || null : null,
+        total: known.length,
+        offset,
         count: items.length,
         items,
     });
@@ -749,6 +786,7 @@ const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,
 const COMTRADE_TTL = {
     "2709": 172800,  // Oil: 48h
     "2711": 172800,  // Gas: 48h
+    "271012": 604800, // Light oils (naphtha, motor gasoline...): weekly
     "2701": 604800,  // Thermal coal: weekly
     "2704": 604800,  // Met coal: weekly
     "7108": 86400,   // Gold: 24h
@@ -1432,7 +1470,12 @@ async function handleMacro(request, env, ctx) {
             // enough to tell a seasonal drawdown from a genuine trend.
             // Daily spot prices carry a shorter window for the same reason:
             // the home panel draws a sparkline beside the latest print.
-            const length = freq === 'weekly' ? 52 : 30;
+            // A caller that wants more (e.g. the SPR/Cushing card's 3-year
+            // view) can ask via `length`, capped well under EIA's own
+            // per-request row limit.
+            const defaultLength = freq === 'weekly' ? 52 : 30;
+            const lengthParam = parseInt(url.searchParams.get('length'), 10);
+            const length = Number.isFinite(lengthParam) ? Math.min(Math.max(lengthParam, 1), 500) : defaultLength;
             // A weekly series cannot have new data more than once a week, so
             // an hourly cache TTL was doing nothing but multiplying how often
             // this Worker hits EIA's own API -- and each of those live calls
@@ -2580,6 +2623,19 @@ async function handleDartFinancials(request, env) {
             }
             const latestYear = years[0];
 
+            // The current calendar year's own interim filings (1분기/반기보고서)
+            // land months before its annual report does -- Q1 in May, H1 in
+            // August -- while `years` above only ever picks up a year once its
+            // 사업보고서 is filed the following spring. Left out of the interim
+            // loop below, this year's quarters would never appear even after
+            // they exist on OpenDART (verified live on 003490: as of
+            // 2026-09-27, 2026Q1/Q2 CFO/FCF were missing for exactly this
+            // reason). `years` (and `latestYear`/`factsByYear`, the annual
+            // cards) stay annual-report-only; only the quarterly fetch below
+            // gets this extra, possibly annual-report-less year.
+            const thisYear = now.getUTCFullYear();
+            const quarterlyYears = years.includes(thisYear) ? years : [thisYear, ...years];
+
             // Interim filings, for the quarterly view. Three more calls per
             // year on top of the annual one, so this is the single most
             // expensive part of a cold-cache request -- but the whole body is
@@ -2587,14 +2643,14 @@ async function handleDartFinancials(request, env) {
             // no quarterly points for that year rather than failing the
             // request. Sequential for the same 020 reason as the loop above.
             const factsByPeriod = {};
-            for (const y of years) {
-                factsByPeriod[y] = { FY: factsByYear[y] };
+            for (const y of quarterlyYears) {
+                factsByPeriod[y] = factsByYear[y] ? { FY: factsByYear[y] } : {};
                 for (const code of ['Q1', 'H1', 'Q3']) {
                     const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
                     if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
                 }
             }
-            const quarterly = dartQuarterlySeries(factsByPeriod, years);
+            const quarterly = dartQuarterlySeries(factsByPeriod, quarterlyYears);
 
             // Independent of the facts loop above -- neither blocks the other,
             // and either failing still leaves the filing-derived cards intact.
@@ -2639,9 +2695,12 @@ async function handleDartFinancials(request, env) {
                         facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
                         // Which interim reports actually came back, per year --
                         // a quarterly gap in the UI is explained here rather
-                        // than looking like a rendering bug.
+                        // than looking like a rendering bug. Covers
+                        // quarterlyYears, not just years, so the current
+                        // calendar year's own interims (no annual report yet)
+                        // show up here too instead of being silently absent.
                         interim_reports_fetched: Object.fromEntries(
-                            years.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
+                            quarterlyYears.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
                         quarterly_derivation: 'flows differenced from YTD cumulatives (Q2=H1-Q1, Q3=3Q-H1, Q4=FY-3Q); balances point-in-time',
                         // Reaching here at all required a keyed OpenDART fetch.
                         live_key_present: true,
@@ -2827,6 +2886,7 @@ const FUTURES_UNPRICED = {
     chromium: "거래되는 선물 계약이 없습니다",
     thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
     met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    light_oils: "무료로 확인 가능한 실시간 시세가 없습니다 (납사·휘발유 모두 Platts·Argus 유료 평가가)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
 };
@@ -3064,10 +3124,10 @@ async function handleUsPolicy(request, env) {
         }
 
         if (path === 'search') {
-            const filter = usSearchFilter(q);
+            let filter;
+            try { filter = usSearchFilter(q); } catch (err) { return usError(err.message, 400); }
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!filter.billRef && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v3:${filter.cacheKey}`, US_TTL.search,
+            return await kvCachedJson(env, `us:search:v5:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -3276,15 +3336,18 @@ async function geminiEmbedQuery(env, text) {
 }
 
 function usSearchFilter(q) {
-    const query = (q.get('q') || '').trim().slice(0, 200);
+    const rawQuery = (q.get('q') || '').trim();
+    const conditions = PolicySearchTerms.parse(rawQuery);
+    const query = rawQuery.slice(0, 200);
     const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
     const billRef = PolicyEvidence.parseBillQuery(query);
-    return { query, limit, billRef, cacheKey: `${query}|${limit}` };
+    return { query, limit, billRef, conditions, cacheKey: `${query}|${limit}` };
 }
 
 // search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
+    if (f.conditions) return usConditionSearch(env, f);
     if (f.billRef) {
         const ref = f.billRef;
         const query = new URLSearchParams({ select: 'bill_id,title,congress_number,bill_type,bill_number,congress_url,current_stage,origin_chamber,law_type,law_number,latest_action_date',
@@ -3297,6 +3360,10 @@ async function usSearch(env, f) {
             law_type: r.law_type, law_number: r.law_number, latest_action_date: r.latest_action_date, match_type: 'exact_bill_number', source_url: PolicyEvidence.billUrl(r.congress_number, r.bill_type, r.bill_number) || r.congress_url,
         })) } };
     }
+    return usHybridSearch(env, f);
+}
+
+async function usSemanticSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
@@ -3317,10 +3384,11 @@ async function usSearch(env, f) {
         .filter((r) => r.source_type === 'regulation')
         .map((r) => r.source_id))];
     const regulationUrls = new Map();
+    const documentDates = new Map();
     if (regulationIds.length) {
         const regRows = await usFetch(env, 'regulations',
-            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
-        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+            `select=regulation_id,federal_register_url,publication_date&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) { regulationUrls.set(reg.regulation_id, reg.federal_register_url); documentDates.set(`regulation:${reg.regulation_id}`, {publication_date: reg.publication_date}); }
     }
     // search_policy_corpus (Supabase RPC, owned separately -- see
     // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
@@ -3340,6 +3408,16 @@ async function usSearch(env, f) {
             + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const b of billRows) billMeta.set(b.bill_id, b);
     }
+    await Promise.all([
+        {type:'executive_order',table:'executive_orders',key:'eo_number',dates:['publication_date','signed_date']},
+        {type:'public_law',table:'public_laws',key:'public_law_id',dates:['enacted_date']},
+    ].map(async source => {
+        const ids=[...new Set((rows || []).filter(r=>r.source_type===source.type).map(r=>r.source_id))];
+        if(!ids.length)return;
+        const query=new URLSearchParams({select:[source.key,...source.dates].join(','),[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+        const metadata=await usFetch(env,source.table,query.toString());
+        for(const row of metadata) documentDates.set(`${source.type}:${row[source.key]}`,Object.fromEntries(source.dates.map(key=>[key,row[key]])));
+    }));
     const items = (rows || []).map((r) => {
         const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
         return {
@@ -3347,6 +3425,7 @@ async function usSearch(env, f) {
             id: r.source_id,
             title: r.title,
             similarity_score: r.similarity_score,
+            ...(documentDates.get(`${r.source_type}:${r.source_id}`) || {}),
             source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
             ...(bill ? {
                 congress_number: bill.congress_number,
@@ -3361,6 +3440,92 @@ async function usSearch(env, f) {
         };
     });
     return { ok: true, body: { query: f.query, items } };
+}
+
+
+// Candidate discovery uses aliases AND a semantic candidate set. Labels are
+// verified only against stored title/summary, never inferred from cosine scores.
+const CONDITION_SOURCES = [
+    {table:'bills',type:'bill',key:'bill_id',fields:['title','summary'],select:'bill_id,title,summary,congress_number,bill_type,bill_number,current_stage,origin_chamber,law_type,law_number,latest_action_date,congress_url'},
+    {table:'executive_orders',type:'executive_order',key:'eo_number',fields:['title','summary'],select:'eo_number,title,summary,publication_date,signed_date,federal_register_url'},
+    {table:'regulations',type:'regulation',key:'regulation_id',fields:['title','abstract'],select:'regulation_id,title,abstract,publication_date,federal_register_url'},
+    {table:'public_laws',type:'public_law',key:'public_law_id',fields:['law_title'],select:'public_law_id,law_title,congress_number,law_number,enacted_date,govinfo_url,congress_url'},
+];
+async function usHybridSearch(env, f) {
+    const term=PolicySearchTerms.single(f.query), candidates=new Map();
+    let lexicalAvailable=true,candidateLimited=false;
+    const tasks=term.label ? CONDITION_SOURCES.flatMap(source=>{
+        const title=source.fields[0];
+        return [{source,filter:{[title]:`ilike.${term.label}`}},
+            ...source.fields.map(field=>({source,filter:{and:`(${PolicySearchTerms.clause([field],term)})`}}))];
+    }) : [];
+    const lexical=async()=>{
+        for(let offset=0;offset<tasks.length;offset+=4){
+            const results=await Promise.allSettled(tasks.slice(offset,offset+4).map(async({source,filter})=>{
+                const q=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.desc`,...filter});
+                const rows=await usFetch(env,source.table,q.toString());
+                candidateLimited ||= rows.length===60;
+                for(const row of rows){
+                    const item={...row,type:source.type,id:String(row[source.key]),title:row.title||row.law_title,
+                        summary:row.summary||row.abstract||'',source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+                        ...(source.type==='public_law'?{current_stage:'enacted'}:{})};
+                    const rank=PolicySearchTerms.lexicalRank(item,term);
+                    if(rank)candidates.set(`${item.type}:${item.id}`,{...item,relevance_rank:rank,
+                        match_type:rank===4?(term.aliases.includes(String(item.title).normalize('NFKC').toLowerCase().trim())?'exact_title':'exact_summary_title'):rank===3?'title_phrase':'summary_phrase'});
+                }
+            }));
+            if(results.some(r=>r.status==='rejected'))lexicalAvailable=false;
+        }
+    };
+    const results=await Promise.allSettled([lexical(),hasPolicyEmbeddingProvider(env)?usSemanticSearch(env,f):Promise.reject(new Error('provider unavailable'))]);
+    const semantic=results[1].status==='fulfilled'&&!results[1].value.body.unavailable;
+    if(semantic)for(const item of results[1].value.body.items){
+        const key=`${item.type}:${item.id}`,existing=candidates.get(key);
+        candidates.set(key,existing?{...item,...existing,similarity_score:item.similarity_score}:{...item,relevance_rank:0,match_type:'semantic'});
+    }
+    // A provider outage with no lexical hits is not evidence of an empty corpus.
+    if(!semantic&&!candidates.size){const error=new Error('정책 검색을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.');error.status=503;throw error;}
+    const items=[...candidates.values()].sort((a,b)=>b.relevance_rank-a.relevance_rank||
+        (b.similarity_score||0)-(a.similarity_score||0)||Number(b.congress_number||0)-Number(a.congress_number||0)||String(a.id).localeCompare(String(b.id)));
+    return {ok:true,body:{query:f.query,search_mode:'hybrid',semantic_available:semantic,lexical_available:lexicalAvailable,
+        candidate_limited:candidateLimited,result_limited:items.length>f.limit,items:items.slice(0,f.limit).map(({summary,raw_source,embedding,...item})=>item)}};
+}
+async function usConditionSearch(env,f){
+    const candidates=new Map();let candidateLimited=false,semanticAvailable=false;
+    const add=(source,row,score=0)=>{
+        const id=String(row[source.key]),key=`${source.type}:${id}`;
+        candidates.set(key,{...row,type:source.type,id,title:row.title||row.law_title,
+            summary:row.summary||row.abstract||'',similarity_score:Math.max(score,candidates.get(key)?.similarity_score||0),
+            source_url:row.federal_register_url||row.govinfo_url||row.congress_url,
+            ...(source.type==='public_law'?{current_stage:'enacted'}:{})});
+    };
+    // Search the conjunction separately so many single-condition matches cannot
+    // crowd all-condition documents out of the bounded candidate pool.
+    const jobs=CONDITION_SOURCES.flatMap(source=>[f.conditions,...f.conditions.map(t=>[t])].map(terms=>({source,terms})));
+    for(let offset=0;offset<jobs.length;offset+=4){
+        await Promise.all(jobs.slice(offset,offset+4).map(async({source,terms})=>{
+            const query=new URLSearchParams({select:source.select,limit:'60',order:`${source.key}.asc`,and:`(${terms.map(t=>PolicySearchTerms.clause(source.fields,t)).join(',')})`});
+            const rows=await usFetch(env,source.table,query.toString());
+            candidateLimited ||= rows.length===60;
+            for(const row of rows)add(source,row);
+        }));
+    }
+    if(hasPolicyEmbeddingProvider(env)){
+        try{
+            const vector=await geminiEmbedQuery(env,f.conditions.map(t=>t.aliases.find(a=>/^[a-z]/.test(a))||t.label).join(' '));
+            const hits=await usRpc(env,'search_policy_corpus',{p_query_embedding:vector,p_embedding_model:GEMINI_EMBEDDING_MODEL,p_result_limit:50});
+            await Promise.all(CONDITION_SOURCES.map(async source=>{
+                const ids=[...new Set(hits.filter(r=>r.source_type===source.type).map(r=>String(r.source_id)))];
+                if(!ids.length)return;
+                const query=new URLSearchParams({select:source.select,[source.key]:`in.(${ids.map(id=>JSON.stringify(id)).join(',')})`});
+                for(const row of await usFetch(env,source.table,query.toString()))add(source,row,Number(hits.find(h=>h.source_type===source.type&&String(h.source_id)===String(row[source.key]))?.similarity_score)||0);
+            }));semanticAvailable=true;
+        }catch{ /* Exact evidence search still works; expose degraded retrieval. */ }
+    }
+    const ranked=PolicySearchTerms.rank([...candidates.values()],f.conditions,10000);
+    return {ok:true,body:{query:f.query,search_mode:'conditions',conditions:f.conditions.map(t=>({label:t.label,aliases:t.aliases})),
+        match_basis:'stored_title_summary',semantic_available:semanticAvailable,candidate_limited:candidateLimited,
+        result_limited:ranked.length>f.limit,items:ranked.slice(0,f.limit)}};
 }
 
 // The obvious way to write this is a PostgREST group-by aggregate

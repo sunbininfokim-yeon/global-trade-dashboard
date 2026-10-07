@@ -40,7 +40,9 @@ const Auth = (() => {
     client.auth.onAuthStateChange((event, newSession) => {
         session = newSession;
         renderAuthButton();
-        notify();
+        // Listeners fetch favorites/profile data. Run after Supabase releases
+        // its auth lock, including on token refresh and tab focus.
+        setTimeout(notify, 0);
         // Fires when the visitor lands back here from the reset-password
         // email link (Supabase parses the recovery token in the URL hash
         // and signs them into a session scoped for exactly this). Send
@@ -210,7 +212,8 @@ const Auth = (() => {
         if (!user) throw new Error('로그인이 필요합니다.');
         const { error } = await client
             .from('user_favorites')
-            .upsert({ user_id: user.id, item_kind: itemKind, item_id: itemId, title: title || null });
+            .upsert({ user_id: user.id, item_kind: itemKind, item_id: itemId, title: title || null },
+                { onConflict: 'user_id,item_kind,item_id' });
         if (error) throw error;
     }
 
@@ -555,3 +558,4 @@ const Auth = (() => {
 // window, so feature modules asking for window.Auth (the contract this file's
 // header promises) would have found undefined.
 window.Auth = Auth;
+
