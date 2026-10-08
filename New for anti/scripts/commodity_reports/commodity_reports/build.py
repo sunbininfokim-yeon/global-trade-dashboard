@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -400,6 +401,13 @@ def build_commodity_reports(
     # what the taggers see. Off without GEMINI_API_KEY.
     annotator = annotator or GeminiAnnotator()
     by_src = {s["id"]: s for s in sources}
+    # Source-level title exclusion (sources.json title_exclude), applied to
+    # fresh and carried-over reports alike: a title that names a mineral for
+    # an unrelated reason (a feed additive, brake drums) must not survive
+    # because an earlier build once collected it.
+    exclusions = {sid: re.compile(s["title_exclude"], re.I) for sid, s in by_src.items() if s.get("title_exclude")}
+    if exclusions:
+        raw = [r for r in raw if not (r.source_id in exclusions and exclusions[r.source_id].search(r.title))]
     notes = annotate_raws(raw, by_src, previous, annotator)
     gemini_status = {
         "enabled": annotator.enabled, "model": annotator.model_used, "calls": annotator.calls,

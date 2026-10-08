@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import email.utils
 import hashlib
+import urllib.parse
+import json
 import re
 import ssl
 import time
@@ -217,6 +219,9 @@ def _board_for(source: Dict[str, Any], title: str) -> Optional[str]:
 
 
 def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
+    # A feed whose item titles say nothing ("Data For 10/05/26") gets a label.
+    if source.get("title_prefix") and kw.get("title"):
+        kw["title"] = f"{source['title_prefix']}{kw['title']}"
     return RawReport(
         source_id=source["id"],
         agency=source.get("agency", source["id"]),
@@ -716,6 +721,21 @@ def fetch_source(
         )
         return {"source_id": sid, "ok": res["ok"], "items": res["items"],
                 "count": len(res["items"]), "error": res["error"], "note": res.get("note")}
+    if source.get("kind") == "federal_register":
+        seen: Dict[str, RawReport] = {}
+        errors: List[str] = []
+        for url in federal_register_urls(source):
+            try:
+                for it in parse_federal_register(fetch_text(url, user_agent=user_agent, timeout=timeout), source):
+                    seen.setdefault(it.url, it)
+            except Exception as exc:  # noqa: BLE001 -- one term failing must not lose the rest
+                errors.append(f"{type(exc).__name__}")
+        items = list(seen.values())
+        if not items and errors:
+            return {"source_id": sid, "ok": False, "items": [], "count": 0,
+                    "error": f"all_queries_failed: {errors[0]}"}
+        return {"source_id": sid, "ok": True, "items": items, "count": len(items), "error": None,
+                **({"note": f"{len(errors)} of {len(federal_register_urls(source))} queries failed"} if errors else {})}
     try:
         body = fetch_text(source["url"], user_agent=user_agent, timeout=timeout,
                           browser=source.get("headers") == "browser")
@@ -753,6 +773,51 @@ def fetch_source(
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"unknown_kind:{kind}"}
     return {"source_id": sid, "ok": True, "items": items, "count": len(items), "error": None}
+
+
+FR_API = "https://www.federalregister.gov/api/v1/documents.json"
+FR_FIELDS = ("title", "abstract", "html_url", "publication_date", "agency_names", "type")
+
+
+def federal_register_urls(source: Dict[str, Any]) -> List[str]:
+    """One API query per search term. The HTML search pages (and their RSS)
+    sit behind a bot-check; the JSON API does not."""
+    cfg = source.get("federal_register") or {}
+    per_page = int(cfg.get("per_page") or 15)
+    urls = []
+    for term in cfg.get("terms") or []:
+        q = [("per_page", str(per_page)), ("order", "newest"), ("conditions[term]", term)]
+        q += [(f"fields[]", f) for f in FR_FIELDS]
+        urls.append(f"{FR_API}?{urllib.parse.urlencode(q)}")
+    return urls
+
+
+def parse_federal_register(body: str, source: Dict[str, Any]) -> List[RawReport]:
+    """Federal Register documents.json -> reports.
+
+    The API matches a term anywhere in the full text, so most hits are not
+    about the mineral; the title and abstract are what the commodity tagger
+    reads afterwards, and a document that does not name it there is dropped.
+    """
+    try:
+        rows = json.loads(body).get("results") or []
+    except (ValueError, AttributeError):
+        return []
+    # (title_exclude is also applied in build.py, so reports carried over from
+    # an earlier build are filtered the same way.)
+    exclude = re.compile(source.get("title_exclude") or r"(?!x)x", re.I)
+    items: List[RawReport] = []
+    for r in rows:
+        title = strip_html(str(r.get("title") or "")).strip()
+        url = str(r.get("html_url") or "").strip()
+        if not title or not url or exclude.search(title):
+            continue
+        abstract = strip_html(str(r.get("abstract") or "")).strip()
+        agencies = "; ".join(r.get("agency_names") or [])
+        summary = f"{agencies}: {abstract}" if agencies and abstract else (abstract or agencies)
+        items.append(_raw_from(source, title=title, url=url, summary=clip(summary),
+                               published_at=parse_date(str(r.get("publication_date") or ""))))
+    return items
 
 
 def report_id(raw: RawReport) -> str:
