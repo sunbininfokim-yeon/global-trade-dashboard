@@ -84,12 +84,12 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 91,
+    "accepted_observations": 93,
     "excluded_observations": 738,
-    "aggregation_eligible_observations": 72,
+    "aggregation_eligible_observations": 74,
     "reference_only_observations": 19,
     "exclusion_reasons": {
-      "pollster_not_selected": 537,
+      "pollster_not_selected": 534,
       "outside_reviewed_general_period": 115,
       "unregistered_primary_host": 60,
       "unreviewed_matchup": 2,
@@ -108,9 +108,12 @@
       "commissioner_primary_not_obtained": 1,
       "primary_question_and_methods_not_obtained": 2,
       "primary_geography_methodology_conflict": 1,
-      "primary_geography_and_candidate_table_not_verified": 1
+      "primary_geography_and_candidate_table_not_verified": 1,
+      "pre_primary_historical_poll_not_general_signal": 1,
+      "commissioner_primary_methodology_not_obtained": 1,
+      "missing_sample_and_primary_methodology": 1
     },
-    "displayed_observations": 91
+    "displayed_observations": 93
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -162,7 +165,7 @@
       "senate": 35,
       "house": 435
     },
-    "ballot_review_count": 472,
+    "ballot_review_count": 473,
     "meaning_ko": "대상 등록과 여론조사 확보는 다릅니다. 후보 명부·출처·기간 검사를 통과한 관측만 집계합니다."
   },
   "excluded_watch_slots": [
@@ -8839,15 +8842,17 @@
           "party": "DEM",
           "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
           "candidate_id": "IA:reported-general:2026:9617c509095d22ca",
-          "identity_source_url": "https://www.nga.org/governors/elections/",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "identity_source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "identity_basis": "official_general_ballot_name_party_office_cycle",
+          "canonical_name": "Rob Sand"
         },
         "Zach Lahn": {
           "party": "REP",
           "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
           "candidate_id": "IA:reported-general:2026:111be9ac291b57f8",
-          "identity_source_url": "https://www.nga.org/governors/elections/",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "identity_source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "identity_basis": "official_general_ballot_name_party_office_cycle",
+          "canonical_name": "Zach Lahn"
         }
       },
       "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
@@ -8866,7 +8871,7 @@
         ]
       },
       "governor_roster": {
-        "source_url": "https://www.nga.org/governors/elections/",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
         "reviewed_on": "2026-10-07",
         "status": "reported_general_matchup",
         "hold_reason": null,
@@ -8874,14 +8879,128 @@
         "basis": "reported_general_ballot_not_state_certification"
       },
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
-        "general_unopposed": null,
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:IA:governor",
       "observations": [
+        {
+          "id": "gov202cnn1640632d",
+          "race_id": "USA:IA:governor",
+          "contest_id": "USA:IA:governor:2026:general:regular",
+          "pollster": "CNN/SSRS",
+          "pollster_group": "cnn_ssrs",
+          "field_start": "2026-09-29",
+          "field_end": "2026-10-05",
+          "provider_record_date": "2026-10-08",
+          "population": "lv",
+          "sample_n": 801,
+          "answers": [
+            {
+              "name": "Rob Sand",
+              "pct": 51.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Zach Lahn",
+              "pct": 42.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+              "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
+            ],
+            "primary_toplines": {
+              "Rob Sand": 51.0,
+              "Zach Lahn": 42.0
+            },
+            "question_sample_n": 801,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 801,
+              "field_dates": [
+                "2026-09-29",
+                "2026-10-05"
+              ],
+              "question_wording_checked": true,
+              "sampling_frame": {
+                "L2_registration_based": 624,
+                "SSRS_probability_panel": 177
+              },
+              "mode": "online and telephone; postal/SMS/email/call invitations; English",
+              "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+              "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+              "question": "GOVVOTEIA combinedG1/G1a withleaners",
+              "non_candidate_responses": {
+                "neither": 5,
+                "other": 2,
+                "no_opinion": "<0.5"
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.2,
+              "confidence_level_pct": 95,
+              "scope": "801_RV_weighted_for_LV",
+              "includes_design_effects": true,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_with_leaners",
+            "sponsor_review": {
+              "commissioner": "CNN",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+          }
+        },
         {
           "id": "gov202thefb920530",
           "race_id": "USA:IA:governor",
@@ -9013,17 +9132,17 @@
             "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
             "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "historical_accuracy_rating",
-              "candidate_gap_significance"
+              "accuracy_grade",
+              "statistical_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
               "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
             ],
             "primary_toplines": {
-              "Rob Sand": 53,
-              "Zach Lahn": 44
+              "Rob Sand": 53.0,
+              "Zach Lahn": 44.0
             },
             "question_sample_n": 1008,
             "disclosure_review": {
@@ -9033,28 +9152,38 @@
                 "2026-09-24",
                 "2026-09-28"
               ],
-              "mode": "live landline/cell interviews and text-to-web",
-              "sampling_frame": "random statewide registered-voter file; modeled LV subset",
-              "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
-              "sponsor": "Fox News",
-              "question_wording_checked": true
+              "question_wording_checked": true,
+              "total_registered_sample_n": 1204,
+              "mode": {
+                "landline_live": 183,
+                "cell_live": 733,
+                "text_to_web": 288
+              },
+              "sampling_frame": "statewide registered voter file; probability-proportionate-to-size telephone selection",
+              "lv_definition": "1008 subsample via probability model: pastvote/interest/intention/age/education/race/ethnicity/maritalstatus",
+              "weighting": "age/race/education/area targets from ACS/FoxVoterAnalysis/voterfile; general publication detail",
+              "question": "Q12 withleaners",
+              "non_candidate_responses": {
+                "other": 1,
+                "would_not_vote": "<0.5",
+                "dont_know": 2
+              },
+              "publication_date": "2026-10-01",
+              "provider_created_at": "2026-10-02"
             },
             "reported_precision": {
-              "kind": "reported_margin_of_error",
+              "kind": "publisher_reported_margin_of_sampling_error",
               "half_width_pp": 3,
-              "scope": "likely_voter_subsample",
-              "model_details_verified": false
+              "confidence_level_pct": null,
+              "scope": "1008_LV_subsample",
+              "validated_here": false
             },
-            "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+            "ballot_format": "two_candidate_with_leaners",
             "sponsor_review": {
-              "provider_sponsors": [
-                "Fox News"
-              ],
-              "partisan": null,
-              "internal": false,
-              "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+              "commissioner": "Fox News",
+              "conducted_by": "Beacon Research/Shaw & Company Research"
             },
-            "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
           }
         },
         {
@@ -9104,20 +9233,22 @@
             "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
             "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame_details",
               "weighting_details",
-              "historical_accuracy_rating",
-              "candidate_gap_significance"
+              "question_sample_n"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/",
               "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll-IA-NOS-and-Tables_202609211631-1.pdf"
             ],
             "primary_toplines": {
-              "Rob Sand": 54,
-              "Zach Lahn": 42
+              "Rob Sand": 54.0,
+              "Zach Lahn": 42.0
             },
-            "question_sample_n": 1050,
+            "question_sample_n": null,
             "disclosure_review": {
               "population": "RV",
               "sample_n": 1050,
@@ -9125,20 +9256,32 @@
                 "2026-09-17",
                 "2026-09-20"
               ],
-              "mode": "telephone, text and online",
-              "sampling_frame": "registered Iowa voters",
-              "weighting": "not_checked",
-              "question_wording_checked": false
+              "question_wording_checked": true,
+              "mode": "livephone/text/online perprimaryrelease",
+              "question": "GVVT26R",
+              "non_candidate_responses": {
+                "other": 1,
+                "undecided_refused": 3
+              },
+              "missing_fields": [
+                "sampling_frame_details",
+                "weighting_details",
+                "question_sample_n"
+              ]
             },
-            "reported_precision": null,
-            "ballot_format": "candidate_ballot_with_undecided",
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.4,
+              "confidence_level_pct": null,
+              "scope": "1050_RV",
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate",
             "sponsor_review": {
-              "provider_sponsors": [],
-              "partisan": null,
-              "internal": false,
-              "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+              "commissioner": "Marist",
+              "conducted_by": "Marist Poll"
             },
-            "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
           }
         }
       ],
@@ -9147,33 +9290,100 @@
           "window_days": 7,
           "from": "2026-10-02",
           "through": "2026-10-08",
-          "population": null,
-          "status": "no_recent_poll",
-          "party": null,
-          "leader": null,
+          "population": "lv",
+          "status": "single_poll_lead",
+          "party": "DEM",
+          "leader": "Rob Sand",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
+          "poll_details": [
+            {
+              "id": "gov202cnn1640632d",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+                  "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 51.0,
+                  "Zach Lahn": 42.0
+                },
+                "question_sample_n": 801,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 801,
+                  "field_dates": [
+                    "2026-09-29",
+                    "2026-10-05"
+                  ],
+                  "question_wording_checked": true,
+                  "sampling_frame": {
+                    "L2_registration_based": 624,
+                    "SSRS_probability_panel": 177
+                  },
+                  "mode": "online and telephone; postal/SMS/email/call invitations; English",
+                  "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+                  "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+                  "question": "GOVVOTEIA combinedG1/G1a withleaners",
+                  "non_candidate_responses": {
+                    "neither": 5,
+                    "other": 2,
+                    "no_opinion": "<0.5"
+                  }
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": 95,
+                  "scope": "801_RV_weighted_for_LV",
+                  "includes_design_effects": true,
+                  "validated_here": false
+                },
+                "ballot_format": "two_candidate_with_leaners",
+                "sponsor_review": {
+                  "commissioner": "CNN",
+                  "conducted_by": "SSRS"
+                },
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+              },
+              "leading_margin_pp": 9.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "reference_ids": [],
           "reference_poll_count": 0,
           "reference_details": [],
           "status_note_ko": null,
-          "lead_counts": {},
+          "lead_counts": {
+            "Rob Sand": 1
+          },
           "tie_count": 0,
-          "pollster_count": 0,
-          "included_ids": [],
+          "pollster_count": 1,
+          "included_ids": [
+            "gov202cnn1640632d"
+          ],
           "conflicting_pollsters": [],
-          "latest_field_end": null
+          "latest_field_end": "2026-10-05"
         },
         "14": {
           "window_days": 14,
@@ -9189,7 +9399,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -9205,17 +9415,17 @@
                 "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
                 "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
                 "missing_fields": [
-                  "historical_accuracy_rating",
-                  "candidate_gap_significance"
+                  "accuracy_grade",
+                  "statistical_significance"
                 ],
-                "reviewed_on": "2026-10-06",
+                "reviewed_on": "2026-10-08",
                 "review_sources": [
                   "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
                   "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
                 ],
                 "primary_toplines": {
-                  "Rob Sand": 53,
-                  "Zach Lahn": 44
+                  "Rob Sand": 53.0,
+                  "Zach Lahn": 44.0
                 },
                 "question_sample_n": 1008,
                 "disclosure_review": {
@@ -9225,28 +9435,100 @@
                     "2026-09-24",
                     "2026-09-28"
                   ],
-                  "mode": "live landline/cell interviews and text-to-web",
-                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
-                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
-                  "sponsor": "Fox News",
-                  "question_wording_checked": true
+                  "question_wording_checked": true,
+                  "total_registered_sample_n": 1204,
+                  "mode": {
+                    "landline_live": 183,
+                    "cell_live": 733,
+                    "text_to_web": 288
+                  },
+                  "sampling_frame": "statewide registered voter file; probability-proportionate-to-size telephone selection",
+                  "lv_definition": "1008 subsample via probability model: pastvote/interest/intention/age/education/race/ethnicity/maritalstatus",
+                  "weighting": "age/race/education/area targets from ACS/FoxVoterAnalysis/voterfile; general publication detail",
+                  "question": "Q12 withleaners",
+                  "non_candidate_responses": {
+                    "other": 1,
+                    "would_not_vote": "<0.5",
+                    "dont_know": 2
+                  },
+                  "publication_date": "2026-10-01",
+                  "provider_created_at": "2026-10-02"
                 },
                 "reported_precision": {
-                  "kind": "reported_margin_of_error",
+                  "kind": "publisher_reported_margin_of_sampling_error",
                   "half_width_pp": 3,
-                  "scope": "likely_voter_subsample",
-                  "model_details_verified": false
+                  "confidence_level_pct": null,
+                  "scope": "1008_LV_subsample",
+                  "validated_here": false
                 },
-                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "ballot_format": "two_candidate_with_leaners",
                 "sponsor_review": {
-                  "provider_sponsors": [
-                    "Fox News"
-                  ],
-                  "partisan": null,
-                  "internal": false,
-                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                  "commissioner": "Fox News",
+                  "conducted_by": "Beacon Research/Shaw & Company Research"
                 },
-                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+              },
+              "leading_margin_pp": 9.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202cnn1640632d",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+                  "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 51.0,
+                  "Zach Lahn": 42.0
+                },
+                "question_sample_n": 801,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 801,
+                  "field_dates": [
+                    "2026-09-29",
+                    "2026-10-05"
+                  ],
+                  "question_wording_checked": true,
+                  "sampling_frame": {
+                    "L2_registration_based": 624,
+                    "SSRS_probability_panel": 177
+                  },
+                  "mode": "online and telephone; postal/SMS/email/call invitations; English",
+                  "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+                  "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+                  "question": "GOVVOTEIA combinedG1/G1a withleaners",
+                  "non_candidate_responses": {
+                    "neither": 5,
+                    "other": 2,
+                    "no_opinion": "<0.5"
+                  }
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": 95,
+                  "scope": "801_RV_weighted_for_LV",
+                  "includes_design_effects": true,
+                  "validated_here": false
+                },
+                "ballot_format": "two_candidate_with_leaners",
+                "sponsor_review": {
+                  "commissioner": "CNN",
+                  "conducted_by": "SSRS"
+                },
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
               },
               "leading_margin_pp": 9.0,
               "significance": "not_evaluated"
@@ -9301,21 +9583,22 @@
           "reference_details": [],
           "status_note_ko": null,
           "lead_counts": {
-            "Rob Sand": 2
+            "Rob Sand": 3
           },
           "tie_count": 0,
-          "pollster_count": 2,
+          "pollster_count": 3,
           "included_ids": [
             "gov202bea91ef4faa",
+            "gov202cnn1640632d",
             "gov202thefb920530"
           ],
           "conflicting_pollsters": [],
-          "latest_field_end": "2026-10-01"
+          "latest_field_end": "2026-10-05"
         }
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -10804,6 +11087,12 @@
           "party": "REP",
           "source_url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/",
           "canonical_name": "Ashley Hinson"
+        },
+        "Thomas Laehn": {
+          "party": "LIB",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Thomas Laehn"
         }
       },
       "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
@@ -10823,15 +11112,16 @@
       },
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -10839,13 +11129,111 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:IA:senate",
       "observations": [
+        {
+          "id": "us-202cnnc393624c",
+          "race_id": "USA:IA:senate",
+          "contest_id": "USA:IA:senate:2026:general",
+          "pollster": "CNN/SSRS",
+          "pollster_group": "cnn_ssrs",
+          "field_start": "2026-09-29",
+          "field_end": "2026-10-05",
+          "provider_record_date": "2026-10-08",
+          "population": "lv",
+          "sample_n": 801,
+          "answers": [
+            {
+              "name": "Ashley Hinson",
+              "pct": 45.0,
+              "party": "REP"
+            },
+            {
+              "name": "Josh Turek",
+              "pct": 43.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+              "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
+            ],
+            "primary_toplines": {
+              "Ashley Hinson": 45.0,
+              "Josh Turek": 43.0
+            },
+            "question_sample_n": 801,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 801,
+              "field_dates": [
+                "2026-09-29",
+                "2026-10-05"
+              ],
+              "question_wording_checked": true,
+              "sampling_frame": {
+                "L2_registration_based": 624,
+                "SSRS_probability_panel": 177
+              },
+              "mode": "online and telephone; postal/SMS/email/call invitations; English",
+              "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+              "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+              "question": "SENVOTEIA combinedS1/S1a withleaners",
+              "non_candidate_responses": {
+                "neither": 8,
+                "other": 3,
+                "no_opinion": "<0.5"
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.2,
+              "confidence_level_pct": 95,
+              "scope": "801_RV_weighted_for_LV",
+              "includes_design_effects": true,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_with_leaners",
+            "sponsor_review": {
+              "commissioner": "CNN",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+          }
+        },
         {
           "id": "us-202beaadb6c4f9",
           "race_id": "USA:IA:senate",
@@ -10897,17 +11285,17 @@
             "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
             "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "historical_accuracy_rating",
-              "candidate_gap_significance"
+              "accuracy_grade",
+              "statistical_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
               "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
             ],
             "primary_toplines": {
-              "Josh Turek": 49,
-              "Ashley Hinson": 47
+              "Ashley Hinson": 47.0,
+              "Josh Turek": 49.0
             },
             "question_sample_n": 1008,
             "disclosure_review": {
@@ -10917,28 +11305,38 @@
                 "2026-09-24",
                 "2026-09-28"
               ],
-              "mode": "live landline/cell interviews and text-to-web",
-              "sampling_frame": "random statewide registered-voter file; modeled LV subset",
-              "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
-              "sponsor": "Fox News",
-              "question_wording_checked": true
+              "question_wording_checked": true,
+              "total_registered_sample_n": 1204,
+              "mode": {
+                "landline_live": 183,
+                "cell_live": 733,
+                "text_to_web": 288
+              },
+              "sampling_frame": "statewide registered voter file; probability-proportionate-to-size telephone selection",
+              "lv_definition": "1008 subsample via probability model: pastvote/interest/intention/age/education/race/ethnicity/maritalstatus",
+              "weighting": "age/race/education/area targets from ACS/FoxVoterAnalysis/voterfile; general publication detail",
+              "question": "Q3 withleaners",
+              "non_candidate_responses": {
+                "other": 1,
+                "would_not_vote": "<0.5",
+                "dont_know": 2
+              },
+              "publication_date": "2026-10-01",
+              "provider_created_at": "2026-10-02"
             },
             "reported_precision": {
-              "kind": "reported_margin_of_error",
+              "kind": "publisher_reported_margin_of_sampling_error",
               "half_width_pp": 3,
-              "scope": "likely_voter_subsample",
-              "model_details_verified": false
+              "confidence_level_pct": null,
+              "scope": "1008_LV_subsample",
+              "validated_here": false
             },
-            "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+            "ballot_format": "two_candidate_with_leaners",
             "sponsor_review": {
-              "provider_sponsors": [
-                "Fox News"
-              ],
-              "partisan": null,
-              "internal": false,
-              "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+              "commissioner": "Fox News",
+              "conducted_by": "Beacon Research/Shaw & Company Research"
             },
-            "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
           }
         },
         {
@@ -10988,20 +11386,22 @@
             "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
             "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame_details",
               "weighting_details",
-              "historical_accuracy_rating",
-              "candidate_gap_significance"
+              "question_sample_n"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/",
               "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll-IA-NOS-and-Tables_202609211631-1.pdf"
             ],
             "primary_toplines": {
-              "Josh Turek": 50,
-              "Ashley Hinson": 42
+              "Ashley Hinson": 42.0,
+              "Josh Turek": 50.0
             },
-            "question_sample_n": 1050,
+            "question_sample_n": null,
             "disclosure_review": {
               "population": "RV",
               "sample_n": 1050,
@@ -11009,20 +11409,32 @@
                 "2026-09-17",
                 "2026-09-20"
               ],
-              "mode": "telephone, text and online",
-              "sampling_frame": "registered Iowa voters",
-              "weighting": "not_checked",
-              "question_wording_checked": false
+              "question_wording_checked": true,
+              "mode": "livephone/text/online perprimaryrelease",
+              "question": "SNVT26R",
+              "non_candidate_responses": {
+                "other": 2,
+                "undecided_refused": 5
+              },
+              "missing_fields": [
+                "sampling_frame_details",
+                "weighting_details",
+                "question_sample_n"
+              ]
             },
-            "reported_precision": null,
-            "ballot_format": "candidate_ballot_with_undecided",
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.4,
+              "confidence_level_pct": null,
+              "scope": "1050_RV",
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate",
             "sponsor_review": {
-              "provider_sponsors": [],
-              "partisan": null,
-              "internal": false,
-              "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+              "commissioner": "Marist",
+              "conducted_by": "Marist Poll"
             },
-            "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+            "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
           }
         }
       ],
@@ -11031,42 +11443,10 @@
           "window_days": 7,
           "from": "2026-10-02",
           "through": "2026-10-08",
-          "population": null,
-          "status": "no_recent_poll",
-          "party": null,
-          "leader": null,
-          "evidence_quality": {
-            "level": "unrated",
-            "grade": null,
-            "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
-            "conflicting_pollsters": [],
-            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
-            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
-          },
-          "poll_details": [],
-          "reference_ids": [],
-          "reference_poll_count": 0,
-          "reference_details": [],
-          "status_note_ko": null,
-          "lead_counts": {},
-          "tie_count": 0,
-          "pollster_count": 0,
-          "included_ids": [],
-          "conflicting_pollsters": [],
-          "latest_field_end": null
-        },
-        "14": {
-          "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
           "population": "lv",
           "status": "single_poll_lead",
-          "party": "DEM",
-          "leader": "Josh Turek",
+          "party": "REP",
+          "leader": "Ashley Hinson",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
@@ -11081,7 +11461,7 @@
           },
           "poll_details": [
             {
-              "id": "us-202beaadb6c4f9",
+              "id": "us-202cnnc393624c",
               "source_quality": {
                 "verification_level": "primary_toplines_checked",
                 "methodological_quality": "unrated",
@@ -11089,48 +11469,55 @@
                 "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
                 "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
                 "missing_fields": [
-                  "historical_accuracy_rating",
-                  "candidate_gap_significance"
+                  "accuracy_grade",
+                  "statistical_significance"
                 ],
-                "reviewed_on": "2026-10-06",
+                "reviewed_on": "2026-10-08",
                 "review_sources": [
-                  "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
-                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                  "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+                  "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
                 ],
                 "primary_toplines": {
-                  "Josh Turek": 49,
-                  "Ashley Hinson": 47
+                  "Ashley Hinson": 45.0,
+                  "Josh Turek": 43.0
                 },
-                "question_sample_n": 1008,
+                "question_sample_n": 801,
                 "disclosure_review": {
                   "population": "LV",
-                  "sample_n": 1008,
+                  "sample_n": 801,
                   "field_dates": [
-                    "2026-09-24",
-                    "2026-09-28"
+                    "2026-09-29",
+                    "2026-10-05"
                   ],
-                  "mode": "live landline/cell interviews and text-to-web",
-                  "sampling_frame": "random statewide registered-voter file; modeled LV subset",
-                  "weighting": "age, race, education, area; ACS, voter file, Fox voter analysis",
-                  "sponsor": "Fox News",
-                  "question_wording_checked": true
+                  "question_wording_checked": true,
+                  "sampling_frame": {
+                    "L2_registration_based": 624,
+                    "SSRS_probability_panel": 177
+                  },
+                  "mode": "online and telephone; postal/SMS/email/call invitations; English",
+                  "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+                  "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+                  "question": "SENVOTEIA combinedS1/S1a withleaners",
+                  "non_candidate_responses": {
+                    "neither": 8,
+                    "other": 3,
+                    "no_opinion": "<0.5"
+                  }
                 },
                 "reported_precision": {
-                  "kind": "reported_margin_of_error",
-                  "half_width_pp": 3,
-                  "scope": "likely_voter_subsample",
-                  "model_details_verified": false
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": 95,
+                  "scope": "801_RV_weighted_for_LV",
+                  "includes_design_effects": true,
+                  "validated_here": false
                 },
-                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
+                "ballot_format": "two_candidate_with_leaners",
                 "sponsor_review": {
-                  "provider_sponsors": [
-                    "Fox News"
-                  ],
-                  "partisan": null,
-                  "internal": false,
-                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
+                  "commissioner": "CNN",
+                  "conducted_by": "SSRS"
                 },
-                "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
               },
               "leading_margin_pp": 2.0,
               "significance": "not_evaluated"
@@ -11141,20 +11528,186 @@
           "reference_details": [],
           "status_note_ko": null,
           "lead_counts": {
-            "Josh Turek": 1
+            "Ashley Hinson": 1
           },
           "tie_count": 0,
           "pollster_count": 1,
           "included_ids": [
-            "us-202beaadb6c4f9"
+            "us-202cnnc393624c"
           ],
           "conflicting_pollsters": [],
-          "latest_field_end": "2026-09-28"
+          "latest_field_end": "2026-10-05"
+        },
+        "14": {
+          "window_days": 14,
+          "from": "2026-09-25",
+          "through": "2026-10-08",
+          "population": "lv",
+          "status": "tie",
+          "party": null,
+          "leader": null,
+          "evidence_quality": {
+            "level": "unrated",
+            "grade": null,
+            "label_ko": "품질 등급 미평가",
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
+            "agreement_fraction": 0.5,
+            "conflicting_pollsters": [],
+            "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
+            "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
+          },
+          "poll_details": [
+            {
+              "id": "us-202beaadb6c4f9",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.foxnews.com/politics/fox-news-poll-turek-hinson-close-iowa-senate-race",
+                  "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Ashley Hinson": 47.0,
+                  "Josh Turek": 49.0
+                },
+                "question_sample_n": 1008,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 1008,
+                  "field_dates": [
+                    "2026-09-24",
+                    "2026-09-28"
+                  ],
+                  "question_wording_checked": true,
+                  "total_registered_sample_n": 1204,
+                  "mode": {
+                    "landline_live": 183,
+                    "cell_live": 733,
+                    "text_to_web": 288
+                  },
+                  "sampling_frame": "statewide registered voter file; probability-proportionate-to-size telephone selection",
+                  "lv_definition": "1008 subsample via probability model: pastvote/interest/intention/age/education/race/ethnicity/maritalstatus",
+                  "weighting": "age/race/education/area targets from ACS/FoxVoterAnalysis/voterfile; general publication detail",
+                  "question": "Q3 withleaners",
+                  "non_candidate_responses": {
+                    "other": 1,
+                    "would_not_vote": "<0.5",
+                    "dont_know": 2
+                  },
+                  "publication_date": "2026-10-01",
+                  "provider_created_at": "2026-10-02"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 3,
+                  "confidence_level_pct": null,
+                  "scope": "1008_LV_subsample",
+                  "validated_here": false
+                },
+                "ballot_format": "two_candidate_with_leaners",
+                "sponsor_review": {
+                  "commissioner": "Fox News",
+                  "conducted_by": "Beacon Research/Shaw & Company Research"
+                },
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202cnnc393624c",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+                  "https://s3.documentcloud.org/documents/28729018/cnn-iowa-poll-conducted-by-ssrs.pdf?t=1791421892708"
+                ],
+                "primary_toplines": {
+                  "Ashley Hinson": 45.0,
+                  "Josh Turek": 43.0
+                },
+                "question_sample_n": 801,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 801,
+                  "field_dates": [
+                    "2026-09-29",
+                    "2026-10-05"
+                  ],
+                  "question_wording_checked": true,
+                  "sampling_frame": {
+                    "L2_registration_based": 624,
+                    "SSRS_probability_panel": 177
+                  },
+                  "mode": "online and telephone; postal/SMS/email/call invitations; English",
+                  "lv_definition": "all801RV retained; RV weight multiplied by modeled2026 turnout probability; not screened801LV subset",
+                  "weighting": "Census education/race; L2 gender-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regional recalled2024vote",
+                  "question": "SENVOTEIA combinedS1/S1a withleaners",
+                  "non_candidate_responses": {
+                    "neither": 8,
+                    "other": 3,
+                    "no_opinion": "<0.5"
+                  }
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": 95,
+                  "scope": "801_RV_weighted_for_LV",
+                  "includes_design_effects": true,
+                  "validated_here": false
+                },
+                "ballot_format": "two_candidate_with_leaners",
+                "sponsor_review": {
+                  "commissioner": "CNN",
+                  "conducted_by": "SSRS"
+                },
+                "limitations_ko": "아이오와 원문수치/문항/방법 공개사항 대조. 표본·모집단·초기/leaned/승자예상 질문 구분. 정확도·유의성·당선확률 미평가. 미공개 사항은빈칸 보존."
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "reference_ids": [],
+          "reference_poll_count": 0,
+          "reference_details": [],
+          "status_note_ko": null,
+          "lead_counts": {
+            "Josh Turek": 1,
+            "Ashley Hinson": 1
+          },
+          "tie_count": 0,
+          "pollster_count": 2,
+          "included_ids": [
+            "us-202beaadb6c4f9",
+            "us-202cnnc393624c"
+          ],
+          "conflicting_pollsters": [],
+          "latest_field_end": "2026-10-05"
         }
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -13872,21 +14425,27 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Christina Bohannan",
-        "Mariannette Miller-Meeks"
+        "Mariannette Miller-Meeks",
+        "Christina Bohannan"
       ],
       "candidates": {
+        "Mariannette Miller-Meeks": {
+          "party": "REP",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Mariannette Miller-Meeks"
+        },
         "Christina Bohannan": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
           "candidate_id": null,
           "canonical_name": "Christina Bohannan"
         },
-        "Mariannette Miller-Meeks": {
-          "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "Michael Bridgford": {
+          "party": "IND",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
           "candidate_id": null,
-          "canonical_name": "Mariannette Miller-Meeks"
+          "canonical_name": "Michael Bridgford"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -13905,15 +14464,16 @@
       },
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "IND",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -13921,10 +14481,10 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:IA:house:01",
       "observations": [],
@@ -13996,7 +14556,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -14013,21 +14573,21 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Sarah Trone Garriott",
-        "Zach Nunn"
+        "Zach Nunn",
+        "Sarah Trone Garriott"
       ],
       "candidates": {
-        "Sarah Trone Garriott": {
-          "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "candidate_id": null,
-          "canonical_name": "Sarah Trone Garriott"
-        },
         "Zach Nunn": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
           "candidate_id": null,
           "canonical_name": "Zach Nunn"
+        },
+        "Sarah Trone Garriott": {
+          "party": "DEM",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Sarah Trone Garriott"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -14051,10 +14611,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -14062,10 +14622,10 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:IA:house:03",
       "observations": [],
@@ -14137,7 +14697,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -17872,21 +18432,33 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Lindsay James",
-        "Joe Mitchell"
+        "Joe Mitchell",
+        "Lindsay James"
       ],
       "candidates": {
+        "Joe Mitchell": {
+          "party": "REP",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Joe Mitchell"
+        },
         "Lindsay James": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
           "candidate_id": null,
           "canonical_name": "Lindsay James"
         },
-        "Joe Mitchell": {
-          "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "Rick Stewart": {
+          "party": "LIB",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
           "candidate_id": null,
-          "canonical_name": "Joe Mitchell"
+          "canonical_name": "Rick Stewart"
+        },
+        "Dave Bushaw": {
+          "party": "IND",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Dave Bushaw"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -17905,15 +18477,17 @@
       },
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 4,
         "parties": [
           "DEM",
+          "IND",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -17921,10 +18495,10 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:IA:house:02",
       "observations": [],
@@ -17996,7 +18570,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -39780,7 +40354,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:13.190216+00:00",
+      "fetched_at": "2026-10-08T18:41:33.885422+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -84013,522 +84587,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "gov202gba60bb6407",
-      "race_id": "USA:IA:governor",
-      "pollster": "GBAO Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-16",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [
-        "Moderate Democrats PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202z t5b74240b",
-      "race_id": "USA:IA:governor",
-      "pollster": "Z to A Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://docs.google.com/document/d/1HUjmkP8wl8fiZfh3pzRVts-fKT0QM9fMW9slGjueOB8/edit?tab=t.0",
-      "field_start": "2025-10-09",
-      "field_end": "2025-10-13",
-      "population": "lv",
-      "sample_n": 1351,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202gbab93d5de3",
-      "race_id": "USA:IA:senate",
-      "pollster": "GBAO",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-16",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [
-        "ModSquad"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202gba62b36025",
-      "race_id": "USA:IA:senate",
-      "pollster": "GBAO",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-16",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [
-        "ModSquad"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202cha781abe34",
-      "race_id": "USA:IA:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/Bencjacobs/status/2020894441196663099",
-      "field_start": "2026-01-08",
-      "field_end": "2026-01-11",
-      "population": "lv",
-      "sample_n": 1108,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202cha683eb5ac",
-      "race_id": "USA:IA:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/Bencjacobs/status/2020894441196663099",
-      "field_start": "2026-01-08",
-      "field_end": "2026-01-11",
-      "population": "lv",
-      "sample_n": 1108,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202eche298f12a",
-      "race_id": "USA:IA:governor",
-      "pollster": "Echelon Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
-      "field_start": "2026-04-03",
-      "field_end": "2026-04-09",
-      "population": "lv",
-      "sample_n": 377,
-      "sponsors": [
-        "NetChoice"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202eche7c2869f",
-      "race_id": "USA:IA:senate",
-      "pollster": "Echelon Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
-      "field_start": "2026-04-03",
-      "field_end": "2026-04-09",
-      "population": "lv",
-      "sample_n": 377,
-      "sponsors": [
-        "NetChoice"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202echf4929c57",
-      "race_id": "USA:IA:senate",
-      "pollster": "Echelon Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
-      "field_start": "2026-04-03",
-      "field_end": "2026-04-09",
-      "population": "lv",
-      "sample_n": 377,
-      "sponsors": [
-        "NetChoice"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub4897124c",
-      "race_id": "USA:IA:house:01",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/newsletters/weekly-score/2025/06/23/recruiting-candidates-in-an-age-of-political-violence-00417469",
-      "field_start": "2025-06-18",
-      "field_end": "2025-06-19",
-      "population": "a",
-      "sample_n": 555,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub957d3bcc",
-      "race_id": "USA:IA:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/newsletters/playbook/2026/06/08/ron-klain-picks-his-2028-horse-00953194",
-      "field_start": "2026-06-03",
-      "field_end": "2026-06-04",
-      "population": "rv",
-      "sample_n": 557,
-      "sponsors": [
-        "Democratic Senatorial Campaign Committee"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202cyg1a1704da",
-      "race_id": "USA:IA:governor",
-      "pollster": "Cygnal",
-      "reason": "pollster_not_selected",
-      "source_url": "https://taxrelief.org/itr-foundation-poll-shows-iowans-want-taxpayer-protection/",
-      "field_start": "2026-06-16",
-      "field_end": "2026-06-19",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Iowans for Tax Relief"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202cyg40c776c5",
-      "race_id": "USA:IA:senate",
-      "pollster": "Cygnal",
-      "reason": "pollster_not_selected",
-      "source_url": "https://taxrelief.org/itr-foundation-poll-shows-iowans-want-taxpayer-protection/",
-      "field_start": "2026-06-16",
-      "field_end": "2026-06-19",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Iowans for Tax Relief"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the3f5e8a60",
-      "race_id": "USA:IA:governor",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-iowa-poll-crosstabs.html",
-      "field_start": "2026-06-15",
-      "field_end": "2026-06-17",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the52e3337f",
-      "race_id": "USA:IA:senate",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-iowa-poll-crosstabs.html",
-      "field_start": "2026-06-15",
-      "field_end": "2026-06-27",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202bea7aa62909",
-      "race_id": "USA:IA:governor",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.foxnews.com/politics/fox-news-poll-close-senate-contest-brewing-iowa",
-      "field_start": "2026-06-23",
-      "field_end": "2026-06-27",
-      "population": "rv",
-      "sample_n": 1003,
-      "sponsors": [
-        "Fox News"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202bea93a2c09c",
-      "race_id": "USA:IA:senate",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.foxnews.com/politics/fox-news-poll-close-senate-contest-brewing-iowa",
-      "field_start": "2026-06-23",
-      "field_end": "2026-06-27",
-      "population": "rv",
-      "sample_n": 1003,
-      "sponsors": [
-        "Fox News"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the20e70677",
-      "race_id": "USA:IA:house:01",
-      "pollster": "The Bullfinch Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat",
-      "field_start": "2026-07-13",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 705,
-      "sponsors": [
-        "The Independent Center"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202glob1380568",
-      "race_id": "USA:IA:house:02",
-      "pollster": "Global Strategy Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static.notus.org/27/58/c93f2d1946c0814f583fa25c7a31/hmp-ia-02-poll.pdf",
-      "field_start": "2026-07-14",
-      "field_end": "2026-07-19",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202emeebb78070",
-      "race_id": "USA:IA:governor",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll/",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-04",
-      "population": "lv",
-      "sample_n": 712,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202eme4923d9f5",
-      "race_id": "USA:IA:senate",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll/",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-04",
-      "population": "lv",
-      "sample_n": 712,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sufbade674c",
-      "race_id": "USA:IA:governor",
-      "pollster": "Suffolk University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-August-26-2026-Iowa-Governor-and-US-Senate-General-Election",
-      "field_start": "2026-08-20",
-      "field_end": "2026-08-23",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202sufc2449e1f",
-      "race_id": "USA:IA:senate",
-      "pollster": "Suffolk University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-August-26-2026-Iowa-Governor-and-US-Senate-General-Election",
-      "field_start": "2026-08-20",
-      "field_end": "2026-08-23",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202you30403394",
-      "race_id": "USA:IA:governor",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
-      "field_start": "2026-09-03",
-      "field_end": "2026-09-08",
-      "population": "lv",
-      "sample_n": 2041,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202wedc80e1999",
-      "race_id": "USA:IA:governor",
-      "pollster": "Wedgewood Polls",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1db0gbhfCa_aNzU7yfM3dufl601cW1FbY/view",
-      "field_start": "2026-08-27",
-      "field_end": "2026-08-29",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202emed6f735ab",
-      "race_id": "USA:IA:governor",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
-      "field_start": "2026-08-31",
-      "field_end": "2026-09-01",
-      "population": "lv",
-      "sample_n": 750,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202emec4141ca7",
-      "race_id": "USA:IA:senate",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
-      "field_start": "2026-08-31",
-      "field_end": "2026-09-01",
-      "population": "lv",
-      "sample_n": 750,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202youa33846f3",
-      "race_id": "USA:IA:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
-      "field_start": "2026-09-03",
-      "field_end": "2026-09-08",
-      "population": "rv",
-      "sample_n": 2166,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202youe257a121",
-      "race_id": "USA:IA:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
-      "field_start": "2026-09-03",
-      "field_end": "2026-09-08",
-      "population": "lv",
-      "sample_n": 2041,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202you89addccd",
-      "race_id": "USA:IA:governor",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
-      "field_start": "2026-09-03",
-      "field_end": "2026-09-08",
-      "population": "rv",
-      "sample_n": 2167,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202co/dc2b4681",
-      "race_id": "USA:IA:senate",
-      "pollster": "co/efficient",
-      "reason": "pollster_not_selected",
-      "source_url": "https://battlegrounds.coefficient.org/ia/",
-      "field_start": "2026-09-14",
-      "field_end": "2026-09-16",
-      "population": "lv",
-      "sample_n": 831,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202co/562ad972",
-      "race_id": "USA:IA:governor",
-      "pollster": "co/efficient",
-      "reason": "pollster_not_selected",
-      "source_url": "https://battlegrounds.coefficient.org/ia/",
-      "field_start": "2026-09-14",
-      "field_end": "2026-09-16",
-      "population": "lv",
-      "sample_n": 831,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "us-202pubd70ec8a7",
       "race_id": "USA:CA:house:22",
       "pollster": "Public Policy Polling",
@@ -91976,6 +92034,522 @@
       "internal": false,
       "partisan": null,
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202gba60bb6407",
+      "race_id": "USA:IA:governor",
+      "pollster": "GBAO Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-16",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [
+        "Moderate Democrats PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202z t5b74240b",
+      "race_id": "USA:IA:governor",
+      "pollster": "Z to A Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://docs.google.com/document/d/1HUjmkP8wl8fiZfh3pzRVts-fKT0QM9fMW9slGjueOB8/edit?tab=t.0",
+      "field_start": "2025-10-09",
+      "field_end": "2025-10-13",
+      "population": "lv",
+      "sample_n": 1351,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202gbab93d5de3",
+      "race_id": "USA:IA:senate",
+      "pollster": "GBAO",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-16",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [
+        "ModSquad"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202gba62b36025",
+      "race_id": "USA:IA:senate",
+      "pollster": "GBAO",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=0000019d-8400-d182-a9fd-b63c76ae0000",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-16",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [
+        "ModSquad"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202cha781abe34",
+      "race_id": "USA:IA:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/Bencjacobs/status/2020894441196663099",
+      "field_start": "2026-01-08",
+      "field_end": "2026-01-11",
+      "population": "lv",
+      "sample_n": 1108,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202cha683eb5ac",
+      "race_id": "USA:IA:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/Bencjacobs/status/2020894441196663099",
+      "field_start": "2026-01-08",
+      "field_end": "2026-01-11",
+      "population": "lv",
+      "sample_n": 1108,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202eche298f12a",
+      "race_id": "USA:IA:governor",
+      "pollster": "Echelon Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+      "field_start": "2026-04-03",
+      "field_end": "2026-04-09",
+      "population": "lv",
+      "sample_n": 377,
+      "sponsors": [
+        "NetChoice"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202eche7c2869f",
+      "race_id": "USA:IA:senate",
+      "pollster": "Echelon Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+      "field_start": "2026-04-03",
+      "field_end": "2026-04-09",
+      "population": "lv",
+      "sample_n": 377,
+      "sponsors": [
+        "NetChoice"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202echf4929c57",
+      "race_id": "USA:IA:senate",
+      "pollster": "Echelon Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+      "field_start": "2026-04-03",
+      "field_end": "2026-04-09",
+      "population": "lv",
+      "sample_n": 377,
+      "sponsors": [
+        "NetChoice"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub4897124c",
+      "race_id": "USA:IA:house:01",
+      "pollster": "Public Policy Polling",
+      "reason": "pre_primary_historical_poll_not_general_signal",
+      "source_url": "https://www.politico.com/newsletters/weekly-score/2025/06/23/recruiting-candidates-in-an-age-of-political-violence-00417469",
+      "field_start": "2025-06-18",
+      "field_end": "2025-06-19",
+      "population": "a",
+      "sample_n": 555,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub957d3bcc",
+      "race_id": "USA:IA:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/newsletters/playbook/2026/06/08/ron-klain-picks-his-2028-horse-00953194",
+      "field_start": "2026-06-03",
+      "field_end": "2026-06-04",
+      "population": "rv",
+      "sample_n": 557,
+      "sponsors": [
+        "Democratic Senatorial Campaign Committee"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202cyg1a1704da",
+      "race_id": "USA:IA:governor",
+      "pollster": "Cygnal",
+      "reason": "pollster_not_selected",
+      "source_url": "https://taxrelief.org/itr-foundation-poll-shows-iowans-want-taxpayer-protection/",
+      "field_start": "2026-06-16",
+      "field_end": "2026-06-19",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Iowans for Tax Relief"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202cyg40c776c5",
+      "race_id": "USA:IA:senate",
+      "pollster": "Cygnal",
+      "reason": "pollster_not_selected",
+      "source_url": "https://taxrelief.org/itr-foundation-poll-shows-iowans-want-taxpayer-protection/",
+      "field_start": "2026-06-16",
+      "field_end": "2026-06-19",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Iowans for Tax Relief"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the3f5e8a60",
+      "race_id": "USA:IA:governor",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-iowa-poll-crosstabs.html",
+      "field_start": "2026-06-15",
+      "field_end": "2026-06-17",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the52e3337f",
+      "race_id": "USA:IA:senate",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-iowa-poll-crosstabs.html",
+      "field_start": "2026-06-15",
+      "field_end": "2026-06-27",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202bea7aa62909",
+      "race_id": "USA:IA:governor",
+      "pollster": "Beacon Research/Shaw & Co. Research",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.foxnews.com/politics/fox-news-poll-close-senate-contest-brewing-iowa",
+      "field_start": "2026-06-23",
+      "field_end": "2026-06-27",
+      "population": "rv",
+      "sample_n": 1003,
+      "sponsors": [
+        "Fox News"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202bea93a2c09c",
+      "race_id": "USA:IA:senate",
+      "pollster": "Beacon Research/Shaw & Co. Research",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.foxnews.com/politics/fox-news-poll-close-senate-contest-brewing-iowa",
+      "field_start": "2026-06-23",
+      "field_end": "2026-06-27",
+      "population": "rv",
+      "sample_n": 1003,
+      "sponsors": [
+        "Fox News"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the20e70677",
+      "race_id": "USA:IA:house:01",
+      "pollster": "The Bullfinch Group",
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "source_url": "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat",
+      "field_start": "2026-07-13",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 705,
+      "sponsors": [
+        "The Independent Center"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202glob1380568",
+      "race_id": "USA:IA:house:02",
+      "pollster": "Global Strategy Group",
+      "reason": "missing_sample_and_primary_methodology",
+      "source_url": "https://static.notus.org/27/58/c93f2d1946c0814f583fa25c7a31/hmp-ia-02-poll.pdf",
+      "field_start": "2026-07-14",
+      "field_end": "2026-07-19",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202emeebb78070",
+      "race_id": "USA:IA:governor",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll/",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-04",
+      "population": "lv",
+      "sample_n": 712,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202eme4923d9f5",
+      "race_id": "USA:IA:senate",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll/",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-04",
+      "population": "lv",
+      "sample_n": 712,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sufbade674c",
+      "race_id": "USA:IA:governor",
+      "pollster": "Suffolk University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-August-26-2026-Iowa-Governor-and-US-Senate-General-Election",
+      "field_start": "2026-08-20",
+      "field_end": "2026-08-23",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202sufc2449e1f",
+      "race_id": "USA:IA:senate",
+      "pollster": "Suffolk University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-August-26-2026-Iowa-Governor-and-US-Senate-General-Election",
+      "field_start": "2026-08-20",
+      "field_end": "2026-08-23",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202you30403394",
+      "race_id": "USA:IA:governor",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
+      "field_start": "2026-09-03",
+      "field_end": "2026-09-08",
+      "population": "lv",
+      "sample_n": 2041,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202wedc80e1999",
+      "race_id": "USA:IA:governor",
+      "pollster": "Wedgewood Polls",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1db0gbhfCa_aNzU7yfM3dufl601cW1FbY/view",
+      "field_start": "2026-08-27",
+      "field_end": "2026-08-29",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202emed6f735ab",
+      "race_id": "USA:IA:governor",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
+      "field_start": "2026-08-31",
+      "field_end": "2026-09-01",
+      "population": "lv",
+      "sample_n": 750,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202emec4141ca7",
+      "race_id": "USA:IA:senate",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
+      "field_start": "2026-08-31",
+      "field_end": "2026-09-01",
+      "population": "lv",
+      "sample_n": 750,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202youa33846f3",
+      "race_id": "USA:IA:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
+      "field_start": "2026-09-03",
+      "field_end": "2026-09-08",
+      "population": "rv",
+      "sample_n": 2166,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202youe257a121",
+      "race_id": "USA:IA:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
+      "field_start": "2026-09-03",
+      "field_end": "2026-09-08",
+      "population": "lv",
+      "sample_n": 2041,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202you89addccd",
+      "race_id": "USA:IA:governor",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/iowa_election_20260903.pdf",
+      "field_start": "2026-09-03",
+      "field_end": "2026-09-08",
+      "population": "rv",
+      "sample_n": 2167,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202co/dc2b4681",
+      "race_id": "USA:IA:senate",
+      "pollster": "co/efficient",
+      "reason": "pollster_not_selected",
+      "source_url": "https://battlegrounds.coefficient.org/ia/",
+      "field_start": "2026-09-14",
+      "field_end": "2026-09-16",
+      "population": "lv",
+      "sample_n": 831,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202co/562ad972",
+      "race_id": "USA:IA:governor",
+      "pollster": "co/efficient",
+      "reason": "pollster_not_selected",
+      "source_url": "https://battlegrounds.coefficient.org/ia/",
+      "field_start": "2026-09-14",
+      "field_end": "2026-09-16",
+      "population": "lv",
+      "sample_n": 831,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -92015,7 +92589,7 @@
       "cook_toss_up_and_lean": {
         "race_count": 64,
         "with_observations": 30,
-        "recent_7d": 3,
+        "recent_7d": 5,
         "recent_14d": 13
       },
       "korean_company_facilities": {
@@ -99555,21 +100129,21 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "recent_14d_only",
-        "provider_record_count": 16,
-        "accepted_count": 3,
-        "aggregation_eligible_count": 3,
+        "status": "recent_7d",
+        "provider_record_count": 17,
+        "accepted_count": 4,
+        "aggregation_eligible_count": 4,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": "2026-10-01",
+        "latest_accepted_field_end": "2026-10-05",
         "windows": {
           "7": {
-            "status": "no_recent_poll",
-            "pollster_count": 0
+            "status": "single_poll_lead",
+            "pollster_count": 1
           },
           "14": {
             "status": "poll_lead",
-            "pollster_count": 2
+            "pollster_count": 3
           }
         },
         "rejection_reasons": {
@@ -99624,7 +100198,8 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "commissioner_primary_methodology_not_obtained": 1,
+          "pre_primary_historical_poll_not_general_signal": 1
         },
         "review_queue_ids": [
           "us-202the20e70677",
@@ -99663,7 +100238,7 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "missing_sample_and_primary_methodology": 1
         },
         "review_queue_ids": [
           "us-202glob1380568"
@@ -99717,21 +100292,21 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "recent_14d_only",
-        "provider_record_count": 18,
-        "accepted_count": 2,
-        "aggregation_eligible_count": 2,
+        "status": "recent_7d",
+        "provider_record_count": 19,
+        "accepted_count": 3,
+        "aggregation_eligible_count": 3,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": "2026-09-28",
+        "latest_accepted_field_end": "2026-10-05",
         "windows": {
           "7": {
-            "status": "no_recent_poll",
-            "pollster_count": 0
-          },
-          "14": {
             "status": "single_poll_lead",
             "pollster_count": 1
+          },
+          "14": {
+            "status": "tie",
+            "pollster_count": 2
           }
         },
         "rejection_reasons": {
@@ -111355,7 +111930,7 @@
       "senate": {
         "races": 35,
         "with_polls": 12,
-        "with_recent_7d": 2,
+        "with_recent_7d": 3,
         "with_recent_14d": 5,
         "with_super_pac": 34,
         "closed_elections": 0
@@ -111363,15 +111938,15 @@
       "governor": {
         "races": 36,
         "with_polls": 18,
-        "with_recent_7d": 3,
+        "with_recent_7d": 4,
         "with_recent_14d": 8,
         "with_super_pac": 0,
         "closed_elections": 0
       }
     },
     "ballot_counts": {
-      "ballot_review_incomplete": 34,
-      "contested": 451,
+      "ballot_review_incomplete": 33,
+      "contested": 452,
       "minor_party_or_independent_opposition": 5,
       "same_party_contest": 9,
       "official_general_unopposed_listing": 1,
@@ -112547,13 +113122,13 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "recent_14d_only",
+        "poll_status": "recent_7d",
         "phase": "pre_election",
-        "poll_observation_count": 3,
-        "poll_eligible_count": 3,
-        "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 2,
-        "provider_record_count": 16,
+        "poll_observation_count": 4,
+        "poll_eligible_count": 4,
+        "recent_7d_pollsters": 1,
+        "recent_14d_pollsters": 3,
+        "provider_record_count": 17,
         "rejection_reasons": {
           "pollster_not_selected": 8,
           "outside_reviewed_general_period": 5
@@ -112580,11 +113155,21 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
-          "general_unopposed": null,
+          "status": "contested",
+          "candidate_count": 2,
+          "parties": [
+            "DEM",
+            "REP"
+          ],
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:OH:senate": {
@@ -112790,13 +113375,13 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "recent_14d_only",
+        "poll_status": "recent_7d",
         "phase": "pre_election",
-        "poll_observation_count": 2,
-        "poll_eligible_count": 2,
-        "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 1,
-        "provider_record_count": 18,
+        "poll_observation_count": 3,
+        "poll_eligible_count": 3,
+        "recent_7d_pollsters": 1,
+        "recent_14d_pollsters": 2,
+        "provider_record_count": 19,
         "rejection_reasons": {
           "pollster_not_selected": 11,
           "outside_reviewed_general_period": 5
@@ -112824,15 +113409,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -113568,7 +114154,8 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 2,
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "commissioner_primary_methodology_not_obtained": 1,
+          "pre_primary_historical_poll_not_general_signal": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -113593,15 +114180,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "IND",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -113655,10 +114243,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -115044,7 +115632,7 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "missing_sample_and_primary_methodology": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -115069,15 +115657,17 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 4,
           "parties": [
             "DEM",
+            "IND",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -141419,9 +142009,7 @@
           "race_count": 1,
           "scheduled": true,
           "polls_without_observations": [],
-          "polls_without_7d": [
-            "USA:IA:governor"
-          ],
+          "polls_without_7d": [],
           "polls_not_required_general_unopposed": [],
           "super_pac_without_observed_records": [
             "USA:IA:governor"
@@ -141434,9 +142022,7 @@
           "race_count": 1,
           "scheduled": true,
           "polls_without_observations": [],
-          "polls_without_7d": [
-            "USA:IA:senate"
-          ],
+          "polls_without_7d": [],
           "polls_not_required_general_unopposed": [],
           "super_pac_without_observed_records": []
         },
@@ -144285,10 +144871,24 @@
       "state": "IA",
       "cycle": 2026,
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:25:13.190216+00:00",
+      "captured_at": "2026-10-08T18:41:33.885422+00:00",
       "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 37
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 39,
+      "primary_supplement_receipts": [],
+      "primary_rechecked_ids": [
+        "us-202cnnc393624c",
+        "gov202cnn1640632d",
+        "us-202beaadb6c4f9",
+        "gov202bea91ef4faa",
+        "us-202marf54f428e",
+        "gov202marf9ae66ed"
+      ],
+      "primary_rechecked_at": "2026-10-08T15:14:08.011093+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/IA-primary-20261009.json",
+      "governor_source_checked_at": "2026-10-08T15:14:26.676538+00:00",
+      "governor_source_access_data_file": "usa_governor_source_access/2026/IA.json",
+      "governor_report_discovery_data_file": "usa_governor_ie_report_indexes/2026/IA.json"
     },
     "CA": {
       "state": "CA",
