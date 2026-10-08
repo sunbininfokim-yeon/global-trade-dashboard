@@ -42,5 +42,44 @@ class Apply(unittest.TestCase):
         self.assertFalse(gc.apply(country, contrib))
 
 
+class Sides(unittest.TestCase):
+    def test_parts_sum_their_signed_terms(self):
+        spec = {"basis_ko": "", "source": "", "source_urls": [], "total": ("t",),
+                "parts": [("net_exports", "순수출", [(1, ("x",)), (-1, ("m",))])]}
+        data = {("t",): list(zip(Q, [0.8, 0.82])), ("x",): list(zip(Q, [0.1, 1.17])), ("m",): list(zip(Q, [1.0, 0.09]))}
+        side = gc.build_side(spec, lambda src: data[src])
+        self.assertEqual(side["parts"][0]["values"], [-0.9, 1.08])
+
+    def test_contributions_computed_from_levels(self):
+        spec = {"basis_ko": "", "source": "", "source_urls": [], "computed_from_levels": True, "total": ("gdp",),
+                "parts": [("pce", "소비", [(1, ("c",))])]}
+        data = {("gdp",): list(zip(Q, [100.0, 101.0])), ("c",): list(zip(Q, [60.0, 60.5]))}
+        side = gc.build_side(spec, lambda src: data[src])
+        self.assertEqual(side["total"], [1.0])
+        self.assertEqual(side["parts"][0]["values"], [0.5])           # 0.5 / 100 GDP
+        self.assertTrue(side["computed"])
+
+    def test_detail_rows_for_the_latest_quarter(self):
+        spec = {"basis_ko": "", "source": "", "source_urls": [], "total": ("t",),
+                "parts": [("goods", "재화", [(1, ("g",))])],
+                "detail": [("53", "부동산", "services", ("d53",)), ("99", "없음", "x", ("missing",))]}
+        data = {("t",): list(zip(Q, [1.0, 2.2])), ("g",): list(zip(Q, [0.3, 0.37])), ("d53",): list(zip(Q, [0.1, 0.57]))}
+        side = gc.build_side(spec, lambda src: data[src])
+        self.assertEqual(side["detail"], [{"id": "53", "label_ko": "부동산", "group": "services", "value": 0.57}])
+
+    def test_apply_both_sides(self):
+        country = {"indicators": [{"id": "gdp"}]}
+        self.assertTrue(gc.apply(country, {"parts": []}, {"parts": [1]}))
+        self.assertEqual(country["indicators"][0]["contrib_industry"], {"parts": [1]})
+
+    def test_keys_never_in_error_messages(self):
+        r = gc.Readers(fetch=object(), get=lambda *a, **k: (_ for _ in ()).throw(RuntimeError("https://x/SECRETKEY/y")))
+        import os
+        os.environ["ECOS_API_KEY"] = "SECRETKEY"
+        with self.assertRaises(RuntimeError) as ctx:
+            r(("ecos", "200Y125", "10601"))
+        self.assertNotIn("SECRETKEY", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

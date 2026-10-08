@@ -977,10 +977,11 @@ const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
 // negative parts down -- with the published growth rate as a dot, and the
 // latest quarter as a table whose sum is checked against the headline.
 const MM_CONTRIB_COLORS = {
-    pce: '#38bdf8', investment: '#a78bfa', inventories: '#f472b6',
+    pce: '#38bdf8', investment: '#a78bfa', construction: '#818cf8', ipp: '#c4b5fd', inventories: '#f472b6',
     government: '#34d399', net_exports: '#fbbf24',
+    goods: '#fb923c', services: '#38bdf8', manufacturing: '#fb923c', other: '#94a3b8', taxes: '#64748b',
 };
-const mmContribView = (c) => {
+const mmContribView = (c, side = '') => {
     if (!c || !(c.parts || []).length) return '<p class="fin-note">기여도 자료가 없습니다.</p>';
     const n = c.periods.length;
     const W = 640, H = 240, padL = 34, padR = 8, padT = 10, padB = 24;
@@ -1027,7 +1028,7 @@ const mmContribView = (c) => {
     const links = (c.source_urls || []).map((u, k) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">원자료${k ? ' ' + (k + 1) : ''} ↗</a>`).join(' ');
     return `
         <div class="mm-contrib">
-            <p class="mm-view-title">실질GDP 성장 기여도 · ${finEsc(c.basis_ko || '')}</p>
+            <p class="mm-view-title">실질GDP 성장 기여도${side ? ' · ' + finEsc(side) : ''} · ${finEsc(c.basis_ko || '')}${c.computed ? ' · <span class="mm-contrib-computed">계산값</span>' : ''}</p>
             <div class="mm-contrib-legend">${legend}</div>
             <svg viewBox="0 0 ${W} ${H}" class="mm-contrib-chart" role="img" aria-label="GDP 성장 기여도">${zero}${ticks}${bars}</svg>
             <table class="mm-contrib-table">
@@ -1039,6 +1040,16 @@ const mmContribView = (c) => {
                     ${Math.abs(lt.residual || 0) >= 0.01 ? `<tr class="mm-contrib-res"><td>잔차(반올림·연쇄가중)</td><td>${sign(lt.residual)}</td></tr>` : ''}
                 </tfoot>
             </table>
+            ${(c.detail || []).length ? `
+            <p class="mm-view-title mm-contrib-detail-title">${finEsc(lt.period || '')} 업종별 (%p, 큰 순)</p>
+            <div class="mm-contrib-detail">${(c.detail.some((d) => String(d.label_ko).startsWith('  '))
+                    ? c.detail                                     // nested (Korea): keep the parent/child order
+                    : [...c.detail].sort((a, b) => b.value - a.value))   // flat (BEA): largest first, as BEA charts it
+                .map((d) => `<div class="mm-contrib-drow${String(d.label_ko).startsWith('  ') ? ' sub' : ''}">
+                    <i class="mm-contrib-sw" style="background:${color(d.group)}"></i>
+                    <span>${finEsc(String(d.label_ko).trim())}</span>
+                    <span class="mm-contrib-dbar"><b class="${d.value < 0 ? 'neg' : 'pos'}" style="width:${Math.min(100, Math.abs(d.value) / Math.max(...c.detail.map((x) => Math.abs(x.value)), 0.01) * 100).toFixed(0)}%"></b></span>
+                    <span class="${d.value < 0 ? 'neg' : 'pos'}">${sign(d.value)}</span></div>`).join('')}</div>` : ''}
             <p class="fin-note">${finEsc(c.note_ko || '')}${c.note_ko ? ' ' : ''}출처: ${finEsc(c.source || '')}. 막대 위 마우스를 올리면 분기별 값이 나옵니다. ${links}</p>
         </div>`;
 };
@@ -1486,7 +1497,8 @@ const mmViewsFor = (ind) => {
                && ind.chart_type === 'line+components') {
         views.push({ id: 'components', label: '구성' });
     }
-    if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: '기여도' });
+    if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: ind.contrib_industry ? '지출 기여도' : '기여도' });
+    if (ind.contrib_industry && has(ind.contrib_industry.parts)) views.push({ id: 'contrib_ind', label: '산업 기여도' });
     return views.length ? views : [{ id: 'history', label: '추이' }];
 };
 
@@ -1623,6 +1635,7 @@ const mmChartDrawer = () => {
     else if (view === 'outcomes') body = mmOutcomesView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
     else if (view === 'contrib') body = mmContribView(ind.contrib);
+    else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;

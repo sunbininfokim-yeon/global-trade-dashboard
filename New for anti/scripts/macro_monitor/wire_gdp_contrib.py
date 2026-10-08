@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Attach contributions to real GDP growth (consumption / investment / government / net exports) to the
-`gdp` card of each country in gdp_contrib.COUNTRIES. Keyless (FRED, Eurostat).
+`gdp` card of each country in gdp_contrib.COUNTRIES. Keys from env or ~/.config: BEA_API_KEY (US industry), ECOS_API_KEY (Korea), BPS_API_KEY (Indonesia);
+the rest keyless.
 
     python3 wire_gdp_contrib.py
 
@@ -18,7 +19,6 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor import gdp_contrib as gc  # noqa: E402
-from macro_monitor.world_public_series import Fetch  # noqa: E402
 
 PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 
@@ -27,19 +27,21 @@ def main() -> int:
     text = PACK.read_text(encoding="utf-8")
     pack = json.loads(text)
     by_iso = {c["iso3"]: c for c in pack["countries"]}
-    fetch, failures = Fetch(), []
-    for iso3 in gc.COUNTRIES:
-        try:
-            contrib = gc.build(iso3, lambda kind, key: fetch.get(kind, key) if kind == "fred"
-                               else fetch.get("eurostat", "namq_10_gdp", key))
-        except Exception as exc:  # noqa: BLE001 -- one country failing must not block the others
-            failures.append(f"{iso3}: {str(exc)[:150]}")
-            continue
-        changed = gc.apply(by_iso[iso3], contrib)
-        lt = contrib["latest"]
-        parts = ", ".join(f"{p['label_ko']} {p['values'][-1]:+.2f}" for p in contrib["parts"])
-        print(f"{iso3} {lt['period']}: GDP {lt['total']:+.2f} = {parts} (잔차 {lt['residual']:+.2f})"
-              f"{'' if changed else ' -- unchanged'}")
+    read, failures = gc.Readers(), []
+    for iso3, sides in gc.SIDES.items():
+        built = {}
+        for side, spec in sides.items():
+            try:
+                built[side] = gc.build_side(spec, read)
+            except Exception as exc:  # noqa: BLE001 -- one side failing must not block the others
+                failures.append(f"{iso3} {side}: {str(exc)[:150]}")
+                continue
+            c = built[side]
+            lt = c["latest"]
+            parts = ", ".join(f"{p['label_ko']} {p['values'][-1]:+.2f}" for p in c["parts"])
+            print(f"{iso3} {side[:3]} {lt['period']}: GDP {lt['total']:+.2f} = {parts} (잔차 {lt['residual']:+.2f})")
+        if built and iso3 in by_iso:
+            gc.apply(by_iso[iso3], built.get("expenditure"), built.get("industry"))
     out = json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if out != text:
         PACK.write_text(out, encoding="utf-8")
