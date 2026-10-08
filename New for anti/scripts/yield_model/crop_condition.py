@@ -205,6 +205,11 @@ def state_index(df):
     wide = df.pivot_table(index=["year", "week", "week_ending"], columns="rating",
                           values="pct", aggfunc="first").reset_index()
     have = [c for c in RATINGS if c in wide.columns]
+    # NASS omits a rating that is zero that week (1994 Iowa corn lists only
+    # excellent, good and fair). A missing rating is 0%, not unknown; left as
+    # NaN it made the index NaN and the region average silently dropped the
+    # state while keeping its weight.
+    wide[have] = wide[have].fillna(0.0)
     total = wide[have].sum(axis=1)
     # A week whose shares don't add to ~100 is a partial release; skip it.
     wide = wide[(total > 95) & (total < 105)].copy()
@@ -231,6 +236,7 @@ def region_index(crop):
     total_w = sum(st["weight"] for st in CROPS[crop]["states"])
 
     def agg(g):
+        g = g.dropna(subset=["cci", "ge_pct"])
         w = g.weight / g.weight.sum()
         return pd.Series({"week_ending": g.week_ending.max(),
                           "cci": float((g.cci * w).sum()),
