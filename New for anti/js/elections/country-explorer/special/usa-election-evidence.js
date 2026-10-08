@@ -118,7 +118,7 @@ export const pollEvidenceHtml = (race, board, health, days = 7) => {
     const leads = Object.entries(signal.window?.lead_counts || {});
     const leadCountText = leads.length ? `조사별 우세 횟수: ${leads.map(([candidate, count]) => `${candidate} ${count}회`).join(' · ')}${signal.window?.tie_count ? ` · 동률 ${signal.window.tie_count}회` : ''}` : '';
     const coverage = board?.monitoring?.race_coverage?.[race?.race_id];
-    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '본선 후보 대진 검토 대기 · 새 조사 자동 채택 보류'
+    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '여론조사 후보 대진 대조 대기 · 새 조사 자동 채택 보류'
         : coverage.status === 'no_provider_record' ? '현재 수집 API 미발견 · 조사 자체의 부재를 뜻하지 않음'
         : coverage.status === 'review_required' ? '발견한 조사 출처·문항 검토 대기' : '';
     const note = race?.schedule_status === 'watch_slot_unverified' && !hasPoll

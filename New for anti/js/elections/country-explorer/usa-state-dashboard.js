@@ -1,11 +1,12 @@
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 // ?v=7: 이전 슈퍼팩 모듈이 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=7';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=3';
-import { pollEvidenceHtml, latestPollHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=3';
-import { candidateMatchupHtml } from './special/usa-candidate-matchup.js';
-import { ELECTION_OFFICES } from '../data/election-overview.js?v=2';
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=9';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=4';
+import { pollEvidenceHtml, latestPollHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=4';
+import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=2';
+import { ELECTION_OFFICES } from '../data/election-overview.js?v=3';
+import { electionMatchup } from '../data/election-matchups.js';
 
 export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null) => {
     const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
@@ -30,7 +31,7 @@ export const districtFocusHtml = (state, district, financeRaces, contract, board
     const poll = board?.races?.[id];
     return `<section class="elections-district-focus" tabindex="-1"><header><h3>${escapeHtml(state.id)} · 하원 ${key === '00' ? '전역구' : Number(key) + '구'}</h3><button type="button" data-clear-district aria-label="선거구 선택 해제">×</button></header>
         <p>현재 의원: ${member ? person(member) : '공석·현직 명부 미확인'}</p>
-        ${candidateMatchupHtml(poll, finance, contract, board, health, days)}
+        ${candidateMatchupHtml(poll, finance, contract, board, health, days, {matchup: electionMatchup(state,id,poll),openPrimary:state.id === 'LA'})}
         <p class="elections-panel-note">참고 · 공시 누적 합계 (본선·경선·과거 포함, 위 후보별 본선 금액과 별개)</p>
         ${financeEvidenceHtml(finance,contract)}
         <p class="elections-panel-note">${finance ? '아래 슈퍼팩 목록에서 경선·과거 공시와 정당별 누적 금액을 더 볼 수 있습니다.' : '이 선거구의 외부 지출 자료 연결 대기'}</p></section>`;
