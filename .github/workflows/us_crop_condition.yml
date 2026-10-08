@@ -1,0 +1,49 @@
+name: US Crop Condition (NASS weekly)
+
+on:
+  schedule:
+    # Tue 00:40 UTC -- NASS publishes Crop Progress Mondays 16:00 ET, so this
+    # always lands after that week's release.
+    - cron: '40 0 * * 2'
+  workflow_dispatch:
+
+jobs:
+  condition:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy
+
+      - name: Collect condition and backtest it
+        working-directory: "New for anti/scripts/yield_model"
+        env:
+          USDA_NASS_API_KEY: ${{ secrets.USDA_NASS_API_KEY }}
+        run: |
+          python crop_condition.py
+          python condition_backtest.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/us_crop_condition.csv" \
+                  "New for anti/scripts/yield_model/us_condition_backtest.json"
+          git commit -m "chore: weekly US crop condition refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
