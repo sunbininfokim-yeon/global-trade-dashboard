@@ -1,0 +1,117 @@
+# 미국50주 순차 여론조사·독립지출 연결 — 2026-10-08
+
+사용자 지시: 50개 주를 A–E로 나누고 한 주씩 여론조사와 슈퍼팩을 연결. 후보 PR #490 기반의 별도 브랜치 `codex/us-state-evidence-20261008`에서 수행한다. UI·workflow·병합·배포는 이번 작업 범위 밖이며 배포 보류를 유지한다.
+
+## 실행 순서
+
+| 그룹 | 기준 | 주별 순서 |
+|---|---|---|
+| A | 요청 주·핵심 스윙스테이트 | NY → TN → GA → FL → PA → MI → WI → AZ → NV → NC |
+| B | Cook 경합이 많은 나머지 주 | TX → OH → IA → CA → CO → VA → AK → KS → NE → ME |
+| C | 남은 Cook 경합·한국기업 및 산업 관심 | AL → NJ → NM → NH → WA → OR → MT → IN → IL → KY |
+| D | 나머지 주 1차 | CT → MD → MA → MN → MO → UT → HI → RI → ID → SD |
+| E | 나머지 주 2차·루이지애나 별도 단계 | AR → DE → LA → MS → ND → OK → SC → VT → WV → WY |
+
+그룹은 우선 작업 순서이며 선거 전망·품질 등급이 아니다. A는 NY/TN/GA/FL 및 기존 스윙 감시 주, 추가 요청 TX는 B 첫 순서다. B의 Cook 경합 수는 검토본 원래 날짜(하원9/25·상원10/6·주지사10/1)를 유지한다. 10/8 Cook 직접 접근은403이므로 최신 등급으로 갱신했다는 주장을 하지 않는다. 검토된 기업 시설 주는 AL/GA/MI/TN/TX이며 C 모든 주의 기업 주소 연결이 확인된 것은 아니다.
+
+## 실제 완료와 남은 범위
+
+- A→E 순서로50주 연결 점검을 실행했다. 하원435·선거 상원35·선거 주지사36의 후보/조사/공시를 주별 JSON에 연결한다. 비선거 상원·주지사를 공백으로 세지 않는다.
+- 이것은 **전국 공시 수집 완성**이 아니다. NY는 실제 API 및 원문을 재검토한 부분 연결, 나머지49주는 기존 검증 산출물 연결 점검 상태다. 다음 심화 검토 순서는 **TN**이다.
+- 주지사 공식 독립지출은 CA·NY의2주만 구현된 부분 수집이다. 선거가 있는 나머지34주는 어댑터/출처 검토가 필요하고, 비선거14주는 별도다. 미확보를0달러나 관측 없음 확정으로 처리하지 않는다.
+- 하원917개 후보 ID가 같은 지역구 공시 카드와 연결된다. 상원은 현재 후보·공개 명부의 인용ID·동일 주/직위 FEC 이름/정당으로68개 후보의 ID를 추가 대조해34개 레이스에 현재 후보의 금액이 연결된다.9명의 이름/정당/ID는 여전히 미확인으로 남긴다. FEC 등록 자체로 본선 후보를 생성하지 않는다.
+
+| 직위 | 선거 대상 | 현재 후보 대상 지출 관측 | 누적 조사 표시 가능 | 최근7일 | 최근14일 |
+|---|---:|---:|---:|---:|---:|
+| 하원 | 435 | 278 | 9 | 0 | 2 |
+| 상원 | 35 | 34 | 12 | 1 | 5 |
+| 주지사 | 36 | 2 | 18 | 1 | 7 |
+
+위 숫자는 현재 후보 ID에 연결된 부분 관측/적격 조사이며 승패나 전체 지원금 총액이 아니다. 회기 전체 지출과 본선·경선·미확인 코드를 분리한다. NH01의 API `Stephany Shaheen`과 명부 `Stefany Amber Shaheen`은 이름 철자가 달라 신규 통합 계약에서는 원문/동일인 검토 전 보류한다. 다른 원래 조사 자료를 삭제하거나 숫자를 변경하지 않았다.
+
+## 뉴욕 실제 보강
+
+- 실제 VoteHub API를 한 번 수집해 전체1426건 중 NY 관련30건을 발견했다. 기존 편입 기준을 유지해 NY17 하원·NY 주지사의2개 관측만 표시한다. 경선·미등록/원문 미확인 자료는 편입하지 않는다.
+- [Emerson NY17](https://emersoncollegepolling.com/ny-17-2026-poll/):9/27–29 LV400명, PIX11 의뢰, 조사기관 원문·방법론 재확인.7일 창에는 없고14일 창에서 단일 기관 참고다.
+- [Quinnipiac NY 주지사](https://poll.qu.edu/poll-release?releaseid=3967):9/17–20 LV1026명·58/39 원문Q1/방법·발표 오차범위4.1pp를 대조해 `source_quality`를 원문 수치 대조 완료로 보강했다. 정확도 등급/격차 유의성은 평가하지 않는다.7/14일 창 밖 누적 자료다.
+- NY 공식 Schedule R/F를 다시 수집: 입력103건·검증76건(이전101/75). 미검토 IE지출자14건, 모호한 정정/복수 대상12건, 이름/방향 미해결1건은 제외한다. 검토된 지출자·동일 금액 단일 지급/단일 대상 연결만 집계한다.
+- 주지사 집계는 연방 Super PAC이 아니라 주 미분류 독립지출이다. 신고 단계가 미확보이므로 본선 금액으로 추정하지 않는다.
+- 기존 지도 금융 index→새 NY 주/레이스 파일로 연결했다. 다른 주의 poll race 레코드와 원래 전역 수집 날짜는 유지하고 NY만 실제 수집 시점/응답SHA를 별도 기록한다. 연방 공시는 마지막 유효 자료(10/5 수집·10/2 공시)를 유지하며 새 FEC API 요청을 하지 않았다.
+
+## 재실행·인수 계약
+
+```bash
+cd "New for anti/scripts/election_watch"
+python3 refresh_state_evidence.py --state TN --as-of 2026-10-08
+python3 refresh_state_evidence.py --group A --as-of 2026-10-08
+python3 refresh_state_evidence.py --all --as-of 2026-10-08
+```
+
+- 실행기는 기존 검토 입력을 연결하는 도구다. 위 명령만으로 새로운 지역지 조사·새 주별 공시 어댑터·GitHub 일정이 설치되지 않는다. 공통 API는 한 번 수집하고 주별 검토/연결은 순차 수행한다. 일일 여론조사 수집/본선 명부 편입 보강은 별도 PR #489이며 이 PR은 workflow를 편집하지 않았다.
+- public index: `usa_election_state_evidence_index_v1.json`, 주별 파일: `usa_election_state_evidence/2026/{STATE}-{hash}.json`. index는 `baseline_join_checked`와 `live_sources_reviewed_partial`, `next_state_to_review`, 실패/이월 및 원래 자료 날짜를 구분한다. **새 주별 계약은 UI에 설치하지 않았다.** 기존 NY 공시/여론조사 계약 변경만 기존 UI가 읽을 수 있다.
+- 실패한 주는 마지막 정상 파일/기준일을 보존하고 나머지 주는 계속 처리한다. 성공한 주마다 진행 index를 원자적으로 저장하므로 중단 후 특정 주부터 재개 가능하다. 같은 입력의 주별 파일hash는 동일하다.
+- 7/14일 창은 실행 기준일로 다시 계산하지만 자료 수집일을 바꾸지 않는다. 선거가 끝나거나 소스가 실패/오래되면 우세색을 보류한다. 선거 후 화면용 관측은 비우며 upstream 역사 자료는 보존하고, 인증 결과가 들어오면 별도 result로 남긴다.
+- 새 API 키/유료권한이 필요한 경로는 수집을 멈추고 사용자에게 요청한다. 이번 NY 수집은 공개 무키 API이며 새로운 키를 요청하지 않았다. 재설정은 사용자가 직접 클릭한다.
+
+## 검증 상태
+
+- 새 주별 계약16개를 포함해 Python polling146개, 연방 명부6개, 금융50개 및 JS51개가 통과했다(합계253개). 실제50주·506레이스 조인 및 NY 외 poll race 원본 보존도 확인했다.
+- API 장애/오래된 데이터의 색 보류, 선거 후 관측 비움, 이름 변경 보류, minor/Other 응답 보존, 지지/반대·경선/본선 분리, 동일 파일 재사용, 실패 파일/기준일 보존 검사가 통과했다.
+- 병합·배포하지 않았다. 후보 PR #490 기반의 별도 검토 PR로 인수한다. ID 미확인/출처 장애/신규 공시 어댑터를 다음 주별 작업에서 계속 보강해야 한다.
+
+## 50주 점검표
+
+`지출`은 현재 후보의 지지/반대 관측이 연결된 레이스 수이며 전체 회기 레이스 합계와 다르다. 아래 표는 원래 입력의 수집 기준일과 신규 처리 날짜를 구분하는 JSON에서 생성한다.
+
+| Order | Group / State | House spending / races | House polls | Senate spending / races | Senate polls | Governor polls | Governor disclosure route |
+|---:|---|---:|---:|---|---:|---:|---|
+| 1 | A / NY | 20/26 | 1 | non_election | 0 | 1 | implemented_partial |
+| 2 | A / TN | 4/9 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 3 | A / GA | 6/14 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 4 | A / FL | 16/28 | 1 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 5 | A / PA | 13/17 | 2 | non_election | 0 | 1 | adapter_or_source_review_required |
+| 6 | A / MI | 11/13 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 7 | A / WI | 3/8 | 0 | non_election | 0 | 1 | adapter_or_source_review_required |
+| 8 | A / AZ | 7/9 | 0 | non_election | 0 | 1 | adapter_or_source_review_required |
+| 9 | A / NV | 3/4 | 0 | non_election | 0 | 1 | adapter_or_source_review_required |
+| 10 | A / NC | 7/14 | 0 | 1/1 | 1 | 0 | non_election |
+| 11 | B / TX | 30/38 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 12 | B / OH | 8/15 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 13 | B / IA | 4/4 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 14 | B / CA | 49/52 | 1 | non_election | 0 | 1 | implemented_partial |
+| 15 | B / CO | 4/8 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 16 | B / VA | 6/11 | 0 | 1/1 | 0 | 0 | non_election |
+| 17 | B / AK | 1/1 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 18 | B / KS | 0/4 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 19 | B / NE | 3/3 | 1 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 20 | B / ME | 2/2 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 21 | C / AL | 2/7 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 22 | C / NJ | 7/12 | 0 | 1/1 | 0 | 0 | non_election |
+| 23 | C / NM | 3/3 | 1 | 1/1 | 1 | 0 | adapter_or_source_review_required |
+| 24 | C / NH | 2/2 | 1 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 25 | C / WA | 9/10 | 1 | non_election | 0 | 0 | non_election |
+| 26 | C / OR | 3/6 | 0 | 1/1 | 0 | 1 | adapter_or_source_review_required |
+| 27 | C / MT | 1/2 | 0 | 1/1 | 0 | 0 | non_election |
+| 28 | C / IN | 2/9 | 0 | non_election | 0 | 0 | non_election |
+| 29 | C / IL | 12/17 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 30 | C / KY | 3/6 | 0 | 1/1 | 0 | 0 | non_election |
+| 31 | D / CT | 5/5 | 0 | non_election | 0 | 0 | adapter_or_source_review_required |
+| 32 | D / MD | 6/8 | 0 | non_election | 0 | 0 | adapter_or_source_review_required |
+| 33 | D / MA | 5/9 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 34 | D / MN | 2/8 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 35 | D / MO | 4/8 | 0 | non_election | 0 | 0 | non_election |
+| 36 | D / UT | 3/4 | 0 | non_election | 0 | 0 | non_election |
+| 37 | D / HI | 1/2 | 0 | non_election | 0 | 0 | adapter_or_source_review_required |
+| 38 | D / RI | 0/2 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 39 | D / ID | 0/2 | 0 | 0/1 | 0 | 0 | adapter_or_source_review_required |
+| 40 | D / SD | 1/1 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 41 | E / AR | 1/4 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 42 | E / DE | 0/1 | 0 | 1/1 | 0 | 0 | non_election |
+| 43 | E / LA | 1/6 | 0 | 1/1 | 0 | 0 | non_election |
+| 44 | E / MS | 1/4 | 0 | 1/1 | 0 | 0 | non_election |
+| 45 | E / ND | 0/1 | 0 | non_election | 0 | 0 | non_election |
+| 46 | E / OK | 2/5 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 47 | E / SC | 2/7 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
+| 48 | E / VT | 1/1 | 0 | non_election | 0 | 1 | adapter_or_source_review_required |
+| 49 | E / WV | 1/2 | 0 | 1/1 | 0 | 0 | non_election |
+| 50 | E / WY | 1/1 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
