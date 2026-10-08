@@ -192,6 +192,20 @@ def _minutes_block(minutes_doc: dict, calendar_doc: dict, *, today: date) -> dic
     return {"latest": latest, "pending": pending}
 
 
+PREVIEW_IN = Path(__file__).resolve().parent / "config" / "fomc_preview_v1.json"
+
+
+def _preview(schedule: dict | None) -> dict | None:
+    """build_fomc_preview.py's view of the next meeting, used only when it is about that same meeting
+    (a stale file from before the last decision is dropped rather than shown)."""
+    if not PREVIEW_IN.exists() or not schedule:
+        return None
+    doc = json.loads(PREVIEW_IN.read_text(encoding="utf-8"))
+    if (doc.get("next_meeting") or {}).get("end") != schedule.get("next_meeting_date"):
+        return None
+    return {k: doc[k] for k in ("next_meeting", "blackout", "releases", "releases_note_ko", "source_urls", "retrieved_at") if k in doc}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, default=OUT)
@@ -293,6 +307,7 @@ def main() -> int:
             },
             "schedule": {
                 **(schedule or {}),
+                "preview": _preview(schedule),
                 "beige_book_note_ko": (
                     "베이지북은 공식 발표 캘린더가 없어 다음 FOMC 결정일 14일 전(수요일) "
                     "패턴으로 추정한 날짜입니다. 실제 발표일이 아닙니다."
