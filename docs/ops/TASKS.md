@@ -114,3 +114,5 @@
 | T-IA-STATE-EVIDENCE-20261009 | 아이오와 공식 후보·여론조사·독립지출 공개 수집 보강 | codex | `New for anti/scripts/election_watch/` IA config·수집기·관련 tests, `public/data/usa_*` IA 및 주별 통합 계약, 전용 handoff | `codex/ia-state-evidence-20261009` | review | #492 의존별도PR. IA원문6/표시7·공식6선거명부·공개IE API100건부분목록, 후보금액매핑미완료.365검사·타주/기존금융보존. UI/workflow/병합/배포없음. [IA 인수](handoff/2026-10-09-codex-state-evidence-IA.md) |
 
 | T-TX-STATE-EVIDENCE-20261009 | 텍사스 원문 조사·후보·공시 점검 | codex | election_watch TX config/tests・TX public data・handoff | codex/tx-state-evidence-20261009 | review | TX 원문9재검토/15표시·공식5선거·TEC253873행감사, 방향/신원미확인금액보류.372검사/타주보존. #498 의존별도PR. [TX 인수](handoff/2026-10-09-codex-state-evidence-TX.md) |
+
+| T-WI-STATE-EVIDENCE-20261009 | 위스콘신 원문 여론조사·연방 신원·공시 접근 검토 | codex | election_watch WI config/tests·WI public data·handoff | codex/wi-state-evidence-20261009 | review | WI 원문6검토·하원O6/8연결·공시접근실패 보존.380검사/타주보존. #499 의존 별도 PR. [WI 인수](handoff/2026-10-09-codex-state-evidence-WI.md) |

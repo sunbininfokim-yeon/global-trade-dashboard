@@ -84,13 +84,13 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 101,
-    "excluded_observations": 737,
-    "aggregation_eligible_observations": 82,
-    "reference_only_observations": 19,
+    "accepted_observations": 106,
+    "excluded_observations": 733,
+    "aggregation_eligible_observations": 83,
+    "reference_only_observations": 23,
     "exclusion_reasons": {
-      "pollster_not_selected": 528,
-      "outside_reviewed_general_period": 115,
+      "pollster_not_selected": 523,
+      "outside_reviewed_general_period": 113,
       "unregistered_primary_host": 60,
       "unreviewed_matchup": 2,
       "date_order_or_future": 1,
@@ -110,10 +110,12 @@
       "primary_geography_methodology_conflict": 1,
       "primary_geography_and_candidate_table_not_verified": 1,
       "pre_primary_historical_poll_not_general_signal": 1,
-      "commissioner_primary_methodology_not_obtained": 3,
-      "missing_sample_and_primary_methodology": 1
+      "commissioner_primary_methodology_not_obtained": 4,
+      "missing_sample_and_primary_methodology": 1,
+      "historical_pre_primary_poll_not_current_signal": 1,
+      "primary_methodology_not_obtained_pre_primary_reference": 1
     },
-    "displayed_observations": 101
+    "displayed_observations": 106
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -4869,6 +4871,133 @@
       "race_id": "USA:WI:governor",
       "observations": [
         {
+          "id": "primary-marquette-wi-governor-rv-20260930",
+          "race_id": "USA:WI:governor",
+          "contest_id": "USA:WI:governor:2026:general:regular",
+          "pollster": "Marquette University Law School",
+          "pollster_group": "marquette",
+          "field_start": "2026-09-16",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-30",
+          "population": "rv",
+          "sample_n": 843,
+          "answers": [
+            {
+              "name": "David Crowley",
+              "pct": 46.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Tom Tiffany",
+              "pct": 45.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://law.marquette.edu/poll/2026/09/30/detailed-results-of-the-marquette-law-school-wisconsin-poll-september-16-23-2026/",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T19:36:27.635034+00:00",
+            "documents": [
+              {
+                "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91PressRelease.pdf",
+                "status": "unchanged",
+                "sha256": "fb7aadacb598bf5b6979b5580c862d28ad615915a9284e84d268f5f75b8723e2"
+              },
+              {
+                "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
+                "status": "unchanged",
+                "sha256": "fe13c5dbe733a52d34f69bb1d546e336afaa5eb6325555d718d9d2f97577c0d0"
+              },
+              {
+                "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Instrument.pdf",
+                "status": "unchanged",
+                "sha256": "b4381bb479e72a18d034628ad1f1a005d25b9d95d7eed1add48be972d5f82427"
+              }
+            ],
+            "provider_duplicate_ids": [],
+            "reviewed_replaced_provider_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://law.marquette.edu/poll/2026/09/30/detailed-results-of-the-marquette-law-school-wisconsin-poll-september-16-23-2026/",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91PressRelease.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Instrument.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91ToplinesRV.html"
+            ],
+            "primary_toplines": {
+              "David Crowley": 46.0,
+              "Tom Tiffany": 45.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "web and live telephone",
+              "field_dates": [
+                "2026-09-16",
+                "2026-09-23"
+              ],
+              "population": "RV",
+              "sample_n": 843,
+              "total_registered_n": 843,
+              "likely_voter_n": 692,
+              "sampling_frame": {
+                "L2_registration_sample": 627,
+                "SSRS_probability_address_panel": 216
+              },
+              "mode_n": {
+                "online": 749,
+                "telephone": 94
+              },
+              "weighting": "source-specific design/base weights, nonresponse adjustment, compositing and calibration to voter benchmarks; SSRS published method",
+              "question": "D1 initial vote intention; D2 undecided-only lean question excluded",
+              "question_wording_checked": true,
+              "question_sample_n_not_inferred_from_weighted_frequency": true,
+              "phase": "post_primary_general_matchup",
+              "undecided_pct": 9
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.3,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Marquette University Law School",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "초기 투표의향과 미정층 후속lean/호감도 분리. LV/RV 및 7/14일 구분. AAPOR 참여·기관 수는 정확도 등급 아님. 표의 가중 빈도 합을 문항별 실제 표본수로 추정하지 않음."
+          }
+        },
+        {
           "id": "gov202mar6e84a0e7",
           "race_id": "USA:WI:governor",
           "contest_id": "USA:WI:governor:2026:general:regular",
@@ -4893,8 +5022,8 @@
           ],
           "sponsors": [],
           "source_url": "https://law.marquette.edu/poll/2026/09/30/detailed-results-of-the-marquette-law-school-wisconsin-poll-september-16-23-2026/",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://law.marquette.edu/poll/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -4902,23 +5031,388 @@
             "partisan": null,
             "sponsors": []
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://law.marquette.edu/poll/2026/09/30/detailed-results-of-the-marquette-law-school-wisconsin-poll-september-16-23-2026/",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91PressRelease.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Instrument.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91ToplinesLV.html"
+            ],
+            "primary_toplines": {
+              "David Crowley": 49.0,
+              "Tom Tiffany": 46.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "web and live telephone",
+              "field_dates": [
+                "2026-09-16",
+                "2026-09-23"
+              ],
+              "population": "LV",
+              "sample_n": 692,
+              "total_registered_n": 843,
+              "likely_voter_n": 692,
+              "sampling_frame": {
+                "L2_registration_sample": 627,
+                "SSRS_probability_address_panel": 216
+              },
+              "mode_n": {
+                "online": 749,
+                "telephone": 94
+              },
+              "weighting": "source-specific design/base weights, nonresponse adjustment, compositing and calibration to voter benchmarks; SSRS published method",
+              "question": "D1 initial vote intention; D2 undecided-only lean question excluded",
+              "question_wording_checked": true,
+              "question_sample_n_not_inferred_from_weighted_frequency": true,
+              "phase": "post_primary_general_matchup",
+              "undecided_pct": 5
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.8,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Marquette University Law School",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "초기 투표의향과 미정층 후속lean/호감도 분리. LV/RV 및 7/14일 구분. AAPOR 참여·기관 수는 정확도 등급 아님. 표의 가중 빈도 합을 문항별 실제 표본수로 추정하지 않음."
+          }
+        },
+        {
+          "id": "gov202mare9ac6d63",
+          "race_id": "USA:WI:governor",
+          "contest_id": "USA:WI:governor:2026:general:regular",
+          "pollster": "Marquette University Law School",
+          "pollster_group": "marquette",
+          "field_start": "2026-08-12",
+          "field_end": "2026-08-20",
+          "provider_record_date": "2026-08-27",
+          "population": "lv",
+          "sample_n": 738,
+          "answers": [
+            {
+              "name": "David Crowley",
+              "pct": 49.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Tom Tiffany",
+              "pct": 44.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP_90_August_Methodology.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "outside_reviewed_general_period",
+              "reviewed_historical_reference_not_current_signal"
             ]
+          },
+          "display_group": "historical_matchup_reference",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90PressRelease.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP_90_August_Methodology.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90Instrument.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90ToplinesLV.html"
+            ],
+            "primary_toplines": {
+              "David Crowley": 49.0,
+              "Tom Tiffany": 44.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "web and live telephone",
+              "field_dates": [
+                "2026-08-12",
+                "2026-08-20"
+              ],
+              "population": "LV",
+              "sample_n": 738,
+              "total_registered_n": 891,
+              "likely_voter_n": 738,
+              "sampling_frame": {
+                "L2_registration_sample": 664,
+                "SSRS_probability_address_panel": 227
+              },
+              "mode_n": {
+                "online": 797,
+                "telephone": 94
+              },
+              "weighting": "source-specific design/base weights, nonresponse adjustment, compositing and calibration to voter benchmarks; SSRS published method",
+              "question": "D1 initial vote intention; D2 undecided-only lean question excluded",
+              "question_wording_checked": true,
+              "question_sample_n_not_inferred_from_weighted_frequency": true,
+              "phase": "post_primary_general_matchup",
+              "undecided_pct": 7
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.5,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Marquette University Law School",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "초기 투표의향과 미정층 후속lean/호감도 분리. LV/RV 및 7/14일 구분. AAPOR 참여·기관 수는 정확도 등급 아님. 표의 가중 빈도 합을 문항별 실제 표본수로 추정하지 않음."
+          }
+        },
+        {
+          "id": "gov202mar91835a0d",
+          "race_id": "USA:WI:governor",
+          "contest_id": "USA:WI:governor:2026:general:regular",
+          "pollster": "Marquette University Law School",
+          "pollster_group": "marquette",
+          "field_start": "2026-08-12",
+          "field_end": "2026-08-20",
+          "provider_record_date": "2026-08-27",
+          "population": "rv",
+          "sample_n": 891,
+          "answers": [
+            {
+              "name": "David Crowley",
+              "pct": 44.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Tom Tiffany",
+              "pct": 44.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP_90_August_Methodology.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "outside_reviewed_general_period",
+              "reviewed_historical_reference_not_current_signal"
+            ]
+          },
+          "display_group": "historical_matchup_reference",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90PressRelease.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP_90_August_Methodology.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90Instrument.pdf",
+              "https://law.marquette.edu/assets/community/poll/MLSP90/MLSP90ToplinesRV.html"
+            ],
+            "primary_toplines": {
+              "David Crowley": 44.0,
+              "Tom Tiffany": 44.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "web and live telephone",
+              "field_dates": [
+                "2026-08-12",
+                "2026-08-20"
+              ],
+              "population": "RV",
+              "sample_n": 891,
+              "total_registered_n": 891,
+              "likely_voter_n": 738,
+              "sampling_frame": {
+                "L2_registration_sample": 664,
+                "SSRS_probability_address_panel": 227
+              },
+              "mode_n": {
+                "online": 797,
+                "telephone": 94
+              },
+              "weighting": "source-specific design/base weights, nonresponse adjustment, compositing and calibration to voter benchmarks; SSRS published method",
+              "question": "D1 initial vote intention; D2 undecided-only lean question excluded",
+              "question_wording_checked": true,
+              "question_sample_n_not_inferred_from_weighted_frequency": true,
+              "phase": "post_primary_general_matchup",
+              "undecided_pct": 12
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.0,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Marquette University Law School",
+              "conducted_by": "SSRS"
+            },
+            "limitations_ko": "초기 투표의향과 미정층 후속lean/호감도 분리. LV/RV 및 7/14일 구분. AAPOR 참여·기관 수는 정확도 등급 아님. 표의 가중 빈도 합을 문항별 실제 표본수로 추정하지 않음."
+          }
+        },
+        {
+          "id": "gov202plab53c0b38",
+          "race_id": "USA:WI:governor",
+          "contest_id": "USA:WI:governor:2026:general:regular",
+          "pollster": "Platform Communications",
+          "pollster_group": "platform_communications",
+          "field_start": "2026-08-12",
+          "field_end": "2026-08-13",
+          "provider_record_date": "2026-08-17",
+          "population": "lv",
+          "sample_n": 500,
+          "answers": [
+            {
+              "name": "David Crowley",
+              "pct": 48.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Tom Tiffany",
+              "pct": 44.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.wpr.org/wp-content/uploads/2026/08/Badger-Battleground-Poll-Memo-August-2026-Final.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.wpr.org/wp-content/uploads/2026/08/Badger-Battleground-Poll-Memo-August-2026-Final.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "historical_post_primary_poll",
+              "limited_methodology_disclosure_reference_only",
+              "outside_reviewed_general_period"
+            ]
+          },
+          "display_group": "historical_matchup_reference",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n",
+              "weighting",
+              "sampling_frame",
+              "lv_screen",
+              "question_wording",
+              "precision"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.wpr.org/wp-content/uploads/2026/08/Badger-Battleground-Poll-Memo-August-2026-Final.pdf"
+            ],
+            "primary_toplines": {
+              "David Crowley": 48.0,
+              "Tom Tiffany": 44.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "mode": "live telephone landline and cellphone",
+              "field_dates": [
+                "2026-08-12",
+                "2026-08-13"
+              ],
+              "population": "LV",
+              "sample_n": 500,
+              "additional_state_assembly_battleground_oversample_n": 50,
+              "state_assembly_subsample_not_imported": true,
+              "question_wording_checked": false,
+              "ballot_values": "initial 48 Crowley / 44 Tiffany, not favorability43/38",
+              "missing_fields": [
+                "weighting",
+                "sampling_frame",
+                "lv_screen",
+                "question_wording",
+                "precision"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": null,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Platform Communications self-published bipartisan Badger Battleground memo, hosted by WPR",
+              "provider_sponsors": []
+            },
+            "limitations_ko": "초기 투표의향과 미정층 후속lean/호감도 분리. LV/RV 및 7/14일 구분. AAPOR 참여·기관 수는 정확도 등급 아님. 표의 가중 빈도 합을 문항별 실제 표본수로 추정하지 않음."
           }
         }
       ],
@@ -4990,7 +5484,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -17101,7 +17595,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -20174,7 +20668,128 @@
         "coverage": "reported_major_party_field"
       },
       "race_id": "USA:WI:house:01",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-dccc-wi-house01-20260929",
+          "race_id": "USA:WI:house:01",
+          "contest_id": "USA:WI:house:01:2026:general",
+          "pollster": "DCCC Targeting and Analytics Department",
+          "pollster_group": "dccc_analytics",
+          "field_start": "2026-09-21",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-29",
+          "population": "lv",
+          "sample_n": 495,
+          "answers": [
+            {
+              "name": "Bryan Steil",
+              "pct": 48.0,
+              "party": "REP"
+            },
+            {
+              "name": "Mitchell Berman",
+              "pct": 48.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://dccc.org/wp-content/uploads/2026/09/WI-01-DCCC-Analytics-Poll-Memo-Google-Docs.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://dccc.org/wp-content/uploads/2026/09/WI-01-DCCC-Analytics-Poll-Memo-Google-Docs.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T19:36:27.813188+00:00",
+            "documents": [
+              {
+                "url": "https://dccc.org/wp-content/uploads/2026/09/WI-01-DCCC-Analytics-Poll-Memo-Google-Docs.pdf",
+                "status": "unchanged",
+                "sha256": "5bfdc9264fdec6eae5424a00319d4c89fa01bedbbbe4b632d0d8fbe79db15ec6"
+              }
+            ],
+            "provider_duplicate_ids": [],
+            "reviewed_replaced_provider_ids": [
+              "us-202dcc0d4b0ded"
+            ]
+          },
+          "commissioning": {
+            "internal": true,
+            "partisan": "DEM",
+            "sponsors": [],
+            "provider_internal": false,
+            "internal_basis": "explicitly_disclosed_in_reviewed_primary_release"
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "party_commissioned_reference",
+              "party_internal_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "question_sample_n",
+              "full_question_wording",
+              "sampling_frame",
+              "lv_definition",
+              "weighting"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://dccc.org/wp-content/uploads/2026/09/WI-01-DCCC-Analytics-Poll-Memo-Google-Docs.pdf"
+            ],
+            "primary_toplines": {
+              "Bryan Steil": 48.0,
+              "Mitchell Berman": 48.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "field_dates": [
+                "2026-09-21",
+                "2026-09-23"
+              ],
+              "sample_n": 495,
+              "population": "LV",
+              "mode": "phone and text_to_web",
+              "question_wording_checked": false,
+              "undecided_pct": 5,
+              "commissioning": "internal DCCC poll",
+              "missing_fields": [
+                "full_question_wording",
+                "sampling_frame",
+                "lv_definition",
+                "weighting"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 4.4,
+              "confidence_level_pct": 95,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "primary_internal": true,
+              "commissioner": "DCCC",
+              "provider_internal": false,
+              "provider_sponsors": [],
+              "provider_partisan": "DEM"
+            },
+            "limitations_ko": "원문 초기48/48·미정5와표본/기간/모드/보고오차 검증. 내부·정파 조사로 참고전용, 전망/색/승패집계제외. 후보철자Brian→Bryan은정확API지문과원문을검토한특정레코드만대체."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -20243,7 +20858,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80289,7 +80904,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80430,7 +81045,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80564,7 +81179,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80718,7 +81333,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80852,7 +81467,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80986,7 +81601,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:04.996201+00:00",
+      "fetched_at": "2026-10-08T19:36:07.092957+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -83361,497 +83976,6 @@
       "sponsors": [],
       "internal": false,
       "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tip0fe8c207",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/IAPolls2022/status/2036258027725025698",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "lv",
-      "sample_n": 1175,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tip144605dc",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "rv",
-      "sample_n": 1495,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202imp31a6ee87",
-      "race_id": "USA:WI:governor",
-      "pollster": "Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.documentcloud.org/documents/26204970-wi-gov-impact-research-for-long-run-pac-oct-2025/",
-      "field_start": "2025-10-02",
-      "field_end": "2025-10-08",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tipd4dc9765",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "lv",
-      "sample_n": 1175,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tipb3a73643",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "rv",
-      "sample_n": 1495,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tip8ecaf354",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/IAPolls2022/status/2036258027725025698",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "lv",
-      "sample_n": 1175,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tipe4c2582a",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "rv",
-      "sample_n": 1495,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202pateb69f263",
-      "race_id": "USA:WI:governor",
-      "pollster": "Patriot Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1RPTJ7lVbPnf35orAIGiwW9TRZthViZY5/view",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-16",
-      "population": "lv",
-      "sample_n": 812,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tipe51755b1",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "lv",
-      "sample_n": 1175,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tipf7f3dea3",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-19",
-      "population": "rv",
-      "sample_n": 1495,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pubc2e16fe9",
-      "race_id": "USA:WI:house:03",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff233550000",
-      "field_start": "2025-10-14",
-      "field_end": "2025-10-15",
-      "population": "lv",
-      "sample_n": 609,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the4e176460",
-      "race_id": "USA:WI:governor",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
-      "field_start": "2026-05-13",
-      "field_end": "2026-05-15",
-      "population": "rv",
-      "sample_n": 880,
-      "sponsors": [
-        "The Great Lakes Perspective"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202thea822b210",
-      "race_id": "USA:WI:governor",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
-      "field_start": "2026-05-13",
-      "field_end": "2026-05-15",
-      "population": "lv",
-      "sample_n": 877,
-      "sponsors": [
-        "The Great Lakes Perspective"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the67fea2f7",
-      "race_id": "USA:WI:governor",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
-      "field_start": "2026-05-13",
-      "field_end": "2026-05-15",
-      "population": "rv",
-      "sample_n": 880,
-      "sponsors": [
-        "The Great Lakes Perspective"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202thee37da0db",
-      "race_id": "USA:WI:governor",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
-      "field_start": "2026-05-13",
-      "field_end": "2026-05-15",
-      "population": "lv",
-      "sample_n": 877,
-      "sponsors": [
-        "The Great Lakes Perspective"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202fm396e2170a",
-      "race_id": "USA:WI:house:03",
-      "pollster": "FM3 Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/cjwarnke/status/2074099699020128352?s=20",
-      "field_start": "2026-06-20",
-      "field_end": "2026-06-25",
-      "population": "lv",
-      "sample_n": 535,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202mar00c0ea71",
-      "race_id": "USA:WI:governor",
-      "pollster": "Marquette University Law School",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
-      "field_start": "2026-07-08",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 695,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202mard33a2b56",
-      "race_id": "USA:WI:governor",
-      "pollster": "Marquette University Law School",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
-      "field_start": "2026-07-08",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 695,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202marf8010a9d",
-      "race_id": "USA:WI:governor",
-      "pollster": "Marquette University Law School",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
-      "field_start": "2026-07-08",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 695,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202rmg094af3ba",
-      "race_id": "USA:WI:governor",
-      "pollster": "RMG Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
-      "field_start": "2026-07-20",
-      "field_end": "2026-07-24",
-      "population": "rv",
-      "sample_n": 800,
-      "sponsors": [
-        "Napolitan Institute",
-        "Institute for Reforming Government"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202rmg47f9f31c",
-      "race_id": "USA:WI:governor",
-      "pollster": "RMG Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
-      "field_start": "2026-07-20",
-      "field_end": "2026-07-24",
-      "population": "rv",
-      "sample_n": 800,
-      "sponsors": [
-        "Napolitan Institute",
-        "Institute for Reforming Government"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202rmg75d397b8",
-      "race_id": "USA:WI:governor",
-      "pollster": "RMG Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
-      "field_start": "2026-07-20",
-      "field_end": "2026-07-24",
-      "population": "rv",
-      "sample_n": 800,
-      "sponsors": [
-        "Napolitan Institute",
-        "Institute for Reforming Government"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202gbaf1f6f960",
-      "race_id": "USA:WI:governor",
-      "pollster": "GBAO Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/newsletters/playbook-pm/2026/08/12/trumps-cost-of-living-crunch-01035189",
-      "field_start": "2026-07-30",
-      "field_end": "2026-08-03",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "Protect Our Wisconsin"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202plab53c0b38",
-      "race_id": "USA:WI:governor",
-      "pollster": "Platform Communications",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.wpr.org/wp-content/uploads/2026/08/Badger-Battleground-Poll-Memo-August-2026-Final.pdf",
-      "field_start": "2026-08-12",
-      "field_end": "2026-08-13",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tip3799a38e",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
-      "field_start": "2026-08-14",
-      "field_end": "2026-08-18",
-      "population": "lv",
-      "sample_n": 1119,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tip71a0dd14",
-      "race_id": "USA:WI:governor",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
-      "field_start": "2026-08-14",
-      "field_end": "2026-08-18",
-      "population": "rv",
-      "sample_n": 1434,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202mare9ac6d63",
-      "race_id": "USA:WI:governor",
-      "pollster": "Marquette University Law School",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
-      "field_start": "2026-08-12",
-      "field_end": "2026-08-20",
-      "population": "lv",
-      "sample_n": 738,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202mar91835a0d",
-      "race_id": "USA:WI:governor",
-      "pollster": "Marquette University Law School",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
-      "field_start": "2026-08-12",
-      "field_end": "2026-08-20",
-      "population": "rv",
-      "sample_n": 891,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202dcc0d4b0ded",
-      "race_id": "USA:WI:house:01",
-      "pollster": "DCCC Targeting and Analytics Department",
-      "reason": "pollster_not_selected",
-      "source_url": "https://hub.nationaljournal.com/dems-choosin-texas",
-      "field_start": "2026-09-21",
-      "field_end": "2026-09-23",
-      "population": "lv",
-      "sample_n": 495,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202impbb787ecf",
-      "race_id": "USA:WI:house:01",
-      "pollster": "Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k",
-      "field_start": "2026-09-28",
-      "field_end": "2026-10-01",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
       "verification": "not_accepted_not_verified"
     },
     {
@@ -93500,6 +93624,437 @@
       "internal": false,
       "partisan": null,
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tip0fe8c207",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/IAPolls2022/status/2036258027725025698",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "lv",
+      "sample_n": 1175,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tip144605dc",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "rv",
+      "sample_n": 1495,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202imp31a6ee87",
+      "race_id": "USA:WI:governor",
+      "pollster": "Impact Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.documentcloud.org/documents/26204970-wi-gov-impact-research-for-long-run-pac-oct-2025/",
+      "field_start": "2025-10-02",
+      "field_end": "2025-10-08",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tipd4dc9765",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "lv",
+      "sample_n": 1175,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tipb3a73643",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "rv",
+      "sample_n": 1495,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tip8ecaf354",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/IAPolls2022/status/2036258027725025698",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "lv",
+      "sample_n": 1175,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tipe4c2582a",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "rv",
+      "sample_n": 1495,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202pateb69f263",
+      "race_id": "USA:WI:governor",
+      "pollster": "Patriot Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1RPTJ7lVbPnf35orAIGiwW9TRZthViZY5/view",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-16",
+      "population": "lv",
+      "sample_n": 812,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tipe51755b1",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "lv",
+      "sample_n": 1175,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tipf7f3dea3",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-19",
+      "population": "rv",
+      "sample_n": 1495,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubc2e16fe9",
+      "race_id": "USA:WI:house:03",
+      "pollster": "Public Policy Polling",
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "source_url": "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff233550000",
+      "field_start": "2025-10-14",
+      "field_end": "2025-10-15",
+      "population": "lv",
+      "sample_n": 609,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the4e176460",
+      "race_id": "USA:WI:governor",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+      "field_start": "2026-05-13",
+      "field_end": "2026-05-15",
+      "population": "rv",
+      "sample_n": 880,
+      "sponsors": [
+        "The Great Lakes Perspective"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202thea822b210",
+      "race_id": "USA:WI:governor",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+      "field_start": "2026-05-13",
+      "field_end": "2026-05-15",
+      "population": "lv",
+      "sample_n": 877,
+      "sponsors": [
+        "The Great Lakes Perspective"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the67fea2f7",
+      "race_id": "USA:WI:governor",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+      "field_start": "2026-05-13",
+      "field_end": "2026-05-15",
+      "population": "rv",
+      "sample_n": 880,
+      "sponsors": [
+        "The Great Lakes Perspective"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202thee37da0db",
+      "race_id": "USA:WI:governor",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+      "field_start": "2026-05-13",
+      "field_end": "2026-05-15",
+      "population": "lv",
+      "sample_n": 877,
+      "sponsors": [
+        "The Great Lakes Perspective"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202fm396e2170a",
+      "race_id": "USA:WI:house:03",
+      "pollster": "FM3 Research",
+      "reason": "primary_methodology_not_obtained_pre_primary_reference",
+      "source_url": "https://x.com/cjwarnke/status/2074099699020128352?s=20",
+      "field_start": "2026-06-20",
+      "field_end": "2026-06-25",
+      "population": "lv",
+      "sample_n": 535,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202mar00c0ea71",
+      "race_id": "USA:WI:governor",
+      "pollster": "Marquette University Law School",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+      "field_start": "2026-07-08",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 695,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202mard33a2b56",
+      "race_id": "USA:WI:governor",
+      "pollster": "Marquette University Law School",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+      "field_start": "2026-07-08",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 695,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202marf8010a9d",
+      "race_id": "USA:WI:governor",
+      "pollster": "Marquette University Law School",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+      "field_start": "2026-07-08",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 695,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202rmg094af3ba",
+      "race_id": "USA:WI:governor",
+      "pollster": "RMG Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+      "field_start": "2026-07-20",
+      "field_end": "2026-07-24",
+      "population": "rv",
+      "sample_n": 800,
+      "sponsors": [
+        "Napolitan Institute",
+        "Institute for Reforming Government"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202rmg47f9f31c",
+      "race_id": "USA:WI:governor",
+      "pollster": "RMG Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+      "field_start": "2026-07-20",
+      "field_end": "2026-07-24",
+      "population": "rv",
+      "sample_n": 800,
+      "sponsors": [
+        "Napolitan Institute",
+        "Institute for Reforming Government"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202rmg75d397b8",
+      "race_id": "USA:WI:governor",
+      "pollster": "RMG Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+      "field_start": "2026-07-20",
+      "field_end": "2026-07-24",
+      "population": "rv",
+      "sample_n": 800,
+      "sponsors": [
+        "Napolitan Institute",
+        "Institute for Reforming Government"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202gbaf1f6f960",
+      "race_id": "USA:WI:governor",
+      "pollster": "GBAO Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/newsletters/playbook-pm/2026/08/12/trumps-cost-of-living-crunch-01035189",
+      "field_start": "2026-07-30",
+      "field_end": "2026-08-03",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Protect Our Wisconsin"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tip3799a38e",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
+      "field_start": "2026-08-14",
+      "field_end": "2026-08-18",
+      "population": "lv",
+      "sample_n": 1119,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tip71a0dd14",
+      "race_id": "USA:WI:governor",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
+      "field_start": "2026-08-14",
+      "field_end": "2026-08-18",
+      "population": "rv",
+      "sample_n": 1434,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202impbb787ecf",
+      "race_id": "USA:WI:house:01",
+      "pollster": "Impact Research",
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "source_url": "https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k",
+      "field_start": "2026-09-28",
+      "field_end": "2026-10-01",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -93532,13 +94087,13 @@
     "groups": {
       "requested_states": {
         "race_count": 196,
-        "with_observations": 27,
+        "with_observations": 28,
         "recent_7d": 1,
         "recent_14d": 7
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 33,
+        "with_observations": 34,
         "recent_7d": 5,
         "recent_14d": 13
       },
@@ -100461,9 +101016,10 @@
         },
         "status": "older_polls_only",
         "provider_record_count": 27,
-        "accepted_count": 1,
-        "aggregation_eligible_count": 1,
-        "reference_only_count": 0,
+        "accepted_count": 5,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 2,
+        "reference_only_count": 3,
         "matchup_reviewed": true,
         "latest_accepted_field_end": "2026-09-23",
         "windows": {
@@ -100477,15 +101033,12 @@
           }
         },
         "rejection_reasons": {
-          "outside_reviewed_general_period": 5,
-          "pollster_not_selected": 21
+          "pollster_not_selected": 20,
+          "outside_reviewed_general_period": 3
         },
         "review_queue_ids": [
-          "gov202mare9ac6d63",
-          "gov202mar91835a0d",
           "gov202tip71a0dd14",
           "gov202tip3799a38e",
-          "gov202plab53c0b38",
           "gov202gbaf1f6f960",
           "gov202rmg75d397b8",
           "gov202rmg47f9f31c",
@@ -100524,13 +101077,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "reference_only",
         "provider_record_count": 2,
-        "accepted_count": 0,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
+        "reference_only_count": 1,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-23",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -100542,11 +101096,10 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "commissioner_primary_methodology_not_obtained": 1
         },
         "review_queue_ids": [
-          "us-202impbb787ecf",
-          "us-202dcc0d4b0ded"
+          "us-202impbb787ecf"
         ],
         "finance_join": {
           "race_id": "USA:WI:house:01",
@@ -100616,7 +101169,8 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "primary_methodology_not_obtained_pre_primary_reference": 1,
+          "historical_pre_primary_poll_not_current_signal": 1
         },
         "review_queue_ids": [
           "us-202fm396e2170a",
@@ -112875,7 +113429,7 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 18,
+        "with_polls": 19,
         "with_recent_7d": 0,
         "with_recent_14d": 2,
         "with_super_pac": 316,
@@ -113498,14 +114052,14 @@
         },
         "poll_status": "older_polls_only",
         "phase": "pre_election",
-        "poll_observation_count": 1,
-        "poll_eligible_count": 1,
+        "poll_observation_count": 5,
+        "poll_eligible_count": 2,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 27,
         "rejection_reasons": {
-          "outside_reviewed_general_period": 5,
-          "pollster_not_selected": 21
+          "pollster_not_selected": 20,
+          "outside_reviewed_general_period": 3
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -115783,7 +116337,8 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 2,
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "primary_methodology_not_obtained_pre_primary_reference": 1,
+          "historical_pre_primary_poll_not_current_signal": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -116896,15 +117451,15 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 1,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 2,
         "rejection_reasons": {
-          "pollster_not_selected": 2
+          "commissioner_primary_methodology_not_obtained": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -145419,7 +145974,6 @@
           "race_count": 8,
           "scheduled": true,
           "polls_without_observations": [
-            "USA:WI:house:01",
             "USA:WI:house:02",
             "USA:WI:house:03",
             "USA:WI:house:04",
@@ -145712,10 +146266,68 @@
       "state": "WI",
       "cycle": 2026,
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:24:04.996201+00:00",
-      "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 31
+      "captured_at": "2026-10-08T19:36:07.092957+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 31,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-marquette-wi-governor-rv-20260930",
+          "state": "WI",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T19:36:27.635034+00:00",
+          "documents": [
+            {
+              "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91PressRelease.pdf",
+              "status": "unchanged",
+              "sha256": "fb7aadacb598bf5b6979b5580c862d28ad615915a9284e84d268f5f75b8723e2"
+            },
+            {
+              "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Methodology.pdf",
+              "status": "unchanged",
+              "sha256": "fe13c5dbe733a52d34f69bb1d546e336afaa5eb6325555d718d9d2f97577c0d0"
+            },
+            {
+              "url": "https://law.marquette.edu/assets/community/poll/MLSP91/MLSP91Instrument.pdf",
+              "status": "unchanged",
+              "sha256": "b4381bb479e72a18d034628ad1f1a005d25b9d95d7eed1add48be972d5f82427"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-dccc-wi-house01-20260929",
+          "state": "WI",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T19:36:27.813188+00:00",
+          "documents": [
+            {
+              "url": "https://dccc.org/wp-content/uploads/2026/09/WI-01-DCCC-Analytics-Poll-Memo-Google-Docs.pdf",
+              "status": "unchanged",
+              "sha256": "5bfdc9264fdec6eae5424a00319d4c89fa01bedbbbe4b632d0d8fbe79db15ec6"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [
+            "us-202dcc0d4b0ded"
+          ]
+        }
+      ],
+      "primary_rechecked_ids": [
+        "gov202mar6e84a0e7",
+        "gov202mare9ac6d63",
+        "gov202mar91835a0d",
+        "primary-marquette-wi-governor-rv-20260930",
+        "gov202plab53c0b38",
+        "primary-dccc-wi-house01-20260929"
+      ],
+      "primary_rechecked_at": "2026-10-08T19:29:04.987345+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/WI-primary-20261009.json",
+      "governor_source_checked_at": "2026-10-08T19:30:41.462501+00:00",
+      "governor_source_access_data_file": "usa_governor_source_access/2026/WI.json"
     },
     "AZ": {
       "state": "AZ",

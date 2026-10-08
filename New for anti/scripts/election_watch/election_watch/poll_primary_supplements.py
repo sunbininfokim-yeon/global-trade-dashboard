@@ -13,7 +13,7 @@ from .poll_quality import answer_correction_fingerprint
 
 # Reviewed publishers with finite release URLs and SHA-256 snapshots below.
 # New releases still require a committed record/document review.
-PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com'))
+PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org'))
 
 
 def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
@@ -33,6 +33,18 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
             require(parsed.scheme=='https' and parsed.hostname in PRIMARY_PDF_HOSTS
                     and not parsed.username and not parsed.password and parsed.path.endswith('.pdf')
                     and len(document['sha256'])==64, 'unreviewed primary document')
+        # Replace a verified provider typo only for the exact reviewed snapshot.
+        # Changed records still undergo the standard same-wave conflict check.
+        replaced=[]
+        for replacement in entry.get('reviewed_provider_replacements', []):
+            require(replacement['reason']=='candidate_name_typo'
+                    and replacement['id']!=raw['id']
+                    and len(replacement['provider_snapshot_sha256'])==64,
+                    'unreviewed_provider_replacement')
+            matching=[r for r in output if r.get('id')==replacement['id']
+                      and answer_correction_fingerprint(r)==replacement['provider_snapshot_sha256']]
+            output=[r for r in output if r not in matching]
+            replaced.extend(r['id'] for r in matching)
         # A later API import of this same wave must agree before deduplication.
         keys=('subject','poll_type','pollster','start_date','end_date','population')
         duplicates=[r for r in output if all(r.get(k)==raw.get(k) for k in keys)]
@@ -56,7 +68,8 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         current=all(c['status']=='unchanged' for c in checks)
         capture={'status':'primary_documents_rechecked' if current else 'carried_forward_reference_only',
                  'original_reviewed_on':entry['reviewed_on'],'checked_at':datetime.now(timezone.utc).isoformat(),
-                 'documents':checks,'provider_duplicate_ids':[r['id'] for r in duplicates]}
+                 'documents':checks,'provider_duplicate_ids':[r['id'] for r in duplicates],
+                 'reviewed_replaced_provider_ids':replaced}
         raw['primary_source_capture']=capture
         output=[r for r in output if r not in duplicates];output.append(raw)
         receipts.append({'id':raw['id'],'state':entry['state'],**capture})
