@@ -2677,6 +2677,14 @@ const mmWireCharts = (host) => {
 const mmPaint = () => {
     const host = document.getElementById('macro-layer');
     if (!host) return;
+    // mmOverlay() rebuilds .mm-overlay (the actual scrollable panel) from
+    // scratch on every repaint, including a click on a card's own view/
+    // window/mode toggle (자산/부채, 5y/10y, ...) -- a fresh element always
+    // starts at scrollTop 0, so without this the whole panel visibly jumped
+    // back to the top on every one of those clicks ("토글 누르면 위로
+    // 올라가는" 2026-10-08). Carry the old scroll position over so an
+    // in-place toggle stays in place.
+    const prevScrollTop = host.querySelector('.mm-overlay')?.scrollTop || 0;
     host.innerHTML = MM_COUNTRY ? mmOverlay() : `
         <div class="mm-hint">
             <span class="mm-hint-dot"></span>
@@ -2684,6 +2692,8 @@ const mmPaint = () => {
             <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
         </div>`;
     host.classList.toggle('mm-open', !!MM_COUNTRY);
+    const nextOverlay = host.querySelector('.mm-overlay');
+    if (nextOverlay) nextOverlay.scrollTop = prevScrollTop;
     mmWireCharts(host);
 };
 
