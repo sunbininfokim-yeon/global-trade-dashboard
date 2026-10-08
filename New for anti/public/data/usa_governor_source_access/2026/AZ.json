@@ -1,0 +1,33 @@
+{
+  "schema": "usa_governor_source_access_v1",
+  "state": "AZ",
+  "cycle": 2026,
+  "checked_at": "2026-10-08T20:04:04.098419+00:00",
+  "status": "source_access_blocked",
+  "last_current_endpoint_accessible_at": null,
+  "financial_data_collected": false,
+  "candidate_amounts_available": false,
+  "current_portal_url": "https://spotlightv2.arizona.vote/Reporting/Api",
+  "source_review": {
+    "cycle": 2026,
+    "reviewed_on": "2026-10-08",
+    "official_discovery_url": "https://spotlightv2.arizona.vote/Reporting/Api",
+    "endpoints": [
+      {
+        "role": "current_public_portal",
+        "url": "https://spotlightv2.arizona.vote/Reporting/Api"
+      }
+    ],
+    "note_ko": "公式公開API資料あり、実際HTTP403。取引取得/候補対象支持反対mappingは未完了。API keyなしの公開仕様と利用成功は別。"
+  },
+  "endpoints": [
+    {
+      "url": "https://spotlightv2.arizona.vote/Reporting/Api",
+      "status": "source_access_blocked",
+      "http_status": 403,
+      "error_type": "HTTPError",
+      "role": "current_public_portal"
+    }
+  ],
+  "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다."
+}

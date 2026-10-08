@@ -116,3 +116,5 @@
 | T-TX-STATE-EVIDENCE-20261009 | 텍사스 원문 조사·후보·공시 점검 | codex | election_watch TX config/tests・TX public data・handoff | codex/tx-state-evidence-20261009 | review | TX 원문9재검토/15표시·공식5선거·TEC253873행감사, 방향/신원미확인금액보류.372검사/타주보존. #498 의존별도PR. [TX 인수](handoff/2026-10-09-codex-state-evidence-TX.md) |
 
 | T-WI-STATE-EVIDENCE-20261009 | 위스콘신 원문 여론조사·연방 신원·공시 접근 검토 | codex | election_watch WI config/tests·WI public data·handoff | codex/wi-state-evidence-20261009 | review | WI 원문6검토·하원O6/8연결·공시접근실패 보존.380검사/타주보존. #499 의존 별도 PR. [WI 인수](handoff/2026-10-09-codex-state-evidence-WI.md) |
+
+| T-AZ-STATE-EVIDENCE-20261009 | 애리조나 원문 여론조사·공시 검토 | codex | election_watch AZ config/tests·AZ public data·handoff | codex/az-state-evidence-20261009 | review | AZ 원문3검토/하원01RV편입·O7/9기존연결·주지사403보존.387검사/타주보존. #500 기반 별도PR. [AZ 인수](handoff/2026-10-09-codex-state-evidence-AZ.md) |

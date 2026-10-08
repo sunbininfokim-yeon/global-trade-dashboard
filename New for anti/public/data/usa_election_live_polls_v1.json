@@ -84,12 +84,12 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 106,
+    "accepted_observations": 107,
     "excluded_observations": 733,
-    "aggregation_eligible_observations": 83,
+    "aggregation_eligible_observations": 84,
     "reference_only_observations": 23,
     "exclusion_reasons": {
-      "pollster_not_selected": 523,
+      "pollster_not_selected": 518,
       "outside_reviewed_general_period": 113,
       "unregistered_primary_host": 60,
       "unreviewed_matchup": 2,
@@ -110,12 +110,15 @@
       "primary_geography_methodology_conflict": 1,
       "primary_geography_and_candidate_table_not_verified": 1,
       "pre_primary_historical_poll_not_general_signal": 1,
-      "commissioner_primary_methodology_not_obtained": 4,
+      "commissioner_primary_methodology_not_obtained": 5,
       "missing_sample_and_primary_methodology": 1,
-      "historical_pre_primary_poll_not_current_signal": 1,
-      "primary_methodology_not_obtained_pre_primary_reference": 1
+      "historical_pre_primary_poll_not_current_signal": 2,
+      "primary_methodology_not_obtained_pre_primary_reference": 1,
+      "primary_methodology_sample_not_obtained": 1,
+      "primary_provider_population_conflict": 1,
+      "primary_population_sample_mapping_required": 1
     },
-    "displayed_observations": 106
+    "displayed_observations": 107
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -5617,7 +5620,7 @@
               "historical_accuracy_rating",
               "candidate_gap_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://azhighground.com/hobbs-builds-double-digit-lead-in-arizona"
             ],
@@ -5720,7 +5723,7 @@
               "precision_model_details",
               "historical_accuracy_rating"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://www.noblepredictiveinsights.com/post/katie-hobbs-leads-andy-biggs-in-the-grand-canyon-state"
             ],
@@ -5827,7 +5830,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -14639,7 +14642,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -17668,7 +17671,126 @@
         "coverage": "reported_major_party_field"
       },
       "race_id": "USA:AZ:house:01",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-firststrategic-az-house01-rv-20261005",
+          "race_id": "USA:AZ:house:01",
+          "contest_id": "USA:AZ:house:01:2026:general",
+          "pollster": "FirstStrategic",
+          "pollster_group": "firststrategic",
+          "field_start": "2026-10-01",
+          "field_end": "2026-10-01",
+          "provider_record_date": "2026-10-05",
+          "population": "rv",
+          "sample_n": 400,
+          "answers": [
+            {
+              "name": "Amish Shah",
+              "pct": 44.4,
+              "party": "DEM"
+            },
+            {
+              "name": "Jay Feely",
+              "pct": 41.6,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T20:04:03.675718+00:00",
+            "documents": [
+              {
+                "url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+                "status": "unchanged",
+                "sha256": "4216fd9e9c49eaeedf211e9faface9f3ca7db0f418f8ce30a9d6cfaab6785318"
+              }
+            ],
+            "provider_duplicate_ids": [],
+            "reviewed_replaced_provider_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "response_rate",
+              "recruitment_probability_details",
+              "paid_client_identity"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+            ],
+            "primary_toplines": {
+              "Amish Shah": 44.4,
+              "Jay Feely": 41.6
+            },
+            "question_sample_n": 400,
+            "disclosure_review": {
+              "population": "RV",
+              "provider_population": "LV",
+              "population_conflict": "publisher methodology explicitly400 registered voters; no LV screen disclosed",
+              "sample_n": 400,
+              "field_dates": [
+                "2026-10-01",
+                "2026-10-01"
+              ],
+              "mode": "text-to-web",
+              "sampling_frame": "Arizona CD1 voter file",
+              "weighting": "general election turnout model by party41R/31D/28IND, gender52F/48M and five age bands; age65+43%",
+              "question_wording_checked": true,
+              "question": "Q1 initial Congress vote, responses randomized; Q2/Q3/Q4 not imported as vote",
+              "undecided_pct": 14.0,
+              "design_effect": 1.24,
+              "publisher_interpretation": "lead statistically tied; no significance assertion made here",
+              "missing_fields": [
+                "lv_screen",
+                "response_rate",
+                "recruitment_probability_details"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_sampling_error",
+              "half_width_pp": 5.4,
+              "confidence_level_pct": 95,
+              "design_effect_included": true,
+              "unweighted_half_width_pp": 4.9,
+              "scope": "overall400RV",
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_initial_with_undecided",
+            "sponsor_review": {
+              "commissioner": "FirstStrategic self-published release; client/paid sponsor not named",
+              "provider_internal": false,
+              "provider_partisan": null,
+              "provider_sponsors": [],
+              "political_consulting_not_accuracy_grade": true
+            },
+            "limitations_ko": "기관 원문 RV400과 API LV를 구분. 표본·방법 공개는 정확도 등급 아님. 44.4/41.6은 한 조사 수치이며 당선 전망이나 유의한 우세 아님."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -17706,38 +17828,111 @@
           "window_days": 14,
           "from": "2026-09-25",
           "through": "2026-10-08",
-          "population": null,
-          "status": "no_recent_poll",
-          "party": null,
-          "leader": null,
+          "population": "rv",
+          "status": "single_poll_lead",
+          "party": "DEM",
+          "leader": "Amish Shah",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
+          "poll_details": [
+            {
+              "id": "primary-firststrategic-az-house01-rv-20261005",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "response_rate",
+                  "recruitment_probability_details",
+                  "paid_client_identity"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Amish Shah": 44.4,
+                  "Jay Feely": 41.6
+                },
+                "question_sample_n": 400,
+                "disclosure_review": {
+                  "population": "RV",
+                  "provider_population": "LV",
+                  "population_conflict": "publisher methodology explicitly400 registered voters; no LV screen disclosed",
+                  "sample_n": 400,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-01"
+                  ],
+                  "mode": "text-to-web",
+                  "sampling_frame": "Arizona CD1 voter file",
+                  "weighting": "general election turnout model by party41R/31D/28IND, gender52F/48M and five age bands; age65+43%",
+                  "question_wording_checked": true,
+                  "question": "Q1 initial Congress vote, responses randomized; Q2/Q3/Q4 not imported as vote",
+                  "undecided_pct": 14.0,
+                  "design_effect": 1.24,
+                  "publisher_interpretation": "lead statistically tied; no significance assertion made here",
+                  "missing_fields": [
+                    "lv_screen",
+                    "response_rate",
+                    "recruitment_probability_details"
+                  ]
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 5.4,
+                  "confidence_level_pct": 95,
+                  "design_effect_included": true,
+                  "unweighted_half_width_pp": 4.9,
+                  "scope": "overall400RV",
+                  "validated_here": false
+                },
+                "ballot_format": "two_candidate_initial_with_undecided",
+                "sponsor_review": {
+                  "commissioner": "FirstStrategic self-published release; client/paid sponsor not named",
+                  "provider_internal": false,
+                  "provider_partisan": null,
+                  "provider_sponsors": [],
+                  "political_consulting_not_accuracy_grade": true
+                },
+                "limitations_ko": "기관 원문 RV400과 API LV를 구분. 표본·방법 공개는 정확도 등급 아님. 44.4/41.6은 한 조사 수치이며 당선 전망이나 유의한 우세 아님."
+              },
+              "leading_margin_pp": 2.8,
+              "significance": "not_evaluated"
+            }
+          ],
           "reference_ids": [],
           "reference_poll_count": 0,
           "reference_details": [],
           "status_note_ko": null,
-          "lead_counts": {},
+          "lead_counts": {
+            "Amish Shah": 1
+          },
           "tie_count": 0,
-          "pollster_count": 0,
-          "included_ids": [],
+          "pollster_count": 1,
+          "included_ids": [
+            "primary-firststrategic-az-house01-rv-20261005"
+          ],
           "conflicting_pollsters": [],
-          "latest_field_end": null
+          "latest_field_end": "2026-10-01"
         }
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -27497,7 +27692,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -27649,7 +27844,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -27799,7 +27994,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -27933,7 +28128,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -28067,7 +28262,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -28201,7 +28396,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -28351,7 +28546,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:15.245066+00:00",
+      "fetched_at": "2026-10-08T20:03:54.482438+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -83979,357 +84174,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "gov202nob3acbfb6b",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Noble Predictive Insights",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.noblepredictiveinsights.com/post/azgov-biggs-benefits-from-field-consolidation-hobbs-holds-early-edge",
-      "field_start": "2026-02-23",
-      "field_end": "2026-02-26",
-      "population": "rv",
-      "sample_n": 1023,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202cen07f7e46c",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Center for Excellence in Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.newsweek.com/andy-biggs-chances-beating-katie-hobbs-arizona-governor-poll-11551094",
-      "field_start": "2026-01-22",
-      "field_end": "2026-01-24",
-      "population": "lv",
-      "sample_n": 519,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nex95db87c3",
-      "race_id": "USA:AZ:governor",
-      "pollster": "NextGen P",
-      "reason": "pollster_not_selected",
-      "source_url": "https://nxtgenp.com/post/Hobbs-leads",
-      "field_start": "2025-12-15",
-      "field_end": "2025-12-17",
-      "population": "lv",
-      "sample_n": 2725,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202eme9b46a11f",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/1ttQsSUYBerJPlBQ9tEliqyXAZeYgyvDN/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
-      "field_start": "2025-11-08",
-      "field_end": "2025-11-10",
-      "population": "rv",
-      "sample_n": 850,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nobabea6ce5",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Noble Predictive Insights",
-      "reason": "unregistered_primary_host",
-      "source_url": "google.com/url?q=https://www.noblepredictiveinsights.com/post/az-governor-s-race-biggs-gains-momentum-as-gop-field-shifts&sa=D&source=editors&ust=1777163132554655&usg=AOvVaw3Yr1GPKX2EdclVxRSFbATu",
-      "field_start": "2025-05-12",
-      "field_end": "2025-05-16",
-      "population": "rv",
-      "sample_n": 1026,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nob2b0611a8",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Noble Predictive Insights",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.noblepredictiveinsights.com/post/robson-rewrites-the-2022-playbook-as-she-opens-with-an-early-lead-in-arizona-gop-primary",
-      "field_start": "2025-08-11",
-      "field_end": "2025-08-18",
-      "population": "rv",
-      "sample_n": 948,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202pulea8a7905",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Pulse Decision Science",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static.politico.com/18/ad/467915674242863a8a9d88d3e6a4/cfg-az-gov-2026-baseline-public-pollingmemo-v1.pdf",
-      "field_start": "2025-04-06",
-      "field_end": "2025-04-09",
-      "population": "lv",
-      "sample_n": 501,
-      "sponsors": [
-        "Club for Growth"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nob3d7447ec",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Noble Predictive Insights",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.noblepredictiveinsights.com/post/arizona-gop-voters-still-searching-for-a-gubernatorial-primary-frontrunner",
-      "field_start": "2025-02-11",
-      "field_end": "2025-02-13",
-      "population": "rv",
-      "sample_n": 1006,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202kref8467fca",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Kreate Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://web.archive.org/web/20250214065131/https://projects.fivethirtyeight.com/polls/250212_AZ_KStrategiesdeck.pdf",
-      "field_start": "2025-02-05",
-      "field_end": "2025-02-07",
-      "population": "lv",
-      "sample_n": 924,
-      "sponsors": [
-        "American Encore"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pubc9e98776",
-      "race_id": "USA:AZ:house:06",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff2ed910000",
-      "field_start": "2025-10-14",
-      "field_end": "2025-10-15",
-      "population": "lv",
-      "sample_n": 581,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nobc86b9c74",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Noble Predictive Insights",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.noblepredictiveinsights.com/post/azgov-biggs-nears-majority-as-hobbs-holds-early-edge",
-      "field_start": "2026-05-05",
-      "field_end": "2026-05-07",
-      "population": "rv",
-      "sample_n": 996,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rag5df93f4a",
-      "race_id": "USA:AZ:house:06",
-      "pollster": "Ragnar Research Partners",
-      "reason": "pollster_not_selected",
-      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
-      "field_start": "2026-03-12",
-      "field_end": "2026-03-14",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [
-        "Conservatives for America"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ragce672c6a",
-      "race_id": "USA:AZ:house:06",
-      "pollster": "Ragnar Research Partners",
-      "reason": "pollster_not_selected",
-      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
-      "field_start": "2026-03-12",
-      "field_end": "2026-03-14",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [
-        "Conservatives for America"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202nor8d5759fc",
-      "race_id": "USA:AZ:house:06",
-      "pollster": "Normington, Petts & Associates",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.thehousemajoritypac.com/news/new-hmp-poll-joanna-mendoza-leads-juan-ciscomani-in-az-06",
-      "field_start": "2026-06-08",
-      "field_end": "2026-06-11",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202fab5f0bab16",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Fabrizio, Lee & Associates/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/content/dam/aarp/research/topics/voter-opinion-research/politics/2026-midterm-election-poll-arizona.doi.10.26419-2fres.01065.007.pdf",
-      "field_start": "2026-07-26",
-      "field_end": "2026-07-28",
-      "population": "lv",
-      "sample_n": 913,
-      "sponsors": [
-        "AARP"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the8bf98233",
-      "race_id": "USA:AZ:governor",
-      "pollster": "The Tarrance Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.democracydefensefoundation.org/news/az/new-poll-arizona-voters-remain-concerned-about-election-integrity-headed-into-general-election",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Democracy Defense Foundation"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202ste25bcebfb",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Stealth Analytics",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.stealth-analytics.com/dispatches/az-general-lv-statewide-august-2026",
-      "field_start": "2026-08-11",
-      "field_end": "2026-08-13",
-      "population": "lv",
-      "sample_n": 530,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202nexd1d1735a",
-      "race_id": "USA:AZ:governor",
-      "pollster": "NextGen Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://nxtgenp.com/post/new-blog-post-6092",
-      "field_start": "2026-08-17",
-      "field_end": "2026-08-19",
-      "population": "rv",
-      "sample_n": 1627,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202kreeebd121f",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Kreate Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/AmericanEncore/status/2090601186273731039",
-      "field_start": "2026-08-13",
-      "field_end": "2026-08-16",
-      "population": "lv",
-      "sample_n": 900,
-      "sponsors": [
-        "American Encore"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202quaca60018a",
-      "race_id": "USA:AZ:governor",
-      "pollster": "Quantus Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1BykPOxoJ1OPnMi2maevjUosmYs8faa8Q/view?usp=sharing",
-      "field_start": "2026-08-14",
-      "field_end": "2026-08-17",
-      "population": "lv",
-      "sample_n": 780,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202firaf458383",
-      "race_id": "USA:AZ:house:01",
-      "pollster": "FirstStrategic",
-      "reason": "pollster_not_selected",
-      "source_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
-      "field_start": "2026-10-01",
-      "field_end": "2026-10-01",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202bsp579091db",
-      "race_id": "USA:AZ:governor",
-      "pollster": "BSP Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://linktr.ee/hrc_asu",
-      "field_start": "2026-08-18",
-      "field_end": "2026-09-04",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [
-        "Arizona State University Center for Latina/os and American Politics Research",
-        "Arizona State University Hispanic Research Center"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "gov202nob02972028",
       "race_id": "USA:NV:governor",
       "pollster": "Noble Predictive Insights",
@@ -94055,6 +93899,357 @@
       "internal": false,
       "partisan": "DEM",
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nob3acbfb6b",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Noble Predictive Insights",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.noblepredictiveinsights.com/post/azgov-biggs-benefits-from-field-consolidation-hobbs-holds-early-edge",
+      "field_start": "2026-02-23",
+      "field_end": "2026-02-26",
+      "population": "rv",
+      "sample_n": 1023,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202cen07f7e46c",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Center for Excellence in Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.newsweek.com/andy-biggs-chances-beating-katie-hobbs-arizona-governor-poll-11551094",
+      "field_start": "2026-01-22",
+      "field_end": "2026-01-24",
+      "population": "lv",
+      "sample_n": 519,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nex95db87c3",
+      "race_id": "USA:AZ:governor",
+      "pollster": "NextGen P",
+      "reason": "pollster_not_selected",
+      "source_url": "https://nxtgenp.com/post/Hobbs-leads",
+      "field_start": "2025-12-15",
+      "field_end": "2025-12-17",
+      "population": "lv",
+      "sample_n": 2725,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202eme9b46a11f",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/1ttQsSUYBerJPlBQ9tEliqyXAZeYgyvDN/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+      "field_start": "2025-11-08",
+      "field_end": "2025-11-10",
+      "population": "rv",
+      "sample_n": 850,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nobabea6ce5",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Noble Predictive Insights",
+      "reason": "unregistered_primary_host",
+      "source_url": "google.com/url?q=https://www.noblepredictiveinsights.com/post/az-governor-s-race-biggs-gains-momentum-as-gop-field-shifts&sa=D&source=editors&ust=1777163132554655&usg=AOvVaw3Yr1GPKX2EdclVxRSFbATu",
+      "field_start": "2025-05-12",
+      "field_end": "2025-05-16",
+      "population": "rv",
+      "sample_n": 1026,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nob2b0611a8",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Noble Predictive Insights",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.noblepredictiveinsights.com/post/robson-rewrites-the-2022-playbook-as-she-opens-with-an-early-lead-in-arizona-gop-primary",
+      "field_start": "2025-08-11",
+      "field_end": "2025-08-18",
+      "population": "rv",
+      "sample_n": 948,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202pulea8a7905",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Pulse Decision Science",
+      "reason": "pollster_not_selected",
+      "source_url": "https://static.politico.com/18/ad/467915674242863a8a9d88d3e6a4/cfg-az-gov-2026-baseline-public-pollingmemo-v1.pdf",
+      "field_start": "2025-04-06",
+      "field_end": "2025-04-09",
+      "population": "lv",
+      "sample_n": 501,
+      "sponsors": [
+        "Club for Growth"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nob3d7447ec",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Noble Predictive Insights",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.noblepredictiveinsights.com/post/arizona-gop-voters-still-searching-for-a-gubernatorial-primary-frontrunner",
+      "field_start": "2025-02-11",
+      "field_end": "2025-02-13",
+      "population": "rv",
+      "sample_n": 1006,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202kref8467fca",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Kreate Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://web.archive.org/web/20250214065131/https://projects.fivethirtyeight.com/polls/250212_AZ_KStrategiesdeck.pdf",
+      "field_start": "2025-02-05",
+      "field_end": "2025-02-07",
+      "population": "lv",
+      "sample_n": 924,
+      "sponsors": [
+        "American Encore"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubc9e98776",
+      "race_id": "USA:AZ:house:06",
+      "pollster": "Public Policy Polling",
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "source_url": "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff2ed910000",
+      "field_start": "2025-10-14",
+      "field_end": "2025-10-15",
+      "population": "lv",
+      "sample_n": 581,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nobc86b9c74",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Noble Predictive Insights",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.noblepredictiveinsights.com/post/azgov-biggs-nears-majority-as-hobbs-holds-early-edge",
+      "field_start": "2026-05-05",
+      "field_end": "2026-05-07",
+      "population": "rv",
+      "sample_n": 996,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rag5df93f4a",
+      "race_id": "USA:AZ:house:06",
+      "pollster": "Ragnar Research Partners",
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
+      "field_start": "2026-03-12",
+      "field_end": "2026-03-14",
+      "population": "lv",
+      "sample_n": 400,
+      "sponsors": [
+        "Conservatives for America"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ragce672c6a",
+      "race_id": "USA:AZ:house:06",
+      "pollster": "Ragnar Research Partners",
+      "reason": "pollster_not_selected",
+      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
+      "field_start": "2026-03-12",
+      "field_end": "2026-03-14",
+      "population": "lv",
+      "sample_n": 400,
+      "sponsors": [
+        "Conservatives for America"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202nor8d5759fc",
+      "race_id": "USA:AZ:house:06",
+      "pollster": "Normington, Petts & Associates",
+      "reason": "primary_methodology_sample_not_obtained",
+      "source_url": "https://www.thehousemajoritypac.com/news/new-hmp-poll-joanna-mendoza-leads-juan-ciscomani-in-az-06",
+      "field_start": "2026-06-08",
+      "field_end": "2026-06-11",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202fab5f0bab16",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Fabrizio, Lee & Associates/Impact Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.aarp.org/content/dam/aarp/research/topics/voter-opinion-research/politics/2026-midterm-election-poll-arizona.doi.10.26419-2fres.01065.007.pdf",
+      "field_start": "2026-07-26",
+      "field_end": "2026-07-28",
+      "population": "lv",
+      "sample_n": 913,
+      "sponsors": [
+        "AARP"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the8bf98233",
+      "race_id": "USA:AZ:governor",
+      "pollster": "The Tarrance Group",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.democracydefensefoundation.org/news/az/new-poll-arizona-voters-remain-concerned-about-election-integrity-headed-into-general-election",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Democracy Defense Foundation"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202ste25bcebfb",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Stealth Analytics",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.stealth-analytics.com/dispatches/az-general-lv-statewide-august-2026",
+      "field_start": "2026-08-11",
+      "field_end": "2026-08-13",
+      "population": "lv",
+      "sample_n": 530,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202nexd1d1735a",
+      "race_id": "USA:AZ:governor",
+      "pollster": "NextGen Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://nxtgenp.com/post/new-blog-post-6092",
+      "field_start": "2026-08-17",
+      "field_end": "2026-08-19",
+      "population": "rv",
+      "sample_n": 1627,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202kreeebd121f",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Kreate Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/AmericanEncore/status/2090601186273731039",
+      "field_start": "2026-08-13",
+      "field_end": "2026-08-16",
+      "population": "lv",
+      "sample_n": 900,
+      "sponsors": [
+        "American Encore"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202quaca60018a",
+      "race_id": "USA:AZ:governor",
+      "pollster": "Quantus Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1BykPOxoJ1OPnMi2maevjUosmYs8faa8Q/view?usp=sharing",
+      "field_start": "2026-08-14",
+      "field_end": "2026-08-17",
+      "population": "lv",
+      "sample_n": 780,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202firaf458383",
+      "race_id": "USA:AZ:house:01",
+      "pollster": "FirstStrategic",
+      "reason": "primary_provider_population_conflict",
+      "source_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+      "field_start": "2026-10-01",
+      "field_end": "2026-10-01",
+      "population": "lv",
+      "sample_n": 400,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202bsp579091db",
+      "race_id": "USA:AZ:governor",
+      "pollster": "BSP Research",
+      "reason": "primary_population_sample_mapping_required",
+      "source_url": "https://linktr.ee/hrc_asu",
+      "field_start": "2026-08-18",
+      "field_end": "2026-09-04",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [
+        "Arizona State University Center for Latina/os and American Politics Research",
+        "Arizona State University Hispanic Research Center"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -94087,15 +94282,15 @@
     "groups": {
       "requested_states": {
         "race_count": 196,
-        "with_observations": 28,
+        "with_observations": 29,
         "recent_7d": 1,
-        "recent_14d": 7
+        "recent_14d": 8
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 34,
+        "with_observations": 35,
         "recent_7d": 5,
-        "recent_14d": 13
+        "recent_14d": 14
       },
       "korean_company_facilities": {
         "race_count": 15,
@@ -94132,7 +94327,8 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 11,
+          "primary_population_sample_mapping_required": 1,
+          "pollster_not_selected": 10,
           "outside_reviewed_general_period": 4,
           "unregistered_primary_host": 2
         },
@@ -94171,25 +94367,26 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "recent_14d_only",
         "provider_record_count": 1,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-10-01",
         "windows": {
           "7": {
             "status": "no_recent_poll",
             "pollster_count": 0
           },
           "14": {
-            "status": "no_recent_poll",
-            "pollster_count": 0
+            "status": "single_poll_lead",
+            "pollster_count": 1
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_population_conflict": 1
         },
         "review_queue_ids": [
           "us-202firaf458383"
@@ -94364,7 +94561,10 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "primary_methodology_sample_not_obtained": 1,
+          "pollster_not_selected": 1,
+          "commissioner_primary_methodology_not_obtained": 1,
+          "historical_pre_primary_poll_not_current_signal": 1
         },
         "review_queue_ids": [
           "us-202nor8d5759fc",
@@ -113429,9 +113629,9 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 19,
+        "with_polls": 20,
         "with_recent_7d": 0,
-        "with_recent_14d": 2,
+        "with_recent_14d": 3,
         "with_super_pac": 316,
         "closed_elections": 0
       },
@@ -114109,7 +114309,8 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 19,
         "rejection_reasons": {
-          "pollster_not_selected": 11,
+          "primary_population_sample_mapping_required": 1,
+          "pollster_not_selected": 10,
           "outside_reviewed_general_period": 4,
           "unregistered_primary_host": 2
         },
@@ -115316,7 +115517,10 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 4,
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "primary_methodology_sample_not_obtained": 1,
+          "pollster_not_selected": 1,
+          "commissioner_primary_methodology_not_obtained": 1,
+          "historical_pre_primary_poll_not_current_signal": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -116390,15 +116594,15 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "recent_14d_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 0,
+        "recent_14d_pollsters": 1,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_population_conflict": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -142853,7 +143057,6 @@
           "race_count": 9,
           "scheduled": true,
           "polls_without_observations": [
-            "USA:AZ:house:01",
             "USA:AZ:house:02",
             "USA:AZ:house:03",
             "USA:AZ:house:04",
@@ -146333,10 +146536,37 @@
       "state": "AZ",
       "cycle": 2026,
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:24:15.245066+00:00",
-      "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 24
+      "captured_at": "2026-10-08T20:03:54.482438+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 24,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-firststrategic-az-house01-rv-20261005",
+          "state": "AZ",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T20:04:03.675718+00:00",
+          "documents": [
+            {
+              "url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+              "status": "unchanged",
+              "sha256": "4216fd9e9c49eaeedf211e9faface9f3ca7db0f418f8ce30a9d6cfaab6785318"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      ],
+      "primary_rechecked_ids": [
+        "primary-firststrategic-az-house01-rv-20261005",
+        "gov202hig20c1b034",
+        "gov202nobb8fa340d"
+      ],
+      "primary_rechecked_at": "2026-10-08T20:03:54.422996+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/AZ-primary-20261009.json",
+      "governor_source_checked_at": "2026-10-08T20:04:04.098419+00:00",
+      "governor_source_access_data_file": "usa_governor_source_access/2026/AZ.json"
     },
     "NV": {
       "state": "NV",

@@ -722,7 +722,7 @@
       ]
     },
     "gov202nobb8fa340d": {
-      "reviewed_on": "2026-10-06",
+      "reviewed_on": "2026-10-08",
       "snapshot_sha256": "4a9c790760f339823fa272a0acbf70d0eab4a5bb92ba12c83eb0a93d127315bd",
       "sources": [
         "https://www.noblepredictiveinsights.com/post/katie-hobbs-leads-andy-biggs-in-the-grand-canyon-state"
@@ -775,10 +775,17 @@
           "historical_reference"
         ],
         "allow_historical_reference": true
-      }
+      },
+      "reviewed_at": "2026-10-08T20:03:54.422996+00:00",
+      "primary_documents": [
+        {
+          "url": "https://www.noblepredictiveinsights.com/post/katie-hobbs-leads-andy-biggs-in-the-grand-canyon-state",
+          "sha256": "410e986f63004521a679089dad117c8c24881d9f358797f3ed36e1e43ffa8093"
+        }
+      ]
     },
     "gov202hig20c1b034": {
-      "reviewed_on": "2026-10-06",
+      "reviewed_on": "2026-10-08",
       "snapshot_sha256": "60527df1294ae2599504b8a2ca2fc7d045bae1b74e0d8e73185bbe61178c835f",
       "sources": [
         "https://azhighground.com/hobbs-builds-double-digit-lead-in-arizona"
@@ -831,7 +838,14 @@
           "historical_reference"
         ],
         "allow_historical_reference": true
-      }
+      },
+      "reviewed_at": "2026-10-08T20:03:54.422996+00:00",
+      "primary_documents": [
+        {
+          "url": "https://azhighground.com/hobbs-builds-double-digit-lead-in-arizona/",
+          "sha256": "0a5bc051f69bf58fdd6d156b840cd4cacbf5b018cc6122bb7e88125ae8fa3b5d"
+        }
+      ]
     },
     "us-202emee56d4394": {
       "reviewed_on": "2026-10-06",
@@ -5601,6 +5615,81 @@
           ]
         }
       ]
+    },
+    "primary-firststrategic-az-house01-rv-20261005": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+      ],
+      "primary_toplines": {
+        "Amish Shah": 44.4,
+        "Jay Feely": 41.6
+      },
+      "question_sample_n": 400,
+      "disclosure_review": {
+        "population": "RV",
+        "provider_population": "LV",
+        "population_conflict": "publisher methodology explicitly400 registered voters; no LV screen disclosed",
+        "sample_n": 400,
+        "field_dates": [
+          "2026-10-01",
+          "2026-10-01"
+        ],
+        "mode": "text-to-web",
+        "sampling_frame": "Arizona CD1 voter file",
+        "weighting": "general election turnout model by party41R/31D/28IND, gender52F/48M and five age bands; age65+43%",
+        "question_wording_checked": true,
+        "question": "Q1 initial Congress vote, responses randomized; Q2/Q3/Q4 not imported as vote",
+        "undecided_pct": 14.0,
+        "design_effect": 1.24,
+        "publisher_interpretation": "lead statistically tied; no significance assertion made here",
+        "missing_fields": [
+          "lv_screen",
+          "response_rate",
+          "recruitment_probability_details"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 5.4,
+        "confidence_level_pct": 95,
+        "design_effect_included": true,
+        "unweighted_half_width_pp": 4.9,
+        "scope": "overall400RV",
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_initial_with_undecided",
+      "sponsor_review": {
+        "commissioner": "FirstStrategic self-published release; client/paid sponsor not named",
+        "provider_internal": false,
+        "provider_partisan": null,
+        "provider_sponsors": [],
+        "political_consulting_not_accuracy_grade": true
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "response_rate",
+        "recruitment_probability_details",
+        "paid_client_identity"
+      ],
+      "limitations_ko": "기관 원문 RV400과 API LV를 구분. 표본·방법 공개는 정확도 등급 아님. 44.4/41.6은 한 조사 수치이며 당선 전망이나 유의한 우세 아님.",
+      "snapshot_sha256": "a9c541145e3064e2a846374a113777969cb93828471564d1829d73e247e18c7d",
+      "provider_record_sha256": "092aae87658a67d4b5ce0cb17c07e4273d9d5cd1a45f32e71c5de10259b6b8ed",
+      "primary_supplement_record_sha256": "092aae87658a67d4b5ce0cb17c07e4273d9d5cd1a45f32e71c5de10259b6b8ed",
+      "primary_documents": [
+        {
+          "url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+          "sha256": "4216fd9e9c49eaeedf211e9faface9f3ca7db0f418f8ce30a9d6cfaab6785318"
+        }
+      ],
+      "admission": {
+        "pollster": "FirstStrategic",
+        "provider_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+        "group": "firststrategic",
+        "methodology_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      }
     }
   }
 }

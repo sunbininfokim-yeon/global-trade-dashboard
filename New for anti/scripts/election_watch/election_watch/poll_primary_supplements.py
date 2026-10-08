@@ -13,7 +13,7 @@ from .poll_quality import answer_correction_fingerprint
 
 # Reviewed publishers with finite release URLs and SHA-256 snapshots below.
 # New releases still require a committed record/document review.
-PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org'))
+PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org', 's3.documentcloud.org'))
 
 
 def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
