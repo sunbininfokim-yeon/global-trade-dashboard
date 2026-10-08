@@ -29,6 +29,17 @@ class PollingScopeTests(unittest.TestCase):
         self.assertFalse(scoped_paths('codex/usa-election-ui-extra'))
         self.assertNotIn('.github/workflows/deploy.yml', scoped_paths('codex/usa-election-ui'))
 
+    def test_daily_polling_request_only_allows_collector_and_name_subscription(self):
+        branch = 'codex/us-house-poll-priority-20261008'
+        self.assertEqual(scoped_paths(branch), {
+            '.github/workflows/us_election_polls_refresh.yml',
+            '.github/workflows/deploy.yml'})
+        self.assertFalse(scoped_paths(branch + '-extra'))
+        for path in ('New for anti/app.js', '_worker.js', 'wrangler.jsonc',
+                     '.github/workflows/ownership_guard.yml',
+                     '.github/workflows/overseas_letf_daily.yml'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_monthly_acquisition_scope_does_not_allow_ui_or_deployment(self):
         self.assertEqual(scoped_paths('codex/commodity-monthly-automation'), {
             '_worker.js', '.github/workflows/commodity_trade_refresh.yml',

@@ -14,6 +14,15 @@ POLLING_PATHS = frozenset({
 ELECTION_UI_BRANCH = 'codex/usa-election-ui'
 ELECTION_UI_PATHS = frozenset({'New for anti/index.html', 'New for anti/style.css'})
 
+# User explicitly requested daily polling Actions on 2026-10-08.
+# The deploy path is only for keeping its workflow-name subscription in sync;
+# this grants no permission to merge, dispatch production collection or deploy.
+DAILY_POLLING_BRANCH = 'codex/us-house-poll-priority-20261008'
+DAILY_POLLING_PATHS = frozenset({
+    '.github/workflows/us_election_polls_refresh.yml',
+    '.github/workflows/deploy.yml',
+})
+
 # User requested monthly acquisition and existing Cloudflare-key integration
 # on 2026-10-07. No UI, wrangler settings or shared deployment workflow grant.
 COMMODITY_BRANCH = 'codex/commodity-monthly-automation'
@@ -26,4 +35,5 @@ COMMODITY_PATHS = frozenset({
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
+            DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS}.get(branch, frozenset())

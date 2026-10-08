@@ -1,8 +1,8 @@
-name: US election polls weekly
+name: US election polls daily
 
 on:
   schedule:
-    - cron: '10 21 * * 0' # Monday 06:10 KST weekly; includes post-election health/results refresh
+    - cron: '10 21 * * *' # Daily 06:10 KST; includes post-election health/results refresh
   workflow_dispatch:
   pull_request:
     paths:
