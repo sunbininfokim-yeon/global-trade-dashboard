@@ -115,7 +115,8 @@ def apply_targets(policy, catalog, ballots, as_of):
             chosen = major if len(major) >= 2 else names
             race['required_candidates'] = chosen
             race['candidates'] = candidates
-            race['schedule_status'] = 'reviewed_general_matchup'
+            # Keep the existing data/UI contract for an evidenced general field.
+            race['schedule_status'] = 'reported_general_matchup'
         else:
             # A single candidate is separately audited, never admitted as a poll
             # comparison, a confirmed winner or a 100% vote share.

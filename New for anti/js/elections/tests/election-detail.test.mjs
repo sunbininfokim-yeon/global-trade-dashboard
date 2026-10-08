@@ -24,7 +24,7 @@ test('100-seat Senate retains exactly 65 seats and exposes only 35 contests incl
  assert.equal(o.retained,65);assert.deepEqual(o.retainedCounts,{DEM:32,GOP:31,IND:2,unknown:0});
  const html=electionOverviewHtml(country,ratings,{now});
  const senate=html.split('data-office="senate"')[1].split('data-office="house"')[0];
- assert.match(senate,/이번 선거 35석/);assert.match(senate,/비선거 유지 65석/);
+ assert.match(senate,/이번 선거 35석/);assert.match(senate.replace(/<[^>]*>/g,''),/비선거 유지 65석/);
  const list=senate.split('class="elections-disclosure elections-senate-contests"')[1].split('</details>')[0];
  assert.equal((list.match(/data-overview-state=/g)||[]).length,35);
  assert.equal((list.match(/특별선거/g)||[]).length,2);
@@ -72,7 +72,7 @@ test('district map click callback selects a real district and ignores base geogr
  click({object:{properties:{district:'99'}}});assert.equal(selected,'00');
 });
 test('selected district card combines current member/party, matchup, polls and clearly labelled accumulated spending',()=>{
- const state=country.ui_ready.state_drilldown.states.find(s=>s.id==='NY');
+ const state={...country.ui_ready.state_drilldown.states.find(s=>s.id==='NY'),election_matchups:{}};
  const html=districtFocusHtml(state,'17',[],contract,{races:{'USA:NY:house:17':race}},null);
  assert.match(html,/Lawler, Michael/);assert.match(html,/공화당/);assert.match(html,/Jane Doe/);assert.match(html,/여론조사/);assert.match(html,/공시 누적 합계/);
  assert.equal(districtFocusHtml(state,null,[],contract,null,null),'');
