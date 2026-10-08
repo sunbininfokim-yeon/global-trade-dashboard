@@ -1179,7 +1179,12 @@
     "us-202impbb787ecf": "commissioner_primary_methodology_not_obtained",
     "us-202dcc0d4b0ded": "primary_methodology_and_reported_name_review_required",
     "us-202fm396e2170a": "primary_methodology_not_obtained_pre_primary_reference",
-    "us-202pubc2e16fe9": "historical_pre_primary_poll_not_current_signal"
+    "us-202pubc2e16fe9": "historical_pre_primary_poll_not_current_signal",
+    "us-202firaf458383": "primary_provider_population_conflict",
+    "us-202nor8d5759fc": "primary_methodology_sample_not_obtained",
+    "us-202rag5df93f4a": "commissioner_primary_methodology_not_obtained",
+    "us-202pubc9e98776": "historical_pre_primary_poll_not_current_signal",
+    "gov202bsp579091db": "primary_population_sample_mapping_required"
   },
   "excluded_watch_slots": [
     {
@@ -1449,6 +1454,51 @@
       "reason": "historical_pre_primary_poll_not_current_signal",
       "note_ko": "WI03 PPP2025자료 원문방법 전체검토 미완료, 현재 우세 아님.",
       "provider_record_sha256": "e94fff002e7bc3cdac6c9357da105cf8d60401a53390b04fb4754ea383d33651"
+    },
+    "us-202firaf458383": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+      ],
+      "reason": "primary_provider_population_conflict",
+      "note_ko": "API LV400 vs 원문 RV400. 초기44.4/41.6 동일, RV 원문 보완만 표시.",
+      "provider_record_sha256": "685cc00a1b329829e849e918b77e85529e3adf1f263164aa4b7cef8da7738c4a"
+    },
+    "us-202nor8d5759fc": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/new-hmp-poll-joanna-mendoza-leads-juan-ciscomani-in-az-06"
+      ],
+      "reason": "primary_methodology_sample_not_obtained",
+      "note_ko": "HMP 공식 원문 초기47/45와 정보제공후52/44 구분. 표본500/LV·방법은 해당 공개 원문에서 확인 못함.",
+      "provider_record_sha256": "5ab3e3ccaf5b1a8ddd8d6a9957de0dcd6cd492156fecdcd745cde5fe94764d84"
+    },
+    "us-202rag5df93f4a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://punchbowl.news/article/campaigns/bad-gop-polls/"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "Ragnar3월 조사·유료언론발견, 공식 의뢰자/원문방법 미확보. 새 접근권한 필요시 해당 수집중단.",
+      "provider_record_sha256": "bd07497c562b25a4e737ef47402a814d594733f92a4278140248a7e9634a1877"
+    },
+    "us-202pubc9e98776": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff2ed910000"
+      ],
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "note_ko": "2025 PPP 조사; 현재본선최근조사로 승격하지 않음.",
+      "provider_record_sha256": "3c49a69fa6f51128355614d8c731d7150c5049d1b86ce9ee23f1d777911bc0ca"
+    },
+    "gov202bsp579091db": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://linktr.ee/hrc_asu"
+      ],
+      "reason": "primary_population_sample_mapping_required",
+      "note_ko": "ASU 원문N1300 전체표본과 API LV/sample null 충돌. Q8초기47/34/2/1과 미정16 확인, LV문항N/전체모집단/가중 미검증.",
+      "provider_record_sha256": "76607b3585144ea518200982a6c91b24cbd8f4088ec862c6af504ce69d5f29a0"
     }
   }
 }
