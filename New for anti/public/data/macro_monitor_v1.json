@@ -1,14 +1,14 @@
 {
   "schema_version": "macro-monitor-v1",
   "engine_version": "0.31.0",
-  "generated_at": "2026-10-07T23:47:28Z",
+  "generated_at": "2026-10-08T23:56:41Z",
   "source": {
     "kind": "hybrid_live",
     "quality": "partial_live",
-    "live_ok": 74,
-    "live_fail": 4,
-    "note": "실데이터 오버레이 74건: Yahoo + Worker FRED latest + BOK + Wikipedia 신용등급 + QRA 엔진. ISM PMI·CDS 스킵. FedWatch는 CME 사이트 스크래핑 금지(ToS/IP 차단) — FF 선물 정산가 기반 자체 스코어링 예정. KOSIS 미사용. BOJ는 Time-Series Search CSV 매핑 예정.",
-    "fetched_at": "2026-10-07T23:47:28Z",
+    "live_ok": 75,
+    "live_fail": 3,
+    "note": "실데이터 오버레이 75건: Yahoo + Worker FRED latest + BOK + Wikipedia 신용등급 + QRA 엔진. ISM PMI·CDS 스킵. FedWatch는 CME 사이트 스크래핑 금지(ToS/IP 차단) — FF 선물 정산가 기반 자체 스코어링 예정. KOSIS 미사용. BOJ는 Time-Series Search CSV 매핑 예정.",
+    "fetched_at": "2026-10-08T23:56:41Z",
     "backends": [
       "yahoo_chart",
       "fred_worker_latest",
@@ -1924,28 +1924,28 @@
           "id": "net_liquidity",
           "category": "liquidity",
           "label_ko": "순유동성",
-          "display": "5.8T",
+          "display": "5.9T",
           "data_status": "live_latest"
         },
         {
           "id": "bond_10y",
           "category": "rates",
           "label_ko": "10년물 국채",
-          "display": "5.27%",
+          "display": "5.28%",
           "data_status": "live"
         },
         {
           "id": "dxy",
           "category": "fx",
           "label_ko": "달러지수(DXY)",
-          "display": "102.2",
+          "display": "102.1",
           "data_status": "live"
         },
         {
           "id": "spx",
           "category": "equity",
           "label_ko": "S&P 500",
-          "display": "7,802",
+          "display": "7,765",
           "data_status": "live"
         },
         {
@@ -1968,14 +1968,14 @@
           {
             "id": "net_liquidity",
             "label_ko": "순유동성",
-            "display": "5.8T",
-            "value": 5.792019,
+            "display": "5.9T",
+            "value": 5.866972,
             "unit": "tn_usd",
             "change_1m_pct": 1.0,
             "change_1y_pct": 1.66,
-            "asof": "2026-09-30",
+            "asof": "2026-10-07",
             "note_ko": "연준 총자산 − TGA − ON RRP",
-            "observed_at": "2026-09-30",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "derived:live_latest",
             "data_status": "live_latest",
@@ -1985,13 +1985,13 @@
             "id": "fed_total_assets",
             "label_ko": "연준 총자산",
             "display": "6.7T",
-            "value": 6.743031,
+            "value": 6.74756,
             "unit": "tn_usd",
             "change_1m_pct": 0.28,
             "change_1y_pct": -0.58,
-            "asof": "2026-09-30",
+            "asof": "2026-10-07",
             "note_ko": null,
-            "observed_at": "2026-09-30",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:WALCL",
             "data_status": "live_latest",
@@ -2017,13 +2017,13 @@
             "id": "on_rrp",
             "label_ko": "역레포(ON RRP)",
             "display": "0.45B",
-            "value": 2.338,
+            "value": 0.335,
             "unit": "bn_usd",
             "change_1m_pct": -79.08,
             "change_1y_pct": 48.79,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "잔고 감소 → 시중 유동성 증가 해석",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "fred_worker:RRPONTTLD",
             "data_status": "live_latest",
@@ -2061,14 +2061,14 @@
           {
             "id": "tga",
             "label_ko": "TGA 잔고",
-            "display": "+949B",
-            "value": 948.674,
+            "display": "+880B",
+            "value": 880.253,
             "unit": "bn_usd",
             "change_1m_pct": -5.84,
             "change_1y_pct": -19.65,
-            "asof": "2026-09-30",
+            "asof": "2026-10-07",
             "note_ko": "TGA↑ → 시중 유동성 흡수",
-            "observed_at": "2026-09-30",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:WTREGEN",
             "data_status": "live_latest",
@@ -2354,9 +2354,9 @@
             "unit": "%",
             "change_1m_pct": -0.67,
             "change_1y_pct": 1.15,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": null,
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:EFFR",
             "data_status": "live_latest",
@@ -2382,14 +2382,14 @@
           {
             "id": "sofr",
             "label_ko": "SOFR",
-            "display": "3.89%",
-            "value": 3.89,
+            "display": "3.88%",
+            "value": 3.88,
             "unit": "%",
             "change_1m_pct": -1.7,
             "change_1y_pct": 1.97,
-            "asof": "2026-10-05",
+            "asof": "2026-10-07",
             "note_ko": null,
-            "observed_at": "2026-10-05",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:SOFR",
             "data_status": "live_latest",
@@ -2398,15 +2398,15 @@
           {
             "id": "bond_3m",
             "label_ko": "3개월 국채",
-            "display": "4.21%",
-            "value": 4.21,
+            "display": "4.22%",
+            "value": 4.22,
             "unit": "%",
             "change_1m_pct": 0.42,
             "change_1y_pct": -0.21,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": "시장 수익률 (TB3MS/DGS3MO) — SOMA 보유와 별개",
             "chart_type": "line",
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:DGS3MO",
             "data_status": "live_latest"
@@ -2414,15 +2414,15 @@
           {
             "id": "bond_2y",
             "label_ko": "2년물 국채",
-            "display": "4.79%",
-            "value": 4.79,
+            "display": "4.77%",
+            "value": 4.77,
             "unit": "%",
             "change_1m_pct": 1.39,
             "change_1y_pct": -0.08,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:DGS2",
             "data_status": "live_latest"
@@ -2430,15 +2430,15 @@
           {
             "id": "bond_10y",
             "label_ko": "10년물 국채",
-            "display": "5.27%",
-            "value": 5.27,
+            "display": "5.28%",
+            "value": 5.28,
             "unit": "%",
             "change_1m_pct": 0.81,
             "change_1y_pct": 5.39,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:DGS10",
             "data_status": "live"
@@ -2446,14 +2446,14 @@
           {
             "id": "tips_10y",
             "label_ko": "10년 실질금리",
-            "display": "2.91%",
-            "value": 2.91,
+            "display": "2.92%",
+            "value": 2.92,
             "unit": "%",
             "change_1m_pct": -1.02,
             "change_1y_pct": -6.26,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": "10Y TIPS — 밸류에이션 핵심 변수",
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:DFII10",
             "data_status": "live_latest",
@@ -2463,13 +2463,13 @@
             "id": "spread_10y3m",
             "label_ko": "10Y−3M 스프레드",
             "display": "+1bp",
-            "value": 1.06,
+            "value": 0.99,
             "unit": "bp",
             "change_1m_pct": 0.18,
             "change_1y_pct": -23.34,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "fred_worker:T10Y3M",
             "data_status": "live_latest",
@@ -2478,14 +2478,14 @@
           {
             "id": "spread_10y2y",
             "label_ko": "10Y−2Y 스프레드",
-            "display": "+48bp",
-            "value": 48.0,
+            "display": "+51bp",
+            "value": 51.0,
             "unit": "bp",
             "change_1m_pct": -3.02,
             "change_1y_pct": 68.24,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": null,
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "derived:live",
             "data_status": "live_latest",
@@ -2509,14 +2509,14 @@
             "id": "hy_oas",
             "label_ko": "High Yield OAS",
             "display": "+3bp",
-            "value": 3.03,
+            "value": 3.09,
             "unit": "bp",
             "change_1m_pct": -4.39,
             "change_1y_pct": 13.71,
-            "asof": "2026-10-06",
+            "asof": "2026-10-07",
             "note_ko": "투기등급(High Yield) 회사채 옵션조정 스프레드",
             "chart_type": "line",
-            "observed_at": "2026-10-06",
+            "observed_at": "2026-10-07",
             "retrieved_at": null,
             "source": "fred_worker:BAMLH0A0HYM2",
             "data_status": "live_latest"
@@ -2565,14 +2565,14 @@
           {
             "id": "dxy",
             "label_ko": "달러지수(DXY)",
-            "display": "102.2",
-            "value": 102.232002,
+            "display": "102.1",
+            "value": 102.138,
             "unit": "index",
             "change_1m_pct": 1.09,
             "change_1y_pct": -7.94,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:DX-Y.NYB",
             "data_status": "live",
@@ -2581,14 +2581,14 @@
           {
             "id": "eurusd",
             "label_ko": "EUR/USD",
-            "display": "1.121",
-            "value": 1.120699,
+            "display": "1.122",
+            "value": 1.121579,
             "unit": "FX",
             "change_1m_pct": 0.3,
             "change_1y_pct": -2.29,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURUSD=X",
             "data_status": "live",
@@ -2597,14 +2597,14 @@
           {
             "id": "usdjpy",
             "label_ko": "USD/JPY",
-            "display": "158.0",
-            "value": 157.970993,
+            "display": "158.1",
+            "value": 158.056,
             "unit": "FX",
             "change_1m_pct": -0.35,
             "change_1y_pct": 8.17,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:USDJPY=X",
             "data_status": "live",
@@ -2615,15 +2615,15 @@
           {
             "id": "spx",
             "label_ko": "S&P 500",
-            "display": "7,802",
-            "value": 7801.77002,
+            "display": "7,765",
+            "value": 7765.359863,
             "unit": "index",
             "change_1m_pct": 5.04,
             "change_1y_pct": 10.73,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^GSPC",
             "data_status": "live"
@@ -2631,15 +2631,15 @@
           {
             "id": "ndx",
             "label_ko": "NASDAQ 100",
-            "display": "31,160",
-            "value": 31160.076172,
+            "display": "30,726",
+            "value": 30725.808594,
             "unit": "index",
             "change_1m_pct": -7.35,
             "change_1y_pct": 4.42,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^NDX",
             "data_status": "live"
@@ -2647,15 +2647,15 @@
           {
             "id": "rut",
             "label_ko": "Russell 2000",
-            "display": "2,793",
-            "value": 2793.204102,
+            "display": "2,794",
+            "value": 2794.128174,
             "unit": "index",
             "change_1m_pct": 6.17,
             "change_1y_pct": 9.26,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "금리·유동성 민감도 높음",
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^RUT",
             "data_status": "live"
@@ -2663,15 +2663,15 @@
           {
             "id": "vix",
             "label_ko": "VIX",
-            "display": "15.1",
-            "value": 15.08,
+            "display": "15.4",
+            "value": 15.41,
             "unit": "index",
             "change_1m_pct": -15.64,
             "change_1y_pct": -38.68,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^VIX",
             "data_status": "live"
@@ -2810,10 +2810,10 @@
             "unit": "k",
             "change_1m_pct": -0.4,
             "change_1y_pct": 2.11,
-            "asof": "2026-09-26",
+            "asof": "2026-10-03",
             "note_ko": "주간 해고 속도. ~200–250k 부근이 흔히 “안정”으로 읽히는 구간(추세는 변함).",
             "analog_ko": "미국 전용. 타국 실업률보다 고빈도 선행에 가깝다.",
-            "observed_at": "2026-09-26",
+            "observed_at": "2026-10-03",
             "retrieved_at": null,
             "source": "fred_worker:ICSA",
             "data_status": "live_latest",
@@ -3143,15 +3143,15 @@
           {
             "id": "bei_10y",
             "label_ko": "10년 BEI",
-            "display": "2.36%",
-            "value": 2.36,
+            "display": "2.35%",
+            "value": 2.35,
             "unit": "%",
             "change_1m_pct": -1.14,
             "change_1y_pct": -11.66,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "fred_worker:T10YIE",
             "data_status": "live_latest"
@@ -3165,11 +3165,11 @@
           "label_ko": "연준 총자산",
           "unit": "tn_usd",
           "format": "tn1",
-          "value": 6.743031,
+          "value": 6.74756,
           "display": "6.7T",
           "change_1m_pct": 0.28,
           "change_1y_pct": -0.58,
-          "asof": "2026-09-30",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -3294,7 +3294,7 @@
                 6.735789,
                 6.665112,
                 6.631704,
-                6.743031
+                6.74756
               ],
               "real_points_from_end": 1
             },
@@ -3541,7 +3541,7 @@
                 6.735789,
                 6.665112,
                 6.631704,
-                6.743031
+                6.74756
               ],
               "real_points_from_end": 1
             }
@@ -3550,7 +3550,7 @@
           "quality": "live_latest",
           "fred_hint": "WALCL",
           "data_status": "live_latest",
-          "observed_at": "2026-09-30",
+          "observed_at": "2026-10-07",
           "retrieved_at": null,
           "balance_sheet": {
             "asof": "2026-09-23",
@@ -8414,7 +8414,7 @@
           "display": "+1,898B",
           "change_1m_pct": -0.12,
           "change_1y_pct": -1.74,
-          "asof": "2026-09-30",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -8794,7 +8794,7 @@
           "source": "fred_worker:WSHOMCB",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-09-30",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -8803,11 +8803,11 @@
           "label_ko": "역레포(ON RRP)",
           "unit": "bn_usd",
           "format": "bn0",
-          "value": 2.338,
-          "display": "+2B",
+          "value": 0.335,
+          "display": "+0B",
           "change_1m_pct": -79.08,
           "change_1y_pct": 48.79,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -8932,7 +8932,7 @@
                 158.250967,
                 166.740794,
                 169.654905,
-                2.338
+                0.335
               ],
               "real_points_from_end": 1
             },
@@ -9179,7 +9179,7 @@
                 158.250967,
                 166.740794,
                 169.654905,
-                2.338
+                0.335
               ],
               "real_points_from_end": 1
             }
@@ -9189,7 +9189,7 @@
           "note_ko": "잔고 감소 → 시중 유동성 증가 해석",
           "fred_hint": "RRPONTTLD",
           "data_status": "live_latest",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null,
           "display_chip": "0.45B"
         },
@@ -12153,11 +12153,11 @@
           "label_ko": "TGA 잔고",
           "unit": "bn_usd",
           "format": "bn0",
-          "value": 948.674,
-          "display": "+949B",
+          "value": 880.253,
+          "display": "+880B",
           "change_1m_pct": -5.84,
           "change_1y_pct": -19.65,
-          "asof": "2026-09-30",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -12282,7 +12282,7 @@
                 862.713446,
                 877.674678,
                 828.368347,
-                948.674
+                880.253
               ],
               "real_points_from_end": 1
             },
@@ -12529,7 +12529,7 @@
                 862.713446,
                 877.674678,
                 828.368347,
-                948.674
+                880.253
               ],
               "real_points_from_end": 1
             }
@@ -12539,7 +12539,7 @@
           "note_ko": "TGA↑ → 시중 유동성 흡수",
           "fred_hint": "WTREGEN",
           "data_status": "live_latest",
-          "observed_at": "2026-09-30",
+          "observed_at": "2026-10-07",
           "retrieved_at": null,
           "chart_type": "line",
           "ui": {
@@ -13469,7 +13469,7 @@
           "display": "3.88%",
           "change_1m_pct": -0.67,
           "change_1y_pct": 1.15,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -13850,7 +13850,7 @@
           "quality": "live_latest",
           "fred_hint": "EFFR",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -14042,11 +14042,11 @@
           "label_ko": "3개월 국채",
           "unit": "%",
           "format": "pct2",
-          "value": 4.21,
-          "display": "4.21%",
+          "value": 4.22,
+          "display": "4.22%",
           "change_1m_pct": 0.42,
           "change_1y_pct": -0.21,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -14171,7 +14171,7 @@
                 4.29503,
                 4.333269,
                 4.33175,
-                4.21
+                4.22
               ],
               "real_points_from_end": 1
             },
@@ -14418,7 +14418,7 @@
                 4.29503,
                 4.333269,
                 4.33175,
-                4.21
+                4.22
               ],
               "real_points_from_end": 1
             }
@@ -14430,7 +14430,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -14439,11 +14439,11 @@
           "label_ko": "2년물 국채",
           "unit": "%",
           "format": "pct2",
-          "value": 4.79,
-          "display": "4.79%",
+          "value": 4.77,
+          "display": "4.77%",
           "change_1m_pct": 1.39,
           "change_1y_pct": -0.08,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -14568,7 +14568,7 @@
                 3.917715,
                 4.023551,
                 4.043626,
-                4.79
+                4.77
               ],
               "real_points_from_end": 1
             },
@@ -14815,7 +14815,7 @@
                 3.917715,
                 4.023551,
                 4.043626,
-                4.79
+                4.77
               ],
               "real_points_from_end": 1
             }
@@ -14826,7 +14826,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -14835,11 +14835,11 @@
           "label_ko": "10년물 국채",
           "unit": "%",
           "format": "pct2",
-          "value": 5.27,
-          "display": "5.27%",
+          "value": 5.28,
+          "display": "5.28%",
           "change_1m_pct": 0.81,
           "change_1y_pct": 5.39,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -14902,7 +14902,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-06"
+                "2026-10-07"
               ],
               "values": [
                 1.443,
@@ -14964,7 +14964,7 @@
                 4.745,
                 4.758,
                 5.293,
-                5.27
+                5.28
               ],
               "real_points_from_end": 1
             },
@@ -15089,7 +15089,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-06"
+                "2026-10-07"
               ],
               "values": [
                 2.368,
@@ -15211,7 +15211,7 @@
                 4.745,
                 4.758,
                 5.293,
-                5.27
+                5.28
               ],
               "real_points_from_end": 1
             }
@@ -15222,7 +15222,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -15231,11 +15231,11 @@
           "label_ko": "10년 실질금리",
           "unit": "%",
           "format": "pct2",
-          "value": 2.91,
-          "display": "2.91%",
+          "value": 2.92,
+          "display": "2.92%",
           "change_1m_pct": -1.02,
           "change_1y_pct": -6.26,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -15360,7 +15360,7 @@
                 2.11703,
                 2.08815,
                 2.071034,
-                2.91
+                2.92
               ],
               "real_points_from_end": 1
             },
@@ -15607,7 +15607,7 @@
                 2.11703,
                 2.08815,
                 2.071034,
-                2.91
+                2.92
               ],
               "real_points_from_end": 1
             }
@@ -15616,7 +15616,7 @@
           "quality": "live_latest",
           "note_ko": "10Y TIPS — 밸류에이션 핵심 변수",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -15625,11 +15625,11 @@
           "label_ko": "10Y−3M 스프레드",
           "unit": "bp",
           "format": "bp0",
-          "value": 1.06,
+          "value": 0.99,
           "display": "+1bp",
           "change_1m_pct": 0.18,
           "change_1y_pct": -23.34,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -15754,7 +15754,7 @@
                 -50.012241,
                 -51.466167,
                 -44.919126,
-                1.06
+                0.99
               ],
               "real_points_from_end": 1
             },
@@ -16001,7 +16001,7 @@
                 -50.012241,
                 -51.466167,
                 -44.919126,
-                1.06
+                0.99
               ],
               "real_points_from_end": 1
             }
@@ -16009,7 +16009,7 @@
           "source": "fred_worker:T10Y3M",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -16018,11 +16018,11 @@
           "label_ko": "High Yield OAS",
           "unit": "bp",
           "format": "bp0",
-          "value": 3.03,
+          "value": 3.09,
           "display": "+3bp",
           "change_1m_pct": -4.39,
           "change_1y_pct": 13.71,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -16147,7 +16147,7 @@
                 299.314012,
                 314.089936,
                 324.227344,
-                3.03
+                3.09
               ],
               "real_points_from_end": 1
             },
@@ -16394,7 +16394,7 @@
                 299.314012,
                 314.089936,
                 324.227344,
-                3.03
+                3.09
               ],
               "real_points_from_end": 1
             }
@@ -16406,7 +16406,7 @@
           "refresh_tier": "market_daily",
           "chart_type": "line",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -16415,11 +16415,11 @@
           "label_ko": "SOFR",
           "unit": "%",
           "format": "pct2",
-          "value": 3.89,
-          "display": "3.89%",
+          "value": 3.88,
+          "display": "3.88%",
           "change_1m_pct": -1.7,
           "change_1y_pct": 1.97,
-          "asof": "2026-10-05",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -16544,7 +16544,7 @@
                 4.304158,
                 4.305168,
                 4.384494,
-                3.89
+                3.88
               ],
               "real_points_from_end": 1
             },
@@ -16791,7 +16791,7 @@
                 4.304158,
                 4.305168,
                 4.384494,
-                3.89
+                3.88
               ],
               "real_points_from_end": 1
             }
@@ -16799,7 +16799,7 @@
           "source": "fred_worker:SOFR",
           "quality": "live_latest",
           "data_status": "live_latest",
-          "observed_at": "2026-10-05",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -16808,11 +16808,11 @@
           "label_ko": "달러지수(DXY)",
           "unit": "index",
           "format": "number1",
-          "value": 102.232002,
-          "display": "102.2",
+          "value": 102.138,
+          "display": "102.1",
           "change_1m_pct": 1.09,
           "change_1y_pct": -7.94,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -16875,7 +16875,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 95.989998,
@@ -16937,7 +16937,7 @@
                 99.800003,
                 99.43,
                 101.449997,
-                102.232002
+                102.138
               ]
             },
             "10y": {
@@ -17061,7 +17061,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 101.5,
@@ -17183,14 +17183,14 @@
                 99.800003,
                 99.43,
                 101.449997,
-                102.232002
+                102.138
               ]
             }
           },
           "source": "yahoo:DX-Y.NYB",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -17199,11 +17199,11 @@
           "label_ko": "EUR/USD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.120699,
-          "display": "1.121",
+          "value": 1.121579,
+          "display": "1.122",
           "change_1m_pct": 0.3,
           "change_1y_pct": -2.29,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -17266,7 +17266,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.129344,
@@ -17327,8 +17327,8 @@
                 1.152353,
                 1.158896,
                 1.134083,
-                1.121705,
-                1.120699
+                1.125353,
+                1.121579
               ]
             },
             "10y": {
@@ -17452,7 +17452,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.064849,
@@ -17573,8 +17573,8 @@
                 1.152353,
                 1.158896,
                 1.134083,
-                1.121705,
-                1.120699
+                1.125353,
+                1.121579
               ]
             }
           },
@@ -17582,7 +17582,7 @@
           "quality": "live",
           "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -17591,11 +17591,11 @@
           "label_ko": "USD/JPY",
           "unit": "FX",
           "format": "fx",
-          "value": 157.970993,
-          "display": "158.0",
+          "value": 158.056,
+          "display": "158.1",
           "change_1m_pct": -0.35,
           "change_1y_pct": 8.17,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -17658,7 +17658,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 113.804001,
@@ -17719,8 +17719,8 @@
                 160.182999,
                 160.121994,
                 157.404007,
-                157.962997,
-                157.970993
+                158.296005,
+                158.056
               ]
             },
             "10y": {
@@ -17844,7 +17844,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 112.470001,
@@ -17965,15 +17965,15 @@
                 160.182999,
                 160.121994,
                 157.404007,
-                157.962997,
-                157.970993
+                158.296005,
+                158.056
               ]
             }
           },
           "source": "yahoo:USDJPY=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -17982,11 +17982,11 @@
           "label_ko": "S&P 500",
           "unit": "index",
           "format": "number0",
-          "value": 7801.77002,
-          "display": "7,802",
+          "value": 7765.359863,
+          "display": "7,765",
           "change_1m_pct": 5.04,
           "change_1y_pct": 10.73,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -18049,7 +18049,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 4567.0,
@@ -18111,7 +18111,7 @@
                 7489.720215,
                 7686.140137,
                 7651.540039,
-                7801.77002
+                7765.359863
               ],
               "ma5": [
                 4567.0,
@@ -18173,7 +18173,7 @@
                 7261.333985,
                 7492.858008,
                 7581.364063,
-                7625.706055
+                7618.424023
               ]
             },
             "10y": {
@@ -18297,7 +18297,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2198.810059,
@@ -18419,7 +18419,7 @@
                 7489.720215,
                 7686.140137,
                 7651.540039,
-                7801.77002
+                7765.359863
               ],
               "ma5": [
                 2198.810059,
@@ -18541,7 +18541,7 @@
                 7261.333985,
                 7492.858008,
                 7581.364063,
-                7625.706055
+                7618.424023
               ]
             }
           },
@@ -18555,7 +18555,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -18564,11 +18564,11 @@
           "label_ko": "NASDAQ 100",
           "unit": "index",
           "format": "number0",
-          "value": 31160.076172,
-          "display": "31,160",
+          "value": 30725.808594,
+          "display": "30,726",
           "change_1m_pct": -7.35,
           "change_1y_pct": 4.42,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -18631,7 +18631,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 16135.919922,
@@ -18693,7 +18693,7 @@
                 28274.199219,
                 29456.970703,
                 30408.5,
-                31160.076172
+                30725.808594
               ],
               "ma5": [
                 16135.919922,
@@ -18755,7 +18755,7 @@
                 28015.207422,
                 29158.563672,
                 29749.839844,
-                29915.219141
+                29828.365625
               ]
             },
             "10y": {
@@ -18879,7 +18879,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 4810.810059,
@@ -19001,7 +19001,7 @@
                 28274.199219,
                 29456.970703,
                 30408.5,
-                31160.076172
+                30725.808594
               ],
               "ma5": [
                 4810.810059,
@@ -19123,7 +19123,7 @@
                 28015.207422,
                 29158.563672,
                 29749.839844,
-                29915.219141
+                29828.365625
               ]
             }
           },
@@ -19137,7 +19137,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -19146,11 +19146,11 @@
           "label_ko": "Russell 2000",
           "unit": "index",
           "format": "number0",
-          "value": 2793.204102,
-          "display": "2,793",
+          "value": 2794.128174,
+          "display": "2,794",
           "change_1m_pct": 6.17,
           "change_1y_pct": 9.26,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -19213,7 +19213,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2198.909912,
@@ -19275,7 +19275,7 @@
                 2931.340088,
                 2956.449951,
                 2796.860107,
-                2793.204102
+                2794.128174
               ],
               "ma5": [
                 2198.909912,
@@ -19337,7 +19337,7 @@
                 2834.266064,
                 2926.282031,
                 2925.67207,
-                2900.444873
+                2900.629687
               ]
             },
             "10y": {
@@ -19461,7 +19461,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1322.339966,
@@ -19583,7 +19583,7 @@
                 2931.340088,
                 2956.449951,
                 2796.860107,
-                2793.204102
+                2794.128174
               ],
               "ma5": [
                 1322.339966,
@@ -19705,7 +19705,7 @@
                 2834.266064,
                 2926.282031,
                 2925.67207,
-                2900.444873
+                2900.629687
               ]
             }
           },
@@ -19720,7 +19720,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -19729,11 +19729,11 @@
           "label_ko": "VIX",
           "unit": "index",
           "format": "number1",
-          "value": 15.08,
-          "display": "15.1",
+          "value": 15.41,
+          "display": "15.4",
           "change_1m_pct": -15.64,
           "change_1y_pct": -38.68,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -19796,7 +19796,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 27.190001,
@@ -19858,7 +19858,7 @@
                 15.99,
                 14.92,
                 16.34,
-                15.08
+                15.41
               ],
               "ma5": [
                 27.190001,
@@ -19920,7 +19920,7 @@
                 17.98,
                 15.914,
                 15.804,
-                15.756
+                15.822
               ]
             },
             "10y": {
@@ -20044,7 +20044,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 13.33,
@@ -20166,7 +20166,7 @@
                 15.99,
                 14.92,
                 16.34,
-                15.08
+                15.41
               ],
               "ma5": [
                 13.33,
@@ -20288,7 +20288,7 @@
                 17.98,
                 15.914,
                 15.804,
-                15.756
+                15.822
               ]
             }
           },
@@ -20297,7 +20297,7 @@
           "refresh_tier": "market_intraday",
           "chart_type": "line",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -22634,7 +22634,7 @@
           "display": "197K",
           "change_1m_pct": -0.4,
           "change_1y_pct": 2.11,
-          "asof": "2026-09-26",
+          "asof": "2026-10-03",
           "history": {
             "5y": {
               "dates": [
@@ -23016,7 +23016,7 @@
           "note_ko": "주간 해고 속도. ~200–250k 부근이 흔히 “안정”으로 읽히는 구간(추세는 변함).",
           "analog_ko": "미국 전용. 타국 실업률보다 고빈도 선행에 가깝다.",
           "data_status": "live_latest",
-          "observed_at": "2026-09-26",
+          "observed_at": "2026-10-03",
           "retrieved_at": null
         },
         {
@@ -27947,11 +27947,11 @@
           "label_ko": "10년 BEI",
           "unit": "%",
           "format": "pct2",
-          "value": 2.36,
-          "display": "2.36%",
+          "value": 2.35,
+          "display": "2.35%",
           "change_1m_pct": -1.14,
           "change_1y_pct": -11.66,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -28076,7 +28076,7 @@
                 2.409851,
                 2.377952,
                 2.306246,
-                2.36
+                2.35
               ],
               "real_points_from_end": 1
             },
@@ -28323,7 +28323,7 @@
                 2.409851,
                 2.377952,
                 2.306246,
-                2.36
+                2.35
               ],
               "real_points_from_end": 1
             }
@@ -28341,7 +28341,7 @@
           ],
           "news": null,
           "data_status": "live_latest",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -30134,11 +30134,11 @@
           "label_ko": "순유동성",
           "unit": "tn_usd",
           "format": "tn1",
-          "value": 5.792019,
-          "display": "5.8T",
+          "value": 5.866972,
+          "display": "5.9T",
           "change_1m_pct": 1.0,
           "change_1y_pct": 1.66,
-          "asof": "2026-09-30",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -30263,7 +30263,7 @@
                 5.714825,
                 5.620697,
                 5.633681,
-                5.792019
+                5.866972
               ],
               "real_points_from_end": 1
             },
@@ -30510,7 +30510,7 @@
                 5.714825,
                 5.620697,
                 5.633681,
-                5.792019
+                5.866972
               ],
               "real_points_from_end": 1
             }
@@ -30520,7 +30520,7 @@
           "note_ko": "연준 총자산 − TGA − ON RRP",
           "derived": "fed_total_assets - tga - on_rrp",
           "data_status": "live_latest",
-          "observed_at": "2026-09-30",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -30529,11 +30529,11 @@
           "label_ko": "10Y−2Y 스프레드",
           "unit": "bp",
           "format": "bp0",
-          "value": 48.0,
-          "display": "+48bp",
+          "value": 51.0,
+          "display": "+51bp",
           "change_1m_pct": -3.02,
           "change_1y_pct": 68.24,
-          "asof": "2026-10-06",
+          "asof": "2026-10-07",
           "history": {
             "5y": {
               "dates": [
@@ -30658,7 +30658,7 @@
                 90.8159,
                 72.4037,
                 61.8665,
-                48.0
+                51.0
               ],
               "real_points_from_end": 1
             },
@@ -30905,7 +30905,7 @@
                 90.8159,
                 72.4037,
                 61.8665,
-                48.0
+                51.0
               ],
               "real_points_from_end": 1
             }
@@ -30914,7 +30914,7 @@
           "quality": "live_latest",
           "derived": "(bond_10y - bond_2y) * 100",
           "data_status": "live_latest",
-          "observed_at": "2026-10-06",
+          "observed_at": "2026-10-07",
           "retrieved_at": null
         },
         {
@@ -37452,14 +37452,14 @@
           "id": "usdkrw",
           "category": "fx",
           "label_ko": "USD/KRW",
-          "display": "1,340.4",
+          "display": "1,338.5",
           "data_status": "live"
         },
         {
           "id": "kospi",
           "category": "equity",
           "label_ko": "KOSPI",
-          "display": "6,804",
+          "display": "6,626",
           "data_status": "live"
         },
         {
@@ -37596,9 +37596,9 @@
             "unit": "%",
             "change_1m_pct": 0.33,
             "change_1y_pct": -2.32,
-            "asof": "2026-10-05",
+            "asof": "2026-10-08",
             "note_ko": "물가·환율·가계부채 종합",
-            "observed_at": "2026-10-05",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest",
@@ -37742,14 +37742,14 @@
           {
             "id": "usdkrw",
             "label_ko": "USD/KRW",
-            "display": "1,340.4",
-            "value": 1340.4,
+            "display": "1,338.5",
+            "value": 1338.5,
             "unit": "FX",
             "change_1m_pct": 2.29,
             "change_1y_pct": -9.08,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "1400원 등 임계점 · 개입·자본이탈",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live",
@@ -37825,15 +37825,15 @@
           {
             "id": "kospi",
             "label_ko": "KOSPI",
-            "display": "6,804",
-            "value": 6803.9,
+            "display": "6,626",
+            "value": 6625.93,
             "unit": "index",
             "change_1m_pct": 1.33,
             "change_1y_pct": -2.03,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live"
@@ -37841,14 +37841,14 @@
           {
             "id": "kosdaq",
             "label_ko": "KOSDAQ",
-            "display": "898",
-            "value": 898.43,
+            "display": "892",
+            "value": 892.27,
             "unit": "index",
             "change_1m_pct": -0.72,
             "change_1y_pct": -13.48,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "bok:ecos_keystat",
             "data_status": "live_latest",
@@ -43028,7 +43028,7 @@
           "display": "3.00%",
           "change_1m_pct": 0.33,
           "change_1y_pct": -2.32,
-          "asof": "2026-10-05",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -43409,7 +43409,7 @@
           "quality": "live_latest",
           "note_ko": "물가·환율·가계부채 종합",
           "data_status": "live_latest",
-          "observed_at": "2026-10-05",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -45011,11 +45011,11 @@
           "label_ko": "USD/KRW",
           "unit": "FX",
           "format": "fx",
-          "value": 1340.4,
-          "display": "1,340.4",
+          "value": 1338.5,
+          "display": "1,338.5",
           "change_1m_pct": 2.29,
           "change_1y_pct": -9.08,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -45078,7 +45078,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1190.73999,
@@ -45139,8 +45139,8 @@
                 1420.599976,
                 1377.109985,
                 1350.5,
-                1343.75,
-                1340.4
+                1339.73999,
+                1338.5
               ],
               "real_points_from_end": 1
             },
@@ -45265,7 +45265,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1167.859985,
@@ -45386,8 +45386,8 @@
                 1420.599976,
                 1377.109985,
                 1350.5,
-                1343.75,
-                1340.4
+                1339.73999,
+                1338.5
               ],
               "real_points_from_end": 1
             }
@@ -45396,7 +45396,7 @@
           "quality": "live_latest",
           "note_ko": "1400원 등 임계점 · 개입·자본이탈",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -45859,11 +45859,11 @@
           "label_ko": "KOSPI",
           "unit": "index",
           "format": "number0",
-          "value": 6803.9,
-          "display": "6,804",
+          "value": 6625.93,
+          "display": "6,626",
           "change_1m_pct": 1.33,
           "change_1y_pct": -2.03,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -45926,7 +45926,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2977.649902,
@@ -45987,8 +45987,8 @@
                 6595.450195,
                 6820.02002,
                 6838.040039,
-                6941.390137,
-                6803.9
+                6803.899902,
+                6625.93
               ],
               "ma5": [
                 2977.649902,
@@ -46049,8 +46049,8 @@
                 7039.882227,
                 7393.394238,
                 7441.228223,
-                7134.276172,
-                6799.760059
+                7106.778125,
+                6736.668066
               ],
               "real_points_from_end": 1
             },
@@ -46175,7 +46175,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2026.459961,
@@ -46296,8 +46296,8 @@
                 6595.450195,
                 6820.02002,
                 6838.040039,
-                6941.390137,
-                6803.9
+                6803.899902,
+                6625.93
               ],
               "ma5": [
                 2026.459961,
@@ -46418,8 +46418,8 @@
                 7039.882227,
                 7393.394238,
                 7441.228223,
-                7134.276172,
-                6799.760059
+                7106.778125,
+                6736.668066
               ],
               "real_points_from_end": 1
             }
@@ -46434,7 +46434,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -46443,11 +46443,11 @@
           "label_ko": "KOSDAQ",
           "unit": "index",
           "format": "number0",
-          "value": 898.43,
-          "display": "898",
+          "value": 892.27,
+          "display": "892",
           "change_1m_pct": -0.72,
           "change_1y_pct": -13.48,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -46572,7 +46572,7 @@
                 872.278169,
                 840.970694,
                 785.674247,
-                898.43
+                892.27
               ],
               "ma5": [
                 817.71661,
@@ -46881,7 +46881,7 @@
                 872.278169,
                 840.970694,
                 785.674247,
-                898.43
+                892.27
               ],
               "ma5": [
                 null,
@@ -47016,7 +47016,7 @@
             ]
           },
           "data_status": "live_latest",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -53659,14 +53659,14 @@
           "id": "usdjpy",
           "category": "fx",
           "label_ko": "USD/JPY",
-          "display": "158.0",
+          "display": "158.1",
           "data_status": "live"
         },
         {
           "id": "nikkei",
           "category": "equity",
           "label_ko": "Nikkei 225",
-          "display": "70,036",
+          "display": "69,042",
           "data_status": "live"
         },
         {
@@ -53965,14 +53965,14 @@
           {
             "id": "usdjpy",
             "label_ko": "USD/JPY",
-            "display": "158.0",
-            "value": 157.970993,
+            "display": "158.1",
+            "value": 158.057007,
             "unit": "FX",
             "change_1m_pct": -0.23,
             "change_1y_pct": 7.06,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:USDJPY=X",
             "data_status": "live",
@@ -54063,15 +54063,15 @@
           {
             "id": "nikkei",
             "label_ko": "Nikkei 225",
-            "display": "70,036",
-            "value": 70035.710938,
+            "display": "69,042",
+            "value": 69042.109375,
             "unit": "index",
             "change_1m_pct": 1.44,
             "change_1y_pct": -0.7,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
             "chart_type": "line",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^N225",
             "data_status": "live"
@@ -55537,11 +55537,11 @@
           "label_ko": "USD/JPY",
           "unit": "FX",
           "format": "fx",
-          "value": 157.970993,
-          "display": "158.0",
+          "value": 158.057007,
+          "display": "158.1",
           "change_1m_pct": -0.23,
           "change_1y_pct": 7.06,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -55604,7 +55604,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 113.804001,
@@ -55665,8 +55665,8 @@
                 160.182999,
                 160.121994,
                 157.404007,
-                157.962997,
-                157.970993
+                158.296005,
+                158.057007
               ]
             },
             "10y": {
@@ -55790,7 +55790,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 112.470001,
@@ -55911,15 +55911,15 @@
                 160.182999,
                 160.121994,
                 157.404007,
-                157.962997,
-                157.970993
+                158.296005,
+                158.057007
               ]
             }
           },
           "source": "yahoo:USDJPY=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -64700,11 +64700,11 @@
           "label_ko": "Nikkei 225",
           "unit": "index",
           "format": "number0",
-          "value": 70035.710938,
-          "display": "70,036",
+          "value": 69042.109375,
+          "display": "69,042",
           "change_1m_pct": 1.44,
           "change_1y_pct": -0.7,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -64767,7 +64767,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 28791.710938,
@@ -64828,8 +64828,8 @@
                 64362.019531,
                 66311.929688,
                 66753.71875,
-                70683.976562,
-                70035.710938
+                70035.710938,
+                69042.109375
               ],
               "ma5": [
                 28791.710938,
@@ -64890,8 +64890,8 @@
                 62220.496094,
                 65270.138281,
                 66763.897656,
-                67634.792969,
-                67629.471094
+                67505.139844,
+                67301.097656
               ]
             },
             "10y": {
@@ -65015,7 +65015,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 19114.369141,
@@ -65136,8 +65136,8 @@
                 64362.019531,
                 66311.929688,
                 66753.71875,
-                70683.976562,
-                70035.710938
+                70035.710938,
+                69042.109375
               ],
               "ma5": [
                 19114.369141,
@@ -65258,8 +65258,8 @@
                 62220.496094,
                 65270.138281,
                 66763.897656,
-                67634.792969,
-                67629.471094
+                67505.139844,
+                67301.097656
               ]
             }
           },
@@ -65273,7 +65273,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -75404,14 +75404,14 @@
           "id": "usdcny",
           "category": "fx",
           "label_ko": "USD/CNY 역내",
-          "display": "6.695",
+          "display": "6.694",
           "data_status": "live"
         },
         {
           "id": "sse_composite",
           "category": "equity",
           "label_ko": "상해종합 (A주)",
-          "display": "3,842",
+          "display": "3,812",
           "data_status": "live"
         },
         {
@@ -75718,14 +75718,14 @@
           {
             "id": "usdcny",
             "label_ko": "USD/CNY 역내",
-            "display": "6.695",
-            "value": 6.6948,
+            "display": "6.694",
+            "value": 6.6938,
             "unit": "FX",
             "change_1m_pct": -0.11,
             "change_1y_pct": -2.14,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "본토 · 일일 상하한",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:CNY=X",
             "data_status": "live",
@@ -75831,15 +75831,15 @@
           {
             "id": "sse_composite",
             "label_ko": "상해종합 (A주)",
-            "display": "3,842",
-            "value": 3842.195068,
+            "display": "3,812",
+            "value": 3811.904297,
             "unit": "index",
             "change_1m_pct": 3.48,
             "change_1y_pct": -3.69,
-            "asof": "2026-08-31",
+            "asof": "2026-10-08",
             "note_ko": "역내 A주 종합. CNY·국내 투자자 중심. B주(달러/HKD)와 다름.",
             "analog_ko": "한국 코스피 종합과 비슷한 “역내 전체” 슬롯. 미국 SPX보다 잡음 큼.",
-            "observed_at": "2026-08-31",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:000001.SS",
             "data_status": "live",
@@ -75866,15 +75866,15 @@
           {
             "id": "hscei",
             "label_ko": "HSCEI (H주)",
-            "display": "8,082",
-            "value": 8082.399902,
+            "display": "8,011",
+            "value": 8010.580078,
             "unit": "index",
             "change_1m_pct": -7.21,
             "change_1y_pct": -7.87,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "홍콩 상장 중국기업(H주). HKD·해외 규제. A주와 가격괴리(AH premium) 흔함.",
             "analog_ko": "ADR/해외상장 중국주. A주(CSI300)와 같은 회사여도 다른 시장.",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^HSCE",
             "data_status": "live",
@@ -81650,11 +81650,11 @@
           "label_ko": "USD/CNY 역내",
           "unit": "FX",
           "format": "fx",
-          "value": 6.6948,
-          "display": "6.695",
+          "value": 6.6938,
+          "display": "6.694",
           "change_1m_pct": -0.11,
           "change_1y_pct": -2.14,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -81717,7 +81717,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 6.387,
@@ -81779,7 +81779,7 @@
                 6.726,
                 6.703,
                 6.7045,
-                6.6948
+                6.6938
               ]
             },
             "10y": {
@@ -81903,7 +81903,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 6.8973,
@@ -82025,7 +82025,7 @@
                 6.726,
                 6.703,
                 6.7045,
-                6.6948
+                6.6938
               ]
             }
           },
@@ -82033,7 +82033,7 @@
           "quality": "live",
           "note_ko": "본토 · 일일 상하한",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -83233,11 +83233,11 @@
           "label_ko": "상해종합 (A주)",
           "unit": "index",
           "format": "number0",
-          "value": 3842.195068,
-          "display": "3,842",
+          "value": 3811.904297,
+          "display": "3,812",
           "change_1m_pct": 3.48,
           "change_1y_pct": -3.69,
-          "asof": "2026-08-31",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -83300,7 +83300,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-31"
+                "2026-10-08"
               ],
               "values": [
                 3639.780029,
@@ -83361,8 +83361,8 @@
                 3832.261963,
                 3986.298096,
                 3842.195068,
-                null,
-                null
+                3842.195068,
+                3811.904297
               ],
               "ma5": [
                 3639.780029,
@@ -83423,8 +83423,8 @@
                 3999.849658,
                 4018.737061,
                 3964.744238,
-                3938.788025,
-                3886.918376
+                3919.469434,
+                3862.970898
               ]
             },
             "10y": {
@@ -83548,7 +83548,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-31"
+                "2026-10-08"
               ],
               "values": [
                 3103.636963,
@@ -83669,8 +83669,8 @@
                 3832.261963,
                 3986.298096,
                 3842.195068,
-                null,
-                null
+                3842.195068,
+                3811.904297
               ],
               "ma5": [
                 3103.636963,
@@ -83791,8 +83791,8 @@
                 3999.849658,
                 4018.737061,
                 3964.744238,
-                3938.788025,
-                3886.918376
+                3919.469434,
+                3862.970898
               ]
             }
           },
@@ -83806,7 +83806,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-08-31",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -84398,11 +84398,11 @@
           "label_ko": "HSCEI (H주)",
           "unit": "index",
           "format": "number0",
-          "value": 8082.399902,
-          "display": "8,082",
+          "value": 8010.580078,
+          "display": "8,011",
           "change_1m_pct": -7.21,
           "change_1y_pct": -7.87,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -84465,7 +84465,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 8236.349609,
@@ -84526,8 +84526,8 @@
                 8612.150391,
                 8513.179688,
                 8220.080078,
-                8128.970215,
-                8082.399902
+                8082.399902,
+                8010.580078
               ],
               "ma5": [
                 8236.349609,
@@ -84588,8 +84588,8 @@
                 8330.480078,
                 8358.256055,
                 8265.906055,
-                8206.536035,
-                8311.356055
+                8197.221973,
+                8287.678027
               ]
             },
             "10y": {
@@ -84713,7 +84713,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 9394.870117,
@@ -84834,8 +84834,8 @@
                 8612.150391,
                 8513.179688,
                 8220.080078,
-                8128.970215,
-                8082.399902
+                8082.399902,
+                8010.580078
               ],
               "ma5": [
                 9394.870117,
@@ -84956,8 +84956,8 @@
                 8330.480078,
                 8358.256055,
                 8265.906055,
-                8206.536035,
-                8311.356055
+                8197.221973,
+                8287.678027
               ]
             }
           },
@@ -84971,7 +84971,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -92479,14 +92479,14 @@
           "id": "eurusd",
           "category": "fx",
           "label_ko": "EUR/USD",
-          "display": "1.121",
+          "display": "1.122",
           "data_status": "live"
         },
         {
           "id": "dax40",
           "category": "equity",
           "label_ko": "DAX 40",
-          "display": "25,104",
+          "display": "24,807",
           "data_status": "live"
         },
         {
@@ -92787,14 +92787,14 @@
           {
             "id": "eurusd",
             "label_ko": "EUR/USD",
-            "display": "1.121",
-            "value": 1.120699,
+            "display": "1.122",
+            "value": 1.121579,
             "unit": "FX",
             "change_1m_pct": 0.44,
             "change_1y_pct": -1.91,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURUSD=X",
             "data_status": "live",
@@ -92852,13 +92852,13 @@
             "id": "eurgbp",
             "label_ko": "EUR/GBP",
             "display": "0.848",
-            "value": 0.84754,
+            "value": 0.84756,
             "unit": "FX",
             "change_1m_pct": -1.42,
             "change_1y_pct": 3.7,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURGBP=X",
             "data_status": "live",
@@ -92867,14 +92867,14 @@
           {
             "id": "eurjpy",
             "label_ko": "EUR/JPY",
-            "display": "177.0",
-            "value": 176.966003,
+            "display": "177.2",
+            "value": 177.207001,
             "unit": "FX",
             "change_1m_pct": -1.48,
             "change_1y_pct": -2.09,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURJPY=X",
             "data_status": "live",
@@ -92885,14 +92885,14 @@
           {
             "id": "euro_stoxx50",
             "label_ko": "Euro Stoxx 50",
-            "display": "6,180",
-            "value": 6180.290039,
+            "display": "6,127",
+            "value": 6126.72998,
             "unit": "index",
             "change_1m_pct": 4.17,
             "change_1y_pct": 10.31,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "유로존 대형주 50 대표지수.",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^STOXX50E",
             "data_status": "live",
@@ -92918,14 +92918,14 @@
           {
             "id": "dax40",
             "label_ko": "DAX 40",
-            "display": "25,104",
-            "value": 25104.359375,
+            "display": "24,807",
+            "value": 24806.970703,
             "unit": "index",
             "change_1m_pct": -1.19,
             "change_1y_pct": -19.65,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^GDAXI",
             "data_status": "live",
@@ -92934,14 +92934,14 @@
           {
             "id": "cac40",
             "label_ko": "CAC 40",
-            "display": "7,769",
-            "value": 7769.209961,
+            "display": "7,730",
+            "value": 7729.689941,
             "unit": "index",
             "change_1m_pct": 5.66,
             "change_1y_pct": 17.47,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "명품·중국 내수 상관",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^FCHI",
             "data_status": "live",
@@ -93123,11 +93123,11 @@
           "label_ko": "EUR/USD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.120699,
-          "display": "1.121",
+          "value": 1.121579,
+          "display": "1.122",
           "change_1m_pct": 0.44,
           "change_1y_pct": -1.91,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -93190,7 +93190,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.129344,
@@ -93251,8 +93251,8 @@
                 1.152353,
                 1.158896,
                 1.134083,
-                1.121705,
-                1.120699
+                1.125353,
+                1.121579
               ]
             },
             "10y": {
@@ -93376,7 +93376,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.064849,
@@ -93497,8 +93497,8 @@
                 1.152353,
                 1.158896,
                 1.134083,
-                1.121705,
-                1.120699
+                1.125353,
+                1.121579
               ]
             }
           },
@@ -93506,7 +93506,7 @@
           "quality": "live",
           "note_ko": "DXY 비중 ~57.6% · 달러 강약의 핵심",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -93687,11 +93687,11 @@
           "label_ko": "EUR/JPY",
           "unit": "FX",
           "format": "fx",
-          "value": 176.966003,
-          "display": "177.0",
+          "value": 177.207001,
+          "display": "177.2",
           "change_1m_pct": -1.48,
           "change_1y_pct": -2.09,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -93754,7 +93754,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 128.513,
@@ -93815,8 +93815,8 @@
                 184.580002,
                 185.557007,
                 178.509995,
-                177.184006,
-                176.966003
+                178.138,
+                177.207001
               ]
             },
             "10y": {
@@ -93940,7 +93940,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 119.742996,
@@ -94061,15 +94061,15 @@
                 184.580002,
                 185.557007,
                 178.509995,
-                177.184006,
-                176.966003
+                178.138,
+                177.207001
               ]
             }
           },
           "source": "yahoo:EURJPY=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -94650,11 +94650,11 @@
           "label_ko": "EUR/GBP",
           "unit": "FX",
           "format": "fx",
-          "value": 0.84754,
+          "value": 0.84756,
           "display": "0.848",
           "change_1m_pct": -1.42,
           "change_1y_pct": 3.7,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -94717,7 +94717,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.84806,
@@ -94778,8 +94778,8 @@
                 0.85602,
                 0.85584,
                 0.85717,
-                0.84854,
-                0.84754
+                0.84819,
+                0.84756
               ]
             },
             "10y": {
@@ -94903,7 +94903,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.85242,
@@ -95024,15 +95024,15 @@
                 0.85602,
                 0.85584,
                 0.85717,
-                0.84854,
-                0.84754
+                0.84819,
+                0.84756
               ]
             }
           },
           "source": "yahoo:EURGBP=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -100617,11 +100617,11 @@
           "label_ko": "Euro Stoxx 50",
           "unit": "index",
           "format": "number0",
-          "value": 6180.290039,
-          "display": "6,180",
+          "value": 6126.72998,
+          "display": "6,127",
           "change_1m_pct": 4.17,
           "change_1y_pct": 10.31,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -100684,7 +100684,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 4298.410156,
@@ -100745,8 +100745,8 @@
                 6358.009766,
                 6420.160156,
                 6269.02002,
-                6272.22998,
-                6180.290039
+                6180.290039,
+                6126.72998
               ],
               "ma5": [
                 4298.410156,
@@ -100807,8 +100807,8 @@
                 6037.575879,
                 6207.661914,
                 6285.163965,
-                6329.501953,
-                6299.941992
+                6311.113965,
+                6270.841992
               ]
             },
             "10y": {
@@ -100932,7 +100932,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 3290.52002,
@@ -101053,8 +101053,8 @@
                 6358.009766,
                 6420.160156,
                 6269.02002,
-                6272.22998,
-                6180.290039
+                6180.290039,
+                6126.72998
               ],
               "ma5": [
                 3290.52002,
@@ -101175,8 +101175,8 @@
                 6037.575879,
                 6207.661914,
                 6285.163965,
-                6329.501953,
-                6299.941992
+                6311.113965,
+                6270.841992
               ]
             }
           },
@@ -101189,7 +101189,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -101198,11 +101198,11 @@
           "label_ko": "DAX 40",
           "unit": "index",
           "format": "number0",
-          "value": 25104.359375,
-          "display": "25,104",
+          "value": 24806.970703,
+          "display": "24,807",
           "change_1m_pct": -1.19,
           "change_1y_pct": -19.65,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -101265,7 +101265,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 15884.860352,
@@ -101326,8 +101326,8 @@
                 25629.240234,
                 26258.109375,
                 25199.189453,
-                25449.189453,
-                25104.359375
+                25104.359375,
+                24806.970703
               ],
               "ma5": [
                 15884.860352,
@@ -101388,8 +101388,8 @@
                 24540.433984,
                 25256.048047,
                 25437.409766,
-                25506.307812,
-                25528.017578
+                25437.341797,
+                25399.573828
               ]
             },
             "10y": {
@@ -101513,7 +101513,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 11481.05957,
@@ -101634,8 +101634,8 @@
                 25629.240234,
                 26258.109375,
                 25199.189453,
-                25449.189453,
-                25104.359375
+                25104.359375,
+                24806.970703
               ],
               "ma5": [
                 11481.05957,
@@ -101756,8 +101756,8 @@
                 24540.433984,
                 25256.048047,
                 25437.409766,
-                25506.307812,
-                25528.017578
+                25437.341797,
+                25399.573828
               ]
             }
           },
@@ -101769,7 +101769,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -101778,11 +101778,11 @@
           "label_ko": "CAC 40",
           "unit": "index",
           "format": "number0",
-          "value": 7769.209961,
-          "display": "7,769",
+          "value": 7729.689941,
+          "display": "7,730",
           "change_1m_pct": 5.66,
           "change_1y_pct": 17.47,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -101845,7 +101845,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 7153.029785,
@@ -101906,8 +101906,8 @@
                 8509.639648,
                 8334.5,
                 7964.509766,
-                7865.069824,
-                7769.209961
+                7769.209961,
+                7729.689941
               ],
               "ma5": [
                 7153.029785,
@@ -101968,8 +101968,8 @@
                 8205.749902,
                 8309.261914,
                 8279.195898,
-                8215.541894,
-                8088.58584
+                8196.369922,
+                8061.509863
               ]
             },
             "10y": {
@@ -102093,7 +102093,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 4862.310059,
@@ -102214,8 +102214,8 @@
                 8509.639648,
                 8334.5,
                 7964.509766,
-                7865.069824,
-                7769.209961
+                7769.209961,
+                7729.689941
               ],
               "ma5": [
                 4862.310059,
@@ -102336,8 +102336,8 @@
                 8205.749902,
                 8309.261914,
                 8279.195898,
-                8215.541894,
-                8088.58584
+                8196.369922,
+                8061.509863
               ]
             }
           },
@@ -102350,7 +102350,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -109382,14 +109382,14 @@
           "id": "usdzar",
           "category": "fx",
           "label_ko": "USD/ZAR",
-          "display": "16.62",
+          "display": "16.59",
           "data_status": "live"
         },
         {
           "id": "jse_top40",
           "category": "equity",
           "label_ko": "JSE Top 40",
-          "display": "99,394",
+          "display": "99,407",
           "data_status": "live"
         },
         {
@@ -109593,14 +109593,14 @@
           {
             "id": "usdzar",
             "label_ko": "USD/ZAR",
-            "display": "16.62",
-            "value": 16.6224,
+            "display": "16.59",
+            "value": 16.58777,
             "unit": "FX",
             "change_1m_pct": 3.39,
             "change_1y_pct": 3.73,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "Risk-on/off 민감 · 약세→수입물가→금리압력",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:ZAR=X",
             "data_status": "live",
@@ -109692,14 +109692,14 @@
           {
             "id": "jse_top40",
             "label_ko": "JSE Top 40",
-            "display": "99,394",
-            "value": 99394.0625,
+            "display": "99,407",
+            "value": 99406.90625,
             "unit": "index",
             "change_1m_pct": -1.32,
             "change_1y_pct": -0.39,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "광산·금융·다국적",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^J200.JO",
             "data_status": "live",
@@ -113804,11 +113804,11 @@
           "label_ko": "USD/ZAR",
           "unit": "FX",
           "format": "fx",
-          "value": 16.6224,
-          "display": "16.62",
+          "value": 16.58777,
+          "display": "16.59",
           "change_1m_pct": 3.39,
           "change_1y_pct": 3.73,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -113871,7 +113871,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 16.103121,
@@ -113932,8 +113932,8 @@
                 16.5,
                 16.16873,
                 16.390989,
-                16.64052,
-                16.6224
+                16.5263,
+                16.58777
               ]
             },
             "10y": {
@@ -114057,7 +114057,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 13.8726,
@@ -114178,8 +114178,8 @@
                 16.5,
                 16.16873,
                 16.390989,
-                16.64052,
-                16.6224
+                16.5263,
+                16.58777
               ]
             }
           },
@@ -114187,7 +114187,7 @@
           "quality": "live",
           "note_ko": "Risk-on/off 민감 · 약세→수입물가→금리압력",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -115789,11 +115789,11 @@
           "label_ko": "JSE Top 40",
           "unit": "index",
           "format": "number0",
-          "value": 99394.0625,
-          "display": "99,394",
+          "value": 99406.90625,
+          "display": "99,407",
           "change_1m_pct": -1.32,
           "change_1y_pct": -0.39,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -115856,7 +115856,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 67052.398438,
@@ -115917,8 +115917,8 @@
                 103257.703125,
                 108760.5,
                 100790.101562,
-                101162.203125,
-                99394.0625
+                99394.101562,
+                99406.90625
               ],
               "ma5": [
                 67052.398438,
@@ -115979,8 +115979,8 @@
                 105107.579688,
                 105601.3,
                 104313.440625,
-                103181.321875,
-                102672.914062
+                102827.701562,
+                102321.8625
               ]
             },
             "10y": {
@@ -116104,7 +116104,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 43901.988281,
@@ -116225,8 +116225,8 @@
                 103257.703125,
                 108760.5,
                 100790.101562,
-                101162.203125,
-                99394.0625
+                99394.101562,
+                99406.90625
               ],
               "ma5": [
                 43901.988281,
@@ -116347,8 +116347,8 @@
                 105107.579688,
                 105601.3,
                 104313.440625,
-                103181.321875,
-                102672.914062
+                102827.701562,
+                102321.8625
               ]
             }
           },
@@ -116361,7 +116361,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -120959,14 +120959,14 @@
           "id": "usdsgd",
           "category": "fx",
           "label_ko": "USD/SGD",
-          "display": "1.279",
+          "display": "1.281",
           "data_status": "live"
         },
         {
           "id": "sti",
           "category": "equity",
           "label_ko": "STI",
-          "display": "5,608",
+          "display": "5,413",
           "data_status": "live"
         },
         {
@@ -121140,14 +121140,14 @@
           {
             "id": "usdsgd",
             "label_ko": "USD/SGD",
-            "display": "1.279",
-            "value": 1.27944,
+            "display": "1.281",
+            "value": 1.28071,
             "unit": "FX",
             "change_1m_pct": 0.8,
             "change_1y_pct": 3.51,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:SGD=X",
             "data_status": "live",
@@ -121273,14 +121273,14 @@
           {
             "id": "sti",
             "label_ko": "STI",
-            "display": "5,608",
-            "value": 5608.439941,
+            "display": "5,413",
+            "value": 5412.959961,
             "unit": "index",
             "change_1m_pct": -1.27,
             "change_1y_pct": 5.88,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "금융주(DBS/OCBC/UOB) 비중↑ · 글로벌 금리 민감",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^STI",
             "data_status": "live",
@@ -124563,11 +124563,11 @@
           "label_ko": "USD/SGD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.27944,
-          "display": "1.279",
+          "value": 1.28071,
+          "display": "1.281",
           "change_1m_pct": 0.8,
           "change_1y_pct": 3.51,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -124630,7 +124630,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.36836,
@@ -124691,8 +124691,8 @@
                 1.28204,
                 1.27461,
                 1.27774,
-                1.2793,
-                1.27944
+                1.27751,
+                1.28071
               ]
             },
             "10y": {
@@ -124816,7 +124816,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.42478,
@@ -124937,15 +124937,15 @@
                 1.28204,
                 1.27461,
                 1.27774,
-                1.2793,
-                1.27944
+                1.27751,
+                1.28071
               ]
             }
           },
           "source": "yahoo:SGD=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -126934,11 +126934,11 @@
           "label_ko": "STI",
           "unit": "index",
           "format": "number0",
-          "value": 5608.439941,
-          "display": "5,608",
+          "value": 5412.959961,
+          "display": "5,413",
           "change_1m_pct": -1.27,
           "change_1y_pct": 5.88,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -127001,7 +127001,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 3123.679932,
@@ -127062,8 +127062,8 @@
                 5628.5,
                 5755.359863,
                 5675.879883,
-                5701.540039,
-                5608.439941
+                5608.439941,
+                5412.959961
               ],
               "ma5": [
                 3123.679932,
@@ -127124,8 +127124,8 @@
                 5127.02998,
                 5301.011914,
                 5453.649902,
-                5586.385937,
-                5673.943945
+                5567.765918,
+                5616.22793
               ]
             },
             "10y": {
@@ -127249,7 +127249,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2880.76001,
@@ -127370,8 +127370,8 @@
                 5628.5,
                 5755.359863,
                 5675.879883,
-                5701.540039,
-                5608.439941
+                5608.439941,
+                5412.959961
               ],
               "ma5": [
                 2880.76001,
@@ -127492,8 +127492,8 @@
                 5127.02998,
                 5301.011914,
                 5453.649902,
-                5586.385937,
-                5673.943945
+                5567.765918,
+                5616.22793
               ]
             }
           },
@@ -127506,7 +127506,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -132158,14 +132158,14 @@
           "id": "usdhkd",
           "category": "fx",
           "label_ko": "USD/HKD",
-          "display": "7.8474",
+          "display": "7.8475",
           "data_status": "live"
         },
         {
           "id": "hsi",
           "category": "equity",
           "label_ko": "항셍지수",
-          "display": "24,130",
+          "display": "23,786",
           "data_status": "live"
         },
         {
@@ -132386,14 +132386,14 @@
           {
             "id": "usdhkd",
             "label_ko": "USD/HKD",
-            "display": "7.8474",
-            "value": 7.8474,
+            "display": "7.8475",
+            "value": 7.84746,
             "unit": "FX",
             "change_1m_pct": 0.07,
             "change_1y_pct": -0.08,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "밴드 7.75–7.85 · 7.85=HKMA 자동개입",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:HKD=X",
             "data_status": "live",
@@ -132436,15 +132436,15 @@
           {
             "id": "hscei",
             "label_ko": "HSCEI (H주)",
-            "display": "8,082",
-            "value": 8082.399902,
+            "display": "8,011",
+            "value": 8010.580078,
             "unit": "index",
             "change_1m_pct": 5.07,
             "change_1y_pct": 8.85,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "홍콩 상장 중국기업(H주). HKD·해외 규제. A주와 가격괴리(AH premium) 흔함.",
             "analog_ko": "ADR/해외상장 중국주. A주(CSI300)와 같은 회사여도 다른 시장.",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^HSCE",
             "data_status": "live",
@@ -132453,14 +132453,14 @@
           {
             "id": "hsi",
             "label_ko": "항셍지수",
-            "display": "24,130",
-            "value": 24130.5,
+            "display": "23,786",
+            "value": 23785.789062,
             "unit": "index",
             "change_1m_pct": -0.36,
             "change_1y_pct": -17.3,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "시총 ~80%+ 본토기업 · 로컬 내수 대변 불가",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^HSI",
             "data_status": "live",
@@ -134036,11 +134036,11 @@
           "label_ko": "HSCEI (H주)",
           "unit": "index",
           "format": "number0",
-          "value": 8082.399902,
-          "display": "8,082",
+          "value": 8010.580078,
+          "display": "8,011",
           "change_1m_pct": 5.07,
           "change_1y_pct": 8.85,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -134103,7 +134103,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 8236.349609,
@@ -134164,8 +134164,8 @@
                 8612.150391,
                 8513.179688,
                 8220.080078,
-                8128.970215,
-                8082.399902
+                8082.399902,
+                8010.580078
               ],
               "ma5": [
                 8236.349609,
@@ -134226,8 +134226,8 @@
                 8330.480078,
                 8358.256055,
                 8265.906055,
-                8206.536035,
-                8311.356055
+                8197.221973,
+                8287.678027
               ]
             },
             "10y": {
@@ -134351,7 +134351,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 9394.870117,
@@ -134472,8 +134472,8 @@
                 8612.150391,
                 8513.179688,
                 8220.080078,
-                8128.970215,
-                8082.399902
+                8082.399902,
+                8010.580078
               ],
               "ma5": [
                 9394.870117,
@@ -134594,8 +134594,8 @@
                 8330.480078,
                 8358.256055,
                 8265.906055,
-                8206.536035,
-                8311.356055
+                8197.221973,
+                8287.678027
               ]
             }
           },
@@ -134609,7 +134609,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -136256,11 +136256,11 @@
           "label_ko": "USD/HKD",
           "unit": "FX",
           "format": "fx4",
-          "value": 7.8474,
-          "display": "7.8474",
+          "value": 7.84746,
+          "display": "7.8475",
           "change_1m_pct": 0.07,
           "change_1y_pct": -0.08,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -136323,7 +136323,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 7.79953,
@@ -136384,8 +136384,8 @@
                 7.8428,
                 7.83975,
                 7.8461,
-                7.84664,
-                7.8474
+                7.84769,
+                7.84746
               ]
             },
             "10y": {
@@ -136509,7 +136509,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 7.7563,
@@ -136630,8 +136630,8 @@
                 7.8428,
                 7.83975,
                 7.8461,
-                7.84664,
-                7.8474
+                7.84769,
+                7.84746
               ]
             }
           },
@@ -136639,7 +136639,7 @@
           "quality": "live",
           "note_ko": "밴드 7.75–7.85 · 7.85=HKMA 자동개입",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -136648,11 +136648,11 @@
           "label_ko": "항셍지수",
           "unit": "index",
           "format": "number0",
-          "value": 24130.5,
-          "display": "24,130",
+          "value": 23785.789062,
+          "display": "23,786",
           "change_1m_pct": -0.36,
           "change_1y_pct": -17.3,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -136715,7 +136715,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 23397.669922,
@@ -136776,8 +136776,8 @@
                 25884.429688,
                 25566.990234,
                 24613.269531,
-                24280.560547,
-                24130.5
+                24130.5,
+                23785.789062
               ],
               "ma5": [
                 23397.669922,
@@ -136838,8 +136838,8 @@
                 24902.501953,
                 25058.271875,
                 24825.619922,
-                24645.253906,
-                24895.15
+                24615.241797,
+                24796.195703
               ]
             },
             "10y": {
@@ -136963,7 +136963,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 22000.560547,
@@ -137084,8 +137084,8 @@
                 25884.429688,
                 25566.990234,
                 24613.269531,
-                24280.560547,
-                24130.5
+                24130.5,
+                23785.789062
               ],
               "ma5": [
                 22000.560547,
@@ -137206,8 +137206,8 @@
                 24902.501953,
                 25058.271875,
                 24825.619922,
-                24645.253906,
-                24895.15
+                24615.241797,
+                24796.195703
               ]
             }
           },
@@ -137220,7 +137220,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -156823,14 +156823,14 @@
           "id": "gbpusd",
           "category": "fx",
           "label_ko": "GBP/USD",
-          "display": "1.322",
+          "display": "1.323",
           "data_status": "live"
         },
         {
           "id": "ftse100",
           "category": "equity",
           "label_ko": "FTSE 100",
-          "display": "10,458",
+          "display": "10,442",
           "data_status": "live"
         },
         {
@@ -157134,14 +157134,14 @@
           {
             "id": "gbpusd",
             "label_ko": "GBP/USD",
-            "display": "1.322",
-            "value": 1.321842,
+            "display": "1.323",
+            "value": 1.322821,
             "unit": "FX",
             "change_1m_pct": -0.7,
             "change_1y_pct": -0.41,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:GBPUSD=X",
             "data_status": "live",
@@ -157183,13 +157183,13 @@
             "id": "eurgbp",
             "label_ko": "EUR/GBP",
             "display": "0.848",
-            "value": 0.84754,
+            "value": 0.84756,
             "unit": "FX",
             "change_1m_pct": -0.53,
             "change_1y_pct": -0.28,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURGBP=X",
             "data_status": "live",
@@ -157216,14 +157216,14 @@
           {
             "id": "ftse100",
             "label_ko": "FTSE 100",
-            "display": "10,458",
-            "value": 10458.5,
+            "display": "10,442",
+            "value": 10441.599609,
             "unit": "index",
             "change_1m_pct": 1.42,
             "change_1y_pct": -2.34,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "다국적 매출 ~75% · 내수 대리변수 금지",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^FTSE",
             "data_status": "live",
@@ -157232,14 +157232,14 @@
           {
             "id": "ftse250",
             "label_ko": "FTSE 250",
-            "display": "24,037",
-            "value": 24036.75,
+            "display": "23,944",
+            "value": 23943.880859,
             "unit": "index",
             "change_1m_pct": 1.45,
             "change_1y_pct": -11.23,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "내수 민감 중소형",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^FTMC",
             "data_status": "live",
@@ -164510,11 +164510,11 @@
           "label_ko": "GBP/USD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.321842,
-          "display": "1.322",
+          "value": 1.322821,
+          "display": "1.323",
           "change_1m_pct": -0.7,
           "change_1y_pct": -0.41,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -164577,7 +164577,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.331505,
@@ -164638,8 +164638,8 @@
                 1.346094,
                 1.354041,
                 1.323276,
-                1.32186,
-                1.321842
+                1.326682,
+                1.322821
               ]
             },
             "10y": {
@@ -164763,7 +164763,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.249219,
@@ -164884,15 +164884,15 @@
                 1.346094,
                 1.354041,
                 1.323276,
-                1.32186,
-                1.321842
+                1.326682,
+                1.322821
               ]
             }
           },
           "source": "yahoo:GBPUSD=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -164901,11 +164901,11 @@
           "label_ko": "EUR/GBP",
           "unit": "FX",
           "format": "fx",
-          "value": 0.84754,
+          "value": 0.84756,
           "display": "0.848",
           "change_1m_pct": -0.53,
           "change_1y_pct": -0.28,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -164968,7 +164968,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.84806,
@@ -165029,8 +165029,8 @@
                 0.85602,
                 0.85584,
                 0.85717,
-                0.84854,
-                0.84754
+                0.84819,
+                0.84756
               ]
             },
             "10y": {
@@ -165154,7 +165154,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.85242,
@@ -165275,15 +165275,15 @@
                 0.85602,
                 0.85584,
                 0.85717,
-                0.84854,
-                0.84754
+                0.84819,
+                0.84756
               ]
             }
           },
           "source": "yahoo:EURGBP=X",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -165691,11 +165691,11 @@
           "label_ko": "FTSE 100",
           "unit": "index",
           "format": "number0",
-          "value": 10458.5,
-          "display": "10,458",
+          "value": 10441.599609,
+          "display": "10,442",
           "change_1m_pct": 1.42,
           "change_1y_pct": -2.34,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -165758,7 +165758,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 7059.5,
@@ -165819,8 +165819,8 @@
                 10868.099609,
                 10824.299805,
                 10606.0,
-                10541.700195,
-                10458.5
+                10458.5,
+                10441.599609
               ],
               "ma5": [
                 7059.5,
@@ -165881,8 +165881,8 @@
                 10612.779687,
                 10595.519727,
                 10640.959766,
-                10667.439844,
-                10659.719922
+                10650.799805,
+                10639.699805
               ]
             },
             "10y": {
@@ -166006,7 +166006,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 6783.799805,
@@ -166127,8 +166127,8 @@
                 10868.099609,
                 10824.299805,
                 10606.0,
-                10541.700195,
-                10458.5
+                10458.5,
+                10441.599609
               ],
               "ma5": [
                 6783.799805,
@@ -166249,8 +166249,8 @@
                 10612.779687,
                 10595.519727,
                 10640.959766,
-                10667.439844,
-                10659.719922
+                10650.799805,
+                10639.699805
               ]
             }
           },
@@ -166263,7 +166263,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -166272,11 +166272,11 @@
           "label_ko": "FTSE 250",
           "unit": "index",
           "format": "number0",
-          "value": 24036.75,
-          "display": "24,037",
+          "value": 23943.880859,
+          "display": "23,944",
           "change_1m_pct": 1.45,
           "change_1y_pct": -11.23,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -166339,7 +166339,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 22519.699219,
@@ -166400,8 +166400,8 @@
                 23975.0,
                 24938.800781,
                 24540.0,
-                24215.300781,
-                24036.75
+                24036.800781,
+                23943.880859
               ],
               "ma5": [
                 22519.699219,
@@ -166462,8 +166462,8 @@
                 23327.339844,
                 23563.660156,
                 23978.620312,
-                24136.520312,
-                24341.170312
+                24100.820312,
+                24286.896484
               ]
             },
             "10y": {
@@ -166587,7 +166587,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 17545.800781,
@@ -166708,8 +166708,8 @@
                 23975.0,
                 24938.800781,
                 24540.0,
-                24215.300781,
-                24036.75
+                24036.800781,
+                23943.880859
               ],
               "ma5": [
                 17545.800781,
@@ -166830,8 +166830,8 @@
                 23327.339844,
                 23563.660156,
                 23978.620312,
-                24136.520312,
-                24341.170312
+                24100.820312,
+                24286.896484
               ]
             }
           },
@@ -166844,7 +166844,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -173116,14 +173116,14 @@
           "id": "usdcad",
           "category": "fx",
           "label_ko": "USD/CAD",
-          "display": "1.426",
+          "display": "1.422",
           "data_status": "live"
         },
         {
           "id": "tsx",
           "category": "equity",
           "label_ko": "S&P/TSX",
-          "display": "35,042",
+          "display": "35,145",
           "data_status": "live"
         },
         {
@@ -173325,14 +173325,14 @@
           {
             "id": "usdcad",
             "label_ko": "USD/CAD",
-            "display": "1.426",
-            "value": 1.42554,
+            "display": "1.422",
+            "value": 1.4221,
             "unit": "FX",
             "change_1m_pct": -2.73,
             "change_1y_pct": -9.98,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "상품통화 · 약세=수출유리·수입물가",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:CAD=X",
             "data_status": "live",
@@ -173425,14 +173425,14 @@
           {
             "id": "tsx",
             "label_ko": "S&P/TSX",
-            "display": "35,042",
-            "value": 35041.859375,
+            "display": "35,145",
+            "value": 35145.378906,
             "unit": "index",
             "change_1m_pct": -0.19,
             "change_1y_pct": -16.71,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "에너지·금융 시총 절반+",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^GSPTSE",
             "data_status": "live",
@@ -179745,11 +179745,11 @@
           "label_ko": "USD/CAD",
           "unit": "FX",
           "format": "fx",
-          "value": 1.42554,
-          "display": "1.426",
+          "value": 1.4221,
+          "display": "1.422",
           "change_1m_pct": -2.73,
           "change_1y_pct": -9.98,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -179812,7 +179812,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.2738,
@@ -179873,8 +179873,8 @@
                 1.40112,
                 1.38991,
                 1.41913,
-                1.42637,
-                1.42554
+                1.42122,
+                1.4221
               ]
             },
             "10y": {
@@ -179998,7 +179998,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.34312,
@@ -180119,8 +180119,8 @@
                 1.40112,
                 1.38991,
                 1.41913,
-                1.42637,
-                1.42554
+                1.42122,
+                1.4221
               ]
             }
           },
@@ -180128,7 +180128,7 @@
           "quality": "live",
           "note_ko": "상품통화 · 약세=수출유리·수입물가",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -181322,11 +181322,11 @@
           "label_ko": "S&P/TSX",
           "unit": "index",
           "format": "number0",
-          "value": 35041.859375,
-          "display": "35,042",
+          "value": 35145.378906,
+          "display": "35,145",
           "change_1m_pct": -0.19,
           "change_1y_pct": -16.71,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -181389,7 +181389,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 20660.0,
@@ -181451,7 +181451,7 @@
                 35226.101562,
                 36270.5,
                 35235.898438,
-                35041.859375
+                35145.378906
               ],
               "ma5": [
                 20660.0,
@@ -181513,7 +181513,7 @@
                 34316.900781,
                 35017.400781,
                 35271.720312,
-                35326.271875
+                35346.975781
               ]
             },
             "10y": {
@@ -181637,7 +181637,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 15082.900391,
@@ -181759,7 +181759,7 @@
                 35226.101562,
                 36270.5,
                 35235.898438,
-                35041.859375
+                35145.378906
               ],
               "ma5": [
                 15082.900391,
@@ -181881,7 +181881,7 @@
                 34316.900781,
                 35017.400781,
                 35271.720312,
-                35326.271875
+                35346.975781
               ]
             }
           },
@@ -181894,7 +181894,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -188120,7 +188120,7 @@
           "id": "asx200",
           "category": "equity",
           "label_ko": "S&P/ASX 200",
-          "display": "8,693",
+          "display": "8,702",
           "data_status": "live"
         },
         {
@@ -188327,13 +188327,13 @@
             "id": "audusd",
             "label_ko": "AUD/USD",
             "display": "0.696",
-            "value": 0.696476,
+            "value": 0.695991,
             "unit": "FX",
             "change_1m_pct": -0.3,
             "change_1y_pct": -4.98,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "상품통화 · 위험선호·중국·원자재 프록시",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:AUDUSD=X",
             "data_status": "live",
@@ -188392,14 +188392,14 @@
           {
             "id": "asx200",
             "label_ko": "S&P/ASX 200",
-            "display": "8,693",
-            "value": 8692.700195,
+            "display": "8,702",
+            "value": 8701.5,
             "unit": "index",
             "change_1m_pct": 1.89,
             "change_1y_pct": -1.69,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "금융+소재(광산) 시총 50%+",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^AXJO",
             "data_status": "live",
@@ -188408,14 +188408,14 @@
           {
             "id": "asx_vix",
             "label_ko": "ASX 200 VIX",
-            "display": "11.1",
-            "value": 11.087,
+            "display": "11.4",
+            "value": 11.394,
             "unit": "index",
             "change_1m_pct": -3.07,
             "change_1y_pct": 68.75,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^AXVI",
             "data_status": "live",
@@ -193857,11 +193857,11 @@
           "label_ko": "AUD/USD",
           "unit": "FX",
           "format": "fx",
-          "value": 0.696476,
+          "value": 0.695991,
           "display": "0.696",
           "change_1m_pct": -0.3,
           "change_1y_pct": -4.98,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -193924,7 +193924,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.71458,
@@ -193985,8 +193985,8 @@
                 0.702519,
                 0.7163,
                 0.6989,
-                0.69673,
-                0.696476
+                0.69818,
+                0.695991
               ]
             },
             "10y": {
@@ -194110,7 +194110,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.748447,
@@ -194231,8 +194231,8 @@
                 0.702519,
                 0.7163,
                 0.6989,
-                0.69673,
-                0.696476
+                0.69818,
+                0.695991
               ]
             }
           },
@@ -194240,7 +194240,7 @@
           "quality": "live",
           "note_ko": "상품통화 · 위험선호·중국·원자재 프록시",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -195446,11 +195446,11 @@
           "label_ko": "S&P/ASX 200",
           "unit": "index",
           "format": "number0",
-          "value": 8692.700195,
-          "display": "8,693",
+          "value": 8701.5,
+          "display": "8,702",
           "change_1m_pct": 1.89,
           "change_1y_pct": -1.69,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -195513,7 +195513,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 7444.600098,
@@ -195574,8 +195574,8 @@
                 8976.799805,
                 9076.0,
                 8789.299805,
-                8735.700195,
-                8692.700195
+                8727.700195,
+                8701.5
               ],
               "ma5": [
                 7444.600098,
@@ -195636,8 +195636,8 @@
                 8726.959961,
                 8845.8,
                 8870.5,
-                8871.3,
-                8854.1
+                8869.7,
+                8854.259961
               ]
             },
             "10y": {
@@ -195761,7 +195761,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 5665.799805,
@@ -195882,8 +195882,8 @@
                 8976.799805,
                 9076.0,
                 8789.299805,
-                8735.700195,
-                8692.700195
+                8727.700195,
+                8701.5
               ],
               "ma5": [
                 5665.799805,
@@ -196004,8 +196004,8 @@
                 8726.959961,
                 8845.8,
                 8870.5,
-                8871.3,
-                8854.1
+                8869.7,
+                8854.259961
               ]
             }
           },
@@ -196018,7 +196018,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -196027,11 +196027,11 @@
           "label_ko": "ASX 200 VIX",
           "unit": "index",
           "format": "number1",
-          "value": 11.087,
-          "display": "11.1",
+          "value": 11.394,
+          "display": "11.4",
           "change_1m_pct": -3.07,
           "change_1y_pct": 68.75,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -196094,7 +196094,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 10.63,
@@ -196155,8 +196155,8 @@
                 11.41,
                 10.74,
                 10.31,
-                10.85,
-                11.087
+                10.87,
+                11.394
               ],
               "ma5": [
                 10.63,
@@ -196217,8 +196217,8 @@
                 12.868,
                 11.772,
                 11.208,
-                10.992,
-                10.8794
+                10.996,
+                10.9448
               ]
             },
             "10y": {
@@ -196342,7 +196342,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 12.76,
@@ -196463,8 +196463,8 @@
                 11.41,
                 10.74,
                 10.31,
-                10.85,
-                11.087
+                10.87,
+                11.394
               ],
               "ma5": [
                 12.76,
@@ -196585,15 +196585,15 @@
                 12.868,
                 11.772,
                 11.208,
-                10.992,
-                10.8794
+                10.996,
+                10.9448
               ]
             }
           },
           "source": "yahoo:^AXVI",
           "quality": "live",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -201123,14 +201123,14 @@
           "id": "usdchf",
           "category": "fx",
           "label_ko": "USD/CHF",
-          "display": "0.833",
+          "display": "0.832",
           "data_status": "live"
         },
         {
           "id": "smi",
           "category": "equity",
           "label_ko": "SMI",
-          "display": "13,808",
+          "display": "13,637",
           "data_status": "live"
         },
         {
@@ -201331,14 +201331,14 @@
           {
             "id": "usdchf",
             "label_ko": "USD/CHF",
-            "display": "0.833",
-            "value": 0.83268,
+            "display": "0.832",
+            "value": 0.83159,
             "unit": "FX",
             "change_1m_pct": -0.79,
             "change_1y_pct": -6.03,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "글로벌 안전자산 선호도",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:CHF=X",
             "data_status": "live",
@@ -201411,14 +201411,14 @@
           {
             "id": "eurchf",
             "label_ko": "EUR/CHF",
-            "display": "0.933",
-            "value": 0.93284,
+            "display": "0.932",
+            "value": 0.93233,
             "unit": "FX",
             "change_1m_pct": -0.63,
             "change_1y_pct": -4.84,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "최대 교역권 · 하락=프랑강세·수출타격·디플레",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:EURCHF=X",
             "data_status": "live",
@@ -201429,14 +201429,14 @@
           {
             "id": "smi",
             "label_ko": "SMI",
-            "display": "13,808",
-            "value": 13808.419922,
+            "display": "13,637",
+            "value": 13637.0,
             "unit": "index",
             "change_1m_pct": -0.21,
             "change_1y_pct": -1.29,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "제약·필수소비 방어주 편중",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^SSMI",
             "data_status": "live",
@@ -207325,11 +207325,11 @@
           "label_ko": "EUR/CHF",
           "unit": "FX",
           "format": "fx",
-          "value": 0.93284,
-          "display": "0.933",
+          "value": 0.93233,
+          "display": "0.932",
           "change_1m_pct": -0.63,
           "change_1y_pct": -4.84,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -207392,7 +207392,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.0421,
@@ -207453,8 +207453,8 @@
                 0.9287,
                 0.93736,
                 0.94601,
-                0.93248,
-                0.93284
+                0.93652,
+                0.93233
               ]
             },
             "10y": {
@@ -207578,7 +207578,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.07716,
@@ -207699,8 +207699,8 @@
                 0.9287,
                 0.93736,
                 0.94601,
-                0.93248,
-                0.93284
+                0.93652,
+                0.93233
               ]
             }
           },
@@ -207708,7 +207708,7 @@
           "quality": "live",
           "note_ko": "최대 교역권 · 하락=프랑강세·수출타격·디플레",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -207717,11 +207717,11 @@
           "label_ko": "USD/CHF",
           "unit": "FX",
           "format": "fx",
-          "value": 0.83268,
-          "display": "0.833",
+          "value": 0.83159,
+          "display": "0.832",
           "change_1m_pct": -0.79,
           "change_1y_pct": -6.03,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -207784,7 +207784,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 0.92287,
@@ -207845,8 +207845,8 @@
                 0.80577,
                 0.80884,
                 0.83422,
-                0.83112,
-                0.83268
+                0.83218,
+                0.83159
               ]
             },
             "10y": {
@@ -207970,7 +207970,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1.01166,
@@ -208091,8 +208091,8 @@
                 0.80577,
                 0.80884,
                 0.83422,
-                0.83112,
-                0.83268
+                0.83218,
+                0.83159
               ]
             }
           },
@@ -208100,7 +208100,7 @@
           "quality": "live",
           "note_ko": "글로벌 안전자산 선호도",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -208508,11 +208508,11 @@
           "label_ko": "SMI",
           "unit": "index",
           "format": "number0",
-          "value": 13808.419922,
-          "display": "13,808",
+          "value": 13637.0,
+          "display": "13,637",
           "change_1m_pct": -0.21,
           "change_1y_pct": -1.29,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -208575,7 +208575,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 12875.660156,
@@ -208636,8 +208636,8 @@
                 14346.139648,
                 14286.429688,
                 13830.339844,
-                13788.929688,
-                13808.419922
+                13808.419922,
+                13637.0
               ],
               "ma5": [
                 12875.660156,
@@ -208698,8 +208698,8 @@
                 13599.155859,
                 13901.083789,
                 14039.897852,
-                14089.151758,
-                14012.051758
+                14093.049805,
+                13981.66582
               ]
             },
             "10y": {
@@ -208823,7 +208823,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 8219.870117,
@@ -208944,8 +208944,8 @@
                 14346.139648,
                 14286.429688,
                 13830.339844,
-                13788.929688,
-                13808.419922
+                13808.419922,
+                13637.0
               ],
               "ma5": [
                 8219.870117,
@@ -209066,8 +209066,8 @@
                 13599.155859,
                 13901.083789,
                 14039.897852,
-                14089.151758,
-                14012.051758
+                14093.049805,
+                13981.66582
               ]
             }
           },
@@ -209080,7 +209080,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -214199,14 +214199,14 @@
           "id": "usdbrl",
           "category": "fx",
           "label_ko": "USD/BRL",
-          "display": "5.022",
+          "display": "5.018",
           "data_status": "live"
         },
         {
           "id": "ibovespa",
           "category": "equity",
           "label_ko": "Ibovespa",
-          "display": "204,302",
+          "display": "206,220",
           "data_status": "live"
         },
         {
@@ -214393,14 +214393,14 @@
           {
             "id": "usdbrl",
             "label_ko": "USD/BRL",
-            "display": "5.022",
-            "value": 5.0216,
+            "display": "5.018",
+            "value": 5.0179,
             "unit": "FX",
             "change_1m_pct": 0.9,
             "change_1y_pct": 2.1,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "Risk-off·원자재 하락 시 급등",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:BRL=X",
             "data_status": "live",
@@ -214476,14 +214476,14 @@
           {
             "id": "ibovespa",
             "label_ko": "Ibovespa",
-            "display": "204,302",
-            "value": 204302.328125,
+            "display": "206,220",
+            "value": 206220.234375,
             "unit": "index",
             "change_1m_pct": -7.7,
             "change_1y_pct": 15.02,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "Petrobras·Vale·대형은행 비중 절대적",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^BVSP",
             "data_status": "live",
@@ -219181,11 +219181,11 @@
           "label_ko": "USD/BRL",
           "unit": "FX",
           "format": "fx",
-          "value": 5.0216,
-          "display": "5.022",
+          "value": 5.0179,
+          "display": "5.018",
           "change_1m_pct": 0.9,
           "change_1y_pct": 2.1,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -219248,7 +219248,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 5.6007,
@@ -219309,8 +219309,8 @@
                 5.0781,
                 5.1912,
                 5.2029,
-                4.9967,
-                5.0216
+                4.9814,
+                5.0179
               ]
             },
             "10y": {
@@ -219434,7 +219434,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 3.4538,
@@ -219555,8 +219555,8 @@
                 5.0781,
                 5.1912,
                 5.2029,
-                4.9967,
-                5.0216
+                4.9814,
+                5.0179
               ]
             }
           },
@@ -219564,7 +219564,7 @@
           "quality": "live",
           "note_ko": "Risk-off·원자재 하락 시 급등",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -220371,11 +220371,11 @@
           "label_ko": "Ibovespa",
           "unit": "index",
           "format": "number0",
-          "value": 204302.328125,
-          "display": "204,302",
+          "value": 206220.234375,
+          "display": "206,220",
           "change_1m_pct": -7.7,
           "change_1y_pct": 15.02,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -220438,7 +220438,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 101915.0,
@@ -220500,7 +220500,7 @@
                 177999.0,
                 177419.0,
                 186340.0,
-                204302.328125
+                206220.234375
               ],
               "ma5": [
                 101915.0,
@@ -220562,7 +220562,7 @@
                 179718.2,
                 177709.6,
                 177514.0,
-                183616.865625
+                184000.446875
               ]
             },
             "10y": {
@@ -220686,7 +220686,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 61906.0,
@@ -220808,7 +220808,7 @@
                 177999.0,
                 177419.0,
                 186340.0,
-                204302.328125
+                206220.234375
               ],
               "ma5": [
                 61906.0,
@@ -220930,7 +220930,7 @@
                 179718.2,
                 177709.6,
                 177514.0,
-                183616.865625
+                184000.446875
               ]
             }
           },
@@ -220943,7 +220943,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -227005,7 +227005,7 @@
           "id": "usdvnd",
           "category": "fx",
           "label_ko": "USD/VND",
-          "display": "25,975",
+          "display": "25,889",
           "data_status": "live"
         },
         {
@@ -227222,14 +227222,14 @@
           {
             "id": "usdvnd",
             "label_ko": "USD/VND",
-            "display": "25,975",
-            "value": 25975.0,
+            "display": "25,889",
+            "value": 25889.0,
             "unit": "FX",
             "change_1m_pct": 0.09,
             "change_1y_pct": 2.98,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "관리변동 · 중심환율 ±5% 밴드",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:VND=X",
             "data_status": "live",
@@ -230443,11 +230443,11 @@
           "label_ko": "USD/VND",
           "unit": "FX",
           "format": "number0",
-          "value": 25975.0,
-          "display": "25,975",
+          "value": 25889.0,
+          "display": "25,889",
           "change_1m_pct": 0.09,
           "change_1y_pct": 2.98,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -230510,7 +230510,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 22690.0,
@@ -230571,8 +230571,8 @@
                 26279.0,
                 26070.0,
                 25970.0,
-                25991.0,
-                25975.0
+                25989.0,
+                25889.0
               ]
             },
             "10y": {
@@ -230696,7 +230696,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 22291.0,
@@ -230817,8 +230817,8 @@
                 26279.0,
                 26070.0,
                 25970.0,
-                25991.0,
-                25975.0
+                25989.0,
+                25889.0
               ]
             }
           },
@@ -230826,7 +230826,7 @@
           "quality": "live",
           "note_ko": "관리변동 · 중심환율 ±5% 밴드",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -237818,7 +237818,7 @@
           "id": "usdkzt",
           "category": "fx",
           "label_ko": "USD/KZT",
-          "display": "447",
+          "display": "450",
           "data_status": "live"
         },
         {
@@ -237985,14 +237985,14 @@
           {
             "id": "usdkzt",
             "label_ko": "USD/KZT",
-            "display": "447",
-            "value": 447.119995,
+            "display": "450",
+            "value": 450.170013,
             "unit": "FX",
             "change_1m_pct": 1.36,
             "change_1y_pct": 4.84,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "유가↓ 시 NBK 개입 빈번",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:KZT=X",
             "data_status": "live",
@@ -241971,11 +241971,11 @@
           "label_ko": "USD/KZT",
           "unit": "FX",
           "format": "number0",
-          "value": 447.119995,
-          "display": "447",
+          "value": 450.170013,
+          "display": "450",
           "change_1m_pct": 1.36,
           "change_1y_pct": 4.84,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -242038,7 +242038,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 435.139191,
@@ -242099,8 +242099,8 @@
                 459.385834,
                 451.037933,
                 423.849579,
-                441.213562,
-                447.119995
+                435.421906,
+                450.170013
               ]
             },
             "10y": {
@@ -242224,7 +242224,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 336.149994,
@@ -242345,8 +242345,8 @@
                 459.385834,
                 451.037933,
                 423.849579,
-                441.213562,
-                447.119995
+                435.421906,
+                450.170013
               ]
             }
           },
@@ -242354,7 +242354,7 @@
           "quality": "live",
           "note_ko": "유가↓ 시 NBK 개입 빈번",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -247481,14 +247481,14 @@
           "id": "usdtwd",
           "category": "fx",
           "label_ko": "USD/TWD",
-          "display": "31.87",
+          "display": "31.92",
           "data_status": "live"
         },
         {
           "id": "taiex",
           "category": "equity",
           "label_ko": "가권(TAIEX)",
-          "display": "49,806",
+          "display": "49,313",
           "data_status": "live"
         },
         {
@@ -247628,14 +247628,14 @@
           {
             "id": "usdtwd",
             "label_ko": "USD/TWD",
-            "display": "31.87",
-            "value": 31.868999,
+            "display": "31.92",
+            "value": 31.922001,
             "unit": "FX",
             "change_1m_pct": 0.83,
             "change_1y_pct": -1.77,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "IT·외국인·생보 환헤지 물량",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:TWD=X",
             "data_status": "live",
@@ -247779,14 +247779,14 @@
           {
             "id": "taiex",
             "label_ko": "가권(TAIEX)",
-            "display": "49,806",
-            "value": 49806.371094,
+            "display": "49,313",
+            "value": 49313.441406,
             "unit": "index",
             "change_1m_pct": -4.92,
             "change_1y_pct": 2.52,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "TSMC 시총 30%+ · SOX 연동",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^TWII",
             "data_status": "live",
@@ -251652,11 +251652,11 @@
           "label_ko": "USD/TWD",
           "unit": "FX",
           "format": "fx",
-          "value": 31.868999,
-          "display": "31.87",
+          "value": 31.922001,
+          "display": "31.92",
           "change_1m_pct": 0.83,
           "change_1y_pct": -1.77,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -251719,7 +251719,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 27.7456,
@@ -251780,8 +251780,8 @@
                 32.395,
                 31.625999,
                 31.85,
-                31.7514,
-                31.868999
+                31.776899,
+                31.922001
               ]
             },
             "10y": {
@@ -251905,7 +251905,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 31.813,
@@ -252026,8 +252026,8 @@
                 32.395,
                 31.625999,
                 31.85,
-                31.7514,
-                31.868999
+                31.776899,
+                31.922001
               ]
             }
           },
@@ -252035,7 +252035,7 @@
           "quality": "live",
           "note_ko": "IT·외국인·생보 환헤지 물량",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -254014,11 +254014,11 @@
           "label_ko": "가권(TAIEX)",
           "unit": "index",
           "format": "number0",
-          "value": 49806.371094,
-          "display": "49,806",
+          "value": 49313.441406,
+          "display": "49,313",
           "change_1m_pct": -4.92,
           "change_1y_pct": 2.52,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -254081,7 +254081,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 18218.839844,
@@ -254142,8 +254142,8 @@
                 43119.75,
                 46128.46875,
                 47940.128906,
-                49822.550781,
-                49806.371094
+                49806.371094,
+                49313.441406
               ],
               "ma5": [
                 18218.839844,
@@ -254204,8 +254204,8 @@
                 40925.64414,
                 43806.739844,
                 45609.439844,
-                46627.361719,
-                47363.453906
+                46624.125781,
+                47261.632031
               ]
             },
             "10y": {
@@ -254329,7 +254329,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 9253.5,
@@ -254450,8 +254450,8 @@
                 43119.75,
                 46128.46875,
                 47940.128906,
-                49822.550781,
-                49806.371094
+                49806.371094,
+                49313.441406
               ],
               "ma5": [
                 9253.5,
@@ -254572,8 +254572,8 @@
                 40925.64414,
                 43806.739844,
                 45609.439844,
-                46627.361719,
-                47363.453906
+                46624.125781,
+                47261.632031
               ]
             }
           },
@@ -254586,7 +254586,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -256947,14 +256947,14 @@
           "id": "usdinr",
           "category": "fx",
           "label_ko": "USD/INR",
-          "display": "96.76",
+          "display": "96.78",
           "data_status": "live"
         },
         {
           "id": "sensex",
           "category": "equity",
           "label_ko": "BSE Sensex",
-          "display": "72,639",
+          "display": "71,593",
           "data_status": "live"
         },
         {
@@ -257125,14 +257125,14 @@
           {
             "id": "usdinr",
             "label_ko": "USD/INR",
-            "display": "96.76",
-            "value": 96.760002,
+            "display": "96.78",
+            "value": 96.779999,
             "unit": "FX",
             "change_1m_pct": -0.27,
             "change_1y_pct": 1.05,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "RBI 개입으로 변동성 인위 억제 경향",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:INR=X",
             "data_status": "live",
@@ -257240,14 +257240,14 @@
           {
             "id": "nifty50",
             "label_ko": "Nifty 50",
-            "display": "22,603",
-            "value": 22603.050781,
+            "display": "22,232",
+            "value": 22231.800781,
             "unit": "index",
             "change_1m_pct": -0.46,
             "change_1y_pct": 30.98,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^NSEI",
             "data_status": "live",
@@ -257256,14 +257256,14 @@
           {
             "id": "sensex",
             "label_ko": "BSE Sensex",
-            "display": "72,639",
-            "value": 72638.703125,
+            "display": "71,593",
+            "value": 71593.242188,
             "unit": "index",
             "change_1m_pct": 2.17,
             "change_1y_pct": -7.6,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": null,
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^BSESN",
             "data_status": "live",
@@ -261711,11 +261711,11 @@
           "label_ko": "USD/INR",
           "unit": "FX",
           "format": "fx",
-          "value": 96.760002,
-          "display": "96.76",
+          "value": 96.779999,
+          "display": "96.78",
           "change_1m_pct": -0.27,
           "change_1y_pct": 1.05,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -261778,7 +261778,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 75.054901,
@@ -261839,8 +261839,8 @@
                 95.684799,
                 95.380302,
                 96.050697,
-                96.342796,
-                96.760002
+                96.370399,
+                96.779999
               ]
             },
             "10y": {
@@ -261964,7 +261964,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 68.608002,
@@ -262085,8 +262085,8 @@
                 95.684799,
                 95.380302,
                 96.050697,
-                96.342796,
-                96.760002
+                96.370399,
+                96.779999
               ]
             }
           },
@@ -262094,7 +262094,7 @@
           "quality": "live",
           "note_ko": "RBI 개입으로 변동성 인위 억제 경향",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -262496,11 +262496,11 @@
           "label_ko": "Nifty 50",
           "unit": "index",
           "format": "number0",
-          "value": 22603.050781,
-          "display": "22,603",
+          "value": 22231.800781,
+          "display": "22,232",
           "change_1m_pct": -0.46,
           "change_1y_pct": 30.98,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -262563,7 +262563,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 17354.050781,
@@ -262624,8 +262624,8 @@
                 24383.599609,
                 24080.400391,
                 22620.449219,
-                22776.099609,
-                22603.050781
+                22603.050781,
+                22231.800781
               ],
               "ma5": [
                 17354.050781,
@@ -262686,8 +262686,8 @@
                 23625.210156,
                 23975.010156,
                 23699.589844,
-                23545.259766,
-                23292.719922
+                23510.65,
+                23183.860156
               ]
             },
             "10y": {
@@ -262811,7 +262811,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 8185.799805,
@@ -262932,8 +262932,8 @@
                 24383.599609,
                 24080.400391,
                 22620.449219,
-                22776.099609,
-                22603.050781
+                22603.050781,
+                22231.800781
               ],
               "ma5": [
                 8185.799805,
@@ -263054,8 +263054,8 @@
                 23625.210156,
                 23975.010156,
                 23699.589844,
-                23545.259766,
-                23292.719922
+                23510.65,
+                23183.860156
               ]
             }
           },
@@ -263067,7 +263067,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -263076,11 +263076,11 @@
           "label_ko": "BSE Sensex",
           "unit": "index",
           "format": "number0",
-          "value": 72638.703125,
-          "display": "72,639",
+          "value": 71593.242188,
+          "display": "71,593",
           "change_1m_pct": 2.17,
           "change_1y_pct": -7.6,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -263143,7 +263143,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 58253.820312,
@@ -263204,8 +263204,8 @@
                 78094.640625,
                 76957.273438,
                 72480.289062,
-                73067.8125,
-                72638.703125
+                72638.703125,
+                71593.242188
               ],
               "ma5": [
                 58253.820312,
@@ -263266,8 +263266,8 @@
                 75642.020313,
                 76643.965625,
                 75757.323438,
-                75415.7375,
-                74647.74375
+                75329.915625,
+                74352.829688
               ]
             },
             "10y": {
@@ -263391,7 +263391,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 26626.460938,
@@ -263512,8 +263512,8 @@
                 78094.640625,
                 76957.273438,
                 72480.289062,
-                73067.8125,
-                72638.703125
+                72638.703125,
+                71593.242188
               ],
               "ma5": [
                 26626.460938,
@@ -263634,8 +263634,8 @@
                 75642.020313,
                 76643.965625,
                 75757.323438,
-                75415.7375,
-                74647.74375
+                75329.915625,
+                74352.829688
               ]
             }
           },
@@ -263647,7 +263647,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -269392,14 +269392,14 @@
           "id": "usdils",
           "category": "fx",
           "label_ko": "USD/ILS",
-          "display": "3.0684",
+          "display": "3.0567",
           "data_status": "live"
         },
         {
           "id": "ta125",
           "category": "equity",
           "label_ko": "TA-125",
-          "display": "3,932",
+          "display": "3,934",
           "data_status": "live"
         },
         {
@@ -269623,15 +269623,15 @@
           {
             "id": "usdils",
             "label_ko": "USD/ILS",
-            "display": "3.0684",
-            "value": 3.0684,
+            "display": "3.0567",
+            "value": 3.0567,
             "unit": "ils",
             "change_1m_pct": -1.35,
             "change_1y_pct": 1.89,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "셰켈. 지정학·위험프리미엄에 민감. BOI 개입 이력.",
             "analog_ko": "USD/KRW 슬롯. 전쟁·CDS와 같이 읽는다.",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:ILS=X",
             "data_status": "live",
@@ -269690,15 +269690,15 @@
           {
             "id": "ta125",
             "label_ko": "TA-125",
-            "display": "3,932",
-            "value": 3932.419922,
+            "display": "3,934",
+            "value": 3934.01001,
             "unit": "index",
             "change_1m_pct": 0.0,
             "change_1y_pct": 0.0,
-            "asof": "2026-10-07",
+            "asof": "2026-10-08",
             "note_ko": "텔아비브 125. 하이테크·방산 비중.",
             "analog_ko": "KOSPI / S&P500 자리의 이스라엘 대표지수.",
-            "observed_at": "2026-10-07",
+            "observed_at": "2026-10-08",
             "retrieved_at": null,
             "source": "yahoo:^TA125.TA",
             "data_status": "live",
@@ -275901,11 +275901,11 @@
           "label_ko": "USD/ILS",
           "unit": "ils",
           "format": "fx3",
-          "value": 3.0684,
-          "display": "3.0684",
+          "value": 3.0567,
+          "display": "3.0567",
           "change_1m_pct": -1.35,
           "change_1y_pct": 1.89,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -275968,7 +275968,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 3.16577,
@@ -276029,8 +276029,8 @@
                 3.06418,
                 2.9753,
                 3.06594,
-                3.053,
-                3.0684
+                3.04368,
+                3.0567
               ]
             },
             "10y": {
@@ -276154,7 +276154,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 3.83167,
@@ -276275,8 +276275,8 @@
                 3.06418,
                 2.9753,
                 3.06594,
-                3.053,
-                3.0684
+                3.04368,
+                3.0567
               ]
             }
           },
@@ -276285,7 +276285,7 @@
           "note_ko": "셰켈. 지정학·위험프리미엄에 민감. BOI 개입 이력.",
           "analog_ko": "USD/KRW 슬롯. 전쟁·CDS와 같이 읽는다.",
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -276294,11 +276294,11 @@
           "label_ko": "TA-125",
           "unit": "index",
           "format": "number0",
-          "value": 3932.419922,
-          "display": "3,932",
+          "value": 3934.01001,
+          "display": "3,934",
           "change_1m_pct": 0.0,
           "change_1y_pct": 0.0,
-          "asof": "2026-10-07",
+          "asof": "2026-10-08",
           "history": {
             "5y": {
               "dates": [
@@ -276361,7 +276361,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 2056.51001,
@@ -276422,8 +276422,8 @@
                 4071.76001,
                 4056.600098,
                 4075.620117,
-                4028.100098,
-                3932.419922
+                3932.419922,
+                3934.01001
               ],
               "ma5": [
                 2056.51001,
@@ -276484,8 +276484,8 @@
                 4168.747998,
                 4176.71001,
                 4129.058057,
-                4048.586084,
-                4032.900049
+                4029.450049,
+                4014.082031
               ]
             },
             "10y": {
@@ -276609,7 +276609,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 1282.410034,
@@ -276730,8 +276730,8 @@
                 4071.76001,
                 4056.600098,
                 4075.620117,
-                4028.100098,
-                3932.419922
+                3932.419922,
+                3934.01001
               ],
               "ma5": [
                 1282.410034,
@@ -276852,8 +276852,8 @@
                 4168.747998,
                 4176.71001,
                 4129.058057,
-                4048.586084,
-                4032.900049
+                4029.450049,
+                4014.082031
               ]
             }
           },
@@ -276867,7 +276867,7 @@
             ]
           },
           "data_status": "live",
-          "observed_at": "2026-10-07",
+          "observed_at": "2026-10-08",
           "retrieved_at": null
         },
         {
@@ -280707,14 +280707,14 @@
           "id": "usdidr",
           "category": "fx",
           "label_ko": "USD/IDR",
-          "display": "17,875",
+          "display": "17,890",
           "data_status": "live"
         },
         {
           "id": "jci",
           "category": "equity",
           "label_ko": "JCI(자카르타 종합)",
-          "display": "6,147",
+          "display": "6,031",
           "data_status": "live"
         },
         {
@@ -280816,12 +280816,12 @@
             "id": "usdidr",
             "label_ko": "USD/IDR",
             "unit": null,
-            "display": "17,875",
-            "value": 17875.0,
-            "asof": "2026-10-07",
+            "display": "17,890",
+            "value": 17890.0,
+            "asof": "2026-10-08",
             "data_status": "live",
             "source": "yahoo:IDR=X",
-            "observed_at": "2026-10-07"
+            "observed_at": "2026-10-08"
           },
           {
             "id": "fx_reserves",
@@ -280859,12 +280859,12 @@
             "id": "jci",
             "label_ko": "JCI(자카르타 종합)",
             "unit": null,
-            "display": "6,147",
-            "value": 6146.724121,
-            "asof": "2026-10-07",
+            "display": "6,031",
+            "value": 6031.28418,
+            "asof": "2026-10-08",
             "data_status": "live",
             "source": "yahoo:^JKSE",
-            "observed_at": "2026-10-07"
+            "observed_at": "2026-10-08"
           }
         ],
         "growth": [
@@ -281012,7 +281012,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 14377.0,
@@ -281073,8 +281073,8 @@
                 18040.099609,
                 17749.0,
                 17736.400391,
-                17887.900391,
-                17875.0
+                17829.0,
+                17890.0
               ]
             },
             "10y": {
@@ -281198,7 +281198,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 13502.0,
@@ -281319,8 +281319,8 @@
                 18040.099609,
                 17749.0,
                 17736.400391,
-                17887.900391,
-                17875.0
+                17829.0,
+                17890.0
               ]
             }
           },
@@ -281328,13 +281328,13 @@
           "quality": "live",
           "chart_type": "line",
           "note_ko": "환율(루피아/달러)입니다. Yahoo 시세, 월말 값.",
-          "value": 17875.0,
-          "display": "17,875",
+          "value": 17890.0,
+          "display": "17,890",
           "refresh_tier": "market_daily",
           "news_query": "rupiah dollar Bank Indonesia",
           "source": "yahoo:IDR=X",
-          "asof": "2026-10-07",
-          "observed_at": "2026-10-07"
+          "asof": "2026-10-08",
+          "observed_at": "2026-10-08"
         },
         {
           "id": "jci",
@@ -281404,7 +281404,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 6581.481934,
@@ -281465,8 +281465,8 @@
                 6236.125977,
                 6525.478027,
                 6071.138184,
-                6192.926758,
-                6146.724121
+                6146.724121,
+                6031.28418
               ],
               "ma5": [
                 6581.481934,
@@ -281527,8 +281527,8 @@
                 6402.34541,
                 6297.796582,
                 6120.663379,
-                6133.772559,
-                6234.478613
+                6124.532031,
+                6202.150098
               ]
             },
             "10y": {
@@ -281652,7 +281652,7 @@
                 "2026-07-31",
                 "2026-08-31",
                 "2026-09-30",
-                "2026-10-07"
+                "2026-10-08"
               ],
               "values": [
                 5296.710938,
@@ -281773,8 +281773,8 @@
                 6236.125977,
                 6525.478027,
                 6071.138184,
-                6192.926758,
-                6146.724121
+                6146.724121,
+                6031.28418
               ],
               "ma5": [
                 5296.710938,
@@ -281895,8 +281895,8 @@
                 6402.34541,
                 6297.796582,
                 6120.663379,
-                6133.772559,
-                6234.478613
+                6124.532031,
+                6202.150098
               ]
             }
           },
@@ -281904,13 +281904,13 @@
           "quality": "live",
           "chart_type": "line",
           "note_ko": "자카르타 종합지수(IDX Composite) 월말 종가입니다. Yahoo 시세.",
-          "value": 6146.724121,
-          "display": "6,147",
+          "value": 6031.28418,
+          "display": "6,031",
           "refresh_tier": "market_daily",
           "news_query": "Jakarta Composite Index IDX stocks",
           "source": "yahoo:^JKSE",
-          "asof": "2026-10-07",
-          "observed_at": "2026-10-07"
+          "asof": "2026-10-08",
+          "observed_at": "2026-10-08"
         },
         {
           "id": "gdp",
@@ -285511,21 +285511,22 @@
       "CHN:hscei",
       "KAZ:usdkzt",
       "VNM:usdvnd",
-      "USA:bond_10y:latest",
-      "USA:hy_oas:latest",
-      "USA:unemployment:latest",
-      "USA:bond_3m:latest",
       "USA:fed_total_assets:latest",
-      "USA:tga:latest",
+      "USA:bond_3m:latest",
+      "USA:sofr:latest",
       "USA:bond_2y:latest",
-      "USA:on_rrp:latest",
+      "USA:spread_10y3m:latest",
+      "USA:bond_10y:latest",
+      "USA:tga:latest",
       "USA:effr:latest",
       "USA:tips_10y:latest",
-      "USA:initial_claims:latest",
-      "USA:bei_10y:latest",
-      "USA:spread_10y3m:latest",
-      "USA:sahm:latest",
       "USA:fed_mbs:latest",
+      "USA:unemployment:latest",
+      "USA:bei_10y:latest",
+      "USA:initial_claims:latest",
+      "USA:hy_oas:latest",
+      "USA:sahm:latest",
+      "USA:on_rrp:latest",
       "USA:net_liquidity:latest",
       "USA:spread_10y2y",
       "KOR:bok_base_rate",
@@ -285535,7 +285536,6 @@
     ],
     "fail": [
       "CHN:usdcnh:sparse",
-      "USA:sofr:no observation for SOFR",
       "RATINGS:No module named 'pandas'",
       "QRA:No module named 'bs4'"
     ],
