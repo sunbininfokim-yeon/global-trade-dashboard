@@ -87,6 +87,9 @@ class PollTargetsTests(unittest.TestCase):
 
     def test_unreviewed_source_commissioner_or_matchup_stays_held(self):
         p=selected()
+        # This synthetic fixture deliberately lacks a reviewed field. The
+        # production TX-38 roster is now connected and must not be presumed missing.
+        p['races']['USA:TX:house:38']['required_candidates']=[]
         for changes,reason in [({'pollster':'Unknown Institution'},'pollster_not_selected'),
                                ({'sponsors':['Unknown sponsor']},'commissioner_not_reviewed'),
                                ({'subject':'2026 TX-38','seat_name':'TX-38'},'matchup_not_reviewed'),

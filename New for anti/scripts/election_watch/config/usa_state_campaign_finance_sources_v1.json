@@ -66,7 +66,17 @@
       "access": "search_tsv_export",
       "url": "https://dos.fl.gov/elections/candidates-committees/campaign-finance/campaign-finance-database/",
       "authentication": "public_search",
-      "independent_expenditure_mapping": "not_implemented"
+      "independent_expenditure_mapping": "not_implemented",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "search_url": "https://dos.elections.myflorida.com/campaign-finance/expenditures/",
+        "readonly_export_url": "https://dos.elections.myflorida.com/cgi-bin/expend.exe",
+        "source_scope": "ECO_general_expenditure_TSV_audit_only",
+        "filing_login_required_for_public_read": false,
+        "independent_expenditure_mapping": "target_support_oppose_and_amendment_mapping_not_implemented",
+        "note_ko": "공개 ECO 지출 TSV 감사 연결. EFS 로그인은 신고용이며 조회에 불필요. 후보·지지/반대 없는 일반 지출을 주지사 독립지출 금액으로 변환하지 않음."
+      }
     },
     "NY": {
       "agency": "New York State Board of Elections",
@@ -97,10 +107,33 @@
     },
     "GA": {
       "agency": "Georgia Government Transparency and Campaign Finance Commission",
-      "access": "public_search_export",
-      "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx",
+      "access": "public_portal_and_legacy_search",
+      "url": "https://peachfile.ethics.ga.gov/",
       "authentication": "public_search",
-      "independent_expenditure_mapping": "not_implemented"
+      "independent_expenditure_mapping": "source_reviewed_access_blocked",
+      "legacy_url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "sources": [
+          "https://ethics.ga.gov/"
+        ],
+        "scope_ko": "공식홈페이지의 PeachFile e-Filing과 Legacy Records Search를 구분. Legacy 검색 접근만으로2026 공시 완전성을 확인하지 않습니다.",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://peachfile.ethics.ga.gov/"
+          },
+          {
+            "role": "legacy_search",
+            "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx"
+          },
+          {
+            "role": "legacy_independent_registry",
+            "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_Namesearchresults_NC.aspx?CommitteeName=&CommitteeType=2"
+          }
+        ]
+      }
     },
     "MI": {
       "agency": "Michigan Secretary of State MiTN",
@@ -112,6 +145,31 @@
         "date": "2026-10-02",
         "result": "public_export_direct_request_timeout",
         "status": "not_connected"
+      },
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+        "official_guide_url": "https://www.michigan.gov/sos/elections/Disclosure/cfr/committee-search/intro/welcome-to-the-michigan-campaign-finance-searchable-database",
+        "merts_status": "decommissioned_and_migrated_to_MiTN_per_official_docs",
+        "authentication": "public_search_no_account",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch"
+          },
+          {
+            "role": "current_public_export",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload"
+          },
+          {
+            "role": "legacy_independent_registry",
+            "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level"
+          }
+        ],
+        "official_export_static_page_status": "0_matching_records_rendered; not_0_transactions",
+        "expense_identity_documentation": "Expense ID is retained across amended statements; candidate target/SO and office still require filing review",
+        "note_ko": "MiTN현재검색/연간파일직접요청시간초과·주사이트403. 브라우저공개화면존재는백엔드수집성공과다릅니다. 구ZIP은2025년4월전자료여서2026으로사용하지않습니다. 새API키가필요하다는근거는없으며후보별금액은미확보입니다."
       }
     },
     "NV": {
@@ -127,7 +185,18 @@
       "url": "https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/campaign-finance-data",
       "authentication": "public_download",
       "independent_expenditure_mapping": "not_implemented",
-      "limitations_ko": "공개 full export의 비용 행에 지지·반대 대상 후보 필드가 없어 이 파일만으로 주지사 독립지출을 계산할 수 없음."
+      "limitations_ko": "공개 full export의 비용 행에 지지·반대 대상 후보 필드가 없어 이 파일만으로 주지사 독립지출을 계산할 수 없음.",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "audit_module": "election_watch.governor_pa",
+        "public_export_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/resources/voting-and-elections/campaign-finance/campaign-finance-data/2026.zip",
+        "scope": "2026_annual_general_expenses_and_filer_reports_only",
+        "independent_expenditure_form_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/dos/resources/voting-and-elections/campaign-finance/dseb_505.pdf",
+        "individual_report_search_url": "https://www.campaignfinanceonline.pa.gov/pages/CFReportSearch.aspx",
+        "individual_report_search_http_status": 403,
+        "note_ko": "연간ZIP은 공개다운로드·일반비용 감사만 가능. 후보 S/O는 DSEB-505 개별 원문에서 필요하며 현재 직접 검색HTTP403. 새API키는 이 공개 경로에 필요하지 않습니다."
+      }
     },
     "TN": {
       "agency": "Tennessee Registry of Election Finance",
@@ -162,6 +231,31 @@
       "url": "https://sos.oregon.gov/elections/campaign-finance/Pages/search-campaign-finance.aspx",
       "authentication": "public_search",
       "independent_expenditure_mapping": "not_implemented"
+    },
+    "OH": {
+      "agency": "Ohio Secretary of State",
+      "access": "official_public_campaign_finance_portal",
+      "url": "https://www.ohiosos.gov/elections/campaign-finance",
+      "authentication": "public_search_no_api_key_documented",
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-10-08",
+        "result": "current_portal_direct_http403",
+        "status": "not_connected"
+      },
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.ohiosos.gov/elections/campaign-finance",
+        "authentication": "no_new_api_key_requirement_found",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://data.ohiosos.gov/portal/campaign-finance"
+          }
+        ],
+        "note_ko": "공식사이트의Simple/Advanced/FileTransfer가현재DataPortal을연결. 직접수집403. 검색화면존재와후보별독립지출금액확보는다릅니다. 지출유형·후보타깃·지지/반대·정정·선거단계원자료검증전에는캠프일반지출을IE로사용하지않습니다."
+      }
     }
   }
 }

@@ -47,15 +47,16 @@
       "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
     },
     "gov202sufa08bfacb": {
-      "reviewed_on": "2026-10-05",
-      "snapshot_sha256": "c4e926da77e899e77e1dfc0f4b022f96da1b30a44baa5d5a2de4e80af2d64e9a",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
       "sources": [
         "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
         "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
       ],
       "primary_toplines": {
         "Amy Acton": 50.4,
-        "Vivek Ramaswamy": 41.4
+        "Vivek Ramaswamy": 41.4,
+        "Don Kissick": 2.8
       },
       "question_sample_n": 500,
       "disclosure_review": {
@@ -65,26 +66,63 @@
           "2026-09-23",
           "2026-09-27"
         ],
-        "sponsor": "USA TODAY Network Ohio",
-        "sampling_frame": "landline and cell phones; county allocation proportional to expected likely voters",
+        "question_wording_checked": true,
+        "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
         "mode": "live telephone",
         "weighting": null,
-        "question_wording_checked": true,
-        "demographic_design": "quotas informed by prior midterm exit polls, Census and ACS"
+        "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
+        "lv_screen": "very/somewhatlikelyNovembervote",
+        "question": "Q9 named3candidate voteorlean; rotated",
+        "non_candidate_responses": {
+          "write_in": 0.2,
+          "undecided": 4.8,
+          "refused": 0.4
+        },
+        "missing_fields": [
+          "full_weight_calculation",
+          "design_effect",
+          "reported_precision_confidence_level"
+        ]
       },
       "reported_precision": {
-        "kind": "margin_of_sampling_error",
+        "kind": "publisher_reported_margin_of_sampling_error",
         "half_width_pp": 4.4,
         "confidence_level_pct": null,
-        "scope": "overall_sample",
-        "model_details_verified": false
+        "scope": "500_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "USA TODAY Network Ohio"
       },
       "missing_fields": [
-        "weight_calculation_details",
-        "design_effect_adjustment",
-        "historical_accuracy_rating"
+        "accuracy_grade",
+        "statistical_significance",
+        "full_weight_calculation",
+        "design_effect",
+        "reported_precision_confidence_level"
       ],
-      "limitations_ko": "전체 표본 발표 오차범위. 후보 간 격차 오차범위는 별도이며 유의성 미평가. 인구별 할당 설명을 사후 가중치 공개로 간주하지 않음."
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "df2c68e18d61bb41b3153af4ca82ecb0d4eb799e8dda91b902f41d53470f1987",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+          "sha256": "cee90f4e4d5c5ac0934ea51257a71a715d0a1cf412695dc84dcffab9aa0da293",
+          "relevant_pages": [
+            1,
+            3
+          ]
+        }
+      ],
+      "snapshot_sha256": "0f4eedef8e5811de63a3f49c65b7619f98ce6528daaf18972e41d9ea8550526c"
     },
     "gov202theafe06bf1": {
       "reviewed_on": "2026-10-05",
@@ -186,27 +224,57 @@
       "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
     },
     "us-202bigbe8a8854": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838618+00:00",
-      "snapshot_sha256": "631020f5984a2ba8617ccefa3411aebdb1ff797679de36ae5171dabceb4f275e",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
       "sources": [
-        "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/"
+        "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "https://application.marketsight.com/app/ItemView.aspx?SharedBy=34090&SharedFor=public%40bigdatapoll.com&id=c7c559ca-f7a0-45c9-9e09-b4cf015445c6"
       ],
       "primary_toplines": {
-        "Jon Ossoff": 55.4,
-        "Mike Collins": 44.6
+        "Jon Ossoff": 52.2,
+        "Mike Collins": 41.0
       },
       "question_sample_n": 678,
       "disclosure_review": {
-        "mode": "online panel and phone/text mixed mode",
         "population": "LV",
-        "total_sample_n": 712,
-        "lv_sample_n": 678,
         "field_dates": [
           "2026-09-21",
           "2026-09-23"
         ],
+        "mode": "40% online Lucid/CINT; 60% phone/text L2 voter-file source",
+        "total_sample_n": 712,
+        "lv_sample_n": 678,
         "weighting": "sex, age, race/ethnicity, education, geography"
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "Public Polling Project"
+        ],
+        "affiliation_verified": false,
+        "primary_funding_statement": "publisher reports crowdfunding and no candidate/campaign/committee funding",
+        "independently_verified": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "admission": {
+        "pollster": "Big Data Poll",
+        "provider_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "group": "big_data_poll",
+        "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "allow_historical_reference": false
+      },
+      "provider_answer_correction": {
+        "provider_snapshot_sha256": "ec6352729c614bec91a291f6f4632bfeb584b1d386a621f6248302c87e7c7eb9",
+        "overrides": {
+          "Jon Ossoff": 52.2,
+          "Mike Collins": 41.0
+        },
+        "basis_ko": "기관 원문의 LV 최초 응답을 사용. API에 실린 미정층 재질문 후 양당 합계100% 값은 원래 값으로 보존하되 초기 투표 의향과 합산하지 않습니다."
       },
       "reported_precision": {
         "kind": "publisher_reported_mixed_sample_error",
@@ -214,53 +282,61 @@
         "confidence_level": 95,
         "validated_here": false
       },
-      "missing_fields": [
-        "accuracy_grade",
-        "statistical_significance"
-      ],
-      "limitations_ko": "미정층 재질문 후 두 후보 비율 합계 100%로 발표한 값. 최초 응답과 기준이 달라 누적 참고 전용. 공표 오차의 모델 타당성 미평가.",
-      "ballot_format": "binary_leaner_share",
-      "sponsor_review": {
-        "reported_sponsors": [
-          "Public Polling Project"
-        ],
-        "affiliation_verified": false
-      },
-      "admission": {
-        "pollster": "Big Data Poll",
-        "provider_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
-        "group": "big_data_poll",
-        "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
-        "source_role": "pollster_primary",
-        "signal_eligible": false,
-        "signal_exclusion_reasons": [
-          "binary_leaner_share_not_comparable"
-        ],
-        "allow_historical_reference": false
-      }
+      "limitations_ko": "LV 최초 응답과 RV·미정층 재질문을 분리. 정확도 등급·발표 오차 모델·후원자 독립성은 별도 검증하지 않았습니다.",
+      "snapshot_sha256": "3651d2aef9b4f348067ee77c4888b9fbc6daecf959581d7e43ee0c5260279e20"
     },
     "gov202bigf56bfd9a": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838669+00:00",
-      "snapshot_sha256": "638d94f9988475065d3095ed9c3ad29a2ace69570dc7be47f26ebd663056f45d",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
       "sources": [
-        "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/"
+        "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "https://application.marketsight.com/app/ItemView.aspx?SharedBy=34090&SharedFor=public%40bigdatapoll.com&id=c7c559ca-f7a0-45c9-9e09-b4cf015445c6"
       ],
       "primary_toplines": {
-        "Rick Jackson": 50.5,
-        "Keisha Lance Bottoms": 49.5
+        "Rick Jackson": 48.7,
+        "Keisha Lance Bottoms": 46.7
       },
       "question_sample_n": 678,
       "disclosure_review": {
-        "mode": "online panel and phone/text mixed mode",
         "population": "LV",
-        "total_sample_n": 712,
-        "lv_sample_n": 678,
         "field_dates": [
           "2026-09-21",
           "2026-09-23"
         ],
+        "mode": "40% online Lucid/CINT; 60% phone/text L2 voter-file source",
+        "total_sample_n": 712,
+        "lv_sample_n": 678,
         "weighting": "sex, age, race/ethnicity, education, geography"
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "Public Polling Project"
+        ],
+        "affiliation_verified": false,
+        "primary_funding_statement": "publisher reports crowdfunding and no candidate/campaign/committee funding",
+        "independently_verified": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "admission": {
+        "pollster": "Big Data Poll",
+        "provider_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "group": "big_data_poll",
+        "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "allow_historical_reference": false
+      },
+      "provider_answer_correction": {
+        "provider_snapshot_sha256": "7e8b3b2bd1b9910d7121800b0b1dceb37914d4c3bd8095bf9818ddf7e181f851",
+        "overrides": {
+          "Rick Jackson": 48.7,
+          "Keisha Lance Bottoms": 46.7
+        },
+        "basis_ko": "기관 원문의 LV 최초 응답을 사용. API에 실린 미정층 재질문 후 양당 합계100% 값은 원래 값으로 보존하되 초기 투표 의향과 합산하지 않습니다."
       },
       "reported_precision": {
         "kind": "publisher_reported_mixed_sample_error",
@@ -268,34 +344,12 @@
         "confidence_level": 95,
         "validated_here": false
       },
-      "missing_fields": [
-        "accuracy_grade",
-        "statistical_significance"
-      ],
-      "limitations_ko": "미정층 재질문 후 두 후보 비율 합계 100%로 발표한 값. 최초 응답과 기준이 달라 누적 참고 전용. 공표 오차의 모델 타당성 미평가.",
-      "ballot_format": "binary_leaner_share",
-      "sponsor_review": {
-        "reported_sponsors": [
-          "Public Polling Project"
-        ],
-        "affiliation_verified": false
-      },
-      "admission": {
-        "pollster": "Big Data Poll",
-        "provider_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
-        "group": "big_data_poll",
-        "methodology_url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
-        "source_role": "pollster_primary",
-        "signal_eligible": false,
-        "signal_exclusion_reasons": [
-          "binary_leaner_share_not_comparable"
-        ],
-        "allow_historical_reference": false
-      }
+      "limitations_ko": "LV 최초 응답과 RV·미정층 재질문을 분리. 정확도 등급·발표 오차 모델·후원자 독립성은 별도 검증하지 않았습니다.",
+      "snapshot_sha256": "9e76d501f7912084047c493dd22f382d296aff69ec23d3875f07291a277872f9"
     },
     "gov202steb5a21bdb": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838685+00:00",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
       "snapshot_sha256": "7d1ea0d3c086dd065e6f6948cbc8fdcea18a050ea1fa80977a655ad45d747ec6",
       "sources": [
         "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf"
@@ -343,11 +397,21 @@
         "signal_eligible": true,
         "signal_exclusion_reasons": [],
         "allow_historical_reference": false
-      }
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "sha256": "94a3e78926df3c85cf414020cd3740aae9b0626ba779d293a2b23f0ef7fb3077",
+          "relevant_pages": [
+            2,
+            3
+          ]
+        }
+      ]
     },
     "us-202ste67ef4e2d": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838697+00:00",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
       "snapshot_sha256": "0d7963c2cd42821620ec143700d92fcf97a3e9edacb7abc8c74748b0cbe734d1",
       "sources": [
         "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf"
@@ -395,11 +459,21 @@
         "signal_eligible": true,
         "signal_exclusion_reasons": [],
         "allow_historical_reference": false
-      }
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+          "sha256": "94a3e78926df3c85cf414020cd3740aae9b0626ba779d293a2b23f0ef7fb3077",
+          "relevant_pages": [
+            2,
+            3
+          ]
+        }
+      ]
     },
     "gov202cha9102cf63": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838708+00:00",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
       "snapshot_sha256": "aaf480c091982fcfef65a693c949e7e8b0659285ddfd9f8112a92eb8e5efb7d8",
       "sources": [
         "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement"
@@ -458,8 +532,8 @@
       }
     },
     "us-202chad8109bd5": {
-      "reviewed_on": "2026-10-06",
-      "reviewed_at": "2026-10-06T03:45:57.838720+00:00",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
       "snapshot_sha256": "33c6e43d4848a2cbd161e45b528c2159f22b6ca9f510e626ab657f2d9846f692",
       "sources": [
         "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement"
@@ -518,7 +592,7 @@
       }
     },
     "gov202tar2b53cae7": {
-      "reviewed_on": "2026-10-06",
+      "reviewed_on": "2026-10-08",
       "reviewed_at": "2026-10-06T03:45:57.838732+00:00",
       "snapshot_sha256": "bb07ec70361d47a9e0e76bc043f4e298960c385cbe05a7fe6a1747a8ee418ad8",
       "sources": [
@@ -571,10 +645,19 @@
           "historical_reference"
         ],
         "allow_historical_reference": true
-      }
+      },
+      "primary_documents": [
+        {
+          "url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+          "sha256": "7abd475c6d9f94640c803919f36d46ecabc115f7978ef3e37e1b5e89a42ca4ca",
+          "relevant_pages": [
+            44
+          ]
+        }
+      ]
     },
     "us-202tara610e9e2": {
-      "reviewed_on": "2026-10-06",
+      "reviewed_on": "2026-10-08",
       "reviewed_at": "2026-10-06T03:45:57.838744+00:00",
       "snapshot_sha256": "0cff2aa0f3126a08ae652850204d2061f1e6ee3375f3a0e2306870eb54b564a2",
       "sources": [
@@ -627,7 +710,16 @@
           "historical_reference"
         ],
         "allow_historical_reference": true
-      }
+      },
+      "primary_documents": [
+        {
+          "url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
+          "sha256": "7abd475c6d9f94640c803919f36d46ecabc115f7978ef3e37e1b5e89a42ca4ca",
+          "relevant_pages": [
+            47
+          ]
+        }
+      ]
     },
     "gov202nobb8fa340d": {
       "reviewed_on": "2026-10-06",
@@ -1070,7 +1162,8 @@
       ],
       "primary_toplines": {
         "Leela Gray": 44,
-        "Anna Paulina Luna": 43
+        "Anna Paulina Luna": 43,
+        "Tony D'Arrigo": 7
       },
       "question_sample_n": null,
       "disclosure_review": {
@@ -1121,7 +1214,8 @@
         "reviewed_sponsors": [
           "House Majority PAC"
         ]
-      }
+      },
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00"
     },
     "us-202beab9600d9b": {
       "reviewed_on": "2026-10-06",
@@ -1682,6 +1776,2642 @@
         "allow_historical_reference": false
       },
       "primary_snapshot_sha256": "ce8cf02000f060a7b71815c01b6d0fc1999bacfebef230ce361b6b1f5cad5d2a"
+    },
+    "gov202quie0227b77": {
+      "snapshot_sha256": "21d13b50939a0c0a2605ee42c09e85eda3d0e526b23cf8452cbc1120b0a83597",
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://poll.qu.edu/poll-release?releaseid=3967"
+      ],
+      "primary_toplines": {
+        "Kathy Hochul": 58,
+        "Bruce Blakeman": 39
+      },
+      "question_sample_n": 1026,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 1026,
+        "field_dates": [
+          "2026-09-17",
+          "2026-09-20"
+        ],
+        "sponsor": "Quinnipiac University Poll",
+        "sampling_frame": "probability-based random digit dialing of landlines and cell phones",
+        "mode": "live telephone interviews",
+        "question_wording_checked": true,
+        "weighting": "not_rechecked"
+      },
+      "reported_precision": {
+        "kind": "margin_of_error",
+        "half_width_pp": 4.1,
+        "confidence_level_pct": null,
+        "scope": "overall_likely_voter_sample",
+        "design_effect_included": true
+      },
+      "missing_fields": [
+        "weighting_details",
+        "historical_accuracy_rating"
+      ],
+      "limitations_ko": "2026-09-23 대학 원문 Q1 결과·조사기간·LV1026명·발표 오차범위4.1pp 재검토. 후보 격차의 유의성·정확도 등급은 평가하지 않음."
+    },
+    "gov202tar141bada4": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "496936e59113daedfe37b0d83ffecd628a863b6a57b71a207b9c0d73c8779e3a",
+      "sources": [
+        "https://www.tnprogressfund.com/polling",
+        "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf"
+      ],
+      "primary_documents": [
+        {
+          "url": "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf",
+          "sha256": "192b08237bb56f22c07eb9729d51bb89bf7fef93c467d25242798ea80b62073c",
+          "relevant_pages": [
+            3,
+            11
+          ]
+        }
+      ],
+      "primary_toplines": {
+        "Marsha Blackburn": 45,
+        "Jerri Green": 36,
+        "David Hatley": 10,
+        "Lauren Pinkston": 2
+      },
+      "question_sample_n": 600,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 600,
+        "field_dates": [
+          "2026-09-09",
+          "2026-09-12"
+        ],
+        "mode": "live telephone and email/SMS-linked online; weighted 51% phone / 49% online",
+        "sampling_frame": "TargetSmart enhanced voter file for telephone portion",
+        "weighting": "gender, age, race, education score, partisan score, turnout score, urbanicity, county region, 2024 presidential vote quotas",
+        "question_wording_checked": true,
+        "primary_table_page": 3,
+        "methodology_page": 11,
+        "question": "Q12 total ballot with leaners"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 4.0,
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "initial_four_candidate_ballot_with_leaners",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "The Progress Fund"
+        ],
+        "provider_partisan": "DEM",
+        "affiliation_verified": false
+      },
+      "missing_fields": [
+        "confidence_level",
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문 Q12 총계 대조: API의 Hatley19%와 원문10%가 달라 검토한 동일 레코드에만 정정 적용. 당파성 참고 자료로 우세 집계 제외. 후보 소개 뒤의 Q26 신뢰 질문과 구분하며 현재7/14일 창 밖입니다.",
+      "admission": {
+        "pollster": "TargetSmart",
+        "provider_url": "https://www.tnprogressfund.com/polling",
+        "group": "targetsmart",
+        "methodology_url": "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "party_commissioned_reference"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "DEM",
+        "reviewed_sponsors": [
+          "The Progress Fund"
+        ]
+      },
+      "provider_answer_correction": {
+        "provider_snapshot_sha256": "09afb892856975a5ef9813f301b62dbb4c6099b16f9e9305e9cf03ec0ff6ef09",
+        "overrides": {
+          "David Hatley": 10
+        },
+        "basis_ko": "원문 결과표3쪽 Q12와 의뢰기관 발표 모두 Hatley10%이며 수집 API는19%입니다. 원문과 일치하는 다른 후보 수치는 유지합니다."
+      }
+    },
+    "us-202harc3982bab": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "4e92f033e1d5f18fff9a38e9389305b401841bf5c5f1d439570273a7519cf9d5",
+      "sources": [
+        "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view"
+      ],
+      "primary_documents": [
+        {
+          "url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+          "sha256": "341624613a430a0fbf6c3eb4c9c6263e82e45895226b1cfc4d8b75b26d5e32e9",
+          "relevant_pages": [
+            1
+          ]
+        }
+      ],
+      "primary_toplines": {
+        "Justin Pearson": 44,
+        "Brent Taylor": 48
+      },
+      "question_sample_n": 400,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 400,
+        "field_dates": [
+          "2026-09-01",
+          "2026-09-03"
+        ],
+        "mode": null,
+        "sampling_frame": null,
+        "weighting": null,
+        "question_wording_checked": false,
+        "published_on": "2026-09-09",
+        "primary_table_page": 1,
+        "question": "initial congressional trial heat"
+      },
+      "reported_precision": null,
+      "ballot_format": "initial_ballot_trial_heat",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "Tennessee Rise"
+        ],
+        "provider_partisan": "DEM",
+        "affiliation_verified": false
+      },
+      "missing_fields": [
+        "interview_mode",
+        "sampling_frame",
+        "weighting",
+        "question_wording",
+        "margin_of_error_pp",
+        "historical_accuracy_rating"
+      ],
+      "limitations_ko": "Hart 메모에서9/1–3 LV400명·초기 투표 의향 Pearson44/Taylor48 대조. 뒤의 호감·메시지 반응은 투표 의향으로 사용하지 않습니다. 상세 방법·오차범위 미공개, API의 DEM 의뢰 표시 유지. 참고 전용이며 현재7/14일 창 밖입니다.",
+      "admission": {
+        "pollster": "Hart Research Associates",
+        "provider_url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+        "group": "hart",
+        "methodology_url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "party_commissioned_reference",
+          "methodology_disclosure_incomplete"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "DEM",
+        "reviewed_sponsors": [
+          "Tennessee Rise"
+        ]
+      }
+    },
+    "us-202pub0bd895c4": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "d1ab31ba74bc30dbb5044218b3c065c78beb015cdc745398cc81c5dbac6f867a",
+      "sources": [
+        "https://drive.google.com/file/d/1SdUgc3IAuqOAkDggjzfiHIkhI5TNRSuF/view"
+      ],
+      "primary_documents": [
+        {
+          "url": "https://drive.google.com/file/d/1SdUgc3IAuqOAkDggjzfiHIkhI5TNRSuF/view",
+          "sha256": "2e61af222afc1108008f7b27372ae58809acefb8dcc2fa7e44450d067ed415e0",
+          "relevant_pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "primary_toplines": {
+        "Kelly Kirschner": 39,
+        "Sydney Gruters": 43
+      },
+      "question_sample_n": 530,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 530,
+        "field_dates": [
+          "2026-10-01",
+          "2026-10-02"
+        ],
+        "mode": "15% landline, 85% text message",
+        "weighting": null,
+        "sampling_frame": null,
+        "question_wording_checked": true,
+        "primary_table_page": 2,
+        "methodology_page": 1,
+        "question": "Q7 initial named-candidate congressional vote"
+      },
+      "reported_precision": {
+        "margin_of_error_pp": 4.3,
+        "confidence_level": null,
+        "basis": "reported_by_pollster_not_verified"
+      },
+      "ballot_format": "initial_ballot_trial_heat",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "provider_partisan": "DEM",
+        "affiliation_verified": false,
+        "commissioner_disclosed": false
+      },
+      "missing_fields": [
+        "sampling_frame",
+        "weighting",
+        "commissioner",
+        "confidence_level",
+        "historical_accuracy_rating"
+      ],
+      "limitations_ko": "PPP 원문 Q7의 FL-16 RV530명·10/1–2·Kirschner39/Gruters43과 조사 방법을 대조했습니다. 뒤의 후보 소개·비판 메시지 후 Q10·Q13은 사용하지 않습니다. 의뢰자 미공개·API DEM 표시로 참고 전용입니다. 이 지역구 응답자의 주지사·상원 문항을 플로리다 전체 조사로 편입하지 않습니다. 정확도·격차 유의성 미평가.",
+      "admission": {
+        "pollster": "Public Policy Polling",
+        "provider_url": "https://drive.google.com/file/d/1SdUgc3IAuqOAkDggjzfiHIkhI5TNRSuF/view",
+        "group": "public_policy_polling",
+        "methodology_url": "https://drive.google.com/file/d/1SdUgc3IAuqOAkDggjzfiHIkhI5TNRSuF/view",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "provider_partisan_reference",
+          "commissioner_not_disclosed"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "DEM",
+        "reviewed_sponsors": []
+      },
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00"
+    },
+    "us-202insbbb32dd3": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
+      "sources": [
+        "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/"
+      ],
+      "primary_toplines": {
+        "Jon Ossoff": 50.0,
+        "Mike Collins": 42.0
+      },
+      "question_sample_n": 1200,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-09-22",
+          "2026-09-23"
+        ],
+        "mode": "mixed text/panel",
+        "lv_sample_n": 1200,
+        "weighting": "age, race, gender, political affiliation",
+        "published_on": "2026-09-25",
+        "primary_reported_undecided_pct": 8
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "affiliation_verified": false,
+        "primary_commissioner_disclosed": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "numeric_margin_of_error_pp",
+        "commissioner",
+        "sampling_frame",
+        "panel_recruitment",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "InsiderAdvantage",
+        "provider_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "group": "insideradvantage",
+        "methodology_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "allow_historical_reference": false
+      },
+      "reported_precision": null,
+      "limitations_ko": "기관 원문 숫자·LV1200·기간·문자/패널 방식·가중 변수 확인. 숫자 오차범위·의뢰자·표집틀·패널 모집 미공개. 정확도 인증으로 해석하지 않습니다.",
+      "snapshot_sha256": "1c40c3769be559656177915efc2983b3500652b753dfba13973cee829d858eee"
+    },
+    "gov202insa0df0d3c": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
+      "sources": [
+        "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/"
+      ],
+      "primary_toplines": {
+        "Rick Jackson": 48.0,
+        "Keisha Lance Bottoms": 46.0
+      },
+      "question_sample_n": 1200,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-09-22",
+          "2026-09-23"
+        ],
+        "mode": "mixed text/panel",
+        "lv_sample_n": 1200,
+        "weighting": "age, race, gender, political affiliation",
+        "published_on": "2026-09-25",
+        "primary_reported_undecided_pct": 6
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "affiliation_verified": false,
+        "primary_commissioner_disclosed": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "numeric_margin_of_error_pp",
+        "commissioner",
+        "sampling_frame",
+        "panel_recruitment",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "InsiderAdvantage",
+        "provider_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "group": "insideradvantage",
+        "methodology_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "allow_historical_reference": false
+      },
+      "reported_precision": null,
+      "limitations_ko": "기관 원문 숫자·LV1200·기간·문자/패널 방식·가중 변수 확인. 숫자 오차범위·의뢰자·표집틀·패널 모집 미공개. 정확도 인증으로 해석하지 않습니다.",
+      "snapshot_sha256": "f4ed48d837a4c1cddd4a6f269d67a452b7d2b50c4f0e50661b423049125fd27e"
+    },
+    "us-202wic6dd1649c": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
+      "sources": [
+        "https://wick.io/research-georgia-election-survey-june-2026",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-results.pdf",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-methodology.docx",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-questionnaire.docx"
+      ],
+      "primary_toplines": {
+        "Jon Ossoff": 46.7,
+        "Mike Collins": 42.9
+      },
+      "question_sample_n": 1175,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-06-27",
+          "2026-06-30"
+        ],
+        "mode": "text-to-web / online",
+        "lv_sample_n": 1175,
+        "weighting": "weighted; targets not disclosed",
+        "primary_question": "Q11",
+        "primary_result_pdf_page": 3,
+        "primary_reported_undecided_pct": 10.4
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "affiliation_verified": false,
+        "primary_commissioner_disclosed": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "commissioner",
+        "sampling_frame",
+        "recruitment",
+        "weighting_targets",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "Wick",
+        "provider_url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "group": "wick",
+        "methodology_url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "allow_historical_reference": true,
+        "signal_exclusion_reasons": [
+          "before_reviewed_general_period_reference"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_online_sample_error",
+        "half_width_pp": 2.9,
+        "confidence_level": null,
+        "validated_here": false
+      },
+      "limitations_ko": "PDF3쪽 Q9/Q11 초기 응답 확인. 미정층 후속 문항·호감도와 분리. 현 검토 기간 전 조사이므로 누적 참고 전용. 온라인 표집·가중 세부 사항과 의뢰자 미공개, 발표 오차 모델 미평가.",
+      "snapshot_sha256": "792595f79a64b6d962badb26c9f8062ef1eab9186dd5f9baa67bd9c0a03a333f"
+    },
+    "gov202wic14336d15": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:02:05.358285+00:00",
+      "sources": [
+        "https://wick.io/research-georgia-election-survey-june-2026",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-results.pdf",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-methodology.docx",
+        "https://wick.io/assets/research-georgia-election-survey-june-2026-questionnaire.docx"
+      ],
+      "primary_toplines": {
+        "Rick Jackson": 43.2,
+        "Keisha Lance Bottoms": 42.7
+      },
+      "question_sample_n": 1175,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-06-27",
+          "2026-06-30"
+        ],
+        "mode": "text-to-web / online",
+        "lv_sample_n": 1175,
+        "weighting": "weighted; targets not disclosed",
+        "primary_question": "Q9",
+        "primary_result_pdf_page": 3,
+        "primary_reported_undecided_pct": 14.1
+      },
+      "ballot_format": "initial_vote_intention",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "affiliation_verified": false,
+        "primary_commissioner_disclosed": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "commissioner",
+        "sampling_frame",
+        "recruitment",
+        "weighting_targets",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "Wick",
+        "provider_url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "group": "wick",
+        "methodology_url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "allow_historical_reference": true,
+        "signal_exclusion_reasons": [
+          "before_reviewed_general_period_reference"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_online_sample_error",
+        "half_width_pp": 2.9,
+        "confidence_level": null,
+        "validated_here": false
+      },
+      "limitations_ko": "PDF3쪽 Q9/Q11 초기 응답 확인. 미정층 후속 문항·호감도와 분리. 현 검토 기간 전 조사이므로 누적 참고 전용. 온라인 표집·가중 세부 사항과 의뢰자 미공개, 발표 오차 모델 미평가.",
+      "snapshot_sha256": "7354181e392a90798a23eea7c0a36ea094a14b26cc62da256787f3648946890f"
+    },
+    "us-202tav1ccea6ab": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf"
+      ],
+      "primary_toplines": {
+        "Casey Askar": 50.0,
+        "Pia Dandiya": 50.0
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "field_dates": [
+          "2026-08-10",
+          "2026-08-12"
+        ],
+        "total_sample_n": 551,
+        "population": "source says voters; API LV screen not independently confirmed",
+        "lv_sample_n": null,
+        "mode": "web panels and text-to-web",
+        "question": "Q13 with leaners",
+        "question_wording_checked": true,
+        "weighting": "gender, race, 2024 presidential vote, education, age, survey mode",
+        "methodology_page": 1,
+        "primary_table_page": 4
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "reported_sponsors": [],
+        "affiliation_verified": false
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "commissioner_affiliation",
+        "lv_sample_n",
+        "sampling_frame",
+        "confidence_level",
+        "primary_commissioner"
+      ],
+      "admission": {
+        "pollster": "Tavern Research",
+        "provider_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+        "group": "tavern_research",
+        "methodology_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "allow_historical_reference": true,
+        "signal_exclusion_reasons": [
+          "commissioner_not_disclosed",
+          "lv_screen_not_disclosed",
+          "leaner_adjusted_only"
+        ]
+      },
+      "primary_documents": [
+        {
+          "url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+          "sha256": "477f0661030807f6f0e27efb6ccc33a32e44191a8205974e151e47c2f39076bf",
+          "relevant_pages": [
+            1,
+            4
+          ]
+        }
+      ],
+      "reported_precision": {
+        "kind": "publisher_reported_online_sample_error",
+        "half_width_pp": 4.9,
+        "confidence_level": null,
+        "validated_here": false
+      },
+      "limitations_ko": "기관 로고·문항·방법 공개 PDF1/4쪽 확인. Q13 미정층 재질문 포함50/50, 온라인551명은 전체 응답이며 API LV 판별 기준은 미확인. 의뢰자 미공개·과거 조사로 참고 전용. 문서 공유 호스트 전체나 새 발표를 자동 허용하지 않습니다.",
+      "snapshot_sha256": "4cc042d8f315659ce97cd3213df92b67480a4cb64cfcd60b43df33b426d7d3da"
+    },
+    "us-202cha69e5536b": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
+      "sources": [
+        "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "https://changeresearch.com/research/2026/2026-09-10-florida-aapor-methodology-statement"
+      ],
+      "primary_toplines": {
+        "Ashley Moody": 47.0,
+        "Angie Nixon": 47.0
+      },
+      "question_sample_n": 1107,
+      "disclosure_review": {
+        "field_dates": [
+          "2026-09-07",
+          "2026-09-09"
+        ],
+        "total_sample_n": 1317,
+        "lv_sample_n": 1107,
+        "population": "LV self-reported vote motivation 8-10",
+        "mode": "online social advertisements and voter-file SMS",
+        "weighting": "age, gender, race/ethnicity, education, 2024 presidential vote, region",
+        "language": "English",
+        "question_wording_checked": true,
+        "question": "initial statewide ballot including undecided follow-up; before campaign messages"
+      },
+      "ballot_format": "initial_with_leaners_and_undecided",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "Freedom Project USA"
+        ],
+        "affiliation_verified": false,
+        "primary_commissioner": "Freedom Project USA"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "commissioner_affiliation",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "Change Research",
+        "provider_url": "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "group": "change_research",
+        "methodology_url": "https://changeresearch.com/research/2026/2026-09-10-florida-aapor-methodology-statement",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "allow_historical_reference": false,
+        "signal_exclusion_reasons": [
+          "commissioner_affiliation_not_reviewed"
+        ]
+      },
+      "reported_precision": {
+        "kind": "modeled_margin_of_error",
+        "half_width_pp": 2.8,
+        "confidence_level": null,
+        "validated_here": false
+      },
+      "limitations_ko": "기관 최초 투표 의향 문항·방법론 확인. 후보 소개·메시지 후50/45 문항은 제외합니다. 의뢰자 성격 미검토로 참고 전용이며 본선 승자·기관 정확도·격차 유의성을 판정하지 않습니다.",
+      "snapshot_sha256": "75fb426ee3ab7ff7c3cb9842dec0f203735f893b535614fd665197b37eedf86e"
+    },
+    "gov202cha6fdf31d1": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T11:46:40.485799+00:00",
+      "sources": [
+        "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "https://changeresearch.com/research/2026/2026-09-10-florida-aapor-methodology-statement"
+      ],
+      "primary_toplines": {
+        "David Jolly": 47.0,
+        "Byron Donalds": 44.0
+      },
+      "question_sample_n": 1107,
+      "disclosure_review": {
+        "field_dates": [
+          "2026-09-07",
+          "2026-09-09"
+        ],
+        "total_sample_n": 1317,
+        "lv_sample_n": 1107,
+        "population": "LV self-reported vote motivation 8-10",
+        "mode": "online social advertisements and voter-file SMS",
+        "weighting": "age, gender, race/ethnicity, education, 2024 presidential vote, region",
+        "language": "English",
+        "question_wording_checked": true,
+        "question": "initial statewide ballot including undecided follow-up; before campaign messages"
+      },
+      "ballot_format": "initial_with_leaners_and_undecided",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "Freedom Project USA"
+        ],
+        "affiliation_verified": false,
+        "primary_commissioner": "Freedom Project USA"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "commissioner_affiliation",
+        "confidence_level"
+      ],
+      "admission": {
+        "pollster": "Change Research",
+        "provider_url": "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "group": "change_research",
+        "methodology_url": "https://changeresearch.com/research/2026/2026-09-10-florida-aapor-methodology-statement",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "allow_historical_reference": false,
+        "signal_exclusion_reasons": [
+          "commissioner_affiliation_not_reviewed"
+        ]
+      },
+      "reported_precision": {
+        "kind": "modeled_margin_of_error",
+        "half_width_pp": 2.8,
+        "confidence_level": null,
+        "validated_here": false
+      },
+      "limitations_ko": "기관 최초 투표 의향 문항·방법론 확인. 후보 소개·메시지 후50/45 문항은 제외합니다. 의뢰자 성격 미검토로 참고 전용이며 본선 승자·기관 정확도·격차 유의성을 판정하지 않습니다.",
+      "provider_source_correction": {
+        "provider_snapshot_sha256": "17e90620de44814478e9feb6da670a9c389ea685a97fbdccb39fadee9771f317",
+        "original_provider_url": "[null]",
+        "primary_url": "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "basis_ko": "API 링크 [null]을 동일 기관·주·본선 후보·조사일·LV표본·수치의 기관 원문/방법론으로 대조. 원본 전체 응답 지문이 바뀌면 이 연결을 재사용하지 않습니다."
+      },
+      "snapshot_sha256": "8bf6b8053c56cb2ae88f1dbfa803b85d2af468de5d4bfaab2c35973b6195a9fe"
+    },
+    "gov202the361d1d72": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T12:14:56.415230+00:00",
+      "sources": [
+        "https://sri.siena.edu/2026/09/24/nytimes-philadelphia-inquirer-siena-poll-of-likely-pennsylvania-voters/"
+      ],
+      "primary_toplines": {
+        "Josh Shapiro": 58.0,
+        "Stacy Garrity": 38.0
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "field_dates": [
+          "2026-09-15",
+          "2026-09-22"
+        ],
+        "population": "LV reported by provider; primary title says likely voters",
+        "sample_n_primary_verified": false,
+        "primary_toplines_verified": true,
+        "source_methodology_scope": "Siena release summary only; linked NYTimes full tables inaccessible in this review"
+      },
+      "reported_precision": null,
+      "ballot_format": "primary_ballot_wording_not_accessed",
+      "sponsor_review": {
+        "provider_reported_sponsors": [
+          "The Philadelphia Inquirer"
+        ],
+        "primary_release_partners": [
+          "The New York Times",
+          "The Philadelphia Inquirer",
+          "Siena University"
+        ]
+      },
+      "missing_fields": [
+        "primary_sample_n",
+        "question_sample_n",
+        "question_wording",
+        "release_specific_sampling_method",
+        "release_specific_weighting",
+        "reported_precision",
+        "accuracy_grade"
+      ],
+      "limitations_ko": "기관 발표 본문의58/38만 원문 대조했습니다. API 표본615·기간은 보존하지만 NYTimes 연결 표를 읽지 못해 상세 방법·문항 표본은 원문 검증 미완료입니다.",
+      "admission": {
+        "pollster": "The New York Times/Siena University",
+        "provider_url": "https://sri.siena.edu/2026/09/24/nytimes-philadelphia-inquirer-siena-poll-of-likely-pennsylvania-voters/",
+        "group": "siena",
+        "methodology_url": "https://sri.siena.edu/2026/09/24/nytimes-philadelphia-inquirer-siena-poll-of-likely-pennsylvania-voters/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "snapshot_sha256": "b9b51d0194f09ed116f742ba7a8316189624be676038a07fd4325f0f0375adb2",
+      "provider_record_sha256": "46701bcb9c4dffab1c2673797d76b29ee0ba6311a2ea50f8b66931e79ea61831"
+    },
+    "us-202fraa24d50e1": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T12:14:56.415230+00:00",
+      "sources": [
+        "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/?ref=franklin-marshall-college-poll-newsletter",
+        "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Topline-1.pdf",
+        "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf"
+      ],
+      "primary_toplines": {
+        "Ryan Mackenzie": 40.0,
+        "Bob Brooks": 45.0
+      },
+      "question_sample_n": 350,
+      "disclosure_review": {
+        "population": "RV",
+        "overall_district_sample_n": 357,
+        "field_dates": [
+          "2026-09-09",
+          "2026-09-20"
+        ],
+        "sampling_frame": "Aristotle voter file",
+        "mode": "mail invitation with telephone or online completion",
+        "weighting": "age, gender, education, geography, vote history, party registration",
+        "primary_question": "CD2607 with leaners",
+        "initial_ballot_values": {
+          "Bob Brooks": 41,
+          "Ryan Mackenzie": 37
+        },
+        "question_wording_checked": true,
+        "lv_results_not_published": "small LV subsample; do not manufacture LV"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error_with_design_effect",
+        "half_width_pp": 5.8,
+        "scope": "overall_district_RV_sample",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "primary_disclosed_funder": "F&M alumnus Brett Harwood, Class of 1971",
+        "provider_reported_sponsors": [],
+        "partisan_affiliation_verified": false,
+        "disclosure_discrepancy": "API empty sponsors; primary release discloses gift"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "funder_partisan_affiliation",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "미정층 재질문 포함 단일 파동 RV 결과. 전체 표본357/390과 최종 문항 표본350/378을 분리. 초기41/37·46/42와 합친45/40·47/44를 중복 조사로 세지 않습니다. LV 수치는 기관이 표본 부족으로 미공개. 후원금 제공자 Brett Harwood의 정치적 성향은 미평가이며 정확도/유의성은 판정하지 않습니다.",
+      "admission": {
+        "pollster": "Franklin & Marshall College",
+        "provider_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/?ref=franklin-marshall-college-poll-newsletter",
+        "group": "fandm",
+        "methodology_url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Topline-1.pdf",
+          "sha256": "551aed53112d55f578f153c75a969081afc9bba733e3e05db447ffe242946bd0",
+          "relevant_pages": [
+            7,
+            8
+          ]
+        },
+        {
+          "url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf",
+          "sha256": "eeed9fdb9bab4f43ad73617cf659063cadda115edf68857e6af1b23e9e784d20",
+          "relevant_pages": [
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      ],
+      "snapshot_sha256": "9522b9865dc092d43f6515e6fae14a9ec0cd88b335d63b4e21829194c46684f6",
+      "provider_record_sha256": "66696acb1f724c2355ef658fcbfa8be12b97b37f4a9c07ddc7a4cad4051501b2"
+    },
+    "us-202frae23de26f": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T12:14:56.415230+00:00",
+      "sources": [
+        "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/?ref=franklin-marshall-college-poll-newsletter",
+        "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Topline-1.pdf",
+        "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf"
+      ],
+      "primary_toplines": {
+        "Janelle Stelson": 47.0,
+        "Scott Perry": 44.0
+      },
+      "question_sample_n": 378,
+      "disclosure_review": {
+        "population": "RV",
+        "overall_district_sample_n": 390,
+        "field_dates": [
+          "2026-09-09",
+          "2026-09-20"
+        ],
+        "sampling_frame": "Aristotle voter file",
+        "mode": "mail invitation with telephone or online completion",
+        "weighting": "age, gender, education, geography, vote history, party registration",
+        "primary_question": "CD2610 with leaners",
+        "initial_ballot_values": {
+          "Janelle Stelson": 46,
+          "Scott Perry": 42
+        },
+        "question_wording_checked": true,
+        "lv_results_not_published": "small LV subsample; do not manufacture LV"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error_with_design_effect",
+        "half_width_pp": 5.7,
+        "scope": "overall_district_RV_sample",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "primary_disclosed_funder": "F&M alumnus Brett Harwood, Class of 1971",
+        "provider_reported_sponsors": [],
+        "partisan_affiliation_verified": false,
+        "disclosure_discrepancy": "API empty sponsors; primary release discloses gift"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "funder_partisan_affiliation",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "미정층 재질문 포함 단일 파동 RV 결과. 전체 표본357/390과 최종 문항 표본350/378을 분리. 초기41/37·46/42와 합친45/40·47/44를 중복 조사로 세지 않습니다. LV 수치는 기관이 표본 부족으로 미공개. 후원금 제공자 Brett Harwood의 정치적 성향은 미평가이며 정확도/유의성은 판정하지 않습니다.",
+      "admission": {
+        "pollster": "Franklin & Marshall College",
+        "provider_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/?ref=franklin-marshall-college-poll-newsletter",
+        "group": "fandm",
+        "methodology_url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Topline-1.pdf",
+          "sha256": "551aed53112d55f578f153c75a969081afc9bba733e3e05db447ffe242946bd0",
+          "relevant_pages": [
+            7,
+            8
+          ]
+        },
+        {
+          "url": "https://www.fandmpoll.org/content/files/2026/09/KEYSEPCD26_Summary.pdf",
+          "sha256": "eeed9fdb9bab4f43ad73617cf659063cadda115edf68857e6af1b23e9e784d20",
+          "relevant_pages": [
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      ],
+      "snapshot_sha256": "6faf978c4e25cd60a6bbda5f753c186b21809141fc449032e19f20031ab6030d",
+      "provider_record_sha256": "1f4f7650817aae85fbaf065054880d56f3e84933c601b95d4f7cbb743fa4343d"
+    },
+    "primary-quinnipiac-pa-governor-20261007": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T12:14:56.415230+00:00",
+      "sources": [
+        "https://poll.qu.edu/poll-release?releaseid=3970",
+        "https://poll.qu.edu/images/polling/pa/pa10072026_pgrx47.pdf",
+        "https://poll.qu.edu/images/polling/pa/pa10072026_demos_pgrx47.pdf"
+      ],
+      "primary_toplines": {
+        "Josh Shapiro": 59.0,
+        "Stacy Garrity": 34.0,
+        "Ken Krawchuk": 2.0
+      },
+      "question_sample_n": 1159,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 1159,
+        "field_dates": [
+          "2026-10-01",
+          "2026-10-05"
+        ],
+        "sampling_frame": "probability dual-frame random digit dialing by Dynata",
+        "mode": "live English telephone interviews; landline205, cellphone954",
+        "weighting": "Census age, gender, education, race; party benchmarks and 2024 presidential results",
+        "primary_question": "Q1 includes already voted and leaners; three named candidates",
+        "question_wording_checked": true,
+        "non_candidate_responses": {
+          "undecided": 4,
+          "refused": 1
+        },
+        "funding": "entirely Quinnipiac University; Marketing and Communications"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error_with_design_effect",
+        "half_width_pp": 3.9,
+        "scope": "1159_LV",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "three_candidate_with_leaners_and_already_voted",
+      "sponsor_review": {
+        "primary_funder": "Quinnipiac University",
+        "provider_reported_sponsors": []
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level",
+        "exact_lv_screen"
+      ],
+      "limitations_ko": "기관 원문/PDF/방법론을 직접 대조한 API 누락 보완. 3인 선택 문항이며 이미 투표·미정층 재질문 포함. 제3후보 정당/공식 명부 신원은 미연결로 null이고 발표의 2%를 보존합니다. 단일 조사 앞섬은 승자/당선확률이 아닙니다. RV 과거 조사와 LV를 합산하지 않습니다.",
+      "admission": {
+        "pollster": "Quinnipiac University",
+        "provider_url": "https://poll.qu.edu/poll-release?releaseid=3970",
+        "group": "quinnipiac",
+        "methodology_url": "https://poll.qu.edu/images/polling/pa/pa10072026_demos_pgrx47.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://poll.qu.edu/images/polling/pa/pa10072026_pgrx47.pdf",
+          "sha256": "a168ca498097add9d517b9a116c06a07d699858a5fd04d7f1f89c9d9ae94f995",
+          "relevant_pages": [
+            1,
+            4
+          ]
+        },
+        {
+          "url": "https://poll.qu.edu/images/polling/pa/pa10072026_demos_pgrx47.pdf",
+          "sha256": "8191235c0a7685cdee5cea900374fb45edf00179e70675896675c7ac9932a4d3",
+          "relevant_pages": [
+            1
+          ]
+        }
+      ],
+      "primary_supplement_record_sha256": "0207abfbd3dfbceae6ec88470774ebed35202c00a7610f263f5d243f31c72b4b",
+      "snapshot_sha256": "77d69126c913bbbbe32c2a5c20611c85bd5440521fc56570b481d5fe52bf4738",
+      "provider_record_sha256": "0207abfbd3dfbceae6ec88470774ebed35202c00a7610f263f5d243f31c72b4b"
+    },
+    "us-202beac0286b40": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+        "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf"
+      ],
+      "primary_toplines": {
+        "Abdul El-Sayed": 50.0,
+        "Mike Rogers": 49.0
+      },
+      "question_sample_n": 1028,
+      "disclosure_review": {
+        "population": "LV",
+        "overall_registered_sample_n": 1203,
+        "likely_sample_n": 1028,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-28"
+        ],
+        "sampling_frame": "Michigan statewide registered voter file; probability proportionate to size selection",
+        "mode": "live telephone114 landline/794 cellphone and text-to-web295; counts are full RV sample",
+        "weighting": "age, race, education, area; American Community Survey, Fox News Voter Analysis and voter file benchmarks",
+        "lv_screen": "probabilistic model: vote history, interest, intention, age, education, race, ethnicity, marital status",
+        "question": "Q3",
+        "question_wording_checked": true,
+        "non_candidate_responses": {
+          "dont_know": 1,
+          "other": "less_than_half_percent",
+          "would_not_vote": "less_than_half_percent"
+        },
+        "wrong_registry_methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+        "primary_release_on": "2026-09-30",
+        "provider_created_on": "2026-10-01"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error",
+        "half_width_pp": 3,
+        "scope": "1028_LV",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners_and_already_voted",
+      "sponsor_review": {
+        "provider_sponsors": [
+          "Fox News"
+        ]
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level",
+        "exact_question_item_nonresponse_sample"
+      ],
+      "limitations_ko": "미시간 PDF1/3/6쪽을 대조해 기존 텍사스 방법론 링크를 발표별 미시간 문서로 교체. 전체RV1203과LV1028 및상원RV51/48·주지사RV55/44와LV 수치를 분리. 이미 투표·leaners 포함. 발표일9/30과API 등록일10/1을 분리하며 단일조사 앞섬은 당선 판정이 아닙니다.",
+      "admission": {
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "provider_url": "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+        "group": "beacon_shaw",
+        "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
+          "sha256": "9d8e1b85183d5040ba1ac3c4ff746005590326a1a8a5c1c5c0fd9b7d8d25a783",
+          "relevant_pages": [
+            1,
+            3,
+            6
+          ]
+        }
+      ],
+      "provider_record_sha256": "97d6f20ffcae29ced94f43d4a969740f6748e0ac96c22861ca367294e3fc4f42",
+      "snapshot_sha256": "d3509c41c21b3cc9a37be5bf02d8baf669b751f99ca6eafa7f69dfea98d42d98"
+    },
+    "gov202bea0796a0d8": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+        "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf"
+      ],
+      "primary_toplines": {
+        "Jocelyn Benson": 54.0,
+        "John James": 45.0
+      },
+      "question_sample_n": 1028,
+      "disclosure_review": {
+        "population": "LV",
+        "overall_registered_sample_n": 1203,
+        "likely_sample_n": 1028,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-28"
+        ],
+        "sampling_frame": "Michigan statewide registered voter file; probability proportionate to size selection",
+        "mode": "live telephone114 landline/794 cellphone and text-to-web295; counts are full RV sample",
+        "weighting": "age, race, education, area; American Community Survey, Fox News Voter Analysis and voter file benchmarks",
+        "lv_screen": "probabilistic model: vote history, interest, intention, age, education, race, ethnicity, marital status",
+        "question": "Q13",
+        "question_wording_checked": true,
+        "non_candidate_responses": {
+          "dont_know": 1,
+          "other": "less_than_half_percent",
+          "would_not_vote": "less_than_half_percent"
+        },
+        "wrong_registry_methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+        "primary_release_on": "2026-09-30",
+        "provider_created_on": "2026-10-01"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error",
+        "half_width_pp": 3,
+        "scope": "1028_LV",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners_and_already_voted",
+      "sponsor_review": {
+        "provider_sponsors": [
+          "Fox News"
+        ]
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level",
+        "exact_question_item_nonresponse_sample"
+      ],
+      "limitations_ko": "미시간 PDF1/3/6쪽을 대조해 기존 텍사스 방법론 링크를 발표별 미시간 문서로 교체. 전체RV1203과LV1028 및상원RV51/48·주지사RV55/44와LV 수치를 분리. 이미 투표·leaners 포함. 발표일9/30과API 등록일10/1을 분리하며 단일조사 앞섬은 당선 판정이 아닙니다.",
+      "admission": {
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "provider_url": "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+        "group": "beacon_shaw",
+        "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
+          "sha256": "9d8e1b85183d5040ba1ac3c4ff746005590326a1a8a5c1c5c0fd9b7d8d25a783",
+          "relevant_pages": [
+            1,
+            3,
+            6
+          ]
+        }
+      ],
+      "provider_record_sha256": "9febfe8d4f856a2d353c72da6563cd933e3dd8d6a13edbc2a0b8a6cba50a24f1",
+      "snapshot_sha256": "2383b2f4e3d0a43e0300372f7b8c5fc4850b92170ebd98abef7318f7ef10afa0"
+    },
+    "us-202suf59500e62": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+        "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884"
+      ],
+      "primary_toplines": {
+        "Abdul El-Sayed": 46.8,
+        "Mike Rogers": 39.6,
+        "Lydia Christensen": 0.8,
+        "Tim Long": 0.2,
+        "Douglas P. Marsh": 0.2,
+        "Walter P. Kristy": 0.6
+      },
+      "question_sample_n": 500,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 500,
+        "field_dates": [
+          "2026-09-16",
+          "2026-09-20"
+        ],
+        "lv_screen": "registered MI voters; almost certain or probably vote (462/38)",
+        "primary_question": "Q9 six candidate first preference",
+        "question_wording_checked": true,
+        "primary_exact_values": {
+          "Abdul El-Sayed": 46.8,
+          "Mike Rogers": 39.6,
+          "Lydia Christensen": 0.8,
+          "Tim Long": 0.2,
+          "Douglas P. Marsh": 0.2,
+          "Walter P. Kristy": 0.6
+        },
+        "second_preference_question": "Q10 N13",
+        "second_preference_excluded": true,
+        "geographic_quotas": {
+          "North": 50,
+          "West": 100,
+          "Mid": 90,
+          "Flint/Tri": 60,
+          "Southeast": 200
+        },
+        "mode": null,
+        "sampling_frame": null,
+        "weighting": null
+      },
+      "reported_precision": null,
+      "ballot_format": "multi_candidate_initial_ballot",
+      "sponsor_review": {
+        "provider_sponsors": []
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "release_specific_mode",
+        "sampling_frame",
+        "weighting",
+        "reported_precision"
+      ],
+      "limitations_ko": "기관 표1/3쪽 원문 문항·LV판별·후보별 수치 대조. API 정수 반올림을 유지하고 상세 원문 소수값을 함께 기록. 두 번째 선택 N13/N18을 전체LV500의 별도 조사로 합치지 않습니다. Bellwether 카운티 자료와 statewide를 분리. 구체적 모집·전화모드·가중치 문서는 미확보입니다.",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
+          "sha256": "3aac58ec9931558ba6a20e39dbd94dce13e408dd915f3fd3dd9f54b743296fcb",
+          "relevant_pages": [
+            1,
+            3
+          ]
+        }
+      ],
+      "provider_record_sha256": "636b92da850f80758d12601c2a318bcae8de5b4a5b3eb75cb0f99089b2a8431b",
+      "snapshot_sha256": "cfaad40ae1519f19fa21b8629691af7682e2e375bf37db7a61a39c4ef19ca027"
+    },
+    "gov202suf29857b9c": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+        "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884"
+      ],
+      "primary_toplines": {
+        "Jocelyn Benson": 50.6,
+        "John James": 34.4,
+        "Anthony Hudson": 1.4,
+        "Donna Brandenburg": 0.4,
+        "Douglas Campbell": 1.6
+      },
+      "question_sample_n": 500,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 500,
+        "field_dates": [
+          "2026-09-16",
+          "2026-09-20"
+        ],
+        "lv_screen": "registered MI voters; almost certain or probably vote (462/38)",
+        "primary_question": "Q11 five candidate first preference",
+        "question_wording_checked": true,
+        "primary_exact_values": {
+          "Jocelyn Benson": 50.6,
+          "John James": 34.4,
+          "Anthony Hudson": 1.4,
+          "Donna Brandenburg": 0.4,
+          "Douglas Campbell": 1.6
+        },
+        "second_preference_question": "Q12 N18",
+        "second_preference_excluded": true,
+        "geographic_quotas": {
+          "North": 50,
+          "West": 100,
+          "Mid": 90,
+          "Flint/Tri": 60,
+          "Southeast": 200
+        },
+        "mode": null,
+        "sampling_frame": null,
+        "weighting": null
+      },
+      "reported_precision": null,
+      "ballot_format": "multi_candidate_initial_ballot",
+      "sponsor_review": {
+        "provider_sponsors": []
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "release_specific_mode",
+        "sampling_frame",
+        "weighting",
+        "reported_precision"
+      ],
+      "limitations_ko": "기관 표1/3쪽 원문 문항·LV판별·후보별 수치 대조. API 정수 반올림을 유지하고 상세 원문 소수값을 함께 기록. 두 번째 선택 N13/N18을 전체LV500의 별도 조사로 합치지 않습니다. Bellwether 카운티 자료와 statewide를 분리. 구체적 모집·전화모드·가중치 문서는 미확보입니다.",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
+          "sha256": "3aac58ec9931558ba6a20e39dbd94dce13e408dd915f3fd3dd9f54b743296fcb",
+          "relevant_pages": [
+            1,
+            3
+          ]
+        }
+      ],
+      "provider_record_sha256": "85074ed01a3753139c8b603153f2e6034f824441ce4cac67272bf7baaa703744",
+      "snapshot_sha256": "2f8d061892ddd7267e6c1c67e7b777721aae8fdad1e7165988165f1bd419c963"
+    },
+    "us-202eme99d02ce6": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "https://docs.google.com/spreadsheets/d/1rnTTvihaOiwTEob60r_8qMdYEZcAhNSa/export?format=csv"
+      ],
+      "primary_toplines": {
+        "Abdul El-Sayed": 48.2,
+        "Mike Rogers": 45.7,
+        "Lydia Christensen": 0.5,
+        "Tim Long": 0.6,
+        "Douglas P. Marsh": 0.3,
+        "Walter P. Kristy": 0.3
+      },
+      "question_sample_n": 1000,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 1000,
+        "field_dates": [
+          "2026-09-12",
+          "2026-09-14"
+        ],
+        "mode": "Consensus Strategies probability-based voter panel MMS text-to-web plus PureSpectrum panel interviews; English QuestionPro",
+        "sampling_frame": "custom invitation links; panel matched Aristotle voter file by full name and ZIP",
+        "weighting": "gender, education, race, age, region from Census and voter file",
+        "question_wording_checked": true,
+        "question": "multi_candidate_initial_ballot",
+        "funding": "Nexstar Media",
+        "full_results_csv_sha256": "9ef4f247a1dddc3cfb4247bb6eb6476277c7f84703d595382b6f889369317012"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 3,
+        "confidence_level_pct": 95,
+        "scope": "1000_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_initial_ballot",
+      "sponsor_review": {
+        "provider_sponsors": [
+          "Nexstar Media"
+        ]
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "기관 본문 방법론 및 기관이 연결한 전체 결과표 대조. 정수 요약 대신 원문 소수값을 유지. 상원 Green 후보 Douglas Marsh 원문0.3%를 API3.0%에서 정정하고 원 API 값·지문을 남깁니다. 표본 조합의 credibility interval을 별도 표기하며 양당으로 재환산하지 않습니다.",
+      "admission": {
+        "pollster": "Emerson College",
+        "provider_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "group": "emerson",
+        "methodology_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "provider_answer_correction": {
+        "provider_snapshot_sha256": "ae03cb31740309b8c45549d96e39a6b0269141d3ae012d21e32212b74d6e400b",
+        "overrides": {
+          "Douglas P. Marsh": 0.3
+        },
+        "basis_ko": "기관 연결 전체표에서 Green Party Douglas P. Marsh 빈도3/N1000,0.3% 확인; API3.0%는소수점오류."
+      },
+      "snapshot_sha256": "2eaae1090954f1d3f79a4979267f08c87aa19d723a7c812436436e2a9f330e34"
+    },
+    "gov202emeadcf7c77": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "https://docs.google.com/spreadsheets/d/1rnTTvihaOiwTEob60r_8qMdYEZcAhNSa/export?format=csv"
+      ],
+      "primary_toplines": {
+        "Jocelyn Benson": 48.6,
+        "John James": 41.9,
+        "Anthony Hudson": 1.8,
+        "Donna Brandenburg": 0.7,
+        "Douglas Campbell": 0.7
+      },
+      "question_sample_n": 1000,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 1000,
+        "field_dates": [
+          "2026-09-12",
+          "2026-09-14"
+        ],
+        "mode": "Consensus Strategies probability-based voter panel MMS text-to-web plus PureSpectrum panel interviews; English QuestionPro",
+        "sampling_frame": "custom invitation links; panel matched Aristotle voter file by full name and ZIP",
+        "weighting": "gender, education, race, age, region from Census and voter file",
+        "question_wording_checked": true,
+        "question": "multi_candidate_initial_ballot",
+        "funding": "Nexstar Media",
+        "full_results_csv_sha256": "9ef4f247a1dddc3cfb4247bb6eb6476277c7f84703d595382b6f889369317012"
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 3,
+        "confidence_level_pct": 95,
+        "scope": "1000_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_initial_ballot",
+      "sponsor_review": {
+        "provider_sponsors": [
+          "Nexstar Media"
+        ]
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "기관 본문 방법론 및 기관이 연결한 전체 결과표 대조. 정수 요약 대신 원문 소수값을 유지. 상원 Green 후보 Douglas Marsh 원문0.3%를 API3.0%에서 정정하고 원 API 값·지문을 남깁니다. 표본 조합의 credibility interval을 별도 표기하며 양당으로 재환산하지 않습니다.",
+      "admission": {
+        "pollster": "Emerson College",
+        "provider_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "group": "emerson",
+        "methodology_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "provider_record_sha256": "c56372d7b5761a8d4806886922fd6ca8ff48424cbc38e5df96b162c71922c3ec",
+      "snapshot_sha256": "98dcaad1de2d9a8ca83f61c99c53cf2e49698a58655774b64d846863017f2f47"
+    },
+    "us-202thecf4746de": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://www.nytimes.com/2026/09/24/us/politics/democrats-show-strength-in-michigan-senate-race-but-trail-in-maine-polls-find.html",
+        "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/"
+      ],
+      "primary_toplines": {
+        "Abdul El-Sayed": 49.0,
+        "Mike Rogers": 44.0
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "primary_toplines_verified": true,
+        "primary_summary_values": {
+          "Abdul El-Sayed": 49,
+          "Mike Rogers": 44
+        },
+        "population": "LV as primary title",
+        "sample_n_primary_verified": false,
+        "linked_NYTimes_tables": "not_accessed_in_this_review"
+      },
+      "reported_precision": null,
+      "ballot_format": "primary_wording_not_accessed",
+      "sponsor_review": {
+        "provider_sponsors": []
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "primary_sample_n",
+        "question_sample_n",
+        "question_wording",
+        "sampling_frame",
+        "mode",
+        "weighting",
+        "reported_precision"
+      ],
+      "limitations_ko": "Siena 자체 발표의49/44만 수치 대조했습니다. API의LV605·기간은 보존하지만 연결NYTimes전체표와 상세방법은미검증입니다.",
+      "admission": {
+        "pollster": "The New York Times/Siena University",
+        "provider_url": "https://www.nytimes.com/2026/09/24/us/politics/democrats-show-strength-in-michigan-senate-race-but-trail-in-maine-polls-find.html",
+        "group": "siena",
+        "methodology_url": "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "provider_record_sha256": "ee67d9158aba53b6890ae899807860f8d8585a5dd6a26b18b197b3322557aa46",
+      "snapshot_sha256": "6038b2e1d25524fb09b15b537c508be088a0f6b69172c0dc13f93cb911ed6329"
+    },
+    "gov202co/08a815fe": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://battlegrounds.coefficient.org/mi/"
+      ],
+      "primary_toplines": {
+        "Jocelyn Benson": 47.0,
+        "John James": 44.0
+      },
+      "question_sample_n": 843,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 843,
+        "field_dates": [
+          "2026-09-21",
+          "2026-09-23"
+        ],
+        "mode": "mobile text responses and landline interviews",
+        "weighting": "age, gender, race, education, congressional district",
+        "sampling_frame": null,
+        "question_wording_checked": true,
+        "question": "Q2 governor initial ballot",
+        "same_wave_context": {
+          "Q6_multicandidate_senate": {
+            "Mike Rogers": 45,
+            "Abdul El-Sayed": 45,
+            "Lydia Christensen": 2,
+            "Timothy Long": 0,
+            "Douglas Marsh": 0,
+            "undecided": 8
+          },
+          "Q7_forced_two_candidate": {
+            "Mike Rogers": 50,
+            "Abdul El-Sayed": 50
+          }
+        },
+        "duplicate_questions_counted_once": true
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.36,
+        "scope": "843_LV",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "primary_wording_not_accessed",
+      "sponsor_review": {
+        "provider_sponsors": [],
+        "primary_disclosure": "independent public polling, not sponsored by candidate, party or IE committee"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "sampling_frame",
+        "exact_lv_screen",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "이번 특정 기관 발표 원문·문항·방법론 대조로 편입. 상원50/50은강제 양자문항Q7이며 다후보Q6의45/45·미정8을 숨긴 초기 조사로 바꾸지 않습니다. 같은파동은1회만 세고 조사의 기관 정확도·통계적 유의성은 평가하지 않습니다.",
+      "admission": {
+        "pollster": "co/efficient",
+        "provider_url": "https://battlegrounds.coefficient.org/mi/",
+        "group": "coefficient",
+        "methodology_url": "https://battlegrounds.coefficient.org/mi/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "provider_record_sha256": "7f042fe1e42205b2914344ee4ea93e8f4581082fdd1bfb0e23317f8a21bd55d1",
+      "snapshot_sha256": "5793e28317c60b33eb858196fbc503b9c5a26e7e601df0b63415781c594ed1f8"
+    },
+    "us-202co/b838141c": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T13:19:19.341043+00:00",
+      "sources": [
+        "https://battlegrounds.coefficient.org/mi/"
+      ],
+      "primary_toplines": {
+        "Abdul El-Sayed": 50.0,
+        "Mike Rogers": 50.0
+      },
+      "question_sample_n": 843,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 843,
+        "field_dates": [
+          "2026-09-21",
+          "2026-09-23"
+        ],
+        "mode": "mobile text responses and landline interviews",
+        "weighting": "age, gender, race, education, congressional district",
+        "sampling_frame": null,
+        "question_wording_checked": true,
+        "question": "Q7 two-candidate forced ballot",
+        "same_wave_context": {
+          "Q6_multicandidate_senate": {
+            "Mike Rogers": 45,
+            "Abdul El-Sayed": 45,
+            "Lydia Christensen": 2,
+            "Timothy Long": 0,
+            "Douglas Marsh": 0,
+            "undecided": 8
+          },
+          "Q7_forced_two_candidate": {
+            "Mike Rogers": 50,
+            "Abdul El-Sayed": 50
+          }
+        },
+        "duplicate_questions_counted_once": true
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.36,
+        "scope": "843_LV",
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "ballot_format": "forced_two_candidate_ballot",
+      "sponsor_review": {
+        "provider_sponsors": [],
+        "primary_disclosure": "independent public polling, not sponsored by candidate, party or IE committee"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "sampling_frame",
+        "exact_lv_screen",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "이번 특정 기관 발표 원문·문항·방법론 대조로 편입. 상원50/50은강제 양자문항Q7이며 다후보Q6의45/45·미정8을 숨긴 초기 조사로 바꾸지 않습니다. 같은파동은1회만 세고 조사의 기관 정확도·통계적 유의성은 평가하지 않습니다.",
+      "admission": {
+        "pollster": "co/efficient",
+        "provider_url": "https://battlegrounds.coefficient.org/mi/",
+        "group": "coefficient",
+        "methodology_url": "https://battlegrounds.coefficient.org/mi/",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "provider_record_sha256": "70eec6047b223588b7f530e3c6b4a7dd54e26fad89d0361159d4654f2b20e7c6",
+      "snapshot_sha256": "29886531a1dbeb2396fe25ccd45f7700686dfb97a353d9f610f90245ef1f64b3"
+    },
+    "us-202higae3d1182": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 50.0,
+        "Michael Whatley": 42.0
+      },
+      "question_sample_n": 706,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-09-09",
+          "2026-09-16"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 706,
+        "sampling_frame": "nonprobability Dynata online panel",
+        "mode": "online self-administered English",
+        "weighting": "Census age/gender/race/education/ethnicity quotas and SPSS iterative weights",
+        "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+        "overall_sample_n": 1003,
+        "registered_sample_n": 813,
+        "likely_sample_n": 706,
+        "question": "named Senate initial ballot with other/unsure",
+        "direct_download_status": "403; primary PDF reader text reviewed",
+        "same_wave_lv_rv_counted_once": true
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 3.9,
+        "confidence_level_pct": 95,
+        "scope": "706_LV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "High Point University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "c7a66f79c457010d6417f97d2a6499cd0a2097dcb84f6654531fdfd0c78cec1a",
+      "admission": {
+        "pollster": "High Point University Survey Research Center",
+        "provider_url": "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf",
+        "group": "hpu",
+        "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "snapshot_sha256": "ab6f585e8c3bfb9ae942e3e8c6ad8fc3b1705b4a3f1d41fcf5692ccf463a294d"
+    },
+    "us-202hig0453aa0e": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 50.0,
+        "Michael Whatley": 45.0
+      },
+      "question_sample_n": 660,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-08-03",
+          "2026-08-12"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 660,
+        "sampling_frame": "nonprobability YouGov matched panel",
+        "mode": "online self-administered English",
+        "weighting": "CPS2024 matching and propensity decile poststratification; raking 2024 presidential vote and demographics",
+        "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+        "overall_sample_n": 800,
+        "registered_sample_n": 800,
+        "likely_sample_n": 660,
+        "question": "named Senate initial ballot with other/unsure",
+        "direct_download_status": "403; primary PDF reader text reviewed",
+        "same_wave_lv_rv_counted_once": true
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 5.2,
+        "confidence_level_pct": 95,
+        "scope": "660_LV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "High Point University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "ae69d15834604798e0a0f5eabee6e388749bef70d7c2cf8ddbce857e4c961897",
+      "admission": {
+        "pollster": "High Point University Survey Research Center",
+        "provider_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "group": "hpu",
+        "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "snapshot_sha256": "c15a235b51ab041be73966091f1f0ef3d95ef3979c887d083b62b64807cb02c3"
+    },
+    "us-202hig8ec8c4e5": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 48.0,
+        "Michael Whatley": 41.0
+      },
+      "question_sample_n": 800,
+      "disclosure_review": {
+        "population": "RV",
+        "field_dates": [
+          "2026-08-03",
+          "2026-08-12"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 800,
+        "sampling_frame": "nonprobability YouGov matched panel",
+        "mode": "online self-administered English",
+        "weighting": "CPS2024 matching and propensity decile poststratification; raking 2024 presidential vote and demographics",
+        "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+        "overall_sample_n": 800,
+        "registered_sample_n": 800,
+        "likely_sample_n": 660,
+        "question": "named Senate initial ballot with other/unsure",
+        "direct_download_status": "403; primary PDF reader text reviewed",
+        "same_wave_lv_rv_counted_once": true
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 4.3,
+        "confidence_level_pct": 95,
+        "scope": "800_RV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "High Point University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "e5addfcc3bd811c7b7c5809bf5fe6299b37e2cd50d87de03376c46e81d1fd0f2",
+      "admission": {
+        "pollster": "High Point University Survey Research Center",
+        "provider_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "group": "hpu",
+        "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "snapshot_sha256": "6fb0a18fecc512eb80942ac933711b0df3ea5a248af13ad197dee9efc9fd3265"
+    },
+    "us-202harfc1499b8": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
+        "https://www.carolinajournal.com/wp-content/uploads/2026/09/H24747-CJ-NC-Sept26-Toplines.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 49.2,
+        "Michael Whatley": 34.1,
+        "Shannon Bray": 2.9,
+        "Michael Dublin": 1.5
+      },
+      "question_sample_n": 608,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-09-13",
+          "2026-09-15"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 608,
+        "question": "Q9 named four-candidate ballot with definitely/probably totals; unsure12.3",
+        "mode": "live telephone and SMS-online",
+        "weighting": "demographically balanced to likely voting population",
+        "sampling_frame": null,
+        "lv_screen": "Q1 definitely/probably vote; no nonvoters/unsure retained",
+        "direct_download_status": "403; primary PDF reader text reviewed",
+        "missing_fields": [
+          "sampling_frame",
+          "full_weight_targets"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.97,
+        "confidence_level_pct": 95,
+        "scope": "608_LV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "commissioner": "Carolina Journal / John Locke Foundation",
+        "provider_sponsors": [
+          "Carolina Journal"
+        ],
+        "partisan_party_code": null
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "sampling_frame",
+        "full_weight_targets"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "10c42b09e1b47415df284f321d1cdeaebc898c76639bfe4a2eb4603ed11be5ab",
+      "admission": {
+        "pollster": "Harper Polling",
+        "provider_url": "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
+        "group": "harper",
+        "methodology_url": "https://www.carolinajournal.com/wp-content/uploads/2026/09/H24747-CJ-NC-Sept26-Toplines.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "snapshot_sha256": "2d1f399ded6219dfb280ce92b1312303f91c4c4e840a3c0febed3ed4c60e0722"
+    },
+    "us-202elo857d928d": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-Topline-Methodology-9-10-26.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 49.0,
+        "Michael Whatley": 38.0,
+        "Shannon Bray": 2.0,
+        "Michael Dublin": 2.0
+      },
+      "question_sample_n": 565,
+      "disclosure_review": {
+        "population": "LV",
+        "field_dates": [
+          "2026-08-21",
+          "2026-08-31"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 565,
+        "mode": "nonprobability YouGov online panel",
+        "sampling_frame": "CPS2024 matched adult panel",
+        "overall_sample_n": 800,
+        "registered_sample_n": 677,
+        "likely_sample_n": 565,
+        "lv_screen": "absolutely certain or very likely; includes32 people planning to register (6% of LV)",
+        "weighting": "matching gender/age/race/education plus registration and 2024 vote",
+        "primary_method_interviewed_n": 924,
+        "news_interviewed_n": 1121,
+        "publication_method_discrepancy_preserved": true,
+        "question": "four-candidate initial Senate ballot; names rotated",
+        "non_candidate_responses": {
+          "undecided": 8,
+          "someone_else": 0
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_credibility_interval",
+        "half_width_pp": 5.65,
+        "cover_rounding_pp": 5.6,
+        "confidence_level_pct": null,
+        "scope": "565_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_initial_ballot",
+      "sponsor_review": {
+        "funding": "Elon University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "795f5b049e013d0c2d7988a2b530c61b5a3c376cbe4f54512fc4bf45ed5ac904",
+      "admission": {
+        "pollster": "Elon University/YouGov",
+        "provider_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
+        "group": "elon",
+        "methodology_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-Topline-Methodology-9-10-26.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-Topline-Methodology-9-10-26.pdf",
+          "sha256": "a1afae127906a88d0f7fba46595d17ab0e7bab418eba34c3f389a8752989f4aa",
+          "relevant_pages": [
+            1,
+            3,
+            26,
+            27,
+            28
+          ]
+        }
+      ],
+      "snapshot_sha256": "8247e24226bab5d81d3886fe6238dcf78dcc3e12d45c0863e4c4209fc2b77328"
+    },
+    "us-202beacaddacc4": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
+        "https://static.foxnews.com/foxnews.com/content/uploads/2026/07/fox_july-23-27-2026_north-carolina_topline_july-29-release.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 53.0,
+        "Michael Whatley": 44.0
+      },
+      "question_sample_n": 1005,
+      "disclosure_review": {
+        "population": "RV",
+        "field_dates": [
+          "2026-07-23",
+          "2026-07-27"
+        ],
+        "question_wording_checked": true,
+        "sample_n": 1005,
+        "sampling_frame": "random NC registered voter file; probability proportionate to size",
+        "mode_counts": {
+          "live_landline": 115,
+          "live_cellphone": 654,
+          "text_to_web": 236
+        },
+        "weighting": "age/race/education/area; ACS,Fox Voter Analysis,voter file",
+        "question": "Q4 includes leaners",
+        "non_candidate_responses": {
+          "dont_know": 2,
+          "other": "less_than_half_percent",
+          "would_not_vote": "less_than_half_percent"
+        },
+        "wrong_registry_methodology_url": "Texas PDF; replaced by specific NC release",
+        "missing_fields": [
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_sampling_error",
+        "half_width_pp": 3,
+        "confidence_level_pct": null,
+        "scope": "1005_RV",
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "Fox News"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "be7f6b5f6a9d46072cbc2613323d5d28bcf72000ffc0b1711d795ceaaffef856",
+      "admission": {
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "provider_url": "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
+        "group": "beacon_shaw",
+        "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/07/fox_july-23-27-2026_north-carolina_topline_july-29-release.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/07/fox_july-23-27-2026_north-carolina_topline_july-29-release.pdf",
+          "sha256": "8d8382ef72f35bf1230c91be09e60011e710cf271eaa6e644e9f1fe6544482ad",
+          "relevant_pages": [
+            1,
+            3
+          ]
+        }
+      ],
+      "snapshot_sha256": "229c9915e738d2f152ffe3e14bd6c235f06c1ec4fd5f49df61f545f5de7e7c64"
+    },
+    "primary-opinion-diagnostics-nc-senate-20260925": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf"
+      ],
+      "primary_toplines": {
+        "Roy Cooper": 51.3,
+        "Michael Whatley": 41.3
+      },
+      "question_sample_n": 857,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 857,
+        "field_dates": [
+          "2026-09-17",
+          "2026-09-20"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "random NC voter file",
+        "mode": "live telephone plus unique one-person SMS web links",
+        "lv_screen": "registered definitely/probably voting November",
+        "weighting": "IPF party/region/gender/age/race/education/2024 vote; model average2018/2022 electorates",
+        "question": "initial named two-candidate ballot; order rotated",
+        "non_candidate_responses": {
+          "other_candidate": 2,
+          "undecided": 5.4
+        },
+        "same_wave_context": {
+          "leaned_ballot": {
+            "Roy Cooper": 51.7,
+            "Michael Whatley": 43.5,
+            "undecided": 2.8
+          }
+        },
+        "leaned_question_counted_separately": false
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.3,
+        "confidence_level_pct": 95,
+        "scope": "857_LV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "commissioner": "Common Cause North Carolina"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "9df1e994610d7a1d73438b5c0cd0b775fec4d83ed439411c2d60d418f40bd488",
+      "admission": {
+        "pollster": "Opinion Diagnostics",
+        "provider_url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+        "group": "opinion_diagnostics",
+        "methodology_url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+          "sha256": "59bf8c72ee0b9cdd82a46f259847a3920a2e457a5825ad31f5a3037e1096b258",
+          "relevant_pages": [
+            1,
+            9,
+            10
+          ]
+        }
+      ],
+      "snapshot_sha256": "0f59b182d6d9ddb83d251a429629d17f413c0cfee94982a712c275c9630ebe1e",
+      "primary_supplement_record_sha256": "9df1e994610d7a1d73438b5c0cd0b775fec4d83ed439411c2d60d418f40bd488"
+    },
+    "primary-coefficient-nc-house01-20260508": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:12:12.669235+00:00",
+      "sources": [
+        "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf"
+      ],
+      "primary_toplines": {
+        "Laurie Buckhout": 41,
+        "Don Davis": 41
+      },
+      "question_sample_n": 842,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 842,
+        "field_dates": [
+          "2026-04-25",
+          "2026-04-29"
+        ],
+        "question_wording_checked": true,
+        "mode": "mobile text and landline interviews",
+        "weighting": "age/gender/race/education/DMA/registered party",
+        "sampling_frame": null,
+        "question": "named district candidate ballot; not statewide/generic ballot",
+        "non_candidate_responses": {
+          "undecided": 17
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "exact_lv_screen",
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.37,
+        "confidence_level_pct": null,
+        "scope": "842_LV",
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "commissioner": "NRCC"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "sampling_frame",
+        "exact_lv_screen",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다.",
+      "provider_record_sha256": "cdbf2163c45f9a0e1b0a543fd9a53996bc453c70f1a48c8d2a1f8395eb9641b8",
+      "admission": {
+        "pollster": "co/efficient",
+        "provider_url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+        "group": "coefficient",
+        "methodology_url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+        "source_role": "commissioner_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "party_commissioned_reference"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "REP",
+        "reviewed_sponsors": [
+          "NRCC"
+        ]
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+          "sha256": "d88ef252f02dc609106810f17361142f8447c332728ec839964c01b9435e4815",
+          "relevant_pages": [
+            1
+          ]
+        }
+      ],
+      "snapshot_sha256": "3f178a3dc8d0c4268ecc1892236d8e4a11dd058b07749bb124b1ab53459b50f4",
+      "primary_supplement_record_sha256": "cdbf2163c45f9a0e1b0a543fd9a53996bc453c70f1a48c8d2a1f8395eb9641b8"
+    },
+    "us-202cnna1713372": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 49.0,
+        "Jon Husted": 43.0
+      },
+      "question_sample_n": 760,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 760,
+        "field_dates": [
+          "2026-09-29",
+          "2026-10-05"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": {
+          "L2_registration_based": 524,
+          "SSRS_probability_panel": 236
+        },
+        "mode": "online and telephone; postal/SMS/email/call invitations; English",
+        "lv_definition": "all760RV retained; RV weight multiplied by modeled2026 turnout probability; not screened760LV subset",
+        "weighting": "Censuseducation/race; L2 gender-by-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regionalrecalled2024vote",
+        "question": "SENVOTEOH combinedS1/S1a withleaners",
+        "non_candidate_responses": {
+          "neither": 5,
+          "other": 2,
+          "no_opinion": 1
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "760_RV_weighted_for_LV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "CNN",
+        "conducted_by": "SSRS"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "868e9f8de8f62211718e6664e3bb4f912c02ff187f2ccfc7c0a4b3adc238649a",
+      "admission": {
+        "pollster": "CNN/SSRS",
+        "provider_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "group": "cnn_ssrs",
+        "methodology_url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+          "sha256": "5ece2b2f7621280472d826bd43ebe18dfb045a6738f16da03f26ac2d26c30baf",
+          "relevant_pages": [
+            1,
+            2,
+            3,
+            7
+          ]
+        }
+      ],
+      "snapshot_sha256": "593d5b565514e0ae69e41bb61c918d1dbd09be57dc432937bddf2534cfb6d72b"
+    },
+    "gov202cnn61f54c15": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952"
+      ],
+      "primary_toplines": {
+        "Amy Acton": 50.0,
+        "Vivek Ramaswamy": 42.0
+      },
+      "question_sample_n": 760,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 760,
+        "field_dates": [
+          "2026-09-29",
+          "2026-10-05"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": {
+          "L2_registration_based": 524,
+          "SSRS_probability_panel": 236
+        },
+        "mode": "online and telephone; postal/SMS/email/call invitations; English",
+        "lv_definition": "all760RV retained; RV weight multiplied by modeled2026 turnout probability; not screened760LV subset",
+        "weighting": "Censuseducation/race; L2 gender-by-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regionalrecalled2024vote",
+        "question": "GOVVOTEOH combinedG1/G1a withleaners",
+        "non_candidate_responses": {
+          "neither": 6,
+          "other": 2,
+          "no_opinion": 1
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "760_RV_weighted_for_LV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "CNN",
+        "conducted_by": "SSRS"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "d00fb5df6f6451c0843441abe70f51e877580303fd2cb7083aaf3365f4048026",
+      "admission": {
+        "pollster": "CNN/SSRS",
+        "provider_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "group": "cnn_ssrs",
+        "methodology_url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+          "sha256": "5ece2b2f7621280472d826bd43ebe18dfb045a6738f16da03f26ac2d26c30baf",
+          "relevant_pages": [
+            1,
+            2,
+            3,
+            7
+          ]
+        }
+      ],
+      "snapshot_sha256": "830174ec6ce9bf9d9caa1e66a0114b9daad6f5a3b58a9c5a43b17913e04f2246"
+    },
+    "us-202mara7f1d430": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 51.0,
+        "Jon Husted": 43.0
+      },
+      "question_sample_n": 1298,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 1298,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "L2registeredvoterfile; CintaggregatedpanelsmatchedtoL2",
+        "mode_counts": {
+          "live_phone": 213,
+          "text": 858,
+          "online": 227
+        },
+        "weighting": "L2 age/gender/income/race; CPSeducation; turnout-adjustedregions",
+        "screening": "18+registeredOhio; age/registrationconfirmation andwebattentionchecks",
+        "question": "SNVT26R named initialSenate",
+        "non_candidate_responses": {
+          "another_party": 1,
+          "undecided": 4,
+          "no_response": 1
+        },
+        "design_effect": 1.93,
+        "missing_fields": [
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.8,
+        "confidence_level_pct": null,
+        "scope": "1298_RV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "Marist University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "467250665475b20a664547ebdffffb76a0116ac948be081ae97364920cb1b6d4",
+      "admission": {
+        "pollster": "Marist University",
+        "provider_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "group": "marist",
+        "methodology_url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+          "sha256": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30",
+          "relevant_pages": [
+            1,
+            8
+          ]
+        }
+      ],
+      "snapshot_sha256": "dc260618b0a074cd965c239e3002137013be9e3a5ba7908f5e40308bdef9345a"
+    },
+    "gov202marb1c4f938": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf"
+      ],
+      "primary_toplines": {
+        "Amy Acton": 50.0,
+        "Vivek Ramaswamy": 44.0
+      },
+      "question_sample_n": 1298,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 1298,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "L2registeredvoterfile; CintaggregatedpanelsmatchedtoL2",
+        "mode_counts": {
+          "live_phone": 213,
+          "text": 858,
+          "online": 227
+        },
+        "weighting": "L2 age/gender/income/race; CPSeducation; turnout-adjustedregions",
+        "screening": "18+registeredOhio; age/registrationconfirmation andwebattentionchecks",
+        "question": "GVVT26R named initialGovernor",
+        "non_candidate_responses": {
+          "another_party": 3,
+          "undecided": 3,
+          "no_response": "less_than_one_percent"
+        },
+        "design_effect": 1.93,
+        "missing_fields": [
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.8,
+        "confidence_level_pct": null,
+        "scope": "1298_RV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "Marist University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "0c4c669f36ab9906f65fc2061f2157217dc08362bfa9725bf22a7b9f5fa2a0e9",
+      "admission": {
+        "pollster": "Marist University",
+        "provider_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "group": "marist",
+        "methodology_url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+          "sha256": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30",
+          "relevant_pages": [
+            1,
+            11
+          ]
+        }
+      ],
+      "snapshot_sha256": "d842954c05d13840d86ea5f1d19d6f74acf527fddd7d6e647aee156bcee8e62d"
+    },
+    "us-202dcc0662cb55": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/"
+      ],
+      "primary_toplines": {
+        "Marcy Kaptur": 48.0,
+        "Derek Merrin": 48.0
+      },
+      "question_sample_n": 481,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 481,
+        "field_dates": [
+          "2026-09-22",
+          "2026-09-23"
+        ],
+        "question_wording_checked": false,
+        "mode": "phone andtext-to-web",
+        "sampling_frame": null,
+        "weighting": null,
+        "question": "OH09 initialheadtohead withundecided4; fullquestionwording notprinted",
+        "lv_screen": null,
+        "missing_fields": [
+          "full_question_wording",
+          "sampling_frame",
+          "weighting",
+          "exact_lv_screen"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "481_LV",
+        "validated_here": false
+      },
+      "ballot_format": "party_internal_head_to_head",
+      "sponsor_review": {
+        "commissioner": "DCCC",
+        "primary_internal": true,
+        "provider_internal": false,
+        "partisan_party": "DEM",
+        "discrepancy_note": "Primary explicitly says internal; provider internal=false retained separately."
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "full_question_wording",
+        "sampling_frame",
+        "weighting",
+        "exact_lv_screen"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "890cb7a4677634c0c65aed71a60f06aff8ac3c6774f060db5e336b8e263c1127",
+      "admission": {
+        "pollster": "DCCC Targeting and Analytics Department",
+        "provider_url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+        "group": "dccc",
+        "methodology_url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+        "source_role": "commissioner_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "party_internal_reference"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "DEM",
+        "reviewed_sponsors": []
+      },
+      "primary_documents": [
+        {
+          "url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+          "sha256": "695b833bdfdd807c493f542d7e34379d80251e0c497536f93c0415d20e7e7d3b",
+          "relevant_pages": null
+        }
+      ],
+      "snapshot_sha256": "64c863e5613b1a77c5286aa6486306053cb2f6b0b1d6b0ca7aaa108ea2be7d3e"
+    },
+    "primary-suffolk-oh-senate-20261002": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 46.6,
+        "Jon Husted": 44,
+        "Greg Levy": 1,
+        "William B. Redpath": 2
+      },
+      "question_sample_n": 500,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 500,
+        "field_dates": [
+          "2026-09-23",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
+        "mode": "live telephone",
+        "weighting": null,
+        "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
+        "lv_screen": "very/somewhatlikelyNovembervote",
+        "question": "Q8 named4candidate voteorlean; rotated",
+        "non_candidate_responses": {
+          "write_in": 0,
+          "undecided": 6,
+          "refused": 0.4
+        },
+        "missing_fields": [
+          "full_weight_calculation",
+          "design_effect",
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.4,
+        "confidence_level_pct": null,
+        "scope": "500_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "USA TODAY Network Ohio"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "full_weight_calculation",
+        "design_effect",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "946366b667a5579de18d8eb7bce9a0045f84c4219780bef82eb2263e9da5de9b",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+          "sha256": "cee90f4e4d5c5ac0934ea51257a71a715d0a1cf412695dc84dcffab9aa0da293",
+          "relevant_pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "snapshot_sha256": "64f1fd7c2108f5c56cfc908a25fea1f84c0cc478114efdb814468974fe518e0a",
+      "primary_supplement_record_sha256": "946366b667a5579de18d8eb7bce9a0045f84c4219780bef82eb2263e9da5de9b"
     }
   }
 }
