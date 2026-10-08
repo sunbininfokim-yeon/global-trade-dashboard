@@ -1,4 +1,6 @@
-name: US election polls daily
+# Keep the existing workflow_run identifier in deploy.yml; schedule is daily.
+name: US election polls weekly
+run-name: US election polls daily (${{ github.event_name }})
 
 on:
   schedule:

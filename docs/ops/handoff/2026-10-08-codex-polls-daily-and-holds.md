@@ -5,7 +5,7 @@
 ## 일일 수집 변경
 
 - 매일 06:10 한국시간(`10 21 * * *` UTC). 실제 스케줄은 main 병합 후 적용된다.
-- workflow 이름을 `US election polls daily`로 바꾸고 기존 deploy의 구독 이름 1줄만 동기화. main 수집은 JSON을 main에 기록하며 기존 배포 연결을 촉발한다.
+- 기존 workflow 식별자 `US election polls weekly`는 배포 구독 호환성을 위해 보존하고 실행 제목(run-name)은 `US election polls daily`로 표시. 실제 일정은 매일이다. deploy.yml은 변경하지 않는다. main 수집은 JSON을 main에 기록하며 기존 배포 연결을 촉발한다.
 - 정책·게시 JSON의 수집 주기는 1일, 수집 지연 기준은 48시간. 7일 기본·14일 선택의 조사 기간과 후보별 판정 규칙은 유지.
 - 본 JSON에서 변경한 것은 주기 메타데이터뿐이다. 원래 as_of·fetched_at·조사 수치·출처 검토 상태를 그대로 보존했다. 새 수집을 실행했다고 표시하지 않는다.
 - 전체 공개 API 1회 수집 방식·동시 실행 잠금·실패 시 마지막 유효 자료 보존·원래 기준일 유지 계약도 유지.
@@ -65,5 +65,5 @@
 ## 검증 및 운영 상태
 
 - Python polling 122개, JS 선거 계약 51개, 소유권 범위 6개, 배포 수집기 연결39개 검증. 최종 실행 결과는 PR 검사에서 재확인.
-- 제한적인 사용자 지시 범위 예외: 현재 브랜치의 polling workflow와 deploy의 이름 구독 파일만 허용. 공용 ownership guard·다른 workflow·UI·Worker 변경 권한은 추가하지 않았다.
+- 제한적인 사용자 지시 범위 예외: 현재 브랜치의 polling workflow만 허용. deploy.yml·공용 ownership guard·다른 workflow·UI·Worker 변경 권한은 추가하지 않았다.
 - 매일 수집의 운영 적용은 main 병합이 필요하다. 해당 병합과 이후 수집은 배포와 연결되므로 배포 보류 해제를 확인하기 전 실행하지 않는다.

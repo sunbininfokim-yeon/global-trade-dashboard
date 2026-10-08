@@ -29,14 +29,13 @@ class PollingScopeTests(unittest.TestCase):
         self.assertFalse(scoped_paths('codex/usa-election-ui-extra'))
         self.assertNotIn('.github/workflows/deploy.yml', scoped_paths('codex/usa-election-ui'))
 
-    def test_daily_polling_request_only_allows_collector_and_name_subscription(self):
+    def test_daily_polling_request_only_allows_collector(self):
         branch = 'codex/us-house-poll-priority-20261008'
         self.assertEqual(scoped_paths(branch), {
-            '.github/workflows/us_election_polls_refresh.yml',
-            '.github/workflows/deploy.yml'})
+            '.github/workflows/us_election_polls_refresh.yml'})
         self.assertFalse(scoped_paths(branch + '-extra'))
         for path in ('New for anti/app.js', '_worker.js', 'wrangler.jsonc',
-                     '.github/workflows/ownership_guard.yml',
+                     '.github/workflows/ownership_guard.yml', '.github/workflows/deploy.yml',
                      '.github/workflows/overseas_letf_daily.yml'):
             self.assertNotIn(path, scoped_paths(branch))
 
