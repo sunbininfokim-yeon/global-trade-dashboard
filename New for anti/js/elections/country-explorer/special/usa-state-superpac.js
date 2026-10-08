@@ -1,5 +1,7 @@
 import { escapeHtml } from '../../ui.js';
-import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=2';
+import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=3';
+
+import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js';
 
 // Every figure here is independent expenditure: money outside groups spent of
 // their own accord to promote or attack a named candidate. The index says so
@@ -143,33 +145,34 @@ const sideColumn = (race, side, categories) => {
 };
 
 const raceBody = (race, view) => `
-    <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div>
+    <details class="elections-disclosure"><summary>정당별 누적 공시 · 본선·경선·과거 포함</summary><div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div></details>
+    ${spendingHistoryHtml(race, { federal_superpac_categories: view.categories, governor_independent_expenditure_categories: view.categories })}
     <p class="elections-panel-note">${escapeHtml(view.label)}${race.coverage_note_ko ? ` · ${race.coverage_note_ko}` : ''}</p>
     <p class="elections-panel-note">반대 지출은 그 후보를 떨어뜨리려 쓴 돈입니다. 상대 정당의 지지액으로 옮기지 않으며, 우세 판정에도 넣지 않습니다.</p>`;
 
 // "지지지출 우세" sits next to the party name wherever a badge appears, so the
 // badge cannot be read as an election result.
-const badgeCaption = '<span class="elections-spac-caption">지지지출 우세</span>';
+const badgeCaption = '<span class="elections-spac-caption">누적 지지지출 우세</span>';
 
-const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days) => {
+const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true, contestKnown = null) => {
     if (!race) return `
-        <section class="elections-spac-block">
-            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">해당 선거 없음</span></div>
-            ${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}
+        <section class="elections-spac-block" data-spac-office="${label === '주지사' ? 'governor' : 'senate'}">
+            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">${contestKnown === false ? '2026 선거 없음' : contestKnown === true ? '자금 자료 연결 대기' : '선거·자료 확인 대기'}</span></div>
+            ${contestKnown === false ? '' : candidateMatchupHtml(pollRace,null,contract,pollBoard,pollHealth,days,{showPolls})}
         </section>`;
-    const notRegular = (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
+    const notRegular = contestKnown === false || (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
     const polling = notRegular ? '<p class="elections-panel-note">2026 정기선거 없음 · 특별선거는 별도 확인. 아래 금액은 공시 기록입니다.</p>'
-        : pollEvidenceHtml(pollRace, pollBoard, pollHealth, days);
+        : showPolls ? pollEvidenceHtml(pollRace, pollBoard, pollHealth, days) : '';
     const view = viewFor(race.office, contract);
     const unverified = pollRace?.schedule_status === 'watch_slot_unverified';
     const unsupported = race.status === 'unsupported';
     const missing = race.finance_missing === true;
     return `
-        <section class="elections-spac-block">
+        <section class="elections-spac-block" data-spac-office="${label === '주지사' ? 'governor' : 'senate'}">
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}${unverified ? ' · 2026 선거 미확인' : ''}</span>
                 ${missing ? '<span class="elections-spac-badge is-none">자금 자료 연결 대기</span>' : unsupported ? '<span class="elections-spac-badge is-none">주 공시 미수집</span>' : `${badgeCaption}${winnerBadge(race, view.categories)}`}</div>
             ${unverified ? '<p class="elections-panel-note">이 주의 해당 직위에 2026 선거가 있는지 검증 전입니다. 공시 금액은 선거자금 기록으로만 읽어주세요.</p>' : ''}
-            ${polling}
+            ${notRegular ? polling : candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls })}
             ${missing ? financeEvidenceHtml(null, contract) : unsupported ? '<p class="elections-panel-note">독립지출 금액은 수집 미지원이며, 0달러나 지출 없음으로 해석할 수 없습니다.</p>' : raceBody(race, view)}
         </section>`;
 };
@@ -196,52 +199,82 @@ const districtLabel = (race, mapped) => {
 //
 // Rows whose district the state's map does not have still appear -- the money
 // is really reported -- but say so instead of posing as a seat that exists.
-const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, days) => `
-    <div class="elections-spac-district${mapped ? '' : ' is-unmapped'}">
+//
+// `mapped` 는 세 값이다: true(도형 있음) · false(도형 없음) · null(도형이 아직 안 왔다).
+// null 이면 "지도 미대응"이라고 단정하지 않는다 -- 도형(캘리포니아는 16MB)은 금액 자료보다
+// 늦게 도착하는 것이 보통이라, 그 사이를 미대응으로 칠하면 도형이 오자마자 라벨이 뒤집힌다.
+// 이 상태의 행은 열고 닫기만 되고 지도 강조는 걸지 않는다(걸 지도가 아직 없다).
+const districtRow = (race, mapped, contract, pollRace, pollBoard, pollHealth, days, showPolls = true) => `
+    <div class="elections-spac-district${mapped === false ? ' is-unmapped' : ''}" data-race-id="${escapeHtml(race.race_id ?? '')}" data-district-key="${escapeHtml(race.district ?? '')}">
         <button class="elections-spac-district-head" type="button" data-spac-toggle
             ${mapped ? `data-spac-district="${escapeHtml(race.district ?? '')}"` : ''}>
-            <span>${escapeHtml(districtLabel(race, mapped))}</span>
-            ${mapped ? '' : '<span class="elections-spac-unmapped-tag">지도 미대응</span>'}
+            <span>${escapeHtml(districtLabel(race, mapped === true))}</span>
+            ${mapped === false ? '<span class="elections-spac-unmapped-tag">지도 미대응</span>' : ''}
             ${winnerBadge(race, viewFor(race.office, contract).categories)}
         </button>
-        <div class="elections-spac-district-body">${pollEvidenceHtml(pollRace, pollBoard, pollHealth, days)}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
+        <div class="elections-spac-district-body">${candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls })}${race.finance_missing ? financeEvidenceHtml(null, contract) : raceBody(race, viewFor(race.office, contract))}</div>
     </div>`;
 
 const byDistrict = (a, b) => String(a.district ?? '').localeCompare(String(b.district ?? ''), undefined, { numeric: true });
 
-export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7) => {
+// 도형이 아직 안 왔음을 알리는 값. `null` 은 "도형 읽기를 마쳤는데 없다"는 뜻으로 이미 쓰이고
+// 있어서(기존 호출과 테스트가 그렇다), 별도의 값을 둔다.
+export const MAPPING_PENDING = Symbol('mapping-pending');
+// 도형을 받다가 실패했다. "도형이 없다"(null)와 다르다 -- 없는 것이 아니라 못 받은 것이므로
+// 행을 "지도 미대응"으로 칠하지 않는다.
+export const MAPPING_FAILED = Symbol('mapping-failed');
+
+// 금액 자료에 없지만 여론조사 판에는 있는 레이스를 "자금 자료 연결 대기" 자리표시로 채운다.
+const mergeRaces = (state, races, pollBoard) => {
     const merged = new Map((Array.isArray(races) ? races : []).map((race) => [race.race_id, race]));
     for (const race of Object.values(pollBoard?.races || {})) {
         if (race.state === state.id && !merged.has(race.race_id)) merged.set(race.race_id,
             { race_id: race.race_id, state_id: race.state, office: race.office, district: race.district,
               finance_missing: true, status: 'not_collected', candidates: [] });
     }
-    races = [...merged.values()];
-    const governor = races.find((race) => race.office === 'governor');
-    const senate = races.find((race) => race.office === 'senate');
+    return [...merged.values()];
+};
+
+// 하원 구획만 따로 그린다. 선거구 도형은 금액 자료보다 늦게 오는 일이 많아서, 패널을 먼저
+// 그린 뒤 도형이 오면 이 구획만 갈아끼운다 (usa-state-dashboard 의 setMapped).
+export const usaStateSuperPacHouse = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true } = {}) => {
+    races = mergeRaces(state, races, pollBoard);
     const house = races.filter((race) => race.office === 'house').sort(byDistrict);
     const pollFor = (race) => pollBoard?.races?.[race?.race_id] || null;
+    const failed = mappedDistricts === MAPPING_FAILED;
+    const pending = mappedDistricts === MAPPING_PENDING || failed;
     // No geometry loaded at all (a state whose district file is missing) means
     // nothing can be highlighted, rather than everything being unmapped.
-    const isMapped = (race) => (mappedDistricts ? mappedDistricts.has(String(race.district ?? '')) : false);
-    const mapped = house.filter(isMapped);
-    const unmapped = house.filter((race) => !isMapped(race));
+    const isMapped = (race) => (pending ? null : mappedDistricts ? mappedDistricts.has(String(race.district ?? '')) : false);
+    const mapped = pending ? house : house.filter((race) => isMapped(race));
+    const unmapped = pending ? [] : house.filter((race) => !isMapped(race));
+    return `
+            <p class="section-title">연방 하원 · 배지는 누적 공시 지지지출이 더 많은 정당입니다 (본선·경선·과거 포함). 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
+            ${pending && house.length ? `<p class="elections-panel-note${failed ? ' is-warning' : ''}">${failed
+        ? '선거구 지도 도형을 불러오지 못했습니다. 금액은 그대로 표시됩니다. 나갔다 다시 들어오면 재시도합니다.'
+        : '선거구 지도를 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span><br>금액은 먼저 표시되고, 지도 위치는 도형이 도착하면 연결됩니다.'}</p>` : ''}
+            <div class="elections-spac-district-list">
+                ${mapped.map((race) => districtRow(race, pending ? null : true, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
+                ${unmapped.map((race) => districtRow(race, false, contract, pollFor(race), pollBoard, pollHealth, days, showPolls)).join('')}
+            </div>
+            ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
+            ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}`;
+};
+
+export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null, pollBoard = null, pollHealth = null, days = 7, { showPolls = true, contestIds = null } = {}) => {
+    const merged = mergeRaces(state, races, pollBoard);
+    const governor = merged.find((race) => race.office === 'governor');
+    const senate = merged.find((race) => race.office === 'senate');
+    const pollFor = (race) => pollBoard?.races?.[race?.race_id] || null;
 
     return `
         <p class="elections-spac-lede">외부 단체(슈퍼팩 등)가 특정 후보를 <strong>지지하거나 반대하려고 독자적으로 쓴 돈</strong>입니다.
             후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
-            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days)}
-            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days)}
+            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:governor`) : null)}
+            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:senate`) : null)}
         </section>
-        <section class="elections-detail-section">
-            <p class="section-title">연방 하원 · 배지는 지지지출이 더 많은 정당입니다. 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
-            <div class="elections-spac-district-list">
-                ${mapped.map((race) => districtRow(race, true, contract, pollFor(race), pollBoard, pollHealth, days)).join('')}
-                ${unmapped.map((race) => districtRow(race, false, contract, pollFor(race), pollBoard, pollHealth, days)).join('')}
-            </div>
-            ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
-            ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}
+        <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days, { showPolls })}
         </section>
         <p class="elections-panel-note">배지는 지지 지출이 더 많은 정당일 뿐, 개표 결과나 당선 전망이 아닙니다.</p>`;
 };

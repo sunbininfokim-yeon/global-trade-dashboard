@@ -26,9 +26,9 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | actor | net_krw | scope | quality |
 |-------|--------:|-------|---------|
-| foreign | -1953164586000 | covered_underlyings_spot | estimated |
-| retail | 1294828391000 | covered_underlyings_spot | estimated |
-| institution | -310832277000 | covered_underlyings_spot | estimated |
+| foreign | -1428915781000 | covered_underlyings_spot | estimated |
+| retail | 1145151578000 | covered_underlyings_spot | estimated |
+| institution | -413727185000 | covered_underlyings_spot | estimated |
 
 ## 3. Leveraged ETF AUM (paper: leverage reset)
 
@@ -48,8 +48,8 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | ticker | day_R | wag_the_dog | long_aum% | inv_aum% | inv_tv% | retail_net | foreign_net | realized IR% |
 |--------|------:|:-----------:|----------:|---------:|--------:|-----------:|------------:|-------------:|
-| 000660 | -0.0369 | mid | 97.3 | 2.7 | 16.4 | 948404295000 | -1391709258000 | 5.9076 |
-| 005930 | -0.014499999999999999 | low | 99.2 | 0.8 | 4.5 | 346424096000 | -561455328000 | 2.1256 |
+| 000660 | -0.0369 | mid | 97.3 | 2.7 | 16.4 | 884659626000 | -1396742805000 | 5.9076 |
+| 005930 | -0.014499999999999999 | low | 99.2 | 0.8 | 4.5 | 260491952000 | -32172976000 | 2.1256 |
 
 해석 힌트: `wag_the_dog=high`면 LETF 거래가 현물을 잠식. 인버스 거래비중(`inv_tv%`)이 AUM 비중보다 크면 하락일에 리밸런싱 압력이 비대칭.
 
@@ -132,9 +132,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 1008421.94 | 2026-10-02 | observed |
-| 신용잔고 | 336282.38 | 2026-10-02 | observed |
-| 신용/예탁금 % | 33.347 |  |  |
+| 고객예탁금 | 1010486.27 | 2026-10-06 | observed |
+| 신용잔고 | 335591.43 | 2026-10-06 | observed |
+| 신용/예탁금 % | 33.211 |  |  |
 
 ## 8. KOSPI market investor flows
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 3.064 | 72.09 | 19.388 |
-| overseas | 26 | 0.013 | 0.3 | 0.082 |
-| sector | 8 | 0.801 | 18.84 | 5.067 |
-| single_stock | 16 | 0.372 | 8.76 | 2.357 |
+| index | 53 | 3.11 | 72.86 | 15.193 |
+| overseas | 26 | 0.013 | 0.3 | 0.063 |
+| sector | 8 | 0.6 | 14.06 | 2.931 |
+| single_stock | 16 | 0.546 | 12.78 | 2.665 |
 
 ## 10. Short interest
 

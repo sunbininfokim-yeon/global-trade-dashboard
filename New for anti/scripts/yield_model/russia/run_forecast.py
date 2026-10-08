@@ -14,7 +14,7 @@ import sys
 from datetime import datetime, timezone
 
 from .collect import current_season, load_oni
-from .predict import predict_one
+from .predict import MODELS, predict_one
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,33 @@ def enso_label(oni):
     if oni <= -0.5:
         return "La Nina", oni
     return "neutral", oni
+
+
+def backtest_skill(key):
+    """Skill block from the trained model file, for regions with no forecast.
+
+    Off-season (after SEASON_ROLLOVER) the new season has no observed weather,
+    so predict_one() errors for every region. The trained model's backtest
+    still holds, and build_registry.py grades a country only on regions that
+    carry `skill` -- so the skeleton keeps it.
+    """
+    path = os.path.join(MODELS, f"{key}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        model = json.load(f)
+    skill_vs = model.get("recent_skill_vs_trend")
+    weather = model.get("weather_skill", skill_vs)
+    beats = bool(model.get("beats_trend"))
+    return {
+        "method": ("forward chaining, trend refit inside each fold, "
+                   "scored on recent folds"),
+        "skill_vs_trend_only": round(skill_vs, 3) if skill_vs is not None else None,
+        "weather_skill": round(weather, 3) if weather is not None else None,
+        "beats_trend": beats,
+        "low_confidence": bool((not beats) or (skill_vs is not None and skill_vs < 0.20)),
+        "note_ko": "이번 시즌 예측 없음, 학습 모델 백테스트 기준",
+    }
 
 
 def main():
@@ -69,6 +96,15 @@ def main():
     for cfg in ALL:
         season = override or current_season(cfg)
         r = predict_one(cfg, season, oni)
+        final = False
+        if r is not None and "error" in r and override is None:
+            # After SEASON_ROLLOVER the new season has no weather yet. Until
+            # Rosstat publishes the season just finished, its weather-complete
+            # estimate is the most useful number to show -- not a blank panel.
+            prev = predict_one(cfg, season - 1, oni)
+            if (prev is not None and "error" not in prev
+                    and prev["last_actual"]["year"] < season - 1):
+                r, season, final = prev, season - 1, True
         if r is None:
             skipped.append((cfg.key, "no trained model"))
             continue
@@ -83,6 +119,9 @@ def main():
                 "season": season,
                 "unit": cfg.target_unit,
             }
+            skill = backtest_skill(cfg.key)
+            if skill is not None:
+                payload["regions"][cfg.key]["skill"] = skill
             continue
 
         skill_vs = r["skill_vs_trend"]
@@ -110,6 +149,9 @@ def main():
             "season_progress": r.get("season_progress"),
             "presentation": ("weather-driven forecast" if r["beats_trend"]
                              else "trend extrapolation"),
+            "season_status": "final_estimate" if final else "in_season",
+            **({"status_note_ko": f"{season} 시즌 종료 · Rosstat 발표 전 최종 추정치"}
+               if final else {}),
             "enso": {"state": label_enso, "oni_growing_season": oni_val},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
@@ -143,6 +185,13 @@ def main():
         flag = "" if r["beats_trend"] else "  [trend extrapolation]"
         log(f"{cfg.key:28} {r['point']:11,.0f} kg/ha "
             f"({r['weather_effect_pct']:+.1f}% weather){flag}")
+
+    shown = {v["season"] for v in payload["regions"].values()
+             if v.get("forecast_available")}
+    if len(shown) == 1:
+        # The panel title reads the top-level season; keep it on the season
+        # whose numbers are actually shown.
+        payload["season"] = shown.pop()
 
     payload["skipped"] = {k: w for k, w in skipped}
     if not payload["regions"]:

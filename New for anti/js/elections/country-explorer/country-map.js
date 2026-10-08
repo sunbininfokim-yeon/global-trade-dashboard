@@ -1,4 +1,4 @@
-import { loadAdmin1 } from '../data/geo-service.js';
+import { loadAdmin1 } from '../data/geo-service.js?v=2';
 import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
 
 const neutral = [51, 65, 85, 235];
@@ -110,9 +110,20 @@ const stateIndex = (country) => new Map(
     (country?.ui_ready?.state_drilldown?.states || []).map((state) => [state.map_feature_code, state]),
 );
 
-export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, onStateOpen }) => {
-    const geo = withRelocatedExclaves(await loadAdmin1(country.iso3), country.iso3);
-    if (isStale?.()) return;
+// fitView:false 는 카메라를 건드리지 않고 색만 바꾼다. 주를 누른 직후 "눌렀다"는 표시를 지도에
+// 먼저 주려고 같은 지도를 다시 칠할 때 쓴다 -- 사용자가 확대해 둔 시점이 되돌아가면 안 된다.
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen }) => {
+    let raw;
+    try {
+        raw = await loadAdmin1(country.iso3);
+    } catch (error) {
+        // 경계 도형을 못 받았다. 예외를 올리면 이 지도를 기다리는 화면 전체가 멈춘다. 실패는
+        // 캐시되지 않으므로 나갔다 들어오면 다시 시도한다.
+        console.warn(`국가 경계 도형을 불러오지 못했습니다 (${country.iso3}):`, error?.message || error);
+        return false;
+    }
+    const geo = withRelocatedExclaves(raw, country.iso3);
+    if (isStale?.()) return false;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
     const layer = new host.layers.GeoJsonLayer({
         id: `elections-country-${country.iso3}`,
@@ -139,5 +150,6 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
     ], country.iso3 === 'USA' ? (info) => {
         const state = usaStates.get(info?.object?.properties?.code);
         if (state) onStateOpen(state.id);
-    } : null, viewForGeometry(geo));
+    } : null, fitView ? viewForGeometry(geo) : null);
+    return true;
 };

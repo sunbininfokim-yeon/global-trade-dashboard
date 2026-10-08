@@ -14,6 +14,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from hs_match import COMMODITY_HS_STEMS, normalize_hs
+from comtrade_totals import select_totals
 
 
 PREVIEW_URL = "https://comtradeapi.un.org/public/v1/preview/C/M/HS"
@@ -43,6 +44,7 @@ def fetch_monthly(
         "cmdCode": normalize_hs(hs),
         "flowCode": flow,
         "fmt": "json",
+        "partner2Code": "0", "customsCode": "C00", "motCode": "0",
     }
     url = "https://comtradeapi.un.org/data/v1/get/C/M/HS?" + urlencode(params)
     req = Request(
@@ -59,8 +61,15 @@ def fetch_monthly(
     except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
         return {"available": False, "reason": str(exc), "hs": hs, "series": []}
 
+    try:
+        if not isinstance(body, dict) or body.get("error") or body.get("mayBeTruncated") or not isinstance(body.get("data"), list):
+            raise ValueError("incomplete Comtrade response")
+        rows = select_totals(body.get("data") or [], reporter=reporter_m49,
+                             periods=set(periods.split(',')), hs_codes={normalize_hs(hs)}, flows={flow}, partner="0")
+    except ValueError:
+        return {"available": False, "reason": "invalid Comtrade totals", "hs": hs, "series": []}
     series = []
-    for row in body.get("data") or []:
+    for row in rows:
         period = str(row.get("period") or "")
         if len(period) == 6 and period.isdigit():
             month = f"{period[:4]}-{period[4:]}"
@@ -92,7 +101,7 @@ def _preview_cache_path(
 ) -> Path:
     key = ",".join(sorted(hs_codes))
     digest = sha256(key.encode("utf-8")).hexdigest()[:12]
-    return cache_dir / f"comtrade_preview_{reporter_m49}_{flow}_{period}_{digest}.json"
+    return cache_dir / f"comtrade_preview_totals_v2_{reporter_m49}_{flow}_{period}_{digest}.json"
 
 
 def fetch_preview_month(
@@ -146,6 +155,7 @@ def fetch_preview_month(
             "cmdCode": ",".join(normalized_codes),
             "flowCode": flow,
             "maxRecords": "500",
+            "partner2Code": "0", "customsCode": "C00", "motCode": "0",
         }
         req = Request(
             PREVIEW_URL + "?" + urlencode(params),
@@ -170,13 +180,20 @@ def fetch_preview_month(
     if (not isinstance(body, dict) or body.get("error") or not isinstance(body.get("data"), list)
             or any(not isinstance(row, dict) for row in body["data"])):
         return {"available": False, "reason": "invalid Preview response", "series_by_hs": {}}
+    try:
+        if body.get("mayBeTruncated") or len(body["data"]) >= 500:
+            raise ValueError("possibly truncated Preview")
+        rows = select_totals(body["data"], reporter=reporter_m49, periods={period},
+                             hs_codes=set(normalized_codes), flows={flow}, partner="0")
+    except ValueError:
+        return {"available": False, "reason": "invalid or conflicting Preview totals", "series_by_hs": {}}
     if not from_cache:
         temporary = cache_path.with_suffix(".tmp")
         temporary.write_text(json.dumps(body, ensure_ascii=False) + "\n", encoding="utf-8")
         temporary.replace(cache_path)
 
     series_by_hs: dict[str, list[dict[str, Any]]] = {code: [] for code in normalized_codes}
-    for row in body.get("data") or []:
+    for row in rows:
         hs = normalize_hs(row.get("cmdCode"))
         if hs not in series_by_hs:
             continue
@@ -202,6 +219,8 @@ def fetch_preview_month(
                 "partner_m49": "0",
                 "primary_value_usd": row.get("primaryValue"),
                 "quality": {
+                    "statistical_scope": "partner2=0;customs=C00;mot=0",
+                    "total_selection": "comtrade-totals-v2",
                     "is_reported": row.get("isReported"),
                     "is_quantity_estimated": row.get("isQtyEstimated"),
                     "is_aggregate": row.get("isAggregate"),

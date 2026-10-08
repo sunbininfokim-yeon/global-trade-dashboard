@@ -1,5 +1,5 @@
 import { escapeHtml, formatDate } from '../ui.js';
-import { usaMidtermsModel, PARTY_KO, PARTY_COLOR } from '../data/usa-midterms-model.js';
+import { usaMidtermsModel, PARTY_KO, PARTY_COLOR } from '../data/usa-midterms-model.js?v=2';
 import { forecastSlot, forecastFooterSlot } from './forecast-panel.js';
 
 // 미국 중간선거 브리핑. 선거 종류 세 열(주지사·하원·상원)이 완전히 같은 구조라,
@@ -114,7 +114,7 @@ const columnHtml = (column) => {
         || '<p class="elections-muted">확정된 대진이 아직 없습니다.</p>'}
             </div>
             ${pending.length ? `<details class="elections-brief-pending">
-                <summary>${escapeHtml(`경선 예정 ${pending.length}개 주`)}</summary>
+                <summary>${escapeHtml(`본선 대진 수집 대기 ${pending.length}개 주`)}</summary>
                 <div class="elections-brief-pending-rows">${pending.map((row) => `<div>
                     <span>${escapeHtml(row.id)}</span>
                     <strong>${escapeHtml(row.name || '')}</strong>
@@ -131,7 +131,7 @@ export const usaMidtermsBrief = (country, { event } = {}) => {
         <div class="elections-brief">
             ${event?.contested_ko ? `<p class="elections-brief-lede">${escapeHtml(event.contested_ko)}</p>` : ''}
             <div class="elections-brief-columns">${model.columns.map(columnHtml).join('')}</div>
-            ${model.primaryPending ? `<p class="elections-panel-note">${escapeHtml(`${model.statesTotal}개 주 가운데 ${model.primaryPending}개 주는 경선이 아직입니다. 그 주의 대진이 비어 있는 것은 후보가 없다는 뜻이 아닙니다.`)}</p>` : ''}
+            ${model.primaryPending ? `<p class="elections-panel-note">${escapeHtml(`${model.statesTotal}개 주 가운데 ${model.primaryPending}개 주는 이 명부의 대진 갱신을 기다립니다. 경선이 아직 진행 중이거나 실제 후보가 없다는 뜻은 아닙니다.`)}</p>` : ''}
             <p class="elections-panel-note">현재 의석과 본선 대진은 공식 명부·경선 결과입니다. 전망만 여론조사에서 옵니다.</p>
             ${forecastFooterSlot()}
         </div>`;

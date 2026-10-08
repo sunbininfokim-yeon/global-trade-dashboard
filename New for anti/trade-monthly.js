@@ -669,7 +669,7 @@
             if (liveStarted || !m49) return;
             liveStarted = true;
             const slot = monthly.querySelector('.tm-live');
-            slot.innerHTML = '<p class="tm-note">UN Comtrade 월별 36개월 불러오는 중… 처음 여는 국가·품목은 수십 초 걸릴 수 있습니다</p>';
+            slot.innerHTML = '<p class="tm-note">UN Comtrade 월별 36개월 불러오는 중<span class="inline-spinner" aria-hidden="true"></span><br>처음 여는 국가·품목은 수십 초 걸릴 수 있습니다</p>';
             const data = await loadComtradeSeries(hs, m49);
             if (!alive()) return;
             const label = (typeof resolveCountry === 'function' && resolveCountry(countryName)?.label) || countryName;

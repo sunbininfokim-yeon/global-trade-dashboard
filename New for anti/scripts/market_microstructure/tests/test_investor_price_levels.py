@@ -6,6 +6,8 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 import pandas as pd
 
@@ -17,12 +19,33 @@ from market_microstructure.investor_price_levels import (  # noqa: E402
     aggregate_by_range_bins,
     default_kospi_universe,
     high_vol_kospi_universe,
+    build_ticker_levels,
     trend_to_frame,
     _top_zone,
 )
 
 
 class TestInvestorPriceLevels(unittest.TestCase):
+    def test_three_actor_residual_is_preserved_and_krw_is_marked_estimated(self):
+        rows = [{"bizdate": day, "closePrice": close,
+                 "individualPureBuyQuant": "-100", "foreignerPureBuyQuant": "20",
+                 "organPureBuyQuant": "10", "accumulatedTradingVolume": "500"}
+                for day, close in [("20260921", "100"), ("20260922", "110")]]
+        prices = pd.DataFrame({"open": [100, 110], "high": [101, 111],
+                               "low": [99, 109], "close": [100, 110], "volume": [500, 500]},
+                              index=pd.to_datetime(["2026-09-21", "2026-09-22"]))
+        with patch("market_microstructure.investor_price_levels.fetch_naver_investor_trend", return_value=rows), \
+             patch("market_microstructure.investor_price_levels.fetch_ohlc_panel", return_value=prices):
+            block = build_ticker_levels("005930", n_bins=2)
+        self.assertEqual(block["net_shares_quality"], "observed")
+        self.assertEqual(block["net_krw_quality"], "estimated")
+        self.assertEqual(block["net_krw_method"], "net_shares_times_close")
+        self.assertEqual(block["actor_scope"], ["retail", "foreign", "institution"])
+        day = block["days"][0]
+        self.assertEqual(sum(day[a + "_net_shares"] for a in block["actor_scope"]), -70)
+        self.assertEqual(sum(day[a + "_net_krw"] for a in block["actor_scope"]), -7000)
+        self.assertNotIn("other_corp_net_shares", day)
+
     def test_trend_to_frame_parses_signed(self):
         rows = [
             {
@@ -89,27 +112,38 @@ class TestInvestorPriceLevels(unittest.TestCase):
         self.assertEqual(total, 0)
 
     def test_default_kospi_universe_shape(self):
-        # Network/FDR — skip soft if listing empty in offline CI without FDR cache.
-        try:
+        listing = pd.DataFrame({
+            "Code": ["000001", "000002", "000003", "000004", "000005", "000006"],
+            "Name": ["보통주1", "보통주2", "보통주3", "보통주4", "보통주5", "우선주우"],
+            "Marcap": [10, 30, 20, 40, 50, 100],
+        })
+        fdr = SimpleNamespace(StockListing=Mock(return_value=listing))
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
             uni = default_kospi_universe(top_n=5)
-        except Exception as e:  # noqa: BLE001
-            self.skipTest(f"FDR listing unavailable: {e}")
-        self.assertGreaterEqual(len(uni), 1)
-        self.assertLessEqual(len(uni), 5)
+        self.assertEqual(len(uni), 5)
+        self.assertEqual(uni[0][0], "000005")
         for code, name in uni:
             self.assertEqual(len(code), 6)
             self.assertFalse(str(name).endswith("우"))
 
     def test_high_vol_universe_returns_meta(self):
-        try:
+        listing = pd.DataFrame({
+            "Code": [f"{i:06d}" for i in range(1, 16)],
+            "Name": [f"보통주{i}" for i in range(1, 16)],
+            "Marcap": list(range(15, 0, -1)),
+        })
+        prices = pd.DataFrame({"Close": [100 + i % 4 for i in range(40)]})
+        fdr = SimpleNamespace(
+            StockListing=Mock(return_value=listing), DataReader=Mock(return_value=prices),
+        )
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
             hv = high_vol_kospi_universe(top_n=3, pool=15, lookback_days=30)
-        except Exception as e:  # noqa: BLE001
-            self.skipTest(f"FDR high-vol unavailable: {e}")
         self.assertIn("pairs", hv)
         self.assertEqual(hv.get("pool"), 15)
         self.assertLessEqual(len(hv["pairs"]), 3)
-        if hv.get("quality") == "observed":
-            self.assertTrue(hv.get("ranks"))
+        self.assertEqual(hv["quality"], "observed")
+        self.assertEqual(hv["scored_n"], 15)
+        self.assertTrue(hv["ranks"])
 
 
 if __name__ == "__main__":

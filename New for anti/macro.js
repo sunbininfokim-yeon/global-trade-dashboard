@@ -745,7 +745,7 @@ const mmEquityMaView = (ind, range) => {
         return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
     }
     if (!data) {
-        return `<p class="fin-loading">일봉 ${finEsc(range.replace('y', '년'))}치를 불러오는 중…</p>`;
+        return `<p class="fin-loading">일봉 ${finEsc(range.replace('y', '년'))}치를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>`;
     }
     const { dates, close } = data;
     if (close.length < 240) {
@@ -1257,7 +1257,7 @@ const mmCpiPathPanel = (ind, movers) => {
         if (MM_CPI_STRUCTURE_ERROR) return `<section class="mm-cpi-panel mm-cpi-panel-error">
             <p>${finEsc(MM_CPI_STRUCTURE_ERROR)}</p><span>항목 수치는 그대로 표시되며 관계 경로만 사용할 수 없습니다.</span>
         </section>`;
-        return `<section class="mm-cpi-panel mm-cpi-panel-loading"><span class="mm-cpi-spinner"></span>CPI 관계 지도를 불러오는 중…</section>`;
+        return `<section class="mm-cpi-panel mm-cpi-panel-loading">CPI 관계 지도를 불러오는 중…<span class="mm-cpi-spinner"></span></section>`;
     }
 
     const items = mmCpiItemIndex(doc);

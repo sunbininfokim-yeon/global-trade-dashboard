@@ -1,9 +1,9 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js?v=6';
+import { createCountryExplorer } from './country-explorer/index.js?v=10';
 import { renderTimeline } from './timeline/index.js';
-import { briefKeyFor, openBrief } from './briefs/index.js';
+import { briefKeyFor, openBrief } from './briefs/index.js?v=2';
 
 const state = createElectionState();
 let host = null;

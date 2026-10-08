@@ -1,0 +1,1243 @@
+{
+  "audit_date": "2026-10-07",
+  "dashboard_base_commit": "e4949f01",
+  "snapshot_as_of": "2026-10-07",
+  "snapshot_input_sha256": "971b3391a193e1f5e57d28a0b525d5d9a3cc720d41e87dc33b4a05fc1176d6be",
+  "krx_repository_commit": "7ff60ba991af785bd3595c777d55c88e770021ac",
+  "krx_input_path": "data/normalized/krx_12009_stock_investor/year=2026/month=09/part.jsonl.gz",
+  "krx_input_sha256": "ec01b4025f1b765abb8d3222871d2a2c4c9bba6bb9fbfc8672eb1332baa8dce8",
+  "krx_manifest_date_end": "2026-09-21",
+  "dedup_policy": "latest collected_at per ticker/date; last record on equal timestamp",
+  "comparison_quantity": "Naver net shares times close (estimate) vs KRX observed net transaction value; not identical quantities",
+  "summary": {
+    "compared_ticker_days": 30,
+    "unique_dates": 15,
+    "max_classification_residual_vs_market_krw": 3000000.0,
+    "max_actor_buy_sell_net_residual_krw": 0.0,
+    "source_market_total_not_zero_days": [
+      {
+        "ticker": "000660",
+        "date": "2026-09-18",
+        "net_krw": 478000000.0
+      }
+    ]
+  },
+  "naver_quantity_checks": [
+    {
+      "ticker": "005930",
+      "naver_rows_compared": 60,
+      "quantity_mismatches": [],
+      "naver_latest": "20261006",
+      "naver_response_sha256": "756c708563506d304cc750032762e53f984b3e0579a885729c8e7c4a7580a840"
+    },
+    {
+      "ticker": "000660",
+      "naver_rows_compared": 60,
+      "quantity_mismatches": [],
+      "naver_latest": "20261006",
+      "naver_response_sha256": "78f78cad6b53f5558a1b0c401b5eeea4e6cd367636ea2c08e08db9e7bb3a14fb"
+    }
+  ],
+  "comparisons": [
+    {
+      "ticker": "005930",
+      "date": "2026-09-01",
+      "snapshot_close_krw": 261000.0,
+      "snapshot_three_net_estimated_krw": -517659309000,
+      "krx_three_net_krw": -517535876000.0,
+      "krx_other_corp_net_krw": 514468845000.0,
+      "krx_other_foreign_net_krw": 3068673750.0,
+      "krx_five_net_krw": 1642750.0,
+      "krx_market_total_net_krw": -357250.0,
+      "classification_residual_vs_market_krw": 2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -935990,
+          "snapshot_net_estimated_krw": -244293390000,
+          "krx_net_krw": -247823739750.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -707536,
+          "snapshot_net_estimated_krw": -184666896000,
+          "krx_net_krw": -184541131500.0
+        },
+        "institution": {
+          "snapshot_net_shares": -339843,
+          "snapshot_net_estimated_krw": -88699023000,
+          "krx_net_krw": -85171004750.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "8465b11bddfd82bfcf157547893a7911dc3e8e3e0b177561c059b7fa2afe353a",
+        "005930_sell.xlsx": "f5c69149d49443c4aedacfd60c4c3142b03450ff203ff5cbdbbcb4e4526f7e7b"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-02",
+      "snapshot_close_krw": 250500.0,
+      "snapshot_three_net_estimated_krw": -492633550500,
+      "krx_three_net_krw": -496868531500.0,
+      "krx_other_corp_net_krw": 496574642500.0,
+      "krx_other_foreign_net_krw": 293156000.0,
+      "krx_five_net_krw": -733000.0,
+      "krx_market_total_net_krw": 267000.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 2332837,
+          "snapshot_net_estimated_krw": 584375668500,
+          "krx_net_krw": 588758361500.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -1321536,
+          "snapshot_net_estimated_krw": -331044768000,
+          "krx_net_krw": -333008573000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -2977902,
+          "snapshot_net_estimated_krw": -745964451000,
+          "krx_net_krw": -752618320000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "55e251c28e9675e19cae6f02c1d59e2c178f38223aa67130bc5530ee9f43e4c6",
+        "005930_sell.xlsx": "b583e05f10675d5070941aae8c06fdf03b954630e64eeb44b2751b7aa7a1e1e4"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-03",
+      "snapshot_close_krw": 250000.0,
+      "snapshot_three_net_estimated_krw": -495509000000,
+      "krx_three_net_krw": -500273665000.0,
+      "krx_other_corp_net_krw": 500569663000.0,
+      "krx_other_foreign_net_krw": -296470500.0,
+      "krx_five_net_krw": -472500.0,
+      "krx_market_total_net_krw": -472500.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -1234260,
+          "snapshot_net_estimated_krw": -308565000000,
+          "krx_net_krw": -314681632250.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 91825,
+          "snapshot_net_estimated_krw": 22956250000,
+          "krx_net_krw": 23156694250.0
+        },
+        "institution": {
+          "snapshot_net_shares": -839601,
+          "snapshot_net_estimated_krw": -209900250000,
+          "krx_net_krw": -208748727000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "32984430c97a6ac4dc41ea1827cb7c549c3daecb9f768a86b8dd8c6faac01821",
+        "005930_sell.xlsx": "86364716ca5d964e56aaab5b7e0959e83c0aa4faab97f29fa8b8e05baea49d29"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-04",
+      "snapshot_close_krw": 255500.0,
+      "snapshot_three_net_estimated_krw": -503210571500,
+      "krx_three_net_krw": -501162986750.0,
+      "krx_other_corp_net_krw": 503388784250.0,
+      "krx_other_foreign_net_krw": -2225297250.0,
+      "krx_five_net_krw": 500250.0,
+      "krx_market_total_net_krw": -499750.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -4343948,
+          "snapshot_net_estimated_krw": -1109878714000,
+          "krx_net_krw": -1110677185500.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -115377,
+          "snapshot_net_estimated_krw": -29478823500,
+          "krx_net_krw": -26391015500.0
+        },
+        "institution": {
+          "snapshot_net_shares": 2489812,
+          "snapshot_net_estimated_krw": 636146966000,
+          "krx_net_krw": 635905214250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "3399ad44c0dc77d57ea88f0ca5f15588cad4269d57200afdb85edd5a69fe8d88",
+        "005930_sell.xlsx": "7ecf2288613acec527c6dbde2a8fd433b050e1395b936f1dc7c5c950f55231fc"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-07",
+      "snapshot_close_krw": 270000.0,
+      "snapshot_three_net_estimated_krw": -495226440000,
+      "krx_three_net_krw": -478565921282.0,
+      "krx_other_corp_net_krw": 489194133500.0,
+      "krx_other_foreign_net_krw": -10628288500.0,
+      "krx_five_net_krw": -76282.0,
+      "krx_market_total_net_krw": -76282.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -9648846,
+          "snapshot_net_estimated_krw": -2605188420000,
+          "krx_net_krw": -2582259422000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 3246247,
+          "snapshot_net_estimated_krw": 876486690000,
+          "krx_net_krw": 881740120718.0
+        },
+        "institution": {
+          "snapshot_net_shares": 4568427,
+          "snapshot_net_estimated_krw": 1233475290000,
+          "krx_net_krw": 1221953380000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "bf3d0595004fc3c1e2173d3d6e596c23c3aa83186f1889c8b5ee6cfef0547f21",
+        "005930_sell.xlsx": "d2d6604df329fb399888cf569106b8e634eefde82bc9660d932e1562abd6178c"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-08",
+      "snapshot_close_krw": 269500.0,
+      "snapshot_three_net_estimated_krw": -521671958500,
+      "krx_three_net_krw": -526095829000.0,
+      "krx_other_corp_net_krw": 534182468500.0,
+      "krx_other_foreign_net_krw": -8085372000.0,
+      "krx_five_net_krw": 1267500.0,
+      "krx_market_total_net_krw": 267500.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -7674481,
+          "snapshot_net_estimated_krw": -2068272629500,
+          "krx_net_krw": -2112570520500.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 3332528,
+          "snapshot_net_estimated_krw": 898116296000,
+          "krx_net_krw": 922111935750.0
+        },
+        "institution": {
+          "snapshot_net_shares": 2406250,
+          "snapshot_net_estimated_krw": 648484375000,
+          "krx_net_krw": 664362755750.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "19681c195e12ff51a906de1d207cfaa4797333d9fafac537236db821aee5df86",
+        "005930_sell.xlsx": "9a6ba969895d2e2e11ed02a8e86550e367b8ab29865a0622de33b0bc842389b3"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-09",
+      "snapshot_close_krw": 269500.0,
+      "snapshot_three_net_estimated_krw": -556285191000,
+      "krx_three_net_krw": -559456004439.0,
+      "krx_other_corp_net_krw": 560162379500.0,
+      "krx_other_foreign_net_krw": -708364250.0,
+      "krx_five_net_krw": -1989189.0,
+      "krx_market_total_net_krw": 10811.0,
+      "classification_residual_vs_market_krw": -2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -920131,
+          "snapshot_net_estimated_krw": -247975304500,
+          "krx_net_krw": -254769369750.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -2884161,
+          "snapshot_net_estimated_krw": -777281389500,
+          "krx_net_krw": -779311560189.0
+        },
+        "institution": {
+          "snapshot_net_shares": 1740154,
+          "snapshot_net_estimated_krw": 468971503000,
+          "krx_net_krw": 474624925500.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "59e8d107d8b57d60bfca33ff91c207467c9868914172904b91358e5db2de53aa",
+        "005930_sell.xlsx": "3e26578b368e5f07e4c845beda92edde6b497bf7c0cbb9f0df5be60d7edc3589"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-10",
+      "snapshot_close_krw": 269000.0,
+      "snapshot_three_net_estimated_krw": -520939751000,
+      "krx_three_net_krw": -512578476061.0,
+      "krx_other_corp_net_krw": 517284626000.0,
+      "krx_other_foreign_net_krw": -4704548750.0,
+      "krx_five_net_krw": 1601189.0,
+      "krx_market_total_net_krw": -398811.0,
+      "classification_residual_vs_market_krw": 2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -434111,
+          "snapshot_net_estimated_krw": -116775859000,
+          "krx_net_krw": -118326966000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -5769453,
+          "snapshot_net_estimated_krw": -1551982857000,
+          "krx_net_krw": -1546878540811.0
+        },
+        "institution": {
+          "snapshot_net_shares": 4266985,
+          "snapshot_net_estimated_krw": 1147818965000,
+          "krx_net_krw": 1152627030750.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "acdc72cafca49ff7f32a18e45ff6bce5e5f8867a63177e41c1685287280a12d6",
+        "005930_sell.xlsx": "c2768bca761a6bc49170c13df40ce9ed0c191b43409b929bb6072f3cec4e455f"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-11",
+      "snapshot_close_krw": 259500.0,
+      "snapshot_three_net_estimated_krw": -543910702500,
+      "krx_three_net_krw": -546798350500.0,
+      "krx_other_corp_net_krw": 541817023000.0,
+      "krx_other_foreign_net_krw": 4982494000.0,
+      "krx_five_net_krw": 1166500.0,
+      "krx_market_total_net_krw": 166500.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 3643746,
+          "snapshot_net_estimated_krw": 945552087000,
+          "krx_net_krw": 940346575250.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -3531147,
+          "snapshot_net_estimated_krw": -916332646500,
+          "krx_net_krw": -916704941500.0
+        },
+        "institution": {
+          "snapshot_net_shares": -2208594,
+          "snapshot_net_estimated_krw": -573130143000,
+          "krx_net_krw": -570439984250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "15cce5b44880b4c34b54127d193183f6bb0c9e15731f0bfdfbb789e94f43dd66",
+        "005930_sell.xlsx": "7ae8301dd3bd940a800f7287941e85f223d0665ed0ed611638b432416f4c0d48"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-14",
+      "snapshot_close_krw": 248500.0,
+      "snapshot_three_net_estimated_krw": -425700380000,
+      "krx_three_net_krw": -435286877276.0,
+      "krx_other_corp_net_krw": 430731301500.0,
+      "krx_other_foreign_net_krw": 4555145750.0,
+      "krx_five_net_krw": -430026.0,
+      "krx_market_total_net_krw": -430026.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 3570705,
+          "snapshot_net_estimated_krw": 887320192500,
+          "krx_net_krw": 891441355500.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -3466765,
+          "snapshot_net_estimated_krw": -861491102500,
+          "krx_net_krw": -872397663526.0
+        },
+        "institution": {
+          "snapshot_net_shares": -1817020,
+          "snapshot_net_estimated_krw": -451529470000,
+          "krx_net_krw": -454330569250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "9a4ce6ad2be1bca7f79a0ed8707f604ca0300f7d0b134c410160bb975c47f14a",
+        "005930_sell.xlsx": "eb4e9481733aa7966fb824ca8a3a912a58e69cabd236d761484c535192264971"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-15",
+      "snapshot_close_krw": 250500.0,
+      "snapshot_three_net_estimated_krw": -508548066000,
+      "krx_three_net_krw": -507622741250.0,
+      "krx_other_corp_net_krw": 506934700250.0,
+      "krx_other_foreign_net_krw": 687358500.0,
+      "krx_five_net_krw": -682500.0,
+      "krx_market_total_net_krw": 317500.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 1379866,
+          "snapshot_net_estimated_krw": 345656433000,
+          "krx_net_krw": 342346816250.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -1088039,
+          "snapshot_net_estimated_krw": -272553769500,
+          "krx_net_krw": -271643841250.0
+        },
+        "institution": {
+          "snapshot_net_shares": -2321959,
+          "snapshot_net_estimated_krw": -581650729500,
+          "krx_net_krw": -578325716250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "b3ab0327a0fd658b2ea1686ba31f2923c5c06cb068c8c85d4cc231299730fb24",
+        "005930_sell.xlsx": "b1e30eb54f6a06ebb0e82a1c3850cf35f98cf63be9c0e24bf5ba318eebc2da8f"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-16",
+      "snapshot_close_krw": 253500.0,
+      "snapshot_three_net_estimated_krw": -501134010000,
+      "krx_three_net_krw": -495062385777.0,
+      "krx_other_corp_net_krw": 497180098750.0,
+      "krx_other_foreign_net_krw": -2118685000.0,
+      "krx_five_net_krw": -972027.0,
+      "krx_market_total_net_krw": 27973.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -1730267,
+          "snapshot_net_estimated_krw": -438622684500,
+          "krx_net_krw": -436425018250.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -1906839,
+          "snapshot_net_estimated_krw": -483383686500,
+          "krx_net_krw": -476653566777.0
+        },
+        "institution": {
+          "snapshot_net_shares": 1660246,
+          "snapshot_net_estimated_krw": 420872361000,
+          "krx_net_krw": 418016199250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "0399de50a81abf52b8877780b4658fa3c66764e2a97573284cf1d9321bdb248c",
+        "005930_sell.xlsx": "73b4c0a9875e5d6c263f8b03a20170a9d4e427b7e4f34ca9c5c4432da4438331"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-17",
+      "snapshot_close_krw": 256000.0,
+      "snapshot_three_net_estimated_krw": -515365888000,
+      "krx_three_net_krw": -512477656886.0,
+      "krx_other_corp_net_krw": 511762680000.0,
+      "krx_other_foreign_net_krw": 714062250.0,
+      "krx_five_net_krw": -914636.0,
+      "krx_market_total_net_krw": 85364.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -39299,
+          "snapshot_net_estimated_krw": -10060544000,
+          "krx_net_krw": -12019976000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -2170687,
+          "snapshot_net_estimated_krw": -555695872000,
+          "krx_net_krw": -551416183136.0
+        },
+        "institution": {
+          "snapshot_net_shares": 196838,
+          "snapshot_net_estimated_krw": 50390528000,
+          "krx_net_krw": 50958502250.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "c99bc2307ec1cc7ee1db402ae20ac0789d06b4d30bacbbbc3dab632288846551",
+        "005930_sell.xlsx": "ffdd439da78956b31496109f605a053eabce9f35ae2e84eb8d46368b290e16be"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-18",
+      "snapshot_close_krw": 260000.0,
+      "snapshot_three_net_estimated_krw": -494562640000,
+      "krx_three_net_krw": -496155730750.0,
+      "krx_other_corp_net_krw": 497181625250.0,
+      "krx_other_foreign_net_krw": -1024428250.0,
+      "krx_five_net_krw": 1466250.0,
+      "krx_market_total_net_krw": 1466250.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -2975813,
+          "snapshot_net_estimated_krw": -773711380000,
+          "krx_net_krw": -748929078250.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -1673323,
+          "snapshot_net_estimated_krw": -435063980000,
+          "krx_net_krw": -455448380000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 2746972,
+          "snapshot_net_estimated_krw": 714212720000,
+          "krx_net_krw": 708221727500.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "caed5ad4ab46005ae085c73c9e0a48515f9e4c3adcfd17c6dfeb07aef7f63892",
+        "005930_sell.xlsx": "936a715aeb5cd2f47d70d4d8dbc2baa824eea73e12d8f5304c935b0d0cce57b9"
+      }
+    },
+    {
+      "ticker": "005930",
+      "date": "2026-09-21",
+      "snapshot_close_krw": 275000.0,
+      "snapshot_three_net_estimated_krw": -518530100000,
+      "krx_three_net_krw": -503999701558.0,
+      "krx_other_corp_net_krw": 513761014250.0,
+      "krx_other_foreign_net_krw": -9761782750.0,
+      "krx_five_net_krw": -470058.0,
+      "krx_market_total_net_krw": -470058.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -10152588,
+          "snapshot_net_estimated_krw": -2791961700000,
+          "krx_net_krw": -2758156979750.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 4080410,
+          "snapshot_net_estimated_krw": 1122112750000,
+          "krx_net_krw": 1116053293692.0
+        },
+        "institution": {
+          "snapshot_net_shares": 4186614,
+          "snapshot_net_estimated_krw": 1151318850000,
+          "krx_net_krw": 1138103984500.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "krw"
+      },
+      "unit_correction": "mixed_source_unit_by_side",
+      "collected_at": "2026-09-21T12:13:28Z",
+      "raw_shas": {
+        "005930_buy.xlsx": "8df70cf1023b8dd6a8f6a204250600c6b23561230af5dbcf2f4286ea66c3348e",
+        "005930_sell.xlsx": "9bda69a67cae5fb487c8434438955a771ef74bcbe8a1eb33bbe4324de6bb09e2"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-01",
+      "snapshot_close_krw": 1693000.0,
+      "snapshot_three_net_estimated_krw": -1085775076000,
+      "krx_three_net_krw": -1073875000000.0,
+      "krx_other_corp_net_krw": 1083656000000.0,
+      "krx_other_foreign_net_krw": -9780000000.0,
+      "krx_five_net_krw": 1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -590498,
+          "snapshot_net_estimated_krw": -999713114000,
+          "krx_net_krw": -1001258000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 91835,
+          "snapshot_net_estimated_krw": 155476655000,
+          "krx_net_krw": 166823000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -142669,
+          "snapshot_net_estimated_krw": -241538617000,
+          "krx_net_krw": -239440000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "fa6ba0b5fa1f0a1a6768745b8824b5681e43df4125c533af6cd853e1ee1ccdf3",
+        "000660_sell.xlsx": "0435e1d9d96037b1c2b298e19e3258f027b96756421b03c0ef5081bd72b7dc35"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-02",
+      "snapshot_close_krw": 1613000.0,
+      "snapshot_three_net_estimated_krw": -1048319347000,
+      "krx_three_net_krw": -1065480000000.0,
+      "krx_other_corp_net_krw": 1061050000000.0,
+      "krx_other_foreign_net_krw": 4428000000.0,
+      "krx_five_net_krw": -2000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": -2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 296807,
+          "snapshot_net_estimated_krw": 478749691000,
+          "krx_net_krw": 483453000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -651507,
+          "snapshot_net_estimated_krw": -1050880791000,
+          "krx_net_krw": -1068481000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -295219,
+          "snapshot_net_estimated_krw": -476188247000,
+          "krx_net_krw": -480452000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "4a23ecef9622a448042a3c42abca7f46c02efe07efd025fe8bca09c59b792b91",
+        "000660_sell.xlsx": "2aec06d2aef85cfccd759d8b1c52a0821475a5510547a4b2e84b153ee0e83155"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-03",
+      "snapshot_close_krw": 1596000.0,
+      "snapshot_three_net_estimated_krw": -1024997484000,
+      "krx_three_net_krw": -1040056000000.0,
+      "krx_other_corp_net_krw": 1043340000000.0,
+      "krx_other_foreign_net_krw": -3282000000.0,
+      "krx_five_net_krw": 2000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -220315,
+          "snapshot_net_estimated_krw": -351622740000,
+          "krx_net_krw": -361498000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -234626,
+          "snapshot_net_estimated_krw": -374463096000,
+          "krx_net_krw": -378169000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -187288,
+          "snapshot_net_estimated_krw": -298911648000,
+          "krx_net_krw": -300389000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "ee21b3e17c181cc560e476e80cbfb0d0467a9d1710a278fe8a2c9fad146ee99a",
+        "000660_sell.xlsx": "ca9b2908acebc517aaaeec398d41d9712eb90ce1c9168ce8cc2c2d030b593495"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-04",
+      "snapshot_close_krw": 1647000.0,
+      "snapshot_three_net_estimated_krw": -1040948469000,
+      "krx_three_net_krw": -1025942000000.0,
+      "krx_other_corp_net_krw": 1041338000000.0,
+      "krx_other_foreign_net_krw": -15395000000.0,
+      "krx_five_net_krw": 1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -1037636,
+          "snapshot_net_estimated_krw": -1708986492000,
+          "krx_net_krw": -1711757000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 308833,
+          "snapshot_net_estimated_krw": 508647951000,
+          "krx_net_krw": 527200000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 96776,
+          "snapshot_net_estimated_krw": 159390072000,
+          "krx_net_krw": 158615000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "13283d1df68defb67f235cc0d3c054031d7ed6e1c48635ba662310aeb98c3611",
+        "000660_sell.xlsx": "2a162673c456166fa95569bbf957a9661ef16db9f4ab602521b9d0cf4ae7876d"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-07",
+      "snapshot_close_krw": 1783000.0,
+      "snapshot_three_net_estimated_krw": -1130502235000,
+      "krx_three_net_krw": -1094371000000.0,
+      "krx_other_corp_net_krw": 1110368000000.0,
+      "krx_other_foreign_net_krw": -15999000000.0,
+      "krx_five_net_krw": -2000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": -2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -1771800,
+          "snapshot_net_estimated_krw": -3159119400000,
+          "krx_net_krw": -3108703000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 772036,
+          "snapshot_net_estimated_krw": 1376540188000,
+          "krx_net_krw": 1370548000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 365719,
+          "snapshot_net_estimated_krw": 652076977000,
+          "krx_net_krw": 643784000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "36bd249922370df437193fcea08beeed53e1d672934035170868bdfb3eca89d2",
+        "000660_sell.xlsx": "f4262eafa13e29d2dd90a8b61133266843f67a479c3ea54a2851663c23936b5f"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-08",
+      "snapshot_close_krw": 1793000.0,
+      "snapshot_three_net_estimated_krw": -1144186813000,
+      "krx_three_net_krw": -1173813000000.0,
+      "krx_other_corp_net_krw": 1183290000000.0,
+      "krx_other_foreign_net_krw": -9475000000.0,
+      "krx_five_net_krw": 2000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -721126,
+          "snapshot_net_estimated_krw": -1292978918000,
+          "krx_net_krw": -1335483000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 97545,
+          "snapshot_net_estimated_krw": 174898185000,
+          "krx_net_krw": 189865000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -14560,
+          "snapshot_net_estimated_krw": -26106080000,
+          "krx_net_krw": -28195000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "e3286e6ec5e2ffe856e49d37dd85a0f4ae7e392ad2f4f7989c97a2e58548727c",
+        "000660_sell.xlsx": "c16cb0427a1a1a51b155484ae236a53f5d22687f59923e2cbf58ac316605173b"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-09",
+      "snapshot_close_krw": 1856000.0,
+      "snapshot_three_net_estimated_krw": -1179957568000,
+      "krx_three_net_krw": -1173942000000.0,
+      "krx_other_corp_net_krw": 1178228000000.0,
+      "krx_other_foreign_net_krw": -4287000000.0,
+      "krx_five_net_krw": -1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -752453,
+          "snapshot_net_estimated_krw": -1396552768000,
+          "krx_net_krw": -1398812000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 41716,
+          "snapshot_net_estimated_krw": 77424896000,
+          "krx_net_krw": 85704000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 74984,
+          "snapshot_net_estimated_krw": 139170304000,
+          "krx_net_krw": 139166000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "59cca3bf3517b1d14b9c455918e38d84ee13be6bcaa182f531774e8728fe3503",
+        "000660_sell.xlsx": "2579481b3f1fc76dfca3a96d2eae9543af41d21d62ca09b366a2c48fa60dce96"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-10",
+      "snapshot_close_krw": 1853000.0,
+      "snapshot_three_net_estimated_krw": -1112991479000,
+      "krx_three_net_krw": -1110344000000.0,
+      "krx_other_corp_net_krw": 1109924000000.0,
+      "krx_other_foreign_net_krw": 420000000.0,
+      "krx_five_net_krw": 0.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 68853,
+          "snapshot_net_estimated_krw": 127584609000,
+          "krx_net_krw": 125970000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -956724,
+          "snapshot_net_estimated_krw": -1772809572000,
+          "krx_net_krw": -1769516000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 287228,
+          "snapshot_net_estimated_krw": 532233484000,
+          "krx_net_krw": 533202000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "cd779f03976e496ba6ff1d7197bf0cb9a63c94d42dd1906ea6b9934b9e521b14",
+        "000660_sell.xlsx": "667e40afcf999a233af7d46402df736bf4222381b6361c320bb84708e0c9676e"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-11",
+      "snapshot_close_krw": 1812000.0,
+      "snapshot_three_net_estimated_krw": -1094248680000,
+      "krx_three_net_krw": -1082858000000.0,
+      "krx_other_corp_net_krw": 1079187000000.0,
+      "krx_other_foreign_net_krw": 3669000000.0,
+      "krx_five_net_krw": -2000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": -2000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 277145,
+          "snapshot_net_estimated_krw": 502186740000,
+          "krx_net_krw": 489983000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -606502,
+          "snapshot_net_estimated_krw": -1098981624000,
+          "krx_net_krw": -1084025000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -274533,
+          "snapshot_net_estimated_krw": -497453796000,
+          "krx_net_krw": -488816000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "14970bbbeafe70ea892dad665b1af99b3c2b9740c60f33d8f0095f4971da9462",
+        "000660_sell.xlsx": "7426fbaf9c655de66a277ed5dbc4356a536f417a05f490e61b4bf519c646cdea"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-14",
+      "snapshot_close_krw": 1683000.0,
+      "snapshot_three_net_estimated_krw": -968261877000,
+      "krx_three_net_krw": -995053000000.0,
+      "krx_other_corp_net_krw": 988290000000.0,
+      "krx_other_foreign_net_krw": 6762000000.0,
+      "krx_five_net_krw": -1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": -1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 906398,
+          "snapshot_net_estimated_krw": 1525467834000,
+          "krx_net_krw": 1547541000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -1215512,
+          "snapshot_net_estimated_krw": -2045706696000,
+          "krx_net_krw": -2088964000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -266205,
+          "snapshot_net_estimated_krw": -448023015000,
+          "krx_net_krw": -453630000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "8a76a1b6411a69031b5660f94b24113d216e4bb4067267a0cdaa8c5a09efb7a5",
+        "000660_sell.xlsx": "3dd9f8d80f2874adebefff074c9fe6387ee0da744a3fa36187b6d4e47dbecce4"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-15",
+      "snapshot_close_krw": 1712000.0,
+      "snapshot_three_net_estimated_krw": -1123678048000,
+      "krx_three_net_krw": -1118246000000.0,
+      "krx_other_corp_net_krw": 1119649000000.0,
+      "krx_other_foreign_net_krw": -1402000000.0,
+      "krx_five_net_krw": 1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 32096,
+          "snapshot_net_estimated_krw": 54948352000,
+          "krx_net_krw": 50738000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -586836,
+          "snapshot_net_estimated_krw": -1004663232000,
+          "krx_net_krw": -997078000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -101614,
+          "snapshot_net_estimated_krw": -173963168000,
+          "krx_net_krw": -171906000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "ab79622f0e8144662ef2abfb0682b3cc73727c065b189cf57296e4c7173a52b5",
+        "000660_sell.xlsx": "4d94774fbfc2794b6ea21bb8467bf8314a63c3c0ff8e4abecab66488d343c02a"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-16",
+      "snapshot_close_krw": 1757000.0,
+      "snapshot_three_net_estimated_krw": -1148466564000,
+      "krx_three_net_krw": -1124635000000.0,
+      "krx_other_corp_net_krw": 1128478000000.0,
+      "krx_other_foreign_net_krw": -3840000000.0,
+      "krx_five_net_krw": 3000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 3000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -608158,
+          "snapshot_net_estimated_krw": -1068533606000,
+          "krx_net_krw": -1052990000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -262655,
+          "snapshot_net_estimated_krw": -461484835000,
+          "krx_net_krw": -448848000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 217161,
+          "snapshot_net_estimated_krw": 381551877000,
+          "krx_net_krw": 377203000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "f2d7a440676d8219b29e3a8fe6db44a1b30ef73def1a36788d07c125530b4400",
+        "000660_sell.xlsx": "1d7a8914636111098036af67972b92f27c8a52f0ebbf7a8669291eb4a9191d8a"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-17",
+      "snapshot_close_krw": 1766000.0,
+      "snapshot_three_net_estimated_krw": -1171098176000,
+      "krx_three_net_krw": -1162120000000.0,
+      "krx_other_corp_net_krw": 1162787000000.0,
+      "krx_other_foreign_net_krw": -666000000.0,
+      "krx_five_net_krw": 1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": 92256,
+          "snapshot_net_estimated_krw": 162924096000,
+          "krx_net_krw": 160375000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -701796,
+          "snapshot_net_estimated_krw": -1239371736000,
+          "krx_net_krw": -1229551000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": -53596,
+          "snapshot_net_estimated_krw": -94650536000,
+          "krx_net_krw": -92944000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "45ab579d18ca4931c0adb5f2e446fef31027dc1235c386b7c2095638bb4f45af",
+        "000660_sell.xlsx": "5d66b00c65aca1550693a09d1b00b692839ed0b66ea9c91ba8a2d8d3fe4d836f"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-18",
+      "snapshot_close_krw": 1849000.0,
+      "snapshot_three_net_estimated_krw": -1140405881000,
+      "krx_three_net_krw": -1121435000000.0,
+      "krx_other_corp_net_krw": 1131795000000.0,
+      "krx_other_foreign_net_krw": -9882000000.0,
+      "krx_five_net_krw": 478000000.0,
+      "krx_market_total_net_krw": 478000000.0,
+      "classification_residual_vs_market_krw": 0.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -1500981,
+          "snapshot_net_estimated_krw": -2775313869000,
+          "krx_net_krw": -2743881000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": 723470,
+          "snapshot_net_estimated_krw": 1337696030000,
+          "krx_net_krw": 1334973000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 160742,
+          "snapshot_net_estimated_krw": 297211958000,
+          "krx_net_krw": 287473000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-19T07:23:13Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "f8389106df8b4b40a697402340b3b1c3898629fe25e1dd96e82f9644fe0c6a4f",
+        "000660_sell.xlsx": "6f419648ab96b13543aad4e8afffa610a166ef4feb7a360366cc00bb1d9abfba"
+      }
+    },
+    {
+      "ticker": "000660",
+      "date": "2026-09-21",
+      "snapshot_close_krw": 1879000.0,
+      "snapshot_three_net_estimated_krw": -1112696825000,
+      "krx_three_net_krw": -1104961000000.0,
+      "krx_other_corp_net_krw": 1108421000000.0,
+      "krx_other_foreign_net_krw": -3459000000.0,
+      "krx_five_net_krw": 1000000.0,
+      "krx_market_total_net_krw": 0.0,
+      "classification_residual_vs_market_krw": 1000000.0,
+      "max_actor_buy_sell_net_residual_krw": 0.0,
+      "actors": {
+        "retail": {
+          "snapshot_net_shares": -327282,
+          "snapshot_net_estimated_krw": -614962878000,
+          "krx_net_krw": -614598000000.0
+        },
+        "foreign": {
+          "snapshot_net_shares": -360986,
+          "snapshot_net_estimated_krw": -678292694000,
+          "krx_net_krw": -671314000000.0
+        },
+        "institution": {
+          "snapshot_net_shares": 96093,
+          "snapshot_net_estimated_krw": 180558747000,
+          "krx_net_krw": 180951000000.0
+        }
+      },
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      },
+      "unit_correction": null,
+      "collected_at": "2026-09-21T12:13:28Z",
+      "raw_shas": {
+        "000660_buy.xlsx": "fd57332d6464d5226ac26811fb8f3cc9d4a1da2fc25cec75fca155797f411816",
+        "000660_sell.xlsx": "fd133769a74d13de4ee27917cda9a027fea6a52d7506a2f7f8d36876a4c2169c"
+      }
+    }
+  ]
+}
