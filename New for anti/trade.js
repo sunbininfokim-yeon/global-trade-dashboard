@@ -1244,6 +1244,16 @@ const renderTradeWorldPanel = (arcs) => {
     if (topExporterEl && exportRank.ranked.length) {
         topExporterEl.textContent = exportRank.ranked[0][0];
     }
+    // A commodity with no hand-written world total ("—", e.g. 경질유, which
+    // has no published figure to copy) takes it from the routes on the map:
+    // weight and value summed over every exporter->importer route.
+    const staticTotal = window.TradeData?.[currentCommodity]?.totalVolume;
+    if (totalVolumeEl && staticTotal === '—' && arcs.length) {
+        const usdM = arcs.reduce((sum, a) => sum + (a.volume > 0 ? a.volume : 0), 0);
+        const mt = arcs.reduce((sum, a) => sum + (a.netWeightMt > 0 ? a.netWeightMt : 0), 0);
+        const usd = usdM >= 1000 ? `$${(usdM / 1000).toFixed(0)}B` : `$${usdM.toLocaleString()}M`;
+        totalVolumeEl.textContent = mt > 0 ? `${Math.round(mt).toLocaleString()} Mt · ${usd}` : usd;
+    }
 
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
