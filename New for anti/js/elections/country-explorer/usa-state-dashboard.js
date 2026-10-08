@@ -110,7 +110,7 @@ const subtitleFor = (financeMode, districtMapReady) => {
 
 const skeletonHtml = () => `
     <div class="elections-spac-skeleton" aria-busy="true">
-        <p class="elections-panel-note">선거 자금·여론조사 자료를 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span> 지도는 먼저 표시됩니다.</p>
+        <p class="elections-panel-note">선거 자금·여론조사 자료를 불러오는 중입니다.<span class="inline-spinner" aria-hidden="true"></span><br>지도는 먼저 표시됩니다.</p>
         <i></i><i></i><i></i>
     </div>`;
 

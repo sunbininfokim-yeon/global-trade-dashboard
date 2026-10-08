@@ -148,6 +148,28 @@ def evaluate(y_true, y_pred, baseline):
             "recent_trend_bias": trend_bias}
 
 
+# Evidence floor for calling a model usable (same rule as russia.train):
+# Vidarbha cotton scored +47% on five forward folds, which is noise.
+MIN_FORWARD_FOLDS = 8
+SEASONS_PER_FEATURE = 5
+
+
+def window_rows(years, mask, degree, window):
+    """
+    Narrow a training mask to the rows the trend was actually fitted to.
+
+    Port of brazil.train.window_rows (2026-08-03): residuals against a
+    trailing-window trend computed over the whole record carry a non-zero
+    mean, and RidgeCV's intercept takes it as a free level correction that
+    scores as skill against a baseline that never received it.
+    """
+    if not window:
+        return mask
+    cutoff = years[mask].max() - window + 1
+    narrowed = mask & (years >= cutoff)
+    return narrowed if narrowed.sum() >= max(degree + 2, 8) else mask
+
+
 def run_cv(df, features, mode, degree, window, min_train):
     years = df.year.values.astype(float)
     yields = df.yield_kg_ha.values.astype(float)
@@ -167,10 +189,11 @@ def run_cv(df, features, mode, degree, window, min_train):
         trend = fit_trend(years[train], yields[train], degree, window)
         X = prepare(df, features, years, trend)
 
-        resid_train = np.log(yields[train]) - trend(years[train])
+        fit = window_rows(years, train, degree, window)
+        resid_train = np.log(yields[fit]) - trend(years[fit])
 
-        scaler = StandardScaler().fit(X[train])
-        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[train]), resid_train)
+        scaler = StandardScaler().fit(X[fit])
+        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid_train)
         pred = float(model.predict(scaler.transform(X[i:i + 1]))[0])
 
         preds.append(float(np.exp(trend(target) + pred)))
@@ -297,6 +320,17 @@ def train_one(cfg):
     full_skill = (1 - best["rmse"] / best_baseline
                   if best_baseline > 0 else float("nan"))
     beats_trend = full_skill > 0 and recent_skill > 0
+    raw_beats_trend = bool(beats_trend)
+    thin_evidence = []
+    if n_folds < MIN_FORWARD_FOLDS:
+        thin_evidence.append(f"{n_folds} forward folds < {MIN_FORWARD_FOLDS}")
+    if len(best_feats) > len(df) // SEASONS_PER_FEATURE:
+        thin_evidence.append(f"{len(best_feats)} features > {len(df)} seasons / "
+                             f"{SEASONS_PER_FEATURE}")
+    if thin_evidence and beats_trend:
+        log("  NOTE: positive skill on thin evidence ("
+            + "; ".join(thin_evidence) + ") — not usable.")
+        beats_trend = False
 
     # Isolate the weather contribution where non-weather features are present.
     nw_feats = [f for f in best_feats if f in NON_WEATHER_FEATURES]
@@ -333,9 +367,10 @@ def train_one(cfg):
     # Final fit on every season, for forecasting the live one.
     years = df.year.values.astype(float)
     X = prepare(df, best_feats, years, trend)
-    scaler = StandardScaler().fit(X)
-    resid = np.log(df.yield_kg_ha.values) - trend(years)
-    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
+    fit = window_rows(years, np.ones(len(years), dtype=bool), degree, window)
+    scaler = StandardScaler().fit(X[fit])
+    resid = np.log(df.yield_kg_ha.values[fit]) - trend(years[fit])
+    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid)
 
     # Uncertainty from out-of-sample error, never in-sample. Where the model
     # loses to the trend, the honest band is the trend's own error.
@@ -378,6 +413,8 @@ def train_one(cfg):
                   "coef": final.coef_.tolist(),
                   "intercept": float(final.intercept_)},
         "beats_trend": bool(beats_trend),
+        "raw_beats_trend": raw_beats_trend,
+        "thin_evidence": thin_evidence,
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),

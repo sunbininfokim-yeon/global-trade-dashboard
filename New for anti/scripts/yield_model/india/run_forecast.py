@@ -35,6 +35,10 @@ from .predict import predict_one
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Seasons between the last published label and the forecast season beyond
+# which the figure is shown as low confidence regardless of backtest skill.
+MAX_LABEL_GAP = 3
 OUT = os.path.abspath(os.path.join(
     HERE, "..", "..", "..", "public", "data", "india_yield_forecast.json"))
 
@@ -120,6 +124,13 @@ def main():
         enso_state, enso_val = enso_label(r["features"].get("oni_season"))
         iod_state, iod_val = iod_label(r["features"].get("dmi_season"))
 
+        # A forecast extrapolated many seasons past the last published
+        # label is a trend guess however good the backtest was: Punjab wheat
+        # was last observed in 2019 (ICRISAT lag) and forecast for 2026.
+        label_year = (r["last_actual"] or {}).get("year")
+        label_gap = season - label_year if label_year else None
+        stale_label = label_gap is not None and label_gap > MAX_LABEL_GAP
+
         payload["regions"][cfg.key] = {
             "label": r["label"],
             "crop": cfg.crop,
@@ -141,6 +152,11 @@ def main():
                 "weather_driven": bool(r["weather_skill"] > 0),
                 "non_weather_features": r["non_weather_features"],
                 "beats_trend": r["beats_trend"],
+                "low_confidence": bool((not r["beats_trend"])
+                                       or r["skill_vs_trend"] < 0.20
+                                       or stale_label),
+                "label_through": label_year,
+                "stale_label": stale_label,
                 "sigma_kg_ha": round(r["sigma"], 1),
             },
             "provenance": {
