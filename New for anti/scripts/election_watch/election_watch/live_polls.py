@@ -125,6 +125,42 @@ def reviewed_source(raw, policy, as_of):
     return source, None
 
 
+def provider_fingerprint(raw):
+    """Bind a primary-source correction to the entire admitted provider record."""
+    return digest({k: raw.get(k) for k in ('id', 'subject', 'poll_type', 'pollster', 'url',
+        'start_date', 'end_date', 'created_at', 'population', 'sample_size', 'answers',
+        'seat_name', 'sponsors', 'internal', 'partisan')})
+
+
+def corrected_provider_metadata(raw, review, as_of):
+    correction = review.get('provider_metadata_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(correction['provider_snapshot_sha256'] == provider_fingerprint(raw),
+            'provider_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    require(admission.get('provider_url') == raw.get('url') and admission.get('pollster') == raw['pollster']
+            and review.get('sources') and review.get('primary_toplines'), 'unverified_metadata_correction')
+    overrides = correction['overrides']
+    require(overrides and set(overrides) <= {'start_date', 'end_date', 'population', 'sample_size'},
+            'unsupported_metadata_correction')
+    disclosure = review['disclosure_review']
+    dates = disclosure.get('field_dates') or [None, None]
+    require(isinstance(dates, list) and len(dates) == 2, 'invalid_correction_field_dates')
+    expected = {'start_date': dates[0],
+                'end_date': dates[1],
+                'population': str(disclosure.get('population', '')).lower(),
+                'sample_size': review.get('question_sample_n') or disclosure.get('sample_n')}
+    require(all(v == expected[k] for k, v in overrides.items()), 'correction_disclosure_mismatch')
+    output = deepcopy(raw)
+    output.update(overrides)
+    return output, {'status': 'reviewed_primary_metadata_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'provider_values': {k: raw.get(k) for k in overrides}, 'primary_values_used': deepcopy(overrides),
+        'sources': review['sources'], 'basis_ko': correction['basis_ko']}
+
+
 def normalize(rows, policy, as_of):
     day = date.fromisoformat(as_of)
     races = policy['races']
@@ -144,6 +180,7 @@ def normalize(rows, policy, as_of):
             require(p['id'] not in seen_ids, 'duplicate_id')
             seen_ids.add(p['id'])
             require(p['id'] not in policy.get('excluded_records', {}), policy.get('excluded_records', {}).get(p['id'], 'excluded_record'))
+            p, metadata_correction = corrected_provider_metadata(p, policy.get("quality_reviews", {}).get(p["id"], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
             partisan_reference = (admission and admission.get('allow_partisan_reference') is True
                                   and admission['signal_eligible'] is False
@@ -196,6 +233,8 @@ def normalize(rows, policy, as_of):
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
                              'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
+            if metadata_correction:
+                observation['provider_metadata_correction'] = metadata_correction
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'

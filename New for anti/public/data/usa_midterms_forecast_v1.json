@@ -2,7 +2,7 @@
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
   "as_of": "2026-10-08",
-  "generated_at": "2026-10-08T00:22:26.973242+00:00",
+  "generated_at": "2026-10-08T03:51:18.337409+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -6027,14 +6027,14 @@
       "chambers": {
         "house": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 198 · 공화 196 · 무소속 0 · 미정 41. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 200 · 공화 196 · 무소속 0 · 미정 39. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 435,
           "scenario_counts": {
-            "DEM": 198,
+            "DEM": 200,
             "GOP": 196,
             "IND": 0
           },
-          "unresolved_seats": 41,
+          "unresolved_seats": 39,
           "buckets": {
             "retained": {},
             "rated_baseline_assumption": {
@@ -6043,13 +6043,13 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 1,
+              "DEM": 3,
               "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 1,
+            "DEM": 3,
             "GOP": 1,
             "IND": 0
           },
@@ -6061,16 +6061,16 @@
           "unresolved_without_single_polls": 43,
           "conditional_bounds": {
             "DEM": {
-              "min": 198,
+              "min": 200,
               "max": 239
             },
             "GOP": {
               "min": 196,
-              "max": 237
+              "max": 235
             },
             "IND": {
               "min": 0,
-              "max": 41
+              "max": 39
             }
           },
           "ratings_as_of": "2026-09-25",
@@ -6699,24 +6699,77 @@
               "race_id": "USA:AZ:house:01",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202firaf458383",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "statistical_significance"
+                    ],
+                    "reviewed_on": "2026-10-08",
+                    "review_sources": [
+                      "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Amish Shah": 44.4,
+                      "Jay Feely": 41.6
+                    },
+                    "question_sample_n": 400,
+                    "disclosure_review": {
+                      "population": "RV",
+                      "sample_n": 400,
+                      "field_dates": [
+                        "2026-10-01",
+                        "2026-10-01"
+                      ],
+                      "sponsor": null,
+                      "sampling_frame": "district registered-voter file",
+                      "mode": "text-to-web",
+                      "weighting": "general-election turnout model by party, gender and age",
+                      "question_wording_checked": true,
+                      "undecided_pct": 14.0
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_error",
+                      "half_width_pp": 5.4,
+                      "confidence_level_pct": 95,
+                      "scope": "candidate share",
+                      "design_effect": 1.24,
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "not_reviewed",
+                    "sponsor_review": {},
+                    "limitations_ko": "원문은 등록 유권자 400명이며 API의 LV를 RV로 정정. 투표율 모형 가중을 LV 선별 조사로 간주하지 않음. 의뢰자 별도 미공개. 후보 격차의 유의성·승리 확률은 산출하지 않음."
+                  },
+                  "leading_margin_pp": 2.8,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202firaf458383"
+              ]
             },
             {
               "race_id": "USA:CA:house:13",
@@ -7136,24 +7189,71 @@
               "race_id": "USA:VA:house:01",
               "rating": "lean_rep",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202the7176ba8a",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "statistical_significance"
+                    ],
+                    "reviewed_on": "2026-10-08",
+                    "review_sources": [
+                      "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+                      "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/"
+                    ],
+                    "primary_toplines": {
+                      "Rob Wittman": 46,
+                      "Shannon Taylor": 50
+                    },
+                    "question_sample_n": 609,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 609,
+                      "field_dates": [
+                        "2026-09-23",
+                        "2026-09-28"
+                      ],
+                      "sponsor": "The Washington Post and George Mason University Schar School",
+                      "sampling_frame": "random sample from statewide voter database within each district",
+                      "mode": "64% live-cellphone, 10% landline, 26% SMS-to-web",
+                      "likely_voter_screen": "registered voters assigned probability of voting",
+                      "weighting": null,
+                      "question_wording_checked": false
+                    },
+                    "reported_precision": null,
+                    "ballot_format": "not_reviewed",
+                    "sponsor_review": {},
+                    "limitations_ko": "공동 의뢰 언론의 원문 수치·표본·기간·방법 대조. 상세 PDF 접근 실패. VA-05 원문 Perriello 45와 API 46 불일치는 수치 편입 보류, 임의 보정하지 않음."
+                  },
+                  "leading_margin_pp": 4.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202the7176ba8a"
+              ]
             },
             {
               "race_id": "USA:WI:house:01",
@@ -9541,24 +9641,77 @@
           "race_id": "USA:AZ:house:01",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202firaf458383",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+                ],
+                "primary_toplines": {
+                  "Amish Shah": 44.4,
+                  "Jay Feely": 41.6
+                },
+                "question_sample_n": 400,
+                "disclosure_review": {
+                  "population": "RV",
+                  "sample_n": 400,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-01"
+                  ],
+                  "sponsor": null,
+                  "sampling_frame": "district registered-voter file",
+                  "mode": "text-to-web",
+                  "weighting": "general-election turnout model by party, gender and age",
+                  "question_wording_checked": true,
+                  "undecided_pct": 14.0
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_error",
+                  "half_width_pp": 5.4,
+                  "confidence_level_pct": 95,
+                  "scope": "candidate share",
+                  "design_effect": 1.24,
+                  "model_details_verified": false
+                },
+                "ballot_format": "not_reviewed",
+                "sponsor_review": {},
+                "limitations_ko": "원문은 등록 유권자 400명이며 API의 LV를 RV로 정정. 투표율 모형 가중을 LV 선별 조사로 간주하지 않음. 의뢰자 별도 미공개. 후보 격차의 유의성·승리 확률은 산출하지 않음."
+              },
+              "leading_margin_pp": 2.8,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202firaf458383"
+          ]
         },
         {
           "race_id": "USA:CA:house:13",
@@ -9978,24 +10131,71 @@
           "race_id": "USA:VA:house:01",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202the7176ba8a",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+                  "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/"
+                ],
+                "primary_toplines": {
+                  "Rob Wittman": 46,
+                  "Shannon Taylor": 50
+                },
+                "question_sample_n": 609,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 609,
+                  "field_dates": [
+                    "2026-09-23",
+                    "2026-09-28"
+                  ],
+                  "sponsor": "The Washington Post and George Mason University Schar School",
+                  "sampling_frame": "random sample from statewide voter database within each district",
+                  "mode": "64% live-cellphone, 10% landline, 26% SMS-to-web",
+                  "likely_voter_screen": "registered voters assigned probability of voting",
+                  "weighting": null,
+                  "question_wording_checked": false
+                },
+                "reported_precision": null,
+                "ballot_format": "not_reviewed",
+                "sponsor_review": {},
+                "limitations_ko": "공동 의뢰 언론의 원문 수치·표본·기간·방법 대조. 상세 PDF 접근 실패. VA-05 원문 Perriello 45와 API 46 불일치는 수치 편입 보류, 임의 보정하지 않음."
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202the7176ba8a"
+          ]
         },
         {
           "race_id": "USA:WI:house:01",

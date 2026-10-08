@@ -1579,14 +1579,14 @@
     },
     "us-202sur34bdca99": {
       "reviewed_on": "2026-10-08",
-      "snapshot_sha256": "2fbae5cbeada8bd1cb26eba2bfa477673d4076c4fee1aa4f562cb24d3fd0aada",
+      "snapshot_sha256": "4396047edc8183e722dd543b2d30cb314b201066d3c427f0c3b2c85ea6532343",
       "sources": [
         "https://results.surveyusa.com/client/PollReport.aspx?g=7dad7202-08be-4fe4-a687-b52480791639"
       ],
       "primary_toplines": {
-        "Anthony Constantino": 39.0,
-        "Blake Gendebien": 43.0,
-        "Chris Schmidt": 5.0
+        "Anthony Constantino": 39,
+        "Blake Gendebien": 43,
+        "Chris Schmidt": 5
       },
       "question_sample_n": 612,
       "disclosure_review": {
@@ -1604,35 +1604,41 @@
         "sponsor": [
           "WNYT"
         ],
-        "question_wording_checked": true
+        "question_wording_checked": true,
+        "sample_n": 612
       },
       "reported_precision": null,
       "missing_fields": [
-        "precision_model_specification",
         "historical_accuracy_rating",
         "statistical_significance"
       ],
-      "limitations_ko": "API 모집단은 성인(a) 800명으로 등록했으나 원문의 본선 문항은 LV 612명. 수치 대조 기록을 남기며 지원 모집단·표본 불일치로 편입 보류.",
-      "sponsor_review": {
-        "reported_sponsors": [
-          "WNYT"
-        ],
-        "affiliation_verified": true,
-        "meaning": "identified regional media commissioner, not a neutrality certification"
-      },
+      "limitations_ko": "기존 검토 원문 본선 문항 LV 612명으로 API 성인 800명 메타데이터 정정. 원 지문·원문 공개 항목 보존. 과거 8월 조사이며 최근 7/14일 자료가 아님.",
       "admission": {
         "pollster": "SurveyUSA",
         "provider_url": "https://results.surveyusa.com/client/PollReport.aspx?g=7dad7202-08be-4fe4-a687-b52480791639",
         "group": "surveyusa",
         "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=7dad7202-08be-4fe4-a687-b52480791639",
         "source_role": "pollster_primary",
-        "signal_eligible": false,
-        "signal_exclusion_reasons": [
-          "provider_primary_population_sample_mismatch"
-        ],
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
         "allow_historical_reference": false
       },
-      "primary_snapshot_sha256": "d061366f787b223189744e8670f075e3ad3f7967e328253f5cc61a2736ea1b2d"
+      "provider_metadata_correction": {
+        "provider_snapshot_sha256": "19f3c1d3de7c7d0305467b4ce057454b8090a7a7f5b80736015c6028e946bc47",
+        "overrides": {
+          "population": "lv",
+          "sample_size": 612
+        },
+        "basis_ko": "원문 방법론과 API의 메타데이터 불일치를 개별 레코드로 검토해 정정. API 원래 값·지문을 함께 보존하며 응답이 변경되면 자동 적용하지 않습니다."
+      },
+      "primary_snapshot_sha256": "d061366f787b223189744e8670f075e3ad3f7967e328253f5cc61a2736ea1b2d",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "WNYT"
+        ],
+        "affiliation_verified": true,
+        "meaning": "identified regional media commissioner, not a neutrality certification"
+      }
     },
     "gov202surd1c462e5": {
       "reviewed_on": "2026-10-08",
@@ -1682,6 +1688,512 @@
         "allow_historical_reference": false
       },
       "primary_snapshot_sha256": "ce8cf02000f060a7b71815c01b6d0fc1999bacfebef230ce361b6b1f5cad5d2a"
+    },
+    "us-202firaf458383": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "4b5275719be44cf2e7e2a1a365a1cac773fca1c56aac32ca100ef9184bd88f13",
+      "sources": [
+        "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+      ],
+      "primary_toplines": {
+        "Amish Shah": 44.4,
+        "Jay Feely": 41.6
+      },
+      "question_sample_n": 400,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 400,
+        "field_dates": [
+          "2026-10-01",
+          "2026-10-01"
+        ],
+        "sponsor": null,
+        "sampling_frame": "district registered-voter file",
+        "mode": "text-to-web",
+        "weighting": "general-election turnout model by party, gender and age",
+        "question_wording_checked": true,
+        "undecided_pct": 14.0
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 5.4,
+        "confidence_level_pct": 95,
+        "scope": "candidate share",
+        "design_effect": 1.24,
+        "model_details_verified": false
+      },
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문은 등록 유권자 400명이며 API의 LV를 RV로 정정. 투표율 모형 가중을 LV 선별 조사로 간주하지 않음. 의뢰자 별도 미공개. 후보 격차의 유의성·승리 확률은 산출하지 않음.",
+      "admission": {
+        "pollster": "FirstStrategic",
+        "provider_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+        "group": "firststrategic",
+        "methodology_url": "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      },
+      "provider_metadata_correction": {
+        "provider_snapshot_sha256": "685cc00a1b329829e849e918b77e85529e3adf1f263164aa4b7cef8da7738c4a",
+        "overrides": {
+          "population": "rv"
+        },
+        "basis_ko": "원문 방법론과 API의 메타데이터 불일치를 개별 레코드로 검토해 정정. API 원래 값·지문을 함께 보존하며 응답이 변경되면 자동 적용하지 않습니다."
+      },
+      "primary_snapshot_sha256": "4216fd9e9c49eaeedf211e9faface9f3ca7db0f418f8ce30a9d6cfaab6785318"
+    },
+    "us-202texe83b516f": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "650bab42239e92c967003b6d1dba893226cb92d543256478b52805e254d5501b",
+      "sources": [
+        "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+      ],
+      "primary_toplines": {
+        "Bobby Pulido": 50,
+        "Monica De La Cruz": 45
+      },
+      "question_sample_n": 700,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 700,
+        "field_dates": [
+          "2026-08-18",
+          "2026-08-22"
+        ],
+        "sponsor": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "sampling_frame": "Texas registered voters in each 2026 congressional district",
+        "mode": "SMS invitation to English/Spanish online survey",
+        "likely_voter_screen": "reported likelihood plus prior election participation",
+        "weighting": null,
+        "question_wording_checked": false
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.7,
+        "scope": "district overall sample",
+        "model_details_verified": false
+      },
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문 조사일 8/18–22와 API 7/27–30의 불일치를 개별 원문 검토로 정정. 지역구별 표본을 주 전체 상원·주지사 조사로 확대하지 않음. 2026 새 경계 대상임을 원문 확인. 가중치 상세·원 질문 전문은 미공개/미확인.",
+      "admission": {
+        "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "provider_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "group": "tsu_barbara_jordan",
+        "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      },
+      "provider_metadata_correction": {
+        "provider_snapshot_sha256": "023842328c55113abb2edf9ae2319af153580acfbb3ab4442f5c808b1092974c",
+        "overrides": {
+          "start_date": "2026-08-18",
+          "end_date": "2026-08-22"
+        },
+        "basis_ko": "원문 방법론과 API의 메타데이터 불일치를 개별 레코드로 검토해 정정. API 원래 값·지문을 함께 보존하며 응답이 변경되면 자동 적용하지 않습니다."
+      },
+      "primary_snapshot_sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+    },
+    "us-202tex35ec19da": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "70a3e521635e8262f09ceca50e4db05c1f6e51e2d77ed8e182a61cf7ca72e9e9",
+      "sources": [
+        "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+      ],
+      "primary_toplines": {
+        "Henry Cuellar": 45,
+        "Tano Tijerina": 34,
+        "Marlón Durán": 6
+      },
+      "question_sample_n": 600,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 600,
+        "field_dates": [
+          "2026-08-18",
+          "2026-08-22"
+        ],
+        "sponsor": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "sampling_frame": "Texas registered voters in each 2026 congressional district",
+        "mode": "SMS invitation to English/Spanish online survey",
+        "likely_voter_screen": "reported likelihood plus prior election participation",
+        "weighting": null,
+        "question_wording_checked": false
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 4.0,
+        "scope": "district overall sample",
+        "model_details_verified": false
+      },
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문 조사일 8/18–22와 API 7/27–30의 불일치를 개별 원문 검토로 정정. 지역구별 표본을 주 전체 상원·주지사 조사로 확대하지 않음. 2026 새 경계 대상임을 원문 확인. 가중치 상세·원 질문 전문은 미공개/미확인.",
+      "admission": {
+        "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "provider_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "group": "tsu_barbara_jordan",
+        "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      },
+      "provider_metadata_correction": {
+        "provider_snapshot_sha256": "0036223f08164be444489cd4bc91aa569baa62b1dcc83ffc89fea5ff3ee3a91e",
+        "overrides": {
+          "start_date": "2026-08-18",
+          "end_date": "2026-08-22"
+        },
+        "basis_ko": "원문 방법론과 API의 메타데이터 불일치를 개별 레코드로 검토해 정정. API 원래 값·지문을 함께 보존하며 응답이 변경되면 자동 적용하지 않습니다."
+      },
+      "primary_snapshot_sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+    },
+    "us-202tex909ea2d7": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "271cba5aae7c74159d5e359dfd0d1216f0acfbc5978bc516ac2b76971a91c754",
+      "sources": [
+        "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+      ],
+      "primary_toplines": {
+        "Vicente Gonzalez": 45,
+        "Eric Flores": 42,
+        "Eddie Espinoza": 3,
+        "Chris Royal": 2
+      },
+      "question_sample_n": 700,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 700,
+        "field_dates": [
+          "2026-08-18",
+          "2026-08-22"
+        ],
+        "sponsor": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "sampling_frame": "Texas registered voters in each 2026 congressional district",
+        "mode": "SMS invitation to English/Spanish online survey",
+        "likely_voter_screen": "reported likelihood plus prior election participation",
+        "weighting": null,
+        "question_wording_checked": false
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.7,
+        "scope": "district overall sample",
+        "model_details_verified": false
+      },
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문 조사일 8/18–22와 API 7/27–30의 불일치를 개별 원문 검토로 정정. 지역구별 표본을 주 전체 상원·주지사 조사로 확대하지 않음. 2026 새 경계 대상임을 원문 확인. 가중치 상세·원 질문 전문은 미공개/미확인.",
+      "admission": {
+        "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+        "provider_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "group": "tsu_barbara_jordan",
+        "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      },
+      "provider_metadata_correction": {
+        "provider_snapshot_sha256": "8e0c834a5bd079fd6cbaa22f02f8073a2c7d8b63c2aafc35f200b559c983905d",
+        "overrides": {
+          "start_date": "2026-08-18",
+          "end_date": "2026-08-22"
+        },
+        "basis_ko": "원문 방법론과 API의 메타데이터 불일치를 개별 레코드로 검토해 정정. API 원래 값·지문을 함께 보존하며 응답이 변경되면 자동 적용하지 않습니다."
+      },
+      "primary_snapshot_sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+    },
+    "us-202j.lcde5bf32": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "917a3ec225995f329e98340c5a55edb0cd0f0f45cc4ae531d484166854330fa2",
+      "sources": [
+        "https://jlpartners.com/new-york-21st-district-likely-voter-polling",
+        "https://jlpartners.com/s/NY21-Memo.pdf",
+        "https://jlpartners.com/s/NY21-Toplines.pdf"
+      ],
+      "primary_toplines": {
+        "Anthony Constantino": 53,
+        "Blake Gendebien": 40
+      },
+      "question_sample_n": 500,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 500,
+        "field_dates": [
+          "2026-08-15",
+          "2026-08-17"
+        ],
+        "mode": "150 live cell calls and 350 SMS-to-web",
+        "sampling_frame": "district-wide representative likely voters; frame details undisclosed",
+        "sponsor": null,
+        "weighting": null,
+        "question_wording_checked": true,
+        "initial_ballot": {
+          "Anthony Constantino": 50,
+          "Blake Gendebien": 40,
+          "undecided": 10
+        },
+        "api_question": "combined initial ballot with forced-leaner follow-up"
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "API 53/40은 최초 50/40에 미결정자의 강제 선택을 합친 값. 일반 문항과 비교할 수 없어 참고 전용. 원문 의뢰자·가중치 미공개.",
+      "admission": {
+        "pollster": "J.L. Partners",
+        "provider_url": "https://jlpartners.com/new-york-21st-district-likely-voter-polling",
+        "group": "jl_partners",
+        "methodology_url": "https://jlpartners.com/s/NY21-Toplines.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "forced_choice_leaners_not_comparable",
+          "commissioner_not_disclosed"
+        ],
+        "allow_historical_reference": false
+      },
+      "primary_snapshot_sha256": "26e0b05a6cccddf5cb60811d8c2d284785080428fe54247ae2d3c8f6af9bef17"
+    },
+    "us-202tavd2d23773": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "91184cded0ebebf0c9d21ea3f2359a999083753a8ca0fbc9eeb3d69a52417e00",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf"
+      ],
+      "primary_toplines": {
+        "Max Miller": 46,
+        "Brian Poindexter": 54
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 635,
+        "field_dates": [
+          "2026-08-04",
+          "2026-08-05"
+        ],
+        "sponsor": null,
+        "mode": "web panels and text-to-web",
+        "sampling_frame": "online likely voter sample",
+        "weighting": "gender, race, 2024 presidential vote, education, age and survey mode",
+        "question_wording_checked": true,
+        "api_question": "ballot with leaners"
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "미결정자 leaner를 합친 문항 및 의뢰자 미공개로 참고 전용. OH 원문 전체 표본 635와 API 560은 구분. FL은 경선일 이전 본선 가정 자료이며 현재 본선 집계 제외.",
+      "admission": {
+        "pollster": "Tavern Research",
+        "provider_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf",
+        "group": "tavern_research",
+        "methodology_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "forced_choice_leaners_not_comparable",
+          "provider_primary_sample_mismatch",
+          "commissioner_not_disclosed"
+        ],
+        "allow_historical_reference": true
+      },
+      "primary_snapshot_sha256": "3829e4dc3a8a2d5692781e56c89b5aa01a2e573b8327aac237b864554579a237"
+    },
+    "us-202tav1ccea6ab": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "4cc042d8f315659ce97cd3213df92b67480a4cb64cfcd60b43df33b426d7d3da",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf"
+      ],
+      "primary_toplines": {
+        "Casey Askar": 50,
+        "Pia Dandiya": 50
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 551,
+        "field_dates": [
+          "2026-08-10",
+          "2026-08-12"
+        ],
+        "sponsor": null,
+        "mode": "web panels and text-to-web",
+        "sampling_frame": "online likely voter sample",
+        "weighting": "gender, race, 2024 presidential vote, education, age and survey mode",
+        "question_wording_checked": true,
+        "api_question": "ballot with leaners"
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "미결정자 leaner를 합친 문항 및 의뢰자 미공개로 참고 전용. OH 원문 전체 표본 635와 API 560은 구분. FL은 경선일 이전 본선 가정 자료이며 현재 본선 집계 제외.",
+      "admission": {
+        "pollster": "Tavern Research",
+        "provider_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+        "group": "tavern_research",
+        "methodology_url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "forced_choice_leaners_not_comparable",
+          "commissioner_not_disclosed"
+        ],
+        "allow_historical_reference": true
+      },
+      "primary_snapshot_sha256": "477f0661030807f6f0e27efb6ccc33a32e44191a8205974e151e47c2f39076bf"
+    },
+    "us-202ame9bedbaa8": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "d58d3b29f1fc0f0886d8f9be69c651694f68c61e76c3a9d08def396fd31608fb",
+      "sources": [
+        "https://www.montanarightnow.com/elections/aaron-flint-sam-forstag-nearly-tied-for-montana-congressional-district-1/article_96a2f7e1-334a-46c7-9a92-84ccc4c44171.html"
+      ],
+      "primary_toplines": {
+        "Aaron Flint": 45.9,
+        "Sam Forstag": 45.4,
+        "Nick Sheedy": 5.4
+      },
+      "question_sample_n": null,
+      "disclosure_review": {
+        "population": null,
+        "sample_n": null,
+        "field_dates": [
+          "2026-09-19",
+          "2026-09-24"
+        ],
+        "sponsor": "KULR-TV / NonStop Local and American Pulse Polling Club",
+        "mode": null,
+        "sampling_frame": null,
+        "weighting": null,
+        "question_wording_checked": false,
+        "published_sample_description": "more than 300 district respondents"
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "의뢰 지역 방송의 원문 수치·기간은 대조. 정확한 314명/LV·문항·방법론은 API 외 원문에서 재검증 못해 참고 전용.",
+      "admission": {
+        "pollster": "American Pulse Research & Polling",
+        "provider_url": "https://www.montanarightnow.com/elections/aaron-flint-sam-forstag-nearly-tied-for-montana-congressional-district-1/article_96a2f7e1-334a-46c7-9a92-84ccc4c44171.html",
+        "group": "american_pulse",
+        "methodology_url": "https://www.montanarightnow.com/elections/aaron-flint-sam-forstag-nearly-tied-for-montana-congressional-district-1/article_96a2f7e1-334a-46c7-9a92-84ccc4c44171.html",
+        "source_role": "commissioner_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "primary_population_and_exact_sample_unverified",
+          "methodology_incomplete"
+        ],
+        "allow_historical_reference": false
+      }
+    },
+    "us-202the7176ba8a": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "87b7507bf02d81a104cbfe76187b91ede982ec4229bc4f1f39c095db57322b43",
+      "sources": [
+        "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+        "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/"
+      ],
+      "primary_toplines": {
+        "Rob Wittman": 46,
+        "Shannon Taylor": 50
+      },
+      "question_sample_n": 609,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 609,
+        "field_dates": [
+          "2026-09-23",
+          "2026-09-28"
+        ],
+        "sponsor": "The Washington Post and George Mason University Schar School",
+        "sampling_frame": "random sample from statewide voter database within each district",
+        "mode": "64% live-cellphone, 10% landline, 26% SMS-to-web",
+        "likely_voter_screen": "registered voters assigned probability of voting",
+        "weighting": null,
+        "question_wording_checked": false
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "공동 의뢰 언론의 원문 수치·표본·기간·방법 대조. 상세 PDF 접근 실패. VA-05 원문 Perriello 45와 API 46 불일치는 수치 편입 보류, 임의 보정하지 않음.",
+      "admission": {
+        "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
+        "provider_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+        "group": "washington_post_schar",
+        "methodology_url": "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      }
+    },
+    "us-202thec3b2cee5": {
+      "reviewed_on": "2026-10-08",
+      "snapshot_sha256": "652d242aa74ee4140e4a225090bae716d4915a06e2ec5aeaf5e5da466007d2ca",
+      "sources": [
+        "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+        "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/"
+      ],
+      "primary_toplines": {
+        "John McGuire": 51,
+        "Tom Perriello": 45
+      },
+      "question_sample_n": 600,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 600,
+        "field_dates": [
+          "2026-09-23",
+          "2026-09-28"
+        ],
+        "sponsor": "The Washington Post and George Mason University Schar School",
+        "sampling_frame": "random sample from statewide voter database within each district",
+        "mode": "64% live-cellphone, 10% landline, 26% SMS-to-web",
+        "likely_voter_screen": "registered voters assigned probability of voting",
+        "weighting": null,
+        "question_wording_checked": false
+      },
+      "reported_precision": null,
+      "missing_fields": [
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "limitations_ko": "공동 의뢰 언론의 원문 수치·표본·기간·방법 대조. 상세 PDF 접근 실패. VA-05 원문 Perriello 45와 API 46 불일치는 수치 편입 보류, 임의 보정하지 않음.",
+      "admission": {
+        "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
+        "provider_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+        "group": "washington_post_schar",
+        "methodology_url": "https://www.washingtonpost.com/tablet/2026/10/01/sept-23-28-2026-washington-post-schar-school-poll-virginias-1st-5th-congressional-districts/",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": [],
+        "allow_historical_reference": false
+      }
     }
   }
 }
