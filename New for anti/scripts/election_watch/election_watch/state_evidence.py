@@ -61,13 +61,15 @@ def candidate_finance(candidate, asset, office):
             'note_ko': '후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다.'}
 
 
-def build_state(state, group, plan, catalog, federal_rosters, governors, polls, finance, source_directory, as_of, identity_reviews=None):
+def build_state(state, group, plan, catalog, federal_rosters, governors, polls, finance, source_directory, as_of, identity_reviews=None, governor_audits=None):
     require(state in catalog['states'] and finance['cycle'] == 2026 and polls['cycle'] == 2026, 'state evidence cycle')
     require(date.fromisoformat(polls['as_of']) <= date.fromisoformat(as_of), 'future polling snapshot')
     races = []
     for rid in expected_races(state, catalog):
         poll = polls['races'].get(rid)
         require(poll and poll['race_id'] == rid and poll['state'] == state, 'missing/wrong state poll slot')
+        poll_as_of = poll.get('as_of', polls['as_of'])
+        require(date.fromisoformat(poll_as_of) <= date.fromisoformat(as_of), 'future state polling snapshot')
         office = poll['office']; roster = federal_rosters['races'].get(rid)
         if office == 'governor':
             roster = governors['contests'].get(state)
@@ -108,17 +110,18 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
         fetched = poll.get('fetched_at', polls['fetched_at'])
         age_hours = max(0, (datetime.combine(date.fromisoformat(as_of), datetime.min.time(), timezone.utc)
                            - datetime.fromisoformat(fetched.replace('Z', '+00:00'))).total_seconds() / 3600)
-        source_held = polls['source_status'] not in ('ok', 'replay') or age_hours > polls.get('stale_after_hours', 192)
+        source_status = poll.get('source_status', polls['source_status'])
+        source_held = source_status not in ('ok', 'replay') or age_hours > polls.get('stale_after_hours', 192)
         neutral = ('changed_matchup_review_required' if changed else phase if closed else
                    'source_error_or_stale' if source_held else None)
         windows = {str(d): {'status': neutral, 'party': None, 'pollster_count': 0} if neutral
                    else summarize(observations, poll, as_of, d) for d in (7, 14)}
-        polling = {'as_of': polls['as_of'], 'fetched_at': poll.get('fetched_at', polls['fetched_at']),
-            'source_status': polls['source_status'], 'schedule_status': poll.get('schedule_status'),
+        polling = {'as_of': poll_as_of, 'fetched_at': fetched,
+            'source_status': source_status, 'schedule_status': poll.get('schedule_status'),
             'observations': observations, 'windows': windows, 'windows_checked_as_of': as_of,
             'held_observation_ids': held, 'phase': phase, 'result': deepcopy(poll.get('result')),
             'unmatched_nonmajor_answer_names': unmatched_nonmajor,
-            'source_url': polls['source']['request_url'],
+            'source_url': poll.get('source_url', polls['source']['request_url']),
             'monitoring': deepcopy(polls.get('monitoring', {}).get('race_coverage', {}).get(rid, {})),
             'automatic_admission': poll.get('schedule_status') == 'reported_general_matchup' and not neutral,
             'note_ko': 'API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다.'}
@@ -144,18 +147,28 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
             'candidate_id_links': sum(c['finance']['join_status'] == 'same_reviewed_candidate_id'
                                      for r in selected for c in r['candidates'])}
     agency = deepcopy(source_directory['states'].get(state))
+    audit = deepcopy((governor_audits or {}).get(state))
+    if audit:
+        require(audit['schema'] == 'usa_governor_finance_audit_v1' and audit['state'] == state
+                and audit['cycle'] == 2026 and audit['status'] == 'collected_normalization_held'
+                and date.fromisoformat(audit['captured_at'][:10]) <= date.fromisoformat(as_of),
+                'governor finance audit scope/date mismatch')
     if state not in catalog['governor_states']:
         governor_route = {'status': 'non_election', 'agency': agency}
     elif finance['source_status'].get(state + '_governor'):
         governor_route = {'status': 'implemented_partial', 'agency': agency}
+    elif audit:
+        governor_route = {'status': 'collected_normalization_held', 'agency': agency, 'audit': audit}
     else:
         governor_route = {'status': 'adapter_or_source_review_required', 'agency': agency,
             'directory_url': source_directory['directory_url']}
     receipt = deepcopy(polls.get('state_captures', {}).get(state))
+    governor_success = finance['source_status'].get(state + '_governor', {}).get('last_success_at')
+    governor_reviewed = state not in catalog['governor_states'] or bool(receipt and (
+        governor_success and receipt.get('governor_last_success_at') == governor_success or
+        audit and receipt.get('governor_audit_captured_at') == audit['captured_at']))
     reviewed = bool(receipt and receipt.get('cycle') == 2026 and receipt.get('state') == state
-                    and receipt.get('governor_last_success_at')
-                    == finance['source_status'].get(state + '_governor', {}).get('last_success_at')
-                    and receipt.get('primary_rechecked_ids'))
+                    and governor_reviewed and receipt.get('primary_rechecked_ids'))
     return {'schema': 'usa_state_election_evidence_v1', 'cycle': 2026, 'state': state,
         'state_name': catalog['states'][state]['name'], 'group': group, 'checked_as_of': as_of,
         'status': 'partial_observed', 'work_status': 'live_sources_reviewed_partial' if reviewed else 'baseline_join_checked',

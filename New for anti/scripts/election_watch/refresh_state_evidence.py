@@ -35,12 +35,17 @@ def main():
     validate_governors(governors, 2026, args.as_of)
     polls = read(args.polls); finance = load_finance(args.public/'usa_election_finance_index_v1.json', 2026)
     directory = read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')
+    audits = {}
+    for _,state in selected:
+        path=args.public/'usa_governor_finance_audits'/'2026'/f'{state}.json'
+        if path.exists():
+            audits[state]={**read(path),'data_file':path.relative_to(args.public).as_posix()}
     identities = read(ROOT/'config/usa_polls/state_finance_identities_2026.json')
     if identities.get('schema') != 'usa_state_finance_identities_v1' or identities.get('cycle') != 2026:
         p.error('unreviewed finance identity snapshot')
     def builder(state, group):
         payload = build_state(state, group, plan, catalog, federal, governors, polls,
-                              finance, directory, args.as_of, identities)
+                              finance, directory, args.as_of, identities, audits)
         return payload
     result = publish_states(args.public, plan, selected, builder, datetime.now(timezone.utc).isoformat())
     print({'processed_states': result['processed_state_count'], 'last_state': result['last_processed_state'],

@@ -72,6 +72,26 @@ class StateEvidenceTests(unittest.TestCase):
         self.assertEqual(amounts(totals,('state_independent_spender_unclassified',))['support_cents'],300)
         self.assertIsNone(amounts(totals,('super_pac',))['support_cents'])
 
+    def test_public_export_audit_does_not_publish_candidate_amounts(self):
+        f=self.fixture();audit={'schema':'usa_governor_finance_audit_v1','state':'AK','cycle':2026,
+            'status':'collected_normalization_held','captured_at':'2026-10-08T01:00:00Z'}
+        f[3]['state_captures']={'AK':{'state':'AK','cycle':2026,'primary_rechecked_ids':['p'],
+                                   'governor_audit_captured_at':audit['captured_at']}}
+        row=build_state('AK','B',self.plan,*f,'2026-10-08',governor_audits={'AK':audit})
+        self.assertEqual(row['governor_source_route']['status'],'collected_normalization_held')
+        self.assertEqual(row['work_status'],'live_sources_reviewed_partial')
+        self.assertIsNone(row['races'][-1]['finance']['all_reported_candidates']['support_cents'])
+        f[3]['state_captures']['AK']['governor_audit_captured_at']='2026-10-07T01:00:00Z'
+        self.assertEqual(build_state('AK','B',self.plan,*f,'2026-10-08',governor_audits={'AK':audit})['work_status'],
+                         'baseline_join_checked')
+
+    def test_finance_audit_wrong_state_or_future_date_is_held(self):
+        for state,day in [('TN','2026-10-08'),('AK','2026-10-09')]:
+            audit={'schema':'usa_governor_finance_audit_v1','state':state,'cycle':2026,
+                   'status':'collected_normalization_held','captured_at':day+'T01:00:00Z'}
+            with self.assertRaises(ValueError):
+                build_state('AK','B',self.plan,*self.fixture(),'2026-10-08',governor_audits={'AK':audit})
+
     def test_changed_nominee_does_not_inherit_poll_or_lead(self):
         f=self.fixture();f[3]['races']['USA:AK:house:00']['observations']=[{'id':'old-poll','answers':[{'name':'Old Nominee','pct':60,'party':'DEM'}]}]
         row=self.state(f)['races'][0]['polling']
@@ -115,6 +135,22 @@ class StateEvidenceTests(unittest.TestCase):
 
     def test_wrong_state_asset_fails_instead_of_joining(self):
         f=self.fixture();f[4]['races']['USA:AK:house:00']={'race_id':'USA:AK:house:00','state_id':'NY','office':'house'}
+        with self.assertRaises(ValueError):self.state(f)
+
+    def test_individual_capture_uses_its_own_date_and_source_status(self):
+        f=self.fixture();f[3]['as_of']='2026-10-01';f[3]['source_status']='error_stale'
+        p=f[3]['races']['USA:AK:house:00']
+        p.update(as_of='2026-10-08',fetched_at='2026-10-08T00:00:00Z',source_status='ok',
+                 source_url='https://example.org/state-capture')
+        row=self.state(f)['races'][0]['polling']
+        self.assertEqual(row['as_of'],'2026-10-08');self.assertEqual(row['source_status'],'ok')
+        self.assertEqual(row['source_url'],'https://example.org/state-capture')
+        self.assertNotEqual(row['windows']['7']['status'],'source_error_or_stale')
+        f[3]['source_status']='ok';p['source_status']='error_stale'
+        self.assertEqual(self.state(f)['races'][0]['polling']['windows']['7']['status'],'source_error_or_stale')
+
+    def test_future_individual_capture_cannot_hide_behind_global_date(self):
+        f=self.fixture();f[3]['races']['USA:AK:house:00']['as_of']='2026-10-09'
         with self.assertRaises(ValueError):self.state(f)
 
     def test_receipt_does_not_certify_unrefreshed_governor(self):

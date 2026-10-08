@@ -1,12 +1,51 @@
 """Source-review facts and coverage, without inventing an accuracy grade."""
 from copy import deepcopy
 from datetime import date
+import math
 from .polls import digest, require
 
 
 def review_fingerprint(row):
     return digest({k: row[k] for k in ('id', 'race_id', 'pollster_group', 'field_start',
                                      'field_end', 'population', 'sample_n', 'answers')})
+
+
+def answer_correction_fingerprint(raw):
+    return digest({k: raw.get(k) for k in ('id', 'subject', 'poll_type', 'pollster', 'url',
+        'start_date', 'end_date', 'created_at', 'population', 'sample_size', 'answers',
+        'seat_name', 'sponsors', 'internal', 'partisan')})
+
+
+def corrected_provider_answers(raw, review, as_of):
+    """Correct only exact, unchanged records whose every candidate value was reviewed."""
+    correction = review.get('provider_answer_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_answer_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    require(admission.get('provider_url') == raw.get('url') and admission.get('pollster') == raw['pollster']
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('sources') and review.get('disclosure_review'), 'unverified_answer_correction')
+    values = review['primary_toplines']
+    names = [a['choice'] for a in raw['answers']]
+    require(len(names) == len(set(names)) and set(names) == set(values), 'incomplete_answer_correction_review')
+    overrides = correction['overrides']
+    require(overrides and set(overrides) <= set(names), 'unsupported_answer_correction')
+    require(all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 100 for v in values.values())
+            and sum(values.values()) <= 102, 'invalid_primary_answer_values')
+    corrected = deepcopy(raw)
+    for answer in corrected['answers']:
+        name = answer['choice']
+        if name in overrides:
+            require(overrides[name] == values[name], 'answer_correction_primary_mismatch')
+            answer['pct'] = overrides[name]
+        require(abs(answer['pct'] - values[name]) <= .51, 'uncorrected_primary_answer_mismatch')
+    return corrected, {'status': 'reviewed_primary_answer_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'provider_values': {a['choice']: a['pct'] for a in raw['answers'] if a['choice'] in overrides},
+        'primary_values_used': deepcopy(overrides), 'sources': review['sources'], 'basis_ko': correction['basis_ko']}
 
 
 def source_quality(row, reviews, as_of):

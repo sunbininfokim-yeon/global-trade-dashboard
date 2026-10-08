@@ -84,12 +84,12 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 66,
-    "excluded_observations": 755,
+    "accepted_observations": 68,
+    "excluded_observations": 753,
     "aggregation_eligible_observations": 55,
-    "reference_only_observations": 11,
+    "reference_only_observations": 13,
     "exclusion_reasons": {
-      "pollster_not_selected": 571,
+      "pollster_not_selected": 569,
       "unregistered_primary_host": 58,
       "outside_reviewed_general_period": 113,
       "internal_or_partisan": 2,
@@ -99,7 +99,7 @@
       "forced_choice_question_not_comparable": 1,
       "unreviewed_matchup": 1
     },
-    "displayed_observations": 66
+    "displayed_observations": 68
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -151,7 +151,7 @@
       "senate": 35,
       "house": 435
     },
-    "ballot_review_count": 157,
+    "ballot_review_count": 166,
     "meaning_ko": "대상 등록과 여론조사 확보는 다릅니다. 후보 명부·출처·기간 검사를 통과한 관측만 집계합니다."
   },
   "excluded_watch_slots": [
@@ -527,7 +527,7 @@
               "accuracy_grade",
               "statistical_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
               "https://tennsight.com/polls/august-2026/"
@@ -633,7 +633,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:governor": {
       "state": "TN",
@@ -699,6 +703,133 @@
       "race_id": "USA:TN:governor",
       "observations": [
         {
+          "id": "gov202tar141bada4",
+          "race_id": "USA:TN:governor",
+          "contest_id": "USA:TN:governor:2026:general:regular",
+          "pollster": "TargetSmart",
+          "pollster_group": "targetsmart",
+          "field_start": "2026-09-09",
+          "field_end": "2026-09-12",
+          "provider_record_date": "2026-09-18",
+          "population": "lv",
+          "sample_n": 600,
+          "answers": [
+            {
+              "name": "Marsha Blackburn",
+              "pct": 45.0,
+              "party": "REP"
+            },
+            {
+              "name": "Jerri Green",
+              "pct": 36.0,
+              "party": "DEM"
+            },
+            {
+              "name": "David Hatley",
+              "pct": 10,
+              "party": null
+            },
+            {
+              "name": "Lauren Pinkston",
+              "pct": 2.0,
+              "party": null
+            }
+          ],
+          "sponsors": [
+            "The Progress Fund"
+          ],
+          "source_url": "https://www.tnprogressfund.com/polling",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "provider_answer_correction": {
+            "status": "reviewed_primary_answer_correction",
+            "reviewed_on": "2026-10-08",
+            "provider_snapshot_sha256": "09afb892856975a5ef9813f301b62dbb4c6099b16f9e9305e9cf03ec0ff6ef09",
+            "provider_values": {
+              "David Hatley": 19.0
+            },
+            "primary_values_used": {
+              "David Hatley": 10
+            },
+            "sources": [
+              "https://www.tnprogressfund.com/polling",
+              "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf"
+            ],
+            "basis_ko": "원문 결과표3쪽 Q12와 의뢰기관 발표 모두 Hatley10%이며 수집 API는19%입니다. 원문과 일치하는 다른 후보 수치는 유지합니다."
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": "DEM",
+            "sponsors": [
+              "The Progress Fund"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "party_commissioned_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "confidence_level",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.tnprogressfund.com/polling",
+              "https://www.tnprogressfund.com/s/TSmart_TN-Statewide-Baseline_Toplines_20260914.pdf"
+            ],
+            "primary_toplines": {
+              "Marsha Blackburn": 45,
+              "Jerri Green": 36,
+              "David Hatley": 10,
+              "Lauren Pinkston": 2
+            },
+            "question_sample_n": 600,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 600,
+              "field_dates": [
+                "2026-09-09",
+                "2026-09-12"
+              ],
+              "mode": "live telephone and email/SMS-linked online; weighted 51% phone / 49% online",
+              "sampling_frame": "TargetSmart enhanced voter file for telephone portion",
+              "weighting": "gender, age, race, education score, partisan score, turnout score, urbanicity, county region, 2024 presidential vote quotas",
+              "question_wording_checked": true,
+              "primary_table_page": 3,
+              "methodology_page": 11,
+              "question": "Q12 total ballot with leaners"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 4.0,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "initial_four_candidate_ballot_with_leaners",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "The Progress Fund"
+              ],
+              "provider_partisan": "DEM",
+              "affiliation_verified": false
+            },
+            "limitations_ko": "원문 Q12 총계 대조: API의 Hatley19%와 원문10%가 달라 검토한 동일 레코드에만 정정 적용. 당파성 참고 자료로 우세 집계 제외. 후보 소개 뒤의 Q26 신뢰 질문과 구분하며 현재7/14일 창 밖입니다."
+          }
+        },
+        {
           "id": "gov202tar2b53cae7",
           "race_id": "USA:TN:governor",
           "contest_id": "USA:TN:governor:2026:general:regular",
@@ -760,7 +891,7 @@
               "accuracy_grade",
               "statistical_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf",
               "https://tennsight.com/polls/august-2026/"
@@ -866,7 +997,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:GA:senate": {
       "state": "GA",
@@ -15686,9 +15821,37 @@
       "contest_id": "USA:TN:house:07:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Darden Hunter Copeland",
+        "Matthew Robert \"Matt\" Van Epps"
+      ],
+      "candidates": {
+        "Darden Hunter Copeland": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Darden Hunter Copeland"
+        },
+        "Matthew Robert \"Matt\" Van Epps": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Matthew Robert \"Matt\" Van Epps"
+        },
+        "Andrew Jordon Koontz": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Andrew Jordon Koontz"
+        },
+        "Lowell Andre Reynolds": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Lowell Andre Reynolds"
+        }
+      },
       "selection_reason_ko": "한국기업 주소의 하원 선거구. 후보·조사는 별도 원문 검토 전까지 보류.",
       "company_site_ids": [
         "lg-clarksville-tn",
@@ -15702,11 +15865,28 @@
         ]
       },
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:07",
       "observations": [],
@@ -15777,7 +15957,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:08": {
       "state": "TN",
@@ -15789,9 +15973,61 @@
       "contest_id": "USA:TN:house:08:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "watch_slot_unverified",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Heidi Kuhn",
+        "David Kustoff"
+      ],
+      "candidates": {
+        "Heidi Kuhn": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Heidi Kuhn"
+        },
+        "David Kustoff": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "David Kustoff"
+        },
+        "Adam D. Austill": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Adam D. Austill"
+        },
+        "Wendell \"Wells\" Blankenship": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Wendell \"Wells\" Blankenship"
+        },
+        "Antonio Futch": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Antonio Futch"
+        },
+        "Pamela Jeanine \"P.\" Moses": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Pamela Jeanine \"P.\" Moses"
+        },
+        "Horace Taylor": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Horace Taylor"
+        },
+        "Henry J. Ward, III": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Henry J. Ward, III"
+        }
+      },
       "selection_reason_ko": "한국기업 주소의 하원 선거구. 후보·조사는 별도 원문 검토 전까지 보류.",
       "company_site_ids": [
         "sk-on-stanton-tn"
@@ -15804,11 +16040,28 @@
         ]
       },
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 8,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:08",
       "observations": [],
@@ -15879,7 +16132,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:AL:house:02": {
       "state": "AL",
@@ -54824,9 +55081,55 @@
       "contest_id": "USA:TN:house:01:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Kristi Amber Mickelle Burke",
+        "Diana Lynn Harshbarger"
+      ],
+      "candidates": {
+        "Kristi Amber Mickelle Burke": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Kristi Amber Mickelle Burke"
+        },
+        "Diana Lynn Harshbarger": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Diana Lynn Harshbarger"
+        },
+        "Joshua Ray Ashburn": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Joshua Ray Ashburn"
+        },
+        "Richard G. Baker": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Richard G. Baker"
+        },
+        "Christopher T. \"Chris\" Campbell": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Christopher T. \"Chris\" Campbell"
+        },
+        "William Eugene \"Billy\" Cody": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "William Eugene \"Billy\" Cody"
+        },
+        "Tyler Brice Mitchell McClain": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Tyler Brice Mitchell McClain"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -54835,11 +55138,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 7,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:01",
       "observations": [],
@@ -54910,7 +55230,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:02": {
       "state": "TN",
@@ -54922,9 +55246,37 @@
       "contest_id": "USA:TN:house:02:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Michaela J. Barnett",
+        "Tim Burchett"
+      ],
+      "candidates": {
+        "Michaela J. Barnett": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Michaela J. Barnett"
+        },
+        "Tim Burchett": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Tim Burchett"
+        },
+        "Bruce Fine": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Bruce Fine"
+        },
+        "Adam Heimerman": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Adam Heimerman"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -54933,11 +55285,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:02",
       "observations": [],
@@ -55008,7 +55377,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:03": {
       "state": "TN",
@@ -55020,9 +55393,55 @@
       "contest_id": "USA:TN:house:03:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Anna M. Golladay",
+        "Charles J. \"Chuck\" Fleischmann"
+      ],
+      "candidates": {
+        "Anna M. Golladay": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Anna M. Golladay"
+        },
+        "Charles J. \"Chuck\" Fleischmann": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Charles J. \"Chuck\" Fleischmann"
+        },
+        "Dean W. Arnold": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Dean W. Arnold"
+        },
+        "Mary Jean \"Lady J\" Howard-Hill": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Mary Jean \"Lady J\" Howard-Hill"
+        },
+        "Rodney Joe King": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Rodney Joe King"
+        },
+        "Donnie Lynn Ownby": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Donnie Lynn Ownby"
+        },
+        "Edward John Roland, V": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Edward John Roland, V"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -55031,11 +55450,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 7,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:03",
       "observations": [],
@@ -55106,7 +55542,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:04": {
       "state": "TN",
@@ -55118,9 +55558,37 @@
       "contest_id": "USA:TN:house:04:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Victoria Isabel Broderick",
+        "Scott Eugene DesJarlais"
+      ],
+      "candidates": {
+        "Victoria Isabel Broderick": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Victoria Isabel Broderick"
+        },
+        "Scott Eugene DesJarlais": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Scott Eugene DesJarlais"
+        },
+        "Jacob Kristopher Anders": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Jacob Kristopher Anders"
+        },
+        "Clay Faircloth": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Clay Faircloth"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -55129,11 +55597,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:04",
       "observations": [],
@@ -55204,7 +55689,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:05": {
       "state": "TN",
@@ -55216,9 +55705,37 @@
       "contest_id": "USA:TN:house:05:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Charles M. \"Chaz\" Molder",
+        "Charles W. \"Charlie\" Hatcher"
+      ],
+      "candidates": {
+        "Charles M. \"Chaz\" Molder": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Charles M. \"Chaz\" Molder"
+        },
+        "Charles W. \"Charlie\" Hatcher": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Charles W. \"Charlie\" Hatcher"
+        },
+        "James Andrew Johnson": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "James Andrew Johnson"
+        },
+        "Micheál \"Me-Haul\" O'Leary": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Micheál \"Me-Haul\" O'Leary"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -55227,11 +55744,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:05",
       "observations": [],
@@ -55302,7 +55836,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:06": {
       "state": "TN",
@@ -55314,9 +55852,37 @@
       "contest_id": "USA:TN:house:06:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Mike Croley",
+        "Johnny C. Garrett"
+      ],
+      "candidates": {
+        "Mike Croley": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Mike Croley"
+        },
+        "Johnny C. Garrett": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Johnny C. Garrett"
+        },
+        "Christopher Brian \"Chris\" Monday": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Christopher Brian \"Chris\" Monday"
+        },
+        "Angus Purdy": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Angus Purdy"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -55325,11 +55891,28 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:06",
       "observations": [],
@@ -55400,7 +55983,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TN:house:09": {
       "state": "TN",
@@ -55412,9 +55999,43 @@
       "contest_id": "USA:TN:house:09:2026:general",
       "general_from": "2026-09-01",
       "election_date": "2026-11-03",
-      "schedule_status": "scheduled_matchup_unreviewed",
-      "required_candidates": [],
-      "candidates": {},
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Justin J. Pearson",
+        "Brent Taylor"
+      ],
+      "candidates": {
+        "Justin J. Pearson": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Justin J. Pearson"
+        },
+        "Justin Pearson": {
+          "party": "DEM",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Justin J. Pearson"
+        },
+        "Brent Taylor": {
+          "party": "REP",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Brent Taylor"
+        },
+        "Dennis Jeffrey Clark": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Dennis Jeffrey Clark"
+        },
+        "Michelle Davis Head": {
+          "party": "IND",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "candidate_id": null,
+          "canonical_name": "Michelle Davis Head"
+        }
+      },
       "collection_priority": {
         "order": 1,
         "reasons": [
@@ -55423,14 +56044,129 @@
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "reviewed_on": "2026-10-08",
         "general_unopposed": null,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.thegreenpapers.com/G26/TN",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-08",
+        "coverage": "reported_active_candidate_listing"
       },
       "race_id": "USA:TN:house:09",
-      "observations": [],
+      "observations": [
+        {
+          "id": "us-202harc3982bab",
+          "race_id": "USA:TN:house:09",
+          "contest_id": "USA:TN:house:09:2026:general",
+          "pollster": "Hart Research Associates",
+          "pollster_group": "hart",
+          "field_start": "2026-09-01",
+          "field_end": "2026-09-03",
+          "provider_record_date": "2026-09-10",
+          "population": "lv",
+          "sample_n": 400,
+          "answers": [
+            {
+              "name": "Justin Pearson",
+              "pct": 44.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Brent Taylor",
+              "pct": 48.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "Tennessee Rise"
+          ],
+          "source_url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": "DEM",
+            "sponsors": [
+              "Tennessee Rise"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "methodology_disclosure_incomplete",
+              "party_commissioned_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "interview_mode",
+              "sampling_frame",
+              "weighting",
+              "question_wording",
+              "margin_of_error_pp",
+              "historical_accuracy_rating"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view"
+            ],
+            "primary_toplines": {
+              "Justin Pearson": 44,
+              "Brent Taylor": 48
+            },
+            "question_sample_n": 400,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 400,
+              "field_dates": [
+                "2026-09-01",
+                "2026-09-03"
+              ],
+              "mode": null,
+              "sampling_frame": null,
+              "weighting": null,
+              "question_wording_checked": false,
+              "published_on": "2026-09-09",
+              "primary_table_page": 1,
+              "question": "initial congressional trial heat"
+            },
+            "reported_precision": null,
+            "ballot_format": "initial_ballot_trial_heat",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Tennessee Rise"
+              ],
+              "provider_partisan": "DEM",
+              "affiliation_verified": false
+            },
+            "limitations_ko": "Hart 메모에서9/1–3 LV400명·초기 투표 의향 Pearson44/Taylor48 대조. 뒤의 호감·메시지 반응은 투표 의향으로 사용하지 않습니다. 상세 방법·오차범위 미공개, API의 DEM 의뢰 표시 유지. 참고 전용이며 현재7/14일 창 밖입니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -55498,7 +56234,11 @@
         }
       },
       "result": null,
-      "phase": "pre_election"
+      "phase": "pre_election",
+      "fetched_at": "2026-10-08T06:59:43.816322+00:00",
+      "as_of": "2026-10-08",
+      "source_status": "ok",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
     },
     "USA:TX:house:01": {
       "state": "TX",
@@ -64986,21 +65726,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "gov202quaf29f068d",
-      "race_id": "USA:TN:governor",
-      "pollster": "Quantus Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1e3buxlVGdwvx-2H11FwX9XI_y1EWvzu6/view",
-      "field_start": "2025-08-05",
-      "field_end": "2025-08-07",
-      "population": "rv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "gov202cyg809fe67c",
       "race_id": "USA:AL:governor",
       "pollster": "Cygnal",
@@ -67325,23 +68050,6 @@
       ],
       "internal": false,
       "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tar4629c6a8",
-      "race_id": "USA:TN:governor",
-      "pollster": "Targoz Market Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://tennsight.com/wp-content/uploads/2026/05/Crosstabs-Party-Ideology-Region-5.pdf",
-      "field_start": "2026-04-20",
-      "field_end": "2026-04-27",
-      "population": "rv",
-      "sample_n": 1157,
-      "sponsors": [
-        "Beacon Center"
-      ],
-      "internal": false,
-      "partisan": null,
       "verification": "not_accepted_not_verified"
     },
     {
@@ -72777,23 +73485,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "us-202harc3982bab",
-      "race_id": "USA:TN:house:09",
-      "pollster": "Hart Research Associates",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
-      "field_start": "2026-09-01",
-      "field_end": "2026-09-03",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [
-        "Tennessee Rise"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "us-202fab22efb6bc",
       "race_id": "USA:TX:senate",
       "pollster": "Fabrizio Ward/Impact Research",
@@ -73331,23 +74022,6 @@
       "sponsors": [],
       "internal": false,
       "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tar141bada4",
-      "race_id": "USA:TN:governor",
-      "pollster": "TargetSmart",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.tnprogressfund.com/polling",
-      "field_start": "2026-09-09",
-      "field_end": "2026-09-12",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "The Progress Fund"
-      ],
-      "internal": false,
-      "partisan": "DEM",
       "verification": "not_accepted_not_verified"
     },
     {
@@ -74471,6 +75145,38 @@
       "internal": false,
       "partisan": "REP",
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202quaf29f068d",
+      "race_id": "USA:TN:governor",
+      "pollster": "Quantus Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1e3buxlVGdwvx-2H11FwX9XI_y1EWvzu6/view",
+      "field_start": "2025-08-05",
+      "field_end": "2025-08-07",
+      "population": "rv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tar4629c6a8",
+      "race_id": "USA:TN:governor",
+      "pollster": "Targoz Market Research",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://tennsight.com/wp-content/uploads/2026/05/Crosstabs-Party-Ideology-Region-5.pdf",
+      "field_start": "2026-04-20",
+      "field_end": "2026-04-27",
+      "population": "rv",
+      "sample_n": 1157,
+      "sponsors": [
+        "Beacon Center"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -74503,7 +75209,7 @@
     "groups": {
       "requested_states": {
         "race_count": 196,
-        "with_observations": 20,
+        "with_observations": 21,
         "recent_7d": 0,
         "recent_14d": 6
       },
@@ -79581,11 +80287,11 @@
         },
         "status": "reference_only",
         "provider_record_count": 4,
-        "accepted_count": 1,
+        "accepted_count": 2,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 1,
+        "reference_only_count": 2,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": "2026-08-26",
+        "latest_accepted_field_end": "2026-09-12",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -79597,11 +80303,10 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 2,
-          "outside_reviewed_general_period": 1
+          "outside_reviewed_general_period": 1,
+          "pollster_not_selected": 1
         },
         "review_queue_ids": [
-          "gov202tar141bada4",
           "gov202tar4629c6a8",
           "gov202quaf29f068d"
         ],
@@ -79609,7 +80314,7 @@
           "race_id": "USA:TN:governor",
           "file": "usa_election_finance/2026/races/TN-governor-d1d7d0e1454dd89e.json",
           "status": "unsupported",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79625,7 +80330,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79643,7 +80348,7 @@
           "race_id": "USA:TN:house:01",
           "file": "usa_election_finance/2026/races/TN-house-01-2d29f0fe1c7d3e10.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79659,7 +80364,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79677,7 +80382,7 @@
           "race_id": "USA:TN:house:02",
           "file": "usa_election_finance/2026/races/TN-house-02-ad7ca29a740d86ee.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79693,7 +80398,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79711,7 +80416,7 @@
           "race_id": "USA:TN:house:03",
           "file": "usa_election_finance/2026/races/TN-house-03-1a0a1bd9c1699dc3.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79727,7 +80432,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79745,7 +80450,7 @@
           "race_id": "USA:TN:house:04",
           "file": "usa_election_finance/2026/races/TN-house-04-c7198ee4819f1ada.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79761,7 +80466,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79779,7 +80484,7 @@
           "race_id": "USA:TN:house:05",
           "file": "usa_election_finance/2026/races/TN-house-05-49d3c37dd08b7c59.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79795,7 +80500,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79813,7 +80518,7 @@
           "race_id": "USA:TN:house:06",
           "file": "usa_election_finance/2026/races/TN-house-06-761d018cb985eb35.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79830,7 +80535,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79848,7 +80553,7 @@
           "race_id": "USA:TN:house:07",
           "file": "usa_election_finance/2026/races/TN-house-07-29eb0ab9a3c0666a.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79865,7 +80570,7 @@
         "accepted_count": 0,
         "aggregation_eligible_count": 0,
         "reference_only_count": 0,
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "latest_accepted_field_end": null,
         "windows": {
           "7": {
@@ -79883,7 +80588,7 @@
           "race_id": "USA:TN:house:08",
           "file": "usa_election_finance/2026/races/TN-house-08-80086648069e752a.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79894,13 +80599,13 @@
             "requested_state"
           ]
         },
-        "status": "review_required",
+        "status": "reference_only",
         "provider_record_count": 1,
-        "accepted_count": 0,
+        "accepted_count": 1,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
-        "matchup_reviewed": false,
-        "latest_accepted_field_end": null,
+        "reference_only_count": 1,
+        "matchup_reviewed": true,
+        "latest_accepted_field_end": "2026-09-03",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -79911,17 +80616,13 @@
             "pollster_count": 0
           }
         },
-        "rejection_reasons": {
-          "pollster_not_selected": 1
-        },
-        "review_queue_ids": [
-          "us-202harc3982bab"
-        ],
+        "rejection_reasons": {},
+        "review_queue_ids": [],
         "finance_join": {
           "race_id": "USA:TN:house:09",
           "file": "usa_election_finance/2026/races/TN-house-09-02eb8313bbe41603.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -79956,7 +80657,7 @@
           "race_id": "USA:TN:senate",
           "file": "usa_election_finance/2026/races/TN-senate-3f0c0208bce7feff.json",
           "status": "partial",
-          "finance_generated_at": "2026-10-07T12:17:06.473357+00:00",
+          "finance_generated_at": "2026-10-08T06:07:10.135037+00:00",
           "measure": "candidate_targeted_independent_expenditure"
         }
       },
@@ -93850,7 +94551,7 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 10,
+        "with_polls": 11,
         "with_recent_7d": 0,
         "with_recent_14d": 2,
         "with_super_pac": 314,
@@ -93874,8 +94575,8 @@
       }
     },
     "ballot_counts": {
-      "ballot_review_incomplete": 349,
-      "contested": 144,
+      "ballot_review_incomplete": 340,
+      "contested": 153,
       "same_party_contest": 9,
       "minor_party_or_independent_opposition": 3,
       "official_general_unopposed_listing": 1
@@ -94006,14 +94707,14 @@
         },
         "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 1,
+        "poll_observation_count": 2,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 4,
         "rejection_reasons": {
-          "pollster_not_selected": 2,
-          "outside_reviewed_general_period": 1
+          "outside_reviewed_general_period": 1,
+          "pollster_not_selected": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -98262,14 +98963,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -98284,11 +98985,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:08": {
@@ -98310,14 +99022,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -98332,11 +99044,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 8,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:AL:house:02": {
@@ -116001,14 +116724,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116023,11 +116746,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 7,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:02": {
@@ -116048,14 +116782,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116070,11 +116804,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:03": {
@@ -116095,14 +116840,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116117,11 +116862,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 7,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:04": {
@@ -116142,14 +116898,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116164,11 +116920,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:05": {
@@ -116189,14 +116956,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116211,11 +116978,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:06": {
@@ -116236,14 +117014,14 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 0,
         "rejection_reasons": {},
-        "matchup_reviewed": false,
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116258,11 +117036,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TN:house:09": {
@@ -116275,24 +117064,22 @@
             "requested_state"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 1,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
-        "rejection_reasons": {
-          "pollster_not_selected": 1
-        },
-        "matchup_reviewed": false,
+        "rejection_reasons": {},
+        "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
           "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-          "automatic_admission": false,
+          "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
         "super_pac": {
@@ -116307,11 +117094,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "IND",
+            "REP"
+          ],
+          "coverage": "reported_active_candidate_listing",
+          "source_url": "https://www.thegreenpapers.com/G26/TN",
+          "reviewed_on": "2026-10-08",
           "general_unopposed": null,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:TX:house:01": {
@@ -122518,8 +123316,7 @@
             "USA:TN:house:05",
             "USA:TN:house:06",
             "USA:TN:house:07",
-            "USA:TN:house:08",
-            "USA:TN:house:09"
+            "USA:TN:house:08"
           ],
           "polls_without_7d": [
             "USA:TN:house:01",
@@ -123121,6 +123918,24 @@
       ],
       "reviewed_on": "2026-10-08",
       "governor_last_success_at": "2026-10-08T05:59:25.007293+00:00"
+    },
+    "TN": {
+      "state": "TN",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+      "captured_at": "2026-10-08T06:59:43.816322+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
+      "provider_records": 6,
+      "primary_rechecked_ids": [
+        "gov202tar2b53cae7",
+        "us-202tara610e9e2",
+        "gov202tar141bada4",
+        "us-202harc3982bab"
+      ],
+      "reviewed_on": "2026-10-08",
+      "governor_audit_captured_at": "2026-10-08T06:53:37.586432+00:00",
+      "governor_audit_file": "usa_governor_finance_audits/2026/TN.json"
     }
   }
 }

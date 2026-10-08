@@ -17,13 +17,13 @@
 ## 실제 완료와 남은 범위
 
 - A→E 순서로50주 연결 점검을 실행했다. 하원435·선거 상원35·선거 주지사36의 후보/조사/공시를 주별 JSON에 연결한다. 비선거 상원·주지사를 공백으로 세지 않는다.
-- 이것은 **전국 공시 수집 완성**이 아니다. NY는 실제 API 및 원문을 재검토한 부분 연결, 나머지49주는 기존 검증 산출물 연결 점검 상태다. 다음 심화 검토 순서는 **TN**이다.
-- 주지사 공식 독립지출은 CA·NY의2주만 구현된 부분 수집이다. 선거가 있는 나머지34주는 어댑터/출처 검토가 필요하고, 비선거14주는 별도다. 미확보를0달러나 관측 없음 확정으로 처리하지 않는다.
+- 이것은 **전국 공시 수집 완성**이 아니다. NY·TN은 실제 소스와 원문을 재검토한 부분 연결, 나머지48주는 기존 검증 산출물 연결 점검 상태다. 다음 심화 검토 순서는 **GA**이다.
+- 주지사 후보별 금액은 CA·NY의2주만 구현된 부분 수집이다. TN은 공식 CSV 수집을 구현했으나 정정·거래 식별 검증 전 금액은 보류한다. 선거가 있는 나머지33주는 어댑터/출처 검토가 필요하고, 비선거14주는 별도다. 미확보를0달러나 관측 없음 확정으로 처리하지 않는다.
 - 하원917개 후보 ID가 같은 지역구 공시 카드와 연결된다. 상원은 현재 후보·공개 명부의 인용ID·동일 주/직위 FEC 이름/정당으로68개 후보의 ID를 추가 대조해34개 레이스에 현재 후보의 금액이 연결된다.9명의 이름/정당/ID는 여전히 미확인으로 남긴다. FEC 등록 자체로 본선 후보를 생성하지 않는다.
 
 | 직위 | 선거 대상 | 현재 후보 대상 지출 관측 | 누적 조사 표시 가능 | 최근7일 | 최근14일 |
 |---|---:|---:|---:|---:|---:|
-| 하원 | 435 | 278 | 9 | 0 | 2 |
+| 하원 | 435 | 278 | 10 | 0 | 2 |
 | 상원 | 35 | 34 | 12 | 1 | 5 |
 | 주지사 | 36 | 2 | 18 | 1 | 7 |
 
@@ -47,6 +47,10 @@ python3 refresh_state_evidence.py --group A --as-of 2026-10-08
 python3 refresh_state_evidence.py --all --as-of 2026-10-08
 ```
 
+개별 주의 새 API 관측을 수집하려면 `python3 refresh_state_polls.py --state TN --as-of 2026-10-08`을 먼저 실행한다. 이 실행기는 그 주의 전체 선거 슬롯만 갱신하며 다른 주의 관측·전역 기준일을 유지한다. 기존 기관·후보·기간 검사를 통과한 새 조사는 자동 편입되고 미등록 기관/변경 대진/원문과 다른 기존 레코드는 검토 대기다. API 밖의 모든 조사 발견을 보장하지 않는다. 참고 전용·당파성 조사는 우세 집계에서 제외한다.
+
+테네시 공식 CSV 수집 감사는 `python3 refresh_governor_finance_audit.py --state TN --cycle 2026`으로 재실행한다. 주별 금액 정상화 수집기와 별도 경로이며 이 명령만으로 후보별 독립지출 금액이 공개되지 않는다.
+
 - 실행기는 기존 검토 입력을 연결하는 도구다. 위 명령만으로 새로운 지역지 조사·새 주별 공시 어댑터·GitHub 일정이 설치되지 않는다. 공통 API는 한 번 수집하고 주별 검토/연결은 순차 수행한다. 일일 여론조사 수집/본선 명부 편입 보강은 별도 PR #489이며 이 PR은 workflow를 편집하지 않았다.
 - public index: `usa_election_state_evidence_index_v1.json`, 주별 파일: `usa_election_state_evidence/2026/{STATE}-{hash}.json`. index는 `baseline_join_checked`와 `live_sources_reviewed_partial`, `next_state_to_review`, 실패/이월 및 원래 자료 날짜를 구분한다. **새 주별 계약은 UI에 설치하지 않았다.** 기존 NY 공시/여론조사 계약 변경만 기존 UI가 읽을 수 있다.
 - 실패한 주는 마지막 정상 파일/기준일을 보존하고 나머지 주는 계속 처리한다. 성공한 주마다 진행 index를 원자적으로 저장하므로 중단 후 특정 주부터 재개 가능하다. 같은 입력의 주별 파일hash는 동일하다.
@@ -55,7 +59,7 @@ python3 refresh_state_evidence.py --all --as-of 2026-10-08
 
 ## 검증 상태
 
-- 새 주별 계약16개를 포함해 Python polling146개, 연방 명부6개, 금융50개 및 JS51개가 통과했다(합계253개). 실제50주·506레이스 조인 및 NY 외 poll race 원본 보존도 확인했다.
+- 새 주별 계약18개·답변 수치 정정8개·단일 주 편입4개를 포함해 Python polling162개, 연방 명부6개, 금융58개 및 JS51개가 통과했다(합계277개). 실제50주·506레이스 조인 및 NY/TN 각 작업 외 다른 주의 poll race 원본 보존도 확인했다.
 - API 장애/오래된 데이터의 색 보류, 선거 후 관측 비움, 이름 변경 보류, minor/Other 응답 보존, 지지/반대·경선/본선 분리, 동일 파일 재사용, 실패 파일/기준일 보존 검사가 통과했다.
 - 병합·배포하지 않았다. 후보 PR #490 기반의 별도 검토 PR로 인수한다. ID 미확인/출처 장애/신규 공시 어댑터를 다음 주별 작업에서 계속 보강해야 한다.
 
@@ -66,7 +70,7 @@ python3 refresh_state_evidence.py --all --as-of 2026-10-08
 | Order | Group / State | House spending / races | House polls | Senate spending / races | Senate polls | Governor polls | Governor disclosure route |
 |---:|---|---:|---:|---|---:|---:|---|
 | 1 | A / NY | 20/26 | 1 | non_election | 0 | 1 | implemented_partial |
-| 2 | A / TN | 4/9 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 2 | A / TN | 4/9 | 1 | 1/1 | 1 | 1 | collected_normalization_held |
 | 3 | A / GA | 6/14 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
 | 4 | A / FL | 16/28 | 1 | 1/1 | 1 | 1 | adapter_or_source_review_required |
 | 5 | A / PA | 13/17 | 2 | non_election | 0 | 1 | adapter_or_source_review_required |
