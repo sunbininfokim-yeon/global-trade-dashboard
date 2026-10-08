@@ -249,10 +249,34 @@
     };
     const measureLabel = (t) => doc?.measure_types?.[t] || MEASURE_FALLBACK_KO[t] || t || '';
 
+    // --- US tariffs (트럼프 2기) -------------------------------------------------
+    //
+    // The one exception to "export controls": the US is shown with its tariff
+    // and trade policy, because for this dashboard's readers the US's import
+    // side moves markets the way other countries' export bans do. A separate
+    // hand-curated file (public/data/trade_policy/us_tariffs_v1.json), not a
+    // catalogue module: it has its own shape (measures with a status and how
+    // they ended, plus per-partner current rates).
+    const US_TARIFFS_URL = '/public/data/trade_policy/us_tariffs_v1.json';
+    let usTariffs = null;
+    let usTariffsPromise = null;
+    const loadUsTariffs = () => {
+        if (usTariffsPromise) return usTariffsPromise;
+        usTariffsPromise = fetch(US_TARIFFS_URL, { cache: 'no-cache' })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { usTariffs = d; return d; })
+            .catch(() => null);
+        return usTariffsPromise;
+    };
+    const TARIFF_STATUS_KO = {
+        active: '시행 중', expired: '만료', struck_down: '위법 판결로 무효', ended: '종료', truce: '휴전',
+    };
+
     const ui = {
         host: null,
         tab: 'measures', // 'measures' (curated catalogue) | 'notices' (regulator feed)
         category: 'all',
+        usView: 'tariffs', // USA panel: 'tariffs' (관세정책) | 'controls' (일반 수출통제)
         by: 'country', // 현행 조치 grouping: 'country' | 'commodity'
         commodity: null,
         noticeScope: 'controls', // 'controls' | 'all' (adds sanctions/enforcement)
@@ -568,6 +592,8 @@
         }
         ui.panel.innerHTML = `
             ${tabsHtml()}
+            <button type="button" class="ust-entry" data-ec-iso="USA">
+                <b>미국 관세·통상 정책</b><span>트럼프 2기 · 232조·301조 · 한·일·대만·중·독 세율</span></button>
             ${byToggleHtml()}
             ${filterHtml()}
             ${levelKeyHtml()}
@@ -591,6 +617,77 @@
                 : '<p class="ec-empty">정리된 조치가 없습니다.</p>'}
             ${levelKeyHtml()}
             ${footerHtml()}`;
+    };
+
+    const tariffSources = (list) => (list || []).map((x) => {
+        const url = safeUrl(x.url);
+        return url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(x.label)} ↗</a>` : esc(x.label);
+    }).join(' · ');
+
+    const tariffMeasureHtml = (m) => `<li class="ust-item ust-${esc(m.status)}">
+        <div class="ust-top">
+            <span class="ust-auth">${esc(m.authority === 'IEEPA' ? 'IEEPA' : `${m.authority}조`)}</span>
+            <b>${esc(m.name_ko)}</b>
+            <span class="ust-status">${esc(TARIFF_STATUS_KO[m.status] || m.status)}</span>
+        </div>
+        <div class="ust-when">${esc(m.started || '')} ~ ${esc(m.ended || '현재')}</div>
+        <div class="ust-rate">${esc(m.rate_ko)}</div>
+        ${m.how_ended_ko ? `<div class="ust-ended"><b>어떻게 끝났나</b> ${esc(m.how_ended_ko)}</div>` : ''}
+        ${m.scope_ko ? `<div class="ust-scope">${esc(m.scope_ko)}</div>` : ''}
+        <div class="ec-src">${tariffSources(m.sources)}</div>
+    </li>`;
+
+    const partnerHtml = (iso, p, { link = false } = {}) => `<div class="ust-partner">
+        <div class="ust-top">
+            ${link ? `<button type="button" class="ust-pname" data-ec-iso="${esc(iso)}">${esc(p.name_ko)} →</button>`
+                : `<b>미국이 ${esc(p.name_ko)}에 매기는 관세 (현재)</b>`}
+        </div>
+        <div class="ust-scope">${esc(p.summary_ko)}</div>
+        <table class="ust-table"><tbody>
+            ${(p.lines || []).map((l) => `<tr><th>${esc(l.label_ko)}</th><td>${esc(l.rate_ko)}</td>
+                <td class="ust-auth-cell">${esc(/^\d/.test(l.authority) ? `${l.authority}조` : l.authority)}</td></tr>`).join('')}
+        </tbody></table>
+        ${link ? '' : `<div class="ec-src">${tariffSources(p.sources)}</div>`}
+    </div>`;
+
+    // The US's own panel: what is in force, how the struck-down and expired
+    // layers ended, and the current rate on the main manufacturing partners.
+    const usTariffSectionHtml = () => {
+        if (!usTariffs) return '<p class="ec-warn">미국 관세 자료를 불러오지 못했습니다.</p>';
+        const live = usTariffs.measures.filter((m) => m.status === 'active' || m.status === 'truce');
+        const gone = usTariffs.measures.filter((m) => !(m.status === 'active' || m.status === 'truce'));
+        const partners = Object.entries(usTariffs.partners || {});
+        return `<section class="ust">
+            <h4 class="ec-sect">${esc(usTariffs.title_ko)}</h4>
+            <p class="ust-lead">미국은 예외로 수출통제 대신 관세·통상 정책을 붙였다. 2026-02-20 대법원이 IEEPA 관세를 무효로 하면서
+                지금은 <b>232조(품목별)</b>와 <b>301조(국가별)</b>가 두 축이다.</p>
+            <h4 class="ec-cat">주요 제조국에 지금 매기는 관세</h4>
+            ${partners.map(([iso, p]) => partnerHtml(iso, p, { link: true })).join('')}
+            <h4 class="ec-cat">시행 중인 제도 <span class="ec-cat-n">${live.length}건</span></h4>
+            <ul class="ust-list">${live.map(tariffMeasureHtml).join('')}</ul>
+            <details class="ust-gone"><summary>끝난 조치 — 어떻게 끝났나 <span class="ec-cat-n">${gone.length}건</span></summary>
+                <ul class="ust-list">${gone.map(tariffMeasureHtml).join('')}</ul>
+            </details>
+            <p class="ec-foot">${esc(usTariffs.as_of)} 기준 · ${esc(usTariffs.note_ko)}</p>
+        </section>`;
+    };
+
+    // A partner's panel: the US's current rates on it, above its own measures.
+    const usPartnerSectionHtml = (iso) => {
+        const p = usTariffs?.partners?.[iso];
+        if (!p) return '';
+        return `<section class="ust">${partnerHtml(iso, p)}
+            <button type="button" class="ec-more" data-ec-iso="USA">미국 관세 정책 전체 보기 (트럼프 2기)</button></section>`;
+    };
+
+    // The US panel splits in two: its tariff policy, and the export-control
+    // notices its regulators (OFAC, BIS) issue -- which otherwise sat below a
+    // long tariff section.
+    const usToggleHtml = () => {
+        const n = noticeItems().filter((it) => it.control.issuer === 'USA').length;
+        const b = (key, label) => `<button type="button" class="ec-by${ui.usView === key ? ' is-on' : ''}" data-ec-usview="${key}"
+            aria-pressed="${ui.usView === key}">${label}</button>`;
+        return `<div class="ec-bys ust-toggle" role="group" aria-label="미국 보기">${b('tariffs', '관세 정책')}${b('controls', `일반 수출통제 <span>${n}</span>`)}</div>`;
     };
 
     const renderCountryPanel = (iso) => {
@@ -618,10 +715,14 @@
                 <h3>${esc(name)} <span class="ec-iso">${esc(iso)}</span></h3>
                 <span class="ec-count">${list.length ? `현행 조치 ${list.length}건` : ''}</span>
             </div>
+            ${iso === 'USA' ? usToggleHtml() : ''}
+            ${iso === 'USA' && ui.usView === 'tariffs' ? usTariffSectionHtml() : ''}
+            ${iso !== 'USA' ? usPartnerSectionHtml(iso) : ''}
+            ${iso === 'USA' && ui.usView === 'tariffs' ? '' : `
             ${sections ? `<h4 class="ec-sect">현행 조치 (수기 정리)</h4>${sections}` : ''}
             ${noticeBlock(`${name} 규제 기관이 낸 공고`, issued, true)}
-            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, false)}
-            ${total ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
+            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, false)}`}
+            ${total || (iso === 'USA' && ui.usView === 'tariffs') || usTariffs?.partners?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
                 아직 원문을 확인하지 않은 것일 수 있습니다 — 통제가 없다는 뜻은 아닙니다.</p>`}
             ${footerHtml()}`;
     };
@@ -661,7 +762,8 @@
                 .map((l) => `<div class="mini-leg-row">${swatch(MAP_FILL[l])}${esc(levelLabel(l))}</div>`).join('');
             const head = ui.commodity ? `${commodityKo(ui.commodity)} 수출통제` : '수출 통제 · 국가별 최고 단계';
             ui.legend.innerHTML = `<div class="mini-leg-head">${esc(head)}</div>${rows}
-                <div class="mini-leg-note">${esc(doc?.as_of || '')} 기준 · 국가 클릭 시 상세</div>`;
+                <div class="mini-leg-note">${esc(doc?.as_of || '')} 기준 · 국가 클릭 시 상세</div>
+                <div class="mini-leg-row">${swatch([45, 212, 191])}미국 — 관세·통상 정책</div>`;
         }
         ui.legend.classList.remove('hidden');
     };
@@ -690,7 +792,9 @@
                 return c.issued ? ISSUER_FILL : targetFill(c.targeted);
             }
             const lv = topLevel(groups.get(iso));
-            return lv ? MAP_FILL[lv] : [0, 0, 0, 0];
+            if (lv) return MAP_FILL[lv];
+            // The US carries tariff policy, not export controls (see usTariffs).
+            return iso === 'USA' && usTariffs ? [45, 212, 191, 75] : [0, 0, 0, 0];
         };
         const line = (iso) => {
             if (iso && iso === ui.iso) return [240, 249, 255, 240];
@@ -774,6 +878,9 @@
         if ((v = attr('data-ec-tab'))) {
             ui.tab = v; ui.iso = null; ui.commodity = null; ui.shown = 0; redraw(); return;
         }
+        if ((v = attr('data-ec-usview'))) {
+            ui.usView = v; renderPanel(); return;
+        }
         if ((v = attr('data-ec-by'))) {
             ui.by = v; ui.iso = null; ui.commodity = null; redraw(); return;
         }
@@ -823,7 +930,7 @@
         host.setPanels();
         if (ui.panel) ui.panel.innerHTML = '<p class="ec-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         host.setMap([], onMapClick, onMapHover);
-        await Promise.all([load(), loadNotices(), host.loadWorldGeo()]);
+        await Promise.all([load(), loadNotices(), loadUsTariffs(), host.loadWorldGeo()]);
         if (!host.isActive()) return;
         if (!doc) {
             if (ui.panel) ui.panel.innerHTML = '<p class="ec-warn">수출통제 목록을 불러오지 못했습니다.</p>';
