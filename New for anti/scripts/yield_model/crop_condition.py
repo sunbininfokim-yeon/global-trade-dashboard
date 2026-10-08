@@ -65,11 +65,31 @@ RATINGS = {"PCT EXCELLENT": 1.0, "PCT GOOD": 0.75, "PCT FAIR": 0.5,
            "PCT POOR": 0.25, "PCT VERY POOR": 0.0}
 
 
+def _annotate_crash(kind, value, tb):
+    """Surface an uncaught error as an Actions annotation, then fail as usual."""
+    import traceback
+    if os.environ.get("GITHUB_ACTIONS"):
+        last = traceback.extract_tb(tb)[-1] if tb else None
+        where = f" at {os.path.basename(last.filename)}:{last.lineno}" if last else ""
+        print(f"::error::{kind.__name__}{where}: {str(value)[:300]}", flush=True)
+    sys.__excepthook__(kind, value, tb)
+
+
+sys.excepthook = _annotate_crash
+
+
 def log(msg):
     print(f"[condition] {msg}", flush=True)
 
 
-def get_json(url, attempts=3, timeout=300):
+def annotate(level, msg):
+    """GitHub Actions annotation: readable from the check run even when the
+    raw job log is not (the log store sits behind a different host)."""
+    if os.environ.get("GITHUB_ACTIONS"):
+        print(f"::{level}::{msg}", flush=True)
+
+
+def get_json(url, attempts=3, timeout=120):
     for i in range(attempts):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
@@ -99,6 +119,7 @@ def fetch_state(crop, code):
         hi = min(lo + CHUNK - 1, END_YEAR)
         params = {"key": key, "commodity_desc": spec["commodity"],
                   "statisticcat_desc": "CONDITION", "agg_level_desc": "STATE",
+                  "freq_desc": "WEEKLY", "source_desc": "SURVEY",
                   "state_alpha": code, "year__GE": str(lo), "year__LE": str(hi),
                   "format": "JSON"}
         if spec["class_desc"]:
@@ -109,6 +130,7 @@ def fetch_state(crop, code):
             # NASS answers 400 when a chunk has no rows (e.g. a state that
             # stopped growing the crop); that is a gap, not a failure.
             log(f"  {crop}/{code} {lo}-{hi}: {e}")
+            annotate("warning", f"{crop}/{code} {lo}-{hi}: {str(e)[:200]}")
             continue
         for r in data.get("data", []):
             unit = r.get("unit_desc")
@@ -178,11 +200,18 @@ def main():
     crops = sys.argv[1:] or list(CROPS)
     frames = []
     for crop in crops:
-        r = region_index(crop)
+        try:
+            r = region_index(crop)
+        except Exception as e:  # noqa: BLE001
+            # One crop failing must not cost the others their data.
+            annotate("error", f"{crop}: {type(e).__name__}: {str(e)[:300]}")
+            log(f"{crop}: failed: {e}")
+            continue
         if r.empty:
             log(f"{crop}: no condition data")
             continue
         log(f"{crop}: {r.year.min()}-{r.year.max()}, {len(r)} region-weeks")
+        annotate("notice", f"{crop}: {r.year.min()}-{r.year.max()}, {len(r)} region-weeks")
         frames.append(r)
     if not frames:
         return 1

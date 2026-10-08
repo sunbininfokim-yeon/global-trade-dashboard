@@ -29,6 +29,19 @@ MIN_TRAIN = 15        # condition starts in 1986; keeps the test span 2001-
 MIN_WEIGHT = 0.8      # skip weeks where states covering <80% of the region report
 
 
+def _annotate_crash(kind, value, tb):
+    """Surface an uncaught error as an Actions annotation, then fail as usual."""
+    import traceback
+    if os.environ.get("GITHUB_ACTIONS"):
+        last = traceback.extract_tb(tb)[-1] if tb else None
+        where = f" at {os.path.basename(last.filename)}:{last.lineno}" if last else ""
+        print(f"::error::{kind.__name__}{where}: {str(value)[:300]}", flush=True)
+    sys.__excepthook__(kind, value, tb)
+
+
+sys.excepthook = _annotate_crash
+
+
 def log(msg):
     print(f"[cond-bt] {msg}", flush=True)
 
@@ -73,6 +86,12 @@ def run(crop, cond):
         out[int(week)] = r
         log(f"  {crop:13} week {week:2d} (~{r['typical_date']}): "
             f"skill={r['skill_vs_trend']:+6.1%}  n={r['n_test']}")
+    if out and os.environ.get("GITHUB_ACTIONS"):
+        # One annotation per crop so the result is readable from the check run.
+        cells = " ".join(f"{v['typical_date']}:{v['skill_vs_trend']:+.2f}"
+                         for _, v in sorted(out.items()))
+        print(f"::notice::{crop} skill by week (n={next(iter(out.values()))['n_test']}): {cells}",
+              flush=True)
     return out
 
 
