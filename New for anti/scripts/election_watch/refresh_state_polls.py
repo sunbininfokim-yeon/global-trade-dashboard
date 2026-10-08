@@ -11,6 +11,7 @@ from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
 from election_watch.poll_gaps import attach_gaps
 from election_watch.state_poll_capture import merge_capture
+from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.superpac import STATES
 
 ROOT=Path(__file__).resolve().parent
@@ -40,13 +41,16 @@ def main():
         policy['races']={rid:r for rid,r in policy['races'].items() if r['state']==args.state}
         policy['states']=[args.state]
         rows,url=fetch_polls(policy['cycle'],args.as_of)
+        provider_rows=rows
+        rows,primary_receipts=merge_primary_supplements(rows,read(config/'primary_supplements_2026.json'),args.as_of,[args.state])
         capture=build_live(rows,policy,read(config/'results_2026.json'),args.as_of,checked,url)
         finance=load_finance_links(args.public/'usa_election_finance_index_v1.json',2026)
-        attach_coverage(capture,rows,policy,finance);attach_gaps(capture,finance)
+        attach_coverage(capture,provider_rows,policy,finance);attach_gaps(capture,finance)
         old_receipt=previous.get('state_captures',{}).get(args.state,{})
         receipt={**old_receipt,'state':args.state,'cycle':2026,'source_url':url,'captured_at':checked,
-            'capture_kind':'provider_transport_only',
-            'serialized_provider_response_sha256':hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
+            'capture_kind':'provider_transport_and_reviewed_primary_supplements' if primary_receipts else 'provider_transport_only',
+            'primary_supplement_receipts':primary_receipts,
+            'serialized_provider_response_sha256':hashlib.sha256(json.dumps(provider_rows,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
             'provider_records':sum(r['provider_record_count'] for r in capture['monitoring']['race_coverage'].values())}
         board=merge_capture(previous,capture,args.state,receipt)
         board['target_catalog']['ballot_review_count']=len(ballots['races'])

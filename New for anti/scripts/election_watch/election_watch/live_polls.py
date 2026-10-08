@@ -11,7 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, answer_correction_fingerprint
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -144,6 +144,8 @@ def normalize(rows, policy, as_of):
             require(p['id'] not in seen_ids, 'duplicate_id')
             seen_ids.add(p['id'])
             require(p['id'] not in policy.get('excluded_records', {}), policy.get('excluded_records', {}).get(p['id'], 'excluded_record'))
+            reviewed_raw = policy.get('quality_reviews', {}).get(p['id'], {}).get('provider_record_sha256')
+            require(not reviewed_raw or reviewed_raw==answer_correction_fingerprint(p), 'primary_review_provider_metadata_changed')
             p, answer_correction = corrected_provider_answers(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             p, source_correction = corrected_provider_source(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
@@ -198,6 +200,25 @@ def normalize(rows, policy, as_of):
                              'methodology_url': source['methodology_url'],
                              'margin_of_error_pp': None,
                              'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
+            primary = p.get('primary_source_capture')
+            if primary:
+                review = policy.get('quality_reviews', {}).get(p['id'], {})
+                require(admission and admission['source_role']=='pollster_primary'
+                        and review.get('primary_supplement_record_sha256')==answer_correction_fingerprint(p)
+                        and primary.get('original_reviewed_on')==review['reviewed_on']
+                        and primary.get('status') in ('primary_documents_rechecked','carried_forward_reference_only'),
+                        'unreviewed_primary_supplement')
+                expected_documents={d['url']:d['sha256'] for d in review.get('primary_documents', [])}
+                checked_documents=primary.get('documents', [])
+                require(expected_documents and len(checked_documents)==len(expected_documents)
+                        and {d['url'] for d in checked_documents}==set(expected_documents),
+                        'primary_document_receipt_mismatch')
+                if primary['status']=='primary_documents_rechecked':
+                    require(all(d.get('status')=='unchanged' and d.get('sha256')==expected_documents[d['url']]
+                                for d in checked_documents), 'primary_document_receipt_mismatch')
+                observation['primary_source_capture'] = deepcopy(primary)
+                observation['verification'] = 'reviewed_primary_source_snapshot'
+                observation['limitations_ko'] = 'API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.'
             if answer_correction:
                 observation['provider_answer_correction'] = answer_correction
             if source_correction:
@@ -206,6 +227,8 @@ def normalize(rows, policy, as_of):
                                              'sponsors': p.get('sponsors') or []}
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if primary and primary['status']=='carried_forward_reference_only':
+                reasons.append('primary_source_unavailable_or_changed')
             if partisan_reference:
                 reasons.append('party_commissioned_reference')
             if not in_general_period:
