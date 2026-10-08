@@ -1,7 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal, pollSourceReady } from '../../data/usa-election-context.js?v=2';
-import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=2';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=3';
+import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=4';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=4';
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
 

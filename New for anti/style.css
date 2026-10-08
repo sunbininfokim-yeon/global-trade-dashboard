@@ -6946,3 +6946,19 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-spending-history article { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid #334155; }
 .elections-spending-history small { color: #94a3b8; }
 .elections-state-polls .elections-map-legend { margin-bottom: 8px; }
+
+/* Senate scope and ballot matchup cards share the national/state panel width. */
+.elections-senate-scope { display: grid; gap: 7px; padding: 9px; margin: 8px 0; border: 1px solid #334155; border-radius: 7px; background: #172236; font-size: 11px; color: #cbd5e1; }
+.elections-senate-scope > div { display: grid; gap: 3px; }
+.elections-senate-scope .is-dem { color: #93c5fd; }
+.elections-senate-scope .is-gop { color: #fca5a5; }
+.elections-tenure { white-space: nowrap; }
+.elections-contest-row { border: 1px solid #334155; border-radius: 8px; background: #111d30; padding: 9px; margin: 7px 0; gap: 7px; }
+.elections-contest-row:hover { border-color: #64748b; background: #17243a; }
+.elections-contest-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 8px; }
+.elections-contest-rating { border: 1px solid #475569; border-radius: 4px; padding: 2px 4px; white-space: nowrap; font-size: 10px; }
+.elections-contest-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.elections-contest-person { display: grid; min-width: 0; padding: 7px; border: 1px solid #475569; border-radius: 5px; background: #172236; overflow-wrap: anywhere; }
+.elections-contest-person.is-dem { border-color: #2563eb; background: #142540; }
+.elections-contest-person.is-gop { border-color: #dc2626; background: #321f2e; }
+.elections-contest-person strong { font-size: 11px; font-weight: 700; }
