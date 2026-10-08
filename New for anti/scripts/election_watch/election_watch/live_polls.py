@@ -119,6 +119,9 @@ def reviewed_source(raw, policy, as_of):
     url = urlparse(raw.get('url') if isinstance(raw.get('url'), str) else '')
     require(url.scheme == 'https' and not url.username and not url.password
             and url.hostname in source['hosts'], 'unregistered_primary_host')
+    if source.get('approved_sponsor_sets'):
+        require(sorted(raw.get('sponsors') or []) in
+                [sorted(s) for s in source['approved_sponsor_sets']], 'commissioner_not_reviewed')
     return source, None
 
 
@@ -171,7 +174,11 @@ def normalize(rows, policy, as_of):
             require(sum(a['pct'] for a in answers) <= 102, 'invalid_total')
             # Exact reviewed matchup, not name fuzzing against a list of FEC
             # registrants (which contains withdrawn/primary candidates too).
-            require(set(race['required_candidates']) <= set(names), 'unreviewed_matchup')
+            def canonical(name):
+                return race['candidates'].get(name, {}).get('canonical_name', name)
+            require(len({canonical(n) for n in names}) == len(names), 'duplicate_candidate_alias')
+            require({canonical(n) for n in race['required_candidates']}
+                    <= {canonical(n) for n in names}, 'unreviewed_matchup')
             normalized = []
             for a in answers:
                 identity = race['candidates'].get(a['choice'])
@@ -253,6 +260,8 @@ def summarize(rows, race, as_of, days):
             ties += 1
         else:
             leader = leaders[0]
+            # Preserve source spellings in the published signal contract, which
+            # the browser also recomputes from the same observations.
             counts[leader['name']] += 1
             parties[leader['name']] = leader['party']
     leading = [name for name, count in counts.items() if count == max(counts.values(), default=0)]
@@ -387,6 +396,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                          'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
             'watchlist': policy.get('watchlist'),
             'governor_roster_coverage': deepcopy(policy.get('governor_roster_coverage')),
+            'target_catalog': deepcopy(policy.get('target_catalog')),
             'excluded_watch_slots': deepcopy(policy.get('excluded_watch_slots', [])),
             'races': races, 'review_queue': rejected,
             'results_collection': {'status': 'official_source_review_required',

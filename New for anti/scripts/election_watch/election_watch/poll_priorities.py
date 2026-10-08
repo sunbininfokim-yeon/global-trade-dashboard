@@ -186,7 +186,9 @@ def load_finance_links(index_path, cycle):
             payload = asset(race['data_file'])
             require(payload['schema'] == 'usa_election_finance_race_v1' and payload['cycle'] == cycle
                     and payload['race_id'] == rid and payload['status'] == race['status'], 'finance race mismatch')
-            races[rid] = {'data_file': race['data_file'], 'status': race['status']}
+            races[rid] = {'data_file': race['data_file'], 'status': race['status'],
+                          'totals_by_category': payload.get('totals_by_category', {}),
+                          'totals_by_election_type': payload.get('totals_by_election_type', {})}
     return {'races': races, 'status': 'loaded', 'generated_at': index['generated_at'], 'national_file': national_file}
 
 
