@@ -30,9 +30,8 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         env:
           USDA_NASS_API_KEY: ${{ secrets.USDA_NASS_API_KEY }}
-          CONDITION_DEBUG: "1"
         run: |
-          python crop_condition.py corn
+          python crop_condition.py
           python condition_backtest.py
 
       - name: Commit and Push Changes
@@ -40,8 +39,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add "New for anti/scripts/yield_model/us_crop_condition.csv" \
-                  "New for anti/scripts/yield_model/us_condition_backtest.json" \
-                  "New for anti/scripts/yield_model/debug_condition_raw.csv"
+                  "New for anti/scripts/yield_model/us_condition_backtest.json"
           git commit -m "chore: weekly US crop condition refresh" || exit 0
           for i in 1 2 3; do
             git push && exit 0

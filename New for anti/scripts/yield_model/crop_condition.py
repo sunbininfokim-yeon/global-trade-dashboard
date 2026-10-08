@@ -171,14 +171,6 @@ def fetch_state(crop, code):
             log(f"  {crop}/{code} {lo}-{hi}: {e}")
             annotate("warning", f"{crop}/{code} {lo}-{hi}: {str(e)[:200]}")
             continue
-        if os.environ.get("CONDITION_DEBUG") and crop == "corn" and code == "IA":
-            # TEMPORARY: dump raw NASS rows for one state to diagnose CCI.
-            dbg = os.path.join(HERE, "debug_condition_raw.csv")
-            keep = ["year", "reference_period_desc", "week_ending", "short_desc",
-                    "unit_desc", "Value", "source_desc", "freq_desc", "class_desc",
-                    "util_practice_desc", "prodn_practice_desc", "domain_desc", "load_time"]
-            pd.DataFrame([{k: r.get(k) for k in keep} for r in data.get("data", [])]).to_csv(
-                dbg, mode="a", header=not os.path.exists(dbg), index=False)
         for r in data.get("data", []):
             unit = r.get("unit_desc")
             if unit not in RATINGS or not r.get("week_ending"):
