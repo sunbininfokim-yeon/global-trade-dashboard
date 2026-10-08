@@ -55,7 +55,8 @@ def candidate_cards(rows, roster):
     registrations = group_rows(roster, 'candidate_id')
     for candidate_id in sorted(set(by_id) | set(registrations)):
         spending, entries = by_id.get(candidate_id, []), registrations.get(candidate_id, [])
-        names = sorted({r.get('candidate_name') or r.get('name') or candidate_id for r in spending + entries})
+        names = sorted({r.get('candidate_name') or r.get('name') or candidate_id for r in spending + entries}
+                       | {alias for r in entries for alias in r.get('reported_name_aliases', [])})
         phases = {}
         for phase, selected in group_rows(spending, 'election_type').items():
             # Preserve report party and committee categories rather than guessing a party switch date.
@@ -80,7 +81,10 @@ def geometry_catalog(public):
     return result
 
 
-def build(public=PUBLIC, cadence='daily'):
+def build(public=PUBLIC, cadence='daily', governor_rosters=None):
+    if governor_rosters:
+        from election_watch.governor_matchups import validate_snapshot
+        validate_snapshot(governor_rosters, governor_rosters['cycle'], now()[:10])
     federal = read(public / INDEX) if (public / INDEX).exists() else {'cycles': {}}
     governor_sources = defaultdict(dict)
     for path in sorted((public / 'usa_governor_finance').glob('*/*.json')):
@@ -105,7 +109,8 @@ def build(public=PUBLIC, cadence='daily'):
             '경선·본선은 election_types의 원문 코드로 필터링하세요. 등록 명부에 경선 참여를 추정하지 마세요.',
             '대통령은 US 전국 단위. 상원·주지사는 주 전체 단위이며 하원 구역에 배분하지 마세요.',
             '지도는 기존 경계와 신고 선거구 코드만 연결합니다. 해당 선거의 경계 일치 여부는 미검증입니다.']}
-    for cycle in sorted(set(federal.get('cycles', {})) | set(governor_sources)):
+    roster_cycles = {str(governor_rosters['cycle'])} if governor_rosters else set()
+    for cycle in sorted(set(federal.get('cycles', {})) | set(governor_sources) | roster_cycles):
         meta = federal.get('cycles', {}).get(cycle)
         state_sources = governor_sources.get(cycle, {})
         rows, roster = [], []
@@ -124,6 +129,10 @@ def build(public=PUBLIC, cadence='daily'):
                 raise ValueError('Governor roster scope mismatch')
             rows.extend(source['spending'])
             roster.extend(source.get('candidates', []))
+        matchup_roster = governor_rosters if governor_rosters and str(governor_rosters['cycle']) == cycle else None
+        if matchup_roster:
+            roster.extend(c for contest in matchup_roster['contests'].values()
+                          if contest['status'] == 'reported_general_matchup' for c in contest['candidates'])
         rows, roster = normalize_house(rows, roster, geometry, cycle)
         audit = district_audit(rows, roster)
         records_by_race, roster_by_race = defaultdict(list), defaultdict(list)
@@ -176,13 +185,17 @@ def build(public=PUBLIC, cadence='daily'):
                 'district_source': sorted({r['district_source']['status'] for r in selected + registered if r.get('district_source')}),
                 'status': status, 'source_status_key': source_key, 'currency': 'USD',
                 'coverage_note_ko': ('연결된 주 공시 양식의 부분 집계입니다.' if source_key else '주 공시 수집기 미연결. 관측 없음 또는 실제 지출 0을 뜻하지 않습니다.') if office == 'governor' else None, 'amount_unit': 'cents',
-                'source_limitations_ko': source.get('limitations_ko', []) if office == 'governor' and source else [],
-                'amount_basis': source.get('amount_basis') if office == 'governor' and source else None,
                 'seat_class': None, 'ballot_election_id': None,
                 'totals_by_category': amounts(selected),
                 'totals_by_election_type': {p: amounts(v) for p, v in group_rows(selected, 'election_type').items()},
                 'totals_by_reported_party': {p: amounts(v) for p, v in group_rows(selected, 'party').items()},
                 'candidates': candidate_cards(selected, registered)}
+            if office == 'governor' and source:
+                payload['amount_basis'] = source.get('amount_basis')
+                payload['source_limitations_ko'] = source.get('limitations_ko', [])
+            if office == 'governor' and matchup_roster and state in matchup_roster['contests']:
+                payload.update(candidate_roster_status=matchup_roster['contests'][state]['status'],
+                               candidate_roster_source_url=matchup_roster['contests'][state]['source_url'])
             path = immutable(public, f'{cycle}/races/{state}-{office}' + (f'-{district}' if district is not None else ''), payload)
             state_races[state].append({'race_id': race_id, 'office': office, 'district': district, 'status': status,
                 'candidate_count': len(payload['candidates']), 'map_join': join, 'totals_by_category': payload['totals_by_category'], 'data_file': path})
@@ -198,6 +211,11 @@ def build(public=PUBLIC, cadence='daily'):
             'sources': (meta.get('sources', []) if meta else []) + [{'url': v['source_url'], 'metadata_url': v['metadata_url']} for v in state_sources.values()],
             'limitations_ko': (meta.get('limitations_ko', []) if meta else ['연방 자료 미수집']) + [note for v in state_sources.values() for note in v['limitations_ko']],
             'unmatched_district_race_ids': [race_key(s, o, d) for s, o, d in keys if o == 'house' and (s, d) not in geometry]}
+        if matchup_roster:
+            catalog['cycles'][cycle]['governor_roster_coverage'] = {**matchup_roster['coverage'],
+                'reviewed_on': matchup_roster['reviewed_on'], 'source_url': matchup_roster['source_url'],
+                'additional_sources': matchup_roster.get('additional_sources', []),
+                'limitations_ko': matchup_roster['limitations_ko']}
         catalog['cycles'][cycle]['unmatched_district_race_ids'].sort()
         national = {'schema': 'usa_election_finance_national_v1', 'cycle': int(cycle),
             'states': catalog['cycles'][cycle].pop('states'),
@@ -215,5 +233,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--public', type=Path, default=PUBLIC)
     args = parser.parse_args()
-    result = build(args.public)
+    from refresh_governor_matchups import ROSTERS
+    result = build(args.public, cadence='weekly', governor_rosters=read(ROSTERS) if ROSTERS.exists() else None)
     print(json.dumps({'cycles': list(result['cycles']), 'catalog': CATALOG}))

@@ -1,6 +1,6 @@
 {
   "schema": "usa_state_campaign_finance_sources_v1",
-  "verified_on": "2026-10-04",
+  "verified_on": "2026-10-07",
   "directory_url": "https://www.fec.gov/introduction-campaign-finance/how-to-research-public-records/combined-federalstate-disclosure-and-election-directory/",
   "note_ko": "공식 문서로 제공 방식을 확인한 출처 목록. API의 존재는 주지사 후보·지지/반대·정정·위원회 유형 매핑의 완성을 의미하지 않는다. 계정 없이 조회 가능한 자료에는 신고자 계정을 만들지 않는다.",
   "states": {
@@ -39,7 +39,7 @@
       "independent_expenditure_mapping": "implemented_F496_governor_current_amendment_partial",
       "api_endpoint": "https://campaignfinance.cdn.sos.ca.gov/dbwebexport.zip",
       "metadata_url": "https://campaignfinance.cdn.sos.ca.gov/calaccess-documentation.zip",
-      "limitations_ko": "최신 F496/S496만. 지출자 슈퍼팩 분류 미확보. 다른 양식 제외. 후보는 공식 경선 명부 전체 이름 정확 일치만 연결.",
+      "limitations_ko": "최신 F496/S496만. 지출자 슈퍼팩 분류 미확보. 다른 양식 제외. CVR Elect_Date가 검토 선거일과 일치할 때만 경선/본선 구분; 날짜 없는 공시는 미확인.",
       "last_probe": {
         "date": "2026-09-10",
         "result": "official_daily_zip_range_fetch_and_normalization_verified",
@@ -75,9 +75,9 @@
       "authentication": "public_read_no_key_verified",
       "independent_expenditure_mapping": "implemented_reviewed_IE_filers_unique_F_R_governor_links_partial",
       "last_probe": {
-        "date": "2026-10-04",
-        "result": "live_API_100_governor_allocations_75_unique_paid_links_map_contract_verified",
-        "status": "connected_partial_branch_only"
+        "date": "2026-10-07",
+        "result": "official_API_101_allocations_75_reviewed_unique_F_R_links_refreshed_map_rebuild_required",
+        "status": "connected_partial"
       },
       "api_endpoint": "https://data.ny.gov/resource/e9ss-239a.json",
       "metadata_url": "https://data.ny.gov/api/views/e9ss-239a.json",
@@ -90,9 +90,9 @@
       "authentication": "none_required_per_official_docs",
       "independent_expenditure_mapping": "not_implemented",
       "last_probe": {
-        "date": "2026-10-02",
-        "result": "documented_API_but_direct_request_Cloudflare_HTTP_403",
-        "status": "not_connected"
+        "date": "2026-10-07",
+        "result": "documented_public_API_directory_and_cycles_HTTP_403_no_API_key_required",
+        "status": "source_access_blocked"
       }
     },
     "GA": {
