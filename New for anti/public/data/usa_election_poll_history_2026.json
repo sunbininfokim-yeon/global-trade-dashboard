@@ -1,10 +1,10 @@
 {
   "schema": "usa_poll_history_v1",
   "cycle": 2026,
-  "as_of": "2026-10-07",
+  "as_of": "2026-10-08",
   "note_ko": "감사·출처 확인용 기록. 선거 종료 후 지도 우세 신호로 사용하지 않습니다.",
-  "race_count": 32,
-  "observation_count": 55,
+  "race_count": 40,
+  "observation_count": 66,
   "races": {
     "USA:AZ:governor": {
       "contest_id": "USA:AZ:governor:2026:general:regular",
@@ -212,6 +212,206 @@
               "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
             },
             "limitations_ko": "8월 조사로 누적 참고만 보관. 원문 전체 RV 1,040과 LV 923을 분리. 7일·14일 우세 집계에서 제외."
+          }
+        }
+      ]
+    },
+    "USA:CA:governor": {
+      "contest_id": "USA:CA:governor:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "gov202surd1c462e5",
+          "race_id": "USA:CA:governor",
+          "contest_id": "USA:CA:governor:2026:general:regular",
+          "pollster": "SurveyUSA",
+          "pollster_group": "surveyusa",
+          "field_start": "2026-09-15",
+          "field_end": "2026-09-20",
+          "provider_record_date": "2026-09-22",
+          "population": "lv",
+          "sample_n": 742,
+          "answers": [
+            {
+              "name": "Xavier Becerra",
+              "pct": 55.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Steve Hilton",
+              "pct": 33.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "KGTV (San Diego)",
+            "The San Diego Union Tribune"
+          ],
+          "source_url": "https://www.10news.com/americavotes/poll-xavier-becerra-leads-california-gubernatorial-race-in-statewide-survey",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=aa444494-3077-4ad2-a8ef-df17241474c5",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "KGTV (San Diego)",
+              "The San Diego Union Tribune"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "precision_model_specification",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.10news.com/americavotes/poll-xavier-becerra-leads-california-gubernatorial-race-in-statewide-survey",
+              "https://results.surveyusa.com/client/PollReport.aspx?g=aa444494-3077-4ad2-a8ef-df17241474c5"
+            ],
+            "primary_toplines": {
+              "Xavier Becerra": 55,
+              "Steve Hilton": 33
+            },
+            "question_sample_n": 742,
+            "disclosure_review": {
+              "population": "LV",
+              "total_sample_n": 1000,
+              "rv_sample_n": 837,
+              "question_sample_n": 742,
+              "field_dates": [
+                "2026-09-15",
+                "2026-09-20"
+              ],
+              "mode": "online nonprobability adult panel",
+              "sampling_frame": "Cint USA online adult panel",
+              "weighting": "Census gender, age, ethnicity, education, home ownership; statewide party registration",
+              "sponsor": [
+                "KGTV (San Diego)",
+                "The San Diego Union Tribune"
+              ],
+              "question_wording_checked": true
+            },
+            "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {},
+            "limitations_ko": "ABC 10News 직접 의뢰 기사와 SurveyUSA 상세표의 본선 LV 742명·55/33 수치를 대조. 비확률 온라인 표본. 최근 7/14일 범위 밖 자료는 현재 우세로 사용하지 않음."
+          }
+        }
+      ]
+    },
+    "USA:CA:house:48": {
+      "contest_id": "USA:CA:house:48:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202surf8843a2d",
+          "race_id": "USA:CA:house:48",
+          "contest_id": "USA:CA:house:48:2026:general",
+          "pollster": "SurveyUSA",
+          "pollster_group": "surveyusa",
+          "field_start": "2026-08-27",
+          "field_end": "2026-09-01",
+          "provider_record_date": "2026-09-04",
+          "population": "lv",
+          "sample_n": 522,
+          "answers": [
+            {
+              "name": "Marni von Wilpert",
+              "pct": 45.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Jim Desmond",
+              "pct": 42.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "KGTV (San Diego)",
+            "The San Diego Union Tribune"
+          ],
+          "source_url": "https://results.surveyusa.com/client/PollReport.aspx?g=0877c725-6e44-47fe-9856-dcf799865671",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=0877c725-6e44-47fe-9856-dcf799865671",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "KGTV (San Diego)",
+              "The San Diego Union Tribune"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "precision_model_specification",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://results.surveyusa.com/client/PollReport.aspx?g=0877c725-6e44-47fe-9856-dcf799865671"
+            ],
+            "primary_toplines": {
+              "Marni von Wilpert": 45.0,
+              "Jim Desmond": 42.0
+            },
+            "question_sample_n": 522,
+            "disclosure_review": {
+              "population": "LV",
+              "total_sample_n": 625,
+              "rv_sample_n": 568,
+              "question_sample_n": 522,
+              "field_dates": [
+                "2026-08-27",
+                "2026-09-01"
+              ],
+              "sampling_frame": "48% Cint panel; 52% Aristotle voter telephone sample via SMS-to-web",
+              "mode": "mixed online panel, telephone IVR and/or operator SMS-to-web",
+              "weighting": "gender, age, ethnicity, home ownership; CA-48 party registration",
+              "sponsor": [
+                "KGTV (San Diego)",
+                "The San Diego Union Tribune"
+              ],
+              "question_wording_checked": true
+            },
+            "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "KGTV (San Diego)",
+                "The San Diego Union Tribune"
+              ],
+              "affiliation_verified": true,
+              "meaning": "identified regional media commissioner, not a neutrality certification"
+            },
+            "limitations_ko": "본선 문항·지지도·LV 표본 원문 일치. 방법론 내 primary voters 표현이 있으나 November LV 선별과 본선 문항을 함께 확인. 정확도 미평가."
           }
         }
       ]
@@ -435,7 +635,7 @@
             {
               "name": "Tony D'Arrigo",
               "pct": 7.0,
-              "party": null
+              "party": "IND"
             }
           ],
           "sponsors": [
@@ -477,9 +677,10 @@
               "reported_precision",
               "historical_accuracy_rating"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
-              "https://www.thehousemajoritypac.com/news/hmp-poll-leela-gray-leads-anna-paulina-luna-in-fl-13"
+              "https://www.thehousemajoritypac.com/news/hmp-poll-leela-gray-leads-anna-paulina-luna-in-fl-13",
+              "https://dos.elections.myflorida.com/candidates/CanList.asp?elecid=20261103-GEN&status=All"
             ],
             "primary_toplines": {
               "Leela Gray": 44,
@@ -509,7 +710,7 @@
               "internal": false,
               "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
             },
-            "limitations_ko": "민주당 House Majority PAC 의뢰 조사. 원문 3후보 44/43/7 문항만 대조, 2후보 51/46과 혼합 안 함. n=500 LV는 API값이며 원문 방법론 미확인. 참고 목록만 편입, 우세·의석 집계 제외."
+            "limitations_ko": "민주당 House Majority PAC 의뢰 조사. 원문 3후보 44/43/7 문항만 대조, 2후보 51/46과 혼합 안 함. n=500 LV는 API값이며 원문 방법론 미확인. 참고 목록만 편입, 우세·의석 집계 제외. 2026-10-08 FL 공식 명부로 Tony D’Arrigo의 IND 소속을 확인해 정규화된 정당을 갱신."
           }
         }
       ]
@@ -1849,6 +2050,59 @@
               "primary_values_rechecked"
             ]
           }
+        },
+        {
+          "id": "us-202uni51f1c418",
+          "race_id": "USA:ME:senate",
+          "contest_id": "USA:ME:senate:2026:general",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 1312,
+          "answers": [
+            {
+              "name": "Troy Jackson",
+              "pct": 51.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Susan Collins",
+              "pct": 47.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1007/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
         }
       ]
     },
@@ -2433,6 +2687,117 @@
         }
       ]
     },
+    "USA:NE:house:02": {
+      "contest_id": "USA:NE:house:02:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202sur23f1946c",
+          "race_id": "USA:NE:house:02",
+          "contest_id": "USA:NE:house:02:2026:general",
+          "pollster": "SurveyUSA",
+          "pollster_group": "surveyusa",
+          "field_start": "2026-09-08",
+          "field_end": "2026-09-13",
+          "provider_record_date": "2026-09-15",
+          "population": "lv",
+          "sample_n": 182,
+          "answers": [
+            {
+              "name": "Denise Powell",
+              "pct": 46.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Brinker Harding",
+              "pct": 42.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "Grant Forbes",
+            "LLC"
+          ],
+          "source_url": "https://results.surveyusa.com/client/PollReport.aspx?g=d94236a7-5861-4b7f-9d81-d5a81ab786cc",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=d94236a7-5861-4b7f-9d81-d5a81ab786cc",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "Grant Forbes",
+              "LLC"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "commissioner_affiliation_not_verified",
+              "small_district_subsample_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "precision_model_specification",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://results.surveyusa.com/client/PollReport.aspx?g=d94236a7-5861-4b7f-9d81-d5a81ab786cc"
+            ],
+            "primary_toplines": {
+              "Denise Powell": 46.0,
+              "Brinker Harding": 42.0
+            },
+            "question_sample_n": 182,
+            "disclosure_review": {
+              "population": "LV",
+              "total_sample_n": 680,
+              "rv_sample_n": 200,
+              "question_sample_n": 182,
+              "field_dates": [
+                "2026-09-08",
+                "2026-09-13"
+              ],
+              "sampling_frame": "Statewide: 54% Cint panel; 46% Aristotle voter telephone sample (17% IVR, 29% SMS-to-web)",
+              "mode": "mixed online panel, telephone IVR and/or operator SMS-to-web",
+              "weighting": "gender, age, ethnicity, education, region; Nebraska party registration",
+              "sponsor": [
+                "Grant Forbes",
+                "LLC"
+              ],
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 12.2,
+              "scope": "NE-02 likely-voter question",
+              "model_details_verified": false
+            },
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "Grant Forbes",
+                "LLC"
+              ],
+              "affiliation_verified": false,
+              "meaning": "identified private commissioner; political affiliation not verified"
+            },
+            "limitations_ko": "NE-02 하위 표본 182명. 원문 자체가 소표본 외삽에 주의를 요구. Grant Forbes LLC 의뢰자의 정치적 관계 미확인. 누적 참고 전용."
+          }
+        }
+      ]
+    },
     "USA:NH:governor": {
       "contest_id": "USA:NH:governor:2026:general:regular",
       "election_date": "2026-11-03",
@@ -2464,6 +2829,187 @@
           "source_url": "https://www.nytimes.com/interactive/2026/09/25/polls/times-siena-poll-nh-crosstabs.html",
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
+        },
+        {
+          "id": "gov202uni4f540392",
+          "race_id": "USA:NH:governor",
+          "contest_id": "USA:NH:governor:2026:general:regular",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 1418,
+          "answers": [
+            {
+              "name": "Kelly Ayotte",
+              "pct": 47.0,
+              "party": "REP"
+            },
+            {
+              "name": "Cinde Warmington",
+              "pct": 43.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Stephen Villee",
+              "pct": 2.0,
+              "party": null
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
+        }
+      ]
+    },
+    "USA:NH:house:01": {
+      "contest_id": "USA:NH:house:01:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202unic08cf0d0",
+          "race_id": "USA:NH:house:01",
+          "contest_id": "USA:NH:house:01:2026:general",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 711,
+          "answers": [
+            {
+              "name": "Stephany Shaheen",
+              "pct": 46.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Anthony DiLorenzo",
+              "pct": 42.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
+        }
+      ]
+    },
+    "USA:NH:house:02": {
+      "contest_id": "USA:NH:house:02:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202unie2f0d260",
+          "race_id": "USA:NH:house:02",
+          "contest_id": "USA:NH:house:02:2026:general",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 702,
+          "answers": [
+            {
+              "name": "Maggie Goodlander",
+              "pct": 56.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Lily Tang Williams",
+              "pct": 35.0,
+              "party": "REP"
+            },
+            {
+              "name": "Robbie Mahrou",
+              "pct": 3.0,
+              "party": null
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -2547,6 +3093,264 @@
               "question_sample_n",
               "primary_values_rechecked"
             ]
+          }
+        },
+        {
+          "id": "us-202uni02a0a46f",
+          "race_id": "USA:NH:senate",
+          "contest_id": "USA:NH:senate:2026:general",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 1418,
+          "answers": [
+            {
+              "name": "Chris Pappas",
+              "pct": 50.0,
+              "party": "DEM"
+            },
+            {
+              "name": "John Sununu",
+              "pct": 42.0,
+              "party": "REP"
+            },
+            {
+              "name": "Edmond Laplante",
+              "pct": 2.0,
+              "party": null
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
+        }
+      ]
+    },
+    "USA:NM:house:02": {
+      "contest_id": "USA:NM:house:02:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202sur44bc5f16",
+          "race_id": "USA:NM:house:02",
+          "contest_id": "USA:NM:house:02:2026:general",
+          "pollster": "SurveyUSA",
+          "pollster_group": "surveyusa",
+          "field_start": "2026-08-28",
+          "field_end": "2026-09-02",
+          "provider_record_date": "2026-09-04",
+          "population": "lv",
+          "sample_n": 554,
+          "answers": [
+            {
+              "name": "Gabe Vasquez",
+              "pct": 46.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Greg Cunningham",
+              "pct": 43.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "KOB-TV (Albuquerque)"
+          ],
+          "source_url": "https://results.surveyusa.com/client/PollReport.aspx?g=28ed3f59-8986-4e1f-a5d1-a2e7fc8fff01",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=28ed3f59-8986-4e1f-a5d1-a2e7fc8fff01",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "KOB-TV (Albuquerque)"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "precision_model_specification",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://results.surveyusa.com/client/PollReport.aspx?g=28ed3f59-8986-4e1f-a5d1-a2e7fc8fff01"
+            ],
+            "primary_toplines": {
+              "Gabe Vasquez": 46.0,
+              "Greg Cunningham": 43.0
+            },
+            "question_sample_n": 554,
+            "disclosure_review": {
+              "population": "LV",
+              "total_sample_n": 700,
+              "rv_sample_n": 622,
+              "question_sample_n": 554,
+              "field_dates": [
+                "2026-08-28",
+                "2026-09-02"
+              ],
+              "sampling_frame": "36% Cint panel; 64% Aristotle registered-voter telephone sample (15% IVR, 49% SMS-to-web)",
+              "mode": "mixed online panel, telephone IVR and/or operator SMS-to-web",
+              "weighting": "gender, age, ethnicity",
+              "sponsor": [
+                "KOB-TV (Albuquerque)"
+              ],
+              "question_wording_checked": true
+            },
+            "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "KOB-TV (Albuquerque)"
+              ],
+              "affiliation_verified": true,
+              "meaning": "identified regional media commissioner, not a neutrality certification"
+            },
+            "limitations_ko": "지지도·LV 표본 원문 일치. 확률·비확률 혼합 표본. 격차 유의성·정확도 미평가."
+          }
+        }
+      ]
+    },
+    "USA:NM:senate": {
+      "contest_id": "USA:NM:senate:2026:general",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "us-202surae0ec3b2",
+          "race_id": "USA:NM:senate",
+          "contest_id": "USA:NM:senate:2026:general",
+          "pollster": "SurveyUSA",
+          "pollster_group": "surveyusa",
+          "field_start": "2026-09-25",
+          "field_end": "2026-09-30",
+          "provider_record_date": "2026-10-06",
+          "population": "lv",
+          "sample_n": 576,
+          "answers": [
+            {
+              "name": "Ben Ray Luján",
+              "pct": 54.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Larry Marker",
+              "pct": 36.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "KOB-TV (Albuquerque)"
+          ],
+          "source_url": "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "KOB-TV (Albuquerque)"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "provider_primary_sample_mismatch"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "precision_model_specification",
+              "historical_accuracy_rating",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052"
+            ],
+            "primary_toplines": {
+              "Ben Ray Luján": 54.0,
+              "Larry Marker": 36.0
+            },
+            "question_sample_n": 567,
+            "disclosure_review": {
+              "population": "LV",
+              "total_sample_n": 800,
+              "rv_sample_n": 673,
+              "question_sample_n": 567,
+              "field_dates": [
+                "2026-09-25",
+                "2026-09-30"
+              ],
+              "sampling_frame": "45% Cint panel; 55% Aristotle adult telephone sample (30% IVR, 25% SMS-to-web)",
+              "mode": "mixed online panel, telephone IVR and/or operator SMS-to-web",
+              "weighting": "gender, age, race, education, home ownership",
+              "sponsor": [
+                "KOB-TV (Albuquerque)"
+              ],
+              "question_wording_checked": true
+            },
+            "reported_precision": null,
+            "ballot_format": "not_reviewed",
+            "sponsor_review": {
+              "reported_sponsors": [
+                "KOB-TV (Albuquerque)"
+              ],
+              "affiliation_verified": true,
+              "meaning": "identified regional media commissioner, not a neutrality certification"
+            },
+            "limitations_ko": "원문 LV 567명과 API 576명이 다름. 지지도는 대조했으나 표본 불일치 미해결로 참고 전용."
           }
         }
       ]
@@ -4103,6 +4907,80 @@
           "source_url": "https://sri.siena.edu/2026/09/17/hinojosa-now-leads-abbott-by-4-points-talarico-widens-lead-to-6-points/",
           "verification": "selected_source_aggregator_import",
           "methodology_url": "https://sri.siena.edu/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
+        }
+      ]
+    },
+    "USA:VT:governor": {
+      "contest_id": "USA:VT:governor:2026:general:regular",
+      "election_date": "2026-11-03",
+      "observations": [
+        {
+          "id": "gov202uni39c6b60e",
+          "race_id": "USA:VT:governor",
+          "contest_id": "USA:VT:governor:2026:general:regular",
+          "pollster": "University of New Hampshire",
+          "pollster_group": "unh",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-21",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 835,
+          "answers": [
+            {
+              "name": "Amanda Janoo",
+              "pct": 49.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Phil Scott",
+              "pct": 43.0,
+              "party": "REP"
+            },
+            {
+              "name": "Brian Judd",
+              "pct": 2.0,
+              "party": null
+            },
+            {
+              "name": "Dean Roy",
+              "pct": 0.0,
+              "party": null
+            },
+            {
+              "name": "June Goodband",
+              "pct": 0.0,
+              "party": null
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1006/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://cola.unh.edu/unh-survey-center",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {

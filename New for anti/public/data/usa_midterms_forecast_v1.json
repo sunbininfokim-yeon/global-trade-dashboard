@@ -1,8 +1,8 @@
 {
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
-  "as_of": "2026-10-07",
-  "generated_at": "2026-10-07T12:17:46.823809+00:00",
+  "as_of": "2026-10-08",
+  "generated_at": "2026-10-08T00:22:26.973242+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1653,14 +1653,14 @@
     },
     "governor": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 19 · 공화 19 · 무소속 0 · 미정 12. 단일 기관 참고 0곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 50,
       "scenario_counts": {
-        "DEM": 21,
+        "DEM": 19,
         "GOP": 19,
         "IND": 0
       },
-      "unresolved_seats": 10,
+      "unresolved_seats": 12,
       "buckets": {
         "retained": {
           "DEM": 6,
@@ -1671,13 +1671,11 @@
           "GOP": 11
         },
         "recent_poll_lead": {},
-        "single_poll_lead": {
-          "DEM": 2
-        },
+        "single_poll_lead": {},
         "certified_result": {}
       },
       "single_poll_lead_counts": {
-        "DEM": 2,
+        "DEM": 0,
         "GOP": 0,
         "IND": 0
       },
@@ -1689,16 +1687,16 @@
       "unresolved_without_single_polls": 12,
       "conditional_bounds": {
         "DEM": {
-          "min": 21,
+          "min": 19,
           "max": 31
         },
         "GOP": {
           "min": 19,
-          "max": 29
+          "max": 31
         },
         "IND": {
           "min": 0,
-          "max": 10
+          "max": 12
         }
       },
       "ratings_as_of": "2026-10-01",
@@ -1888,71 +1886,24 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "gov202thefb920530",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "sample_design",
-                  "sample_n_primary_verification",
-                  "question_sample_n",
-                  "precision",
-                  "question_wording",
-                  "weighting",
-                  "historical_accuracy_rating"
-                ],
-                "reviewed_on": "2026-10-05",
-                "review_sources": [
-                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                ],
-                "primary_toplines": {
-                  "Rob Sand": 52,
-                  "Zach Lahn": 41
-                },
-                "question_sample_n": null,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sponsor": "The New York Times",
-                  "sample_n": null,
-                  "field_dates": null,
-                  "sampling_frame": null,
-                  "mode": null,
-                  "weighting": null,
-                  "question_wording_checked": null
-                },
-                "reported_precision": null,
-                "ballot_format": "not_reviewed",
-                "sponsor_review": {},
-                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-              },
-              "leading_margin_pp": 11.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "gov202thefb920530"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:MI:governor",
@@ -2073,71 +2024,24 @@
           "race_id": "USA:OH:governor",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "gov202the240fb48b",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "sample_design",
-                  "sample_n_primary_verification",
-                  "question_sample_n",
-                  "precision",
-                  "question_wording",
-                  "weighting",
-                  "historical_accuracy_rating"
-                ],
-                "reviewed_on": "2026-10-05",
-                "review_sources": [
-                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                ],
-                "primary_toplines": {
-                  "Amy Acton": 49,
-                  "Vivek Ramaswamy": 45
-                },
-                "question_sample_n": null,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sponsor": "The New York Times",
-                  "sample_n": null,
-                  "field_dates": null,
-                  "sampling_frame": null,
-                  "mode": null,
-                  "weighting": null,
-                  "question_wording_checked": null
-                },
-                "reported_precision": null,
-                "ballot_format": "not_reviewed",
-                "sponsor_review": {},
-                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "gov202the240fb48b"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:WI:governor",
@@ -4007,14 +3911,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 19 · 공화 19 · 무소속 0 · 미정 12. 단일 기관 참고 0곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
-            "DEM": 21,
+            "DEM": 19,
             "GOP": 19,
             "IND": 0
           },
-          "unresolved_seats": 10,
+          "unresolved_seats": 12,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -4025,13 +3929,11 @@
               "GOP": 11
             },
             "recent_poll_lead": {},
-            "single_poll_lead": {
-              "DEM": 2
-            },
+            "single_poll_lead": {},
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 2,
+            "DEM": 0,
             "GOP": 0,
             "IND": 0
           },
@@ -4043,16 +3945,16 @@
           "unresolved_without_single_polls": 12,
           "conditional_bounds": {
             "DEM": {
-              "min": 21,
+              "min": 19,
               "max": 31
             },
             "GOP": {
               "min": 19,
-              "max": 29
+              "max": 31
             },
             "IND": {
               "min": 0,
-              "max": 10
+              "max": 12
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -4242,71 +4144,24 @@
               "race_id": "USA:IA:governor",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
-                "agreement_fraction": 1.0,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "gov202thefb920530",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "sample_design",
-                      "sample_n_primary_verification",
-                      "question_sample_n",
-                      "precision",
-                      "question_wording",
-                      "weighting",
-                      "historical_accuracy_rating"
-                    ],
-                    "reviewed_on": "2026-10-05",
-                    "review_sources": [
-                      "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                    ],
-                    "primary_toplines": {
-                      "Rob Sand": 52,
-                      "Zach Lahn": 41
-                    },
-                    "question_sample_n": null,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sponsor": "The New York Times",
-                      "sample_n": null,
-                      "field_dates": null,
-                      "sampling_frame": null,
-                      "mode": null,
-                      "weighting": null,
-                      "question_wording_checked": null
-                    },
-                    "reported_precision": null,
-                    "ballot_format": "not_reviewed",
-                    "sponsor_review": {},
-                    "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-                  },
-                  "leading_margin_pp": 11.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "gov202thefb920530"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:MI:governor",
@@ -4427,71 +4282,24 @@
               "race_id": "USA:OH:governor",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
-                "agreement_fraction": 1.0,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "gov202the240fb48b",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "sample_design",
-                      "sample_n_primary_verification",
-                      "question_sample_n",
-                      "precision",
-                      "question_wording",
-                      "weighting",
-                      "historical_accuracy_rating"
-                    ],
-                    "reviewed_on": "2026-10-05",
-                    "review_sources": [
-                      "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                    ],
-                    "primary_toplines": {
-                      "Amy Acton": 49,
-                      "Vivek Ramaswamy": 45
-                    },
-                    "question_sample_n": null,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sponsor": "The New York Times",
-                      "sample_n": null,
-                      "field_dates": null,
-                      "sampling_frame": null,
-                      "mode": null,
-                      "weighting": null,
-                      "question_wording_checked": null
-                    },
-                    "reported_precision": null,
-                    "ballot_format": "not_reviewed",
-                    "sponsor_review": {},
-                    "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-                  },
-                  "leading_margin_pp": 4.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "gov202the240fb48b"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:WI:governor",
@@ -5964,71 +5772,24 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "gov202thefb920530",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "sample_design",
-                  "sample_n_primary_verification",
-                  "question_sample_n",
-                  "precision",
-                  "question_wording",
-                  "weighting",
-                  "historical_accuracy_rating"
-                ],
-                "reviewed_on": "2026-10-05",
-                "review_sources": [
-                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                ],
-                "primary_toplines": {
-                  "Rob Sand": 52,
-                  "Zach Lahn": 41
-                },
-                "question_sample_n": null,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sponsor": "The New York Times",
-                  "sample_n": null,
-                  "field_dates": null,
-                  "sampling_frame": null,
-                  "mode": null,
-                  "weighting": null,
-                  "question_wording_checked": null
-                },
-                "reported_precision": null,
-                "ballot_format": "not_reviewed",
-                "sponsor_review": {},
-                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-              },
-              "leading_margin_pp": 11.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "gov202thefb920530"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:MI:governor",
@@ -6149,71 +5910,24 @@
           "race_id": "USA:OH:governor",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "gov202the240fb48b",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "sample_design",
-                  "sample_n_primary_verification",
-                  "question_sample_n",
-                  "precision",
-                  "question_wording",
-                  "weighting",
-                  "historical_accuracy_rating"
-                ],
-                "reviewed_on": "2026-10-05",
-                "review_sources": [
-                  "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
-                ],
-                "primary_toplines": {
-                  "Amy Acton": 49,
-                  "Vivek Ramaswamy": 45
-                },
-                "question_sample_n": null,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sponsor": "The New York Times",
-                  "sample_n": null,
-                  "field_dates": null,
-                  "sampling_frame": null,
-                  "mode": null,
-                  "weighting": null,
-                  "question_wording_checked": null
-                },
-                "reported_precision": null,
-                "ballot_format": "not_reviewed",
-                "sponsor_review": {},
-                "limitations_ko": "Siena 공개 발표 수치만 대조. 연결된 NYTimes 상세표에 이번 검토에서 접근하지 못해 방법론·표본·오차범위 등은 미확인."
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "gov202the240fb48b"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:WI:governor",
