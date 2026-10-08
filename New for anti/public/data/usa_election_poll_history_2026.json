@@ -4,7 +4,7 @@
   "as_of": "2026-10-08",
   "note_ko": "감사·출처 확인용 기록. 선거 종료 후 지도 우세 신호로 사용하지 않습니다.",
   "race_count": 42,
-  "observation_count": 76,
+  "observation_count": 78,
   "races": {
     "USA:TN:governor": {
       "contest_id": "USA:TN:governor:2026:general:regular",
@@ -913,8 +913,8 @@
             "Fox News"
           ],
           "source_url": "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -924,23 +924,176 @@
               "Fox News"
             ]
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance",
+              "reported_precision_confidence_level",
+              "exact_question_item_nonresponse_sample"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+              "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf"
+            ],
+            "primary_toplines": {
+              "Jocelyn Benson": 54.0,
+              "John James": 45.0
+            },
+            "question_sample_n": 1028,
+            "disclosure_review": {
+              "population": "LV",
+              "overall_registered_sample_n": 1203,
+              "likely_sample_n": 1028,
+              "field_dates": [
+                "2026-09-24",
+                "2026-09-28"
+              ],
+              "sampling_frame": "Michigan statewide registered voter file; probability proportionate to size selection",
+              "mode": "live telephone114 landline/794 cellphone and text-to-web295; counts are full RV sample",
+              "weighting": "age, race, education, area; American Community Survey, Fox News Voter Analysis and voter file benchmarks",
+              "lv_screen": "probabilistic model: vote history, interest, intention, age, education, race, ethnicity, marital status",
+              "question": "Q13",
+              "question_wording_checked": true,
+              "non_candidate_responses": {
+                "dont_know": 1,
+                "other": "less_than_half_percent",
+                "would_not_vote": "less_than_half_percent"
+              },
+              "wrong_registry_methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+              "primary_release_on": "2026-09-30",
+              "provider_created_on": "2026-10-01"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_sampling_error",
+              "half_width_pp": 3,
+              "scope": "1028_LV",
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_with_leaners_and_already_voted",
+            "sponsor_review": {
+              "provider_sponsors": [
+                "Fox News"
+              ]
+            },
+            "limitations_ko": "미시간 PDF1/3/6쪽을 대조해 기존 텍사스 방법론 링크를 발표별 미시간 문서로 교체. 전체RV1203과LV1028 및RV50/51 차이를 분리. 이미 투표·leaners 포함. 발표일9/30과API 등록일10/1을 분리하며 단일조사 앞섬은 당선 판정이 아닙니다."
+          }
+        },
+        {
+          "id": "gov202co/08a815fe",
+          "race_id": "USA:MI:governor",
+          "contest_id": "USA:MI:governor:2026:general:regular",
+          "pollster": "co/efficient",
+          "pollster_group": "coefficient",
+          "field_start": "2026-09-21",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-24",
+          "population": "lv",
+          "sample_n": 843,
+          "answers": [
+            {
+              "name": "Jocelyn Benson",
+              "pct": 47.0,
+              "party": "DEM"
+            },
+            {
+              "name": "John James",
+              "pct": 44.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://battlegrounds.coefficient.org/mi/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://battlegrounds.coefficient.org/mi/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame",
+              "exact_lv_screen",
+              "reported_precision_confidence_level"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://battlegrounds.coefficient.org/mi/"
+            ],
+            "primary_toplines": {
+              "Jocelyn Benson": 47.0,
+              "John James": 44.0
+            },
+            "question_sample_n": 843,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 843,
+              "field_dates": [
+                "2026-09-21",
+                "2026-09-23"
+              ],
+              "mode": "mobile text responses and landline interviews",
+              "weighting": "age, gender, race, education, congressional district",
+              "sampling_frame": null,
+              "question_wording_checked": true,
+              "question": "Q2 governor initial ballot",
+              "same_wave_context": {
+                "Q6_multicandidate_senate": {
+                  "Mike Rogers": 45,
+                  "Abdul El-Sayed": 45,
+                  "Lydia Christensen": 2,
+                  "Timothy Long": 0,
+                  "Douglas Marsh": 0,
+                  "undecided": 8
+                },
+                "Q7_forced_two_candidate": {
+                  "Mike Rogers": 50,
+                  "Abdul El-Sayed": 50
+                }
+              },
+              "duplicate_questions_counted_once": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.36,
+              "scope": "843_LV",
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "primary_wording_not_accessed",
+            "sponsor_review": {
+              "provider_sponsors": [],
+              "primary_disclosure": "independent public polling, not sponsored by candidate, party or IE committee"
+            },
+            "limitations_ko": "이번 특정 기관 발표 원문·문항·방법론 대조로 편입. 상원50/50은강제 양자문항Q7이며 다후보Q6의45/45·미정8을 숨긴 초기 조사로 바꾸지 않습니다. 같은파동은1회만 세고 조사의 기관 정확도·통계적 유의성은 평가하지 않습니다."
           }
         },
         {
@@ -1036,8 +1189,8 @@
           ],
           "sponsors": [],
           "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -1045,23 +1198,75 @@
             "partisan": null,
             "sponsors": []
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance",
+              "release_specific_mode",
+              "sampling_frame",
+              "weighting",
+              "reported_precision"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+              "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884"
+            ],
+            "primary_toplines": {
+              "Jocelyn Benson": 50.6,
+              "John James": 34.4,
+              "Anthony Hudson": 1.4,
+              "Donna Brandenburg": 0.4,
+              "Douglas Campbell": 1.6
+            },
+            "question_sample_n": 500,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 500,
+              "field_dates": [
+                "2026-09-16",
+                "2026-09-20"
+              ],
+              "lv_screen": "registered MI voters; almost certain or probably vote (462/38)",
+              "primary_question": "Q11 five candidate first preference",
+              "question_wording_checked": true,
+              "primary_exact_values": {
+                "Jocelyn Benson": 50.6,
+                "John James": 34.4,
+                "Anthony Hudson": 1.4,
+                "Donna Brandenburg": 0.4,
+                "Douglas Campbell": 1.6
+              },
+              "second_preference_question": "Q12 N18",
+              "second_preference_excluded": true,
+              "geographic_quotas": {
+                "North": 50,
+                "West": 100,
+                "Mid": 90,
+                "Flint/Tri": 60,
+                "Southeast": 200
+              },
+              "mode": null,
+              "sampling_frame": null,
+              "weighting": null
+            },
+            "reported_precision": null,
+            "ballot_format": "multi_candidate_initial_ballot",
+            "sponsor_review": {
+              "provider_sponsors": []
+            },
+            "limitations_ko": "기관 표1/3쪽 원문 문항·LV판별·후보별 수치 대조. API 정수 반올림을 유지하고 상세 원문 소수값을 함께 기록. 두 번째 선택 N13/N18을 전체LV500의 별도 조사로 합치지 않습니다. Bellwether 카운티 자료와 statewide를 분리. 구체적 모집·전화모드·가중치 문서는 미확보입니다."
           }
         },
         {
@@ -1106,8 +1311,8 @@
             "Nexstar Media"
           ],
           "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://emersoncollegepolling.com/about/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -1117,28 +1322,69 @@
               "Nexstar Media"
             ]
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+              "https://docs.google.com/spreadsheets/d/1rnTTvihaOiwTEob60r_8qMdYEZcAhNSa/export?format=csv"
+            ],
+            "primary_toplines": {
+              "Jocelyn Benson": 48.6,
+              "John James": 41.9,
+              "Anthony Hudson": 1.8,
+              "Donna Brandenburg": 0.7,
+              "Douglas Campbell": 0.7
+            },
+            "question_sample_n": 1000,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 1000,
+              "field_dates": [
+                "2026-09-12",
+                "2026-09-14"
+              ],
+              "mode": "Consensus Strategies probability-based voter panel MMS text-to-web plus PureSpectrum panel interviews; English QuestionPro",
+              "sampling_frame": "custom invitation links; panel matched Aristotle voter file by full name and ZIP",
+              "weighting": "gender, education, race, age, region from Census and voter file",
+              "question_wording_checked": true,
+              "question": "multi_candidate_initial_ballot",
+              "funding": "Nexstar Media",
+              "full_results_csv_sha256": "9ef4f247a1dddc3cfb4247bb6eb6476277c7f84703d595382b6f889369317012"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 3,
+              "confidence_level_pct": 95,
+              "scope": "1000_LV",
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate_initial_ballot",
+            "sponsor_review": {
+              "provider_sponsors": [
+                "Nexstar Media"
+              ]
+            },
+            "limitations_ko": "기관 본문 방법론 및 기관이 연결한 전체 결과표 대조. 정수 요약 대신 원문 소수값을 유지. 상원 Green 후보 Douglas Marsh 원문0.3%를 API3.0%에서 정정하고 원 API 값·지문을 남깁니다. 표본 조합의 credibility interval을 별도 표기하며 양당으로 재환산하지 않습니다."
           }
         }
       ],
       "as_of": "2026-10-08",
-      "fetched_at": "2026-10-08T07:23:53.431351+00:00"
+      "fetched_at": "2026-10-08T13:21:31.682481+00:00"
     },
     "USA:MI:senate": {
       "contest_id": "USA:MI:senate:2026:general:regular",
@@ -1171,8 +1417,8 @@
             "Fox News"
           ],
           "source_url": "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -1182,23 +1428,176 @@
               "Fox News"
             ]
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance",
+              "reported_precision_confidence_level",
+              "exact_question_item_nonresponse_sample"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.foxnews.com/politics/fox-news-poll-michigan-voters-split-between-el-sayed-rogers",
+              "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf"
+            ],
+            "primary_toplines": {
+              "Abdul El-Sayed": 50.0,
+              "Mike Rogers": 49.0
+            },
+            "question_sample_n": 1028,
+            "disclosure_review": {
+              "population": "LV",
+              "overall_registered_sample_n": 1203,
+              "likely_sample_n": 1028,
+              "field_dates": [
+                "2026-09-24",
+                "2026-09-28"
+              ],
+              "sampling_frame": "Michigan statewide registered voter file; probability proportionate to size selection",
+              "mode": "live telephone114 landline/794 cellphone and text-to-web295; counts are full RV sample",
+              "weighting": "age, race, education, area; American Community Survey, Fox News Voter Analysis and voter file benchmarks",
+              "lv_screen": "probabilistic model: vote history, interest, intention, age, education, race, ethnicity, marital status",
+              "question": "Q3",
+              "question_wording_checked": true,
+              "non_candidate_responses": {
+                "dont_know": 1,
+                "other": "less_than_half_percent",
+                "would_not_vote": "less_than_half_percent"
+              },
+              "wrong_registry_methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+              "primary_release_on": "2026-09-30",
+              "provider_created_on": "2026-10-01"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_sampling_error",
+              "half_width_pp": 3,
+              "scope": "1028_LV",
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_with_leaners_and_already_voted",
+            "sponsor_review": {
+              "provider_sponsors": [
+                "Fox News"
+              ]
+            },
+            "limitations_ko": "미시간 PDF1/3/6쪽을 대조해 기존 텍사스 방법론 링크를 발표별 미시간 문서로 교체. 전체RV1203과LV1028 및RV50/51 차이를 분리. 이미 투표·leaners 포함. 발표일9/30과API 등록일10/1을 분리하며 단일조사 앞섬은 당선 판정이 아닙니다."
+          }
+        },
+        {
+          "id": "us-202co/b838141c",
+          "race_id": "USA:MI:senate",
+          "contest_id": "USA:MI:senate:2026:general:regular",
+          "pollster": "co/efficient",
+          "pollster_group": "coefficient",
+          "field_start": "2026-09-21",
+          "field_end": "2026-09-23",
+          "provider_record_date": "2026-09-24",
+          "population": "lv",
+          "sample_n": 843,
+          "answers": [
+            {
+              "name": "Abdul El-Sayed",
+              "pct": 50.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Mike Rogers",
+              "pct": 50.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://battlegrounds.coefficient.org/mi/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://battlegrounds.coefficient.org/mi/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame",
+              "exact_lv_screen",
+              "reported_precision_confidence_level"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://battlegrounds.coefficient.org/mi/"
+            ],
+            "primary_toplines": {
+              "Abdul El-Sayed": 50.0,
+              "Mike Rogers": 50.0
+            },
+            "question_sample_n": 843,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 843,
+              "field_dates": [
+                "2026-09-21",
+                "2026-09-23"
+              ],
+              "mode": "mobile text responses and landline interviews",
+              "weighting": "age, gender, race, education, congressional district",
+              "sampling_frame": null,
+              "question_wording_checked": true,
+              "question": "Q7 two-candidate forced ballot",
+              "same_wave_context": {
+                "Q6_multicandidate_senate": {
+                  "Mike Rogers": 45,
+                  "Abdul El-Sayed": 45,
+                  "Lydia Christensen": 2,
+                  "Timothy Long": 0,
+                  "Douglas Marsh": 0,
+                  "undecided": 8
+                },
+                "Q7_forced_two_candidate": {
+                  "Mike Rogers": 50,
+                  "Abdul El-Sayed": 50
+                }
+              },
+              "duplicate_questions_counted_once": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.36,
+              "scope": "843_LV",
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "forced_two_candidate_ballot",
+            "sponsor_review": {
+              "provider_sponsors": [],
+              "primary_disclosure": "independent public polling, not sponsored by candidate, party or IE committee"
+            },
+            "limitations_ko": "이번 특정 기관 발표 원문·문항·방법론 대조로 편입. 상원50/50은강제 양자문항Q7이며 다후보Q6의45/45·미정8을 숨긴 초기 조사로 바꾸지 않습니다. 같은파동은1회만 세고 조사의 기관 정확도·통계적 유의성은 평가하지 않습니다."
           }
         },
         {
@@ -1226,8 +1625,8 @@
           ],
           "sponsors": [],
           "source_url": "https://www.nytimes.com/2026/09/24/us/politics/democrats-show-strength-in-michigan-senate-race-but-trail-in-maine-polls-find.html",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://sri.siena.edu/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -1235,23 +1634,55 @@
             "partisan": null,
             "sponsors": []
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
+              "accuracy_grade",
+              "statistical_significance",
+              "primary_sample_n",
               "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "question_wording",
+              "sampling_frame",
+              "mode",
+              "weighting",
+              "reported_precision"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.nytimes.com/2026/09/24/us/politics/democrats-show-strength-in-michigan-senate-race-but-trail-in-maine-polls-find.html",
+              "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/"
+            ],
+            "primary_toplines": {
+              "Abdul El-Sayed": 49.0,
+              "Mike Rogers": 44.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "primary_toplines_verified": true,
+              "primary_summary_values": {
+                "Abdul El-Sayed": 49,
+                "Mike Rogers": 44
+              },
+              "population": "LV as primary title",
+              "sample_n_primary_verified": false,
+              "linked_NYTimes_tables": "not_accessed_in_this_review"
+            },
+            "reported_precision": null,
+            "ballot_format": "primary_wording_not_accessed",
+            "sponsor_review": {
+              "provider_sponsors": []
+            },
+            "limitations_ko": "Siena 자체 발표의49/44만 수치 대조했습니다. API의LV605·기간은 보존하지만 연결NYTimes전체표와 상세방법은미검증입니다."
           }
         },
         {
@@ -1299,8 +1730,8 @@
           ],
           "sponsors": [],
           "source_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -1308,23 +1739,77 @@
             "partisan": null,
             "sponsors": []
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance",
+              "release_specific_mode",
+              "sampling_frame",
+              "weighting",
+              "reported_precision"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-22-2026-Michigan-Governor-and-US-Senate-Statewide-and-Bellwether",
+              "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/9_22_2026_michigan_statewide_marginals.pdf?la=en&hash=6738E3056D284CD6D4733F5FB9C38684431D4884"
+            ],
+            "primary_toplines": {
+              "Abdul El-Sayed": 46.8,
+              "Mike Rogers": 39.6,
+              "Lydia Christensen": 0.8,
+              "Tim Long": 0.2,
+              "Douglas P. Marsh": 0.2,
+              "Walter P. Kristy": 0.6
+            },
+            "question_sample_n": 500,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 500,
+              "field_dates": [
+                "2026-09-16",
+                "2026-09-20"
+              ],
+              "lv_screen": "registered MI voters; almost certain or probably vote (462/38)",
+              "primary_question": "Q9 six candidate first preference",
+              "question_wording_checked": true,
+              "primary_exact_values": {
+                "Abdul El-Sayed": 46.8,
+                "Mike Rogers": 39.6,
+                "Lydia Christensen": 0.8,
+                "Tim Long": 0.2,
+                "Douglas P. Marsh": 0.2,
+                "Walter P. Kristy": 0.6
+              },
+              "second_preference_question": "Q10 N13",
+              "second_preference_excluded": true,
+              "geographic_quotas": {
+                "North": 50,
+                "West": 100,
+                "Mid": 90,
+                "Flint/Tri": 60,
+                "Southeast": 200
+              },
+              "mode": null,
+              "sampling_frame": null,
+              "weighting": null
+            },
+            "reported_precision": null,
+            "ballot_format": "multi_candidate_initial_ballot",
+            "sponsor_review": {
+              "provider_sponsors": []
+            },
+            "limitations_ko": "기관 표1/3쪽 원문 문항·LV판별·후보별 수치 대조. API 정수 반올림을 유지하고 상세 원문 소수값을 함께 기록. 두 번째 선택 N13/N18을 전체LV500의 별도 조사로 합치지 않습니다. Bellwether 카운티 자료와 statewide를 분리. 구체적 모집·전화모드·가중치 문서는 미확보입니다."
           }
         },
         {
@@ -1361,7 +1846,7 @@
             },
             {
               "name": "Douglas P. Marsh",
-              "pct": 3.0,
+              "pct": 0.3,
               "party": null
             },
             {
@@ -1374,10 +1859,26 @@
             "Nexstar Media"
           ],
           "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
-          "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://emersoncollegepolling.com/about/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "provider_answer_correction": {
+            "status": "reviewed_primary_answer_correction",
+            "reviewed_on": "2026-10-08",
+            "provider_snapshot_sha256": "ae03cb31740309b8c45549d96e39a6b0269141d3ae012d21e32212b74d6e400b",
+            "provider_values": {
+              "Douglas P. Marsh": 3.0
+            },
+            "primary_values_used": {
+              "Douglas P. Marsh": 0.3
+            },
+            "sources": [
+              "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+              "https://docs.google.com/spreadsheets/d/1rnTTvihaOiwTEob60r_8qMdYEZcAhNSa/export?format=csv"
+            ],
+            "basis_ko": "기관 연결 전체표에서 Green Party Douglas P. Marsh 빈도3/N1000,0.3% 확인; API3.0%는소수점오류."
+          },
           "commissioning": {
             "internal": false,
             "partisan": null,
@@ -1385,28 +1886,70 @@
               "Nexstar Media"
             ]
           },
-          "source_admission": "registered_pollster",
+          "source_admission": "reviewed_release",
           "aggregation_eligibility": {
             "eligible": true,
             "reasons": []
           },
           "display_group": "general",
           "source_quality": {
-            "verification_level": "partial",
+            "verification_level": "primary_toplines_checked",
             "methodological_quality": "unrated",
             "accuracy_grade": null,
-            "label_ko": "출처 연결 · 집계값 부분 검증",
-            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
             "missing_fields": [
-              "margin_of_error_pp",
-              "question_sample_n",
-              "primary_values_rechecked"
-            ]
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+              "https://docs.google.com/spreadsheets/d/1rnTTvihaOiwTEob60r_8qMdYEZcAhNSa/export?format=csv"
+            ],
+            "primary_toplines": {
+              "Abdul El-Sayed": 48.2,
+              "Mike Rogers": 45.7,
+              "Lydia Christensen": 0.5,
+              "Tim Long": 0.6,
+              "Douglas P. Marsh": 0.3,
+              "Walter P. Kristy": 0.3
+            },
+            "question_sample_n": 1000,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 1000,
+              "field_dates": [
+                "2026-09-12",
+                "2026-09-14"
+              ],
+              "mode": "Consensus Strategies probability-based voter panel MMS text-to-web plus PureSpectrum panel interviews; English QuestionPro",
+              "sampling_frame": "custom invitation links; panel matched Aristotle voter file by full name and ZIP",
+              "weighting": "gender, education, race, age, region from Census and voter file",
+              "question_wording_checked": true,
+              "question": "multi_candidate_initial_ballot",
+              "funding": "Nexstar Media",
+              "full_results_csv_sha256": "9ef4f247a1dddc3cfb4247bb6eb6476277c7f84703d595382b6f889369317012"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 3,
+              "confidence_level_pct": 95,
+              "scope": "1000_LV",
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate_initial_ballot",
+            "sponsor_review": {
+              "provider_sponsors": [
+                "Nexstar Media"
+              ]
+            },
+            "limitations_ko": "기관 본문 방법론 및 기관이 연결한 전체 결과표 대조. 정수 요약 대신 원문 소수값을 유지. 상원 Green 후보 Douglas Marsh 원문0.3%를 API3.0%에서 정정하고 원 API 값·지문을 남깁니다. 표본 조합의 credibility interval을 별도 표기하며 양당으로 재환산하지 않습니다."
           }
         }
       ],
       "as_of": "2026-10-08",
-      "fetched_at": "2026-10-08T07:23:53.431351+00:00"
+      "fetched_at": "2026-10-08T13:21:31.682481+00:00"
     },
     "USA:WI:governor": {
       "contest_id": "USA:WI:governor:2026:general:regular",

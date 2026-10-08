@@ -83,10 +83,28 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
             for review in (identity_reviews or {}).get('races', {}).get(rid, []):
                 if review['candidate_name'] == candidate['name'] and review['party'] == candidate['party']:
                     require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future finance identity review')
-                    require(re.fullmatch(r'S[0-9A-Z]{8}', review['candidate_id']) is not None and office == 'senate', 'invalid Senate identity')
-                    provenance = [p for p in federal_rosters.get('source_snapshots', [])
-                                  if p.get('state') == state and p.get('source_url') == review['source_url']
-                                  and p.get('sha256') == review['source_sha256']]
+                    if office == 'house':
+                        require(review.get('office') == 'house' and re.fullmatch(r'H[0-9A-Z]{8}', review['candidate_id'])
+                                and review['candidate_id'] == candidate.get('reported_fec_id')
+                                and review.get('reported_fec_id') == candidate.get('reported_fec_id')
+                                and review.get('agency_reported_name') == candidate.get('reported_name')
+                                and review.get('official_source_url') == candidate['source_url'],
+                                'changed House finance identity requires review')
+                        provenance = [p for p in (identity_reviews or {}).get('source_snapshots', [])
+                                      if p.get('state') == state and p.get('office') == 'house'
+                                      and p.get('source_url') == review['source_url'] and p.get('sha256') == review['source_sha256']
+                                      and p.get('role') == 'reviewed_secondary_identity_corroboration'
+                                      and date.fromisoformat(p['reviewed_on']) <= date.fromisoformat(as_of)
+                                      and {'race_id': rid, **review} in p.get('verified_candidates', [])]
+                        finance_rows = [c for c in asset.get('candidates', []) if c['candidate_id'] == review['candidate_id']]
+                        require(len(finance_rows) == 1 and candidate['party'] in finance_rows[0]['reported_parties']
+                                and sorted(review['finance_reported_names']) == sorted(finance_rows[0]['reported_names']),
+                                'House finance source identity changed')
+                    else:
+                        require(re.fullmatch(r'S[0-9A-Z]{8}', review['candidate_id']) is not None and office == 'senate', 'invalid Senate identity')
+                        provenance = [p for p in federal_rosters.get('source_snapshots', [])
+                                      if p.get('state') == state and p.get('source_url') == review['source_url']
+                                      and p.get('sha256') == review['source_sha256']]
                     require(len(provenance) == 1, 'identity source snapshot mismatch')
                     candidate['finance_candidate_id'] = review['candidate_id']
                     candidate['finance_identity_evidence'] = deepcopy(review)

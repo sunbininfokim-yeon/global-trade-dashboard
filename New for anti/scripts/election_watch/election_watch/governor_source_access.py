@@ -48,7 +48,7 @@ def collect_access(state, cycle, agency, checked_at, previous=None, opener=urlop
         parsed = urlparse(endpoint['url'])
         require(parsed.scheme == 'https' and parsed.hostname and not parsed.username and not parsed.password,
                 'invalid governor portal URL')
-        require(endpoint['role'] in ('current_public_portal', 'legacy_search', 'legacy_independent_registry'),
+        require(endpoint['role'] in ('current_public_portal', 'current_public_export', 'legacy_search', 'legacy_independent_registry'),
                 'unreviewed governor portal role')
     if previous:
         validate_access(previous, state, cycle, checked_at[:10])

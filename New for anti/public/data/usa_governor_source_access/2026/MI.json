@@ -1,0 +1,60 @@
+{
+  "schema": "usa_governor_source_access_v1",
+  "state": "MI",
+  "cycle": 2026,
+  "checked_at": "2026-10-08T13:19:46.738709+00:00",
+  "status": "source_unavailable",
+  "last_current_endpoint_accessible_at": null,
+  "financial_data_collected": false,
+  "candidate_amounts_available": false,
+  "current_portal_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch",
+  "source_review": {
+    "cycle": 2026,
+    "reviewed_on": "2026-10-08",
+    "official_discovery_url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+    "official_guide_url": "https://www.michigan.gov/sos/elections/Disclosure/cfr/committee-search/intro/welcome-to-the-michigan-campaign-finance-searchable-database",
+    "merts_status": "decommissioned_and_migrated_to_MiTN_per_official_docs",
+    "authentication": "public_search_no_account",
+    "endpoints": [
+      {
+        "role": "current_public_portal",
+        "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch"
+      },
+      {
+        "role": "current_public_export",
+        "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload"
+      },
+      {
+        "role": "legacy_independent_registry",
+        "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level"
+      }
+    ],
+    "official_export_static_page_status": "0_matching_records_rendered; not_0_transactions",
+    "expense_identity_documentation": "Expense ID is retained across amended statements; candidate target/SO and office still require filing review",
+    "note_ko": "MiTN현재검색/연간파일직접요청시간초과·주사이트403. 브라우저공개화면존재는백엔드수집성공과다릅니다. 구ZIP은2025년4월전자료여서2026으로사용하지않습니다. 새API키가필요하다는근거는없으며후보별금액은미확보입니다."
+  },
+  "endpoints": [
+    {
+      "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch",
+      "status": "source_unavailable",
+      "http_status": null,
+      "error_type": "URLError",
+      "role": "current_public_portal"
+    },
+    {
+      "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload",
+      "status": "source_unavailable",
+      "http_status": null,
+      "error_type": "URLError",
+      "role": "current_public_export"
+    },
+    {
+      "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level",
+      "status": "source_access_blocked",
+      "http_status": 403,
+      "error_type": "HTTPError",
+      "role": "legacy_independent_registry"
+    }
+  ],
+  "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다."
+}
