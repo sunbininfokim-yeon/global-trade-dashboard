@@ -30,6 +30,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -95,6 +96,17 @@ def get_json(url, attempts=3, timeout=120):
             req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                # A rejected key will not get better on retry, and every later
+                # call would wait out the same rejection.
+                annotate("error", f"NASS rejected the API key (HTTP {e.code}); "
+                                  "reissue it and update the USDA_NASS_API_KEY secret")
+                raise SystemExit(f"NASS rejected the API key (HTTP {e.code})")
+            if i == attempts - 1:
+                raise
+            log(f"  retry {i + 1} after {e}")
+            time.sleep(10)
         except Exception as e:  # noqa: BLE001
             if i == attempts - 1:
                 raise
