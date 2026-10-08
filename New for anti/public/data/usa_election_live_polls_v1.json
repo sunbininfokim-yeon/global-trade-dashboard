@@ -84,12 +84,12 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 93,
-    "excluded_observations": 738,
-    "aggregation_eligible_observations": 74,
+    "accepted_observations": 101,
+    "excluded_observations": 737,
+    "aggregation_eligible_observations": 82,
     "reference_only_observations": 19,
     "exclusion_reasons": {
-      "pollster_not_selected": 534,
+      "pollster_not_selected": 528,
       "outside_reviewed_general_period": 115,
       "unregistered_primary_host": 60,
       "unreviewed_matchup": 2,
@@ -98,7 +98,7 @@
       "internal_or_partisan": 2,
       "provider_third_candidate_attribution_unverified": 1,
       "publisher_identity_unverified": 2,
-      "primary_provider_field_dates_conflict": 2,
+      "primary_provider_field_dates_conflict": 5,
       "forced_choice_question_not_comparable": 1,
       "primary_release_not_accessed": 3,
       "primary_provider_candidate_values_conflict": 1,
@@ -110,10 +110,10 @@
       "primary_geography_methodology_conflict": 1,
       "primary_geography_and_candidate_table_not_verified": 1,
       "pre_primary_historical_poll_not_general_signal": 1,
-      "commissioner_primary_methodology_not_obtained": 1,
+      "commissioner_primary_methodology_not_obtained": 3,
       "missing_sample_and_primary_methodology": 1
     },
-    "displayed_observations": 93
+    "displayed_observations": 101
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -165,7 +165,7 @@
       "senate": 35,
       "house": 435
     },
-    "ballot_review_count": 473,
+    "ballot_review_count": 474,
     "meaning_ko": "대상 등록과 여론조사 확보는 다릅니다. 후보 명부·출처·기간 검사를 통과한 관측만 집계합니다."
   },
   "excluded_watch_slots": [
@@ -7469,15 +7469,23 @@
           "party": "DEM",
           "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
           "candidate_id": "TX:certified:2026:governor:gina-hinojosa",
-          "identity_source_url": "https://www.nga.org/governors/elections/",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "identity_source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "identity_basis": "official_general_ballot_name_party_office_cycle",
+          "canonical_name": "Gina Hinojosa"
         },
         "Greg Abbott": {
           "party": "REP",
           "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
           "candidate_id": "TX:certified:2026:governor:greg-abbott",
-          "identity_source_url": "https://www.nga.org/governors/elections/",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "identity_source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "identity_basis": "official_general_ballot_name_party_office_cycle",
+          "canonical_name": "Greg Abbott"
+        },
+        "Pat Dixon": {
+          "party": "LIB",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Pat Dixon"
         }
       },
       "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
@@ -7497,7 +7505,7 @@
         ]
       },
       "governor_roster": {
-        "source_url": "https://www.nga.org/governors/elections/",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
         "reviewed_on": "2026-10-07",
         "status": "reported_general_matchup",
         "hold_reason": null,
@@ -7505,11 +7513,28 @@
         "basis": "reported_general_ballot_not_state_certification"
       },
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
-        "general_unopposed": null,
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:TX:governor",
       "observations": [
@@ -7594,6 +7619,104 @@
           }
         },
         {
+          "id": "gov202uni25b4833e",
+          "race_id": "USA:TX:governor",
+          "contest_id": "USA:TX:governor:2026:general:regular",
+          "pollster": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+          "pollster_group": "umass_lowell_yougov",
+          "field_start": "2026-09-18",
+          "field_end": "2026-09-28",
+          "provider_record_date": "2026-10-08",
+          "population": "lv",
+          "sample_n": 850,
+          "answers": [
+            {
+              "name": "Greg Abbott",
+              "pct": 48.0,
+              "party": "REP"
+            },
+            {
+              "name": "Gina Hinojosa",
+              "pct": 44.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Pat Dixon",
+              "pct": 1.0,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+              "https://www.uml.edu/docs/Oct-2026-Texas-Topline_tcm18-423338.pdf",
+              "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf"
+            ],
+            "primary_toplines": {
+              "Greg Abbott": 48.0,
+              "Gina Hinojosa": 44.0,
+              "Pat Dixon": 1.0
+            },
+            "question_sample_n": 850,
+            "disclosure_review": {
+              "mode": "self-administered YouGov web panel",
+              "sampling_method": "non_probability_sample_matching",
+              "matched_sample_n": 850,
+              "interviewed_n": 910,
+              "weighting": "CPS2024/APVoteCast matching gender/age/race/education; IPF vote2024 and turnout-profile weights",
+              "publication_date": "2026-10-08",
+              "question": "Q4",
+              "undecided_pct": 6,
+              "field_dates": [
+                "2026-09-18",
+                "2026-09-28"
+              ],
+              "population": "LV",
+              "sample_n": 850,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 4.5,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        },
+        {
           "id": "gov202bea2d2ef4cb",
           "race_id": "USA:TX:governor",
           "contest_id": "USA:TX:governor:2026:general:regular",
@@ -7647,7 +7770,7 @@
               "historical_accuracy_rating",
               "candidate_gap_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
               "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
@@ -7689,6 +7812,99 @@
           }
         },
         {
+          "id": "gov202texdb645b2d",
+          "race_id": "USA:TX:governor",
+          "contest_id": "USA:TX:governor:2026:general:regular",
+          "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+          "pollster_group": "texas_southern",
+          "field_start": "2026-09-15",
+          "field_end": "2026-09-19",
+          "provider_record_date": "2026-09-22",
+          "population": "lv",
+          "sample_n": 1800,
+          "answers": [
+            {
+              "name": "Greg Abbott",
+              "pct": 49.0,
+              "party": "REP"
+            },
+            {
+              "name": "Gina Hinojosa",
+              "pct": 45.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Pat Dixon",
+              "pct": 2.0,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.jordanresearchcenter.org/s/TSUSept2026_TXStatewideRaces.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
+              "https://www.jordanresearchcenter.org/s/TSUSept2026_TXStatewideRaces.pdf"
+            ],
+            "primary_toplines": {
+              "Greg Abbott": 49.0,
+              "Gina Hinojosa": 45.0,
+              "Pat Dixon": 2.0
+            },
+            "question_sample_n": 1800,
+            "disclosure_review": {
+              "mode": "random registered voter SMS to English/Spanish web",
+              "sampling_method": "publisher_probability_based",
+              "lv_definition": "two part likely voter screen plus prior election participation",
+              "undecided_pct": 4,
+              "field_dates": [
+                "2026-09-15",
+                "2026-09-19"
+              ],
+              "population": "LV",
+              "sample_n": 1800,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 2.31,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        },
+        {
           "id": "gov202eme6536e559",
           "race_id": "USA:TX:governor",
           "contest_id": "USA:TX:governor:2026:general:regular",
@@ -7713,7 +7929,7 @@
             {
               "name": "Pat Dixon",
               "pct": 2.0,
-              "party": null
+              "party": "LIB"
             }
           ],
           "sponsors": [
@@ -7775,7 +7991,7 @@
             {
               "name": "Pat Dixon",
               "pct": 0.0,
-              "party": null
+              "party": "LIB"
             }
           ],
           "sponsors": [],
@@ -7847,17 +8063,17 @@
           "from": "2026-09-25",
           "through": "2026-10-08",
           "population": "lv",
-          "status": "tie",
-          "party": null,
-          "leader": null,
+          "status": "poll_lead",
+          "party": "REP",
+          "leader": "Greg Abbott",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
-            "agreement_fraction": 0.5,
+            "independent_pollster_count": 3,
+            "agreement_fraction": 0.6666666666666666,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -7875,7 +8091,7 @@
                   "historical_accuracy_rating",
                   "candidate_gap_significance"
                 ],
-                "reviewed_on": "2026-10-06",
+                "reviewed_on": "2026-10-08",
                 "review_sources": [
                   "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
                   "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
@@ -7961,6 +8177,63 @@
               },
               "leading_margin_pp": 3.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202uni25b4833e",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+                  "https://www.uml.edu/docs/Oct-2026-Texas-Topline_tcm18-423338.pdf",
+                  "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf"
+                ],
+                "primary_toplines": {
+                  "Greg Abbott": 48.0,
+                  "Gina Hinojosa": 44.0,
+                  "Pat Dixon": 1.0
+                },
+                "question_sample_n": 850,
+                "disclosure_review": {
+                  "mode": "self-administered YouGov web panel",
+                  "sampling_method": "non_probability_sample_matching",
+                  "matched_sample_n": 850,
+                  "interviewed_n": 910,
+                  "weighting": "CPS2024/APVoteCast matching gender/age/race/education; IPF vote2024 and turnout-profile weights",
+                  "publication_date": "2026-10-08",
+                  "question": "Q4",
+                  "undecided_pct": 6,
+                  "field_dates": [
+                    "2026-09-18",
+                    "2026-09-28"
+                  ],
+                  "population": "LV",
+                  "sample_n": 850,
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_error",
+                  "half_width_pp": 4.5,
+                  "confidence_level_pct": null,
+                  "validated_here": false
+                },
+                "ballot_format": "multi_candidate",
+                "sponsor_review": {
+                  "commissioner": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                  "sponsors": []
+                },
+                "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
             }
           ],
           "reference_ids": [],
@@ -7968,14 +8241,15 @@
           "reference_details": [],
           "status_note_ko": null,
           "lead_counts": {
-            "Greg Abbott": 1,
+            "Greg Abbott": 2,
             "Gina Hinojosa": 1
           },
           "tie_count": 0,
-          "pollster_count": 2,
+          "pollster_count": 3,
           "included_ids": [
             "gov202bea2d2ef4cb",
-            "gov202theafe06bf1"
+            "gov202theafe06bf1",
+            "gov202uni25b4833e"
           ],
           "conflicting_pollsters": [],
           "latest_field_end": "2026-09-30"
@@ -7983,7 +8257,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -10637,7 +10911,8 @@
         },
         "Ted Brown": {
           "party": "LIB",
-          "source_url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/"
+          "source_url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/",
+          "canonical_name": "Ted Brown"
         }
       },
       "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
@@ -10658,15 +10933,16 @@
       },
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -10674,13 +10950,111 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:TX:senate",
       "observations": [
+        {
+          "id": "us-202unic8d0412d",
+          "race_id": "USA:TX:senate",
+          "contest_id": "USA:TX:senate:2026:general",
+          "pollster": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+          "pollster_group": "umass_lowell_yougov",
+          "field_start": "2026-09-18",
+          "field_end": "2026-09-28",
+          "provider_record_date": "2026-10-08",
+          "population": "lv",
+          "sample_n": 850,
+          "answers": [
+            {
+              "name": "James Talarico",
+              "pct": 45.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Ken Paxton",
+              "pct": 45.0,
+              "party": "REP"
+            },
+            {
+              "name": "Ted Brown",
+              "pct": 2.0,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+              "https://www.uml.edu/docs/Oct-2026-Texas-Topline_tcm18-423338.pdf",
+              "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf"
+            ],
+            "primary_toplines": {
+              "James Talarico": 45.0,
+              "Ken Paxton": 45.0,
+              "Ted Brown": 2.0
+            },
+            "question_sample_n": 850,
+            "disclosure_review": {
+              "mode": "self-administered YouGov web panel",
+              "sampling_method": "non_probability_sample_matching",
+              "matched_sample_n": 850,
+              "interviewed_n": 910,
+              "weighting": "CPS2024/APVoteCast matching gender/age/race/education; IPF vote2024 and turnout-profile weights",
+              "publication_date": "2026-10-08",
+              "question": "Q1",
+              "undecided_pct": 7,
+              "field_dates": [
+                "2026-09-18",
+                "2026-09-28"
+              ],
+              "population": "LV",
+              "sample_n": 850,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 4.5,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        },
         {
           "id": "us-202beab9600d9b",
           "race_id": "USA:TX:senate",
@@ -10735,7 +11109,7 @@
               "historical_accuracy_rating",
               "candidate_gap_significance"
             ],
-            "reviewed_on": "2026-10-06",
+            "reviewed_on": "2026-10-08",
             "review_sources": [
               "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
               "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
@@ -10774,6 +11148,99 @@
               "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
             },
             "limitations_ko": "원문 수치·공개 방법 항목 대조. 정확도 등급·후보 격차의 유의성·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202tex6938a787",
+          "race_id": "USA:TX:senate",
+          "contest_id": "USA:TX:senate:2026:general",
+          "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+          "pollster_group": "texas_southern",
+          "field_start": "2026-09-15",
+          "field_end": "2026-09-19",
+          "provider_record_date": "2026-09-22",
+          "population": "lv",
+          "sample_n": 1800,
+          "answers": [
+            {
+              "name": "James Talarico",
+              "pct": 47.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Ken Paxton",
+              "pct": 46.0,
+              "party": "REP"
+            },
+            {
+              "name": "Ted Brown",
+              "pct": 3.0,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.jordanresearchcenter.org/s/TSUSept2026_TXStatewideRaces.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
+              "https://www.jordanresearchcenter.org/s/TSUSept2026_TXStatewideRaces.pdf"
+            ],
+            "primary_toplines": {
+              "James Talarico": 47.0,
+              "Ken Paxton": 46.0,
+              "Ted Brown": 3.0
+            },
+            "question_sample_n": 1800,
+            "disclosure_review": {
+              "mode": "random registered voter SMS to English/Spanish web",
+              "sampling_method": "publisher_probability_based",
+              "lv_definition": "two part likely voter screen plus prior election participation",
+              "undecided_pct": 4,
+              "field_dates": [
+                "2026-09-15",
+                "2026-09-19"
+              ],
+              "population": "LV",
+              "sample_n": 1800,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 2.31,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
           }
         },
         {
@@ -10927,6 +11394,64 @@
               "primary_values_rechecked"
             ]
           }
+        },
+        {
+          "id": "us-202ins8df69531",
+          "race_id": "USA:TX:senate",
+          "contest_id": "USA:TX:senate:2026:general",
+          "pollster": "InsiderAdvantage",
+          "pollster_group": "insideradvantage",
+          "field_start": "2026-09-08",
+          "field_end": "2026-09-09",
+          "provider_record_date": "2026-09-11",
+          "population": "lv",
+          "sample_n": 1200,
+          "answers": [
+            {
+              "name": "James Talarico",
+              "pct": 47.1,
+              "party": "DEM"
+            },
+            {
+              "name": "Ken Paxton",
+              "pct": 45.6,
+              "party": "REP"
+            },
+            {
+              "name": "Ted Brown",
+              "pct": 2.2,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://insideradvantage.com/top-line-tabs-texas/",
+          "verification": "selected_source_aggregator_import",
+          "methodology_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "registered_pollster",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "partial",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "출처 연결 · 집계값 부분 검증",
+            "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+            "missing_fields": [
+              "margin_of_error_pp",
+              "question_sample_n",
+              "primary_values_rechecked"
+            ]
+          }
         }
       ],
       "windows": {
@@ -10967,17 +11492,17 @@
           "from": "2026-09-25",
           "through": "2026-10-08",
           "population": "lv",
-          "status": "single_poll_lead",
-          "party": "DEM",
-          "leader": "James Talarico",
+          "status": "tie",
+          "party": null,
+          "leader": null,
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
+            "agreement_fraction": 0.5,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -10995,7 +11520,7 @@
                   "historical_accuracy_rating",
                   "candidate_gap_significance"
                 ],
-                "reviewed_on": "2026-10-06",
+                "reviewed_on": "2026-10-08",
                 "review_sources": [
                   "https://www.foxnews.com/politics/fox-news-poll-its-lone-star-senate-showdown-between-talarico-paxton",
                   "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf"
@@ -11037,6 +11562,63 @@
               },
               "leading_margin_pp": 2.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202unic8d0412d",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-08",
+                "review_sources": [
+                  "https://www.uml.edu/news/press-releases/2026/10092026-texas-poll.aspx",
+                  "https://www.uml.edu/docs/Oct-2026-Texas-Topline_tcm18-423338.pdf",
+                  "https://www.uml.edu/docs/Oct-2026-Texas-Methodology_tcm18-423336.pdf"
+                ],
+                "primary_toplines": {
+                  "James Talarico": 45.0,
+                  "Ken Paxton": 45.0,
+                  "Ted Brown": 2.0
+                },
+                "question_sample_n": 850,
+                "disclosure_review": {
+                  "mode": "self-administered YouGov web panel",
+                  "sampling_method": "non_probability_sample_matching",
+                  "matched_sample_n": 850,
+                  "interviewed_n": 910,
+                  "weighting": "CPS2024/APVoteCast matching gender/age/race/education; IPF vote2024 and turnout-profile weights",
+                  "publication_date": "2026-10-08",
+                  "question": "Q1",
+                  "undecided_pct": 7,
+                  "field_dates": [
+                    "2026-09-18",
+                    "2026-09-28"
+                  ],
+                  "population": "LV",
+                  "sample_n": 850,
+                  "question_wording_checked": true
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_error",
+                  "half_width_pp": 4.5,
+                  "confidence_level_pct": null,
+                  "validated_here": false
+                },
+                "ballot_format": "multi_candidate",
+                "sponsor_review": {
+                  "commissioner": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                  "sponsors": []
+                },
+                "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+              },
+              "leading_margin_pp": 0.0,
+              "significance": "not_evaluated"
             }
           ],
           "reference_ids": [],
@@ -11046,10 +11628,11 @@
           "lead_counts": {
             "James Talarico": 1
           },
-          "tie_count": 0,
-          "pollster_count": 1,
+          "tie_count": 1,
+          "pollster_count": 2,
           "included_ids": [
-            "us-202beab9600d9b"
+            "us-202beab9600d9b",
+            "us-202unic8d0412d"
           ],
           "conflicting_pollsters": [],
           "latest_field_end": "2026-09-28"
@@ -11057,7 +11640,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -15708,7 +16291,7 @@
       "poll_type": "us-representative",
       "seat_name": "TX-15",
       "contest_id": "USA:TX:house:15:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-18",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
@@ -15718,13 +16301,13 @@
       "candidates": {
         "Bobby Pulido": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
           "canonical_name": "Bobby Pulido"
         },
         "Monica De La Cruz": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
           "canonical_name": "Monica De La Cruz"
         }
@@ -15744,6 +16327,7 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 2,
@@ -15751,10 +16335,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -15762,13 +16346,115 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:TX:house:15",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-tsu-tx-house15-20260826",
+          "race_id": "USA:TX:house:15",
+          "contest_id": "USA:TX:house:15:2026:general",
+          "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+          "pollster_group": "texas_southern",
+          "field_start": "2026-08-18",
+          "field_end": "2026-08-22",
+          "provider_record_date": "2026-08-26",
+          "population": "lv",
+          "sample_n": 700,
+          "answers": [
+            {
+              "name": "Bobby Pulido",
+              "pct": 50,
+              "party": "DEM"
+            },
+            {
+              "name": "Monica De La Cruz",
+              "pct": 45,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T18:58:21.007024+00:00",
+            "documents": [
+              {
+                "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+                "status": "unchanged",
+                "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+              }
+            ],
+            "provider_duplicate_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+            ],
+            "primary_toplines": {
+              "Bobby Pulido": 50,
+              "Monica De La Cruz": 45
+            },
+            "question_sample_n": 700,
+            "disclosure_review": {
+              "mode": "SMS invitation to online English/Spanish",
+              "sampling_frame": "registered voters",
+              "lv_definition": "likely voter screen and prior election participation",
+              "new_2026_district_boundaries_checked": true,
+              "undecided_pct": 5,
+              "field_dates": [
+                "2026-08-18",
+                "2026-08-22"
+              ],
+              "population": "LV",
+              "sample_n": 700,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.7,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate",
+            "sponsor_review": {
+              "commissioner": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -15837,7 +16523,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -15850,25 +16536,61 @@
       "poll_type": "us-representative",
       "seat_name": "TX-34",
       "contest_id": "USA:TX:house:34:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-18",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Vicente Gonzalez Jr.",
-        "Eric Flores"
+        "Vicente González",
+        "Eric D. Flores"
       ],
       "candidates": {
+        "Vicente González": {
+          "party": "DEM",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Vicente González"
+        },
         "Vicente Gonzalez Jr.": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
-          "canonical_name": "Vicente Gonzalez Jr."
+          "canonical_name": "Vicente González"
+        },
+        "Vicente Gonzalez": {
+          "party": "DEM",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Vicente González"
+        },
+        "Eric D. Flores": {
+          "party": "REP",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Eric D. Flores"
         },
         "Eric Flores": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
-          "canonical_name": "Eric Flores"
+          "canonical_name": "Eric D. Flores"
+        },
+        "Eddie Espinoza": {
+          "party": "GRN",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Eddie Espinoza"
+        },
+        "Chris B. Royal": {
+          "party": "LIB",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Chris B. Royal"
+        },
+        "Chris Royal": {
+          "party": "LIB",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Chris B. Royal"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -15886,17 +16608,20 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 4,
         "parties": [
           "DEM",
+          "GRN",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -15904,13 +16629,127 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:TX:house:34",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-tsu-tx-house34-20260826",
+          "race_id": "USA:TX:house:34",
+          "contest_id": "USA:TX:house:34:2026:general",
+          "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+          "pollster_group": "texas_southern",
+          "field_start": "2026-08-18",
+          "field_end": "2026-08-22",
+          "provider_record_date": "2026-08-26",
+          "population": "lv",
+          "sample_n": 700,
+          "answers": [
+            {
+              "name": "Vicente Gonzalez",
+              "pct": 45,
+              "party": "DEM"
+            },
+            {
+              "name": "Eric Flores",
+              "pct": 42,
+              "party": "REP"
+            },
+            {
+              "name": "Eddie Espinoza",
+              "pct": 3,
+              "party": "GRN"
+            },
+            {
+              "name": "Chris Royal",
+              "pct": 2,
+              "party": "LIB"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T18:58:21.503138+00:00",
+            "documents": [
+              {
+                "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+                "status": "unchanged",
+                "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+              }
+            ],
+            "provider_duplicate_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+            ],
+            "primary_toplines": {
+              "Vicente Gonzalez": 45,
+              "Eric Flores": 42,
+              "Eddie Espinoza": 3,
+              "Chris Royal": 2
+            },
+            "question_sample_n": 700,
+            "disclosure_review": {
+              "mode": "SMS invitation to online English/Spanish",
+              "sampling_frame": "registered voters",
+              "lv_definition": "likely voter screen and prior election participation",
+              "new_2026_district_boundaries_checked": true,
+              "undecided_pct": 8,
+              "field_dates": [
+                "2026-08-18",
+                "2026-08-22"
+              ],
+              "population": "LV",
+              "sample_n": 700,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.7,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -15979,7 +16818,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -18003,7 +18842,7 @@
       "poll_type": "us-representative",
       "seat_name": "TX-28",
       "contest_id": "USA:TX:house:28:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-18",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
@@ -18013,15 +18852,27 @@
       "candidates": {
         "Henry Cuellar": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
           "canonical_name": "Henry Cuellar"
         },
         "Tano Tijerina": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
           "candidate_id": null,
           "canonical_name": "Tano Tijerina"
+        },
+        "Tano E. Tijerina": {
+          "party": "REP",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Tano Tijerina"
+        },
+        "Marlón Durán": {
+          "party": "GRN",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "candidate_id": null,
+          "canonical_name": "Marlón Durán"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -18039,17 +18890,19 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "GRN",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -18057,13 +18910,121 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:TX:house:28",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-tsu-tx-house28-20260826",
+          "race_id": "USA:TX:house:28",
+          "contest_id": "USA:TX:house:28:2026:general",
+          "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+          "pollster_group": "texas_southern",
+          "field_start": "2026-08-18",
+          "field_end": "2026-08-22",
+          "provider_record_date": "2026-08-26",
+          "population": "lv",
+          "sample_n": 600,
+          "answers": [
+            {
+              "name": "Henry Cuellar",
+              "pct": 45,
+              "party": "DEM"
+            },
+            {
+              "name": "Tano Tijerina",
+              "pct": 34,
+              "party": "REP"
+            },
+            {
+              "name": "Marlón Durán",
+              "pct": 6,
+              "party": "GRN"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T18:58:21.262045+00:00",
+            "documents": [
+              {
+                "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+                "status": "unchanged",
+                "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+              }
+            ],
+            "provider_duplicate_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf"
+            ],
+            "primary_toplines": {
+              "Henry Cuellar": 45,
+              "Tano Tijerina": 34,
+              "Marlón Durán": 6
+            },
+            "question_sample_n": 600,
+            "disclosure_review": {
+              "mode": "SMS invitation to online English/Spanish",
+              "sampling_frame": "registered voters",
+              "lv_definition": "likely voter screen and prior election participation",
+              "new_2026_district_boundaries_checked": true,
+              "undecided_pct": 15,
+              "field_dates": [
+                "2026-08-18",
+                "2026-08-22"
+              ],
+              "population": "LV",
+              "sample_n": 600,
+              "question_wording_checked": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 4.0,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate",
+            "sponsor_review": {
+              "commissioner": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+              "sponsors": []
+            },
+            "limitations_ko": "원문 수치·표본·기간·방법 검토. AAPOR 참여나 기관 수를 정확도 등급으로 바꾸지 않음. 최근7/14일 밖 조사는 누적 참고이며 현재 우세 아님."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -18132,7 +19093,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -18999,7 +19960,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -71358,7 +72319,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -71492,7 +72453,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -71626,7 +72587,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -71760,7 +72721,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -71894,7 +72855,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72028,7 +72989,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72169,7 +73130,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72303,7 +73264,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72437,7 +73398,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72571,7 +73532,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72705,7 +73666,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72839,7 +73800,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -72973,7 +73934,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73107,7 +74068,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73241,7 +74202,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73375,7 +74336,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73509,7 +74470,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73643,7 +74604,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73777,7 +74738,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -73911,7 +74872,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74045,7 +75006,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74186,7 +75147,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74320,7 +75281,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74454,7 +75415,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74595,7 +75556,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74738,7 +75699,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -74872,7 +75833,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75006,7 +75967,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75147,7 +76108,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75281,7 +76242,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75415,7 +76376,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75549,7 +76510,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75683,7 +76644,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -75824,7 +76785,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:47.574156+00:00",
+      "fetched_at": "2026-10-08T18:58:15.742996+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -83304,1286 +84265,6 @@
       "sponsors": [],
       "internal": false,
       "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202recc51e1594",
-      "race_id": "USA:TX:governor",
-      "pollster": "ReconMR/Siena University",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://reconmr.com/wp-content/uploads/2026/06/TXPLV-Crosstabs-1.pdf",
-      "field_start": "2026-06-01",
-      "field_end": "2026-06-04",
-      "population": "lv",
-      "sample_n": 807,
-      "sponsors": [
-        "Texas A&M University Bush School of Government & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202uniddcdaeb8",
-      "race_id": "USA:TX:governor",
-      "pollster": "University of Texas at Tyler",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/ut-tyler-poll-cor-feb-2026-poll-final-topline-report.pdf",
-      "field_start": "2026-02-13",
-      "field_end": "2026-02-22",
-      "population": "rv",
-      "sample_n": 1117,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202unif0b2a5e1",
-      "race_id": "USA:TX:governor",
-      "pollster": "University of Houston/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uh.edu/hobby/primary2026/state.pdf",
-      "field_start": "2026-01-20",
-      "field_end": "2026-01-31",
-      "population": "lv",
-      "sample_n": 1502,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202emea409dff6",
-      "race_id": "USA:TX:governor",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?gid=1394126659#gid=1394126659",
-      "field_start": "2026-01-10",
-      "field_end": "2026-01-12",
-      "population": "rv",
-      "sample_n": 1165,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pubf37f0aa3",
-      "race_id": "USA:TX:house:15",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.documentcloud.org/documents/26100755-tx15results1/",
-      "field_start": "2025-09-10",
-      "field_end": "2025-09-11",
-      "population": "lv",
-      "sample_n": 533,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub358c46e4",
-      "race_id": "USA:TX:house:23",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/03/TX23-PPP-poll.pdf",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-11",
-      "population": "a",
-      "sample_n": 521,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202unie89cc6b4",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Texas at Tyler",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/topline-report-of-texas-voters-revised-september-2025.pdf",
-      "field_start": "2025-09-17",
-      "field_end": "2025-09-24",
-      "population": "rv",
-      "sample_n": 1032,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202uni8225dcc0",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Houston/Texas Southern University",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.documentcloud.org/documents/26183203-election2026/",
-      "field_start": "2025-09-19",
-      "field_end": "2025-10-01",
-      "population": "rv",
-      "sample_n": 1650,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rag0c28bfd3",
-      "race_id": "USA:TX:senate",
-      "pollster": "Ragnar Research Partners",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019a-9d57-df0f-abfa-fd7fac900000",
-      "field_start": "2025-11-12",
-      "field_end": "2025-11-17",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202uni0dc518c7",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Houston/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uh.edu/hobby/primary2026/senate.pdf",
-      "field_start": "2026-01-20",
-      "field_end": "2026-01-31",
-      "population": "lv",
-      "sample_n": 1502,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub7e233927",
-      "race_id": "USA:TX:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://punchbowl.news/article/campaigns/paxton-cornyn-poll/",
-      "field_start": "2026-03-04",
-      "field_end": "2026-03-05",
-      "population": "a",
-      "sample_n": 576,
-      "sponsors": [
-        "Senate Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202imp50137db2",
-      "race_id": "USA:TX:senate",
-      "pollster": "Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/live-updates/2026/03/20/congress/texas-senate-talarico-cornyn-paxton-poll-00837336",
-      "field_start": "2026-03-12",
-      "field_end": "2026-03-17",
-      "population": "lv",
-      "sample_n": 900,
-      "sponsors": [
-        "James Talarico"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texe500a6d5",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Public Opinion Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/04/TPOR-April-2026-TXSEN-poll.pdf",
-      "field_start": "2026-04-17",
-      "field_end": "2026-04-20",
-      "population": "lv",
-      "sample_n": 1018,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202unidb95df99",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Texas at Tyler",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/topline-report-of-texas-voters-revised-september-2025.pdf",
-      "field_start": "2025-09-17",
-      "field_end": "2025-09-24",
-      "population": "rv",
-      "sample_n": 1032,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202uni731e2279",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Houston/Texas Southern University",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.documentcloud.org/documents/26183203-election2026/",
-      "field_start": "2025-09-19",
-      "field_end": "2025-10-01",
-      "population": "rv",
-      "sample_n": 1650,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rag8552bbbc",
-      "race_id": "USA:TX:senate",
-      "pollster": "Ragnar Research Partners",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019a-9d57-df0f-abfa-fd7fac900000",
-      "field_start": "2025-11-12",
-      "field_end": "2025-11-17",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202emeef7cbc1d",
-      "race_id": "USA:TX:senate",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
-      "field_start": "2026-01-10",
-      "field_end": "2026-01-12",
-      "population": "rv",
-      "sample_n": 1165,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202eme9b9f44a5",
-      "race_id": "USA:TX:senate",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
-      "field_start": "2026-01-10",
-      "field_end": "2026-01-12",
-      "population": "rv",
-      "sample_n": 1165,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202uni5040ddd3",
-      "race_id": "USA:TX:senate",
-      "pollster": "University of Houston/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uh.edu/hobby/primary2026/senate.pdf",
-      "field_start": "2026-01-20",
-      "field_end": "2026-01-31",
-      "population": "lv",
-      "sample_n": 1502,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pubaf44626b",
-      "race_id": "USA:TX:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://punchbowl.news/article/campaigns/paxton-cornyn-poll/",
-      "field_start": "2026-03-04",
-      "field_end": "2026-03-05",
-      "population": "a",
-      "sample_n": 576,
-      "sponsors": [
-        "Senate Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texaca3925a",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Public Opinion Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/04/TPOR-April-2026-TXSEN-poll.pdf",
-      "field_start": "2026-04-17",
-      "field_end": "2026-04-20",
-      "population": "lv",
-      "sample_n": 1018,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202you9dee520f",
-      "race_id": "USA:TX:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
-      "field_start": "2026-04-10",
-      "field_end": "2026-04-20",
-      "population": "rv",
-      "sample_n": 1200,
-      "sponsors": [
-        "University of Texas"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202you0dcc69cb",
-      "race_id": "USA:TX:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
-      "field_start": "2026-04-10",
-      "field_end": "2026-04-12",
-      "population": "rv",
-      "sample_n": 1200,
-      "sponsors": [
-        "University of Texas"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the1dba2946",
-      "race_id": "USA:TX:governor",
-      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
-      "field_start": "2026-04-10",
-      "field_end": "2026-04-20",
-      "population": "rv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sli6ebff755",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/2026/04/28/texas-us-senate-poll-talarico-cornyn-paxton-2026-midterms/",
-      "field_start": "2026-04-17",
-      "field_end": "2026-04-20",
-      "population": "lv",
-      "sample_n": 1018,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202uni9190ff53",
-      "race_id": "USA:TX:governor",
-      "pollster": "University of Texas at Tyler Center for Opinion Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.gilmermirror.com/wp-content/uploads/2026/02/UTTylerPoll_202602_FINAL226-COR-FEB-2026-Poll-Final-Topline-Report.pdf",
-      "field_start": "2026-02-13",
-      "field_end": "2026-02-22",
-      "population": "rv",
-      "sample_n": 1117,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202uni2dbe825b",
-      "race_id": "USA:TX:governor",
-      "pollster": "University of Texas at Tyler Center for Opinion Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.gilmermirror.com/wp-content/uploads/2026/02/UTTylerPoll_202602_FINAL226-COR-FEB-2026-Poll-Final-Topline-Report.pdf",
-      "field_start": "2026-02-13",
-      "field_end": "2026-02-22",
-      "population": "rv",
-      "sample_n": 1117,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202uni47c6f510",
-      "race_id": "USA:TX:governor",
-      "pollster": "University of Houston Hobby School of Public Affairs/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.uh.edu/hobby/primary2026/state.pdf",
-      "field_start": "2026-01-20",
-      "field_end": "2026-01-31",
-      "population": "lv",
-      "sample_n": 1502,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202emed32824b8",
-      "race_id": "USA:TX:governor",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?rtpof=true&sd=true",
-      "field_start": "2026-01-10",
-      "field_end": "2026-01-12",
-      "population": "rv",
-      "sample_n": 1165,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sli432139cf",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=00000199-3cc6-dddb-a7d9-3fcfeeca0000&nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
-      "field_start": "2025-08-27",
-      "field_end": "2025-08-29",
-      "population": "rv",
-      "sample_n": 843,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texc28cf835",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1_iPARgG4ScAjPXaqXfHse9R9hnvGS6If/view",
-      "field_start": "2026-04-22",
-      "field_end": "2026-05-06",
-      "population": "lv",
-      "sample_n": 1223,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tex1f4254f8",
-      "race_id": "USA:TX:governor",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1_iPARgG4ScAjPXaqXfHse9R9hnvGS6If/view",
-      "field_start": "2026-04-22",
-      "field_end": "2026-05-06",
-      "population": "lv",
-      "sample_n": 1223,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub59f4c740",
-      "race_id": "USA:TX:house:23",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/2026/03/12/brandon-herrera-democrats-texas-23rd-congressional-district-tony-gonzales/",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-11",
-      "population": "rv",
-      "sample_n": 521,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub121c904c",
-      "race_id": "USA:TX:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static.politico.com/c0/7c/2c2db3c14c74946fa393d9e485cc/texas-gen-results-ppp-5-26-1.pdf?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
-      "field_start": "2026-05-22",
-      "field_end": "2026-05-23",
-      "population": "lv",
-      "sample_n": 643,
-      "sponsors": [
-        "Lone Star Rising PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202pub1d82cc46",
-      "race_id": "USA:TX:governor",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static.politico.com/c0/7c/2c2db3c14c74946fa393d9e485cc/texas-gen-results-ppp-5-26-1.pdf?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
-      "field_start": "2026-05-22",
-      "field_end": "2026-05-23",
-      "population": "lv",
-      "sample_n": 643,
-      "sponsors": [
-        "Lone Star Rising PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202sli9f75fb57",
-      "race_id": "USA:TX:senate",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1lCiaC7xw4VTmc2I4aHRZ-Pi3McLOwsrI/view",
-      "field_start": "2026-05-27",
-      "field_end": "2026-05-28",
-      "population": "lv",
-      "sample_n": 1670,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sli340a2b54",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talarico-leads-ken",
-      "field_start": "2026-05-27",
-      "field_end": "2026-05-28",
-      "population": "lv",
-      "sample_n": 1670,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202qua6b878295",
-      "race_id": "USA:TX:senate",
-      "pollster": "Quantus Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/d/1U-DMOuPcsD0P-B5F_m-rfw3Bv1yXSeS7/view?usp=sharing",
-      "field_start": "2026-06-03",
-      "field_end": "2026-06-04",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rec22b1c62b",
-      "race_id": "USA:TX:senate",
-      "pollster": "ReconMR/Siena University",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://reconmr.com/wp-content/uploads/2026/06/TXPLV-Crosstabs-1.pdf",
-      "field_start": "2026-06-01",
-      "field_end": "2026-06-04",
-      "population": "lv",
-      "sample_n": 807,
-      "sponsors": [
-        "Texas A&M University Bush School of Government & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub97e481be",
-      "race_id": "USA:TX:house:23",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/03/TX23-PPP-poll.pdf",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-11",
-      "population": "rv",
-      "sample_n": 521,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tex7e98deeb",
-      "race_id": "USA:TX:governor",
-      "pollster": "Texas Politics Project at the University of Texas/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/june-poll-finds-a-competitive-u-s-senate-race-in-texas-amid-continuing-economic-concerns-data-center-backlash",
-      "field_start": "2026-06-05",
-      "field_end": "2026-06-12",
-      "population": "rv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texc8fd4814",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Politics Project at the University of Texas/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/june-poll-finds-a-competitive-u-s-senate-race-in-texas-amid-continuing-economic-concerns-data-center-backlash",
-      "field_start": "2026-06-05",
-      "field_end": "2026-06-12",
-      "population": "rv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202soc2fe8bcf3",
-      "race_id": "USA:TX:governor",
-      "pollster": "SoCal Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://socalstrategies.substack.com/p/ken-paxton-leads-narrow-texas-senate",
-      "field_start": "2026-06-21",
-      "field_end": "2026-06-21",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "Red Eagle Politics"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202socb918e088",
-      "race_id": "USA:TX:senate",
-      "pollster": "SoCal Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://socalstrategies.substack.com/p/ken-paxton-leads-narrow-texas-senate",
-      "field_start": "2026-06-21",
-      "field_end": "2026-06-21",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "Red Eagle Politics"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the566a145f",
-      "race_id": "USA:TX:governor",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/06/30/polls/times-siena-texas-poll-crosstabs.html#composition-of-the-sample",
-      "field_start": "2026-06-19",
-      "field_end": "2026-06-27",
-      "population": "lv",
-      "sample_n": 656,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202thee89c7bce",
-      "race_id": "USA:TX:senate",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/06/30/polls/times-siena-texas-poll-crosstabs.html#composition-of-the-sample",
-      "field_start": "2026-06-19",
-      "field_end": "2026-06-27",
-      "population": "lv",
-      "sample_n": 656,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202a2 1a5590cb",
-      "race_id": "USA:TX:senate",
-      "pollster": "A2 Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://substack.com/@a2insights/note/c-285306220",
-      "field_start": "2026-06-23",
-      "field_end": "2026-06-28",
-      "population": "lv",
-      "sample_n": 618,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202app872e2e5f",
-      "race_id": "USA:TX:house:15",
-      "pollster": "Applecart",
-      "reason": "pollster_not_selected",
-      "source_url": "https://welcome.team/press-releases/Blog%20Post%20Title%20One-3zaa9-zlxng-67tfc-2sf8d",
-      "field_start": "2026-05-18",
-      "field_end": "2026-05-25",
-      "population": "lv",
-      "sample_n": 802,
-      "sponsors": [
-        "WelcomePAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202sli6204659f",
-      "race_id": "USA:TX:senate",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talaricos-lead-over",
-      "field_start": "2026-07-15",
-      "field_end": "2026-07-17",
-      "population": "lv",
-      "sample_n": 1048,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sli59e6afce",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talaricos-lead-over",
-      "field_start": "2026-07-15",
-      "field_end": "2026-07-17",
-      "population": "lv",
-      "sample_n": 1048,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202bea54820d8d",
-      "race_id": "USA:TX:senate",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.foxnews.com/politics/fox-news-poll-gop-divisions-shape-texas-senate-race",
-      "field_start": "2026-07-23",
-      "field_end": "2026-07-27",
-      "population": "rv",
-      "sample_n": 1006,
-      "sponsors": [
-        "Fox News"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202bea12dfc963",
-      "race_id": "USA:TX:governor",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.foxnews.com/politics/fox-news-poll-gop-divisions-shape-texas-senate-race",
-      "field_start": "2026-07-23",
-      "field_end": "2026-07-27",
-      "population": "rv",
-      "sample_n": 1006,
-      "sponsors": [
-        "Fox News"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202wed4dcf8c6b",
-      "race_id": "USA:TX:senate",
-      "pollster": "Wedgewood Polls",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/u/1/d/1t2mC4MFActxiBdx4ef_5crisXjD9xH7a/view",
-      "field_start": "2026-07-30",
-      "field_end": "2026-07-31",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202wedaa8a5561",
-      "race_id": "USA:TX:governor",
-      "pollster": "Wedgewood Polls",
-      "reason": "pollster_not_selected",
-      "source_url": "https://drive.google.com/file/u/1/d/1t2mC4MFActxiBdx4ef_5crisXjD9xH7a/view",
-      "field_start": "2026-07-30",
-      "field_end": "2026-07-31",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texee0a6ae6",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a713767d4ed824b91ea090d/1785804647961/Texas+Statewide+August2026.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202tex0c7a001f",
-      "race_id": "USA:TX:governor",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a713767d4ed824b91ea090d/1785804647961/Texas+Statewide+August2026.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the7762f5c1",
-      "race_id": "USA:TX:governor",
-      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/new-ut-texas-politics-project-poll-finds-talarico-leading-paxton-abbott-leading-hinojosa-continued-resistance-to-data-centers-2",
-      "field_start": "2026-08-05",
-      "field_end": "2026-08-13",
-      "population": "rv",
-      "sample_n": 1218,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202you3c4a4a9f",
-      "race_id": "USA:TX:senate",
-      "pollster": "YouGov Blue",
-      "reason": "pollster_not_selected",
-      "source_url": "https://254labs.io/news/2026-07-txsen",
-      "field_start": "2026-07-15",
-      "field_end": "2026-07-31",
-      "population": "rv",
-      "sample_n": 1001,
-      "sponsors": [
-        "254 Labs"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rec773da2d7",
-      "race_id": "USA:TX:senate",
-      "pollster": "ReconMR/Siena University",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://reconmr.com/wp-content/uploads/2026/08/Texas-Pulse-August-Release-August-7-2026-Final.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 619,
-      "sponsors": [
-        "Texas A&M University Bush School of Government & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202recd12239ff",
-      "race_id": "USA:TX:governor",
-      "pollster": "ReconMR/Siena University",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://reconmr.com/wp-content/uploads/2026/08/Texas-Pulse-August-Release-August-7-2026-Final.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 619,
-      "sponsors": [
-        "Texas A&M University Bush School of Government & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202cygc8150f78",
-      "race_id": "USA:TX:governor",
-      "pollster": "Cygnal",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.cygn.al/wp-content/uploads/2026/08/Abbott-Data-Center-Plan-Memo.pdf",
-      "field_start": "2026-07-29",
-      "field_end": "2026-07-31",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "Uknown Sponsor"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202eme5bcac049",
-      "race_id": "USA:TX:senate",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/texas-2026-poll-paxton-and-talarico/",
-      "field_start": "2026-08-09",
-      "field_end": "2026-08-10",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202emebe4786e2",
-      "race_id": "USA:TX:governor",
-      "pollster": "Emerson College",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://emersoncollegepolling.com/texas-2026-poll-paxton-and-talarico/",
-      "field_start": "2026-08-09",
-      "field_end": "2026-08-10",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Nexstar Media"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the54ba4671",
-      "race_id": "USA:TX:senate",
-      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspolitics.utexas.edu/blog/new-ut-texas-politics-project-poll-finds-talarico-leading-paxton-abbott-leading-hinojosa-continued-resistance-to-data-centers-2",
-      "field_start": "2026-08-05",
-      "field_end": "2026-08-13",
-      "population": "rv",
-      "sample_n": 1218,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tex35ec19da",
-      "race_id": "USA:TX:house:28",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tex909ea2d7",
-      "race_id": "USA:TX:house:34",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 700,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202texe83b516f",
-      "race_id": "USA:TX:house:15",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
-      "field_start": "2026-07-27",
-      "field_end": "2026-07-30",
-      "population": "lv",
-      "sample_n": 700,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202sli394bd9a0",
-      "race_id": "USA:TX:senate",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election",
-      "field_start": "2026-08-21",
-      "field_end": "2026-08-24",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202sli33eb9fcb",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election",
-      "field_start": "2026-08-21",
-      "field_end": "2026-08-24",
-      "population": "lv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202norf7bc03a2",
-      "race_id": "USA:TX:house:35",
-      "pollster": "Normington, Petts & Associates",
-      "reason": "pollster_not_selected",
-      "source_url": "https://hub.nationaljournal.com/can-democrats-school-ramaswamy-in-ohio",
-      "field_start": "2026-08-27",
-      "field_end": "2026-08-31",
-      "population": "lv",
-      "sample_n": 500,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202youc39ac53a",
-      "race_id": "USA:TX:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-2026",
-      "field_start": "2026-08-27",
-      "field_end": "2026-09-04",
-      "population": "rv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Univision"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202youd945dff6",
-      "race_id": "USA:TX:governor",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-2026",
-      "field_start": "2026-08-27",
-      "field_end": "2026-09-04",
-      "population": "rv",
-      "sample_n": 1000,
-      "sponsors": [
-        "Univision"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202fab22efb6bc",
-      "race_id": "USA:TX:senate",
-      "pollster": "Fabrizio Ward/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-texas",
-      "field_start": "2026-08-30",
-      "field_end": "2026-09-01",
-      "population": "lv",
-      "sample_n": 895,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202fab3ce59a7d",
-      "race_id": "USA:TX:governor",
-      "pollster": "Fabrizio Ward/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-texas",
-      "field_start": "2026-08-30",
-      "field_end": "2026-09-01",
-      "population": "lv",
-      "sample_n": 895,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ins8df69531",
-      "race_id": "USA:TX:senate",
-      "pollster": "InsiderAdvantage",
-      "reason": "pollster_not_selected",
-      "source_url": "https://insideradvantage.com/top-line-tabs-texas/",
-      "field_start": "2026-09-08",
-      "field_end": "2026-09-09",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tex6938a787",
-      "race_id": "USA:TX:senate",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
-      "field_start": "2026-09-15",
-      "field_end": "2026-09-19",
-      "population": "lv",
-      "sample_n": 1800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202texdb645b2d",
-      "race_id": "USA:TX:governor",
-      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.jordanresearchcenter.org/publications/tsusept2026-txsenate-governor-statewideraces",
-      "field_start": "2026-09-15",
-      "field_end": "2026-09-19",
-      "population": "lv",
-      "sample_n": 1800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202sli284b821d",
-      "race_id": "USA:TX:senate",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
-      "field_start": "2026-09-19",
-      "field_end": "2026-09-22",
-      "population": "lv",
-      "sample_n": 1007,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202slieae997f0",
-      "race_id": "USA:TX:governor",
-      "pollster": "Slingshot Strategies",
-      "reason": "pollster_not_selected",
-      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
-      "field_start": "2026-09-19",
-      "field_end": "2026-09-22",
-      "population": "lv",
-      "sample_n": 1007,
-      "sponsors": [
-        "Texas Public Opinion Research"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202nor348bad95",
-      "race_id": "USA:TX:house:15",
-      "pollster": "Normington, Petts & Associates",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/PatrickSvitek/status/2105651406627561762?s=20",
-      "field_start": "2026-09-24",
-      "field_end": "2026-09-28",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
       "verification": "not_accepted_not_verified"
     },
     {
@@ -92550,6 +92231,1275 @@
       "internal": false,
       "partisan": "REP",
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202recc51e1594",
+      "race_id": "USA:TX:governor",
+      "pollster": "ReconMR/Siena University",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://reconmr.com/wp-content/uploads/2026/06/TXPLV-Crosstabs-1.pdf",
+      "field_start": "2026-06-01",
+      "field_end": "2026-06-04",
+      "population": "lv",
+      "sample_n": 807,
+      "sponsors": [
+        "Texas A&M University Bush School of Government & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202uniddcdaeb8",
+      "race_id": "USA:TX:governor",
+      "pollster": "University of Texas at Tyler",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/ut-tyler-poll-cor-feb-2026-poll-final-topline-report.pdf",
+      "field_start": "2026-02-13",
+      "field_end": "2026-02-22",
+      "population": "rv",
+      "sample_n": 1117,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202unif0b2a5e1",
+      "race_id": "USA:TX:governor",
+      "pollster": "University of Houston/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uh.edu/hobby/primary2026/state.pdf",
+      "field_start": "2026-01-20",
+      "field_end": "2026-01-31",
+      "population": "lv",
+      "sample_n": 1502,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202emea409dff6",
+      "race_id": "USA:TX:governor",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?gid=1394126659#gid=1394126659",
+      "field_start": "2026-01-10",
+      "field_end": "2026-01-12",
+      "population": "rv",
+      "sample_n": 1165,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubf37f0aa3",
+      "race_id": "USA:TX:house:15",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.documentcloud.org/documents/26100755-tx15results1/",
+      "field_start": "2025-09-10",
+      "field_end": "2025-09-11",
+      "population": "lv",
+      "sample_n": 533,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub358c46e4",
+      "race_id": "USA:TX:house:23",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/03/TX23-PPP-poll.pdf",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-11",
+      "population": "a",
+      "sample_n": 521,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202unie89cc6b4",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Texas at Tyler",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/topline-report-of-texas-voters-revised-september-2025.pdf",
+      "field_start": "2025-09-17",
+      "field_end": "2025-09-24",
+      "population": "rv",
+      "sample_n": 1032,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202uni8225dcc0",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Houston/Texas Southern University",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.documentcloud.org/documents/26183203-election2026/",
+      "field_start": "2025-09-19",
+      "field_end": "2025-10-01",
+      "population": "rv",
+      "sample_n": 1650,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rag0c28bfd3",
+      "race_id": "USA:TX:senate",
+      "pollster": "Ragnar Research Partners",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=0000019a-9d57-df0f-abfa-fd7fac900000",
+      "field_start": "2025-11-12",
+      "field_end": "2025-11-17",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202uni0dc518c7",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Houston/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uh.edu/hobby/primary2026/senate.pdf",
+      "field_start": "2026-01-20",
+      "field_end": "2026-01-31",
+      "population": "lv",
+      "sample_n": 1502,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub7e233927",
+      "race_id": "USA:TX:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://punchbowl.news/article/campaigns/paxton-cornyn-poll/",
+      "field_start": "2026-03-04",
+      "field_end": "2026-03-05",
+      "population": "a",
+      "sample_n": 576,
+      "sponsors": [
+        "Senate Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202imp50137db2",
+      "race_id": "USA:TX:senate",
+      "pollster": "Impact Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/live-updates/2026/03/20/congress/texas-senate-talarico-cornyn-paxton-poll-00837336",
+      "field_start": "2026-03-12",
+      "field_end": "2026-03-17",
+      "population": "lv",
+      "sample_n": 900,
+      "sponsors": [
+        "James Talarico"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texe500a6d5",
+      "race_id": "USA:TX:senate",
+      "pollster": "Texas Public Opinion Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/04/TPOR-April-2026-TXSEN-poll.pdf",
+      "field_start": "2026-04-17",
+      "field_end": "2026-04-20",
+      "population": "lv",
+      "sample_n": 1018,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202unidb95df99",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Texas at Tyler",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uttyler.edu/academics/colleges-schools/arts-sciences/departments/political-science/files/topline-report-of-texas-voters-revised-september-2025.pdf",
+      "field_start": "2025-09-17",
+      "field_end": "2025-09-24",
+      "population": "rv",
+      "sample_n": 1032,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202uni731e2279",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Houston/Texas Southern University",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.documentcloud.org/documents/26183203-election2026/",
+      "field_start": "2025-09-19",
+      "field_end": "2025-10-01",
+      "population": "rv",
+      "sample_n": 1650,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rag8552bbbc",
+      "race_id": "USA:TX:senate",
+      "pollster": "Ragnar Research Partners",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=0000019a-9d57-df0f-abfa-fd7fac900000",
+      "field_start": "2025-11-12",
+      "field_end": "2025-11-17",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202emeef7cbc1d",
+      "race_id": "USA:TX:senate",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+      "field_start": "2026-01-10",
+      "field_end": "2026-01-12",
+      "population": "rv",
+      "sample_n": 1165,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202eme9b9f44a5",
+      "race_id": "USA:TX:senate",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+      "field_start": "2026-01-10",
+      "field_end": "2026-01-12",
+      "population": "rv",
+      "sample_n": 1165,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202uni5040ddd3",
+      "race_id": "USA:TX:senate",
+      "pollster": "University of Houston/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uh.edu/hobby/primary2026/senate.pdf",
+      "field_start": "2026-01-20",
+      "field_end": "2026-01-31",
+      "population": "lv",
+      "sample_n": 1502,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubaf44626b",
+      "race_id": "USA:TX:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://punchbowl.news/article/campaigns/paxton-cornyn-poll/",
+      "field_start": "2026-03-04",
+      "field_end": "2026-03-05",
+      "population": "a",
+      "sample_n": 576,
+      "sponsors": [
+        "Senate Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texaca3925a",
+      "race_id": "USA:TX:senate",
+      "pollster": "Texas Public Opinion Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/04/TPOR-April-2026-TXSEN-poll.pdf",
+      "field_start": "2026-04-17",
+      "field_end": "2026-04-20",
+      "population": "lv",
+      "sample_n": 1018,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202you9dee520f",
+      "race_id": "USA:TX:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
+      "field_start": "2026-04-10",
+      "field_end": "2026-04-20",
+      "population": "rv",
+      "sample_n": 1200,
+      "sponsors": [
+        "University of Texas"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202you0dcc69cb",
+      "race_id": "USA:TX:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
+      "field_start": "2026-04-10",
+      "field_end": "2026-04-12",
+      "population": "rv",
+      "sample_n": 1200,
+      "sponsors": [
+        "University of Texas"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the1dba2946",
+      "race_id": "USA:TX:governor",
+      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/april-polling-war-and-surging-gas-prices-fuel-another-negative-turn-in-texans-views-of-the-economy-2",
+      "field_start": "2026-04-10",
+      "field_end": "2026-04-20",
+      "population": "rv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sli6ebff755",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/2026/04/28/texas-us-senate-poll-talarico-cornyn-paxton-2026-midterms/",
+      "field_start": "2026-04-17",
+      "field_end": "2026-04-20",
+      "population": "lv",
+      "sample_n": 1018,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202uni9190ff53",
+      "race_id": "USA:TX:governor",
+      "pollster": "University of Texas at Tyler Center for Opinion Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.gilmermirror.com/wp-content/uploads/2026/02/UTTylerPoll_202602_FINAL226-COR-FEB-2026-Poll-Final-Topline-Report.pdf",
+      "field_start": "2026-02-13",
+      "field_end": "2026-02-22",
+      "population": "rv",
+      "sample_n": 1117,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202uni2dbe825b",
+      "race_id": "USA:TX:governor",
+      "pollster": "University of Texas at Tyler Center for Opinion Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.gilmermirror.com/wp-content/uploads/2026/02/UTTylerPoll_202602_FINAL226-COR-FEB-2026-Poll-Final-Topline-Report.pdf",
+      "field_start": "2026-02-13",
+      "field_end": "2026-02-22",
+      "population": "rv",
+      "sample_n": 1117,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202uni47c6f510",
+      "race_id": "USA:TX:governor",
+      "pollster": "University of Houston Hobby School of Public Affairs/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.uh.edu/hobby/primary2026/state.pdf",
+      "field_start": "2026-01-20",
+      "field_end": "2026-01-31",
+      "population": "lv",
+      "sample_n": 1502,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202emed32824b8",
+      "race_id": "USA:TX:governor",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/15YGRzDC0lKpxKWzRswm-jVakVutZLJc7/edit?rtpof=true&sd=true",
+      "field_start": "2026-01-10",
+      "field_end": "2026-01-12",
+      "population": "rv",
+      "sample_n": 1165,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sli432139cf",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/f/?id=00000199-3cc6-dddb-a7d9-3fcfeeca0000&nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
+      "field_start": "2025-08-27",
+      "field_end": "2025-08-29",
+      "population": "rv",
+      "sample_n": 843,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texc28cf835",
+      "race_id": "USA:TX:senate",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1_iPARgG4ScAjPXaqXfHse9R9hnvGS6If/view",
+      "field_start": "2026-04-22",
+      "field_end": "2026-05-06",
+      "population": "lv",
+      "sample_n": 1223,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202tex1f4254f8",
+      "race_id": "USA:TX:governor",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1_iPARgG4ScAjPXaqXfHse9R9hnvGS6If/view",
+      "field_start": "2026-04-22",
+      "field_end": "2026-05-06",
+      "population": "lv",
+      "sample_n": 1223,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub59f4c740",
+      "race_id": "USA:TX:house:23",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/2026/03/12/brandon-herrera-democrats-texas-23rd-congressional-district-tony-gonzales/",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-11",
+      "population": "rv",
+      "sample_n": 521,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub121c904c",
+      "race_id": "USA:TX:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://static.politico.com/c0/7c/2c2db3c14c74946fa393d9e485cc/texas-gen-results-ppp-5-26-1.pdf?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
+      "field_start": "2026-05-22",
+      "field_end": "2026-05-23",
+      "population": "lv",
+      "sample_n": 643,
+      "sponsors": [
+        "Lone Star Rising PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202pub1d82cc46",
+      "race_id": "USA:TX:governor",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://static.politico.com/c0/7c/2c2db3c14c74946fa393d9e485cc/texas-gen-results-ppp-5-26-1.pdf?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4f4d3aeb-621a-47b9-a66d-d9944fed5257",
+      "field_start": "2026-05-22",
+      "field_end": "2026-05-23",
+      "population": "lv",
+      "sample_n": 643,
+      "sponsors": [
+        "Lone Star Rising PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202sli9f75fb57",
+      "race_id": "USA:TX:senate",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1lCiaC7xw4VTmc2I4aHRZ-Pi3McLOwsrI/view",
+      "field_start": "2026-05-27",
+      "field_end": "2026-05-28",
+      "population": "lv",
+      "sample_n": 1670,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sli340a2b54",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talarico-leads-ken",
+      "field_start": "2026-05-27",
+      "field_end": "2026-05-28",
+      "population": "lv",
+      "sample_n": 1670,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202qua6b878295",
+      "race_id": "USA:TX:senate",
+      "pollster": "Quantus Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/d/1U-DMOuPcsD0P-B5F_m-rfw3Bv1yXSeS7/view?usp=sharing",
+      "field_start": "2026-06-03",
+      "field_end": "2026-06-04",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rec22b1c62b",
+      "race_id": "USA:TX:senate",
+      "pollster": "ReconMR/Siena University",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://reconmr.com/wp-content/uploads/2026/06/TXPLV-Crosstabs-1.pdf",
+      "field_start": "2026-06-01",
+      "field_end": "2026-06-04",
+      "population": "lv",
+      "sample_n": 807,
+      "sponsors": [
+        "Texas A&M University Bush School of Government & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub97e481be",
+      "race_id": "USA:TX:house:23",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.texastribune.org/wp-content/uploads/2026/03/TX23-PPP-poll.pdf",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-11",
+      "population": "rv",
+      "sample_n": 521,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tex7e98deeb",
+      "race_id": "USA:TX:governor",
+      "pollster": "Texas Politics Project at the University of Texas/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/june-poll-finds-a-competitive-u-s-senate-race-in-texas-amid-continuing-economic-concerns-data-center-backlash",
+      "field_start": "2026-06-05",
+      "field_end": "2026-06-12",
+      "population": "rv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texc8fd4814",
+      "race_id": "USA:TX:senate",
+      "pollster": "Texas Politics Project at the University of Texas/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/june-poll-finds-a-competitive-u-s-senate-race-in-texas-amid-continuing-economic-concerns-data-center-backlash",
+      "field_start": "2026-06-05",
+      "field_end": "2026-06-12",
+      "population": "rv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202soc2fe8bcf3",
+      "race_id": "USA:TX:governor",
+      "pollster": "SoCal Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://socalstrategies.substack.com/p/ken-paxton-leads-narrow-texas-senate",
+      "field_start": "2026-06-21",
+      "field_end": "2026-06-21",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Red Eagle Politics"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202socb918e088",
+      "race_id": "USA:TX:senate",
+      "pollster": "SoCal Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://socalstrategies.substack.com/p/ken-paxton-leads-narrow-texas-senate",
+      "field_start": "2026-06-21",
+      "field_end": "2026-06-21",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Red Eagle Politics"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the566a145f",
+      "race_id": "USA:TX:governor",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/06/30/polls/times-siena-texas-poll-crosstabs.html#composition-of-the-sample",
+      "field_start": "2026-06-19",
+      "field_end": "2026-06-27",
+      "population": "lv",
+      "sample_n": 656,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202thee89c7bce",
+      "race_id": "USA:TX:senate",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/06/30/polls/times-siena-texas-poll-crosstabs.html#composition-of-the-sample",
+      "field_start": "2026-06-19",
+      "field_end": "2026-06-27",
+      "population": "lv",
+      "sample_n": 656,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202a2 1a5590cb",
+      "race_id": "USA:TX:senate",
+      "pollster": "A2 Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://substack.com/@a2insights/note/c-285306220",
+      "field_start": "2026-06-23",
+      "field_end": "2026-06-28",
+      "population": "lv",
+      "sample_n": 618,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202app872e2e5f",
+      "race_id": "USA:TX:house:15",
+      "pollster": "Applecart",
+      "reason": "pollster_not_selected",
+      "source_url": "https://welcome.team/press-releases/Blog%20Post%20Title%20One-3zaa9-zlxng-67tfc-2sf8d",
+      "field_start": "2026-05-18",
+      "field_end": "2026-05-25",
+      "population": "lv",
+      "sample_n": 802,
+      "sponsors": [
+        "WelcomePAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202sli6204659f",
+      "race_id": "USA:TX:senate",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talaricos-lead-over",
+      "field_start": "2026-07-15",
+      "field_end": "2026-07-17",
+      "population": "lv",
+      "sample_n": 1048,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sli59e6afce",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-james-talaricos-lead-over",
+      "field_start": "2026-07-15",
+      "field_end": "2026-07-17",
+      "population": "lv",
+      "sample_n": 1048,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202bea54820d8d",
+      "race_id": "USA:TX:senate",
+      "pollster": "Beacon Research/Shaw & Co. Research",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.foxnews.com/politics/fox-news-poll-gop-divisions-shape-texas-senate-race",
+      "field_start": "2026-07-23",
+      "field_end": "2026-07-27",
+      "population": "rv",
+      "sample_n": 1006,
+      "sponsors": [
+        "Fox News"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202bea12dfc963",
+      "race_id": "USA:TX:governor",
+      "pollster": "Beacon Research/Shaw & Co. Research",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.foxnews.com/politics/fox-news-poll-gop-divisions-shape-texas-senate-race",
+      "field_start": "2026-07-23",
+      "field_end": "2026-07-27",
+      "population": "rv",
+      "sample_n": 1006,
+      "sponsors": [
+        "Fox News"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202wed4dcf8c6b",
+      "race_id": "USA:TX:senate",
+      "pollster": "Wedgewood Polls",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/u/1/d/1t2mC4MFActxiBdx4ef_5crisXjD9xH7a/view",
+      "field_start": "2026-07-30",
+      "field_end": "2026-07-31",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202wedaa8a5561",
+      "race_id": "USA:TX:governor",
+      "pollster": "Wedgewood Polls",
+      "reason": "pollster_not_selected",
+      "source_url": "https://drive.google.com/file/u/1/d/1t2mC4MFActxiBdx4ef_5crisXjD9xH7a/view",
+      "field_start": "2026-07-30",
+      "field_end": "2026-07-31",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texee0a6ae6",
+      "race_id": "USA:TX:senate",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "pollster_not_selected",
+      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a713767d4ed824b91ea090d/1785804647961/Texas+Statewide+August2026.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202tex0c7a001f",
+      "race_id": "USA:TX:governor",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "pollster_not_selected",
+      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a713767d4ed824b91ea090d/1785804647961/Texas+Statewide+August2026.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the7762f5c1",
+      "race_id": "USA:TX:governor",
+      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/new-ut-texas-politics-project-poll-finds-talarico-leading-paxton-abbott-leading-hinojosa-continued-resistance-to-data-centers-2",
+      "field_start": "2026-08-05",
+      "field_end": "2026-08-13",
+      "population": "rv",
+      "sample_n": 1218,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202you3c4a4a9f",
+      "race_id": "USA:TX:senate",
+      "pollster": "YouGov Blue",
+      "reason": "pollster_not_selected",
+      "source_url": "https://254labs.io/news/2026-07-txsen",
+      "field_start": "2026-07-15",
+      "field_end": "2026-07-31",
+      "population": "rv",
+      "sample_n": 1001,
+      "sponsors": [
+        "254 Labs"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rec773da2d7",
+      "race_id": "USA:TX:senate",
+      "pollster": "ReconMR/Siena University",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://reconmr.com/wp-content/uploads/2026/08/Texas-Pulse-August-Release-August-7-2026-Final.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 619,
+      "sponsors": [
+        "Texas A&M University Bush School of Government & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202recd12239ff",
+      "race_id": "USA:TX:governor",
+      "pollster": "ReconMR/Siena University",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://reconmr.com/wp-content/uploads/2026/08/Texas-Pulse-August-Release-August-7-2026-Final.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 619,
+      "sponsors": [
+        "Texas A&M University Bush School of Government & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202cygc8150f78",
+      "race_id": "USA:TX:governor",
+      "pollster": "Cygnal",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.cygn.al/wp-content/uploads/2026/08/Abbott-Data-Center-Plan-Memo.pdf",
+      "field_start": "2026-07-29",
+      "field_end": "2026-07-31",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Uknown Sponsor"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202eme5bcac049",
+      "race_id": "USA:TX:senate",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/texas-2026-poll-paxton-and-talarico/",
+      "field_start": "2026-08-09",
+      "field_end": "2026-08-10",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202emebe4786e2",
+      "race_id": "USA:TX:governor",
+      "pollster": "Emerson College",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://emersoncollegepolling.com/texas-2026-poll-paxton-and-talarico/",
+      "field_start": "2026-08-09",
+      "field_end": "2026-08-10",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Nexstar Media"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the54ba4671",
+      "race_id": "USA:TX:senate",
+      "pollster": "The Texas Politics Project at the University of Texas at Austin/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspolitics.utexas.edu/blog/new-ut-texas-politics-project-poll-finds-talarico-leading-paxton-abbott-leading-hinojosa-continued-resistance-to-data-centers-2",
+      "field_start": "2026-08-05",
+      "field_end": "2026-08-13",
+      "population": "rv",
+      "sample_n": 1218,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202tex35ec19da",
+      "race_id": "USA:TX:house:28",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "primary_provider_field_dates_conflict",
+      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202tex909ea2d7",
+      "race_id": "USA:TX:house:34",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "primary_provider_field_dates_conflict",
+      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 700,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202texe83b516f",
+      "race_id": "USA:TX:house:15",
+      "pollster": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+      "reason": "primary_provider_field_dates_conflict",
+      "source_url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+      "field_start": "2026-07-27",
+      "field_end": "2026-07-30",
+      "population": "lv",
+      "sample_n": 700,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202sli394bd9a0",
+      "race_id": "USA:TX:senate",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election",
+      "field_start": "2026-08-21",
+      "field_end": "2026-08-24",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202sli33eb9fcb",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election",
+      "field_start": "2026-08-21",
+      "field_end": "2026-08-24",
+      "population": "lv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202norf7bc03a2",
+      "race_id": "USA:TX:house:35",
+      "pollster": "Normington, Petts & Associates",
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "source_url": "https://hub.nationaljournal.com/can-democrats-school-ramaswamy-in-ohio",
+      "field_start": "2026-08-27",
+      "field_end": "2026-08-31",
+      "population": "lv",
+      "sample_n": 500,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202youc39ac53a",
+      "race_id": "USA:TX:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-2026",
+      "field_start": "2026-08-27",
+      "field_end": "2026-09-04",
+      "population": "rv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Univision"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202youd945dff6",
+      "race_id": "USA:TX:governor",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-2026",
+      "field_start": "2026-08-27",
+      "field_end": "2026-09-04",
+      "population": "rv",
+      "sample_n": 1000,
+      "sponsors": [
+        "Univision"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202fab22efb6bc",
+      "race_id": "USA:TX:senate",
+      "pollster": "Fabrizio Ward/Impact Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-texas",
+      "field_start": "2026-08-30",
+      "field_end": "2026-09-01",
+      "population": "lv",
+      "sample_n": 895,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202fab3ce59a7d",
+      "race_id": "USA:TX:governor",
+      "pollster": "Fabrizio Ward/Impact Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-texas",
+      "field_start": "2026-08-30",
+      "field_end": "2026-09-01",
+      "population": "lv",
+      "sample_n": 895,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202sli284b821d",
+      "race_id": "USA:TX:senate",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
+      "field_start": "2026-09-19",
+      "field_end": "2026-09-22",
+      "population": "lv",
+      "sample_n": 1007,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202slieae997f0",
+      "race_id": "USA:TX:governor",
+      "pollster": "Slingshot Strategies",
+      "reason": "pollster_not_selected",
+      "source_url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
+      "field_start": "2026-09-19",
+      "field_end": "2026-09-22",
+      "population": "lv",
+      "sample_n": 1007,
+      "sponsors": [
+        "Texas Public Opinion Research"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202nor348bad95",
+      "race_id": "USA:TX:house:15",
+      "pollster": "Normington, Petts & Associates",
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "source_url": "https://x.com/PatrickSvitek/status/2105651406627561762?s=20",
+      "field_start": "2026-09-24",
+      "field_end": "2026-09-28",
+      "population": "lv",
+      "sample_n": 400,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202gui7fa4251f",
+      "race_id": "USA:TX:senate",
+      "pollster": "Guidant Polling and Strategy",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/burgessev/status/2107923538392776875?s=20",
+      "field_start": "2026-09-20",
+      "field_end": "2026-09-28",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Public First Action"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202gui28bc9b4e",
+      "race_id": "USA:TX:governor",
+      "pollster": "Guidant Polling and Strategy",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/burgessev/status/2107923538392776875?s=20",
+      "field_start": "2026-09-20",
+      "field_end": "2026-09-28",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Public First Action"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -92582,13 +93532,13 @@
     "groups": {
       "requested_states": {
         "race_count": 196,
-        "with_observations": 24,
+        "with_observations": 27,
         "recent_7d": 1,
         "recent_14d": 7
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 30,
+        "with_observations": 33,
         "recent_7d": 5,
         "recent_14d": 13
       },
@@ -98035,9 +98985,9 @@
           ]
         },
         "status": "recent_14d_only",
-        "provider_record_count": 34,
-        "accepted_count": 4,
-        "aggregation_eligible_count": 4,
+        "provider_record_count": 36,
+        "accepted_count": 6,
+        "aggregation_eligible_count": 6,
         "reference_only_count": 0,
         "matchup_reviewed": true,
         "latest_accepted_field_end": "2026-09-30",
@@ -98047,8 +98997,8 @@
             "pollster_count": 0
           },
           "14": {
-            "status": "tie",
-            "pollster_count": 2
+            "status": "poll_lead",
+            "pollster_count": 3
           }
         },
         "rejection_reasons": {
@@ -98057,8 +99007,8 @@
           "unregistered_primary_host": 4
         },
         "review_queue_ids": [
+          "gov202gui28bc9b4e",
           "gov202slieae997f0",
-          "gov202texdb645b2d",
           "gov202youd945dff6",
           "gov202fab3ce59a7d",
           "gov202sli33eb9fcb",
@@ -98580,13 +99530,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "older_polls_only",
         "provider_record_count": 4,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-08-22",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -98598,7 +99549,9 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "commissioner_primary_methodology_not_obtained": 1,
+          "primary_provider_field_dates_conflict": 1,
+          "pollster_not_selected": 2
         },
         "review_queue_ids": [
           "us-202nor348bad95",
@@ -99036,13 +99989,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "older_polls_only",
         "provider_record_count": 1,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-08-22",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -99054,7 +100008,7 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_field_dates_conflict": 1
         },
         "review_queue_ids": [
           "us-202tex35ec19da"
@@ -99245,13 +100199,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "older_polls_only",
         "provider_record_count": 1,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-08-22",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -99263,7 +100218,7 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_field_dates_conflict": 1
         },
         "review_queue_ids": [
           "us-202tex909ea2d7"
@@ -99302,7 +100257,7 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "commissioner_primary_methodology_not_obtained": 1
         },
         "review_queue_ids": [
           "us-202norf7bc03a2"
@@ -99426,9 +100381,9 @@
           ]
         },
         "status": "recent_14d_only",
-        "provider_record_count": 43,
-        "accepted_count": 3,
-        "aggregation_eligible_count": 3,
+        "provider_record_count": 45,
+        "accepted_count": 6,
+        "aggregation_eligible_count": 6,
         "reference_only_count": 0,
         "matchup_reviewed": true,
         "latest_accepted_field_end": "2026-09-28",
@@ -99438,19 +100393,18 @@
             "pollster_count": 0
           },
           "14": {
-            "status": "single_poll_lead",
-            "pollster_count": 1
+            "status": "tie",
+            "pollster_count": 2
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 33,
+          "pollster_not_selected": 32,
           "outside_reviewed_general_period": 3,
           "unregistered_primary_host": 4
         },
         "review_queue_ids": [
+          "us-202gui7fa4251f",
           "us-202sli284b821d",
-          "us-202tex6938a787",
-          "us-202ins8df69531",
           "us-202youc39ac53a",
           "us-202fab22efb6bc",
           "us-202sli394bd9a0",
@@ -111921,7 +112875,7 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 15,
+        "with_polls": 18,
         "with_recent_7d": 0,
         "with_recent_14d": 2,
         "with_super_pac": 316,
@@ -111945,8 +112899,8 @@
       }
     },
     "ballot_counts": {
-      "ballot_review_incomplete": 33,
-      "contested": 452,
+      "ballot_review_incomplete": 32,
+      "contested": 453,
       "minor_party_or_independent_opposition": 5,
       "same_party_contest": 9,
       "official_general_unopposed_listing": 1,
@@ -113004,11 +113958,11 @@
         },
         "poll_status": "recent_14d_only",
         "phase": "pre_election",
-        "poll_observation_count": 4,
-        "poll_eligible_count": 4,
+        "poll_observation_count": 6,
+        "poll_eligible_count": 6,
         "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 2,
-        "provider_record_count": 34,
+        "recent_14d_pollsters": 3,
+        "provider_record_count": 36,
         "rejection_reasons": {
           "pollster_not_selected": 23,
           "outside_reviewed_general_period": 3,
@@ -113036,11 +113990,22 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
-          "general_unopposed": null,
+          "status": "contested",
+          "candidate_count": 3,
+          "parties": [
+            "DEM",
+            "LIB",
+            "REP"
+          ],
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:OH:governor": {
@@ -113316,13 +114281,13 @@
         },
         "poll_status": "recent_14d_only",
         "phase": "pre_election",
-        "poll_observation_count": 3,
-        "poll_eligible_count": 3,
+        "poll_observation_count": 6,
+        "poll_eligible_count": 6,
         "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 1,
-        "provider_record_count": 43,
+        "recent_14d_pollsters": 2,
+        "provider_record_count": 45,
         "rejection_reasons": {
-          "pollster_not_selected": 33,
+          "pollster_not_selected": 32,
           "outside_reviewed_general_period": 3,
           "unregistered_primary_host": 4
         },
@@ -113349,15 +114314,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -114626,15 +115592,17 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "older_polls_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 4,
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "commissioner_primary_methodology_not_obtained": 1,
+          "primary_provider_field_dates_conflict": 1,
+          "pollster_not_selected": 2
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -114664,10 +115632,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -114686,15 +115654,15 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "older_polls_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_field_dates_conflict": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -114719,15 +115687,17 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 4,
           "parties": [
             "DEM",
+            "GRN",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -115448,15 +116418,15 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "older_polls_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "primary_provider_field_dates_conflict": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -115481,15 +116451,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "GRN",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -115814,7 +116785,7 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "commissioner_primary_methodology_not_obtained": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -144121,7 +145092,6 @@
             "USA:TX:house:12",
             "USA:TX:house:13",
             "USA:TX:house:14",
-            "USA:TX:house:15",
             "USA:TX:house:16",
             "USA:TX:house:17",
             "USA:TX:house:18",
@@ -144134,13 +145104,11 @@
             "USA:TX:house:25",
             "USA:TX:house:26",
             "USA:TX:house:27",
-            "USA:TX:house:28",
             "USA:TX:house:29",
             "USA:TX:house:30",
             "USA:TX:house:31",
             "USA:TX:house:32",
             "USA:TX:house:33",
-            "USA:TX:house:34",
             "USA:TX:house:35",
             "USA:TX:house:36",
             "USA:TX:house:37",
@@ -144824,10 +145792,72 @@
       "state": "TX",
       "cycle": 2026,
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:24:47.574156+00:00",
-      "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 87
+      "captured_at": "2026-10-08T18:58:15.742996+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 91,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-tsu-tx-house15-20260826",
+          "state": "TX",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T18:58:21.007024+00:00",
+          "documents": [
+            {
+              "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "status": "unchanged",
+              "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+            }
+          ],
+          "provider_duplicate_ids": []
+        },
+        {
+          "id": "primary-tsu-tx-house28-20260826",
+          "state": "TX",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T18:58:21.262045+00:00",
+          "documents": [
+            {
+              "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "status": "unchanged",
+              "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+            }
+          ],
+          "provider_duplicate_ids": []
+        },
+        {
+          "id": "primary-tsu-tx-house34-20260826",
+          "state": "TX",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T18:58:21.503138+00:00",
+          "documents": [
+            {
+              "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6a8debe648e3721adb0534b6/1787685864204/SouthTexasCDs2026.pdf",
+              "status": "unchanged",
+              "sha256": "2d2138b09210bffd0a80e58f0480b9982f7b282b20ac20e90665ed58116d1d5b"
+            }
+          ],
+          "provider_duplicate_ids": []
+        }
+      ],
+      "primary_rechecked_ids": [
+        "primary-tsu-tx-house15-20260826",
+        "primary-tsu-tx-house28-20260826",
+        "primary-tsu-tx-house34-20260826",
+        "us-202unic8d0412d",
+        "gov202uni25b4833e",
+        "us-202tex6938a787",
+        "gov202texdb645b2d",
+        "us-202beab9600d9b",
+        "gov202bea2d2ef4cb"
+      ],
+      "primary_rechecked_at": "2026-10-08T18:57:01.342028+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/TX-primary-20261009.json",
+      "governor_audit_captured_at": "2026-10-08T19:01:26.311030+00:00",
+      "governor_audit_data_file": "usa_governor_finance_audits/2026/TX.json"
     },
     "OH": {
       "state": "OH",
