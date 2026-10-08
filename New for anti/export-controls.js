@@ -276,6 +276,7 @@
         host: null,
         tab: 'measures', // 'measures' (curated catalogue) | 'notices' (regulator feed)
         category: 'all',
+        usView: 'tariffs', // USA panel: 'tariffs' (관세정책) | 'controls' (일반 수출통제)
         by: 'country', // 현행 조치 grouping: 'country' | 'commodity'
         commodity: null,
         noticeScope: 'controls', // 'controls' | 'all' (adds sanctions/enforcement)
@@ -679,6 +680,16 @@
             <button type="button" class="ec-more" data-ec-iso="USA">미국 관세 정책 전체 보기 (트럼프 2기)</button></section>`;
     };
 
+    // The US panel splits in two: its tariff policy, and the export-control
+    // notices its regulators (OFAC, BIS) issue -- which otherwise sat below a
+    // long tariff section.
+    const usToggleHtml = () => {
+        const n = noticeItems().filter((it) => it.control.issuer === 'USA').length;
+        const b = (key, label) => `<button type="button" class="ec-by${ui.usView === key ? ' is-on' : ''}" data-ec-usview="${key}"
+            aria-pressed="${ui.usView === key}">${label}</button>`;
+        return `<div class="ec-bys ust-toggle" role="group" aria-label="미국 보기">${b('tariffs', '관세 정책')}${b('controls', `일반 수출통제 <span>${n}</span>`)}</div>`;
+    };
+
     const renderCountryPanel = (iso) => {
         // The detail ignores every filter: a reader who clicked a country
         // wants everything on it -- its standing measures, the notices its
@@ -704,11 +715,14 @@
                 <h3>${esc(name)} <span class="ec-iso">${esc(iso)}</span></h3>
                 <span class="ec-count">${list.length ? `현행 조치 ${list.length}건` : ''}</span>
             </div>
-            ${iso === 'USA' ? usTariffSectionHtml() : usPartnerSectionHtml(iso)}
+            ${iso === 'USA' ? usToggleHtml() : ''}
+            ${iso === 'USA' && ui.usView === 'tariffs' ? usTariffSectionHtml() : ''}
+            ${iso !== 'USA' ? usPartnerSectionHtml(iso) : ''}
+            ${iso === 'USA' && ui.usView === 'tariffs' ? '' : `
             ${sections ? `<h4 class="ec-sect">현행 조치 (수기 정리)</h4>${sections}` : ''}
             ${noticeBlock(`${name} 규제 기관이 낸 공고`, issued, true)}
-            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, false)}
-            ${total || iso === 'USA' || usTariffs?.partners?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
+            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, false)}`}
+            ${total || (iso === 'USA' && ui.usView === 'tariffs') || usTariffs?.partners?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
                 아직 원문을 확인하지 않은 것일 수 있습니다 — 통제가 없다는 뜻은 아닙니다.</p>`}
             ${footerHtml()}`;
     };
@@ -863,6 +877,9 @@
         let v;
         if ((v = attr('data-ec-tab'))) {
             ui.tab = v; ui.iso = null; ui.commodity = null; ui.shown = 0; redraw(); return;
+        }
+        if ((v = attr('data-ec-usview'))) {
+            ui.usView = v; renderPanel(); return;
         }
         if ((v = attr('data-ec-by'))) {
             ui.by = v; ui.iso = null; ui.commodity = null; redraw(); return;
