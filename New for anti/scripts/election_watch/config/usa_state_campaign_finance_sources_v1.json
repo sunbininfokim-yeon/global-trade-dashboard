@@ -97,10 +97,33 @@
     },
     "GA": {
       "agency": "Georgia Government Transparency and Campaign Finance Commission",
-      "access": "public_search_export",
-      "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx",
+      "access": "public_portal_and_legacy_search",
+      "url": "https://peachfile.ethics.ga.gov/",
       "authentication": "public_search",
-      "independent_expenditure_mapping": "not_implemented"
+      "independent_expenditure_mapping": "source_reviewed_access_blocked",
+      "legacy_url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "sources": [
+          "https://ethics.ga.gov/"
+        ],
+        "scope_ko": "공식홈페이지의 PeachFile e-Filing과 Legacy Records Search를 구분. Legacy 검색 접근만으로2026 공시 완전성을 확인하지 않습니다.",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://peachfile.ethics.ga.gov/"
+          },
+          {
+            "role": "legacy_search",
+            "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_ByExpenditures.aspx"
+          },
+          {
+            "role": "legacy_independent_registry",
+            "url": "https://media.ethics.ga.gov/search/Campaign/Campaign_Namesearchresults_NC.aspx?CommitteeName=&CommitteeType=2"
+          }
+        ]
+      }
     },
     "MI": {
       "agency": "Michigan Secretary of State MiTN",

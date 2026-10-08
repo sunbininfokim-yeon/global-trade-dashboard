@@ -17,8 +17,8 @@
 ## 실제 완료와 남은 범위
 
 - A→E 순서로50주 연결 점검을 실행했다. 하원435·선거 상원35·선거 주지사36의 후보/조사/공시를 주별 JSON에 연결한다. 비선거 상원·주지사를 공백으로 세지 않는다.
-- GA→WY의 나머지48주도 계획 순서로 실제 여론조사 API 수집을 완료했다. NY의 나머지21개 하원 명부를 조사 대상에 추가 연결하고 NY→GA→FL을 후속 재수집했다. 하원435/435구가 검토 명부 기반 조사 대상에 연결된다. **수집 경로 점검은 전국 공시 완결·모든 원문 전수 검토와 다르다.** NY·TN의 부분 소스 검토와 나머지48주의 원문/공시 심화 검토를 구분하며 다음 심화 검토는 **GA**이다.
-- 주지사 후보별 금액은 CA·NY의2주만 구현된 부분 수집이다. TN은 공식 CSV 수집을 구현했으나 정정·거래 식별 검증 전 금액은 보류한다. 선거가 있는 나머지33주는 어댑터/출처 검토가 필요하고, 비선거14주는 별도다. 미확보를0달러나 관측 없음 확정으로 처리하지 않는다.
+- GA→WY의 나머지48주도 계획 순서로 실제 여론조사 API 수집을 완료했다. NY의 나머지21개 하원 명부를 조사 대상에 추가 연결하고 NY→GA→FL을 후속 재수집했다. 하원435/435구가 검토 명부 기반 조사 대상에 연결된다. **수집 경로 점검은 전국 공시 완결·모든 원문 전수 검토와 다르다.** NY·TN의 부분 소스 검토와 나머지48주의 원문/공시 심화 검토를 구분한다. GA는 조사 원문6건을 보강했으나 최신 주 공시 접근 차단으로 미완료이고, 다음 심화 검토는 **FL**, 재시도는 **GA**이다. [GA 인수](2026-10-08-codex-state-evidence-GA.md).
+- 주지사 후보별 금액은 CA·NY의2주만 구현된 부분 수집이다. TN은 공식 CSV 수집을 구현했으나 정정·거래 식별 검증 전 금액은 보류한다. 선거가 있는 나머지33주는 GA1주 최신 공시 접근 차단과32주 어댑터/출처 검토 필요로 구분하고, 비선거14주는 별도다. 미확보를0달러나 관측 없음 확정으로 처리하지 않는다.
 - 하원917개 후보 ID가 같은 지역구 공시 카드와 연결된다. 상원은 현재 후보·공개 명부의 인용ID·동일 주/직위 FEC 이름/정당으로68개 후보의 ID를 추가 대조해34개 레이스에 현재 후보의 금액이 연결된다.9명의 이름/정당/ID는 여전히 미확인으로 남긴다. FEC 등록 자체로 본선 후보를 생성하지 않는다.
 
 | 직위 | 선거 대상 | 현재 후보 대상 지출 관측 | 누적 조사 표시 가능 | 최근7일 | 최근14일 |
@@ -29,7 +29,7 @@
 
 위 숫자는 현재 후보 ID에 연결된 부분 관측/적격 조사이며 승패나 전체 지원금 총액이 아니다. 회기 전체 지출과 본선·경선·미확인 코드를 분리한다. NH01의 API `Stephany Shaheen`과 명부 `Stefany Amber Shaheen`은 이름 철자가 달라 신규 통합 계약에서는 원문/동일인 검토 전 보류한다. 다른 원래 조사 자료를 삭제하거나 숫자를 변경하지 않았다.
 
-누적 표시69건(우세 집계 적격55·참고 전용14)이다. 새 FL16 PPP는 원문 대조된 참고 전용1건이며 우세색·7/14일 승패 집계에서 제외한다. GA Wedgewood2건은 원문의 책임 주체·연락처·기관 사이트가 확인되지 않아 `publisher_identity_unverified`로 보류한다. 기관 수와 출처 확인 수준을 기관 정확도 등급으로 바꾸지 않는다. 순차 실행 기록·보류 이유·재개 명령은 [후속 인수](2026-10-08-codex-state-sequence.md)에 있다.
+누적 표시73건(우세 집계 적격59·참고 전용14)이다. GA 상원/주지사 각3건을 원문 대조했고6건 모두14일 창 밖이다. 새 FL16 PPP는 원문 대조된 참고 전용1건이며 우세색·7/14일 승패 집계에서 제외한다. GA Wedgewood2건은 원문의 책임 주체·연락처·기관 사이트가 확인되지 않아 `publisher_identity_unverified`로 보류한다. 기관 수와 출처 확인 수준을 기관 정확도 등급으로 바꾸지 않는다. 순차 실행 기록·보류 이유·재개 명령은 [후속 인수](2026-10-08-codex-state-sequence.md)에 있다.
 
 ## 뉴욕 실제 보강
 
@@ -55,14 +55,14 @@ python3 refresh_state_sequence.py --from-state GA --through-state WY --as-of 202
 테네시 공식 CSV 수집 감사는 `python3 refresh_governor_finance_audit.py --state TN --cycle 2026`으로 재실행한다. 주별 금액 정상화 수집기와 별도 경로이며 이 명령만으로 후보별 독립지출 금액이 공개되지 않는다.
 
 - `refresh_state_evidence.py`는 검토 입력을 연결한다. `refresh_state_sequence.py`는 주마다 명부 연결→실제 공개 API 수집→주별 evidence 연결을 순차 수행하고 실행 기록을 저장한다. 새로운 지역지 조사·새 주별 공시 어댑터·GitHub 일정 설치는 별도다. 일일 여론조사 수집/본선 명부 편입 보강은 별도 PR #489이며 이 PR은 workflow를 편집하지 않았다.
-- public index: `usa_election_state_evidence_index_v1.json`, 주별 파일: `usa_election_state_evidence/2026/{STATE}-{hash}.json`. index는 `baseline_join_checked`와 `live_sources_reviewed_partial`, `next_state_to_review`, 실패/이월 및 원래 자료 날짜를 구분한다. **새 주별 계약은 UI에 설치하지 않았다.** 기존 NY 공시/여론조사 계약 변경만 기존 UI가 읽을 수 있다.
+- public index: `usa_election_state_evidence_index_v1.json`, 주별 파일: `usa_election_state_evidence/2026/{STATE}-{hash}.json`. index는 `baseline_join_checked`·`live_sources_reviewed_partial`·`live_poll_sources_reviewed_finance_blocked`, `next_state_to_review`·`next_state_to_retry`, 실패/이월 및 원래 자료 날짜를 구분한다. **새 주별 계약은 UI에 설치하지 않았다.** 기존 공시/여론조사 계약 변경은 기존 UI가 읽을 수 있다.
 - evidence 연결기는 실패한 주의 마지막 정상 파일/기준일을 보존하고 다음 주를 점검한다. 실제 수집 순차 실행기는 실패한 주에서 멈춰 `blocked_state`를 저장하며 `--resume`은 성공한 주를 다시 수집하지 않는다. 동일 실행ID·기간·범위만 재개 가능하며 동시에 같은 공개 데이터 경로를 처리하는 순차 실행은 잠금으로 차단한다.
 - 7/14일 창은 실행 기준일로 다시 계산하지만 자료 수집일을 바꾸지 않는다. 선거가 끝나거나 소스가 실패/오래되면 우세색을 보류한다. 선거 후 화면용 관측은 비우며 upstream 역사 자료는 보존하고, 인증 결과가 들어오면 별도 result로 남긴다.
 - 새 API 키/유료권한이 필요한 경로는 수집을 멈추고 사용자에게 요청한다. 이번 NY 수집은 공개 무키 API이며 새로운 키를 요청하지 않았다. 재설정은 사용자가 직접 클릭한다.
 
 ## 검증 상태
 
-- 새 명부 연결6개·순차 실행3개·출처 보류1개 검사를 추가해 Python polling172개, 연방 명부6개, 금융58개 및 JS51개가 통과했다(합계287개). 실제50주·506레이스 조인과 TN 원본 관측/기준일 보존을 확인했다.
+- 새 명부 연결6개·순차 실행3개·출처 보류1개 검사를 추가해 기존 검증과 GA13개 회귀 검증을 합쳐 Python polling185개, 연방 명부6개, 금융58개 및 JS51개 범위가 통과했다(합계300개). 실제50주·506레이스 조인과 TN 원본 관측/기준일 보존을 확인했다.
 - API 장애/오래된 데이터의 색 보류, 선거 후 관측 비움, 이름 변경 보류, minor/Other 응답 보존, 지지/반대·경선/본선 분리, 동일 파일 재사용, 실패 파일/기준일 보존 검사가 통과했다.
 - 병합·배포하지 않았다. 후보 PR #490 기반의 별도 검토 PR로 인수한다. ID 미확인/출처 장애/신규 공시 어댑터를 다음 주별 작업에서 계속 보강해야 한다.
 
@@ -74,7 +74,7 @@ python3 refresh_state_sequence.py --from-state GA --through-state WY --as-of 202
 |---:|---|---:|---:|---|---:|---:|---|
 | 1 | A / NY | 20/26 | 1 | non_election | 0 | 1 | implemented_partial |
 | 2 | A / TN | 4/9 | 1 | 1/1 | 1 | 1 | collected_normalization_held |
-| 3 | A / GA | 6/14 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 3 | A / GA | 6/14 | 0 | 1/1 | 1 | 1 | source_access_blocked |
 | 4 | A / FL | 16/28 | 2 | 1/1 | 1 | 1 | adapter_or_source_review_required |
 | 5 | A / PA | 13/17 | 2 | non_election | 0 | 1 | adapter_or_source_review_required |
 | 6 | A / MI | 11/13 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |

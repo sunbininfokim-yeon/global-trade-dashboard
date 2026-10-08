@@ -61,7 +61,7 @@ def candidate_finance(candidate, asset, office):
             'note_ko': '후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다.'}
 
 
-def build_state(state, group, plan, catalog, federal_rosters, governors, polls, finance, source_directory, as_of, identity_reviews=None, governor_audits=None):
+def build_state(state, group, plan, catalog, federal_rosters, governors, polls, finance, source_directory, as_of, identity_reviews=None, governor_audits=None, governor_access=None):
     require(state in catalog['states'] and finance['cycle'] == 2026 and polls['cycle'] == 2026, 'state evidence cycle')
     require(date.fromisoformat(polls['as_of']) <= date.fromisoformat(as_of), 'future polling snapshot')
     races = []
@@ -153,25 +153,43 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
                 and audit['cycle'] == 2026 and audit['status'] == 'collected_normalization_held'
                 and date.fromisoformat(audit['captured_at'][:10]) <= date.fromisoformat(as_of),
                 'governor finance audit scope/date mismatch')
+    access = deepcopy((governor_access or {}).get(state))
+    if access:
+        from .governor_source_access import validate_access
+        validate_access(access, state, 2026, as_of)
     if state not in catalog['governor_states']:
         governor_route = {'status': 'non_election', 'agency': agency}
     elif finance['source_status'].get(state + '_governor'):
         governor_route = {'status': 'implemented_partial', 'agency': agency}
     elif audit:
         governor_route = {'status': 'collected_normalization_held', 'agency': agency, 'audit': audit}
+    elif access:
+        governor_route = {'status': access['status'], 'agency': agency}
     else:
         governor_route = {'status': 'adapter_or_source_review_required', 'agency': agency,
             'directory_url': source_directory['directory_url']}
+    if access:
+        governor_route['access_check'] = access
     receipt = deepcopy(polls.get('state_captures', {}).get(state))
     governor_success = finance['source_status'].get(state + '_governor', {}).get('last_success_at')
     governor_reviewed = state not in catalog['governor_states'] or bool(receipt and (
         governor_success and receipt.get('governor_last_success_at') == governor_success or
         audit and receipt.get('governor_audit_captured_at') == audit['captured_at']))
+    primary_reviewed = bool(receipt and receipt.get('primary_rechecked_ids'))
+    if primary_reviewed and receipt.get('primary_review_data_file'):
+        verified = {p['id'] for r in races for p in r['polling']['observations']
+                    if p.get('source_quality', {}).get('verification_level') == 'primary_toplines_checked'}
+        primary_reviewed = set(receipt['primary_rechecked_ids']) <= verified
     reviewed = bool(receipt and receipt.get('cycle') == 2026 and receipt.get('state') == state
-                    and governor_reviewed and receipt.get('primary_rechecked_ids'))
+                    and governor_reviewed and primary_reviewed)
+    blocked_review = bool(not reviewed and receipt and receipt.get('cycle') == 2026 and
+        receipt.get('state') == state and primary_reviewed and access and
+        access['status'] in ('source_access_blocked', 'source_unavailable') and
+        receipt.get('governor_source_checked_at') == access['checked_at'])
     return {'schema': 'usa_state_election_evidence_v1', 'cycle': 2026, 'state': state,
         'state_name': catalog['states'][state]['name'], 'group': group, 'checked_as_of': as_of,
-        'status': 'partial_observed', 'work_status': 'live_sources_reviewed_partial' if reviewed else 'baseline_join_checked',
+        'status': 'partial_observed', 'work_status': 'live_sources_reviewed_partial' if reviewed else
+            'live_poll_sources_reviewed_finance_blocked' if blocked_review else 'baseline_join_checked',
         'live_capture_receipt': receipt,
         'priority': deepcopy(plan['states'][state]), 'office_coverage': counts, 'races': races,
         'governor_source_route': governor_route,
@@ -243,6 +261,11 @@ def publish_states(public, plan, selected, builder, checked_at):
     result['status'] = 'partial_observed' if len(result['states']) == 50 and not failures else 'incomplete'
     result['deep_source_review_remaining'] = [s for _, s in ordered_states(plan, checked_at[:10])
         if result['states'].get(s, {}).get('work_status') != 'live_sources_reviewed_partial' or s in failures]
-    result['next_state_to_review'] = next(iter(result['deep_source_review_remaining']), None)
+    result['source_review_blocked_states'] = [s for s in result['deep_source_review_remaining']
+        if result['states'].get(s, {}).get('work_status') == 'live_poll_sources_reviewed_finance_blocked'
+        and s not in failures]
+    result['next_state_to_review'] = next((s for s in result['deep_source_review_remaining']
+        if s not in result['source_review_blocked_states']), None)
+    result['next_state_to_retry'] = next(iter(result['source_review_blocked_states']), None)
     atomic(path, result)
     return result

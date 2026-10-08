@@ -190,4 +190,69 @@ class StateEvidenceTests(unittest.TestCase):
             self.assertEqual(result['next_state_to_review'],'NY')
 
 
+
+    def test_source_block_is_retained_as_pending_while_next_state_can_proceed(self):
+        from election_watch.governor_source_access import collect_access
+        from urllib.error import HTTPError
+        f=self.fixture('GA')
+        agency=json.loads((ROOT/'config/usa_state_campaign_finance_sources_v1.json').read_text())['states']['GA']
+        def blocked(req,timeout):raise HTTPError(req.full_url,403,'Forbidden',{},None)
+        access=collect_access('GA',2026,agency,'2026-10-08T01:00:00Z',opener=blocked)
+        f[3]['state_captures']={'GA':{'cycle':2026,'state':'GA','primary_rechecked_ids':['p'],
+            'governor_source_checked_at':access['checked_at']}}
+        payload=build_state('GA','A',self.plan,*f,'2026-10-08',governor_access={'GA':access})
+        self.assertEqual(payload['work_status'],'live_poll_sources_reviewed_finance_blocked')
+        self.assertEqual(payload['governor_source_route']['status'],'source_access_blocked')
+        self.assertIsNone(payload['races'][-1]['finance']['all_reported_candidates']['support_cents'])
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp);previous={'schema':'usa_state_evidence_index_v1','cycle':2026,'states':{
+                state:{'work_status':'live_sources_reviewed_partial'} for state in ('NY','TN')}}
+            (p/'usa_election_state_evidence_index_v1.json').write_text(json.dumps(previous))
+            index=publish_states(p,self.plan,[('A','GA')],lambda s,g:payload,'2026-10-08T02:00:00Z')
+            self.assertIn('GA',index['deep_source_review_remaining'])
+            self.assertEqual(index['source_review_blocked_states'],['GA'])
+            self.assertEqual(index['next_state_to_review'],'FL')
+            self.assertEqual(index['next_state_to_retry'],'GA')
+        f[3]['state_captures']['GA']['governor_source_checked_at']='2026-10-07T01:00:00Z'
+        stale=build_state('GA','A',self.plan,*f,'2026-10-08',governor_access={'GA':access})
+        self.assertEqual(stale['work_status'],'baseline_join_checked')
+
+    def test_governor_access_failure_keeps_observed_amounts_and_original_success_date(self):
+        from election_watch.governor_source_access import collect_access
+        from urllib.error import HTTPError
+        f=self.fixture('GA');agency=json.loads((ROOT/'config/usa_state_campaign_finance_sources_v1.json').read_text())['states']['GA']
+        def blocked(req,timeout):raise HTTPError(req.full_url,403,'Forbidden',{},None)
+        access=collect_access('GA',2026,agency,'2026-10-08T01:00:00Z',opener=blocked)
+        original='2026-10-02T00:00:00Z'
+        f[4]['source_status']['GA_governor']={'last_success_at':original}
+        totals={'state_independent_spender_unclassified':{'records':1,'support_cents':200,'oppose_cents':0}}
+        f[4]['races']['USA:GA:governor']={'race_id':'USA:GA:governor','state_id':'GA','office':'governor',
+            'status':'partial','totals_by_category':totals}
+        row=build_state('GA','A',self.plan,*f,'2026-10-08',governor_access={'GA':access})
+        self.assertEqual(row['governor_source_route']['status'],'implemented_partial')
+        self.assertEqual(row['governor_source_route']['access_check']['status'],'source_access_blocked')
+        race=row['races'][-1]['finance']
+        self.assertEqual(race['all_reported_candidates']['support_cents'],200)
+        self.assertEqual(race['source_status']['last_success_at'],original)
+
+
+    def test_inherited_primary_receipt_cannot_certify_changed_or_held_api_record(self):
+        from election_watch.governor_source_access import collect_access
+        from urllib.error import HTTPError
+        f=self.fixture('GA');agency=json.loads((ROOT/'config/usa_state_campaign_finance_sources_v1.json').read_text())['states']['GA']
+        def blocked(req,timeout):raise HTTPError(req.full_url,403,'Forbidden',{},None)
+        access=collect_access('GA',2026,agency,'2026-10-08T01:00:00Z',opener=blocked)
+        f[3]['state_captures']={'GA':{'cycle':2026,'state':'GA','primary_rechecked_ids':['p'],
+            'primary_review_data_file':'synthetic-primary.json','governor_source_checked_at':access['checked_at']}}
+        def joined():return build_state('GA','A',self.plan,*f,'2026-10-08',governor_access={'GA':access})
+        self.assertEqual(joined()['work_status'],'baseline_join_checked')
+        observation={'id':'p','field_end':'2026-10-07','population':'lv','pollster_group':'synthetic',
+            'source_quality':{'verification_level':'partial'},'aggregation_eligibility':{'eligible':False,'reasons':['synthetic_reference']},
+            'answers':[{'name':'Candidate Alpha','pct':51,'party':'DEM'},
+                       {'name':'Candidate Beta','pct':44,'party':'REP'}]}
+        f[3]['races']['USA:GA:house:00']['observations']=[observation]
+        self.assertEqual(joined()['work_status'],'baseline_join_checked')
+        observation['source_quality']['verification_level']='primary_toplines_checked'
+        self.assertEqual(joined()['work_status'],'live_poll_sources_reviewed_finance_blocked')
+
 if __name__=='__main__':unittest.main()
