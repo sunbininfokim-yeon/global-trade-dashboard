@@ -30,6 +30,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -65,16 +66,91 @@ RATINGS = {"PCT EXCELLENT": 1.0, "PCT GOOD": 0.75, "PCT FAIR": 0.5,
            "PCT POOR": 0.25, "PCT VERY POOR": 0.0}
 
 
+def _annotate_crash(kind, value, tb):
+    """Surface an uncaught error as an Actions annotation, then fail as usual."""
+    import traceback
+    if os.environ.get("GITHUB_ACTIONS"):
+        last = traceback.extract_tb(tb)[-1] if tb else None
+        where = f" at {os.path.basename(last.filename)}:{last.lineno}" if last else ""
+        print(f"::error::{kind.__name__}{where}: {str(value)[:300]}", flush=True)
+    sys.__excepthook__(kind, value, tb)
+
+
+sys.excepthook = _annotate_crash
+
+
 def log(msg):
     print(f"[condition] {msg}", flush=True)
 
 
-def get_json(url, attempts=3, timeout=300):
+def annotate(level, msg):
+    """GitHub Actions annotation: readable from the check run even when the
+    raw job log is not (the log store sits behind a different host)."""
+    if os.environ.get("GITHUB_ACTIONS"):
+        print(f"::{level}::{msg}", flush=True)
+
+
+def nass_key():
+    """The NASS key from the environment, with stray whitespace removed.
+
+    A key pasted into a GitHub secret often carries a trailing newline or
+    space, and NASS rejects it as unauthorized.
+    """
+    raw = os.environ.get("USDA_NASS_API_KEY") or ""
+    key = raw.strip()
+    if not key:
+        raise SystemExit("USDA_NASS_API_KEY is not set")
+    if key != raw:
+        annotate("warning", "USDA_NASS_API_KEY had surrounding whitespace; stripped it")
+    return key
+
+
+def describe_key():
+    """Shape of the key, never its value, for diagnosing a rejection."""
+    raw = os.environ.get("USDA_NASS_API_KEY") or ""
+    k = raw.strip()
+    import re
+    looks = "UUID-shaped" if re.fullmatch(r"[0-9A-Fa-f-]{36}", k) else "not UUID-shaped"
+    return f"length {len(k)} ({looks}), whitespace stripped: {k != raw}"
+
+
+class Throttled(RuntimeError):
+    """NASS kept refusing a burst of calls; the data is missing, not absent."""
+
+
+def get_json(url, attempts=4, timeout=120):
     for i in range(attempts):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            body = ""
+            try:
+                body = e.read().decode("utf-8", "replace")[:200]
+            except Exception:  # noqa: BLE001
+                pass
+            if e.code == 403 and "Gateway" in body:
+                # NASS's Azure gateway answers a bare HTML 403 when it throttles
+                # a burst of calls -- the key was fine moments earlier. Back off
+                # instead of calling the key bad.
+                if i == attempts - 1:
+                    raise Throttled("NASS gateway kept refusing (HTTP 403, throttled)")
+                wait = 60 * 2 ** i
+                log(f"  gateway 403, waiting {wait}s")
+                annotate("warning", f"NASS gateway throttled (HTTP 403); waiting {wait}s")
+                time.sleep(wait)
+                continue
+            if e.code in (401, 403):
+                # A rejected key will not get better on retry, and every later
+                # call would wait out the same rejection.
+                annotate("error", f"NASS rejected the API key (HTTP {e.code}); key "
+                                  f"{describe_key()}; response: {body!r}")
+                raise SystemExit(f"NASS rejected the API key (HTTP {e.code})")
+            if i == attempts - 1:
+                raise
+            log(f"  retry {i + 1} after {e}")
+            time.sleep(10)
         except Exception as e:  # noqa: BLE001
             if i == attempts - 1:
                 raise
@@ -89,9 +165,7 @@ def fetch_state(crop, code):
     if os.path.exists(cached):
         return pd.read_csv(cached, parse_dates=["week_ending"])
 
-    key = os.environ.get("USDA_NASS_API_KEY")
-    if not key:
-        raise SystemExit("USDA_NASS_API_KEY is not set")
+    key = nass_key()
 
     spec = CROPS[crop]
     rows = []
@@ -99,16 +173,21 @@ def fetch_state(crop, code):
         hi = min(lo + CHUNK - 1, END_YEAR)
         params = {"key": key, "commodity_desc": spec["commodity"],
                   "statisticcat_desc": "CONDITION", "agg_level_desc": "STATE",
+                  "freq_desc": "WEEKLY", "source_desc": "SURVEY",
                   "state_alpha": code, "year__GE": str(lo), "year__LE": str(hi),
                   "format": "JSON"}
         if spec["class_desc"]:
             params["class_desc"] = spec["class_desc"]
         try:
             data = get_json(NASS_URL + "?" + urllib.parse.urlencode(params))
+        except Throttled:
+            # Unlike an empty chunk, this would leave a hole that looks like data.
+            raise
         except Exception as e:  # noqa: BLE001
             # NASS answers 400 when a chunk has no rows (e.g. a state that
             # stopped growing the crop); that is a gap, not a failure.
             log(f"  {crop}/{code} {lo}-{hi}: {e}")
+            annotate("warning", f"{crop}/{code} {lo}-{hi}: {str(e)[:200]}")
             continue
         for r in data.get("data", []):
             unit = r.get("unit_desc")
@@ -122,7 +201,7 @@ def fetch_state(crop, code):
                              "pct": float(r["Value"].replace(",", ""))})
             except (ValueError, KeyError, IndexError):
                 continue
-        time.sleep(1)
+        time.sleep(2)   # stay under the gateway's burst limit
 
     df = pd.DataFrame(rows, columns=["year", "week", "week_ending", "rating", "pct"])
     df = df.drop_duplicates(["year", "week", "rating"]).sort_values(["year", "week"])
@@ -136,6 +215,11 @@ def state_index(df):
     wide = df.pivot_table(index=["year", "week", "week_ending"], columns="rating",
                           values="pct", aggfunc="first").reset_index()
     have = [c for c in RATINGS if c in wide.columns]
+    # NASS omits a rating that is zero that week (1994 Iowa corn lists only
+    # excellent, good and fair). A missing rating is 0%, not unknown; left as
+    # NaN it made the index NaN and the region average silently dropped the
+    # state while keeping its weight.
+    wide[have] = wide[have].fillna(0.0)
     total = wide[have].sum(axis=1)
     # A week whose shares don't add to ~100 is a partial release; skip it.
     wide = wide[(total > 95) & (total < 105)].copy()
@@ -162,6 +246,7 @@ def region_index(crop):
     total_w = sum(st["weight"] for st in CROPS[crop]["states"])
 
     def agg(g):
+        g = g.dropna(subset=["cci", "ge_pct"])
         w = g.weight / g.weight.sum()
         return pd.Series({"week_ending": g.week_ending.max(),
                           "cci": float((g.cci * w).sum()),
@@ -178,11 +263,18 @@ def main():
     crops = sys.argv[1:] or list(CROPS)
     frames = []
     for crop in crops:
-        r = region_index(crop)
+        try:
+            r = region_index(crop)
+        except Exception as e:  # noqa: BLE001
+            # One crop failing must not cost the others their data.
+            annotate("error", f"{crop}: {type(e).__name__}: {str(e)[:300]}")
+            log(f"{crop}: failed: {e}")
+            continue
         if r.empty:
             log(f"{crop}: no condition data")
             continue
         log(f"{crop}: {r.year.min()}-{r.year.max()}, {len(r)} region-weeks")
+        annotate("notice", f"{crop}: {r.year.min()}-{r.year.max()}, {len(r)} region-weeks")
         frames.append(r)
     if not frames:
         return 1
