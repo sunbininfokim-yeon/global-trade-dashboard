@@ -15,6 +15,7 @@ from .poll_quality import answer_correction_fingerprint
 # New releases still require a committed record/document review.
 PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org', 's3.documentcloud.org'))
 
+PRIMARY_XLSX_HOSTS = frozenset(('7453540.fs1.hubspotusercontent-na1.net',))
 
 def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
     require(snapshot['schema']=='usa_reviewed_primary_poll_supplements_v1'
@@ -30,8 +31,9 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         documents=entry['documents'];require(documents, 'missing reviewed primary documents')
         for document in documents:
             parsed=urlparse(document['url'])
-            require(parsed.scheme=='https' and parsed.hostname in PRIMARY_PDF_HOSTS
-                    and not parsed.username and not parsed.password and parsed.path.endswith('.pdf')
+            require(parsed.scheme=='https' and not parsed.username and not parsed.password
+                    and (parsed.hostname in PRIMARY_PDF_HOSTS and parsed.path.endswith('.pdf')
+                         or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx'))
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # Replace a verified provider typo only for the exact reviewed snapshot.
         # Changed records still undergo the standard same-wave conflict check.
@@ -59,7 +61,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 with opener(Request(document['url'],headers={'User-Agent':'ElectionWatch/1.0 primary-release-review'}),timeout=25) as response:
                     require(response.status==200 and response.geturl()==document['url'], 'primary document redirect/response')
                     body=response.read(3*1024*1024+1)
-                require(len(body)<=3*1024*1024 and body.startswith(b'%PDF-'), 'primary document format/size changed')
+                require(len(body)<=3*1024*1024 and (body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04')), 'primary document format/size changed')
                 digest=hashlib.sha256(body).hexdigest()
                 checks.append({'url':document['url'],'status':'unchanged' if digest==document['sha256'] else 'changed_review_required',
                                'sha256':digest})

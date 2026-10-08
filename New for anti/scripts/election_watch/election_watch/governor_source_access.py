@@ -8,7 +8,7 @@ from urllib.request import Request, urlopen
 
 from .polls import atomic, require
 
-BLOCKED = ('the request is blocked', 'access denied', 'service unavailable')
+BLOCKED = ('the request is blocked', 'access denied', 'service unavailable', 'request unsuccessful. incapsula incident id:')
 
 
 def probe(url, opener=urlopen):
