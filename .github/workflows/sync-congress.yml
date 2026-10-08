@@ -72,7 +72,6 @@ jobs:
       MAX_BILLS: ${{ inputs.max_bills || '100' }}
       MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
       MAX_FR_DOCUMENTS: ${{ inputs.max_fr_documents || '50' }}
-      POLICY_SEARCH_CACHE_DIR: ${{ runner.temp }}/policy-search-cache
       POLICY_SEARCH_DB_BUDGET_BYTES: '6442450944'
       CONGRESS_NUMBERS: '119'
       MAX_DISCOVERY_PAGES: '4'
@@ -121,6 +120,7 @@ jobs:
         if: ${{ success() }}
         env:
           MAX_SEARCH_DOCUMENTS: ${{ inputs.max_search_documents || '100' }}
+          POLICY_SEARCH_CACHE_DIR: ${{ runner.temp }}/policy-search-cache
         run: |
           node -e 'const n=Number(process.env.MAX_SEARCH_DOCUMENTS); if(!Number.isInteger(n)||n<1||n>1000)throw Error("max_search_documents must be an integer between 1 and 1000")'
           node scripts/sync-policy-search.js --limit "$MAX_SEARCH_DOCUMENTS" --max-minutes 20
