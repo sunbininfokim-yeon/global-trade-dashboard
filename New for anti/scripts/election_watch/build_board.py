@@ -187,7 +187,9 @@ def build_usa_state_drilldown(
 
     matchup_path = ROOT / 'config' / 'federal_matchups' / '2026.json'
     if matchup_path.exists():
-        state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat())
+        ballot_path = ROOT / 'config' / 'usa_polls' / 'ballot_reviews_2026.json'
+        state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat(),
+                                     load_json(ballot_path) if ballot_path.exists() else None)
     state_names = set(USA_STATE_ABBR)
     territory_names = sorted(
         {row.get("state") for row in members if row.get("state") and row.get("state") not in state_names}

@@ -6,6 +6,11 @@ import re
 from urllib.parse import urlparse
 
 PARTIES = {'Democratic': 'DEM', 'Republican': 'REP', 'No Party Preference': 'IND'}
+MI_GENERAL_URL = 'https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport'
+MI_PARTIES = {'Democratic Party': 'DEM', 'Republican Party': 'REP',
+              'Libertarian Party': 'LIB', 'U.S. Taxpayers Party': 'UST',
+              'Green Party': 'GRN', 'Working Class Party': 'WCP',
+              'Natural Law Party': 'NLP', 'No Party Affiliation': 'IND'}
 STATES = set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split())
 SENATE_2026_STATES = set('AL AK AR CO DE FL GA ID IL IA KS KY LA ME MA MI MN MS MT NE NH NJ NM NC OH OK OR RI SC SD TN TX VA WV WY'.split())
 
@@ -39,6 +44,98 @@ def parse_ca_house(text, source_url, reviewed_on):
     if set(found) != {f'USA:CA:house:{n:02d}' for n in range(1, 53)}:
         raise ValueError('California 52-district universe changed')
     return found
+
+
+def parse_michigan_general(text, reviewed_on):
+    """Readable official listing; federal offices only, no state legislature.
+
+    A public candidate listing is not an election result or a separately
+    certified ballot. DISQ candidates are retained as exclusions, not nominees.
+    """
+    if not all(s in text for s in ('Michigan Department of State', 'Official Candidate Listing',
+                                  'General Election', 'Tuesday, November 3, 2026')):
+        raise ValueError('Not the Michigan 2026 official general listing')
+    if date.fromisoformat(reviewed_on).year != 2026:
+        raise ValueError('Michigan adapter needs a reviewed cycle')
+    found = {}; current = None
+    parties = '|'.join(re.escape(p) for p in MI_PARTIES)
+    pattern = re.compile(rf'(?:(DISQ)\s+)?({parties})\s+(.+?)\s+(\d{{2}}/\d{{2}}/\d{{4}})\s+(Petitions|Convention)')
+    for line in text.splitlines():
+        line = ' '.join(line.split())
+        district = re.fullmatch(r'(\d+)(?:st|nd|rd|th) District Representative in Congress 2 Year Term \(1\) Position(?: Files In [A-Z ]+ County)?', line)
+        if line == 'U.S. Senate 6 Year Term (1) Position' or district:
+            number = int(district[1]) if district else None
+            if number is not None and not 1 <= number <= 13:
+                raise ValueError('Michigan federal district outside apportionment')
+            rid = 'USA:MI:senate' if number is None else f'USA:MI:house:{number:02d}'
+            if rid in found: raise ValueError('Duplicate Michigan federal office')
+            current = {'race_id': rid, 'state': 'MI', 'office': 'senate' if number is None else 'house',
+                'district': None if number is None else f'{number:02d}', 'election_date': '2026-11-03',
+                'reviewed_on': reviewed_on, 'status': 'reported_general_matchup',
+                'coverage': 'complete_active_agency_listing', 'source_role': 'state_election_agency',
+                'source_url': MI_GENERAL_URL, 'candidates': [], 'excluded_candidates': [],
+                'limitations_ko': '공식 본선 후보 추적 명부. 별도 투표용지 인증·당선 결과가 아니며 향후 기명 후보 등록까지 완결되었다고 보지 않습니다.'}
+            found[rid] = current
+            continue
+        if re.search(r'\d Year Term \(\d+\) Position', line):
+            current = None
+            continue
+        if current is None or not line:
+            continue
+        match = pattern.fullmatch(line)
+        if not match: raise ValueError('Michigan candidate row/status changed')
+        status, party, reported_name, filed, method = match.groups()
+        if reported_name.count(',') != 1: raise ValueError('Michigan candidate name schema changed')
+        last, first = (part.strip() for part in reported_name.split(','))
+        if not first or not last: raise ValueError('Michigan empty candidate name')
+        candidate = {'name': f'{first} {last}', 'party': MI_PARTIES[party],
+                     'candidate_id': None, 'source_url': MI_GENERAL_URL,
+                     'reported_name': reported_name, 'reported_party': party,
+                     'agency_status': status or 'listed_active', 'filed_on': filed,
+                     'filing_method': method}
+        bucket = 'excluded_candidates' if status else 'candidates'
+        if any(c['name'].casefold() == candidate['name'].casefold() for c in current[bucket]):
+            raise ValueError('Michigan duplicate candidate')
+        current[bucket].append(candidate)
+    expected = {'USA:MI:senate'} | {f'USA:MI:house:{n:02d}' for n in range(1, 14)}
+    if set(found) != expected or any(not r['candidates'] for r in found.values()):
+        raise ValueError('Incomplete Michigan federal listing')
+    for race in found.values():
+        race['absent_parties'] = [p for p in ('DEM', 'REP') if not any(c['party'] == p for c in race['candidates'])]
+    return found
+
+
+def merge_ballot_reviews(snapshot, reviews, as_of):
+    """Reuse reviewed identities for display; never use FEC registrations.
+
+    Rich certified rosters remain authoritative. A reviewed agency listing can
+    replace a reported field; missing rosters can be filled from either source.
+    This does not itself approve a polling observation.
+    """
+    validate_snapshot(snapshot, as_of)
+    if reviews.get('schema') != 'usa_poll_ballot_reviews_v1' or reviews.get('cycle') != 2026 \
+            or date.fromisoformat(reviews['reviewed_on']) > date.fromisoformat(as_of):
+        raise ValueError('Invalid reviewed ballot catalog')
+    result = deepcopy(snapshot)
+    for key, review in reviews['races'].items():
+        if review['office'] == 'governor': continue
+        official = review.get('source_role') == 'state_election_agency'
+        if not official and review.get('source_role') != 'reviewed_secondary_nominee_listing':
+            continue
+        previous = result['races'].get(key)
+        if previous and (previous['status'] == 'certified_ballot'
+                         or not official
+                         or previous['reviewed_on'] > review['reviewed_on']):
+            continue
+        row = deepcopy(review)
+        row['status'] = 'reported_general_matchup'
+        if row['coverage'] == 'complete_active_agency_listing':
+            row['absent_parties'] = [p for p in ('DEM', 'REP') if not any(c['party'] == p for c in row['candidates'])]
+        else:
+            row.setdefault('absent_parties', [])
+        result['races'][key] = row
+    validate_snapshot(result, as_of)
+    return result
 
 
 class _Table(HTMLParser):
@@ -110,8 +207,11 @@ def validate_snapshot(snapshot, as_of):
             raise ValueError('Federal ballot date mismatch')
         if race['status'] not in ('certified_ballot', 'reported_general_matchup') or not race['candidates']:
             raise ValueError('Unreviewed federal ballot')
-        if race['coverage'] not in ('complete_ballot', 'certified_major_party_field', 'reported_major_party_field'):
+        if race['coverage'] not in ('complete_ballot', 'certified_major_party_field', 'reported_major_party_field',
+                                    'complete_active_agency_listing'):
             raise ValueError('Unknown federal ballot coverage')
+        if race['coverage'] == 'complete_active_agency_listing' and race.get('source_role') != 'state_election_agency':
+            raise ValueError('Agency listing lacks agency provenance')
         _source_url(race['source_url'])
         seen = set()
         for candidate in race['candidates']:
@@ -131,7 +231,9 @@ def validate_snapshot(snapshot, as_of):
             raise ValueError('Invalid Senate election history')
 
 
-def attach_matchups(states, snapshot, as_of):
+def attach_matchups(states, snapshot, as_of, ballot_reviews=None):
+    if ballot_reviews is not None:
+        snapshot = merge_ballot_reviews(snapshot, ballot_reviews, as_of)
     validate_snapshot(snapshot, as_of)
     result = deepcopy(states)
     for state in result:

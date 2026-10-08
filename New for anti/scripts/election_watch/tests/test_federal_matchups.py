@@ -19,13 +19,13 @@ class FederalMatchupTests(unittest.TestCase):
         text = 'General Election - November 3, 2026\n' + '\n'.join(
             f'United States Representative District {n}\nDem Name Democratic\nRep Name Republican\n'
             for n in range(1, 53)) + 'State Senate District 1\nState Candidate Democratic'
-        rows = parse_ca_house(text, 'https://example.org/general.pdf', '2026-10-07')
+        rows = parse_ca_house(text, 'https://example.org/general.pdf', '2026-10-08')
         self.assertEqual(len(rows), 52)
         self.assertEqual(len(rows['USA:CA:house:52']['candidates']), 2)
         with self.assertRaises(ValueError):
-            parse_ca_house(text.replace('General Election', 'Primary Election'), 'https://example.org/primary', '2026-10-07')
+            parse_ca_house(text.replace('General Election', 'Primary Election'), 'https://example.org/primary', '2026-10-08')
         with self.assertRaises(ValueError):
-            parse_ca_house(text.replace('District 52', 'District 53'), 'https://example.org/general', '2026-10-07')
+            parse_ca_house(text.replace('District 52', 'District 53'), 'https://example.org/general', '2026-10-08')
 
     def test_reported_field_does_not_import_unresolved_candidates_or_unreviewed_ratings(self):
         header = ['State', 'Incumbent / Seat Status', 'Democratic Candidate', 'Republican Candidate', 'Cook Rating']
@@ -33,14 +33,14 @@ class FederalMatchupTests(unittest.TestCase):
         def html(dem):
             rows = [header] + [[state, 'Incumbent', dem, 'Rep Name', 'Toss-Up'] for state in names]
             return '<table>' + ''.join('<tr>' + ''.join(f'<td>{x}</td>' for x in row) + '</tr>' for row in rows) + '</table>'
-        rows = parse_reported_field(html('Dem Name'), 'senate', names, 'https://example.org/report', '2026-10-07')
+        rows = parse_reported_field(html('Dem Name'), 'senate', names, 'https://example.org/report', '2026-10-08')
         self.assertEqual(len(rows), 35)
         self.assertNotIn('rating', next(iter(rows.values())))
         with self.assertRaises(ValueError):
-            parse_reported_field(html('Primary winner TBD'), 'senate', names, 'https://example.org/report', '2026-10-07')
+            parse_reported_field(html('Primary winner TBD'), 'senate', names, 'https://example.org/report', '2026-10-08')
 
     def test_real_roster_preserves_same_party_and_independent_ballots(self):
-        validate_snapshot(self.snapshot, '2026-10-07')
+        validate_snapshot(self.snapshot, '2026-10-08')
         races = self.snapshot['races']
         self.assertEqual(sum(r['office'] == 'senate' for r in races.values()), 35)
         self.assertEqual({c['party'] for c in races['USA:CA:house:04']['candidates']}, {'DEM'})
@@ -63,7 +63,7 @@ class FederalMatchupTests(unittest.TestCase):
             for change in changes:
                 data = copy.deepcopy(self.snapshot); change(data); source.write_text(json.dumps(data))
                 with self.subTest(change=change), self.assertRaises(ValueError):
-                    publish(source, dest, '2026-10-07')
+                    publish(source, dest, '2026-10-08')
                 self.assertEqual(dest.read_bytes(), before)
 
     def test_publication_is_idempotent_and_preserves_other_countries_and_metadata(self):
@@ -72,9 +72,9 @@ class FederalMatchupTests(unittest.TestCase):
             other = {'iso3': 'KOR', 'ui_ready': {'untouched': True}}
             board = {'as_of': 'original', 'countries': [other, {'iso3': 'USA', 'ui_ready': {'state_drilldown': {'states': [{'id': 'CA'}]}}}]}
             dest.write_text(json.dumps(board))
-            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-07')
+            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-08')
             once = dest.read_bytes()
-            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-07')
+            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-08')
             after = json.loads(dest.read_text())
             self.assertEqual(dest.read_bytes(), once)
             self.assertEqual(after['countries'][0], other)
