@@ -61,6 +61,25 @@ def _eurostat(geo: str) -> dict[str, Any]:
     }
 
 
+def _eurostat_industry(geo: str) -> dict[str, Any]:
+    s = lambda n: ("eurostat_a10", f"unit=CON_PPCH_PRE&s_adj=SCA&geo={geo}&na_item=B1G&nace_r2={n}")
+    nace = [("A", "농림어업", "other"), ("B-E", "산업(제조·에너지)", "manufacturing"), ("C", "  제조업", "manufacturing"),
+            ("F", "건설", "construction"), ("G-I", "유통·운송·숙박", "services"), ("J", "정보통신", "services"),
+            ("K", "금융·보험", "services"), ("L", "부동산", "services"), ("M_N", "전문·사업지원", "services"),
+            ("O-Q", "공공행정·교육·보건", "services"), ("R-U", "기타 서비스", "services")]
+    return {
+        "basis_ko": "전기 대비 %p (비연율, Eurostat, 총부가가치 기준)", "source": "Eurostat namq_10_a10 CON_PPCH_PRE",
+        "source_urls": ["https://ec.europa.eu/eurostat/databrowser/view/namq_10_a10/default/table"],
+        "total_label_ko": "총부가가치 증가율",
+        "total": s("TOTAL"),
+        "parts": [("manufacturing", "산업(제조·에너지)", _one(s("B-E"))), ("construction", "건설", _one(s("F"))),
+                  ("services", "서비스", [(1, s(n)) for n in ("G-I", "J", "K", "L", "M_N", "O-Q", "R-U")]),
+                  ("other", "농림어업", _one(s("A")))],
+        "detail": [(n, label, g, s(n)) for n, label, g in nace],
+        "note_ko": "산업별 기여도는 GDP가 아니라 총부가가치(생산물세 제외) 증가율에 대한 것입니다.",
+    }
+
+
 _ECOS = "https://ecos.bok.or.kr/"
 _BEA_IND = "https://www.bea.gov/data/gdp/gdp-industry"
 _ONS = "economy/grossdomesticproductgdp/timeseries/{}/qna"
@@ -166,8 +185,83 @@ SIDES: dict[str, dict[str, dict[str, Any]]] = {
             "note_ko": "ABS는 수입 기여도를 음수로 발표합니다. 통계상 불일치는 잔차에 들어갑니다.",
         },
     },
-    "EMU": {"expenditure": _eurostat("EA")},
-    "CHE": {"expenditure": {**_eurostat("CH"), "note_ko": "스위스 순수출은 금·의약품 교역 때문에 분기마다 크게 흔들립니다."}},
+    "SGP": {
+        "expenditure": {
+            "basis_ko": "전년 동기 대비 %p (SingStat 실질값으로 계산)", "source": "SingStat M014811 (computed)",
+            "source_urls": ["https://tablebuilder.singstat.gov.sg/table/TS/M014811"], "computed_from_levels": True, "lag": 4,
+            "total": ("singstat", "M014811", "1"),
+            "parts": [("pce", "민간소비", _one(("singstat", "M014811", "1.1.1"))),
+                      ("investment", "고정투자", _one(("singstat", "M014811", "1.2.1"))),
+                      ("inventories", "재고", _one(("singstat", "M014811", "1.2.2"))),
+                      ("government", "정부소비", _one(("singstat", "M014811", "1.1.2"))),
+                      ("net_exports", "순수출", _one(("singstat", "M014811", "1.5")))],
+            "note_ko": "SingStat은 지출항목 기여도를 따로 내지 않아, 실질(연쇄) 수준값으로 (항목의 전년 동기 대비 변화 ÷ 전년 동기 GDP)를 계산했습니다. 통계상 불일치·연쇄가중 차이는 잔차로 표시합니다.",
+        },
+        "industry": {
+            "basis_ko": "전년 동기 대비 %p (SingStat, 원계열)", "source": "SingStat M015671",
+            "source_urls": ["https://tablebuilder.singstat.gov.sg/table/TS/M015671"], "total": ("singstat", "M015671", "1"),
+            "parts": [("goods", "재화산업", _one(("singstat", "M015671", "1.1"))),
+                      ("services", "서비스산업", _one(("singstat", "M015671", "1.2"))),
+                      ("other", "주거소유", _one(("singstat", "M015671", "1.3"))),
+                      ("taxes", "생산물세", _one(("singstat", "M015671", "1.4")))],
+            "detail": [(r, label, g, ("singstat", "M015671", r)) for r, label, g in [
+                ("1.1.1", "제조업", "goods"), ("1.1.2", "  건설", "goods"), ("1.2.1", "도소매", "services"),
+                ("1.2.2", "  운수·창고", "services"), ("1.2.3", "  숙박·음식", "services"), ("1.2.4", "  정보통신", "services"),
+                ("1.2.5", "  금융·보험", "services"), ("1.2.6", "  부동산·전문·사업지원", "services"),
+                ("1.2.7", "  기타 서비스", "services")]],
+        },
+    },
+    "HKG": {
+        "expenditure": {
+            "basis_ko": "전년 동기 대비 %p (홍콩 정부통계처, 원계열)", "source": "C&SD 310-31004",
+            "source_urls": ["https://www.censtatd.gov.hk/en/web_table.html?id=310-31004"], "total": ("csd", "310-31004", ""),
+            "parts": [("pce", "민간소비", _one(("csd", "310-31004", "PCE"))),
+                      ("investment", "고정투자", _one(("csd", "310-31004", "GDFCF"))),
+                      ("inventories", "재고", _one(("csd", "310-31004", "CIV"))),
+                      ("government", "정부소비", _one(("csd", "310-31004", "GCE"))),
+                      ("net_exports", "순수출", [(1, ("csd", "310-31004", c)) for c in ("XG", "XS", "MG", "MS")])],
+            "note_ko": "홍콩은 재수출 비중이 커서 상품 수출·수입 기여도가 각각 ±50%p에 이르고, 순수출은 그 차이입니다.",
+        },
+    },
+    "ISR": {
+        "expenditure": {
+            "basis_ko": "전기 대비 %p (비연율, 이스라엘은행 실질값으로 계산)", "source": "Bank of Israel NA (computed)",
+            "source_urls": ["https://www.boi.org.il/en/economic-roles/statistics/"], "computed_from_levels": True,
+            "total": ("boi", "NA", "GDP_Q_FP_SA"),
+            "parts": [("pce", "민간소비", _one(("boi", "NA", "C_Q_FP_SA"))),
+                      ("investment", "투자", _one(("boi", "NA", "I_Q_FP_SA"))),
+                      ("government", "정부소비", _one(("boi", "NA", "G_Q_FP_SA"))),
+                      ("net_exports", "순수출", [(1, ("boi", "NA", "X_Q_FP_SA")), (-1, ("boi", "NA", "M_NO_TAX_Q_FP_SA"))])],
+            "note_ko": "이스라엘은행은 기여도 계열을 내지 않아, 실질 계절조정 수준값으로 (항목 변화 ÷ 전기 GDP)를 계산했습니다. "
+                       "재고 계열이 없어 재고·연쇄가중 차이는 잔차에 들어갑니다. 수입은 BOI 'M_NO_TAX' 계열입니다.",
+        },
+    },
+    "BRA": {
+        "expenditure": {
+            "basis_ko": "전기 대비 %p (비연율, IBGE 계절조정 실질 증가율 × 전기 명목 비중으로 계산)", "source": "IBGE SIDRA 6613 + 1846 (computed)",
+            "source_urls": ["https://sidra.ibge.gov.br/tabela/6613", "https://sidra.ibge.gov.br/tabela/1846"],
+            "share_weighted": True, "nominal_kind": "sidra_nom",
+            "total": ("sidra", "90707"),
+            "parts": [("pce", "가계소비", _one(("sidra", "93404"))),
+                      ("investment", "고정투자", _one(("sidra", "93406"))),
+                      ("government", "정부소비", _one(("sidra", "93405"))),
+                      ("net_exports", "순수출", [(1, ("sidra", "93407")), (-1, ("sidra", "93408"))])],
+            "note_ko": "IBGE는 기여도 계열을 내지 않아 (전기 명목 비중 × 계절조정 실질 증가율)로 계산했습니다. 재고는 계절조정 실질계열이 없고, IBGE가 항목별로 따로 계절조정해 합이 맞지 않으므로 잔차가 큰 분기가 있습니다(표의 잔차 행).",
+        },
+        "industry": {
+            "basis_ko": "전기 대비 %p (비연율, IBGE 실질 증가율 × 전기 명목 비중으로 계산)", "source": "IBGE SIDRA 6613 + 1846 (computed)",
+            "source_urls": ["https://sidra.ibge.gov.br/tabela/6613", "https://sidra.ibge.gov.br/tabela/1846"],
+            "share_weighted": True, "nominal_kind": "sidra_nom",
+            "total": ("sidra", "90707"),
+            "parts": [("other", "농축산업", _one(("sidra", "90687"))),
+                      ("manufacturing", "산업(광업·제조·전기·건설)", _one(("sidra", "90691"))),
+                      ("services", "서비스업", _one(("sidra", "90696")))],
+            "note_ko": "부가가치 기준 계산값입니다. 생산물세(순)는 계절조정 계열이 없어 잔차에 들어갑니다.",
+        },
+    },
+    "EMU": {"expenditure": _eurostat("EA"), "industry": _eurostat_industry("EA")},
+    "CHE": {"expenditure": {**_eurostat("CH"), "note_ko": "스위스 순수출은 금·의약품 교역 때문에 분기마다 크게 흔들립니다."},
+            "industry": _eurostat_industry("CH")},
     "IDN": {
         "expenditure": {
             "basis_ko": "전년 동기 대비 %p (BPS 성장 원천, 원계열)", "source": "BPS Source of Growth y-on-y (var 2129)",
@@ -234,6 +328,9 @@ class Readers:
     def _eurostat(self, query):
         return self.fetch.get("eurostat", "namq_10_gdp", query)
 
+    def _eurostat_a10(self, query):
+        return self.fetch.get("eurostat", "namq_10_a10", query)
+
     def _statcan(self, est):
         import urllib.request
         body = json.dumps([{"productId": 36100104, "coordinate": f"1.3.1.{est}.0.0.0.0.0.0", "latestN": 60}]).encode()
@@ -267,6 +364,33 @@ class Readers:
         if not rows:
             raise RuntimeError(f"ECOS {table}/{item}: {(doc.get('RESULT') or {}).get('CODE', 'no rows')}")
         return sorted((f"{r['TIME'][:4]}-{(int(r['TIME'][5]) - 1) * 3 + 1:02d}-01", float(r["DATA_VALUE"])) for r in rows)
+
+    def _singstat(self, table, row):
+        from . import sg_public_series as sgs
+        pts, _ = sgs.fetch_row(table, row)
+        return pts
+
+    def _boi(self, flow, code):
+        return self.fetch.get("boi", flow, code)
+
+    def _csd(self, table, component):
+        """Hong Kong C&SD table API; quarters are labelled by their last month (202606 = 2026Q2)."""
+        if ("csd", table) not in self._cache:
+            self._cache[("csd", table)] = json.loads(self._get(
+                f"https://www.censtatd.gov.hk/api/get.php?id={table}&lang=en&full_series=1"))["dataSet"]
+        out = []
+        for r in self._cache[("csd", table)]:
+            if r.get("freq") != "Q" or r.get("GDP_COMPONENT", "") != component or r.get("figure") in (None, ""):
+                continue
+            y, m = r["period"][:4], int(r["period"][4:6])
+            out.append((f"{y}-{m - 2:02d}-01", float(r["figure"])))
+        return sorted(out)
+
+    def _sidra(self, cat):
+        return self.fetch.get("sidra", f"t/6613/n1/all/v/9319/p/last%2060/c11255/{cat}")
+
+    def _sidra_nom(self, cat):
+        return self.fetch.get("sidra", f"t/1846/n1/all/v/585/p/last%2060/c11255/{cat}")
 
     def _bea13(self, industry):
         if ("bea13_all",) not in self._cache:
@@ -361,19 +485,40 @@ def _sum(read: Callable[[Src], Points], terms: list[tuple[int, Src]]) -> dict[st
     return {d: sum(sign * s[d] for sign, s in series) for d in common}
 
 
-def _from_levels(levels: dict[str, float], gdp: dict[str, float]) -> dict[str, float]:
-    """Contribution of a chained-volume component: its change over last quarter's GDP, in pp."""
+def _from_levels(levels: dict[str, float], gdp: dict[str, float], lag: int = 1) -> dict[str, float]:
+    """Contribution of a chained-volume component: its change over the base period's GDP, in pp
+    (lag 1 = on the previous quarter, lag 4 = on the same quarter a year earlier)."""
     ds = sorted(levels)
-    return {d: (levels[d] - levels[p]) / gdp[p] * 100 for p, d in zip(ds, ds[1:]) if p in gdp}
+    return {d: (levels[d] - levels[p]) / gdp[p] * 100 for p, d in zip(ds, ds[lag:]) if p in gdp}
 
 
 def build_side(spec: dict[str, Any], read: Callable[[Src], Points]) -> dict[str, Any]:
     total = dict(read(spec["total"]))
-    if spec.get("computed_from_levels"):
-        gdp = total
+    if spec.get("share_weighted"):
+        # contribution = last quarter's nominal share x this quarter's real growth (chained volumes in an
+        # old base year -- IBGE's 1995 prices -- would weight the parts by a 30-year-old price structure)
+        real_gdp = total
+        ds = sorted(real_gdp)
+        total = {d: (real_gdp[d] / real_gdp[p] - 1) * 100 for p, d in zip(ds, ds[1:])}
+        nom_gdp = dict(read((spec["nominal_kind"], spec["total"][1])))
+        parts = []
+        for pid, label, terms in spec["parts"]:
+            acc: dict[str, float] = {}
+            ok: set[str] | None = None
+            for sign, src in terms:
+                real, nom = dict(read(src)), dict(read((spec["nominal_kind"], src[1])))
+                rd = sorted(real)
+                term = {d: sign * nom[p] / nom_gdp[p] * (real[d] / real[p] - 1) * 100
+                        for p, d in zip(rd, rd[1:]) if p in nom and p in nom_gdp and real[p]}
+                ok = set(term) if ok is None else ok & set(term)
+                for d, v in term.items():
+                    acc[d] = acc.get(d, 0.0) + v
+            parts.append((pid, label, {d: acc[d] for d in (ok or set())}))
+    elif spec.get("computed_from_levels"):
+        gdp, lag = total, spec.get("lag", 1)
         ds = sorted(gdp)
-        total = {d: (gdp[d] / gdp[p] - 1) * 100 for p, d in zip(ds, ds[1:])}
-        parts = [(pid, label, _from_levels(_sum(read, terms), gdp)) for pid, label, terms in spec["parts"]]
+        total = {d: (gdp[d] / gdp[p] - 1) * 100 for p, d in zip(ds, ds[lag:])}
+        parts = [(pid, label, _from_levels(_sum(read, terms), gdp, lag)) for pid, label, terms in spec["parts"]]
     else:
         parts = [(pid, label, _sum(read, terms)) for pid, label, terms in spec["parts"]]
     dates = sorted(d for d in total if all(d in p for _, _, p in parts))[-WINDOW:]
@@ -384,7 +529,7 @@ def build_side(spec: dict[str, Any], read: Callable[[Src], Points]) -> dict[str,
     s = sum(p["values"][-1] for p in out_parts)
     side = {
         "basis_ko": spec["basis_ko"], "source": spec["source"], "source_urls": spec["source_urls"],
-        "note_ko": spec.get("note_ko"), "computed": bool(spec.get("computed_from_levels")),
+        "note_ko": spec.get("note_ko"), "total_label_ko": spec.get("total_label_ko"), "computed": bool(spec.get("computed_from_levels") or spec.get("share_weighted")),
         "periods": [_quarter(d) for d in dates], "dates": dates,
         "total": [round(total[d], 2) for d in dates], "parts": out_parts,
         "latest": {"period": _quarter(last), "total": round(total[last], 2), "sum_parts": round(s, 2),

@@ -1018,7 +1018,7 @@ const mmContribView = (c, side = '') => {
     const ticks = [lo, 0, hi].map((v) => `<text x="${padL - 4}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#64748b">${v.toFixed(1)}</text>`).join('');
     const zero = `<line x1="${padL}" x2="${W - padR}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#334155" stroke-width="1"/>`;
     const legend = c.parts.map((p) => `<span class="mm-contrib-key"><i style="background:${color(p.id)}"></i>${finEsc(p.label_ko)}</span>`).join('')
-        + '<span class="mm-contrib-key"><i class="mm-contrib-dot"></i>GDP 성장률</span>';
+        + `<span class="mm-contrib-key"><i class="mm-contrib-dot"></i>${finEsc(c.total_label_ko || 'GDP 성장률')}</span>`;
     const lt = c.latest || {};
     const sign = (v) => `${v > 0 ? '+' : ''}${Number(v).toFixed(2)}`;
     const rows = c.parts.map((p) => {
@@ -1036,8 +1036,8 @@ const mmContribView = (c, side = '') => {
                 <tbody>${rows}</tbody>
                 <tfoot>
                     <tr><td>항목 합계</td><td>${sign(lt.sum_parts)}</td></tr>
-                    <tr><td>발표 GDP 성장률</td><td>${sign(lt.total)}</td></tr>
-                    ${Math.abs(lt.residual || 0) >= 0.01 ? `<tr class="mm-contrib-res"><td>잔차(반올림·연쇄가중)</td><td>${sign(lt.residual)}</td></tr>` : ''}
+                    <tr><td>${finEsc(c.total_label_ko || '발표 GDP 성장률')}</td><td>${sign(lt.total)}</td></tr>
+                    ${Math.abs(lt.residual || 0) >= 0.01 ? `<tr class="mm-contrib-res"><td>잔차(반올림·연쇄가중·재고·불일치 등)</td><td>${sign(lt.residual)}</td></tr>` : ''}
                 </tfoot>
             </table>
             ${(c.detail || []).length ? `
