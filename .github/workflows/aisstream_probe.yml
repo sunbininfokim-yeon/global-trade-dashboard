@@ -1,0 +1,46 @@
+name: AISStream private reception probe
+
+# User-authorized one-off diagnostic branch only. No cron, main writes or deploy.
+on:
+  push:
+    branches: ['codex/aisstream-probe-20261008']
+    paths:
+      - '.github/workflows/aisstream_probe.yml'
+      - 'scripts/aisstream_probe/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aisstream-private-probe
+  cancel-in-progress: false
+
+jobs:
+  receive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test diagnostic semantics and secret handling
+        run: python -m unittest discover -s scripts/aisstream_probe -p 'test_*.py' -v
+      - name: Install streaming client
+        run: python -m pip install 'websockets==15.0.1'
+      - name: Receive for at most fifteen minutes
+        env:
+          AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
+        run: >-
+          python -u scripts/aisstream_probe/probe.py
+          --seconds 900 --output "${{ runner.temp }}/aisstream-probe"
+      - name: Preserve private diagnostic, not website assets
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aisstream-private-reception-probe
+          path: ${{ runner.temp }}/aisstream-probe/*.json
+          if-no-files-found: warn
+          retention-days: 3
