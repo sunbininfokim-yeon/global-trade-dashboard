@@ -6,6 +6,8 @@ Failed/changed documents retain the original observation as reference only.
 from copy import deepcopy
 from datetime import date, datetime, timezone
 import hashlib
+from html.parser import HTMLParser
+import re
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from .polls import require
@@ -13,9 +15,42 @@ from .poll_quality import answer_correction_fingerprint
 
 # Reviewed publishers with finite release URLs and SHA-256 snapshots below.
 # New releases still require a committed record/document review.
-PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org', 's3.documentcloud.org'))
+PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org', 's3.documentcloud.org', 'www.ppic.org'))
 
 PRIMARY_XLSX_HOSTS = frozenset(('7453540.fs1.hubspotusercontent-na1.net',))
+
+
+# Only this reviewed release can use an HTML document. Site navigation and
+# recommendations change independently of the poll and are not evidence.
+PRIMARY_HTML_RELEASES = frozenset((
+    'https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/',
+))
+
+
+def primary_html_fingerprint(body):
+    text = body.decode('utf-8')
+    articles = re.findall(r'<article\b([^>]*)>(.*?)</article>', text, re.S | re.I)
+    selected = []
+    for attrs, content in articles:
+        match = re.search(r'''\bclass\s*=\s*["']([^"']*)["']''', attrs, re.I)
+        if match and 'ghost-content' in match[1].split():
+            selected.append(content)
+    require(len(selected) == 1, 'primary HTML evidence article missing/ambiguous')
+    class EvidenceText(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.parts = []; self.ignored = 0
+        def handle_starttag(self, tag, attrs):
+            if tag in ('script', 'style'): self.ignored += 1
+        def handle_endtag(self, tag):
+            if tag in ('script', 'style'): self.ignored = max(0, self.ignored - 1)
+        def handle_data(self, data):
+            if not self.ignored: self.parts.append(data)
+    parser = EvidenceText(); parser.feed(selected[0]); parser.close()
+    canonical = ' '.join(' '.join(parser.parts).split())
+    require(len(canonical) > 100, 'primary HTML evidence article empty')
+    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+
 
 def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
     require(snapshot['schema']=='usa_reviewed_primary_poll_supplements_v1'
@@ -33,7 +68,9 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
             parsed=urlparse(document['url'])
             require(parsed.scheme=='https' and not parsed.username and not parsed.password
                     and (parsed.hostname in PRIMARY_PDF_HOSTS and parsed.path.endswith('.pdf')
-                         or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx'))
+                         or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx')
+                         or document.get('format') == 'reviewed_html_article_v1'
+                            and document['url'] in PRIMARY_HTML_RELEASES)
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # Replace a verified provider typo only for the exact reviewed snapshot.
         # Changed records still undergo the standard same-wave conflict check.
@@ -61,8 +98,12 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 with opener(Request(document['url'],headers={'User-Agent':'ElectionWatch/1.0 primary-release-review'}),timeout=25) as response:
                     require(response.status==200 and response.geturl()==document['url'], 'primary document redirect/response')
                     body=response.read(3*1024*1024+1)
-                require(len(body)<=3*1024*1024 and (body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04')), 'primary document format/size changed')
-                digest=hashlib.sha256(body).hexdigest()
+                require(len(body)<=3*1024*1024, 'primary document size changed')
+                if document.get('format') == 'reviewed_html_article_v1':
+                    digest = primary_html_fingerprint(body)
+                else:
+                    require(body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04'), 'primary document format changed')
+                    digest=hashlib.sha256(body).hexdigest()
                 checks.append({'url':document['url'],'status':'unchanged' if digest==document['sha256'] else 'changed_review_required',
                                'sha256':digest})
             except (OSError,ValueError) as error:

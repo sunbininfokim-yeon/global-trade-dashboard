@@ -120,19 +120,27 @@ def apply_ballot_reviews(snapshot, reviews, as_of):
         if state not in selected['contests']:
             raise SourceError('Ballot review outside governor contest universe')
         contest = selected['contests'][state]
-        if contest['status'] != 'review_required':
+        if date.fromisoformat(review.get('reviewed_on', reviews['reviewed_on'])) > date.fromisoformat(as_of):
+            raise SourceError('Future governor ballot review')
+        if contest['status'] != 'review_required' and not review.get('replace_reported_general_matchup'):
             continue
+        if review.get('replace_reported_general_matchup') is not None and (
+                review['replace_reported_general_matchup'] is not True
+                or contest['status'] not in ('review_required', 'reported_general_matchup')):
+            raise SourceError('Invalid explicit official governor roster replacement')
         if (review['state'] != state or review['election_date'] != contest['election_date']
                 or review['source_role'] != 'state_election_agency'
                 or not review['source_url'].startswith('https://') or not review['evidence_note_ko']):
             raise SourceError('Governor ballot review scope/source mismatch')
         contest.update(status='reported_general_matchup', hold_reason=None,
+            source_role='state_election_agency', coverage='complete_ballot',
             candidates=deepcopy(review['candidates']), source_url=review['source_url'],
-            ballot_reviewed_on=reviews['reviewed_on'],
+            ballot_reviewed_on=review.get('reviewed_on', reviews['reviewed_on']),
             candidate_identity_basis='state_election_agency_general_ballot_listing',
             evidence_note_ko=review['evidence_note_ko'])
+        sources = [s for s in sources if not (s.get('state') == state and s.get('source_url') == review['source_url'])]
         sources.append({'state': state, 'source_url': review['source_url'],
-                        'reviewed_on': reviews['reviewed_on'], 'source_role': review['source_role']})
+                        'reviewed_on': review.get('reviewed_on', reviews['reviewed_on']), 'source_role': review['source_role']})
     selected['additional_sources'] = sources
     selected['coverage'] = {'contest_count': len(selected['contests']),
         'reviewed_matchup_count': sum(c['status'] == 'reported_general_matchup' for c in selected['contests'].values()),
