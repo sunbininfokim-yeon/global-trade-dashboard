@@ -256,6 +256,28 @@
         ],
         "note_ko": "공식사이트의Simple/Advanced/FileTransfer가현재DataPortal을연결. 직접수집403. 검색화면존재와후보별독립지출금액확보는다릅니다. 지출유형·후보타깃·지지/반대·정정·선거단계원자료검증전에는캠프일반지출을IE로사용하지않습니다."
       }
+    },
+    "IA": {
+      "agency": "Iowa Ethics and Campaign Disclosure Board",
+      "access": "public_IE_report_index_API_and_PDF",
+      "url": "https://ethics.iowa.gov/",
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "not_implemented",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://ethics.iowa.gov/",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://webapp.iecdb.iowa.gov/publicReports/independent-expenditure-reports"
+          }
+        ],
+        "public_report_api": "https://webapp.iecdb.iowa.gov/api/publicreports/ie",
+        "public_report_api_method": "POST_readonly_table_query",
+        "report_index_file": "usa_governor_ie_report_indexes/2026/IA.json",
+        "note_ko": "공식공개IE 목록 API실응답확인. 후보·금액·지지/반대는PDF거래에있어자동금액귀속미구현. 최대100건목록수집으로전수공시확보를주장하지않음."
+      }
     }
   }
 }

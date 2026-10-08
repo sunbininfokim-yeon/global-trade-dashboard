@@ -204,10 +204,15 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
         receipt.get('state') == state and primary_reviewed and access and
         access['status'] in ('source_access_blocked', 'source_unavailable') and
         receipt.get('governor_source_checked_at') == access['checked_at'])
+    mapping_review = bool(not reviewed and receipt and receipt.get('cycle') == 2026 and
+        receipt.get('state') == state and primary_reviewed and access and
+        access['status'] == 'public_endpoint_reachable_mapping_required' and
+        receipt.get('governor_source_checked_at') == access['checked_at'])
     return {'schema': 'usa_state_election_evidence_v1', 'cycle': 2026, 'state': state,
         'state_name': catalog['states'][state]['name'], 'group': group, 'checked_as_of': as_of,
         'status': 'partial_observed', 'work_status': 'live_sources_reviewed_partial' if reviewed else
-            'live_poll_sources_reviewed_finance_blocked' if blocked_review else 'baseline_join_checked',
+            'live_poll_sources_reviewed_finance_blocked' if blocked_review else
+            'live_poll_sources_reviewed_finance_mapping_required' if mapping_review else 'baseline_join_checked',
         'live_capture_receipt': receipt,
         'priority': deepcopy(plan['states'][state]), 'office_coverage': counts, 'races': races,
         'governor_source_route': governor_route,
