@@ -114,21 +114,36 @@ def describe_key():
     return f"length {len(k)} ({looks}), whitespace stripped: {k != raw}"
 
 
-def get_json(url, attempts=3, timeout=120):
+class Throttled(RuntimeError):
+    """NASS kept refusing a burst of calls; the data is missing, not absent."""
+
+
+def get_json(url, attempts=4, timeout=120):
     for i in range(attempts):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return json.loads(r.read())
         except urllib.error.HTTPError as e:
+            body = ""
+            try:
+                body = e.read().decode("utf-8", "replace")[:200]
+            except Exception:  # noqa: BLE001
+                pass
+            if e.code == 403 and "Gateway" in body:
+                # NASS's Azure gateway answers a bare HTML 403 when it throttles
+                # a burst of calls -- the key was fine moments earlier. Back off
+                # instead of calling the key bad.
+                if i == attempts - 1:
+                    raise Throttled("NASS gateway kept refusing (HTTP 403, throttled)")
+                wait = 60 * 2 ** i
+                log(f"  gateway 403, waiting {wait}s")
+                annotate("warning", f"NASS gateway throttled (HTTP 403); waiting {wait}s")
+                time.sleep(wait)
+                continue
             if e.code in (401, 403):
                 # A rejected key will not get better on retry, and every later
                 # call would wait out the same rejection.
-                body = ""
-                try:
-                    body = e.read().decode("utf-8", "replace")[:200]
-                except Exception:  # noqa: BLE001
-                    pass
                 annotate("error", f"NASS rejected the API key (HTTP {e.code}); key "
                                   f"{describe_key()}; response: {body!r}")
                 raise SystemExit(f"NASS rejected the API key (HTTP {e.code})")
@@ -165,6 +180,9 @@ def fetch_state(crop, code):
             params["class_desc"] = spec["class_desc"]
         try:
             data = get_json(NASS_URL + "?" + urllib.parse.urlencode(params))
+        except Throttled:
+            # Unlike an empty chunk, this would leave a hole that looks like data.
+            raise
         except Exception as e:  # noqa: BLE001
             # NASS answers 400 when a chunk has no rows (e.g. a state that
             # stopped growing the crop); that is a gap, not a failure.
@@ -183,7 +201,7 @@ def fetch_state(crop, code):
                              "pct": float(r["Value"].replace(",", ""))})
             except (ValueError, KeyError, IndexError):
                 continue
-        time.sleep(1)
+        time.sleep(2)   # stay under the gateway's burst limit
 
     df = pd.DataFrame(rows, columns=["year", "week", "week_ending", "rating", "pct"])
     df = df.drop_duplicates(["year", "week", "rating"]).sort_values(["year", "week"])

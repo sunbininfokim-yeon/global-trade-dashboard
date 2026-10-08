@@ -6,6 +6,11 @@ on:
     # always lands after that week's release.
     - cron: '40 0 * * 2'
   workflow_dispatch:
+    inputs:
+      crops:
+        description: 'Crops to refresh, space-separated (blank = all). Others keep their rows.'
+        required: false
+        default: ''
 
 jobs:
   condition:
@@ -30,8 +35,9 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         env:
           USDA_NASS_API_KEY: ${{ secrets.USDA_NASS_API_KEY }}
+          CROPS: ${{ inputs.crops }}
         run: |
-          python crop_condition.py
+          python crop_condition.py $CROPS
           python condition_backtest.py
 
       - name: Commit and Push Changes
