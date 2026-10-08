@@ -90,6 +90,30 @@ def annotate(level, msg):
         print(f"::{level}::{msg}", flush=True)
 
 
+def nass_key():
+    """The NASS key from the environment, with stray whitespace removed.
+
+    A key pasted into a GitHub secret often carries a trailing newline or
+    space, and NASS rejects it as unauthorized.
+    """
+    raw = os.environ.get("USDA_NASS_API_KEY") or ""
+    key = raw.strip()
+    if not key:
+        raise SystemExit("USDA_NASS_API_KEY is not set")
+    if key != raw:
+        annotate("warning", "USDA_NASS_API_KEY had surrounding whitespace; stripped it")
+    return key
+
+
+def describe_key():
+    """Shape of the key, never its value, for diagnosing a rejection."""
+    raw = os.environ.get("USDA_NASS_API_KEY") or ""
+    k = raw.strip()
+    import re
+    looks = "UUID-shaped" if re.fullmatch(r"[0-9A-Fa-f-]{36}", k) else "not UUID-shaped"
+    return f"length {len(k)} ({looks}), whitespace stripped: {k != raw}"
+
+
 def get_json(url, attempts=3, timeout=120):
     for i in range(attempts):
         try:
@@ -100,8 +124,13 @@ def get_json(url, attempts=3, timeout=120):
             if e.code in (401, 403):
                 # A rejected key will not get better on retry, and every later
                 # call would wait out the same rejection.
-                annotate("error", f"NASS rejected the API key (HTTP {e.code}); "
-                                  "reissue it and update the USDA_NASS_API_KEY secret")
+                body = ""
+                try:
+                    body = e.read().decode("utf-8", "replace")[:200]
+                except Exception:  # noqa: BLE001
+                    pass
+                annotate("error", f"NASS rejected the API key (HTTP {e.code}); key "
+                                  f"{describe_key()}; response: {body!r}")
                 raise SystemExit(f"NASS rejected the API key (HTTP {e.code})")
             if i == attempts - 1:
                 raise
@@ -121,9 +150,7 @@ def fetch_state(crop, code):
     if os.path.exists(cached):
         return pd.read_csv(cached, parse_dates=["week_ending"])
 
-    key = os.environ.get("USDA_NASS_API_KEY")
-    if not key:
-        raise SystemExit("USDA_NASS_API_KEY is not set")
+    key = nass_key()
 
     spec = CROPS[crop]
     rows = []
