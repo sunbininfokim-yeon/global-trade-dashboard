@@ -11,7 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -145,6 +145,7 @@ def normalize(rows, policy, as_of):
             seen_ids.add(p['id'])
             require(p['id'] not in policy.get('excluded_records', {}), policy.get('excluded_records', {}).get(p['id'], 'excluded_record'))
             p, answer_correction = corrected_provider_answers(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
+            p, source_correction = corrected_provider_source(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
             partisan_reference = (admission and admission.get('allow_partisan_reference') is True
                                   and admission['signal_eligible'] is False
@@ -199,6 +200,8 @@ def normalize(rows, policy, as_of):
                              'limitations_ko': 'VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.'}
             if answer_correction:
                 observation['provider_answer_correction'] = answer_correction
+            if source_correction:
+                observation['provider_source_correction'] = source_correction
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'

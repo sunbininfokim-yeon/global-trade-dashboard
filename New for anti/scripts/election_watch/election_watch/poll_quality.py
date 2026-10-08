@@ -2,6 +2,7 @@
 from copy import deepcopy
 from datetime import date
 import math
+from urllib.parse import urlparse
 from .polls import digest, require
 
 
@@ -46,6 +47,33 @@ def corrected_provider_answers(raw, review, as_of):
         'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
         'provider_values': {a['choice']: a['pct'] for a in raw['answers'] if a['choice'] in overrides},
         'primary_values_used': deepcopy(overrides), 'sources': review['sources'], 'basis_ko': correction['basis_ko']}
+
+
+def corrected_provider_source(raw, review, as_of):
+    """Restore an absent URL only for an exact, primary-reviewed API snapshot."""
+    correction = review.get('provider_source_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(not review.get('provider_answer_correction'), 'combined_provider_corrections_require_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_source_correction_snapshot_changed')
+    require(raw.get('url') in (None, '', '[null]') and
+            correction.get('original_provider_url') == raw.get('url'), 'provider_source_not_missing')
+    admission = review.get('admission', {})
+    primary = correction['primary_url']
+    parsed = urlparse(primary)
+    require(parsed.scheme == 'https' and parsed.hostname and not parsed.username and not parsed.password
+            and primary in review.get('sources', []) and admission.get('provider_url') == primary
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and admission.get('pollster') == raw['pollster'] and review.get('disclosure_review')
+            and len(review.get('primary_toplines', {})) >= 2, 'unverified_source_correction')
+    corrected = deepcopy(raw)
+    corrected['url'] = primary
+    return corrected, {'status': 'reviewed_missing_primary_link', 'reviewed_on': review['reviewed_on'],
+        'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'original_provider_url': raw.get('url'), 'primary_url': primary,
+        'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
 
 
 def source_quality(row, reviews, as_of):
