@@ -972,6 +972,77 @@ const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
 
 // Grouped bars for a handful of labelled values -- QRA compare, energy mix,
 // FedWatch outcomes and maturity buckets all reduce to this shape.
+// Contributions to real GDP growth by expenditure component (gdp_contrib.py):
+// one stacked bar per quarter -- positive parts stacked up from zero,
+// negative parts down -- with the published growth rate as a dot, and the
+// latest quarter as a table whose sum is checked against the headline.
+const MM_CONTRIB_COLORS = {
+    pce: '#38bdf8', investment: '#a78bfa', inventories: '#f472b6',
+    government: '#34d399', net_exports: '#fbbf24',
+};
+const mmContribView = (c) => {
+    if (!c || !(c.parts || []).length) return '<p class="fin-note">기여도 자료가 없습니다.</p>';
+    const n = c.periods.length;
+    const W = 640, H = 240, padL = 34, padR = 8, padT = 10, padB = 24;
+    let hi = 0, lo = 0;
+    for (let i = 0; i < n; i++) {
+        let up = 0, dn = 0;
+        c.parts.forEach((p) => { const v = p.values[i] || 0; if (v >= 0) up += v; else dn += v; });
+        hi = Math.max(hi, up, c.total[i]); lo = Math.min(lo, dn, c.total[i]);
+    }
+    const span = (hi - lo) || 1; hi += span * 0.05; lo -= span * 0.05;
+    const y = (v) => padT + (hi - v) / (hi - lo) * (H - padT - padB);
+    const bw = (W - padL - padR) / n;
+    const color = (id) => MM_CONTRIB_COLORS[id] || '#94a3b8';
+    let bars = '';
+    for (let i = 0; i < n; i++) {
+        let up = 0, dn = 0;
+        const x = padL + i * bw + bw * 0.15, w = bw * 0.7;
+        c.parts.forEach((p) => {
+            const v = p.values[i] || 0;
+            if (!v) return;
+            const a = v >= 0 ? up : dn, b = a + v;
+            if (v >= 0) up = b; else dn = b;
+            bars += `<rect x="${x.toFixed(1)}" y="${Math.min(y(a), y(b)).toFixed(1)}" width="${w.toFixed(1)}"
+                height="${Math.max(0.5, Math.abs(y(a) - y(b))).toFixed(1)}" fill="${color(p.id)}" opacity="0.88">
+                <title>${finEsc(c.periods[i])} · ${finEsc(p.label_ko)} ${v > 0 ? '+' : ''}${v.toFixed(2)}%p</title></rect>`;
+        });
+        const t = c.total[i];
+        bars += `<circle cx="${(x + w / 2).toFixed(1)}" cy="${y(t).toFixed(1)}" r="3.2" fill="#f8fafc" stroke="#0f172a" stroke-width="1.2">
+            <title>${finEsc(c.periods[i])} · GDP ${t > 0 ? '+' : ''}${t.toFixed(2)}%</title></circle>`;
+        if (i % 4 === n % 4 || i === n - 1) {
+            bars += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#64748b">${finEsc(c.periods[i])}</text>`;
+        }
+    }
+    const ticks = [lo, 0, hi].map((v) => `<text x="${padL - 4}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#64748b">${v.toFixed(1)}</text>`).join('');
+    const zero = `<line x1="${padL}" x2="${W - padR}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#334155" stroke-width="1"/>`;
+    const legend = c.parts.map((p) => `<span class="mm-contrib-key"><i style="background:${color(p.id)}"></i>${finEsc(p.label_ko)}</span>`).join('')
+        + '<span class="mm-contrib-key"><i class="mm-contrib-dot"></i>GDP 성장률</span>';
+    const lt = c.latest || {};
+    const sign = (v) => `${v > 0 ? '+' : ''}${Number(v).toFixed(2)}`;
+    const rows = c.parts.map((p) => {
+        const v = p.values[p.values.length - 1];
+        return `<tr><td><i class="mm-contrib-sw" style="background:${color(p.id)}"></i>${finEsc(p.label_ko)}</td><td class="${v < 0 ? 'neg' : 'pos'}">${sign(v)}</td></tr>`;
+    }).join('');
+    const links = (c.source_urls || []).map((u, k) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">원자료${k ? ' ' + (k + 1) : ''} ↗</a>`).join(' ');
+    return `
+        <div class="mm-contrib">
+            <p class="mm-view-title">실질GDP 성장 기여도 · ${finEsc(c.basis_ko || '')}</p>
+            <div class="mm-contrib-legend">${legend}</div>
+            <svg viewBox="0 0 ${W} ${H}" class="mm-contrib-chart" role="img" aria-label="GDP 성장 기여도">${zero}${ticks}${bars}</svg>
+            <table class="mm-contrib-table">
+                <thead><tr><th>${finEsc(lt.period || '')}</th><th>%p</th></tr></thead>
+                <tbody>${rows}</tbody>
+                <tfoot>
+                    <tr><td>항목 합계</td><td>${sign(lt.sum_parts)}</td></tr>
+                    <tr><td>발표 GDP 성장률</td><td>${sign(lt.total)}</td></tr>
+                    ${Math.abs(lt.residual || 0) >= 0.01 ? `<tr class="mm-contrib-res"><td>잔차(반올림·연쇄가중)</td><td>${sign(lt.residual)}</td></tr>` : ''}
+                </tfoot>
+            </table>
+            <p class="fin-note">${finEsc(c.note_ko || '')}${c.note_ko ? ' ' : ''}출처: ${finEsc(c.source || '')}. 막대 위 마우스를 올리면 분기별 값이 나옵니다. ${links}</p>
+        </div>`;
+};
+
 const mmBars = (rows, opts = {}) => {
     const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
     if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
@@ -1415,6 +1486,7 @@ const mmViewsFor = (ind) => {
                && ind.chart_type === 'line+components') {
         views.push({ id: 'components', label: '구성' });
     }
+    if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: '기여도' });
     return views.length ? views : [{ id: 'history', label: '추이' }];
 };
 
@@ -1550,6 +1622,7 @@ const mmChartDrawer = () => {
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
+    else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;
