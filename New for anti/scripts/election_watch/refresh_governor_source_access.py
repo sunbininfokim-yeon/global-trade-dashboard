@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--state', choices=['GA','MI','OH','IA','WI','AZ'], required=True)
+    parser.add_argument('--state', choices=['GA','MI','OH','IA','WI','AZ','NV'], required=True)
     parser.add_argument('--cycle', type=int, default=2026)
     parser.add_argument('--public', type=Path, default=ROOT.parent.parent/'public/data')
     args = parser.parse_args()

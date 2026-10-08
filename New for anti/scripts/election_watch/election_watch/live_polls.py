@@ -227,7 +227,7 @@ def normalize(rows, policy, as_of):
                                 for d in checked_documents), 'primary_document_receipt_mismatch')
                 observation['primary_source_capture'] = deepcopy(primary)
                 observation['verification'] = 'reviewed_primary_source_snapshot'
-                observation['limitations_ko'] = 'API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.'
+                observation['limitations_ko'] = 'API 미편입 원문 보완 기록. 원문 문서 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.'
             if answer_correction:
                 observation['provider_answer_correction'] = answer_correction
             if source_correction:
