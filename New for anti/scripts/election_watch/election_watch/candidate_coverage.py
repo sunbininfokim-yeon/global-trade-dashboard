@@ -32,7 +32,8 @@ def candidate_coverage(board, polls, catalog, as_of):
         row = {'state': sid, 'state_name': state['name'], 'offices': {}}
         for office, race_ids in ids.items():
             counts = Counter(expected=len(race_ids), display_roster=0, poll_fallback=0, missing=0,
-                             complete_active_listing=0, official_certified=0, major_party_only=0)
+                             complete_active_listing=0, official_certified=0, major_party_only=0,
+                             reported_active_listing=0, unconfirmed_candidates=0)
             details = []; missing = []
             for rid in race_ids:
                 roster = states[sid].get('election_matchups', {}).get(rid)
@@ -45,7 +46,10 @@ def candidate_coverage(board, polls, catalog, as_of):
                     method = 'display_roster'; candidates = roster['candidates']; counts[method] += 1
                     if roster.get('coverage') in ('complete_ballot', 'complete_active_agency_listing'):
                         counts['complete_active_listing'] += 1
+                    elif roster.get('coverage') == 'reported_active_candidate_listing':
+                        counts['reported_active_listing'] += 1
                     else: counts['major_party_only'] += 1
+                    counts['unconfirmed_candidates'] += len(roster.get('unconfirmed_candidates', []))
                     if roster['status'] == 'certified_ballot': counts['official_certified'] += 1
                     source = roster.get('source_url'); reviewed = roster['reviewed_on']
                 elif poll.get('schedule_status') == 'reported_general_matchup' and len(poll.get('required_candidates', [])) >= 2:
@@ -60,6 +64,8 @@ def candidate_coverage(board, polls, catalog, as_of):
                     source = None; reviewed = None
                 details.append({'race_id': rid, 'connection': method, 'candidates': candidates,
                                 'source_url': source, 'reviewed_on': reviewed,
+                                'coverage': roster.get('coverage') if displayed else None,
+                                'source_role': roster.get('source_role') if displayed else None,
                                 'ballot_competition': poll.get('ballot_competition')})
             counts['available'] = counts['display_roster'] + counts['poll_fallback']
             totals[office].update(counts)

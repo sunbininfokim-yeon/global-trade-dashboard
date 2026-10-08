@@ -195,6 +195,14 @@ def validate_snapshot(snapshot, as_of):
     senate_ids = {key for key, race in snapshot['races'].items() if race['office'] == 'senate'}
     if senate_ids != {f'USA:{state}:senate' for state in SENATE_2026_STATES}:
         raise ValueError('Incomplete 2026 Senate contest universe')
+    if 'house_universe' in snapshot:
+        seats = snapshot['house_universe']
+        if set(seats) != STATES or any(type(n) is not int or not 1 <= n <= 52 for n in seats.values()) or sum(seats.values()) != 435:
+            raise ValueError('Incomplete House apportionment universe')
+        expected_house = {f'USA:{s}:house:{n:02d}' for s, count in seats.items()
+                          for n in (range(1, count + 1) if count > 1 else [0])}
+        if {key for key, race in snapshot['races'].items() if race['office'] == 'house'} != expected_house:
+            raise ValueError('Incomplete 435-seat House display snapshot')
     for key, race in snapshot['races'].items():
         expected = f"USA:{race['state']}:{race['office']}" + (f":{race['district']}" if race['office'] == 'house' else '')
         if key != expected or race['race_id'] != key or race['office'] not in ('house', 'senate') or race['state'] not in STATES:
@@ -208,10 +216,12 @@ def validate_snapshot(snapshot, as_of):
         if race['status'] not in ('certified_ballot', 'reported_general_matchup') or not race['candidates']:
             raise ValueError('Unreviewed federal ballot')
         if race['coverage'] not in ('complete_ballot', 'certified_major_party_field', 'reported_major_party_field',
-                                    'complete_active_agency_listing'):
+                                    'complete_active_agency_listing', 'reported_active_candidate_listing'):
             raise ValueError('Unknown federal ballot coverage')
         if race['coverage'] == 'complete_active_agency_listing' and race.get('source_role') != 'state_election_agency':
             raise ValueError('Agency listing lacks agency provenance')
+        if race['coverage'] == 'reported_active_candidate_listing' and race.get('source_role') != 'reviewed_secondary_nominee_listing':
+            raise ValueError('Reported active listing lacks secondary provenance')
         _source_url(race['source_url'])
         seen = set()
         for candidate in race['candidates']:
