@@ -1138,7 +1138,12 @@
     "us-202easa9c1ac17": "forced_choice_question_not_comparable",
     "us-202wed7f897488": "publisher_identity_unverified",
     "gov202wed3b9968cd": "publisher_identity_unverified",
-    "us-202insad41796a": "provider_third_candidate_attribution_unverified"
+    "us-202insad41796a": "provider_third_candidate_attribution_unverified",
+    "us-202bigf2db767c": "primary_provider_candidate_values_conflict",
+    "us-202elodaa5cffa": "primary_provider_field_dates_conflict",
+    "us-202elo069243f3": "primary_provider_field_dates_conflict",
+    "us-202nei29757f09": "primary_methodology_not_obtained",
+    "us-202insf80352ad": "primary_release_not_accessed"
   },
   "excluded_watch_slots": [
     {
@@ -1192,6 +1197,60 @@
         "gov202wed3b9968cd"
       ],
       "review_file": "usa_election_poll_release_reviews/2026/GA-wedgewood-20261003.json"
+    },
+    "us-202bigf2db767c": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/"
+      ],
+      "reason": "primary_provider_candidate_values_conflict",
+      "note_ko": "API Bray7/Dublin4미검증; 초기47.4/35.2와leaned50.8/38.5 구분. 방법 본문은Texas로 기재, 후보별 전체 원표 미확보.",
+      "provider_record_sha256": "11cf04356d5c1a65cd16d681a854a8711f92157f2462614bb53a5863eedbf70d"
+    },
+    "us-202elodaa5cffa": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; RV717 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "39161a713a6e456315fa9d85d9aa02380bed8140de63618c51c96b42ba535d4a"
+    },
+    "us-202elo069243f3": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; LV466 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "ec515cfb8d10523062104bd7db48fddab8352d5f1ae2993a6ebb4440ea9c3882"
+    },
+    "us-202nei29757f09": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/Shaftan/status/2107772933322277266"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "NC01 10/1–6 API303LV 51/41. 원문 전체문항·모집·가중치·의뢰자 미확보. 후보 alias를 고쳐도 승패색은 보류.",
+      "provider_record_sha256": "fa250032ec2fa9e95a08748ac6b31a75207e3025aca11a88a5eaf8dd36e3e6e0"
+    },
+    "us-202insf80352ad": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/nc-top-line-tabs/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관 NC 이미지 원문 직접 연결 장애. API1200LV48.4/42.5는 보존하되 Georgia 일반 방법 링크로 NC 검증하지 않음.",
+      "provider_record_sha256": "a8d1f2f3da3e19f599576b6c0eb097fc8cbdd0824f267d606f4b5fcd2c23c15a"
+    },
+    "us-202easa9c1ac17": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://cdn.filestackcontent.com/midNvToaTnOmgDOk9qFC"
+      ],
+      "reason": "forced_choice_question_not_comparable",
+      "note_ko": "초기45.7/38.5·미정13.7과 강제 선택51.7/43.6을 구분. 기존 강제 문항 집계 제외 정책 유지.",
+      "provider_record_sha256": "5689f49a510cffed53825a890e779404599ccca658e9da8173210f7dcac44a3b"
     }
   }
 }

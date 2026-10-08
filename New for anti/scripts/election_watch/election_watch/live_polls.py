@@ -203,7 +203,7 @@ def normalize(rows, policy, as_of):
             primary = p.get('primary_source_capture')
             if primary:
                 review = policy.get('quality_reviews', {}).get(p['id'], {})
-                require(admission and admission['source_role']=='pollster_primary'
+                require(admission and admission['source_role'] in ('pollster_primary', 'commissioner_primary')
                         and review.get('primary_supplement_record_sha256')==answer_correction_fingerprint(p)
                         and primary.get('original_reviewed_on')==review['reviewed_on']
                         and primary.get('status') in ('primary_documents_rechecked','carried_forward_reference_only'),

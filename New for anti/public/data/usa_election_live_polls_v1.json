@@ -84,23 +84,27 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 79,
-    "excluded_observations": 744,
-    "aggregation_eligible_observations": 62,
-    "reference_only_observations": 17,
+    "accepted_observations": 87,
+    "excluded_observations": 739,
+    "aggregation_eligible_observations": 69,
+    "reference_only_observations": 18,
     "exclusion_reasons": {
-      "pollster_not_selected": 555,
-      "outside_reviewed_general_period": 119,
+      "pollster_not_selected": 549,
+      "outside_reviewed_general_period": 115,
       "unregistered_primary_host": 60,
-      "forced_choice_question_not_comparable": 1,
       "unreviewed_matchup": 2,
       "date_order_or_future": 1,
       "unsupported_population": 1,
       "internal_or_partisan": 2,
       "provider_third_candidate_attribution_unverified": 1,
-      "publisher_identity_unverified": 2
+      "publisher_identity_unverified": 2,
+      "primary_provider_field_dates_conflict": 2,
+      "forced_choice_question_not_comparable": 1,
+      "primary_release_not_accessed": 1,
+      "primary_provider_candidate_values_conflict": 1,
+      "primary_methodology_not_obtained": 1
     },
-    "displayed_observations": 79
+    "displayed_observations": 87
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -5617,7 +5621,7 @@
       "poll_type": "us-senator",
       "seat_name": null,
       "contest_id": "USA:NC:senate:2026:general:regular",
-      "general_from": "2026-09-01",
+      "general_from": "2026-04-17",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
@@ -5634,6 +5638,24 @@
           "party": "REP",
           "source_url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points",
           "canonical_name": "Michael Whatley"
+        },
+        "Michael Dublin": {
+          "party": "GRN",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Michael Dublin"
+        },
+        "Shannon W. Bray": {
+          "party": "LIB",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Shannon W. Bray"
+        },
+        "Shannon Bray": {
+          "party": "LIB",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Shannon W. Bray"
         }
       },
       "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
@@ -5652,17 +5674,20 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/State_Board_Meeting_Docs/2026-04-16/Supplemental%20Canvass/Composite_Statewide_Abstract_Report.pdf",
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 4,
         "parties": [
           "DEM",
+          "GRN",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -5670,13 +5695,129 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:NC:senate",
       "observations": [
+        {
+          "id": "primary-opinion-diagnostics-nc-senate-20260925",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "Opinion Diagnostics",
+          "pollster_group": "opinion_diagnostics",
+          "field_start": "2026-09-17",
+          "field_end": "2026-09-20",
+          "provider_record_date": "2026-09-25",
+          "population": "lv",
+          "sample_n": 857,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 51.3,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 41.3,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "Common Cause North Carolina"
+          ],
+          "source_url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T14:19:18.449021+00:00",
+            "documents": [
+              {
+                "url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+                "status": "unchanged",
+                "sha256": "59bf8c72ee0b9cdd82a46f259847a3920a2e457a5825ad31f5a3037e1096b258"
+              }
+            ],
+            "provider_duplicate_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "Common Cause North Carolina"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 51.3,
+              "Michael Whatley": 41.3
+            },
+            "question_sample_n": 857,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 857,
+              "field_dates": [
+                "2026-09-17",
+                "2026-09-20"
+              ],
+              "question_wording_checked": true,
+              "sampling_frame": "random NC voter file",
+              "mode": "live telephone plus unique one-person SMS web links",
+              "lv_screen": "registered definitely/probably voting November",
+              "weighting": "IPF party/region/gender/age/race/education/2024 vote; model average2018/2022 electorates",
+              "question": "initial named two-candidate ballot; order rotated",
+              "non_candidate_responses": {
+                "other_candidate": 2,
+                "undecided": 5.4
+              },
+              "same_wave_context": {
+                "leaned_ballot": {
+                  "Roy Cooper": 51.7,
+                  "Michael Whatley": 43.5,
+                  "undecided": 2.8
+                }
+              },
+              "leaned_question_counted_separately": false
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.3,
+              "confidence_level_pct": 95,
+              "scope": "857_LV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Common Cause North Carolina"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
         {
           "id": "us-202higae3d1182",
           "race_id": "USA:NC:senate",
@@ -5702,8 +5843,615 @@
           ],
           "sponsors": [],
           "source_url": "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 50.0,
+              "Michael Whatley": 42.0
+            },
+            "question_sample_n": 706,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-09",
+                "2026-09-16"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 706,
+              "sampling_frame": "nonprobability Dynata online panel",
+              "mode": "online self-administered English",
+              "weighting": "Census age/gender/race/education/ethnicity quotas and SPSS iterative weights",
+              "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+              "overall_sample_n": 1003,
+              "registered_sample_n": 813,
+              "likely_sample_n": 706,
+              "question": "named Senate initial ballot with other/unsure",
+              "direct_download_status": "403; primary PDF reader text reviewed",
+              "same_wave_lv_rv_counted_once": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 3.9,
+              "confidence_level_pct": 95,
+              "scope": "706_LV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "funding": "High Point University"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202harfc1499b8",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "Harper Polling",
+          "pollster_group": "harper",
+          "field_start": "2026-09-13",
+          "field_end": "2026-09-15",
+          "provider_record_date": "2026-09-18",
+          "population": "lv",
+          "sample_n": 608,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 49.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 34.0,
+              "party": "REP"
+            },
+            {
+              "name": "Shannon Bray",
+              "pct": 3.0,
+              "party": "LIB"
+            },
+            {
+              "name": "Michael Dublin",
+              "pct": 2.0,
+              "party": "GRN"
+            }
+          ],
+          "sponsors": [
+            "Carolina Journal"
+          ],
+          "source_url": "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.carolinajournal.com/wp-content/uploads/2026/09/H24747-CJ-NC-Sept26-Toplines.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "Carolina Journal"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame",
+              "full_weight_targets"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
+              "https://www.carolinajournal.com/wp-content/uploads/2026/09/H24747-CJ-NC-Sept26-Toplines.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 49.2,
+              "Michael Whatley": 34.1,
+              "Shannon Bray": 2.9,
+              "Michael Dublin": 1.5
+            },
+            "question_sample_n": 608,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-13",
+                "2026-09-15"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 608,
+              "question": "Q9 named four-candidate ballot with definitely/probably totals; unsure12.3",
+              "mode": "live telephone and SMS-online",
+              "weighting": "demographically balanced to likely voting population",
+              "sampling_frame": null,
+              "lv_screen": "Q1 definitely/probably vote; no nonvoters/unsure retained",
+              "direct_download_status": "403; primary PDF reader text reviewed",
+              "missing_fields": [
+                "sampling_frame",
+                "full_weight_targets"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.97,
+              "confidence_level_pct": 95,
+              "scope": "608_LV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "commissioner": "Carolina Journal / John Locke Foundation",
+              "provider_sponsors": [
+                "Carolina Journal"
+              ],
+              "partisan_party_code": null
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202elo857d928d",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "Elon University/YouGov",
+          "pollster_group": "elon",
+          "field_start": "2026-08-21",
+          "field_end": "2026-08-31",
+          "provider_record_date": "2026-09-10",
+          "population": "lv",
+          "sample_n": 565,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 49.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 38.0,
+              "party": "REP"
+            },
+            {
+              "name": "Shannon Bray",
+              "pct": 2.0,
+              "party": "LIB"
+            },
+            {
+              "name": "Michael Dublin",
+              "pct": 2.0,
+              "party": "GRN"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-Topline-Methodology-9-10-26.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
+              "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-Topline-Methodology-9-10-26.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 49.0,
+              "Michael Whatley": 38.0,
+              "Shannon Bray": 2.0,
+              "Michael Dublin": 2.0
+            },
+            "question_sample_n": 565,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-08-21",
+                "2026-08-31"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 565,
+              "mode": "nonprobability YouGov online panel",
+              "sampling_frame": "CPS2024 matched adult panel",
+              "overall_sample_n": 800,
+              "registered_sample_n": 677,
+              "likely_sample_n": 565,
+              "lv_screen": "absolutely certain or very likely; includes32 people planning to register (6% of LV)",
+              "weighting": "matching gender/age/race/education plus registration and 2024 vote",
+              "primary_method_interviewed_n": 924,
+              "news_interviewed_n": 1121,
+              "publication_method_discrepancy_preserved": true,
+              "question": "four-candidate initial Senate ballot; names rotated",
+              "non_candidate_responses": {
+                "undecided": 8,
+                "someone_else": 0
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 5.65,
+              "cover_rounding_pp": 5.6,
+              "confidence_level_pct": null,
+              "scope": "565_LV",
+              "validated_here": false
+            },
+            "ballot_format": "multi_candidate_initial_ballot",
+            "sponsor_review": {
+              "funding": "Elon University"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202hig8ec8c4e5",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "High Point University Survey Research Center",
+          "pollster_group": "hpu",
+          "field_start": "2026-08-03",
+          "field_end": "2026-08-12",
+          "provider_record_date": "2026-08-26",
+          "population": "rv",
+          "sample_n": 800,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 48.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 41.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 48.0,
+              "Michael Whatley": 41.0
+            },
+            "question_sample_n": 800,
+            "disclosure_review": {
+              "population": "RV",
+              "field_dates": [
+                "2026-08-03",
+                "2026-08-12"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 800,
+              "sampling_frame": "nonprobability YouGov matched panel",
+              "mode": "online self-administered English",
+              "weighting": "CPS2024 matching and propensity decile poststratification; raking 2024 presidential vote and demographics",
+              "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+              "overall_sample_n": 800,
+              "registered_sample_n": 800,
+              "likely_sample_n": 660,
+              "question": "named Senate initial ballot with other/unsure",
+              "direct_download_status": "403; primary PDF reader text reviewed",
+              "same_wave_lv_rv_counted_once": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 4.3,
+              "confidence_level_pct": 95,
+              "scope": "800_RV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "funding": "High Point University"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202hig0453aa0e",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "High Point University Survey Research Center",
+          "pollster_group": "hpu",
+          "field_start": "2026-08-03",
+          "field_end": "2026-08-12",
+          "provider_record_date": "2026-08-26",
+          "population": "lv",
+          "sample_n": 660,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 50.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 45.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 50.0,
+              "Michael Whatley": 45.0
+            },
+            "question_sample_n": 660,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-08-03",
+                "2026-08-12"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 660,
+              "sampling_frame": "nonprobability YouGov matched panel",
+              "mode": "online self-administered English",
+              "weighting": "CPS2024 matching and propensity decile poststratification; raking 2024 presidential vote and demographics",
+              "lv_screen": "seven-item voting-likelihood score; not assumed identical to registered subset",
+              "overall_sample_n": 800,
+              "registered_sample_n": 800,
+              "likely_sample_n": 660,
+              "question": "named Senate initial ballot with other/unsure",
+              "direct_download_status": "403; primary PDF reader text reviewed",
+              "same_wave_lv_rv_counted_once": true
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_credibility_interval",
+              "half_width_pp": 5.2,
+              "confidence_level_pct": 95,
+              "scope": "660_LV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "funding": "High Point University"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202beacaddacc4",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "Beacon Research/Shaw & Co. Research",
+          "pollster_group": "beacon_shaw",
+          "field_start": "2026-07-23",
+          "field_end": "2026-07-27",
+          "provider_record_date": "2026-07-30",
+          "population": "rv",
+          "sample_n": 1005,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 53.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 44.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "Fox News"
+          ],
+          "source_url": "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/07/fox_july-23-27-2026_north-carolina_topline_july-29-release.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "Fox News"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "reported_precision_confidence_level"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
+              "https://static.foxnews.com/foxnews.com/content/uploads/2026/07/fox_july-23-27-2026_north-carolina_topline_july-29-release.pdf"
+            ],
+            "primary_toplines": {
+              "Roy Cooper": 53.0,
+              "Michael Whatley": 44.0
+            },
+            "question_sample_n": 1005,
+            "disclosure_review": {
+              "population": "RV",
+              "field_dates": [
+                "2026-07-23",
+                "2026-07-27"
+              ],
+              "question_wording_checked": true,
+              "sample_n": 1005,
+              "sampling_frame": "random NC registered voter file; probability proportionate to size",
+              "mode_counts": {
+                "live_landline": 115,
+                "live_cellphone": 654,
+                "text_to_web": 236
+              },
+              "weighting": "age/race/education/area; ACS,Fox Voter Analysis,voter file",
+              "question": "Q4 includes leaners",
+              "non_candidate_responses": {
+                "dont_know": 2,
+                "other": "less_than_half_percent",
+                "would_not_vote": "less_than_half_percent"
+              },
+              "wrong_registry_methodology_url": "Texas PDF; replaced by specific NC release",
+              "missing_fields": [
+                "reported_precision_confidence_level"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_sampling_error",
+              "half_width_pp": 3,
+              "confidence_level_pct": null,
+              "scope": "1005_RV",
+              "validated_here": false
+            },
+            "ballot_format": "two_candidate_with_leaners",
+            "sponsor_review": {
+              "commissioner": "Fox News"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        },
+        {
+          "id": "us-202thef5594fea",
+          "race_id": "USA:NC:senate",
+          "contest_id": "USA:NC:senate:2026:general:regular",
+          "pollster": "The New York Times/Siena University",
+          "pollster_group": "siena",
+          "field_start": "2026-06-15",
+          "field_end": "2026-06-27",
+          "provider_record_date": "2026-07-01",
+          "population": "lv",
+          "sample_n": 601,
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 50.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 43.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-north-carolina-poll-crosstabs.html",
           "verification": "selected_source_aggregator_import",
-          "methodology_url": "https://www.highpoint.edu/src/hpupoll/",
+          "methodology_url": "https://sri.siena.edu/",
           "margin_of_error_pp": null,
           "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
           "commissioning": {
@@ -5799,7 +6547,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -5946,25 +6694,37 @@
       "poll_type": "us-representative",
       "seat_name": "NC-01",
       "contest_id": "USA:NC:house:01:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-04-17",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Donald Davis",
+        "Don Davis",
         "Laurie Buckhout"
       ],
       "candidates": {
+        "Don Davis": {
+          "party": "DEM",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Don Davis"
+        },
         "Donald Davis": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
           "candidate_id": null,
-          "canonical_name": "Donald Davis"
+          "canonical_name": "Don Davis"
         },
         "Laurie Buckhout": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
           "candidate_id": null,
           "canonical_name": "Laurie Buckhout"
+        },
+        "Tom Bailey": {
+          "party": "LIB",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Tom Bailey"
         }
       },
       "selection_reason_ko": "지역 방송 WNCT·CBS17가 의뢰한 경선 조사. 선정 초기 표본이며 전체 중요 지역구 목록 아님",
@@ -5982,17 +6742,19 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/State_Board_Meeting_Docs/2026-04-16/Supplemental%20Canvass/Composite_Statewide_Abstract_Report.pdf",
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -6000,13 +6762,130 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:NC:house:01",
-      "observations": [],
+      "observations": [
+        {
+          "id": "primary-coefficient-nc-house01-20260508",
+          "race_id": "USA:NC:house:01",
+          "contest_id": "USA:NC:house:01:2026:general",
+          "pollster": "co/efficient",
+          "pollster_group": "coefficient",
+          "field_start": "2026-04-25",
+          "field_end": "2026-04-29",
+          "provider_record_date": "2026-05-08",
+          "population": "lv",
+          "sample_n": 842,
+          "answers": [
+            {
+              "name": "Laurie Buckhout",
+              "pct": 41,
+              "party": "REP"
+            },
+            {
+              "name": "Don Davis",
+              "pct": 41,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [
+            "NRCC"
+          ],
+          "source_url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 PDF 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-08",
+            "checked_at": "2026-10-08T14:19:18.812277+00:00",
+            "documents": [
+              {
+                "url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+                "status": "unchanged",
+                "sha256": "d88ef252f02dc609106810f17361142f8447c332728ec839964c01b9435e4815"
+              }
+            ],
+            "provider_duplicate_ids": []
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": "REP",
+            "sponsors": [
+              "NRCC"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "party_commissioned_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "sampling_frame",
+              "exact_lv_screen",
+              "reported_precision_confidence_level"
+            ],
+            "reviewed_on": "2026-10-08",
+            "review_sources": [
+              "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf"
+            ],
+            "primary_toplines": {
+              "Laurie Buckhout": 41,
+              "Don Davis": 41
+            },
+            "question_sample_n": 842,
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 842,
+              "field_dates": [
+                "2026-04-25",
+                "2026-04-29"
+              ],
+              "question_wording_checked": true,
+              "mode": "mobile text and landline interviews",
+              "weighting": "age/gender/race/education/DMA/registered party",
+              "sampling_frame": null,
+              "question": "named district candidate ballot; not statewide/generic ballot",
+              "non_candidate_responses": {
+                "undecided": 17
+              },
+              "missing_fields": [
+                "sampling_frame",
+                "exact_lv_screen",
+                "reported_precision_confidence_level"
+              ]
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 3.37,
+              "confidence_level_pct": null,
+              "scope": "842_LV",
+              "validated_here": false
+            },
+            "ballot_format": "named_initial_ballot_with_undecided",
+            "sponsor_review": {
+              "commissioner": "NRCC"
+            },
+            "limitations_ko": "수기 원문 수치·기간·표본·방법 대조. 초기·leaned·강제 문항과LV/RV를 분리하고7/14일 밖 자료를 최신 우세로 쓰지 않습니다. 기관 정확도·당선확률은 평가하지 않습니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
@@ -6075,7 +6954,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -12694,20 +13573,32 @@
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
         "Jamie Ager",
-        "Jennifer Balkcom"
+        "Jennifer Capps Balkcom"
       ],
       "candidates": {
         "Jamie Ager": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
           "candidate_id": null,
           "canonical_name": "Jamie Ager"
         },
+        "Jennifer Capps Balkcom": {
+          "party": "REP",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Jennifer Capps Balkcom"
+        },
         "Jennifer Balkcom": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
           "candidate_id": null,
-          "canonical_name": "Jennifer Balkcom"
+          "canonical_name": "Jennifer Capps Balkcom"
+        },
+        "Travis Groo": {
+          "party": "LIB",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "candidate_id": null,
+          "canonical_name": "Travis Groo"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -12727,15 +13618,16 @@
       },
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 3,
         "parties": [
           "DEM",
+          "LIB",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -12743,10 +13635,10 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-08",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:NC:house:11",
       "observations": [],
@@ -12818,7 +13710,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -52359,7 +53251,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -52500,7 +53392,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -52641,7 +53533,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -52782,7 +53674,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -52916,7 +53808,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53057,7 +53949,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53198,7 +54090,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53332,7 +54224,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53473,7 +54365,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53607,7 +54499,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53748,7 +54640,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -53882,7 +54774,7 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:24:36.831849+00:00",
+      "fetched_at": "2026-10-08T14:19:06.858715+00:00",
       "as_of": "2026-10-08",
       "source_status": "ok",
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
@@ -80814,582 +81706,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "us-202pubdc157848",
-      "race_id": "USA:NC:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2025/03/NorthCarolinaResults.pdf",
-      "field_start": "2025-03-04",
-      "field_end": "2025-03-05",
-      "population": "rv",
-      "sample_n": 662,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202vicec5afb5c",
-      "race_id": "USA:NC:senate",
-      "pollster": "Victory Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://irp.cdn-website.com/07e08705/files/uploaded/PollSummary_NC-US-Senate_07-31-2025.pdf",
-      "field_start": "2025-07-28",
-      "field_end": "2025-07-30",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202harc083001c",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/08/H23232-CJ-NC-Aug25-Toplines.pdf",
-      "field_start": "2025-08-11",
-      "field_end": "2025-08-12",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202chab6c27b91",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://docs.google.com/spreadsheets/d/1fTOAqF7rZ9ugyF1ZFqInJpQ1LgXEu1rnG1Js0y-1YSo/edit?nvep=&hmac=&emci=b910b780-d290-f011-b484-6045bdeb7413&emdi=ea000000-0000-0000-0000-000000000001&ceid=&gid=0#gid=0",
-      "field_start": "2025-09-02",
-      "field_end": "2025-09-08",
-      "population": "lv",
-      "sample_n": 855,
-      "sponsors": [
-        "Carolina Forward"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202har2b123ce0",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/09/H23315-CJ-NC-Sept25-Toplines.pdf",
-      "field_start": "2025-09-14",
-      "field_end": "2025-09-15",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202har1bdb30c5",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/polls/november-2025-cooper-maintains-lead-in-senate-race",
-      "field_start": "2025-11-09",
-      "field_end": "2025-11-10",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202harc344974e",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/11/H23440-CJ-NC-Nov25-Toplines.pdf",
-      "field_start": "2025-11-09",
-      "field_end": "2025-11-10",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202eme013c2ece",
-      "race_id": "USA:NC:senate",
-      "pollster": "Emerson College",
-      "reason": "unregistered_primary_host",
-      "source_url": "https://docs.google.com/spreadsheets/d/15z1ND9R9K0UklZgcXV7Wf1Qotwsj7kb7/edit?gid=455076038#gid=455076038",
-      "field_start": "2025-07-28",
-      "field_end": "2025-07-30",
-      "population": "rv",
-      "sample_n": 1000,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202cha2976f667",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://docs.google.com/spreadsheets/d/1_I2lZN7nOAANajydNZPjm_jaPVK_CVWO9FDuX0kReVQ/edit",
-      "field_start": "2026-01-05",
-      "field_end": "2026-01-07",
-      "population": "lv",
-      "sample_n": 1105,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tipab84b110",
-      "race_id": "USA:NC:senate",
-      "pollster": "TIPP Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.dailysignal.com/2026/01/19/exclusive-economy-remains-gops-biggest-vulnerability-in-north-carolina-new-poll-shows",
-      "field_start": "2026-01-12",
-      "field_end": "2026-01-15",
-      "population": "rv",
-      "sample_n": 1512,
-      "sponsors": [
-        "League of American Workers"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202cha2111afda",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://docs.google.com/spreadsheets/d/1Onaf6YlsprPfjSMODM7ibvwEXs082o7-jNMCML7lGGo/edit?gid=0#gid=0",
-      "field_start": "2026-01-31",
-      "field_end": "2026-02-04",
-      "population": "rv",
-      "sample_n": 1069,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub85665d25",
-      "race_id": "USA:NC:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2026/03/NorthCarolinaResults31626.pdf",
-      "field_start": "2026-03-13",
-      "field_end": "2026-03-14",
-      "population": "rv",
-      "sample_n": 556,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202nex3971aa3a",
-      "race_id": "USA:NC:senate",
-      "pollster": "Nexus Strategies/Strategic Partners Solutions",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.healthierunited.org/media/disagree-healthier-launch-j6kn8-4rbfc",
-      "field_start": "2026-03-08",
-      "field_end": "2026-03-09",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "Healthier United Fund"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202you2133db87",
-      "race_id": "USA:NC:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.catawba.edu/news/all-news/2026/yougov-24",
-      "field_start": "2026-03-09",
-      "field_end": "2026-03-18",
-      "population": "lv",
-      "sample_n": 871,
-      "sponsors": [
-        "Catawba College Center for North Carolina Politics & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202higf04011a1",
-      "race_id": "USA:NC:senate",
-      "pollster": "High Point University Survey Research Center/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
-      "field_start": "2026-03-26",
-      "field_end": "2026-04-06",
-      "population": "lv",
-      "sample_n": 703,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202hig7de64e7d",
-      "race_id": "USA:NC:senate",
-      "pollster": "High Point University Survey Research Center/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
-      "field_start": "2026-03-26",
-      "field_end": "2026-04-06",
-      "population": "rv",
-      "sample_n": 800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202opi5a64ca39",
-      "race_id": "USA:NC:senate",
-      "pollster": "Opinion Diagnostics",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/iapolls2022/status/2049576363175096384?s=46",
-      "field_start": "2026-04-21",
-      "field_end": "2026-04-24",
-      "population": "lv",
-      "sample_n": 830,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202harb00382e0",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2026/05/H23893-CJ-NC-May26-Toplines-Revised.pdf",
-      "field_start": "2026-05-10",
-      "field_end": "2026-05-11",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202chab31a8a6e",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://carolinaforward.org/blog/the-may-2026-carolina-forward-poll",
-      "field_start": "2026-05-04",
-      "field_end": "2026-05-08",
-      "population": "lv",
-      "sample_n": 957,
-      "sponsors": [
-        "Carolina Forward"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202harca09238f",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2026/03/H23758-CJ-NC-Mar26-Toplines.pdf",
-      "field_start": "2026-03-22",
-      "field_end": "2026-03-23",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202youca5f07f2",
-      "race_id": "USA:NC:senate",
-      "pollster": "YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.catawba.edu/news/all-news/2026/yougovsurvey27/",
-      "field_start": "2026-06-01",
-      "field_end": "2026-06-10",
-      "population": "lv",
-      "sample_n": 905,
-      "sponsors": [
-        "Catawba College Center for North Carolina Politics & Public Service"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202thef5594fea",
-      "race_id": "USA:NC:senate",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-north-carolina-poll-crosstabs.html",
-      "field_start": "2026-06-15",
-      "field_end": "2026-06-27",
-      "population": "lv",
-      "sample_n": 601,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub96a42a3f",
-      "race_id": "USA:NC:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.publicpolicypolling.com/polls/cooper-leads-but-whatley-has-a-path/",
-      "field_start": "2026-07-10",
-      "field_end": "2026-07-11",
-      "population": "lv",
-      "sample_n": 759,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202beacaddacc4",
-      "race_id": "USA:NC:senate",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
-      "field_start": "2026-07-23",
-      "field_end": "2026-07-27",
-      "population": "rv",
-      "sample_n": 1005,
-      "sponsors": [
-        "Fox News"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202chad53b9fb6",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://garypearcenc.substack.com/p/cooper-up-by-9-trump-still-slumps",
-      "field_start": "2026-07-29",
-      "field_end": "2026-08-01",
-      "population": "lv",
-      "sample_n": 967,
-      "sponsors": [
-        "Talking About Politics"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202chaf0ea6e94",
-      "race_id": "USA:NC:senate",
-      "pollster": "Change Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://carolinaforward.org/news/the-august-2026-carolina-forward-poll/",
-      "field_start": "2026-08-03",
-      "field_end": "2026-08-06",
-      "population": "lv",
-      "sample_n": 915,
-      "sponsors": [
-        "Carolina Forward"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202elodaa5cffa",
-      "race_id": "USA:NC:senate",
-      "pollster": "Elon University/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
-      "field_start": "2026-07-21",
-      "field_end": "2026-07-23",
-      "population": "rv",
-      "sample_n": 717,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202elo069243f3",
-      "race_id": "USA:NC:senate",
-      "pollster": "Elon University/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
-      "field_start": "2026-07-21",
-      "field_end": "2026-07-23",
-      "population": "lv",
-      "sample_n": 466,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202har1cef6d8a",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/polls/august-2026-coopers-lead-over-whatley-grows-to-12-5-points/",
-      "field_start": "2026-08-09",
-      "field_end": "2026-08-10",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "The Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202hig0453aa0e",
-      "race_id": "USA:NC:senate",
-      "pollster": "High Point University Survey Research Center",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
-      "field_start": "2026-08-03",
-      "field_end": "2026-08-12",
-      "population": "lv",
-      "sample_n": 660,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202hig8ec8c4e5",
-      "race_id": "USA:NC:senate",
-      "pollster": "High Point University Survey Research Center",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
-      "field_start": "2026-08-03",
-      "field_end": "2026-08-12",
-      "population": "rv",
-      "sample_n": 800,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202elo857d928d",
-      "race_id": "USA:NC:senate",
-      "pollster": "Elon University/YouGov",
-      "reason": "pollster_not_selected",
-      "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
-      "field_start": "2026-08-21",
-      "field_end": "2026-08-31",
-      "population": "lv",
-      "sample_n": 565,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202easa9c1ac17",
-      "race_id": "USA:NC:senate",
-      "pollster": "East Carolina University",
-      "reason": "forced_choice_question_not_comparable",
-      "source_url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points",
-      "field_start": "2026-08-31",
-      "field_end": "2026-09-03",
-      "population": "lv",
-      "sample_n": 675,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202harfc1499b8",
-      "race_id": "USA:NC:senate",
-      "pollster": "Harper Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
-      "field_start": "2026-09-13",
-      "field_end": "2026-09-15",
-      "population": "lv",
-      "sample_n": 608,
-      "sponsors": [
-        "Carolina Journal"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202insf80352ad",
-      "race_id": "USA:NC:senate",
-      "pollster": "InsiderAdvantage",
-      "reason": "pollster_not_selected",
-      "source_url": "https://insideradvantage.com/nc-top-line-tabs",
-      "field_start": "2026-09-16",
-      "field_end": "2026-09-17",
-      "population": "lv",
-      "sample_n": 1200,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202bigf2db767c",
-      "race_id": "USA:NC:senate",
-      "pollster": "Big Data Poll",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/",
-      "field_start": "2026-09-27",
-      "field_end": "2026-09-29",
-      "population": "lv",
-      "sample_n": 642,
-      "sponsors": [
-        "Public Polling Project"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "gov202recc51e1594",
       "race_id": "USA:TX:governor",
       "pollster": "ReconMR/Siena University",
@@ -90151,6 +90467,503 @@
       "internal": false,
       "partisan": null,
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubdc157848",
+      "race_id": "USA:NC:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2025/03/NorthCarolinaResults.pdf",
+      "field_start": "2025-03-04",
+      "field_end": "2025-03-05",
+      "population": "rv",
+      "sample_n": 662,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202vicec5afb5c",
+      "race_id": "USA:NC:senate",
+      "pollster": "Victory Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://irp.cdn-website.com/07e08705/files/uploaded/PollSummary_NC-US-Senate_07-31-2025.pdf",
+      "field_start": "2025-07-28",
+      "field_end": "2025-07-30",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202harc083001c",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/08/H23232-CJ-NC-Aug25-Toplines.pdf",
+      "field_start": "2025-08-11",
+      "field_end": "2025-08-12",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202chab6c27b91",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://docs.google.com/spreadsheets/d/1fTOAqF7rZ9ugyF1ZFqInJpQ1LgXEu1rnG1Js0y-1YSo/edit?nvep=&hmac=&emci=b910b780-d290-f011-b484-6045bdeb7413&emdi=ea000000-0000-0000-0000-000000000001&ceid=&gid=0#gid=0",
+      "field_start": "2025-09-02",
+      "field_end": "2025-09-08",
+      "population": "lv",
+      "sample_n": 855,
+      "sponsors": [
+        "Carolina Forward"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202har2b123ce0",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/09/H23315-CJ-NC-Sept25-Toplines.pdf",
+      "field_start": "2025-09-14",
+      "field_end": "2025-09-15",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202har1bdb30c5",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/polls/november-2025-cooper-maintains-lead-in-senate-race",
+      "field_start": "2025-11-09",
+      "field_end": "2025-11-10",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202harc344974e",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2025/11/H23440-CJ-NC-Nov25-Toplines.pdf",
+      "field_start": "2025-11-09",
+      "field_end": "2025-11-10",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202eme013c2ece",
+      "race_id": "USA:NC:senate",
+      "pollster": "Emerson College",
+      "reason": "unregistered_primary_host",
+      "source_url": "https://docs.google.com/spreadsheets/d/15z1ND9R9K0UklZgcXV7Wf1Qotwsj7kb7/edit?gid=455076038#gid=455076038",
+      "field_start": "2025-07-28",
+      "field_end": "2025-07-30",
+      "population": "rv",
+      "sample_n": 1000,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202cha2976f667",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://docs.google.com/spreadsheets/d/1_I2lZN7nOAANajydNZPjm_jaPVK_CVWO9FDuX0kReVQ/edit",
+      "field_start": "2026-01-05",
+      "field_end": "2026-01-07",
+      "population": "lv",
+      "sample_n": 1105,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202tipab84b110",
+      "race_id": "USA:NC:senate",
+      "pollster": "TIPP Insights",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.dailysignal.com/2026/01/19/exclusive-economy-remains-gops-biggest-vulnerability-in-north-carolina-new-poll-shows",
+      "field_start": "2026-01-12",
+      "field_end": "2026-01-15",
+      "population": "rv",
+      "sample_n": 1512,
+      "sponsors": [
+        "League of American Workers"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202cha2111afda",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://docs.google.com/spreadsheets/d/1Onaf6YlsprPfjSMODM7ibvwEXs082o7-jNMCML7lGGo/edit?gid=0#gid=0",
+      "field_start": "2026-01-31",
+      "field_end": "2026-02-04",
+      "population": "rv",
+      "sample_n": 1069,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub85665d25",
+      "race_id": "USA:NC:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2026/03/NorthCarolinaResults31626.pdf",
+      "field_start": "2026-03-13",
+      "field_end": "2026-03-14",
+      "population": "rv",
+      "sample_n": 556,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202nex3971aa3a",
+      "race_id": "USA:NC:senate",
+      "pollster": "Nexus Strategies/Strategic Partners Solutions",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.healthierunited.org/media/disagree-healthier-launch-j6kn8-4rbfc",
+      "field_start": "2026-03-08",
+      "field_end": "2026-03-09",
+      "population": "lv",
+      "sample_n": 800,
+      "sponsors": [
+        "Healthier United Fund"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202you2133db87",
+      "race_id": "USA:NC:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.catawba.edu/news/all-news/2026/yougov-24",
+      "field_start": "2026-03-09",
+      "field_end": "2026-03-18",
+      "population": "lv",
+      "sample_n": 871,
+      "sponsors": [
+        "Catawba College Center for North Carolina Politics & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202higf04011a1",
+      "race_id": "USA:NC:senate",
+      "pollster": "High Point University Survey Research Center/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
+      "field_start": "2026-03-26",
+      "field_end": "2026-04-06",
+      "population": "lv",
+      "sample_n": 703,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202hig7de64e7d",
+      "race_id": "USA:NC:senate",
+      "pollster": "High Point University Survey Research Center/YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
+      "field_start": "2026-03-26",
+      "field_end": "2026-04-06",
+      "population": "rv",
+      "sample_n": 800,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202opi5a64ca39",
+      "race_id": "USA:NC:senate",
+      "pollster": "Opinion Diagnostics",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/iapolls2022/status/2049576363175096384?s=46",
+      "field_start": "2026-04-21",
+      "field_end": "2026-04-24",
+      "population": "lv",
+      "sample_n": 830,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202harb00382e0",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2026/05/H23893-CJ-NC-May26-Toplines-Revised.pdf",
+      "field_start": "2026-05-10",
+      "field_end": "2026-05-11",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202chab31a8a6e",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://carolinaforward.org/blog/the-may-2026-carolina-forward-poll",
+      "field_start": "2026-05-04",
+      "field_end": "2026-05-08",
+      "population": "lv",
+      "sample_n": 957,
+      "sponsors": [
+        "Carolina Forward"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202harca09238f",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/wp-content/uploads/2026/03/H23758-CJ-NC-Mar26-Toplines.pdf",
+      "field_start": "2026-03-22",
+      "field_end": "2026-03-23",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202youca5f07f2",
+      "race_id": "USA:NC:senate",
+      "pollster": "YouGov",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.catawba.edu/news/all-news/2026/yougovsurvey27/",
+      "field_start": "2026-06-01",
+      "field_end": "2026-06-10",
+      "population": "lv",
+      "sample_n": 905,
+      "sponsors": [
+        "Catawba College Center for North Carolina Politics & Public Service"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub96a42a3f",
+      "race_id": "USA:NC:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.publicpolicypolling.com/polls/cooper-leads-but-whatley-has-a-path/",
+      "field_start": "2026-07-10",
+      "field_end": "2026-07-11",
+      "population": "lv",
+      "sample_n": 759,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202chad53b9fb6",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://garypearcenc.substack.com/p/cooper-up-by-9-trump-still-slumps",
+      "field_start": "2026-07-29",
+      "field_end": "2026-08-01",
+      "population": "lv",
+      "sample_n": 967,
+      "sponsors": [
+        "Talking About Politics"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202chaf0ea6e94",
+      "race_id": "USA:NC:senate",
+      "pollster": "Change Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://carolinaforward.org/news/the-august-2026-carolina-forward-poll/",
+      "field_start": "2026-08-03",
+      "field_end": "2026-08-06",
+      "population": "lv",
+      "sample_n": 915,
+      "sponsors": [
+        "Carolina Forward"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202elodaa5cffa",
+      "race_id": "USA:NC:senate",
+      "pollster": "Elon University/YouGov",
+      "reason": "primary_provider_field_dates_conflict",
+      "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
+      "field_start": "2026-07-21",
+      "field_end": "2026-07-23",
+      "population": "rv",
+      "sample_n": 717,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202elo069243f3",
+      "race_id": "USA:NC:senate",
+      "pollster": "Elon University/YouGov",
+      "reason": "primary_provider_field_dates_conflict",
+      "source_url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
+      "field_start": "2026-07-21",
+      "field_end": "2026-07-23",
+      "population": "lv",
+      "sample_n": 466,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202har1cef6d8a",
+      "race_id": "USA:NC:senate",
+      "pollster": "Harper Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.carolinajournal.com/polls/august-2026-coopers-lead-over-whatley-grows-to-12-5-points/",
+      "field_start": "2026-08-09",
+      "field_end": "2026-08-10",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "The Carolina Journal"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202easa9c1ac17",
+      "race_id": "USA:NC:senate",
+      "pollster": "East Carolina University",
+      "reason": "forced_choice_question_not_comparable",
+      "source_url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points",
+      "field_start": "2026-08-31",
+      "field_end": "2026-09-03",
+      "population": "lv",
+      "sample_n": 675,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202insf80352ad",
+      "race_id": "USA:NC:senate",
+      "pollster": "InsiderAdvantage",
+      "reason": "primary_release_not_accessed",
+      "source_url": "https://insideradvantage.com/nc-top-line-tabs",
+      "field_start": "2026-09-16",
+      "field_end": "2026-09-17",
+      "population": "lv",
+      "sample_n": 1200,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202bigf2db767c",
+      "race_id": "USA:NC:senate",
+      "pollster": "Big Data Poll",
+      "reason": "primary_provider_candidate_values_conflict",
+      "source_url": "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/",
+      "field_start": "2026-09-27",
+      "field_end": "2026-09-29",
+      "population": "lv",
+      "sample_n": 642,
+      "sponsors": [
+        "Public Polling Project"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202nei29757f09",
+      "race_id": "USA:NC:house:01",
+      "pollster": "Neighborhood Research and Media",
+      "reason": "primary_methodology_not_obtained",
+      "source_url": "https://x.com/Shaftan/status/2107772933322277266",
+      "field_start": "2026-10-01",
+      "field_end": "2026-10-06",
+      "population": "lv",
+      "sample_n": 303,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -90183,13 +90996,13 @@
     "groups": {
       "requested_states": {
         "race_count": 196,
-        "with_observations": 23,
+        "with_observations": 24,
         "recent_7d": 1,
         "recent_14d": 7
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 28,
+        "with_observations": 29,
         "recent_7d": 1,
         "recent_14d": 13
       },
@@ -92889,13 +93702,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "no_provider_record",
-        "provider_record_count": 0,
-        "accepted_count": 0,
+        "status": "reference_only",
+        "provider_record_count": 1,
+        "accepted_count": 1,
+        "reviewed_primary_supplement_count": 1,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
+        "reference_only_count": 1,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-04-29",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -92906,8 +93720,12 @@
             "pollster_count": 0
           }
         },
-        "rejection_reasons": {},
-        "review_queue_ids": [],
+        "rejection_reasons": {
+          "primary_methodology_not_obtained": 1
+        },
+        "review_queue_ids": [
+          "us-202nei29757f09"
+        ],
         "finance_join": {
           "race_id": "USA:NC:house:01",
           "file": "usa_election_finance/2026/races/NC-house-01-76030b2484319936.json",
@@ -93369,11 +94187,12 @@
         },
         "status": "older_polls_only",
         "provider_record_count": 37,
-        "accepted_count": 1,
-        "aggregation_eligible_count": 1,
+        "accepted_count": 8,
+        "reviewed_primary_supplement_count": 1,
+        "aggregation_eligible_count": 8,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": "2026-09-16",
+        "latest_accepted_field_end": "2026-09-20",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -93385,27 +94204,23 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 30,
+          "primary_provider_candidate_values_conflict": 1,
+          "primary_release_not_accessed": 1,
           "forced_choice_question_not_comparable": 1,
-          "outside_reviewed_general_period": 4,
+          "pollster_not_selected": 24,
+          "primary_provider_field_dates_conflict": 2,
           "unregistered_primary_host": 1
         },
         "review_queue_ids": [
           "us-202bigf2db767c",
           "us-202insf80352ad",
-          "us-202harfc1499b8",
           "us-202easa9c1ac17",
-          "us-202elo857d928d",
-          "us-202hig8ec8c4e5",
-          "us-202hig0453aa0e",
           "us-202har1cef6d8a",
           "us-202chaf0ea6e94",
           "us-202chad53b9fb6",
-          "us-202beacaddacc4",
           "us-202elodaa5cffa",
           "us-202elo069243f3",
           "us-202pub96a42a3f",
-          "us-202thef5594fea",
           "us-202youca5f07f2",
           "us-202harb00382e0",
           "us-202chab31a8a6e",
@@ -109516,7 +110331,7 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 13,
+        "with_polls": 14,
         "with_recent_7d": 0,
         "with_recent_14d": 2,
         "with_super_pac": 316,
@@ -110294,15 +111109,17 @@
         },
         "poll_status": "older_polls_only",
         "phase": "pre_election",
-        "poll_observation_count": 1,
-        "poll_eligible_count": 1,
+        "poll_observation_count": 8,
+        "poll_eligible_count": 8,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 37,
         "rejection_reasons": {
-          "pollster_not_selected": 30,
+          "primary_provider_candidate_values_conflict": 1,
+          "primary_release_not_accessed": 1,
           "forced_choice_question_not_comparable": 1,
-          "outside_reviewed_general_period": 4,
+          "pollster_not_selected": 24,
+          "primary_provider_field_dates_conflict": 2,
           "unregistered_primary_host": 1
         },
         "matchup_reviewed": true,
@@ -110328,15 +111145,17 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 4,
           "parties": [
             "DEM",
+            "GRN",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -110412,14 +111231,16 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "no_provider_record",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 1,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
-        "provider_record_count": 0,
-        "rejection_reasons": {},
+        "provider_record_count": 1,
+        "rejection_reasons": {
+          "primary_methodology_not_obtained": 1
+        },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
@@ -110443,15 +111264,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -111963,15 +112785,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 3,
           "parties": [
             "DEM",
+            "LIB",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/Candidate_Listing_2026.csv",
+          "reviewed_on": "2026-10-08",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -140533,7 +141356,6 @@
           "race_count": 14,
           "scheduled": true,
           "polls_without_observations": [
-            "USA:NC:house:01",
             "USA:NC:house:02",
             "USA:NC:house:03",
             "USA:NC:house:04",
@@ -142319,10 +143141,54 @@
       "state": "NC",
       "cycle": 2026,
       "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:24:36.831849+00:00",
-      "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 37
+      "captured_at": "2026-10-08T14:19:06.858715+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "2b5fe4aac83b1fdc660092f4b9934da4bd62b1a0bf9832c9cfec0ff8d0a29b56",
+      "provider_records": 38,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-opinion-diagnostics-nc-senate-20260925",
+          "state": "NC",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T14:19:18.449021+00:00",
+          "documents": [
+            {
+              "url": "https://www.commoncause.org/north-carolina/wp-content/uploads/2026/09/CCNC-Sep-2026-Poll-Release-1.pdf",
+              "status": "unchanged",
+              "sha256": "59bf8c72ee0b9cdd82a46f259847a3920a2e457a5825ad31f5a3037e1096b258"
+            }
+          ],
+          "provider_duplicate_ids": []
+        },
+        {
+          "id": "primary-coefficient-nc-house01-20260508",
+          "state": "NC",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-08T14:19:18.812277+00:00",
+          "documents": [
+            {
+              "url": "https://www.nrcc.org/wp-content/uploads/2026/05/NRCC-NC-01-Survey-Memo-1.pdf",
+              "status": "unchanged",
+              "sha256": "d88ef252f02dc609106810f17361142f8447c332728ec839964c01b9435e4815"
+            }
+          ],
+          "provider_duplicate_ids": []
+        }
+      ],
+      "primary_rechecked_ids": [
+        "us-202higae3d1182",
+        "us-202hig0453aa0e",
+        "us-202hig8ec8c4e5",
+        "us-202harfc1499b8",
+        "us-202elo857d928d",
+        "us-202beacaddacc4",
+        "primary-opinion-diagnostics-nc-senate-20260925",
+        "primary-coefficient-nc-house01-20260508"
+      ],
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/NC-primary-20261008.json",
+      "primary_rechecked_at": "2026-10-08T14:12:12.669235+00:00"
     },
     "TX": {
       "state": "TX",

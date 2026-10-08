@@ -87,7 +87,7 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
                         require(review.get('office') == 'house' and re.fullmatch(r'H[0-9A-Z]{8}', review['candidate_id'])
                                 and review['candidate_id'] == candidate.get('reported_fec_id')
                                 and review.get('reported_fec_id') == candidate.get('reported_fec_id')
-                                and review.get('agency_reported_name') == candidate.get('reported_name')
+                                and review.get('agency_reported_name') == (candidate.get('reported_name') or candidate.get('reported_legal_name'))
                                 and review.get('official_source_url') == candidate['source_url'],
                                 'changed House finance identity requires review')
                         provenance = [p for p in (identity_reviews or {}).get('source_snapshots', [])

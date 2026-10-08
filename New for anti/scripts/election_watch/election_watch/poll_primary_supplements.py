@@ -11,6 +11,10 @@ from urllib.request import Request, urlopen
 from .polls import require
 from .poll_quality import answer_correction_fingerprint
 
+# Reviewed publishers with finite release URLs and SHA-256 snapshots below.
+# New releases still require a committed record/document review.
+PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org'))
+
 
 def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
     require(snapshot['schema']=='usa_reviewed_primary_poll_supplements_v1'
@@ -26,7 +30,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         documents=entry['documents'];require(documents, 'missing reviewed primary documents')
         for document in documents:
             parsed=urlparse(document['url'])
-            require(parsed.scheme=='https' and parsed.hostname=='poll.qu.edu'
+            require(parsed.scheme=='https' and parsed.hostname in PRIMARY_PDF_HOSTS
                     and not parsed.username and not parsed.password and parsed.path.endswith('.pdf')
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # A later API import of this same wave must agree before deduplication.
