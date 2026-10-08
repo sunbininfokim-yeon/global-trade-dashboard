@@ -47,15 +47,16 @@
       "limitations_ko": "단일 조사. 공개 결과표를 반올림한 API와 일치. 비확률 요소가 포함된 표본의 발표 신뢰구간이며 계산 모델 검증·후보 격차의 유의성 평가 미완료."
     },
     "gov202sufa08bfacb": {
-      "reviewed_on": "2026-10-05",
-      "snapshot_sha256": "c4e926da77e899e77e1dfc0f4b022f96da1b30a44baa5d5a2de4e80af2d64e9a",
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
       "sources": [
         "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
         "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
       ],
       "primary_toplines": {
         "Amy Acton": 50.4,
-        "Vivek Ramaswamy": 41.4
+        "Vivek Ramaswamy": 41.4,
+        "Don Kissick": 2.8
       },
       "question_sample_n": 500,
       "disclosure_review": {
@@ -65,26 +66,63 @@
           "2026-09-23",
           "2026-09-27"
         ],
-        "sponsor": "USA TODAY Network Ohio",
-        "sampling_frame": "landline and cell phones; county allocation proportional to expected likely voters",
+        "question_wording_checked": true,
+        "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
         "mode": "live telephone",
         "weighting": null,
-        "question_wording_checked": true,
-        "demographic_design": "quotas informed by prior midterm exit polls, Census and ACS"
+        "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
+        "lv_screen": "very/somewhatlikelyNovembervote",
+        "question": "Q9 named3candidate voteorlean; rotated",
+        "non_candidate_responses": {
+          "write_in": 0.2,
+          "undecided": 4.8,
+          "refused": 0.4
+        },
+        "missing_fields": [
+          "full_weight_calculation",
+          "design_effect",
+          "reported_precision_confidence_level"
+        ]
       },
       "reported_precision": {
-        "kind": "margin_of_sampling_error",
+        "kind": "publisher_reported_margin_of_sampling_error",
         "half_width_pp": 4.4,
         "confidence_level_pct": null,
-        "scope": "overall_sample",
-        "model_details_verified": false
+        "scope": "500_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "USA TODAY Network Ohio"
       },
       "missing_fields": [
-        "weight_calculation_details",
-        "design_effect_adjustment",
-        "historical_accuracy_rating"
+        "accuracy_grade",
+        "statistical_significance",
+        "full_weight_calculation",
+        "design_effect",
+        "reported_precision_confidence_level"
       ],
-      "limitations_ko": "전체 표본 발표 오차범위. 후보 간 격차 오차범위는 별도이며 유의성 미평가. 인구별 할당 설명을 사후 가중치 공개로 간주하지 않음."
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "df2c68e18d61bb41b3153af4ca82ecb0d4eb799e8dda91b902f41d53470f1987",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+          "sha256": "cee90f4e4d5c5ac0934ea51257a71a715d0a1cf412695dc84dcffab9aa0da293",
+          "relevant_pages": [
+            1,
+            3
+          ]
+        }
+      ],
+      "snapshot_sha256": "0f4eedef8e5811de63a3f49c65b7619f98ce6528daaf18972e41d9ea8550526c"
     },
     "gov202theafe06bf1": {
       "reviewed_on": "2026-10-05",
@@ -3910,6 +3948,470 @@
       ],
       "snapshot_sha256": "3f178a3dc8d0c4268ecc1892236d8e4a11dd058b07749bb124b1ab53459b50f4",
       "primary_supplement_record_sha256": "cdbf2163c45f9a0e1b0a543fd9a53996bc453c70f1a48c8d2a1f8395eb9641b8"
+    },
+    "us-202cnna1713372": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 49.0,
+        "Jon Husted": 43.0
+      },
+      "question_sample_n": 760,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 760,
+        "field_dates": [
+          "2026-09-29",
+          "2026-10-05"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": {
+          "L2_registration_based": 524,
+          "SSRS_probability_panel": 236
+        },
+        "mode": "online and telephone; postal/SMS/email/call invitations; English",
+        "lv_definition": "all760RV retained; RV weight multiplied by modeled2026 turnout probability; not screened760LV subset",
+        "weighting": "Censuseducation/race; L2 gender-by-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regionalrecalled2024vote",
+        "question": "SENVOTEOH combinedS1/S1a withleaners",
+        "non_candidate_responses": {
+          "neither": 5,
+          "other": 2,
+          "no_opinion": 1
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "760_RV_weighted_for_LV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "CNN",
+        "conducted_by": "SSRS"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "868e9f8de8f62211718e6664e3bb4f912c02ff187f2ccfc7c0a4b3adc238649a",
+      "admission": {
+        "pollster": "CNN/SSRS",
+        "provider_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "group": "cnn_ssrs",
+        "methodology_url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+          "sha256": "5ece2b2f7621280472d826bd43ebe18dfb045a6738f16da03f26ac2d26c30baf",
+          "relevant_pages": [
+            1,
+            2,
+            3,
+            7
+          ]
+        }
+      ],
+      "snapshot_sha256": "593d5b565514e0ae69e41bb61c918d1dbd09be57dc432937bddf2534cfb6d72b"
+    },
+    "gov202cnn61f54c15": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952"
+      ],
+      "primary_toplines": {
+        "Amy Acton": 50.0,
+        "Vivek Ramaswamy": 42.0
+      },
+      "question_sample_n": 760,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 760,
+        "field_dates": [
+          "2026-09-29",
+          "2026-10-05"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": {
+          "L2_registration_based": 524,
+          "SSRS_probability_panel": 236
+        },
+        "mode": "online and telephone; postal/SMS/email/call invitations; English",
+        "lv_definition": "all760RV retained; RV weight multiplied by modeled2026 turnout probability; not screened760LV subset",
+        "weighting": "Censuseducation/race; L2 gender-by-age/region/density/modeled2024vote/vote-mode/2022x2024turnout/primary; regionalrecalled2024vote",
+        "question": "GOVVOTEOH combinedG1/G1a withleaners",
+        "non_candidate_responses": {
+          "neither": 6,
+          "other": 2,
+          "no_opinion": 1
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "760_RV_weighted_for_LV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "two_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "CNN",
+        "conducted_by": "SSRS"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "d00fb5df6f6451c0843441abe70f51e877580303fd2cb7083aaf3365f4048026",
+      "admission": {
+        "pollster": "CNN/SSRS",
+        "provider_url": "https://www.cnn.com/2026/10/08/politics/cnn-polls-ohio-iowa-senate-governor-midterms",
+        "group": "cnn_ssrs",
+        "methodology_url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+        "source_role": "commissioner_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://s3.documentcloud.org/documents/28729016/cnn-ohio-poll-conducted-by-ssrs.pdf?t=1791421824952",
+          "sha256": "5ece2b2f7621280472d826bd43ebe18dfb045a6738f16da03f26ac2d26c30baf",
+          "relevant_pages": [
+            1,
+            2,
+            3,
+            7
+          ]
+        }
+      ],
+      "snapshot_sha256": "830174ec6ce9bf9d9caa1e66a0114b9daad6f5a3b58a9c5a43b17913e04f2246"
+    },
+    "us-202mara7f1d430": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 51.0,
+        "Jon Husted": 43.0
+      },
+      "question_sample_n": 1298,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 1298,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "L2registeredvoterfile; CintaggregatedpanelsmatchedtoL2",
+        "mode_counts": {
+          "live_phone": 213,
+          "text": 858,
+          "online": 227
+        },
+        "weighting": "L2 age/gender/income/race; CPSeducation; turnout-adjustedregions",
+        "screening": "18+registeredOhio; age/registrationconfirmation andwebattentionchecks",
+        "question": "SNVT26R named initialSenate",
+        "non_candidate_responses": {
+          "another_party": 1,
+          "undecided": 4,
+          "no_response": 1
+        },
+        "design_effect": 1.93,
+        "missing_fields": [
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.8,
+        "confidence_level_pct": null,
+        "scope": "1298_RV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "Marist University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "467250665475b20a664547ebdffffb76a0116ac948be081ae97364920cb1b6d4",
+      "admission": {
+        "pollster": "Marist University",
+        "provider_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "group": "marist",
+        "methodology_url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+          "sha256": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30",
+          "relevant_pages": [
+            1,
+            8
+          ]
+        }
+      ],
+      "snapshot_sha256": "dc260618b0a074cd965c239e3002137013be9e3a5ba7908f5e40308bdef9345a"
+    },
+    "gov202marb1c4f938": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf"
+      ],
+      "primary_toplines": {
+        "Amy Acton": 50.0,
+        "Vivek Ramaswamy": 44.0
+      },
+      "question_sample_n": 1298,
+      "disclosure_review": {
+        "population": "RV",
+        "sample_n": 1298,
+        "field_dates": [
+          "2026-09-24",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "L2registeredvoterfile; CintaggregatedpanelsmatchedtoL2",
+        "mode_counts": {
+          "live_phone": 213,
+          "text": 858,
+          "online": 227
+        },
+        "weighting": "L2 age/gender/income/race; CPSeducation; turnout-adjustedregions",
+        "screening": "18+registeredOhio; age/registrationconfirmation andwebattentionchecks",
+        "question": "GVVT26R named initialGovernor",
+        "non_candidate_responses": {
+          "another_party": 3,
+          "undecided": 3,
+          "no_response": "less_than_one_percent"
+        },
+        "design_effect": 1.93,
+        "missing_fields": [
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 3.8,
+        "confidence_level_pct": null,
+        "scope": "1298_RV",
+        "includes_design_effects": true,
+        "validated_here": false
+      },
+      "ballot_format": "named_initial_ballot_with_undecided",
+      "sponsor_review": {
+        "funding": "Marist University"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "0c4c669f36ab9906f65fc2061f2157217dc08362bfa9725bf22a7b9f5fa2a0e9",
+      "admission": {
+        "pollster": "Marist University",
+        "provider_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+        "group": "marist",
+        "methodology_url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+          "sha256": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30",
+          "relevant_pages": [
+            1,
+            11
+          ]
+        }
+      ],
+      "snapshot_sha256": "d842954c05d13840d86ea5f1d19d6f74acf527fddd7d6e647aee156bcee8e62d"
+    },
+    "us-202dcc0662cb55": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/"
+      ],
+      "primary_toplines": {
+        "Marcy Kaptur": 48.0,
+        "Derek Merrin": 48.0
+      },
+      "question_sample_n": 481,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 481,
+        "field_dates": [
+          "2026-09-22",
+          "2026-09-23"
+        ],
+        "question_wording_checked": false,
+        "mode": "phone andtext-to-web",
+        "sampling_frame": null,
+        "weighting": null,
+        "question": "OH09 initialheadtohead withundecided4; fullquestionwording notprinted",
+        "lv_screen": null,
+        "missing_fields": [
+          "full_question_wording",
+          "sampling_frame",
+          "weighting",
+          "exact_lv_screen"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_error",
+        "half_width_pp": 4.5,
+        "confidence_level_pct": 95,
+        "scope": "481_LV",
+        "validated_here": false
+      },
+      "ballot_format": "party_internal_head_to_head",
+      "sponsor_review": {
+        "commissioner": "DCCC",
+        "primary_internal": true,
+        "provider_internal": false,
+        "partisan_party": "DEM",
+        "discrepancy_note": "Primary explicitly says internal; provider internal=false retained separately."
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "full_question_wording",
+        "sampling_frame",
+        "weighting",
+        "exact_lv_screen"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "890cb7a4677634c0c65aed71a60f06aff8ac3c6774f060db5e336b8e263c1127",
+      "admission": {
+        "pollster": "DCCC Targeting and Analytics Department",
+        "provider_url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+        "group": "dccc",
+        "methodology_url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+        "source_role": "commissioner_primary",
+        "signal_eligible": false,
+        "signal_exclusion_reasons": [
+          "party_internal_reference"
+        ],
+        "allow_partisan_reference": true,
+        "reviewed_partisan": "DEM",
+        "reviewed_sponsors": []
+      },
+      "primary_documents": [
+        {
+          "url": "https://dccc.org/dccc-polling-memo-oh-09-is-a-dead-heat/",
+          "sha256": "695b833bdfdd807c493f542d7e34379d80251e0c497536f93c0415d20e7e7d3b",
+          "relevant_pages": null
+        }
+      ],
+      "snapshot_sha256": "64c863e5613b1a77c5286aa6486306053cb2f6b0b1d6b0ca7aaa108ea2be7d3e"
+    },
+    "primary-suffolk-oh-senate-20261002": {
+      "reviewed_on": "2026-10-08",
+      "reviewed_at": "2026-10-08T14:48:03.421794+00:00",
+      "sources": [
+        "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
+      ],
+      "primary_toplines": {
+        "Sherrod Brown": 46.6,
+        "Jon Husted": 44,
+        "Greg Levy": 1,
+        "William B. Redpath": 2
+      },
+      "question_sample_n": 500,
+      "disclosure_review": {
+        "population": "LV",
+        "sample_n": 500,
+        "field_dates": [
+          "2026-09-23",
+          "2026-09-27"
+        ],
+        "question_wording_checked": true,
+        "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
+        "mode": "live telephone",
+        "weighting": null,
+        "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
+        "lv_screen": "very/somewhatlikelyNovembervote",
+        "question": "Q8 named4candidate voteorlean; rotated",
+        "non_candidate_responses": {
+          "write_in": 0,
+          "undecided": 6,
+          "refused": 0.4
+        },
+        "missing_fields": [
+          "full_weight_calculation",
+          "design_effect",
+          "reported_precision_confidence_level"
+        ]
+      },
+      "reported_precision": {
+        "kind": "publisher_reported_margin_of_sampling_error",
+        "half_width_pp": 4.4,
+        "confidence_level_pct": null,
+        "scope": "500_LV",
+        "validated_here": false
+      },
+      "ballot_format": "multi_candidate_with_leaners",
+      "sponsor_review": {
+        "commissioner": "USA TODAY Network Ohio"
+      },
+      "missing_fields": [
+        "accuracy_grade",
+        "statistical_significance",
+        "full_weight_calculation",
+        "design_effect",
+        "reported_precision_confidence_level"
+      ],
+      "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다.",
+      "provider_record_sha256": "946366b667a5579de18d8eb7bce9a0045f84c4219780bef82eb2263e9da5de9b",
+      "admission": {
+        "pollster": "Suffolk University",
+        "provider_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "group": "suffolk",
+        "methodology_url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+        "source_role": "pollster_primary",
+        "signal_eligible": true
+      },
+      "primary_documents": [
+        {
+          "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+          "sha256": "cee90f4e4d5c5ac0934ea51257a71a715d0a1cf412695dc84dcffab9aa0da293",
+          "relevant_pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "snapshot_sha256": "64f1fd7c2108f5c56cfc908a25fea1f84c0cc478114efdb814468974fe518e0a",
+      "primary_supplement_record_sha256": "946366b667a5579de18d8eb7bce9a0045f84c4219780bef82eb2263e9da5de9b"
     }
   }
 }

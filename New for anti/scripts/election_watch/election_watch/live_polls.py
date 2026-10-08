@@ -149,6 +149,15 @@ def normalize(rows, policy, as_of):
             p, answer_correction = corrected_provider_answers(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             p, source_correction = corrected_provider_source(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
+            primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
+                'sponsor_review', {}).get('primary_internal') is True
+            if primary_internal:
+                # A primary release can disclose internal commissioning that the
+                # aggregator omitted. Keep its raw flag, but never count it in a signal.
+                require(admission and admission['signal_eligible'] is False
+                        and 'party_internal_reference' in admission.get('signal_exclusion_reasons', [])
+                        and admission.get('allow_partisan_reference') is True,
+                        'primary_internal_poll_requires_reference_review')
             partisan_reference = (admission and admission.get('allow_partisan_reference') is True
                                   and admission['signal_eligible'] is False
                                   and p.get('internal') is False
@@ -225,6 +234,9 @@ def normalize(rows, policy, as_of):
                 observation['provider_source_correction'] = source_correction
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
+            if primary_internal:
+                observation['commissioning'].update(internal=True, provider_internal=p.get('internal'),
+                    internal_basis='explicitly_disclosed_in_reviewed_primary_release')
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
             if primary and primary['status']=='carried_forward_reference_only':

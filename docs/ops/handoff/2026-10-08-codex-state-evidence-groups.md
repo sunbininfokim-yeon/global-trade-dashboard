@@ -85,7 +85,7 @@ python3 refresh_state_sequence.py --from-state GA --through-state WY --as-of 202
 | 9 | A / NV | 3/4 | 0 | non_election | 0 | 1 | adapter_or_source_review_required |
 | 10 | A / NC | 7/14 | 1 (참고) | 1/1 | 1 | 0 | non_election |
 | 11 | B / TX | 30/38 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
-| 12 | B / OH | 8/15 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 12 | B / OH | 8/15 | 1 (참고) | 1/1 | 1 | 1 | source_access_blocked |
 | 13 | B / IA | 4/4 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
 | 14 | B / CA | 49/52 | 1 | non_election | 0 | 1 | implemented_partial |
 | 15 | B / CO | 4/8 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
@@ -128,3 +128,5 @@ python3 refresh_state_sequence.py --from-state GA --through-state WY --as-of 202
 - 최신 MI 후속: 실제API91건·표시10건/원문9건·co/efficient2건신규편입, 전국79건(적격62·참고17). Fox미시간방법교체·Emerson소수점정정. 신원9명보강으로하원누적13/13, 본선4구. 주지사MiTN시간초과로미완료. 다음WI·재시도GA→MI.333검사·타주491레이스/기존금융4638파일보존. [MI 인수](2026-10-08-codex-state-evidence-MI.md).
 
 - 최신 NC후속(사용자즉시요청): 공식상원4명/하원14대진보강, API38대상·표시9관측(상원8/하원1구참고1)·원문8대조. CommonCause/NRCC2원문누락보완, 최근7/14일적격0. 후보신원5명추가32→37연결, O누적하원7/14·상원1/1, 주지사비선거. 전국87관측(적격69/참고18). 최신NC01/BigData등방법·수치충돌보류.342검사·타주491레이스/기존금융4639파일보존. WI→AZ→NV예약유지·다음심화검토WI. [NC 인수](2026-10-08-codex-state-evidence-NC.md).
+
+- OH 사용자즉시후속: API48대상·표시8(상원3/주지사4/하원09내부참고1), 원문재검토7. 7일상원/주지사CNN1기관씩;14일상원LV2/주지사LV3, RV별도. 공식후보주지사·보궐상원/하원01·08·13과기입/minor보강,13구Dixit추가·8구Enoch공시신원1추가. O누적하원8/15·상원1/1,주지사현재포털403.353검사·타주489레이스/기존금융4639파일보존. TX10/9 03:40·WI04:20/AZ05:00/NV06:00예약유지, B다음수동IA. [OH 인수](2026-10-08-codex-state-evidence-OH.md).

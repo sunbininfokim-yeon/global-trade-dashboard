@@ -236,6 +236,19 @@
         []
       ],
       "selection_reason_ko": "2026-10-08 기관 원문 결과·표본·기간·방법 공개 확인. 책임 기관과 자체 공개 도메인만 연결. 새 API 발표는 내부/당파성·대진·기간 검사 후 부분 검증으로 수집하고 원문별 검증과 정확도 등급은 별도. 새 의뢰자와 공유 문서 호스트는 자동 허용하지 않습니다."
+    },
+    "CNN/SSRS": {
+      "group": "cnn_ssrs",
+      "hosts": [
+        "www.cnn.com",
+        "edition.cnn.com",
+        "ssrs.com"
+      ],
+      "methodology_url": "https://ssrs.com/news/an-ohio-edge-and-iowa-tossup-heading-into-the-2026-election/",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "CNN의의뢰기사와SSRS공식발표가직접연결한Ohio상세표·표본/모집/LV가중방법을검토. 미래API원문은등록호스트·대진·의뢰자·기간검사후부분검증수집. 정확도인증아님."
     }
   },
   "races": {
@@ -1143,7 +1156,18 @@
     "us-202elodaa5cffa": "primary_provider_field_dates_conflict",
     "us-202elo069243f3": "primary_provider_field_dates_conflict",
     "us-202nei29757f09": "primary_methodology_not_obtained",
-    "us-202insf80352ad": "primary_release_not_accessed"
+    "us-202insf80352ad": "primary_release_not_accessed",
+    "us-202quad5474d87": "primary_question_and_methods_not_obtained",
+    "us-202qua2790f813": "primary_question_and_methods_not_obtained",
+    "us-202tavd2d23773": "primary_provider_sample_mismatch",
+    "us-202big1f625134": "primary_geography_methodology_conflict",
+    "gov202big5e3239e4": "primary_geography_and_candidate_table_not_verified",
+    "us-202ins890b679a": "primary_release_not_accessed",
+    "us-202insea9816ae": "primary_release_not_accessed",
+    "us-202har67e7828b": "primary_methodology_not_obtained",
+    "us-202har2b87ea23": "primary_methodology_not_obtained",
+    "us-202beda3a16f8f": "commissioner_primary_not_obtained",
+    "us-202unke3b76dc0": "missing_pollster_sample_and_primary_methodology"
   },
   "excluded_watch_slots": [
     {
@@ -1251,6 +1275,105 @@
       "reason": "forced_choice_question_not_comparable",
       "note_ko": "초기45.7/38.5·미정13.7과 강제 선택51.7/43.6을 구분. 기존 강제 문항 집계 제외 정책 유지.",
       "provider_record_sha256": "5689f49a510cffed53825a890e779404599ccca658e9da8173210f7dcac44a3b"
+    },
+    "us-202quad5474d87": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/new-quantus-insights-survey-ohio%E2%80%99s-1st-district-is-up-for-grabs"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관페이지응답200은게시제목/동적본문자리만반환. Ohio01 API47.9/44.6/509LV 원문질문·방법미확보.",
+      "provider_record_sha256": "59a45b030383bf04e821df921133288273bc392a0f661c07f3031c4e39dbc0d1"
+    },
+    "us-202qua2790f813": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/brown-and-husted-deadlocked-in-ohio-senate-race"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관Senate게시물은동적본문미확보;695LV47.8/47.3만으로편입안함.",
+      "provider_record_sha256": "38694beb7c2b585d6b1286491c275248b625d5f6496b8b8bb28afc43c59a3b13"
+    },
+    "us-202tavd2d23773": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf"
+      ],
+      "reason": "primary_provider_sample_mismatch",
+      "note_ko": "원문총635명, API560명. 본선54/46은leaners포함; 문항표본560으로확인할근거없음. 공개공유호스트의책임기관/의뢰자도미확인.",
+      "provider_record_sha256": "17bea0126aaa91bf29d6b835716c82ada6aaba0685d330601c96705d5cb604dd"
+    },
+    "us-202big1f625134": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_methodology_conflict",
+      "note_ko": "Ohio결과기사의방법본문은Texas735RV/680LV로기재. 초기45.5/41.6과API leaned46.3/42.6도분리;관할방법/전체원표미확보.",
+      "provider_record_sha256": "97fb1b76bc770f6f273cbde50fbadbf21c4a58954c0073e5a266d080a54ace41"
+    },
+    "gov202big5e3239e4": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_and_candidate_table_not_verified",
+      "note_ko": "동일Ohio페이지방법은Texas기재·주지사전체후보값미확보. APIminor5.3을확인값으로사용안함.",
+      "provider_record_sha256": "3b0eeef97a2b9ed68a6e2e8b036fdd44ccf0eda774fcd892fabf571a17dd957f"
+    },
+    "us-202ins890b679a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/top-line-tabs-ohio/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관top-line원문접근미확인. 기존Georgia원문등록을Ohio개별원문검증으로대체하지않음.",
+      "provider_record_sha256": "a40d73ffc2d7fa893ff63673e280099bbdd61de1f5737c7c9abfb810602d34f0"
+    },
+    "us-202insea9816ae": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/insideradvantage-ohio-senate-race-narrows-to-brown-up-by-one"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "최신Ohio기관원문요청timeout. Brown44/Husted43/BillRedpath4/GregLevy2의질문·방법확인보류.",
+      "provider_record_sha256": "9761871f70730f285fbe4ae0514fba8ec1c7d3af29ccaf2912c8b7f7b6bb381f"
+    },
+    "us-202har67e7828b": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/cjwarnke/status/2104619061556457603"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "OH15 9/22–24 HMP/Hart발표는X링크만확보. 문항/방법전체미확보.",
+      "provider_record_sha256": "06a903ea063bdcf0c3af0b1cebe1f2d575f17498f256148af1836387abea77a3"
+    },
+    "us-202har2b87ea23": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/hmp-poll-don-leonard-within-striking-distance-of-mike-carey-in-oh-15"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "HMP6월발표에서초기Carey45/Leonard40/Barrington3은확인되나표본550과방법본문없음.",
+      "provider_record_sha256": "36e55ff4f90254e91e567367e270139888b7078ad3fd164b2a2abe72b743cb89"
+    },
+    "us-202beda3a16f8f": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.axios.com/2026/08/11/max-miller-ohio-brian-poindexter-democrats-2026"
+      ],
+      "reason": "commissioner_primary_not_obtained",
+      "note_ko": "OH07 당파성조사Axios요약은의뢰기관원문표/방법과다름.",
+      "provider_record_sha256": "b9ffb46f24617022a11cf4e010304e1d74a2af9c0348a6470925b86ce134a6e1"
+    },
+    "us-202unke3b76dc0": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/IAPolls2022/status/2083970139574129144"
+      ],
+      "reason": "missing_pollster_sample_and_primary_methodology",
+      "note_ko": "OH07 NOTUS재인용/X링크. 기관명·표본·모집단미상.",
+      "provider_record_sha256": "a8529e2cbac459c7e1fc4526f18c2abd53eb38f4852eeeb088745f5f7aca6e16"
     }
   }
 }

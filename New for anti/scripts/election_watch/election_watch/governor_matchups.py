@@ -10,7 +10,7 @@ from .superpac import SourceError, STATES
 
 URL = 'https://www.nga.org/governors/elections/'
 PARTIES = {'D': 'DEM', 'R': 'REP', 'I': 'IND', 'Independent': 'IND', 'L': 'LIB', 'G': 'GRE'}
-ROSTER_PARTIES = set(PARTIES.values()) | {'UC'}
+ROSTER_PARTIES = set(PARTIES.values()) | {'UC', 'WRI'}
 
 
 def text(value):

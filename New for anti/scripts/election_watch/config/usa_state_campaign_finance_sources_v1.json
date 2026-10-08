@@ -231,6 +231,31 @@
       "url": "https://sos.oregon.gov/elections/campaign-finance/Pages/search-campaign-finance.aspx",
       "authentication": "public_search",
       "independent_expenditure_mapping": "not_implemented"
+    },
+    "OH": {
+      "agency": "Ohio Secretary of State",
+      "access": "official_public_campaign_finance_portal",
+      "url": "https://www.ohiosos.gov/elections/campaign-finance",
+      "authentication": "public_search_no_api_key_documented",
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-10-08",
+        "result": "current_portal_direct_http403",
+        "status": "not_connected"
+      },
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.ohiosos.gov/elections/campaign-finance",
+        "authentication": "no_new_api_key_requirement_found",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://data.ohiosos.gov/portal/campaign-finance"
+          }
+        ],
+        "note_ko": "공식사이트의Simple/Advanced/FileTransfer가현재DataPortal을연결. 직접수집403. 검색화면존재와후보별독립지출금액확보는다릅니다. 지출유형·후보타깃·지지/반대·정정·선거단계원자료검증전에는캠프일반지출을IE로사용하지않습니다."
+      }
     }
   }
 }
