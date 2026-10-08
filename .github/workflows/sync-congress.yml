@@ -33,6 +33,12 @@ on:
         default: '50'
         type: string
 
+      max_search_documents:
+        description: 'Maximum changed/pending policy documents to index; each has at most 24 passage vectors.'
+        required: false
+        default: '100'
+        type: string
+
 permissions:
   contents: read
 
@@ -66,6 +72,8 @@ jobs:
       MAX_BILLS: ${{ inputs.max_bills || '100' }}
       MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
       MAX_FR_DOCUMENTS: ${{ inputs.max_fr_documents || '50' }}
+      POLICY_SEARCH_CACHE_DIR: ${{ runner.temp }}/policy-search-cache
+      POLICY_SEARCH_DB_BUDGET_BYTES: '6442450944'
       CONGRESS_NUMBERS: '119'
       MAX_DISCOVERY_PAGES: '4'
       MAX_EMBEDDINGS: '100'
@@ -90,6 +98,7 @@ jobs:
           node --check scripts/sync-public-laws.js
           node --check scripts/sync-us-code.js
           node --check scripts/notify-favorites.js
+          node --check scripts/sync-policy-search.js
           node scripts/lib/eo-authorities.test.js
           node scripts/lib/eo-agency-directives.test.js
 
@@ -107,6 +116,14 @@ jobs:
       - name: Sync Public Law index
         if: ${{ !cancelled() }}
         run: node scripts/sync-public-laws.js
+
+      - name: Refresh policy document embeddings
+        if: ${{ success() }}
+        env:
+          MAX_SEARCH_DOCUMENTS: ${{ inputs.max_search_documents || '100' }}
+        run: |
+          node -e 'const n=Number(process.env.MAX_SEARCH_DOCUMENTS); if(!Number.isInteger(n)||n<1||n>1000)throw Error("max_search_documents must be an integer between 1 and 1000")'
+          node scripts/sync-policy-search.js --limit "$MAX_SEARCH_DOCUMENTS" --max-minutes 20
 
       # Collection handoff does not authorize mail delivery. Enable separately.
       - name: Notify favorited bill/EO changes
