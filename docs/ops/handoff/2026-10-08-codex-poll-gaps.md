@@ -41,7 +41,7 @@
 FL 공식 본선 후보 명부 30개 선거(28 하원+상원+주지사)를 자동 읽는다. Qualified/Unopposed 현재 후보와 기입 후보까지 포함하며 Primary Status와 General Status를 분리한다. 표 구조·상태·지역구 목록이 달라지면 이전 명부를 보존한다.
 
 - FL-10 Maxwell Alejandro Frost(DEM): 공식 명부 General Status=Unopposed. Florida 101.151(7)의 무경쟁 후보 일반 투표지 미표시 법령과 함께 기록. 공식 인증된 당선 결과는 아니며 결과·득표율을 생성하지 않는다. 여론조사 비교 불필요 예외를 별도로 기록.
-- 전체 명부가 아니거나 DEM/GOP 한쪽만 확인돼도 무투표로 판단하지 않는다. CA 같은 당 후보끼리의 9개 선거, 무소속·제3당 상대 3개 선거를 무경쟁과 분리한다. 전체 후보 명부 검토 미완료 349개 선거는 무투표 여부 미확인이다. 이는 검토된 주요 본선 대진이 없다는 의미와 다르다.
+- 전체 명부가 아니거나 DEM/GOP 한쪽만 확인돼도 무투표로 판단하지 않는다. CA 같은 당 후보끼리의 9개 선거, 무소속·제3당 상대 3개 선거를 무경쟁과 분리한다. 명부 검토 자체가 없는 349곳과 주요 후보만 확인한 부분 명부를 포함해, 무경쟁 여부 판정 미완료는 424곳이다. 이는 검토된 주요 본선 대진이 없다는 의미와 다르다.
 - 임명은 상원 공석을 주지사가 임명으로 보충한 현직 취임 경로. 선거 승리·재선 횟수로 계산하지 않는다. 임명자는 다음 본선 후보와 같거나 다를 수 있다.
 
 공식 근거: https://dos.elections.myflorida.com/candidates/CanList.asp?elecid=20261103-GEN&status=All · https://leg.state.fl.us/STATUTES/index.cfm?App_mode=Display_Statute&URL=0100-0199%2F0101%2FSections%2F0101.151.html · https://www.senate.gov/senators/NewSenators.htm
