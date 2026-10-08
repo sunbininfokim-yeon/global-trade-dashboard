@@ -38,7 +38,7 @@ jobs:
         run: pip install pytest beautifulsoup4
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_fomc_collect.py tests/test_fomc_statement_diff.py tests/test_fomc_decision_sep.py tests/test_fomc_minutes.py tests/test_us_macro_quality_from_collect.py -v
+        run: python -m pytest tests/test_fomc_collect.py tests/test_fomc_statement_diff.py tests/test_fomc_decision_sep.py tests/test_fomc_minutes.py tests/test_us_macro_quality_from_collect.py tests/test_fomc_preview.py -v
       - name: Collect statements + Beige Book
         working-directory: New for anti/scripts/macro_monitor
         # A meeting the parser flags (a compound/qualified dissent it can't
@@ -66,6 +66,9 @@ jobs:
         # slot picks them up the same day. A 404 (not out yet) is skipped
         # quietly, a page this parser can't read exits 1 and shows in the log.
         run: python build_fomc_minutes.py || true
+      - name: Next-meeting preview (Fed calendar SEP mark, blackout, BEA releases)
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_fomc_preview.py || true
       - name: Assemble us_macro_quality_v1.json
         working-directory: New for anti/scripts/macro_monitor
         run: python build_us_macro_quality_from_collect.py
@@ -78,6 +81,7 @@ jobs:
                   "New for anti/scripts/macro_monitor/config/fomc_statement_text_v1.json" \
                   "New for anti/scripts/macro_monitor/config/fomc_sep_v1.json" \
                   "New for anti/scripts/macro_monitor/config/fomc_minutes_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/fomc_preview_v1.json" \
                   "New for anti/public/data/us_macro_quality_v1.json" \
                   "New for anti/public/data/fomc_statement_diff_v1.json"
           git commit -m "chore: refresh FOMC/Beige Book collection" || exit 0

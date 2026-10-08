@@ -1938,6 +1938,18 @@ const mmFomcMinutesHtml = (policy) => {
 
     let body = '';
     const statements = latest && Array.isArray(latest.statements) ? latest.statements : [];
+    // 핵심 발췌: the decision paragraph and the statements the minutes attribute to
+    // all / most / many participants -- quoted as written, picked only by the
+    // Fed's own quantifier, not by topic or tone.
+    const decisionPara = latest && (latest.policy_actions_text || [])[0];
+    const broad = statements.filter((row) => ['all', 'most', 'many'].includes(row.group));
+    const highlights = (decisionPara || broad.length) ? `
+        <div class="mm-minutes-highlights">
+            <p class="mm-view-title">핵심 발췌 (원문)</p>
+            ${decisionPara ? `<blockquote class="mm-minutes-quote"><span class="mm-minutes-tag">결정</span>${finEsc(decisionPara)}</blockquote>` : ''}
+            ${broad.map((row) => `<blockquote class="mm-minutes-quote"><span class="mm-minutes-tag">${finEsc(({ all: '전원', most: '대부분·과반', many: '다수' })[row.group] || row.group)}</span>${finEsc(row.text)}</blockquote>`).join('')}
+            <p class="mm-quality-muted">결정 문단과, 의사록이 '전원·대부분·과반·다수(All/Most/A majority/Many)'로 표현한 문장만 원문 그대로 옮겼습니다. 번역·해석·주제 선별 없음.</p>
+        </div>` : '';
     if (statements.length) {
         const sections = groups.map(([key, label]) => {
             const rows = statements.filter((row) => row.group === key);
@@ -1962,6 +1974,7 @@ const mmFomcMinutesHtml = (policy) => {
         <span class="mm-quality-label">FOMC 의사록</span>
         ${head}
         ${next}
+        ${highlights}
         ${body}
     </div>`;
 };
@@ -2420,6 +2433,63 @@ const mmCbPolicyPanel = (cb) => {
     </section>`;
 };
 
+// The next FOMC meeting at a glance (schedule.preview, build_fomc_preview.py):
+// dates, SEP or not, the communications blackout, the decision time in Korea,
+// the last decision and dot-plot median, and official releases around it.
+// Dates only -- no rate expectations (FedWatch is licensed).
+const mmEtToKst = (isoDate, hhmm) => {
+    // New York's UTC offset on that day, then +9h for Korea (both handle DST)
+    const noonUtc = new Date(`${isoDate}T12:00:00Z`);
+    const ny = new Date(noonUtc.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const offsetH = Math.round((ny - new Date(noonUtc.toLocaleString('en-US', { timeZone: 'UTC' }))) / 3600000);
+    const [h, m] = hhmm.split(':').map(Number);
+    const utc = new Date(Date.UTC(...isoDate.split('-').map((x, i) => (i === 1 ? Number(x) - 1 : Number(x))), h - offsetH, m));
+    const kst = new Date(utc.getTime() + 9 * 3600000);
+    return `${kst.getUTCMonth() + 1}/${kst.getUTCDate()} ${String(kst.getUTCHours()).padStart(2, '0')}:${String(kst.getUTCMinutes()).padStart(2, '0')}`;
+};
+const mmFomcPreviewHtml = (policy) => {
+    const sch = policy.schedule || {};
+    const pv = sch.preview;
+    if (!pv || !pv.next_meeting) return '';
+    const nm = pv.next_meeting;
+    const today = new Date().toISOString().slice(0, 10);
+    const dday = Math.round((new Date(nm.end) - new Date(today)) / 86400000);
+    const md = (iso) => { const [, m, d] = String(iso).split('-'); return `${Number(m)}/${Number(d)}`; };
+    const bo = pv.blackout || {};
+    const inBlackout = bo.start && today >= bo.start && today <= bo.end;
+    const dec = policy.decision || {};
+    const votes = (policy.current_votes || []);
+    const vFor = votes.filter((v) => v.vote === 'for').length, vAgainst = votes.filter((v) => v.vote === 'against').length;
+    const ff = ((policy.sep || {}).variables || []).find((v) => v.id === 'fed_funds_rate');
+    const sepYear = ff ? Object.keys(ff.median || {})[0] : null;
+    const actionKo = ({ raise: '인상', lower: '인하', maintain: '동결' })[dec.action] || dec.action;
+    const recap = dec.meeting_date ? `${md(dec.meeting_date)} 결정: ${finEsc(actionKo)}${dec.change_bp ? ` ${dec.change_bp > 0 ? '+' : ''}${dec.change_bp}bp` : ''} → ${dec.range_low}~${dec.range_high}%`
+        + (votes.length ? ` · 표결 찬성 ${vFor} / 반대 ${vAgainst}` : '')
+        + (ff && sepYear ? ` · 점도표 ${finEsc(sepYear)}년 말 중앙값 ${ff.median[sepYear]}%${(policy.sep || {}).meeting_date ? ` (${md(policy.sep.meeting_date)} 점도표)` : ''}` : '') : '';
+    const rows = [];
+    if (sch.next_beige_book_estimate && sch.next_beige_book_estimate >= today) {
+        rows.push({ date: sch.next_beige_book_estimate, title: '베이지북 (추정일)', rel: 'before', src: 'Fed' });
+    }
+    (pv.releases || []).forEach((r) => rows.push({ date: r.date, title: r.title, rel: r.relative, src: r.source, time: r.time }));
+    rows.sort((a, b) => a.date.localeCompare(b.date));
+    const relKo = { before: '결정 전', same_day: '결정 당일', after: '결정 후' };
+    return `
+    <div class="mm-quality-card mm-quality-wide mm-fomc-preview">
+        <span class="mm-quality-label">다음 FOMC</span>
+        <strong>${md(nm.start)}~${md(nm.end)} 회의 ${dday >= 0 ? `· D-${dday}` : ''}
+            <span class="mm-fomc-badge">${nm.sep ? '점도표(SEP) 발표' : '점도표 없음'}</span></strong>
+        <p>결정 발표 ${md(nm.end)} ${finEsc(nm.statement_time_et || '2:00 p.m.')} ET = 한국 ${mmEtToKst(nm.end, '14:00')}
+            ${bo.start ? ` · 블랙아웃 ${md(bo.start)}~${md(bo.end)}${inBlackout ? ' <b class="mm-fomc-live">진행 중</b>' : ''}` : ''}</p>
+        ${recap ? `<p class="mm-quality-muted">${recap}</p>` : ''}
+        ${rows.length ? `<ul class="mm-fomc-cal">${rows.map((r) => `
+            <li><span class="mm-fomc-cal-date">${md(r.date)}${r.time ? ` ${finEsc(r.time)}` : ''}</span>
+                <span class="mm-fomc-cal-rel ${r.rel}">${relKo[r.rel] || ''}</span>
+                <span>${finEsc(r.title)}</span><span class="mm-quality-muted">${finEsc(r.src || '')}</span></li>`).join('')}</ul>` : ''}
+        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 금리 전망·확률은 표시하지 않습니다(FedWatch는 라이선스 데이터).
+            <a class="mm-quality-link" href="${finEsc(nm.source_url || 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm')}" target="_blank" rel="noopener noreferrer">연준 캘린더 ↗</a></p>
+    </div>`;
+};
+
 const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
@@ -2499,6 +2569,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
             <span class="mm-quality-status">예측·성향 점수 아님</span>
         </div>
         <div class="mm-quality-grid">
+            ${mmFomcPreviewHtml(policy)}
             ${fomcFold}
             <div class="mm-quality-card mm-quality-beige">
                 <span class="mm-quality-label">Beige Book ${finEsc(sourceDate)}</span>
