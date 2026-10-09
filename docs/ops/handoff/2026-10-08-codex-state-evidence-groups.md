@@ -1,5 +1,7 @@
 # 미국50주 순차 여론조사·독립지출 연결 — 2026-10-08
 
+10/9 KS 보강: 공식 경선 결과로 민주·공화12명 대조, 검토 명부 연방15명/주지사2명. API6건 중 Emerson2문항 적격(14일 밖)·Siena주지사1문항 참고, 현재7/14일 우세없음. 하원4구 조사미확보. 기존10/8 FEC 본선 Roger 지지11,218.22USD 유지, 새 FEC 수집 없음. KPDC 공개 IE13단체/27PDF 링크 재수집기·과거 경선 반대2행 지문 재확인; 본선 합계null/정정매핑미완료. 468검사·타주/원래날짜 보존. [KS 인수](2026-10-09-codex-state-evidence-KS.md). 다음 수동 신규주는 **B/NE**이며 미시작. UI/workflow/병합/배포 없음.
+
 사용자 지시: 50개 주를 A–E로 나누고 한 주씩 여론조사와 슈퍼팩을 연결. 후보 PR #490 기반의 별도 브랜치 `codex/us-state-evidence-20261008`에서 수행한다. UI·workflow·병합·배포는 이번 작업 범위 밖이며 배포 보류를 유지한다.
 
 10/9 AK 재개: #506 기반 별도 브랜치에서 공식 후보 각4명(상원·전역구 하원·주지사), API5문항+원문 보완1문항을 연결했다. RCV 첫 선택/강제 양자/최종 모의 결과는 모두 참고로 분리했다. 기존 FEC O범주 P2026 신원 연결은 하원2명·상원3명, 본선 O금액과 주지사 독립지출은 미확보(null)다. APOC 공식 공개 검색은 수집기 timeout으로 미완료. 452검사 통과, 타주/원래날짜 보존. 다음 수동 신규주는 **B/KS**(미시작)이며 자동 index의 IA 미완료 표시는 유지. [AK 인수](2026-10-09-codex-state-evidence-AK.md).
@@ -93,7 +95,7 @@ python3 refresh_state_sequence.py --from-state GA --through-state WY --as-of 202
 | 15 | B / CO | 4/8 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
 | 16 | B / VA | 6/11 | 0 | 1/1 | 0 | 0 | non_election |
 | 17 | B / AK | 1/1 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
-| 18 | B / KS | 0/4 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
+| 18 | B / KS | 0/4 | 0 | 1/1 | 1 | 1 (Siena 참고·7/14일 우세없음) | collected_normalization_held (IE27목록·경선PDF2참고, 본선금액null) |
 | 19 | B / NE | 3/3 | 1 | 1/1 | 0 | 0 | adapter_or_source_review_required |
 | 20 | B / ME | 2/2 | 0 | 1/1 | 1 | 1 | adapter_or_source_review_required |
 | 21 | C / AL | 2/7 | 0 | 1/1 | 0 | 0 | adapter_or_source_review_required |
