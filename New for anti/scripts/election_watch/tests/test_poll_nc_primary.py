@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
 import copy, hashlib, json, unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups
@@ -117,7 +117,7 @@ class NorthCarolinaPrimaryTests(unittest.TestCase):
             read(PUBLIC/'usa_election_live_polls_v1.json'),load_finance(PUBLIC/'usa_election_finance_index_v1.json',2026),
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')]
         ids=read(CONFIG/'state_finance_identities_2026.json')
-        state=build_state('NC','A',*inputs,'2026-10-08',identity_reviews=ids)
+        state=build_state('NC','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
         murphy=next(c for r in state['races'] if r['race_id']=='USA:NC:house:03' for c in r['candidates'] if c['name']=='Greg Murphy')
         self.assertEqual(murphy['finance_candidate_id'],'H0NC03172')
         self.assertIsNone(murphy['finance']['all_reported_election_types']['support_cents'])
@@ -129,6 +129,6 @@ class NorthCarolinaPrimaryTests(unittest.TestCase):
         c=next(c for c in inputs[2]['races']['USA:NC:house:03']['candidates'] if c['name']=='Greg Murphy')
         c['reported_legal_name']='Unreviewed Different Candidate'
         with self.assertRaisesRegex(ValueError,'changed House finance identity'):
-            build_state('NC','A',*inputs,'2026-10-08',identity_reviews=ids)
+            build_state('NC','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
 
 if __name__=='__main__':unittest.main()

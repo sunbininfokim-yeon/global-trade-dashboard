@@ -125,6 +125,42 @@ def reviewed_source(raw, policy, as_of):
     return source, None
 
 
+def provider_fingerprint(raw):
+    """Bind a primary-source correction to the entire admitted provider record."""
+    return digest({k: raw.get(k) for k in ('id', 'subject', 'poll_type', 'pollster', 'url',
+        'start_date', 'end_date', 'created_at', 'population', 'sample_size', 'answers',
+        'seat_name', 'sponsors', 'internal', 'partisan')})
+
+
+def corrected_provider_metadata(raw, review, as_of):
+    correction = review.get('provider_metadata_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(correction['provider_snapshot_sha256'] == provider_fingerprint(raw),
+            'provider_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    require(admission.get('provider_url') == raw.get('url') and admission.get('pollster') == raw['pollster']
+            and review.get('sources') and review.get('primary_toplines'), 'unverified_metadata_correction')
+    overrides = correction['overrides']
+    require(overrides and set(overrides) <= {'start_date', 'end_date', 'population', 'sample_size'},
+            'unsupported_metadata_correction')
+    disclosure = review['disclosure_review']
+    dates = disclosure.get('field_dates') or [None, None]
+    require(isinstance(dates, list) and len(dates) == 2, 'invalid_correction_field_dates')
+    expected = {'start_date': dates[0],
+                'end_date': dates[1],
+                'population': str(disclosure.get('population', '')).lower(),
+                'sample_size': review.get('question_sample_n') or disclosure.get('sample_n')}
+    require(all(v == expected[k] for k, v in overrides.items()), 'correction_disclosure_mismatch')
+    output = deepcopy(raw)
+    output.update(overrides)
+    return output, {'status': 'reviewed_primary_metadata_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'provider_values': {k: raw.get(k) for k in overrides}, 'primary_values_used': deepcopy(overrides),
+        'sources': review['sources'], 'basis_ko': correction['basis_ko']}
+
+
 def normalize(rows, policy, as_of):
     day = date.fromisoformat(as_of)
     races = policy['races']
@@ -148,6 +184,7 @@ def normalize(rows, policy, as_of):
             require(not reviewed_raw or reviewed_raw==answer_correction_fingerprint(p), 'primary_review_provider_metadata_changed')
             p, answer_correction = corrected_provider_answers(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             p, source_correction = corrected_provider_source(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
+            p, metadata_correction = corrected_provider_metadata(p, policy.get("quality_reviews", {}).get(p["id"], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
             primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
                 'sponsor_review', {}).get('primary_internal') is True
@@ -235,6 +272,8 @@ def normalize(rows, policy, as_of):
                 observation['provider_answer_correction'] = answer_correction
             if source_correction:
                 observation['provider_source_correction'] = source_correction
+            if metadata_correction:
+                observation['provider_metadata_correction'] = metadata_correction
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             if primary_internal:

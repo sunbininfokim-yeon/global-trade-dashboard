@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
 import copy,json,unittest
 from pathlib import Path
 from urllib.error import URLError
@@ -78,7 +78,7 @@ class MichiganPrimaryTests(unittest.TestCase):
 
     def test_reviewed_nickname_links_existing_fec_records_and_keeps_primary_separate(self):
         inputs,identities=self.state_inputs()
-        state=build_state('MI','A',*inputs,'2026-10-08',identity_reviews=identities)
+        state=build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=identities)
         row=next(r for r in state['races'] if r['race_id']=='USA:MI:house:01')
         c=next(c for c in row['candidates'] if c['name']=='Jack Bergman')
         self.assertEqual(c['finance_candidate_id'],'H6MI01226')
@@ -90,6 +90,6 @@ class MichiganPrimaryTests(unittest.TestCase):
     def test_changed_agency_id_or_fec_identity_requires_review(self):
         for field,value in [('reported_fec_id','H00000001'),('reported_name','Changed, Person'),('source_url','https://example.org/changed')]:
             inputs,ids=self.state_inputs();c=next(c for c in inputs[2]['races']['USA:MI:house:01']['candidates'] if c['name']=='Jack Bergman');c[field]=value
-            with self.assertRaisesRegex(ValueError,'changed House finance identity'):build_state('MI','A',*inputs,'2026-10-08',identity_reviews=ids)
+            with self.assertRaisesRegex(ValueError,'changed House finance identity'):build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
         inputs,ids=self.state_inputs();c=next(c for c in inputs[5]['races']['USA:MI:house:01']['candidates'] if c['candidate_id']=='H6MI01226');c['reported_parties']=['DEM']
-        with self.assertRaisesRegex(ValueError,'House finance source identity changed'):build_state('MI','A',*inputs,'2026-10-08',identity_reviews=ids)
+        with self.assertRaisesRegex(ValueError,'House finance source identity changed'):build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
