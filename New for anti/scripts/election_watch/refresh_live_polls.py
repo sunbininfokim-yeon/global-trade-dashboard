@@ -12,8 +12,10 @@ from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
 from election_watch.poll_ballots import fetch_florida
 from election_watch.poll_gaps import attach_gaps, refresh_gap_lifecycle
+from election_watch.poll_house_focus import apply_house_focus, attach_house_focus, refresh_house_focus_lifecycle
 from election_watch.superpac import SourceError
 from election_watch.poll_primary_supplements import merge_primary_supplements
+from election_watch.poll_refresh_provenance import retain_state_provenance
 
 ROOT = Path(__file__).resolve().parent
 
@@ -48,10 +50,13 @@ def main():
     p.add_argument('--input', type=Path, help='Replay saved provider response for testing; marked as replay')
     p.add_argument('--target-catalog', type=Path, help='Reviewed nationwide scheduled election universe')
     p.add_argument('--ballot-reviews', type=Path, help='Reviewed general ballot identities for poll admission')
+    p.add_argument("--house-focus", type=Path, help="House Lean/Toss-Up review priority policy")
+    p.add_argument("--ratings", type=Path, default=ROOT.parent.parent/"public/data/usa_election_ratings_review_v1.json")
     args = p.parse_args()
     production_policy = args.policy.resolve() == (ROOT/'config/usa_polls/live_2026.json').resolve()
     target_catalog = args.target_catalog or (ROOT/'config/usa_polls/targets_2026.json' if production_policy else None)
     ballot_reviews = args.ballot_reviews or (ROOT/'config/usa_polls/ballot_reviews_2026.json' if production_policy else None)
+    house_focus = args.house_focus or (ROOT/'config/usa_polls/house_focus_2026.json' if production_policy else None)
     governor_matchups = args.governor_matchups
     if governor_matchups is None and production_policy:
         governor_matchups = ROOT/'config/governor_matchups/2026.json'
@@ -90,6 +95,13 @@ def main():
             if ballots is None:
                 raise ValueError('target catalog requires ballot review contract')
             policy = apply_targets(policy, read(target_catalog), ballots, args.as_of)
+        if house_focus:
+            try:
+                policy = apply_house_focus(policy, read(args.ratings), read(args.election_board), read(house_focus), args.as_of)
+                policy['house_poll_focus_health'] = {'status': 'ok', 'checked_as_of': args.as_of}
+            except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+                # Review priority failures must not discard good polling data.
+                policy['house_poll_focus_health'] = {'status': 'hold', 'checked_as_of': args.as_of, 'error_type': type(exc).__name__}
         return policy
     try:
         ballots = read(ballot_reviews) if ballot_reviews else None
@@ -113,10 +125,13 @@ def main():
         except (OSError, ValueError, KeyError, TypeError) as exc:
             finance = {'status': 'hold', 'error_type': type(exc).__name__, 'races': {}}
         attach_coverage(board, provider_rows, policy, finance)
+        attach_house_focus(board, policy)
         if target_catalog:
             attach_gaps(board, finance)
             board['ballot_source_health'] = ballot_health
         history = poll_history(rows, policy, args.as_of)
+        previous = read(args.output) if args.output.exists() else None
+        retain_state_provenance(board, history, previous)
         if args.input:
             board['source_status'] = 'replay'
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')
@@ -144,6 +159,7 @@ def main():
                     len(r.get('observations', [])) for r in existing.get('races', {}).values())
                 existing['source_status'] = 'error_stale'
                 refresh_gap_lifecycle(existing)
+                refresh_house_focus_lifecycle(existing)
                 atomic(args.output, existing)
             # Recompute conditional counts without stale polling signals.
             publish_scenarios(existing, args, checked, {'status': 'error'})

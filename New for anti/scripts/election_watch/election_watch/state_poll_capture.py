@@ -2,6 +2,7 @@
 from collections import Counter
 from copy import deepcopy
 from .polls import require
+from .poll_house_focus import attach_house_focus
 
 
 def merge_capture(previous, capture, state, receipt):
@@ -49,4 +50,6 @@ def merge_capture(previous, capture, state, receipt):
                 link['poll_coverage_status']=coverage[link['race_id']]['status']
                 link['polls_monitored']=True
     result.setdefault('state_captures',{})[state]=deepcopy(receipt)
+    if result.get('house_poll_focus'):
+        attach_house_focus(result, {'house_poll_focus': result['house_poll_focus']})
     return result

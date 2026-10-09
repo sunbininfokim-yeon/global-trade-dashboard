@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
 import copy,hashlib,json,unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups,validate_snapshot
@@ -112,7 +112,7 @@ class OhioPrimaryTests(unittest.TestCase):
     def test_house_identity_is_bound_to_authority_name_and_finance(self):
         federal=read(ROOT/'config/federal_matchups/2026.json');identities=read(CONFIG/'state_finance_identities_2026.json')
         finance=load_finance(PUBLIC/'usa_election_finance_index_v1.json',2026)
-        args=('OH','B',read(CONFIG/'state_evidence_plan_2026.json'),read(CONFIG/'targets_2026.json'),federal,self.gov,read(PUBLIC/'usa_election_live_polls_v1.json'),finance,read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'),DAY,identities)
+        args=('OH','B',read(CONFIG/'state_evidence_plan_2026.json'),read(CONFIG/'targets_2026.json'),federal,self.gov,read(PUBLIC/'usa_election_live_polls_v1.json'),finance,read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'),PUBLIC_SNAPSHOT_DAY,identities)
         result=build_state(*args);c=next(c for r in result['races'] if r['race_id']=='USA:OH:house:08' for c in r['candidates'] if c['party']=='DEM')
         self.assertEqual(c['finance_candidate_id'],'H8OH08097')
         self.assertIsNone(c['finance']['all_reported_election_types']['support_cents'])
