@@ -158,7 +158,11 @@ class CaliforniaPrimaryTests(unittest.TestCase):
         self.assertEqual(source['quality']['included_records'],len(rows))
         self.assertEqual(len({x['source_id'] for x in rows}),len(rows))
         self.assertTrue(all(x['category']=='state_independent_spender_unclassified' for x in rows))
-        self.assertTrue(all(x['election_type']=='UNKNOWN' and x['reported_election_date'] is None for x in rows))
+        calendar={'2026-06-02':'P2026','2026-11-03':'G2026'}
+        for row in rows:
+            expected=calendar.get(row['reported_election_date'],'UNKNOWN')
+            self.assertEqual(row['election_type'],expected)
+            self.assertEqual(row['election_type_basis']=='unavailable',expected=='UNKNOWN')
         self.assertEqual(source['last_filing_date'],max(x['filing_date'] for x in rows))
 
     def test_other_html_urls_are_not_wholesale_admitted(self):
