@@ -135,3 +135,5 @@
 | T-AL-STATE-EVIDENCE-20261009 | C그룹 앨라배마 공식 후보·원문 조사·독립지출 연결 | codex | election_watch AL config/tests·AL public data·handoff | codex/al-evidence-20261009 | review | AL9선거18공식 후보·원문5조사 참고 전용·FCPA42,186행 감사/null금액. 465검사·타주4,651파일 보존. 인수: handoff/2026-10-09-codex-state-evidence-AL.md. 다음 NJ→NM→NH. UI/workflow/LETF/병합/배포 제외. |
 
 | T-NJ-STATE-EVIDENCE-20261009 | C그룹 뉴저지 공식 후보·조사·연방 독립지출 | codex | election_watch NJ config/tests·NJ public data·handoff | codex/nj-evidence-20261009 | review | 공식13선거39명·NJ07 원문1 참고 연결. 하원 현재후보 O관측7→10/12·상원4명 ID. 348poll검사·타주4,644금융파일 보존. 인수: handoff/2026-10-09-codex-state-evidence-NJ.md. 다음 NM→NH. UI/workflow/LETF/배포 제외. |
+
+| T-NM-STATE-EVIDENCE-20261009 | C그룹 뉴멕시코 후보·실제 조사·공시 경로 | codex | election_watch NM config/tests·NM public data·handoff | codex/nm-evidence-20261009 | review | NM5선거·주지사 원문1건 추가/상원576→567검토정정·14일각1. 465검사·타주4,652파일보존. 공식포털403/주지사CFIS매핑미완료. 인수 handoff/2026-10-09-codex-state-evidence-NM.md. 다음NH. UI/workflow/LETF/배포 제외. |

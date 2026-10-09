@@ -36,6 +36,31 @@ PRIMARY_HTML_RELEASES = frozenset((
     'https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/',
 ))
 
+# ASP.NET reports expose their evidence in a main frame. Hash visible text,
+# not generated view-state attributes, and admit only the reviewed report.
+PRIMARY_SURVEYUSA_RELEASES = {
+    'https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052': '28031',
+}
+
+
+def surveyusa_html_fingerprint(body, report_id):
+    class EvidenceText(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.parts = []; self.ignored = 0
+        def handle_starttag(self, tag, attrs):
+            if tag in ('script', 'style'): self.ignored += 1
+        def handle_endtag(self, tag):
+            if tag in ('script', 'style'): self.ignored = max(0, self.ignored - 1)
+        def handle_data(self, data):
+            if not self.ignored: self.parts.append(data)
+    parser = EvidenceText(); parser.feed(body.decode('utf-8')); parser.close()
+    canonical = ' '.join(' '.join(parser.parts).split())
+    require(f'Results of SurveyUSA Election Poll #{report_id}' in canonical
+            and 'About the Research / Filtering:' in canonical
+            and len(canonical) > 1000, 'primary SurveyUSA report missing/changed')
+    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+
 
 def primary_html_fingerprint(body):
     text = body.decode('utf-8')
@@ -81,7 +106,9 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document['url'] in PRIMARY_PDF_RELEASES
                          or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx')
                          or document.get('format') == 'reviewed_html_article_v1'
-                            and document['url'] in PRIMARY_HTML_RELEASES)
+                            and document['url'] in PRIMARY_HTML_RELEASES
+                         or document.get('format') == 'reviewed_surveyusa_report_v1'
+                            and document['url'] in PRIMARY_SURVEYUSA_RELEASES)
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # Replace a verified provider typo only for the exact reviewed snapshot.
         # Changed records still undergo the standard same-wave conflict check.
@@ -112,6 +139,8 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 require(len(body)<=3*1024*1024, 'primary document size changed')
                 if document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
+                elif document.get('format') == 'reviewed_surveyusa_report_v1':
+                    digest = surveyusa_html_fingerprint(body, PRIMARY_SURVEYUSA_RELEASES[document['url']])
                 else:
                     require(body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04'), 'primary document format changed')
                     digest=hashlib.sha256(body).hexdigest()

@@ -1730,10 +1730,24 @@
       "primary_snapshot_sha256": "5cf8cc0455e62468e993912175a2b9183aa6c538076998b5332bc9bf3edf9c19"
     },
     "us-202surae0ec3b2": {
-      "reviewed_on": "2026-10-08",
-      "snapshot_sha256": "8bee1b1b8cd6ab7b5bea41fb3be537a6a2d35befede9fa1969dd0c6e89f942f8",
+      "reviewed_on": "2026-10-09",
+      "reviewed_at": "2026-10-09T10:14:52.185084+00:00",
+      "provider_record_sha256": "b54478a503a51cc723cc6f81617206fc59d6fd0a1865dac19cf1f039bc93f15b",
+      "snapshot_sha256": "5cbdd6e09b386ab6e7fd9a9f27f1321b9117fa07f9f945468d7e952b0b36df0c",
       "sources": [
-        "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052"
+        "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+        "https://results.surveyusa.com/client/methodology.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052"
+      ],
+      "primary_documents": [
+        {
+          "url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+          "status": "ok",
+          "sha256": "da183fa147339bd7bd21e5ba4d0b03457a9a37d95f66462d1633954612e32dbe",
+          "bytes": 344640,
+          "format": "reviewed_surveyusa_report_v1",
+          "raw_sha256": "7146b106a1fd534ab874a6ac57388be6846c92db37ed766bf45736707ae79a66",
+          "fingerprint_scope": "all_visible_report_text_excluding_scripts_styles_and_ASPNET_attributes"
+        }
       ],
       "primary_toplines": {
         "Ben Ray Luján": 54.0,
@@ -1749,41 +1763,56 @@
           "2026-09-25",
           "2026-09-30"
         ],
-        "sampling_frame": "45% Cint panel; 55% Aristotle adult telephone sample (30% IVR, 25% SMS-to-web)",
-        "mode": "mixed online panel, telephone IVR and/or operator SMS-to-web",
-        "weighting": "gender, age, race, education, home ownership",
-        "sponsor": [
-          "KOB-TV (Albuquerque)"
-        ],
-        "question_wording_checked": true
+        "geographic_scope": "statewide_New_Mexico",
+        "question_number": 10,
+        "sampling_frame": "45% Cint nonprobability panel; 55% Aristotle probability telephone sample (30% landline IVR,25% operator SMS-to-web)",
+        "mode": "mixed online panel, IVR, operator SMS-to-web",
+        "weighting": "gender,age,race,education,home ownership",
+        "question_wording_checked": true,
+        "question_order": "after favorability and likelihood to vote; governor Q9 before senate Q10; before issue/data center questions",
+        "non_candidate_responses": {
+          "undecided": 10
+        }
       },
-      "reported_precision": null,
+      "reported_precision": {
+        "kind": "publisher_credibility_interval_not_classical_margin_of_error",
+        "half_width_pp": 5.1,
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
       "missing_fields": [
         "precision_model_specification",
         "historical_accuracy_rating",
         "statistical_significance"
       ],
-      "limitations_ko": "원문 LV 567명과 API 576명이 다름. 지지도는 대조했으나 표본 불일치 미해결로 참고 전용.",
+      "ballot_format": "initial_named_two_candidate_question",
       "sponsor_review": {
         "reported_sponsors": [
           "KOB-TV (Albuquerque)"
         ],
+        "primary_commissioners": [
+          "KOB-TV (Albuquerque)"
+        ],
+        "primary_internal": false,
         "affiliation_verified": true,
-        "meaning": "identified regional media commissioner, not a neutrality certification"
+        "meaning": "identified local media commissioner, not neutrality or accuracy certification"
       },
+      "limitations_ko": "원문 문항별567LV·기간·수치·지역범위·방법 확인. 단일 기관의 관측이며 정확도 등급·유의성·당선확률이 아닙니다. 같은 파동의 주지사/상원은 각각 다른 선거입니다.",
       "admission": {
         "pollster": "SurveyUSA",
         "provider_url": "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
         "group": "surveyusa",
-        "methodology_url": "https://results.surveyusa.com/client/PollReport.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+        "methodology_url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
         "source_role": "pollster_primary",
-        "signal_eligible": false,
-        "signal_exclusion_reasons": [
-          "provider_primary_sample_mismatch"
-        ],
-        "allow_historical_reference": false
+        "signal_eligible": true,
+        "signal_exclusion_reasons": []
       },
-      "primary_snapshot_sha256": "b5903bccecabeb9bb42c231a43f9f7e45af06a9a588ca2c9540d41835f3e7a6b"
+      "provider_sample_correction": {
+        "provider_snapshot_sha256": "b54478a503a51cc723cc6f81617206fc59d6fd0a1865dac19cf1f039bc93f15b",
+        "original_provider_sample_n": 576,
+        "question_sample_n": 567,
+        "basis_ko": "원문#28031 Q10·방법란 모두567LV. API576은 해당 레코드의 표본 전사 차이로 검토 정정. 원래값 보존, API 변경 시 재검토."
+      }
     },
     "us-202sur34bdca99": {
       "reviewed_on": "2026-10-08",
@@ -7794,6 +7823,86 @@
           "commissioner_context_not_fully_reviewed"
         ]
       }
+    },
+    "primary-surveyusa-nm-governor-20260930": {
+      "reviewed_on": "2026-10-09",
+      "reviewed_at": "2026-10-09T10:14:52.185084+00:00",
+      "provider_record_sha256": "534d23f3159b6e56da56578e9c18242bd32e56f241f5e721a998f9a67aaee17c",
+      "snapshot_sha256": "523c0abddaac7dd5288fffe5a019dbe52baee4256dabc3c5c72e797d00a04ac9",
+      "sources": [
+        "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+        "https://results.surveyusa.com/client/methodology.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052"
+      ],
+      "primary_documents": [
+        {
+          "url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+          "status": "ok",
+          "sha256": "da183fa147339bd7bd21e5ba4d0b03457a9a37d95f66462d1633954612e32dbe",
+          "bytes": 344640,
+          "format": "reviewed_surveyusa_report_v1",
+          "raw_sha256": "7146b106a1fd534ab874a6ac57388be6846c92db37ed766bf45736707ae79a66",
+          "fingerprint_scope": "all_visible_report_text_excluding_scripts_styles_and_ASPNET_attributes"
+        }
+      ],
+      "primary_toplines": {
+        "Deb Haaland": 47,
+        "Gregg Hull": 41
+      },
+      "question_sample_n": 567,
+      "disclosure_review": {
+        "population": "LV",
+        "total_sample_n": 800,
+        "rv_sample_n": 673,
+        "question_sample_n": 567,
+        "field_dates": [
+          "2026-09-25",
+          "2026-09-30"
+        ],
+        "geographic_scope": "statewide_New_Mexico",
+        "question_number": 9,
+        "sampling_frame": "45% Cint nonprobability panel; 55% Aristotle probability telephone sample (30% landline IVR,25% operator SMS-to-web)",
+        "mode": "mixed online panel, IVR, operator SMS-to-web",
+        "weighting": "gender,age,race,education,home ownership",
+        "question_wording_checked": true,
+        "question_order": "after favorability and likelihood to vote; governor Q9 before senate Q10; before issue/data center questions",
+        "non_candidate_responses": {
+          "undecided": 12
+        }
+      },
+      "reported_precision": {
+        "kind": "publisher_credibility_interval_not_classical_margin_of_error",
+        "half_width_pp": 5.1,
+        "confidence_level_pct": null,
+        "validated_here": false
+      },
+      "missing_fields": [
+        "precision_model_specification",
+        "historical_accuracy_rating",
+        "statistical_significance"
+      ],
+      "ballot_format": "initial_named_two_candidate_question",
+      "sponsor_review": {
+        "reported_sponsors": [
+          "KOB-TV (Albuquerque)"
+        ],
+        "primary_commissioners": [
+          "KOB-TV (Albuquerque)"
+        ],
+        "primary_internal": false,
+        "affiliation_verified": true,
+        "meaning": "identified local media commissioner, not neutrality or accuracy certification"
+      },
+      "limitations_ko": "원문 문항별567LV·기간·수치·지역범위·방법 확인. 단일 기관의 관측이며 정확도 등급·유의성·당선확률이 아닙니다. 같은 파동의 주지사/상원은 각각 다른 선거입니다.",
+      "admission": {
+        "pollster": "SurveyUSA",
+        "provider_url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+        "group": "surveyusa",
+        "methodology_url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052",
+        "source_role": "pollster_primary",
+        "signal_eligible": true,
+        "signal_exclusion_reasons": []
+      },
+      "primary_supplement_record_sha256": "534d23f3159b6e56da56578e9c18242bd32e56f241f5e721a998f9a67aaee17c"
     }
   }
 }
