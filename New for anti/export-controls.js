@@ -669,12 +669,62 @@
         <div class="ec-src">${tariffSources(m.sources)}</div>
     </li>`;
 
+    const negotiationKind = (kind) => ({ framework: '기본합의', signed_agreement: '서명 확인',
+        agreement_in_force: '기존 발효 협정', consensus: '합의 발표', sectoral_agreement: '분야별 합의',
+        implementation: '이행 발표', implementation_pending: '발표 당시 국내 절차 필요',
+        negotiation: '협상·협의', consultation: '의견수렴', recommendation: '권고 · 시행 별도 확인',
+        suspension: '협상 중단 발표', statement: '공식 입장' }[kind] || '구분 확인 필요');
+    const checkedDevelopments = (n) => (n.developments || []).filter((e) =>
+        e.verification === 'primary_text_checked' && /^\d{4}-\d{2}-\d{2}$/.test(e.announced_on || '') &&
+        e.announced_on <= n.checked_on && e.sources?.length)
+        .slice().sort((a, b) => b.announced_on.localeCompare(a.announced_on));
+    // Passing a scheduled date never proves that talks occurred or an agreement entered into force.
+    const negotiationScheduleState = (m, now = new Date()) => {
+        if (m.status === 'cancelled') return '취소 발표';
+        if (m.status === 'completed' && m.completion_sources?.length) return '결과 원문 확인';
+        const date = m.scheduled_for || '';
+        let end = m.deadline_at ? Date.parse(m.deadline_at) : NaN;
+        if (!Number.isFinite(end)) {
+            if (m.date_precision === 'year' && /^\d{4}$/.test(date)) end = Date.parse(`${date}-12-31T23:59:59Z`);
+            else if (m.date_precision === 'month' && /^\d{4}-(0[1-9]|1[0-2])$/.test(date)) {
+                const [year, month] = date.split('-').map(Number);
+                end = Date.UTC(year, month, 1) - 1;
+            } else if (m.date_precision === 'day' && /^\d{4}-\d{2}-\d{2}$/.test(date)) end = Date.parse(`${date}T23:59:59Z`);
+        }
+        if (!Number.isFinite(end)) return '확정일 미확인';
+        return now.getTime() > end ? '일정 경과 · 결과 미확인' : '공식 예고 · 변경 여부 확인 필요';
+    };
+    const negotiationsHtml = (p, compact = false) => {
+        const n = p.negotiation;
+        if (!n) return '';
+        const a = n.agreement?.verification === 'primary_text_checked' && n.agreement.sources?.length ? n.agreement : null;
+        const updates = checkedDevelopments(n);
+        const row = (e) => `<li><div class="ust-when">${esc(e.announced_on ? `${e.announced_on} 발표` : `${e.event_on || '일자 미확인'} 기준`)} · ${esc(negotiationKind(e.kind))}</div>
+            <b>${esc(e.title_ko)}</b><p class="ust-scope">${esc(e.summary_ko)}</p>
+            <div class="ust-scope">${e.effective_on ? `확인한 발효일: ${esc(e.effective_on)}` : '개별 시행·발효일 별도 확인'}</div>
+            <div class="ec-src">${tariffSources(e.sources)}</div></li>`;
+        const summary = a ? `${a.announced_on || a.event_on || '일자 미확인'} · ${a.title_ko} (${negotiationKind(a.kind)})` : '확인한 합의 없음';
+        if (compact) return `<div class="ust-negotiation-brief"><b>확인한 주요 합의·기준 협정</b> ${esc(summary)}
+            ${updates[0] ? `<br><b>공식 후속 발표</b> ${esc(updates[0].announced_on)} · ${esc(updates[0].title_ko)}` : ''}</div>`;
+        return `<details class="ust-negotiations"><summary>주요 합의·공식 후속 발표·일정</summary>
+            <p class="ust-scope">공식 자료 확인일 ${esc(n.checked_on)} · ${esc(n.coverage_note_ko)}</p>
+            ${n.jurisdiction_ko ? `<p class="ust-scope"><b>협상 관할</b> ${esc(n.jurisdiction_ko)}</p>` : ''}
+            <h5>확인한 주요 합의·기준 협정</h5>${a ? `<ul class="ust-negotiation-list">${row(a)}</ul>` : '<p class="ust-scope">확인한 합의 없음</p>'}
+            <h5>공식 후속 발표 · 최신 발표부터</h5>${updates.length ? `<ul class="ust-negotiation-list">${updates.map(row).join('')}</ul>` : '<p class="ust-scope">추가로 확인한 후속 발표 없음</p>'}
+            <h5>공식 예고 일정</h5>${n.milestones?.length ? `<ul class="ust-negotiation-list">${n.milestones.map((m) => `<li>
+                <div class="ust-when">${esc(m.scheduled_for || '확정일 미확인')} · ${esc(negotiationScheduleState(m))}</div>
+                <b>${esc(m.title_ko)}</b><p class="ust-scope">${esc(m.note_ko)}</p><div class="ec-src">${tariffSources(m.sources)}</div></li>`).join('')}</ul>` : '<p class="ust-scope">확인한 원문에 다음 통상협상 확정일 없음</p>'}
+            <p class="ust-scope">${esc(n.unresolved_ko)}</p>
+        </details>`;
+    };
+
     const partnerHtml = (iso, p, { link = false } = {}) => `<div class="ust-partner">
         <div class="ust-top">
             ${link ? `<button type="button" class="ust-pname" data-ec-iso="${esc(iso)}">${esc(p.name_ko)} →</button>`
                 : `<b>미국 → ${esc(p.name_ko)} · 통상 조치와 검토사항</b>`}
         </div>
         <div class="ust-scope">${esc(p.summary_ko)}</div>
+        ${negotiationsHtml(p, true)}
         <table class="ust-table"><tbody>
             ${(p.lines || []).map((l) => `<tr><th>${esc(l.label_ko)}</th><td>${esc(l.rate_ko)}
                 ${link ? '' : `${verificationHtml(l)}${l.sources?.length ? `<details class="ust-line-detail"><summary>근거·확인 범위</summary>
@@ -684,7 +734,7 @@
                 <td class="ust-auth-cell">${esc(authorityLabel(l.authority))}</td></tr>`).join('')}
         </tbody></table>
         ${link ? '' : `<p class="ust-scope">${esc(usTariffs.as_of)} 기준 · ${esc(p.coverage_ko || '')}</p><div class="ec-src">${tariffSources(p.sources)}</div>
-            ${legalToolsHtml(p.legal_tool_ids, p.legal_tools_note_ko)}`}
+            ${negotiationsHtml(p)}${legalToolsHtml(p.legal_tool_ids, p.legal_tools_note_ko)}`}
     </div>`;
 
     // The US's own panel: what is in force, how the struck-down and expired

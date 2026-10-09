@@ -11,7 +11,7 @@ function renderer(input = data) {
     const window = {};
     const exposed = source.replace('    window.ExportControls = {', `
     usTariffs = input;
-    window.testTradeCards = { partnerHtml, tariffPhase, usTariffSectionHtml };
+    window.testTradeCards = { partnerHtml, tariffPhase, usTariffSectionHtml, negotiationsHtml, negotiationScheduleState };
     window.ExportControls = {`);
     vm.runInNewContext(exposed, { window, input, Intl, console });
     return window.testTradeCards;
@@ -105,4 +105,77 @@ test('each checked line has provenance and unresolved legacy claims remain visib
     }
     assert.match(render.partnerHtml('KOR', data.partners.KOR), /기존 자료 · 재확인 필요/);
     assert.match(render.usTariffSectionHtml(), /모든 현행 HTS/);
+});
+
+test('eight partners have dated official negotiation evidence without refreshing tariff facts', () => {
+    assert.equal(data.as_of, '2026-10-09');
+    assert.equal(Object.keys(data.partners).length, 8);
+    for (const p of Object.values(data.partners)) {
+        const n = p.negotiation;
+        assert.equal(n.checked_on, '2026-10-10');
+        assert.equal(n.coverage, 'selected_official_sources');
+        assert.equal(n.calculation_ready, false);
+        const ids = new Set();
+        for (const e of [n.agreement, ...n.developments, ...n.milestones]) {
+            assert.ok(!ids.has(e.id)); ids.add(e.id);
+            assert.ok(e.sources.length);
+            for (const s of e.sources) {
+                assert.match(new URL(s.url).hostname, /(^|\.)(whitehouse\.gov|ustr\.gov|govinfo\.gov|moit\.gov\.vn|pm\.gc\.ca)$/);
+                assert.match(s.published_on, /^\d{4}-\d{2}-\d{2}$/);
+                assert.ok(s.published_on <= n.checked_on);
+            }
+        }
+    }
+});
+
+test('latest follow-up uses verified publication dates and does not replace the agreement', () => {
+    const p = structuredClone(data.partners.MEX);
+    p.negotiation.developments.reverse();
+    p.negotiation.developments.push({ announced_on: '2027-01-01', title_ko: 'FUTURE', verification: 'primary_text_checked', sources: [{}] });
+    p.negotiation.developments.push({ announced_on: '2026-10-09', title_ko: 'UNVERIFIED', verification: 'needs_review', sources: [{}] });
+    const html = renderer().negotiationsHtml(p, true);
+    assert.match(html, /2020-07-01 · 기준 협정: USMCA/);
+    assert.match(html, /공식 후속 발표<\/b> 2026-10-05/);
+    assert.ok(!html.includes('FUTURE'));
+    assert.ok(!html.includes('UNVERIFIED'));
+    assert.equal(renderer().negotiationsHtml({}), '');
+});
+
+test('passed schedules are not automatically successful and exact EST deadlines preserve time', () => {
+    const state = renderer().negotiationScheduleState;
+    const mexico = data.partners.MEX.negotiation.milestones[0];
+    assert.match(state(mexico, new Date('2026-10-10T00:00:00Z')), /일정 경과 · 결과 미확인/);
+    assert.match(state({ ...mexico, status: 'completed' }, new Date('2026-10-10T00:00:00Z')), /결과 미확인/);
+    const deadline = data.partners.CAN.negotiation.milestones[0];
+    assert.match(state(deadline, new Date('2027-01-13T04:58:00Z')), /공식 예고/);
+    assert.match(state(deadline, new Date('2027-01-13T05:00:00Z')), /일정 경과/);
+    assert.match(state({ scheduled_for: null }), /확정일 미확인/);
+    const hearing = data.partners.CAN.negotiation.milestones[1];
+    assert.equal(hearing.date_precision, 'year');
+    assert.match(hearing.note_ko, /구체적 날짜·장소/);
+});
+
+test('framework, signature, recommendation, EU jurisdiction and consultation remain distinct', () => {
+    const r = renderer();
+    assert.match(r.partnerHtml('DEU', data.partners.DEU), /EU 공통 통상정책 · 독일에 연결/);
+    assert.match(r.partnerHtml('VNM', data.partners.VNM), /최종 서명 또는 발효로 표시하지 않음/);
+    assert.match(r.partnerHtml('TWN', data.partners.TWN), /현재 발효 여부는 별도 확인/);
+    assert.equal(data.partners.TWN.negotiation.agreement.effective_on, null);
+    assert.match(r.partnerHtml('CHN', data.partners.CHN), /권고 · 시행 별도 확인/);
+    assert.match(r.partnerHtml('CAN', data.partners.CAN), /USMCA 협정 자체의 종료 선언이 아님/);
+    assert.match(r.partnerHtml('MEX', data.partners.MEX), /새 협정이나 연장 합의가 아님/);
+});
+
+test('negotiation content escapes markup and rejects executable source URLs', () => {
+    const p = structuredClone(data.partners.CAN);
+    p.negotiation.agreement.title_ko = '<img src=x onerror=alert(1)>';
+    p.negotiation.developments[0].summary_ko = '<script>alert(1)</script>';
+    p.negotiation.milestones[0].note_ko = '<svg onload=alert(1)>';
+    p.negotiation.agreement.sources[0].url = 'javascript:alert(1)';
+    const html = renderer().partnerHtml('CAN', p);
+    assert.ok(!html.includes('<img'));
+    assert.ok(!html.includes('<script'));
+    assert.ok(!html.includes('<svg'));
+    assert.ok(!html.includes('href="javascript:'));
+    assert.match(html, /&lt;img/);
 });
