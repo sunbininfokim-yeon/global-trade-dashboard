@@ -13,6 +13,7 @@ from election_watch.poll_targets import apply_targets
 from election_watch.poll_ballots import fetch_florida
 from election_watch.poll_gaps import attach_gaps, refresh_gap_lifecycle
 from election_watch.superpac import SourceError
+from election_watch.poll_primary_supplements import merge_primary_supplements
 
 ROOT = Path(__file__).resolve().parent
 
@@ -97,15 +98,21 @@ def main():
         if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
             raise ValueError('quality review schema/cycle')
         rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
+        provider_rows = rows
+        primary_receipts = []
+        if production_policy and not args.input:
+            rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
         refresh_ballots()
         policy = selected_policy()
         policy['quality_reviews'] = quality['reviews']
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
+        if primary_receipts:
+            board['primary_supplement_receipts'] = primary_receipts
         try:
             finance = load_finance_links(args.finance_index, policy['cycle'])
         except (OSError, ValueError, KeyError, TypeError) as exc:
             finance = {'status': 'hold', 'error_type': type(exc).__name__, 'races': {}}
-        attach_coverage(board, rows, policy, finance)
+        attach_coverage(board, provider_rows, policy, finance)
         if target_catalog:
             attach_gaps(board, finance)
             board['ballot_source_health'] = ballot_health

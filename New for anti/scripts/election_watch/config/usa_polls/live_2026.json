@@ -214,6 +214,41 @@
         ]
       ],
       "selection_reason_ko": "조사기관 원문과 KOB-TV·KGTV/SD Union Tribune·WNYT 지역 언론 의뢰를 확인. 등록 도메인·검토한 의뢰자 조합만 자동 수집. 수치·표본 불일치 개별 레코드는 참고 전용. 정확도 등급 아님. ABC 10News의 직접 의뢰 원문·SurveyUSA 상세표도 확인."
+    },
+    "InsiderAdvantage": {
+      "group": "insideradvantage",
+      "hosts": [
+        "insideradvantage.com"
+      ],
+      "methodology_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "2026-10-08 기관 원문 결과·표본·기간·방법 공개 확인. 책임 기관과 자체 공개 도메인만 연결. 새 API 발표는 내부/당파성·대진·기간 검사 후 부분 검증으로 수집하고 원문별 검증과 정확도 등급은 별도. 새 의뢰자와 공유 문서 호스트는 자동 허용하지 않습니다."
+    },
+    "Wick": {
+      "group": "wick",
+      "hosts": [
+        "wick.io"
+      ],
+      "methodology_url": "https://wick.io/research-georgia-election-survey-june-2026",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "2026-10-08 기관 원문 결과·표본·기간·방법 공개 확인. 책임 기관과 자체 공개 도메인만 연결. 새 API 발표는 내부/당파성·대진·기간 검사 후 부분 검증으로 수집하고 원문별 검증과 정확도 등급은 별도. 새 의뢰자와 공유 문서 호스트는 자동 허용하지 않습니다."
+    },
+    "CNN/SSRS": {
+      "group": "cnn_ssrs",
+      "hosts": [
+        "www.cnn.com",
+        "edition.cnn.com",
+        "ssrs.com"
+      ],
+      "methodology_url": "https://ssrs.com/news/an-ohio-edge-and-iowa-tossup-heading-into-the-2026-election/",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "CNN의의뢰기사와SSRS공식발표가직접연결한Ohio상세표·표본/모집/LV가중방법을검토. 미래API원문은등록호스트·대진·의뢰자·기간검사후부분검증수집. 정확도인증아님."
     }
   },
   "races": {
@@ -1113,7 +1148,53 @@
     ]
   },
   "excluded_records": {
-    "us-202easa9c1ac17": "forced_choice_question_not_comparable"
+    "us-202easa9c1ac17": "forced_choice_question_not_comparable",
+    "us-202wed7f897488": "publisher_identity_unverified",
+    "gov202wed3b9968cd": "publisher_identity_unverified",
+    "us-202insad41796a": "provider_third_candidate_attribution_unverified",
+    "us-202bigf2db767c": "primary_provider_candidate_values_conflict",
+    "us-202elodaa5cffa": "primary_provider_field_dates_conflict",
+    "us-202elo069243f3": "primary_provider_field_dates_conflict",
+    "us-202nei29757f09": "primary_methodology_not_obtained",
+    "us-202insf80352ad": "primary_release_not_accessed",
+    "us-202quad5474d87": "primary_question_and_methods_not_obtained",
+    "us-202qua2790f813": "primary_question_and_methods_not_obtained",
+    "us-202tavd2d23773": "primary_provider_sample_mismatch",
+    "us-202big1f625134": "primary_geography_methodology_conflict",
+    "gov202big5e3239e4": "primary_geography_and_candidate_table_not_verified",
+    "us-202ins890b679a": "primary_release_not_accessed",
+    "us-202insea9816ae": "primary_release_not_accessed",
+    "us-202har67e7828b": "primary_methodology_not_obtained",
+    "us-202har2b87ea23": "primary_methodology_not_obtained",
+    "us-202beda3a16f8f": "commissioner_primary_not_obtained",
+    "us-202unke3b76dc0": "missing_pollster_sample_and_primary_methodology",
+    "us-202glob1380568": "missing_sample_and_primary_methodology",
+    "us-202the20e70677": "commissioner_primary_methodology_not_obtained",
+    "us-202pub4897124c": "pre_primary_historical_poll_not_general_signal",
+    "us-202texe83b516f": "primary_provider_field_dates_conflict",
+    "us-202tex35ec19da": "primary_provider_field_dates_conflict",
+    "us-202tex909ea2d7": "primary_provider_field_dates_conflict",
+    "us-202nor348bad95": "commissioner_primary_methodology_not_obtained",
+    "us-202norf7bc03a2": "commissioner_primary_methodology_not_obtained",
+    "us-202impbb787ecf": "commissioner_primary_methodology_not_obtained",
+    "us-202dcc0d4b0ded": "primary_methodology_and_reported_name_review_required",
+    "us-202fm396e2170a": "primary_methodology_not_obtained_pre_primary_reference",
+    "us-202pubc2e16fe9": "historical_pre_primary_poll_not_current_signal",
+    "us-202firaf458383": "primary_provider_population_conflict",
+    "us-202nor8d5759fc": "primary_methodology_sample_not_obtained",
+    "us-202rag5df93f4a": "commissioner_primary_methodology_not_obtained",
+    "us-202pubc9e98776": "historical_pre_primary_poll_not_current_signal",
+    "gov202bsp579091db": "primary_population_sample_mapping_required",
+    "us-202pub57d326b1": "pre_primary_historical_poll_primary_methodology_not_obtained",
+    "us-202pub781e29d3": "generic_party_ballot_not_named_race",
+    "us-202rage144569e": "generic_party_ballot_not_named_race",
+    "us-202tul81b19549": "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference",
+    "us-202the5a104154": "primary_provider_population_conflict",
+    "us-202the65a34aca": "primary_provider_population_conflict",
+    "us-202the592aeef5": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202thecc936039": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202the23cfbe50": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202the5f79b2da": "primary_provider_population_conflict"
   },
   "excluded_watch_slots": [
     {
@@ -1158,5 +1239,276 @@
     "weekday_ko": "월요일",
     "time_kst": "06:10",
     "stale_after_hours": 192
+  },
+  "excluded_record_reviews": {
+    "GA:Wedgewood:2026-10-03": {
+      "reviewed_on": "2026-10-08",
+      "provider_ids": [
+        "us-202wed7f897488",
+        "gov202wed3b9968cd"
+      ],
+      "review_file": "usa_election_poll_release_reviews/2026/GA-wedgewood-20261003.json"
+    },
+    "us-202bigf2db767c": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/"
+      ],
+      "reason": "primary_provider_candidate_values_conflict",
+      "note_ko": "API Bray7/Dublin4미검증; 초기47.4/35.2와leaned50.8/38.5 구분. 방법 본문은Texas로 기재, 후보별 전체 원표 미확보.",
+      "provider_record_sha256": "11cf04356d5c1a65cd16d681a854a8711f92157f2462614bb53a5863eedbf70d"
+    },
+    "us-202elodaa5cffa": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; RV717 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "39161a713a6e456315fa9d85d9aa02380bed8140de63618c51c96b42ba535d4a"
+    },
+    "us-202elo069243f3": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; LV466 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "ec515cfb8d10523062104bd7db48fddab8352d5f1ae2993a6ebb4440ea9c3882"
+    },
+    "us-202nei29757f09": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/Shaftan/status/2107772933322277266"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "NC01 10/1–6 API303LV 51/41. 원문 전체문항·모집·가중치·의뢰자 미확보. 후보 alias를 고쳐도 승패색은 보류.",
+      "provider_record_sha256": "fa250032ec2fa9e95a08748ac6b31a75207e3025aca11a88a5eaf8dd36e3e6e0"
+    },
+    "us-202insf80352ad": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/nc-top-line-tabs/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관 NC 이미지 원문 직접 연결 장애. API1200LV48.4/42.5는 보존하되 Georgia 일반 방법 링크로 NC 검증하지 않음.",
+      "provider_record_sha256": "a8d1f2f3da3e19f599576b6c0eb097fc8cbdd0824f267d606f4b5fcd2c23c15a"
+    },
+    "us-202easa9c1ac17": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://cdn.filestackcontent.com/midNvToaTnOmgDOk9qFC"
+      ],
+      "reason": "forced_choice_question_not_comparable",
+      "note_ko": "초기45.7/38.5·미정13.7과 강제 선택51.7/43.6을 구분. 기존 강제 문항 집계 제외 정책 유지.",
+      "provider_record_sha256": "5689f49a510cffed53825a890e779404599ccca658e9da8173210f7dcac44a3b"
+    },
+    "us-202quad5474d87": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/new-quantus-insights-survey-ohio%E2%80%99s-1st-district-is-up-for-grabs"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관페이지응답200은게시제목/동적본문자리만반환. Ohio01 API47.9/44.6/509LV 원문질문·방법미확보.",
+      "provider_record_sha256": "59a45b030383bf04e821df921133288273bc392a0f661c07f3031c4e39dbc0d1"
+    },
+    "us-202qua2790f813": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/brown-and-husted-deadlocked-in-ohio-senate-race"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관Senate게시물은동적본문미확보;695LV47.8/47.3만으로편입안함.",
+      "provider_record_sha256": "38694beb7c2b585d6b1286491c275248b625d5f6496b8b8bb28afc43c59a3b13"
+    },
+    "us-202tavd2d23773": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf"
+      ],
+      "reason": "primary_provider_sample_mismatch",
+      "note_ko": "원문총635명, API560명. 본선54/46은leaners포함; 문항표본560으로확인할근거없음. 공개공유호스트의책임기관/의뢰자도미확인.",
+      "provider_record_sha256": "17bea0126aaa91bf29d6b835716c82ada6aaba0685d330601c96705d5cb604dd"
+    },
+    "us-202big1f625134": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_methodology_conflict",
+      "note_ko": "Ohio결과기사의방법본문은Texas735RV/680LV로기재. 초기45.5/41.6과API leaned46.3/42.6도분리;관할방법/전체원표미확보.",
+      "provider_record_sha256": "97fb1b76bc770f6f273cbde50fbadbf21c4a58954c0073e5a266d080a54ace41"
+    },
+    "gov202big5e3239e4": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_and_candidate_table_not_verified",
+      "note_ko": "동일Ohio페이지방법은Texas기재·주지사전체후보값미확보. APIminor5.3을확인값으로사용안함.",
+      "provider_record_sha256": "3b0eeef97a2b9ed68a6e2e8b036fdd44ccf0eda774fcd892fabf571a17dd957f"
+    },
+    "us-202ins890b679a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/top-line-tabs-ohio/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관top-line원문접근미확인. 기존Georgia원문등록을Ohio개별원문검증으로대체하지않음.",
+      "provider_record_sha256": "a40d73ffc2d7fa893ff63673e280099bbdd61de1f5737c7c9abfb810602d34f0"
+    },
+    "us-202insea9816ae": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/insideradvantage-ohio-senate-race-narrows-to-brown-up-by-one"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "최신Ohio기관원문요청timeout. Brown44/Husted43/BillRedpath4/GregLevy2의질문·방법확인보류.",
+      "provider_record_sha256": "9761871f70730f285fbe4ae0514fba8ec1c7d3af29ccaf2912c8b7f7b6bb381f"
+    },
+    "us-202har67e7828b": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/cjwarnke/status/2104619061556457603"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "OH15 9/22–24 HMP/Hart발표는X링크만확보. 문항/방법전체미확보.",
+      "provider_record_sha256": "06a903ea063bdcf0c3af0b1cebe1f2d575f17498f256148af1836387abea77a3"
+    },
+    "us-202har2b87ea23": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/hmp-poll-don-leonard-within-striking-distance-of-mike-carey-in-oh-15"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "HMP6월발표에서초기Carey45/Leonard40/Barrington3은확인되나표본550과방법본문없음.",
+      "provider_record_sha256": "36e55ff4f90254e91e567367e270139888b7078ad3fd164b2a2abe72b743cb89"
+    },
+    "us-202beda3a16f8f": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.axios.com/2026/08/11/max-miller-ohio-brian-poindexter-democrats-2026"
+      ],
+      "reason": "commissioner_primary_not_obtained",
+      "note_ko": "OH07 당파성조사Axios요약은의뢰기관원문표/방법과다름.",
+      "provider_record_sha256": "b9ffb46f24617022a11cf4e010304e1d74a2af9c0348a6470925b86ce134a6e1"
+    },
+    "us-202unke3b76dc0": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/IAPolls2022/status/2083970139574129144"
+      ],
+      "reason": "missing_pollster_sample_and_primary_methodology",
+      "note_ko": "OH07 NOTUS재인용/X링크. 기관명·표본·모집단미상.",
+      "provider_record_sha256": "a8529e2cbac459c7e1fc4526f18c2abd53eb38f4852eeeb088745f5f7aca6e16"
+    },
+    "us-202glob1380568": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://static.notus.org/27/58/c93f2d1946c0814f583fa25c7a31/hmp-ia-02-poll.pdf"
+      ],
+      "reason": "missing_sample_and_primary_methodology",
+      "note_ko": "IA02 HMP/GSG 원문에초기46/45는있으나표본·모집·가중·전체문항없음.",
+      "provider_record_sha256": "a44ee25b1983b7750f6fc9689ecb404c75e20b19dd890ad8e9117103b7212269"
+    },
+    "us-202the20e70677": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "IA01 Bullfinch/IndependentCenter7월 재인용. 현재공식후보3명일치하나원문방법미확보.",
+      "provider_record_sha256": "8c257f9b2beebceb5b5896a2358f40b2aa8669c09541cc77ce498bf1890642c9"
+    },
+    "us-202pub4897124c": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/newsletters/weekly-score/2025/06/23/recruiting-candidates-in-an-age-of-political-violence-00417469"
+      ],
+      "reason": "pre_primary_historical_poll_not_general_signal",
+      "note_ko": "IA01 2025년6월 조사. 현본선 최신자료로쓰지않음.",
+      "provider_record_sha256": "659a3a529dfe4bb47f83b0c717d314a153b35248f3aaf3e21765ca1ffaeb241d"
+    },
+    "us-202impbb787ecf": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "WI01 최신 HMP/Impact 발표 발견, API표본/기간만으로 원문 방법 공개 완료를 주장하지 않음.",
+      "provider_record_sha256": "e35fad6673c21620b64660e1823ede5d270c4ee48242e5dda90311e14305b983"
+    },
+    "us-202dcc0d4b0ded": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://hub.nationaljournal.com/dems-choosin-texas"
+      ],
+      "reason": "primary_methodology_and_reported_name_review_required",
+      "note_ko": "WI01 DCCC발표: API Brian Steil과본선 Bryan George Steil 철자 불일치, 원문/방법 검토 필요.",
+      "provider_record_sha256": "4464092148e965ef4f338cfc08442c6fa3c6a0dae830a45a124b69b286771e03"
+    },
+    "us-202fm396e2170a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/cjwarnke/status/2074099699020128352?s=20"
+      ],
+      "reason": "primary_methodology_not_obtained_pre_primary_reference",
+      "note_ko": "WI03 HMP/FM3 6월발표, 원문방법 미확보·경선 이전. 최신 본선으로 승격하지 않음.",
+      "provider_record_sha256": "9cc9068574e4c5bd4a078606ce56bd9030a9756fcc88474af155cc944777537b"
+    },
+    "us-202pubc2e16fe9": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff233550000"
+      ],
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "note_ko": "WI03 PPP2025자료 원문방법 전체검토 미완료, 현재 우세 아님.",
+      "provider_record_sha256": "e94fff002e7bc3cdac6c9357da105cf8d60401a53390b04fb4754ea383d33651"
+    },
+    "us-202firaf458383": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+      ],
+      "reason": "primary_provider_population_conflict",
+      "note_ko": "API LV400 vs 원문 RV400. 초기44.4/41.6 동일, RV 원문 보완만 표시.",
+      "provider_record_sha256": "685cc00a1b329829e849e918b77e85529e3adf1f263164aa4b7cef8da7738c4a"
+    },
+    "us-202nor8d5759fc": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/new-hmp-poll-joanna-mendoza-leads-juan-ciscomani-in-az-06"
+      ],
+      "reason": "primary_methodology_sample_not_obtained",
+      "note_ko": "HMP 공식 원문 초기47/45와 정보제공후52/44 구분. 표본500/LV·방법은 해당 공개 원문에서 확인 못함.",
+      "provider_record_sha256": "5ab3e3ccaf5b1a8ddd8d6a9957de0dcd6cd492156fecdcd745cde5fe94764d84"
+    },
+    "us-202rag5df93f4a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://punchbowl.news/article/campaigns/bad-gop-polls/"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "Ragnar3월 조사·유료언론발견, 공식 의뢰자/원문방법 미확보. 새 접근권한 필요시 해당 수집중단.",
+      "provider_record_sha256": "bd07497c562b25a4e737ef47402a814d594733f92a4278140248a7e9634a1877"
+    },
+    "us-202pubc9e98776": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff2ed910000"
+      ],
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "note_ko": "2025 PPP 조사; 현재본선최근조사로 승격하지 않음.",
+      "provider_record_sha256": "3c49a69fa6f51128355614d8c731d7150c5049d1b86ce9ee23f1d777911bc0ca"
+    },
+    "gov202bsp579091db": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://linktr.ee/hrc_asu"
+      ],
+      "reason": "primary_population_sample_mapping_required",
+      "note_ko": "ASU 원문N1300 전체표본과 API LV/sample null 충돌. Q8초기47/34/2/1과 미정16 확인, LV문항N/전체모집단/가중 미검증.",
+      "provider_record_sha256": "76607b3585144ea518200982a6c91b24cbd8f4088ec862c6af504ce69d5f29a0"
+    }
   }
 }
