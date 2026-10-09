@@ -19,6 +19,7 @@ PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.o
 
 # Finite poll files on shared CDNs; never approve the whole storage host.
 PRIMARY_PDF_RELEASES = frozenset((
+    'https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf',
     'https://www.insidernj.com/wp-content/uploads/2026/09/StimSight_NJ07_toplines.pdf',
     'https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf',
     'https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf',
