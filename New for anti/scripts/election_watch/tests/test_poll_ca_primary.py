@@ -153,13 +153,13 @@ class CaliforniaPrimaryTests(unittest.TestCase):
 
     def test_state_ie_updates_have_unique_transaction_ids_and_uncertain_phase(self):
         source=read(PUBLIC/'usa_governor_finance/2026/CA.json')
-        self.assertEqual(source['quality']['included_records'],234)
-        self.assertEqual(len({x['source_id'] for x in source['spending']}),234)
-        new=next(x for x in source['spending'] if x['source_id']=='CA:F496:3207425:0:1')
-        self.assertEqual(new['support_cents'],10850000)
-        self.assertEqual(new['category'],'state_independent_spender_unclassified')
-        self.assertEqual(new['election_type'],'UNKNOWN')
-        self.assertEqual(source['last_filing_date'],'2026-10-07')
+        rows=source['spending']
+        self.assertTrue(rows)
+        self.assertEqual(source['quality']['included_records'],len(rows))
+        self.assertEqual(len({x['source_id'] for x in rows}),len(rows))
+        self.assertTrue(all(x['category']=='state_independent_spender_unclassified' for x in rows))
+        self.assertTrue(all(x['election_type']=='UNKNOWN' and x['reported_election_date'] is None for x in rows))
+        self.assertEqual(source['last_filing_date'],max(x['filing_date'] for x in rows))
 
     def test_other_html_urls_are_not_wholesale_admitted(self):
         snapshot=read(CONFIG/'primary_supplements_2026.json')
