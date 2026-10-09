@@ -270,6 +270,7 @@
     };
     const TARIFF_STATUS_KO = {
         active: '시행 중', expired: '만료', struck_down: '위법 판결로 무효', ended: '종료', truce: '휴전',
+        investigation: '조사 중 · 세율 미확정', review_required: '재확인 필요', scheduled: '시행 예정',
     };
 
     const ui = {
@@ -624,50 +625,141 @@
         return url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(x.label)} ↗</a>` : esc(x.label);
     }).join(' · ');
 
+    const authorityLabel = (value) => /^\d+$/.test(value || '') ? `${value}조` : value || '';
+    const verificationHtml = (item) => `<span class="ust-verification ${item.verification === 'primary_text_checked' ? 'ust-checked' : 'ust-review'}">${
+        item.verification === 'primary_text_checked' ? '표시 원문 확인' : '기존 자료 · 재확인 필요'}</span>`;
+    // A law's existence, an investigation and an effective measure are separate.
+    // Classify against the snapshot date, without silently refreshing legal facts.
+    const tariffPhase = (m) => {
+        if (['expired', 'struck_down', 'ended'].includes(m.status)) return 'history';
+        if (['active', 'truce'].includes(m.status)) {
+            if (m.started && m.started > usTariffs.as_of) return 'pending';
+            if (m.ended && m.ended <= usTariffs.as_of) return 'history';
+            return 'live';
+        }
+        return 'pending';
+    };
+
+    const legalToolsHtml = (ids, note) => {
+        const wanted = new Set(ids || (usTariffs?.legal_tools || []).map((t) => t.id));
+        const tools = (usTariffs?.legal_tools || []).filter((t) => wanted.has(t.id));
+        if (!tools.length) return '';
+        return `<details class="ust-tools"><summary>법적 요건을 충족하면 검토할 수 있는 수단 · ${tools.length}개</summary>
+            <p class="ust-scope">${esc(note || '국가별 발효 조치와 별개인 법률상 검토 목록입니다. 적용 가능성·발동 확률·세율을 확정하지 않습니다.')}</p>
+            <ul class="ust-list">${tools.map((t) => `<li class="ust-item ust-conditional">
+                <b>${esc(t.name_ko)}</b><div class="ust-when">${esc(t.legal_basis)}</div>
+                <div class="ust-scope"><b>요건</b> ${esc(t.trigger_ko)}</div>
+                <div class="ust-scope"><b>절차</b> ${esc(t.procedure_ko)}</div>
+                <div class="ust-rate">${esc(t.effect_ko)}</div>
+                <div class="ec-src">${tariffSources(t.sources)}</div></li>`).join('')}</ul></details>`;
+    };
+
     const tariffMeasureHtml = (m) => `<li class="ust-item ust-${esc(m.status)}">
         <div class="ust-top">
-            <span class="ust-auth">${esc(m.authority === 'IEEPA' ? 'IEEPA' : `${m.authority}조`)}</span>
+            <span class="ust-auth">${esc(authorityLabel(m.authority))}</span>
             <b>${esc(m.name_ko)}</b>
             <span class="ust-status">${esc(TARIFF_STATUS_KO[m.status] || m.status)}</span>
         </div>
-        <div class="ust-when">${esc(m.started || '')} ~ ${esc(m.ended || '현재')}</div>
+        <div class="ust-when">${esc(m.started || '')} ~ ${esc(m.ended || (tariffPhase(m) === 'live' ? '종료일 미지정' : '개별 일정 확인'))}</div>
+        ${verificationHtml(m)}
         <div class="ust-rate">${esc(m.rate_ko)}</div>
         ${m.how_ended_ko ? `<div class="ust-ended"><b>어떻게 끝났나</b> ${esc(m.how_ended_ko)}</div>` : ''}
         ${m.scope_ko ? `<div class="ust-scope">${esc(m.scope_ko)}</div>` : ''}
+        ${m.verification_note_ko ? `<div class="ust-scope">${esc(m.verification_note_ko)}</div>` : ''}
         <div class="ec-src">${tariffSources(m.sources)}</div>
     </li>`;
+
+    const negotiationKind = (kind) => ({ framework: '기본합의', signed_agreement: '서명 확인',
+        agreement_in_force: '기존 발효 협정', consensus: '합의 발표', sectoral_agreement: '분야별 합의',
+        implementation: '이행 발표', implementation_pending: '발표 당시 국내 절차 필요',
+        negotiation: '협상·협의', consultation: '의견수렴', recommendation: '권고 · 시행 별도 확인',
+        suspension: '협상 중단 발표', statement: '공식 입장' }[kind] || '구분 확인 필요');
+    const checkedDevelopments = (n) => (n.developments || []).filter((e) =>
+        e.verification === 'primary_text_checked' && /^\d{4}-\d{2}-\d{2}$/.test(e.announced_on || '') &&
+        e.announced_on <= n.checked_on && e.sources?.length)
+        .slice().sort((a, b) => b.announced_on.localeCompare(a.announced_on));
+    // Passing a scheduled date never proves that talks occurred or an agreement entered into force.
+    const negotiationScheduleState = (m, now = new Date()) => {
+        if (m.status === 'cancelled') return '취소 발표';
+        if (m.status === 'completed' && m.completion_sources?.length) return '결과 원문 확인';
+        const date = m.scheduled_for || '';
+        let end = m.deadline_at ? Date.parse(m.deadline_at) : NaN;
+        if (!Number.isFinite(end)) {
+            if (m.date_precision === 'year' && /^\d{4}$/.test(date)) end = Date.parse(`${date}-12-31T23:59:59Z`);
+            else if (m.date_precision === 'month' && /^\d{4}-(0[1-9]|1[0-2])$/.test(date)) {
+                const [year, month] = date.split('-').map(Number);
+                end = Date.UTC(year, month, 1) - 1;
+            } else if (m.date_precision === 'day' && /^\d{4}-\d{2}-\d{2}$/.test(date)) end = Date.parse(`${date}T23:59:59Z`);
+        }
+        if (!Number.isFinite(end)) return '확정일 미확인';
+        return now.getTime() > end ? '일정 경과 · 결과 미확인' : '공식 예고 · 변경 여부 확인 필요';
+    };
+    const negotiationsHtml = (p, compact = false) => {
+        const n = p.negotiation;
+        if (!n) return '';
+        const a = n.agreement?.verification === 'primary_text_checked' && n.agreement.sources?.length ? n.agreement : null;
+        const updates = checkedDevelopments(n);
+        const row = (e) => `<li><div class="ust-when">${esc(e.announced_on ? `${e.announced_on} 발표` : `${e.event_on || '일자 미확인'} 기준`)} · ${esc(negotiationKind(e.kind))}</div>
+            <b>${esc(e.title_ko)}</b><p class="ust-scope">${esc(e.summary_ko)}</p>
+            <div class="ust-scope">${e.effective_on ? `확인한 발효일: ${esc(e.effective_on)}` : '개별 시행·발효일 별도 확인'}</div>
+            <div class="ec-src">${tariffSources(e.sources)}</div></li>`;
+        const summary = a ? `${a.announced_on || a.event_on || '일자 미확인'} · ${a.title_ko} (${negotiationKind(a.kind)})` : '확인한 합의 없음';
+        if (compact) return `<div class="ust-negotiation-brief"><b>확인한 주요 합의·기준 협정</b> ${esc(summary)}
+            ${updates[0] ? `<br><b>공식 후속 발표</b> ${esc(updates[0].announced_on)} · ${esc(updates[0].title_ko)}` : ''}</div>`;
+        return `<details class="ust-negotiations"><summary>주요 합의·공식 후속 발표·일정</summary>
+            <p class="ust-scope">공식 자료 확인일 ${esc(n.checked_on)} · ${esc(n.coverage_note_ko)}</p>
+            ${n.jurisdiction_ko ? `<p class="ust-scope"><b>협상 관할</b> ${esc(n.jurisdiction_ko)}</p>` : ''}
+            <h5>확인한 주요 합의·기준 협정</h5>${a ? `<ul class="ust-negotiation-list">${row(a)}</ul>` : '<p class="ust-scope">확인한 합의 없음</p>'}
+            <h5>공식 후속 발표 · 최신 발표부터</h5>${updates.length ? `<ul class="ust-negotiation-list">${updates.map(row).join('')}</ul>` : '<p class="ust-scope">추가로 확인한 후속 발표 없음</p>'}
+            <h5>공식 예고 일정</h5>${n.milestones?.length ? `<ul class="ust-negotiation-list">${n.milestones.map((m) => `<li>
+                <div class="ust-when">${esc(m.scheduled_for || '확정일 미확인')} · ${esc(negotiationScheduleState(m))}</div>
+                <b>${esc(m.title_ko)}</b><p class="ust-scope">${esc(m.note_ko)}</p><div class="ec-src">${tariffSources(m.sources)}</div></li>`).join('')}</ul>` : '<p class="ust-scope">확인한 원문에 다음 통상협상 확정일 없음</p>'}
+            <p class="ust-scope">${esc(n.unresolved_ko)}</p>
+        </details>`;
+    };
 
     const partnerHtml = (iso, p, { link = false } = {}) => `<div class="ust-partner">
         <div class="ust-top">
             ${link ? `<button type="button" class="ust-pname" data-ec-iso="${esc(iso)}">${esc(p.name_ko)} →</button>`
-                : `<b>미국이 ${esc(p.name_ko)}에 매기는 관세 (현재)</b>`}
+                : `<b>미국 → ${esc(p.name_ko)} · 통상 조치와 검토사항</b>`}
         </div>
         <div class="ust-scope">${esc(p.summary_ko)}</div>
+        ${negotiationsHtml(p, true)}
         <table class="ust-table"><tbody>
-            ${(p.lines || []).map((l) => `<tr><th>${esc(l.label_ko)}</th><td>${esc(l.rate_ko)}</td>
-                <td class="ust-auth-cell">${esc(/^\d/.test(l.authority) ? `${l.authority}조` : l.authority)}</td></tr>`).join('')}
+            ${(p.lines || []).map((l) => `<tr><th>${esc(l.label_ko)}</th><td>${esc(l.rate_ko)}
+                ${link ? '' : `${verificationHtml(l)}${l.sources?.length ? `<details class="ust-line-detail"><summary>근거·확인 범위</summary>
+                    ${(l.measure_ids || []).map((id) => (usTariffs.measures || []).find((m) => m.id === id)).filter(Boolean)
+                        .map((m) => `<div class="ust-scope">${esc(TARIFF_STATUS_KO[m.status] || m.status)} · ${esc(m.name_ko)}<br>${esc(m.scope_ko || m.verification_note_ko || '')}</div>`).join('')}
+                    <div class="ec-src">${tariffSources(l.sources)}</div></details>` : ''}`}</td>
+                <td class="ust-auth-cell">${esc(authorityLabel(l.authority))}</td></tr>`).join('')}
         </tbody></table>
-        ${link ? '' : `<div class="ec-src">${tariffSources(p.sources)}</div>`}
+        ${link ? '' : `<p class="ust-scope">${esc(usTariffs.as_of)} 기준 · ${esc(p.coverage_ko || '')}</p><div class="ec-src">${tariffSources(p.sources)}</div>
+            ${negotiationsHtml(p)}${legalToolsHtml(p.legal_tool_ids, p.legal_tools_note_ko)}`}
     </div>`;
 
     // The US's own panel: what is in force, how the struck-down and expired
     // layers ended, and the current rate on the main manufacturing partners.
     const usTariffSectionHtml = () => {
         if (!usTariffs) return '<p class="ec-warn">미국 관세 자료를 불러오지 못했습니다.</p>';
-        const live = usTariffs.measures.filter((m) => m.status === 'active' || m.status === 'truce');
-        const gone = usTariffs.measures.filter((m) => !(m.status === 'active' || m.status === 'truce'));
+        const live = usTariffs.measures.filter((m) => tariffPhase(m) === 'live');
+        const gone = usTariffs.measures.filter((m) => tariffPhase(m) === 'history');
+        const pending = usTariffs.measures.filter((m) => tariffPhase(m) === 'pending');
         const partners = Object.entries(usTariffs.partners || {});
         return `<section class="ust">
             <h4 class="ec-sect">${esc(usTariffs.title_ko)}</h4>
-            <p class="ust-lead">미국은 예외로 수출통제 대신 관세·통상 정책을 붙였다. 2026-02-20 대법원이 IEEPA 관세를 무효로 하면서
-                지금은 <b>232조(품목별)</b>와 <b>301조(국가별)</b>가 두 축이다.</p>
-            <h4 class="ec-cat">주요 제조국에 지금 매기는 관세</h4>
+            <p class="ust-lead">미국의 수입관세·수입금지와 수출·거래 제한을 구분합니다. 국가를 열면 실제 조치의 근거와
+                별도의 조건부 법적 수단을 확인할 수 있습니다. 법률이 존재한다고 즉시 적용되는 것은 아닙니다.</p>
+            <p class="ust-scope">${esc(usTariffs.audit?.scope_ko || usTariffs.note_ko)}</p>
+            <h4 class="ec-cat">국가별 미국 통상 조치 · 확인한 범위</h4>
             ${partners.map(([iso, p]) => partnerHtml(iso, p, { link: true })).join('')}
             <h4 class="ec-cat">시행 중인 제도 <span class="ec-cat-n">${live.length}건</span></h4>
             <ul class="ust-list">${live.map(tariffMeasureHtml).join('')}</ul>
+            ${pending.length ? `<details class="ust-gone"><summary>조사·시행 예정·재확인 <span class="ec-cat-n">${pending.length}건</span></summary>
+                <ul class="ust-list">${pending.map(tariffMeasureHtml).join('')}</ul></details>` : ''}
             <details class="ust-gone"><summary>끝난 조치 — 어떻게 끝났나 <span class="ec-cat-n">${gone.length}건</span></summary>
                 <ul class="ust-list">${gone.map(tariffMeasureHtml).join('')}</ul>
             </details>
+            ${legalToolsHtml()}
             <p class="ec-foot">${esc(usTariffs.as_of)} 기준 · ${esc(usTariffs.note_ko)}</p>
         </section>`;
     };
