@@ -133,3 +133,5 @@
 | T-CT-STATE-EVIDENCE-20261009 | D그룹 코네티컷 공식 후보·원문 조사·외부지출 연결 | codex | election_watch CT config/collector/tests·CT public data·handoff | codex/ct-evidence-20261009 | review | 사용자 D그룹 CT부터 명시. #506 기반 격리 worktree→최신 main 확인 후속 PR. 공식 하원5/13명·주지사2명, 원문2관측·API4보류·SEEC10행감사/금액null.454검사·타주/기존금융 보존. AK 편집과 분리. [CT 인수](handoff/2026-10-09-codex-state-evidence-CT.md). 다음MD. UI/workflow/LETF/병합/배포 제외. |
 
 | T-AL-STATE-EVIDENCE-20261009 | C그룹 앨라배마 공식 후보·원문 조사·독립지출 연결 | codex | election_watch AL config/tests·AL public data·handoff | codex/al-evidence-20261009 | review | AL9선거18공식 후보·원문5조사 참고 전용·FCPA42,186행 감사/null금액. 465검사·타주4,651파일 보존. 인수: handoff/2026-10-09-codex-state-evidence-AL.md. 다음 NJ→NM→NH. UI/workflow/LETF/병합/배포 제외. |
+
+| T-NJ-STATE-EVIDENCE-20261009 | C그룹 뉴저지 공식 후보·조사·연방 독립지출 | codex | election_watch NJ config/tests·NJ public data·handoff | codex/nj-evidence-20261009 | review | 공식13선거39명·NJ07 원문1 참고 연결. 하원 현재후보 O관측7→10/12·상원4명 ID. 348poll검사·타주4,644금융파일 보존. 인수: handoff/2026-10-09-codex-state-evidence-NJ.md. 다음 NM→NH. UI/workflow/LETF/배포 제외. |
