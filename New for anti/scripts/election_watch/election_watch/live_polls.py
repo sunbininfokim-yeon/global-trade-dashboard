@@ -11,7 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, answer_correction_fingerprint
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -185,6 +185,7 @@ def normalize(rows, policy, as_of):
             p, answer_correction = corrected_provider_answers(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             p, source_correction = corrected_provider_source(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             p, metadata_correction = corrected_provider_metadata(p, policy.get("quality_reviews", {}).get(p["id"], {}), as_of)
+            p, sample_correction = corrected_provider_sample(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
             primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
                 'sponsor_review', {}).get('primary_internal') is True
@@ -274,6 +275,8 @@ def normalize(rows, policy, as_of):
                 observation['provider_source_correction'] = source_correction
             if metadata_correction:
                 observation['provider_metadata_correction'] = metadata_correction
+            if sample_correction:
+                observation['provider_sample_correction'] = sample_correction
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             if primary_internal:

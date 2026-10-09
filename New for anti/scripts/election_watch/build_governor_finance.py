@@ -27,7 +27,8 @@ def main():
         roster_path = ROOT / 'config/governor_candidates' / str(args.cycle) / (args.state + '.json')
         roster = json.loads(roster_path.read_text())['candidates'] if roster_path.exists() else []
         matchups_path = ROOT / 'config/governor_matchups' / (str(args.cycle) + '.json')
-        snapshot = json.loads(matchups_path.read_text()) if matchups_path.exists() else None
+        from election_watch.polls import read
+        snapshot = read(matchups_path) if matchups_path.exists() else None
         if snapshot:
             validate_snapshot(snapshot, args.cycle, now()[:10])
         matchup = snapshot['contests'].get(args.state) if snapshot else None

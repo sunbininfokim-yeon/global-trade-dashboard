@@ -48,11 +48,18 @@ def main():
     p.add_argument('--scenario-policy', type=Path, default=ROOT/'config/usa_polls/seat_scenarios_2026.json')
     p.add_argument('--election-board', type=Path, default=ROOT.parent.parent/'public/data/elections_board_v1.json')
     p.add_argument('--input', type=Path, help='Replay saved provider response for testing; marked as replay')
+    p.add_argument('--capture-output', type=Path, help='Save actual collection for safe publication retry')
+    p.add_argument('--retry-capture', type=Path, help='Revalidate captured inputs on latest main; never refetch or advance dates')
     p.add_argument('--target-catalog', type=Path, help='Reviewed nationwide scheduled election universe')
     p.add_argument('--ballot-reviews', type=Path, help='Reviewed general ballot identities for poll admission')
     p.add_argument("--house-focus", type=Path, help="House Lean/Toss-Up review priority policy")
     p.add_argument("--ratings", type=Path, default=ROOT.parent.parent/"public/data/usa_election_ratings_review_v1.json")
     args = p.parse_args()
+    from election_watch.poll_run_capture import validate_capture, make_capture
+    retry = validate_capture(read(args.retry_capture)) if args.retry_capture else None
+    if retry:
+        if args.input: raise ValueError('ambiguous polling replay')
+        args.as_of = retry['as_of']
     production_policy = args.policy.resolve() == (ROOT/'config/usa_polls/live_2026.json').resolve()
     target_catalog = args.target_catalog or (ROOT/'config/usa_polls/targets_2026.json' if production_policy else None)
     ballot_reviews = args.ballot_reviews or (ROOT/'config/usa_polls/ballot_reviews_2026.json' if production_policy else None)
@@ -60,7 +67,11 @@ def main():
     governor_matchups = args.governor_matchups
     if governor_matchups is None and production_policy:
         governor_matchups = ROOT/'config/governor_matchups/2026.json'
-    checked = datetime.now(timezone.utc).isoformat()
+    checked = retry['captured_at'] if retry else datetime.now(timezone.utc).isoformat()
+    if retry and args.output.exists():
+        previous_time = read(args.output).get('fetched_at')
+        if previous_time and datetime.fromisoformat(previous_time.replace('Z', '+00:00')) > datetime.fromisoformat(checked.replace('Z', '+00:00')):
+            raise ValueError('Newer national collection already published; older retry held')
     health = args.output.with_name('usa_election_live_polls_status_v1.json')
     ballot_health = {'status': 'not_configured'}
     ballots = None
@@ -69,7 +80,7 @@ def main():
         if not ballots:
             return
         ballot_health = {'status': 'reviewed_snapshot', 'reviewed_on': ballots['reviewed_on']}
-        if not args.input:
+        if not args.input and not retry:
             try:
                 florida = fetch_florida(args.as_of)
                 for rid, review in florida['races'].items():
@@ -109,11 +120,14 @@ def main():
         quality = read(args.quality_reviews)
         if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
             raise ValueError('quality review schema/cycle')
-        rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
-        provider_rows = rows
-        primary_receipts = []
-        if production_policy and not args.input:
+        rows, url = ((retry['rows'], retry['source_url']) if retry else
+                     (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of))
+        provider_rows = retry['provider_rows'] if retry else rows
+        primary_receipts = retry['primary_receipts'] if retry else []
+        if production_policy and not args.input and not retry:
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
+        if args.capture_output and not args.input:
+            atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts))
         refresh_ballots()
         policy = selected_policy()
         policy['quality_reviews'] = quality['reviews']
@@ -131,7 +145,8 @@ def main():
             board['ballot_source_health'] = ballot_health
         history = poll_history(rows, policy, args.as_of)
         previous = read(args.output) if args.output.exists() else None
-        retain_state_provenance(board, history, previous)
+        from election_watch.state_inputs import packets
+        retain_state_provenance(board, history, previous, packets() if production_policy else ())
         if args.input:
             board['source_status'] = 'replay'
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')

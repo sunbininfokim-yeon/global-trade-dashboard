@@ -19,6 +19,11 @@ PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.o
 
 # Finite poll files on shared CDNs; never approve the whole storage host.
 PRIMARY_PDF_RELEASES = frozenset((
+    'https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf',
+    'https://www.insidernj.com/wp-content/uploads/2026/09/StimSight_NJ07_toplines.pdf',
+    'https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf',
+    'https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf',
+    'https://www.sacredheart.edu/media/shu-media/press-room-2026/SHU-CT-Gubernatorial-Race-Poll-2-of-3-2026-ADA.pdf',
     'https://newspack-coloradosun.s3.amazonaws.com/wp-content/uploads/2026/07/CO-05-Polling-Memo-F07.24.26.pdf',
     'https://cdn.prod.website-files.com/6943653ee8791a8a352e27f7/6aadecdc9101b1b52f7aeec1_CO-08%20Toplines%20(9%3A17).pdf',
 ))
@@ -31,6 +36,31 @@ PRIMARY_XLSX_HOSTS = frozenset(('7453540.fs1.hubspotusercontent-na1.net',))
 PRIMARY_HTML_RELEASES = frozenset((
     'https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/',
 ))
+
+# ASP.NET reports expose their evidence in a main frame. Hash visible text,
+# not generated view-state attributes, and admit only the reviewed report.
+PRIMARY_SURVEYUSA_RELEASES = {
+    'https://results.surveyusa.com/client/PollReport_main.aspx?g=6e6ded19-6ad8-4379-8fa9-6a15dfa99052': '28031',
+}
+
+
+def surveyusa_html_fingerprint(body, report_id):
+    class EvidenceText(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.parts = []; self.ignored = 0
+        def handle_starttag(self, tag, attrs):
+            if tag in ('script', 'style'): self.ignored += 1
+        def handle_endtag(self, tag):
+            if tag in ('script', 'style'): self.ignored = max(0, self.ignored - 1)
+        def handle_data(self, data):
+            if not self.ignored: self.parts.append(data)
+    parser = EvidenceText(); parser.feed(body.decode('utf-8')); parser.close()
+    canonical = ' '.join(' '.join(parser.parts).split())
+    require(f'Results of SurveyUSA Election Poll #{report_id}' in canonical
+            and 'About the Research / Filtering:' in canonical
+            and len(canonical) > 1000, 'primary SurveyUSA report missing/changed')
+    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
 
 
 def primary_html_fingerprint(body):
@@ -77,7 +107,9 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document['url'] in PRIMARY_PDF_RELEASES
                          or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx')
                          or document.get('format') == 'reviewed_html_article_v1'
-                            and document['url'] in PRIMARY_HTML_RELEASES)
+                            and document['url'] in PRIMARY_HTML_RELEASES
+                         or document.get('format') == 'reviewed_surveyusa_report_v1'
+                            and document['url'] in PRIMARY_SURVEYUSA_RELEASES)
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # Replace a verified provider typo only for the exact reviewed snapshot.
         # Changed records still undergo the standard same-wave conflict check.
@@ -108,6 +140,8 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 require(len(body)<=3*1024*1024, 'primary document size changed')
                 if document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
+                elif document.get('format') == 'reviewed_surveyusa_report_v1':
+                    digest = surveyusa_html_fingerprint(body, PRIMARY_SURVEYUSA_RELEASES[document['url']])
                 else:
                     require(body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04'), 'primary document format changed')
                     digest=hashlib.sha256(body).hexdigest()

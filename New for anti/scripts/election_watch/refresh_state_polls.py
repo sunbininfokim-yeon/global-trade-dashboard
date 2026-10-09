@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--state',choices=STATES,required=True)
     parser.add_argument('--as-of',default=datetime.now(timezone.utc).date().isoformat())
     parser.add_argument('--public',type=Path,default=ROOT.parent.parent/'public/data')
+    parser.add_argument('--packet', action='store_true', help='Save state-owned reviewed input; leave national outputs untouched')
     args=parser.parse_args();config=ROOT/'config/usa_polls'
     target=args.public/'usa_election_live_polls_v1.json'
     health=args.public/'usa_election_state_poll_status_v1.json'
@@ -52,6 +53,20 @@ def main():
             'primary_supplement_receipts':primary_receipts,
             'serialized_provider_response_sha256':hashlib.sha256(json.dumps(provider_rows,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
             'provider_records':sum(r['provider_record_count'] for r in capture['monitoring']['race_coverage'].values())}
+        if args.packet:
+            from election_watch.state_inputs import digest
+            path = ROOT/'config/state_evidence/2026'/f'{args.state}.json'
+            packet = read(path) if path.exists() else {'schema':'usa_state_evidence_packet_v1',
+                'state':args.state, 'cycle':2026, 'config_operations':[]}
+            subjects = {(r['subject'], r['poll_type']) for r in policy['races'].values()}
+            selected_rows = [r for r in provider_rows if (r.get('subject'), r.get('poll_type')) in subjects]
+            packet['capture'] = {'as_of':args.as_of, 'fetched_at':checked, 'receipt':receipt,
+                'provider_records':selected_rows, 'provider_records_sha256':digest(selected_rows),
+                'primary_records':[r for r in rows if r.get('primary_source_capture')
+                    and (r.get('subject'), r.get('poll_type')) in subjects]}
+            atomic(path, packet)
+            print({'state':args.state, 'saved':'state_input_packet', 'national_outputs_changed':False})
+            return 0
         board=merge_capture(previous,capture,args.state,receipt)
         board['target_catalog']['ballot_review_count']=len(ballots['races'])
         archive=args.public/'usa_election_poll_history_2026.json'
@@ -68,7 +83,8 @@ def main():
         print(status['states'][args.state])
     except (OSError,ValueError,TypeError,KeyError) as error:
         status['states'][args.state]={'status':'error_last_valid_preserved','checked_at':checked,'error_type':type(error).__name__}
-        atomic(health,status);print(status['states'][args.state]);return 1
+        if not args.packet: atomic(health,status)
+        print(status['states'][args.state]);return 1
     return 0
 
 
