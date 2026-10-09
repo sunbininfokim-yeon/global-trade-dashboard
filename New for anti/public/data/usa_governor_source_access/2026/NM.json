@@ -1,0 +1,47 @@
+{
+  "schema": "usa_governor_source_access_v1",
+  "state": "NM",
+  "cycle": 2026,
+  "checked_at": "2026-10-09T10:15:09.680959+00:00",
+  "status": "public_endpoint_reachable_mapping_required",
+  "last_current_endpoint_accessible_at": "2026-10-09T10:15:09.680959+00:00",
+  "financial_data_collected": false,
+  "candidate_amounts_available": false,
+  "current_portal_url": "https://www.cfis.state.nm.us/media/",
+  "source_review": {
+    "cycle": 2026,
+    "reviewed_on": "2026-10-09",
+    "endpoints": [
+      {
+        "url": "https://www.cfis.state.nm.us/media/",
+        "role": "current_public_portal"
+      },
+      {
+        "url": "https://www.cfis.state.nm.us/media/CFIS_Data_Download.aspx",
+        "role": "current_public_export"
+      }
+    ],
+    "source_scope": "portal_and_export_controls_only_not_candidate_targeted_IE_transactions",
+    "filing_login_required_for_public_read": false,
+    "note_ko": "거래CSV 공개 경로 확인. 모든PAC 비용/캠프지출/수입은 주지사 지지반대가 아닙니다. 수혜후보·방향·정정·중복 검증 전 금액 null."
+  },
+  "endpoints": [
+    {
+      "url": "https://www.cfis.state.nm.us/media/",
+      "status": "public_endpoint_reachable",
+      "http_status": 200,
+      "same_host": true,
+      "body_prefix_sha256": "99248fd71867483047c71ab1781dad5e313229e433716366e6be9d95e46149dd",
+      "role": "current_public_portal"
+    },
+    {
+      "url": "https://www.cfis.state.nm.us/media/CFIS_Data_Download.aspx",
+      "status": "public_endpoint_reachable",
+      "http_status": 200,
+      "same_host": true,
+      "body_prefix_sha256": "0ab6fbc3126b3f08cf08a8650a54dbfb1e307c18897e1a93416a7caed6be4439",
+      "role": "current_public_export"
+    }
+  ],
+  "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다."
+}

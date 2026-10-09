@@ -370,6 +370,30 @@
         "filing_login_required_for_public_read": false,
         "note_ko": "공개 GET만. 일반지출의 CANDIDATE NAME은 지출한 캠프 소유자이지 독립지출 대상 후보가 아님. 지원/반대 방향 없는 일반비용을 주지사 IE로 변환하지 않습니다."
       }
+    },
+    "NM": {
+      "agency": "New Mexico Secretary of State",
+      "access": "public_ASPNET_search_and_CSV_download",
+      "url": "https://www.cfis.state.nm.us/media/",
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "public_exports_discovered_candidate_beneficiary_direction_mapping_not_implemented",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-09",
+        "endpoints": [
+          {
+            "url": "https://www.cfis.state.nm.us/media/",
+            "role": "current_public_portal"
+          },
+          {
+            "url": "https://www.cfis.state.nm.us/media/CFIS_Data_Download.aspx",
+            "role": "current_public_export"
+          }
+        ],
+        "source_scope": "portal_and_export_controls_only_not_candidate_targeted_IE_transactions",
+        "filing_login_required_for_public_read": false,
+        "note_ko": "거래CSV 공개 경로 확인. 모든PAC 비용/캠프지출/수입은 주지사 지지반대가 아닙니다. 수혜후보·방향·정정·중복 검증 전 금액 null."
+      }
     }
   }
 }
