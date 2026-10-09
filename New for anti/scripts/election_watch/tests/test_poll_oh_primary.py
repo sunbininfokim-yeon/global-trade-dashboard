@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,json,unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups,validate_snapshot
@@ -14,7 +15,7 @@ DAY='2026-10-08'
 class OhioPrimaryTests(unittest.TestCase):
     def setUp(self):
         self.gov=read(ROOT/'config/governor_matchups/2026.json')
-        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),self.gov,DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY)
+        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),self.gov,SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/OH-primary-20261008.json')
         self.rows=[e['provider_record'] for e in self.audit['records']]
@@ -106,7 +107,7 @@ class OhioPrimaryTests(unittest.TestCase):
         self.assertEqual(self.policy['races']['USA:OH:governor']['candidates']['Don Kissick']['party'],'LIB')
         self.assertEqual(self.policy['races']['USA:OH:house:09']['candidates']['Marcy Kaptur']['canonical_name'],'Marcia Carolyn "Marcy" Kaptur')
         self.assertIn('Sandeep Dixit',self.policy['races']['USA:OH:house:13']['candidates'])
-        validate_snapshot(self.gov,2026,DAY)
+        validate_snapshot(self.gov,2026,SNAPSHOT_DAY)
 
     def test_house_identity_is_bound_to_authority_name_and_finance(self):
         federal=read(ROOT/'config/federal_matchups/2026.json');identities=read(CONFIG/'state_finance_identities_2026.json')

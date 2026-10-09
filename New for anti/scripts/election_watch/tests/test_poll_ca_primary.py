@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy
 import hashlib
 import json
@@ -20,8 +21,8 @@ read = lambda p: json.loads(p.read_text())
 class CaliforniaPrimaryTests(unittest.TestCase):
     def setUp(self):
         self.gov = read(ROOT/'config/governor_matchups/2026.json')
-        self.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), self.gov, DAY),
-            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), DAY)
+        self.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), self.gov, SNAPSHOT_DAY),
+            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), SNAPSHOT_DAY)
         self.policy['quality_reviews'] = read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.audit = read(PUBLIC/'usa_election_poll_release_reviews/2026/CA-primary-20261009.json')
         self.raw = [x['provider_record'] for x in self.audit['records']]
@@ -106,10 +107,10 @@ class CaliforniaPrimaryTests(unittest.TestCase):
 
     def test_explicit_official_governor_override_is_idempotent_and_date_guarded(self):
         reviews=read(ROOT/'config/governor_matchups/2026_ballot_reviews.json')
-        result=apply_ballot_reviews(self.gov,reviews,DAY)
-        self.assertEqual(result,apply_ballot_reviews(result,reviews,DAY))
+        result=apply_ballot_reviews(self.gov,reviews,SNAPSHOT_DAY)
+        self.assertEqual(result,apply_ballot_reviews(result,reviews,SNAPSHOT_DAY))
         changed=copy.deepcopy(reviews);changed['contests']['CA']['reviewed_on']='2026-10-10'
-        with self.assertRaises(SourceError):apply_ballot_reviews(self.gov,changed,DAY)
+        with self.assertRaises(SourceError):apply_ballot_reviews(self.gov,changed,SNAPSHOT_DAY)
 
     def html(self, value='48', related='Other publication'):
         return (f'<html><nav>{related}</nav><article class="ghost-content prose"><p>'

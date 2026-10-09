@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,json
 from pathlib import Path
 import unittest
@@ -17,7 +18,7 @@ class Response:
 class PennsylvaniaPrimaryTests(unittest.TestCase):
     def setUp(self):
         read=lambda p:json.loads(p.read_text())
-        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-08'),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),'2026-10-08')
+        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.rows=[r['provider_record'] for r in read(PUBLIC/'usa_election_poll_release_reviews/2026/PA-primary-20261008.json')['records']]
         self.snapshot=read(CONFIG/'primary_supplements_2026.json');self.body=b'%PDF-1.7 synthetic test content'

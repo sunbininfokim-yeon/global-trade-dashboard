@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,io,json,unittest
 from pathlib import Path
 from urllib.error import URLError
@@ -12,7 +13,7 @@ read=lambda p:json.loads(p.read_text())
 class WisconsinPrimaryTests(unittest.TestCase):
  def setUp(self):
   self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/WI-primary-20261009.json');self.gov=read(ROOT/'config/governor_matchups/2026.json')
-  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),self.gov,DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.rows=[e['provider_record'] for e in self.audit['records']]
+  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),self.gov,SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.rows=[e['provider_record'] for e in self.audit['records']]
  def current(self):
   obs,rejected=normalize(self.rows,self.policy,DAY);self.assertFalse(rejected);self.assertEqual(len(obs),6);return obs
  def test_marquette_total_and_lv_samples_are_distinct(self):

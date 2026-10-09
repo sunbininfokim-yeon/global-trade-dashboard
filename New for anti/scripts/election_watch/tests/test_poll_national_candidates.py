@@ -1,4 +1,5 @@
 """Synthetic source contracts, never synthetic published candidate data."""
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from copy import deepcopy
 import csv
 from io import StringIO
@@ -65,13 +66,13 @@ class NationalCandidateTests(unittest.TestCase):
 
     def test_50_sources_required_and_agency_rosters_preserved(self):
         documents = {s:source(r['name'],r['house_seats']) for s,r in self.catalog['states'].items()}
-        updated = merge_national_house(self.snapshot,self.catalog,documents,DAY)
+        updated = merge_national_house(self.snapshot,self.catalog,documents,SNAPSHOT_DAY)
         self.assertEqual(sum(r['office']=='house' for r in updated['races'].values()),435)
         self.assertEqual(updated['races']['USA:MI:house:01']['candidates'],self.snapshot['races']['USA:MI:house:01']['candidates'])
         del documents['WY']
-        with self.assertRaises(ValueError):merge_national_house(self.snapshot,self.catalog,documents,DAY)
+        with self.assertRaises(ValueError):merge_national_house(self.snapshot,self.catalog,documents,SNAPSHOT_DAY)
         broken = deepcopy(updated);del broken['races']['USA:GA:house:01']
-        with self.assertRaises(ValueError):validate_snapshot(broken,DAY)
+        with self.assertRaises(ValueError):validate_snapshot(broken,SNAPSHOT_DAY)
 
     def test_failed_refresh_preserves_last_valid_file(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -162,7 +163,7 @@ class NationalCandidateTests(unittest.TestCase):
     def test_partial_agency_override_cannot_claim_complete_state(self):
         race=self.snapshot['races']['USA:NC:house:01']
         reviews={'schema':'usa_official_house_reviews_v1','cycle':2026,'reviewed_on':DAY,'races':{race['race_id']:race}}
-        with self.assertRaises(ValueError):merge_official_house_reviews(self.snapshot,reviews,DAY)
+        with self.assertRaises(ValueError):merge_official_house_reviews(self.snapshot,reviews,SNAPSHOT_DAY)
 
 
 if __name__ == '__main__':unittest.main()

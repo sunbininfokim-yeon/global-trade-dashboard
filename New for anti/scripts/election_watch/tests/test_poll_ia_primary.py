@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy
 import json
 from pathlib import Path
@@ -18,8 +19,8 @@ read = lambda p: json.loads(p.read_text())
 class IowaPrimaryTests(unittest.TestCase):
     def setUp(self):
         self.gov = read(ROOT/'config/governor_matchups/2026.json')
-        self.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), self.gov, DAY),
-            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), DAY)
+        self.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), self.gov, SNAPSHOT_DAY),
+            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), SNAPSHOT_DAY)
         self.policy['quality_reviews'] = read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.audit = read(PUBLIC/'usa_election_poll_release_reviews/2026/IA-primary-20261009.json')
         self.rows = [e['provider_record'] for e in self.audit['records']]

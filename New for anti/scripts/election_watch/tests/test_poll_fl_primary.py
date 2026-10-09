@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy
 import json
 from pathlib import Path
@@ -15,8 +16,8 @@ PUBLIC=ROOT.parent.parent/'public/data'
 class FloridaPrimaryReviewTests(unittest.TestCase):
     def setUp(self):
         read=lambda p:json.loads(p.read_text())
-        policy=apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-08')
-        self.policy=apply_targets(policy,read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),'2026-10-08')
+        policy=apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY)
+        self.policy=apply_targets(policy,read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
         receipt=read(PUBLIC/'usa_election_poll_release_reviews/2026/FL-primary-20261008.json')
         self.rows=[r['provider_record'] for r in receipt['records']]

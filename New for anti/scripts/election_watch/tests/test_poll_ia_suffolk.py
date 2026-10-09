@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,io,json,unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups
@@ -7,7 +8,7 @@ from election_watch.poll_primary_supplements import merge_primary_supplements
 ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config/usa_polls';P=ROOT.parent.parent/'public/data';DAY='2026-10-08';read=lambda p:json.loads(p.read_text())
 class IowaSuffolkTests(unittest.TestCase):
  def setUp(self):
-  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'quality_reviews_2026.json')['reviews'];self.audit=read(P/'usa_election_poll_release_reviews/2026/IA-suffolk-20261009.json');self.raw=[r['provider_record'] for r in self.audit['records']]
+  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'quality_reviews_2026.json')['reviews'];self.audit=read(P/'usa_election_poll_release_reviews/2026/IA-suffolk-20261009.json');self.raw=[r['provider_record'] for r in self.audit['records']]
  def current(self):
   obs,rejected=normalize(self.raw,self.policy,DAY);self.assertFalse(rejected);self.assertEqual(len(obs),2);return obs
  def test_statewide500_not_county300_or_second_choice11(self):
