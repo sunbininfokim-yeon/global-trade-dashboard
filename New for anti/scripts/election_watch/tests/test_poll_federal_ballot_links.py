@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ class FederalPollLinkTests(unittest.TestCase):
         rid='USA:GA:house:01';self.ballots['races'].pop(rid,None)
         self.federal['races'][rid]['unconfirmed_candidates']=[{'name':'Unconfirmed Registrant','party':'REP'}]
         original=deepcopy(self.ballots)
-        linked,added=link_house_ballots(self.ballots,self.federal,'GA','2026-10-08')
+        linked,added=link_house_ballots(self.ballots,self.federal,'GA',SNAPSHOT_DAY)
         self.assertEqual(self.ballots,original);self.assertIn(rid,added)
         self.assertEqual(linked['races'][rid]['candidates'],self.federal['races'][rid]['candidates'])
         self.assertEqual(linked['races'][rid]['reviewed_on'],self.federal['races'][rid]['reviewed_on'])
@@ -27,15 +28,15 @@ class FederalPollLinkTests(unittest.TestCase):
 
     def test_existing_agency_review_and_verified_alias_are_preserved(self):
         rid='USA:TN:house:09';original=deepcopy(self.ballots['races'][rid])
-        linked,added=link_house_ballots(self.ballots,self.federal,'TN','2026-10-08')
+        linked,added=link_house_ballots(self.ballots,self.federal,'TN',SNAPSHOT_DAY)
         self.assertEqual(linked['races'][rid],original);self.assertNotIn(rid,added)
         rid='USA:CA:house:01';original=deepcopy(self.ballots['races'][rid])
-        linked,_=link_house_ballots(self.ballots,self.federal,'CA','2026-10-08')
+        linked,_=link_house_ballots(self.ballots,self.federal,'CA',SNAPSHOT_DAY)
         self.assertEqual(linked['races'][rid],original)
 
     def test_official_exclusions_and_rich_roster_metadata_survive_linking(self):
         rid='USA:MI:house:01';self.ballots['races'].pop(rid,None)
-        linked,_=link_house_ballots(self.ballots,self.federal,'MI','2026-10-08')
+        linked,_=link_house_ballots(self.ballots,self.federal,'MI',SNAPSHOT_DAY)
         self.assertEqual(linked['races'][rid],self.federal['races'][rid])
         self.assertIn('excluded_candidates',linked['races'][rid])
 
@@ -43,7 +44,7 @@ class FederalPollLinkTests(unittest.TestCase):
         rid='USA:GA:house:01';self.ballots['races'].pop(rid,None)
         self.federal['races'][rid]['candidates']=self.federal['races'][rid]['candidates'][:1]
         self.federal['races'][rid]['absent_parties']=['REP']
-        linked,_=link_house_ballots(self.ballots,self.federal,'GA','2026-10-08')
+        linked,_=link_house_ballots(self.ballots,self.federal,'GA',SNAPSHOT_DAY)
         result=competition(linked['races'][rid])
         self.assertIsNone(result['general_unopposed']);self.assertFalse(result['confirmed_winner'])
 
@@ -51,13 +52,13 @@ class FederalPollLinkTests(unittest.TestCase):
         for change in ('missing','future','invalid_state'):
             federal=deepcopy(self.federal);state='GA'
             if change=='missing':del federal['races']['USA:GA:house:01']
-            elif change=='future':federal['reviewed_on']='2026-10-09'
+            elif change=='future':federal['reviewed_on']='2027-01-01'
             else:state='XX'
-            with self.assertRaises(ValueError):link_house_ballots(self.ballots,federal,state,'2026-10-08')
+            with self.assertRaises(ValueError):link_house_ballots(self.ballots,federal,state,SNAPSHOT_DAY)
 
     def test_louisiana_multiple_same_party_candidates_remain_a_full_field(self):
         rid='USA:LA:house:01';self.ballots['races'].pop(rid,None)
-        linked,_=link_house_ballots(self.ballots,self.federal,'LA','2026-10-08')
+        linked,_=link_house_ballots(self.ballots,self.federal,'LA',SNAPSHOT_DAY)
         row=linked['races'][rid]
         self.assertEqual(row['election_system'],'all_party_general_with_majority_runoff')
         self.assertGreater(sum(c['party']=='REP' for c in row['candidates']),1)

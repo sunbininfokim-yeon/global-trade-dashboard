@@ -158,12 +158,15 @@ def normalize(rows, policy, as_of):
                         and 'party_internal_reference' in admission.get('signal_exclusion_reasons', [])
                         and admission.get('allow_partisan_reference') is True,
                         'primary_internal_poll_requires_reference_review')
+            if p.get('internal') is True:
+                require(primary_internal and isinstance(reviewed_raw, str) and len(reviewed_raw)==64,
+                        'internal_poll_requires_exact_primary_snapshot')
             partisan_reference = (admission and admission.get('allow_partisan_reference') is True
                                   and admission['signal_eligible'] is False
-                                  and p.get('internal') is False
+                                  and (p.get('internal') is False or p.get('internal') is True and primary_internal)
                                   and p.get('partisan') == admission.get('reviewed_partisan')
                                   and p.get('sponsors') == admission.get('reviewed_sponsors'))
-            require(p.get('internal') is False and (p.get('partisan') is None or partisan_reference),
+            require((p.get('internal') is False or p.get('internal') is True and primary_internal) and (p.get('partisan') is None or partisan_reference),
                     'internal_or_partisan')
             start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
             require(start <= end <= published <= day, 'date_order_or_future')

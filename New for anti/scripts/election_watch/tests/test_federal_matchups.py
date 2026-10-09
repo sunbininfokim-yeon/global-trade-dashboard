@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy
 import json
 from pathlib import Path
@@ -40,7 +41,7 @@ class FederalMatchupTests(unittest.TestCase):
             parse_reported_field(html('Primary winner TBD'), 'senate', names, 'https://example.org/report', '2026-10-08')
 
     def test_real_roster_preserves_same_party_and_independent_ballots(self):
-        validate_snapshot(self.snapshot, '2026-10-08')
+        validate_snapshot(self.snapshot, SNAPSHOT_DAY)
         races = self.snapshot['races']
         self.assertEqual(sum(r['office'] == 'senate' for r in races.values()), 35)
         self.assertEqual({c['party'] for c in races['USA:CA:house:04']['candidates']}, {'DEM'})
@@ -63,7 +64,7 @@ class FederalMatchupTests(unittest.TestCase):
             for change in changes:
                 data = copy.deepcopy(self.snapshot); change(data); source.write_text(json.dumps(data))
                 with self.subTest(change=change), self.assertRaises(ValueError):
-                    publish(source, dest, '2026-10-08')
+                    publish(source, dest, SNAPSHOT_DAY)
                 self.assertEqual(dest.read_bytes(), before)
 
     def test_publication_is_idempotent_and_preserves_other_countries_and_metadata(self):
@@ -72,9 +73,9 @@ class FederalMatchupTests(unittest.TestCase):
             other = {'iso3': 'KOR', 'ui_ready': {'untouched': True}}
             board = {'as_of': 'original', 'countries': [other, {'iso3': 'USA', 'ui_ready': {'state_drilldown': {'states': [{'id': 'CA'}]}}}]}
             dest.write_text(json.dumps(board))
-            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-08')
+            publish(ROOT / 'config/federal_matchups/2026.json', dest, SNAPSHOT_DAY)
             once = dest.read_bytes()
-            publish(ROOT / 'config/federal_matchups/2026.json', dest, '2026-10-08')
+            publish(ROOT / 'config/federal_matchups/2026.json', dest, SNAPSHOT_DAY)
             after = json.loads(dest.read_text())
             self.assertEqual(dest.read_bytes(), once)
             self.assertEqual(after['countries'][0], other)

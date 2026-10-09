@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,json,unittest
 from pathlib import Path
 from urllib.error import URLError
@@ -13,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[1];CONFIG=ROOT/'config/usa_polls';PUBLIC=R
 class MichiganPrimaryTests(unittest.TestCase):
     def setUp(self):
         read=lambda p:json.loads(p.read_text())
-        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-08'),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),'2026-10-08')
+        self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.rows=[r['provider_record'] for r in read(PUBLIC/'usa_election_poll_release_reviews/2026/MI-primary-20261008.json')['records']]
 

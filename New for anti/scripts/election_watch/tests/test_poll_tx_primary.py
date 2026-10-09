@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,json,unittest
 from pathlib import Path
 from election_watch.live_polls import normalize,summarize
@@ -9,7 +10,7 @@ read=lambda p:json.loads(p.read_text())
 class TexasPrimaryTests(unittest.TestCase):
  def setUp(self):
   self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/TX-primary-20261009.json')
-  self.p=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY)
+  self.p=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
   self.p['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
  def test_corrected_house_waves_are_august_not_july_or_recent(self):
   rows=[x['provider_record'] for x in self.audit['records'] if x['provider_record']['id'].startswith('primary-')]

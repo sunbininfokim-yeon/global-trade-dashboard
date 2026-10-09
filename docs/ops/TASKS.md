@@ -124,3 +124,5 @@
 | T-IA-FOLLOWUP-20261009 | 아이오와 누락 원문 조사·공개 IE 후속 점검 | codex | election_watch IA config/tests·IA public data·handoff | codex/ia-followup-20261009 | review | Suffolk 누락2관측 추가/IA9누적, IE1515→최신100부분/새5PDF+경계1검토.403검사·타주보존. #492/#498보존, #502기반 후속. [인수](handoff/2026-10-09-codex-IA-followup.md). 병합/배포 제외. |
 
 | T-CA-STATE-EVIDENCE-20261009 | 캘리포니아 원문 조사·공식 명부·주 공시 보강 | codex | election_watch CA config/tests·CA public data·handoff | codex/ca-state-evidence-20261009 | review | CA52하원/주지사 공식 명부·9조사(신규7)·F496233→234.416검사/타주보존. #503기반 별도후속. [인수](handoff/2026-10-09-codex-state-evidence-CA.md). 다음CO; UI/workflow/병합/배포 제외. |
+
+| T-CO-STATE-EVIDENCE-20261009 | 콜로라도 공식 후보·원문 여론조사·주 공시 수집 감사 | codex | election_watch CO config/collector/tests·CO public data·fixture dates·JS polling contract test only·handoff | codex/co-state-evidence-20261009 | review | #504 기반 별도 PR. 공식 하원8/38명·상원1/9명·주지사7명, CO05/08 참고2조사·TRACER84102행감사/금액null.431검사·타주/기존금융보존. [CO 인수](handoff/2026-10-09-codex-state-evidence-CO.md). 다음VA; 화면/workflow/LETF/병합/배포 제외. |

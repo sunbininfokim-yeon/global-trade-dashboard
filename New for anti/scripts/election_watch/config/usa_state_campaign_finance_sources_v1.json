@@ -263,10 +263,19 @@
     },
     "CO": {
       "agency": "Colorado Secretary of State TRACER",
-      "access": "public_reporting_search",
+      "access": "public_bulk_csv_and_supplemental_search",
       "url": "https://tracer.sos.colorado.gov/PublicSite/SearchPages/PublicNonScheduledFilingsSearch.aspx",
-      "authentication": "public_search",
-      "independent_expenditure_mapping": "not_implemented"
+      "authentication": "public_no_key",
+      "independent_expenditure_mapping": "bulk_collected_target_and_direction_held",
+      "bulk_export_url": "https://Tracer.sos.colorado.gov/PublicSite/Docs/BulkDataDownloads/2026_ExpenditureData.csv.zip",
+      "audit_data_file": "usa_governor_finance_audits/2026/CO.json",
+      "last_probe": {
+        "date": "2026-10-09",
+        "result": "official_2026_bulk_csv_collected_48h_notice_search_accessible",
+        "input_records": 84102,
+        "independent_expenditure_committee_rows": 2277,
+        "candidate_amounts_available": false
+      }
     },
     "OR": {
       "agency": "Oregon Secretary of State ORESTAR",

@@ -1,4 +1,5 @@
 """Synthetic fixtures only; no fabricated polls or candidates are published."""
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from copy import deepcopy
 from functools import lru_cache
 import json
@@ -26,8 +27,8 @@ def selected(ballots=None):
         return deepcopy(cached_selection())
     policy = apply_priorities(apply_watchlist(read('live_2026.json'), read('watchlist_2026.json')),
         read('priorities_2026.json'), ROOT.parent.parent/'public/data/congressional_districts/USA', DAY)
-    policy = apply_matchups(policy, json.loads((ROOT/'config/governor_matchups/2026.json').read_text()), DAY)
-    return apply_targets(policy, read('targets_2026.json'), ballots or read('ballot_reviews_2026.json'), DAY)
+    policy = apply_matchups(policy, json.loads((ROOT/'config/governor_matchups/2026.json').read_text()), SNAPSHOT_DAY)
+    return apply_targets(policy, read('targets_2026.json'), ballots or read('ballot_reviews_2026.json'), SNAPSHOT_DAY)
 
 @lru_cache(maxsize=1)
 def cached_selection():
@@ -74,10 +75,10 @@ class PollTargetsTests(unittest.TestCase):
         for edit in ('seat_count','review_date','election_cycle'):
             catalog=read('targets_2026.json')
             if edit=='seat_count':catalog['states']['CT']['house_seats']=6
-            if edit=='review_date':catalog['reviewed_on']='2026-10-09'
+            if edit=='review_date':catalog['reviewed_on']='2027-01-01'
             if edit=='election_cycle':catalog['election_date']='2028-11-03'
             with self.subTest(edit=edit),self.assertRaises(ValueError):
-                apply_targets(read('live_2026.json'),catalog,read('ballot_reviews_2026.json'),DAY)
+                apply_targets(read('live_2026.json'),catalog,read('ballot_reviews_2026.json'),SNAPSHOT_DAY)
 
     def test_new_release_automatically_admitted_for_reviewed_matchup_and_source(self):
         p=selected();rows,bad=normalize([synthetic_poll()],p,'2026-10-15')

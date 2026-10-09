@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,io,json,unittest
 from pathlib import Path
 from election_watch.live_polls import normalize,summarize
@@ -8,7 +9,7 @@ from election_watch.governor_source_access import collect_access
 ROOT=Path(__file__).resolve().parents[1];CONFIG=ROOT/'config/usa_polls';PUBLIC=ROOT.parent.parent/'public/data';DAY='2026-10-08';read=lambda p:json.loads(p.read_text())
 class NevadaPrimaryTests(unittest.TestCase):
  def setUp(self):
-  self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/NV-primary-20261009.json');self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.rows=[e['provider_record'] for e in self.audit['records']]
+  self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/NV-primary-20261009.json');self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.rows=[e['provider_record'] for e in self.audit['records']]
  def current(self):
   o,e=normalize(self.rows,self.policy,DAY);self.assertFalse(e);self.assertEqual(len(o),3);return o
  def test_noble_rv_and_lv_values_and_samples_distinct(self):

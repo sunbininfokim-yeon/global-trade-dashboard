@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy, hashlib, json, unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups
@@ -14,8 +15,8 @@ read=lambda p:json.loads(p.read_text())
 class NorthCarolinaPrimaryTests(unittest.TestCase):
     def setUp(self):
         self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),
-            read(ROOT/'config/governor_matchups/2026.json'),'2026-10-08'),
-            read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),'2026-10-08')
+            read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),
+            read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/NC-primary-20261008.json')
         self.rows=[r['provider_record'] for r in self.audit['records']]

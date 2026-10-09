@@ -17,6 +17,12 @@ from .poll_quality import answer_correction_fingerprint
 # New releases still require a committed record/document review.
 PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.org', 'www.suffolk.edu', 'static1.squarespace.com', 'law.marquette.edu', 'dccc.org', 's3.documentcloud.org', 'www.ppic.org'))
 
+# Finite poll files on shared CDNs; never approve the whole storage host.
+PRIMARY_PDF_RELEASES = frozenset((
+    'https://newspack-coloradosun.s3.amazonaws.com/wp-content/uploads/2026/07/CO-05-Polling-Memo-F07.24.26.pdf',
+    'https://cdn.prod.website-files.com/6943653ee8791a8a352e27f7/6aadecdc9101b1b52f7aeec1_CO-08%20Toplines%20(9%3A17).pdf',
+))
+
 PRIMARY_XLSX_HOSTS = frozenset(('7453540.fs1.hubspotusercontent-na1.net',))
 
 
@@ -68,6 +74,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
             parsed=urlparse(document['url'])
             require(parsed.scheme=='https' and not parsed.username and not parsed.password
                     and (parsed.hostname in PRIMARY_PDF_HOSTS and parsed.path.endswith('.pdf')
+                         or document['url'] in PRIMARY_PDF_RELEASES
                          or parsed.hostname in PRIMARY_XLSX_HOSTS and parsed.path.endswith('.xlsx')
                          or document.get('format') == 'reviewed_html_article_v1'
                             and document['url'] in PRIMARY_HTML_RELEASES)
