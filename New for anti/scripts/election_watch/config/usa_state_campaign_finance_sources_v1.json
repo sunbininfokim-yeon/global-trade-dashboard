@@ -330,6 +330,26 @@
         "report_index_file": "usa_governor_ie_report_indexes/2026/IA.json",
         "note_ko": "공식공개IE 목록 API실응답확인. 후보·금액·지지/반대는PDF거래에있어자동금액귀속미구현. 최대100건목록수집으로전수공시확보를주장하지않음."
       }
+    },
+    "CT": {
+      "agency": "Connecticut State Elections Enforcement Commission",
+      "access": "public_ASPNET_search",
+      "url": "https://seec.ct.gov/Portal/eCRIS/eCrisSearch",
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "public_search_audit_only_normalization_held",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-09",
+        "endpoints": [
+          {
+            "url": "https://seec.ct.gov/eCrisReporting/SearchingIndependentExpenditure.aspx",
+            "role": "current_public_portal"
+          }
+        ],
+        "source_scope": "2026_filing_year_Governor_search_audit_maximum100_one_page",
+        "filing_login_required_for_public_read": false,
+        "note_ko": "공개 읽기 검색 POST만. 재설정·신고 기능 사용 안함. 검색에 부지사·경선·일반 비용이 혼재. 후보별 지지반대 정규화 미완료."
+      }
     }
   }
 }

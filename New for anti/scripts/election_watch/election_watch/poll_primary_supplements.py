@@ -19,6 +19,7 @@ PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.o
 
 # Finite poll files on shared CDNs; never approve the whole storage host.
 PRIMARY_PDF_RELEASES = frozenset((
+    'https://www.sacredheart.edu/media/shu-media/press-room-2026/SHU-CT-Gubernatorial-Race-Poll-2-of-3-2026-ADA.pdf',
     'https://newspack-coloradosun.s3.amazonaws.com/wp-content/uploads/2026/07/CO-05-Polling-Memo-F07.24.26.pdf',
     'https://cdn.prod.website-files.com/6943653ee8791a8a352e27f7/6aadecdc9101b1b52f7aeec1_CO-08%20Toplines%20(9%3A17).pdf',
 ))

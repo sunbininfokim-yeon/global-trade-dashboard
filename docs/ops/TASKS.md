@@ -129,3 +129,5 @@
 | T-CO-STATE-EVIDENCE-20261009 | 콜로라도 공식 후보·원문 여론조사·주 공시 수집 감사 | codex | election_watch CO config/collector/tests·CO public data·fixture dates·JS polling contract test only·handoff | codex/co-state-evidence-20261009 | review | #504 기반 별도 PR. 공식 하원8/38명·상원1/9명·주지사7명, CO05/08 참고2조사·TRACER84102행감사/금액null.431검사·타주/기존금융보존. [CO 인수](handoff/2026-10-09-codex-state-evidence-CO.md). 다음VA; 화면/workflow/LETF/병합/배포 제외. |
 
 | T-VA-STATE-EVIDENCE-20261009 | 버지니아 공식 후보·원문 조사·연방 외부지출 연결 | codex | election_watch VA config/parser/tests·VA public data·handoff | codex/va-state-evidence-20261009 | review | #505 기반 별도 Draft PR 준비. 440개 로컬검사·보존검사 통과. 하원11·2026 선거 상원1, 주지사 비선거 확인. 원문 검증·타주/공시 날짜 보존. UI/workflow/LETF/병합/배포 제외. |
+
+| T-CT-STATE-EVIDENCE-20261009 | D그룹 코네티컷 공식 후보·원문 조사·외부지출 연결 | codex | election_watch CT config/collector/tests·CT public data·handoff | codex/ct-evidence-20261009 | review | 사용자 D그룹 CT부터 명시. #506 기반 격리 worktree→최신 main 확인 후속 PR. 공식 하원5/13명·주지사2명, 원문2관측·API4보류·SEEC10행감사/금액null.454검사·타주/기존금융 보존. AK 편집과 분리. [CT 인수](handoff/2026-10-09-codex-state-evidence-CT.md). 다음MD. UI/workflow/LETF/병합/배포 제외. |

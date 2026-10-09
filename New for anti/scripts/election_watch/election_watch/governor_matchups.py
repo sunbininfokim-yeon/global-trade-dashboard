@@ -132,8 +132,11 @@ def apply_ballot_reviews(snapshot, reviews, as_of):
                 or review['source_role'] != 'state_election_agency'
                 or not review['source_url'].startswith('https://') or not review['evidence_note_ko']):
             raise SourceError('Governor ballot review scope/source mismatch')
+        coverage = review.get('coverage', 'complete_ballot')
+        if coverage not in ('complete_ballot', 'complete_active_agency_listing'):
+            raise SourceError('Unreviewed governor ballot coverage')
         contest.update(status='reported_general_matchup', hold_reason=None,
-            source_role='state_election_agency', coverage='complete_ballot',
+            source_role='state_election_agency', coverage=coverage,
             candidates=deepcopy(review['candidates']), source_url=review['source_url'],
             ballot_reviewed_on=review.get('reviewed_on', reviews['reviewed_on']),
             candidate_identity_basis='state_election_agency_general_ballot_listing',
