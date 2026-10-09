@@ -108,11 +108,17 @@ body {
     color: var(--text-primary);
 }
 
-/* Dropdown */
+/* Dropdown. position:fixed (not absolute) so it isn't clipped by .top-nav's
+   own overflow-x:auto box below 820px (nav scrolls horizontally there, which
+   makes the nav a clipping container -- an absolutely-positioned dropdown
+   sitting below that 60px-tall box was invisible, never actually shown).
+   app.js sets left/top per menu item on hover since position:fixed is
+   viewport-relative, not relative to the menu item anymore. */
 .dropdown {
-    position: absolute;
+    position: fixed;
     top: 60px;
     left: 0;
+    z-index: 900;
     background: var(--nav-bg);
     border: 1px solid var(--border);
     border-radius: 0 0 8px 8px;
@@ -3653,6 +3659,20 @@ body.trade-map-mode .right-pane {
 .dropdown.dropdown-grouped::-webkit-scrollbar { width: 6px; }
 .dropdown.dropdown-grouped::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .25); border-radius: 999px;
+}
+
+/* 원자재 드롭다운은 min-width:max-content로 4열이 ~820px까지 벌어진다.
+   데스크톱에서는 의도한 폭이지만, 뷰포트가 그보다 좁으면 (fixed
+   positioning 덕에 화면 안에 뜨기는 해도) 오른쪽으로 통째로 잘려 나간다.
+   여기서만 min-width를 풀고 뷰포트 폭으로 잡은 다음 안에서 가로
+   스크롤하게 둔다. 뒤에 와야 위 min-width: max-content 를 덮어쓴다
+   (동일 specificity라 소스 순서가 이긴다). */
+@media (max-width: 820px) {
+    .dropdown.dropdown-columns {
+        min-width: 0;
+        max-width: calc(100vw - 16px);
+        overflow-x: auto;
+    }
 }
 
 /* 해역 분석: 시계열 스파크라인 + 영향 칩 */
