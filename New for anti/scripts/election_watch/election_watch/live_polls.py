@@ -11,7 +11,7 @@ import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 from .polls import atomic, digest, require
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, answer_correction_fingerprint
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, answer_correction_fingerprint, ranked_choice_question
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -193,8 +193,10 @@ def normalize(rows, policy, as_of):
             def canonical(name):
                 return race['candidates'].get(name, {}).get('canonical_name', name)
             require(len({canonical(n) for n in names}) == len(names), 'duplicate_candidate_alias')
-            require({canonical(n) for n in race['required_candidates']}
-                    <= {canonical(n) for n in names}, 'unreviewed_matchup')
+            ranked = ranked_choice_question(p, policy.get('quality_reviews', {}).get(p['id'], {}), race, as_of)
+            if ranked is None:
+                require({canonical(n) for n in race['required_candidates']}
+                        <= {canonical(n) for n in names}, 'unreviewed_matchup')
             normalized = []
             for a in answers:
                 identity = race['candidates'].get(a['choice'])
@@ -235,6 +237,8 @@ def normalize(rows, policy, as_of):
                 observation['provider_answer_correction'] = answer_correction
             if source_correction:
                 observation['provider_source_correction'] = source_correction
+            if ranked:
+                observation['ballot_question'] = ranked
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             if primary_internal:

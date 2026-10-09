@@ -115,3 +115,35 @@ def evidence_context(pollster_count, agreement_fraction, conflicting=()):
             'conflicting_pollsters': list(conflicting),
             'basis_ko': '기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.',
             'limitations_ko': '기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다.'}
+
+
+def ranked_choice_question(raw, review, race, as_of):
+    """Reference-only questions tied to an exact reviewed RCV release.
+
+    Missing candidates are allowed only in a reviewed final simulation or forced
+    pair. No question kind becomes a winner or votes in ordinary lead counts.
+    """
+    if race.get('ballot_system') != 'ranked_choice':
+        require(not review.get('ranked_choice_question'), 'RCV review outside ranked ballot')
+        return None
+    q = review.get('ranked_choice_question')
+    require(q and review.get('provider_record_sha256') == answer_correction_fingerprint(raw),
+            'ranked_choice_question_not_reviewed')
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    admission = review.get('admission', {})
+    require(admission.get('signal_eligible') is False
+            and 'ranked_choice_separate_question_reference' in admission.get('signal_exclusion_reasons', [])
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('disclosure_review') and review.get('sources'), 'RCV requires exact reference review')
+    require(q.get('kind') in ('first_preference', 'simulated_final_round', 'forced_two_candidate')
+            and q.get('question') and q.get('label_ko'), 'invalid ranked choice question')
+    names = [a['choice'] for a in raw['answers']]
+    require(len(names) == len(set(names)) and set(names) == set(review['primary_toplines'])
+            and set(names) == set(q['compared_candidates'])
+            and all(n in race['candidates'] for n in names), 'unreviewed ranked choice comparison')
+    canonical = lambda n: race['candidates'][n].get('canonical_name', n)
+    full = {canonical(n) for n in race['required_candidates']}
+    compared = {canonical(n) for n in names}
+    require(compared <= full and (compared == full if q['kind'] == 'first_preference'
+                                 else len(compared) == 2), 'ranked choice field mismatch')
+    return {**deepcopy(q), 'election_result': False, 'aggregation_eligible': False}

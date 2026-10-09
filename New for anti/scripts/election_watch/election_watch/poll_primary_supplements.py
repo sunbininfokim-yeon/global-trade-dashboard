@@ -19,6 +19,7 @@ PRIMARY_PDF_HOSTS = frozenset(('poll.qu.edu', 'www.commoncause.org', 'www.nrcc.o
 
 # Finite poll files on shared CDNs; never approve the whole storage host.
 PRIMARY_PDF_RELEASES = frozenset((
+    'https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download',
     'https://newspack-coloradosun.s3.amazonaws.com/wp-content/uploads/2026/07/CO-05-Polling-Memo-F07.24.26.pdf',
     'https://cdn.prod.website-files.com/6943653ee8791a8a352e27f7/6aadecdc9101b1b52f7aeec1_CO-08%20Toplines%20(9%3A17).pdf',
 ))
@@ -94,6 +95,17 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         # A later API import of this same wave must agree before deduplication.
         keys=('subject','poll_type','pollster','start_date','end_date','population')
         duplicates=[r for r in output if all(r.get(k)==raw.get(k) for k in keys)]
+        # An exact-reviewed forced pair and first-choice field from one wave
+        # are distinct questions, retained separately rather than deduplicated.
+        separate = entry.get('same_wave_separate_question_reviews', [])
+        for q in separate:
+            require(q['reason'] == 'different_ranked_choice_question'
+                    and q['question'] and q['id'] != raw['id']
+                    and len(q['provider_snapshot_sha256']) == 64,
+                    'unreviewed_same_wave_question')
+        distinct = [r for r in duplicates if any(r['id'] == q['id']
+            and answer_correction_fingerprint(r) == q['provider_snapshot_sha256'] for q in separate)]
+        duplicates = [r for r in duplicates if r not in distinct]
         values=lambda r:sorted((a['choice'],a['pct']) for a in r['answers'])
         require(all(r['sample_size']==raw['sample_size'] and values(r)==values(raw)
                     and r.get('internal')==raw.get('internal') and r.get('partisan')==raw.get('partisan')
@@ -109,7 +121,10 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 if document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
                 else:
-                    require(body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04'), 'primary document format changed')
+                    pdf = (urlparse(document['url']).path.endswith('.pdf')
+                           or document['url'] in PRIMARY_PDF_RELEASES)
+                    require(body.startswith(b'%PDF-') if pdf else body.startswith(b'PK\x03\x04'),
+                            'primary document format changed')
                     digest=hashlib.sha256(body).hexdigest()
                 checks.append({'url':document['url'],'status':'unchanged' if digest==document['sha256'] else 'changed_review_required',
                                'sha256':digest})
@@ -119,7 +134,8 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         capture={'status':'primary_documents_rechecked' if current else 'carried_forward_reference_only',
                  'original_reviewed_on':entry['reviewed_on'],'checked_at':datetime.now(timezone.utc).isoformat(),
                  'documents':checks,'provider_duplicate_ids':[r['id'] for r in duplicates],
-                 'reviewed_replaced_provider_ids':replaced}
+                 'reviewed_replaced_provider_ids':replaced,
+                 'separate_question_provider_ids':[r['id'] for r in distinct]}
         raw['primary_source_capture']=capture
         output=[r for r in output if r not in duplicates];output.append(raw)
         receipts.append({'id':raw['id'],'state':entry['state'],**capture})

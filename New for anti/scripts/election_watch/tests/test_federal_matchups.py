@@ -88,6 +88,23 @@ class FederalMatchupTests(unittest.TestCase):
         self.assertEqual(len(history['C001056']['election_years']), 4)
         self.assertEqual(history['M001244']['election_years'], [])
 
+    def test_state_publication_preserves_other_state_rosters_and_rejects_unknown_state(self):
+        with tempfile.TemporaryDirectory() as temp:
+            dest = Path(temp) / 'board.json'
+            prior = {'id': 'TX', 'election_matchups': {'reviewed_before': True}, 'as_of': 'original'}
+            board = {'countries': [{'iso3': 'USA', 'ui_ready': {'state_drilldown': {
+                'states': [{'id': 'AK', 'election_matchups': {}}, prior]}}}]}
+            dest.write_text(json.dumps(board))
+            source = ROOT / 'config/federal_matchups/2026.json'
+            self.assertEqual(publish(source, dest, SNAPSHOT_DAY, state='AK'), 2)
+            states = json.loads(dest.read_text())['countries'][0]['ui_ready']['state_drilldown']['states']
+            self.assertEqual(states[1], prior)
+            self.assertEqual(len(states[0]['election_matchups']['USA:AK:senate']['candidates']), 4)
+            before = dest.read_bytes()
+            with self.assertRaises(ValueError):
+                publish(source, dest, SNAPSHOT_DAY, state='ZZ')
+            self.assertEqual(dest.read_bytes(), before)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,6 +2,10 @@
 
 Draft PR #492 / `codex/us-state-evidence-20261008`, 후보 명부 PR #490 기반. 사용자 요청한 A→E 순서를 유지한다. UI·workflow·LETF 변경과 병합·배포는 포함하지 않는다.
 
+## 10/9 AK 재개 인수
+
+#506 기반 별도 `codex/ak-state-evidence-20261009`에서 알래스카만 재개했다. 공식 견본의 상원·하원 전역구·주지사 각4명, 실제 API37레코드 중5개와 원문 보완1개를 연결했다. 6개는3개 기관그룹의 문항 관측이며 첫 선택·강제 양자·최종 RCV 모의를 분리해 모두 참고로 보존한다. 기본7일·선택14일 일반 우세 판정은 없다. 기존10/8 FEC 후보별 P2026 관측을 하원2명/상원3명에 연결했고 본선 O금액은 미확보다. APOC Form15-6 공개 검색 경로를 확인했으나 실제 수집기 timeout으로 주지사 금액null/미완료를 유지한다. 452검사와 타주503live race·55누적 이력·49index/표시주·기존공시4,649파일·과거state evidence116파일/원래날짜 보존을 확인했다. [AK 상세 인수](2026-10-09-codex-state-evidence-AK.md). 다음 수동 신규주는 **B/KS**이며 미시작, 자동 index의 선행 IA 미완료 표시는 보존한다. 병합/배포/수동 Actions 실행은 없다.
+
 ## 실제 실행과 후보 연결
 
 - NY·TN 보강 뒤 GA→WY48주를 실제 공개 VoteHub API로 순차 수집했다. `usa_election_state_sequence_v1.json`은 원래48주 실행의 상태·주별 수집 시각·관측 건수·공백을 기록한다. 결과는 `transport_sequence_completed_partial`이며 모든 출처 완결을 뜻하지 않는다.

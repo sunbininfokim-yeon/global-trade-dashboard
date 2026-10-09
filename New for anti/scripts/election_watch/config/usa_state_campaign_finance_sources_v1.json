@@ -330,6 +330,29 @@
         "report_index_file": "usa_governor_ie_report_indexes/2026/IA.json",
         "note_ko": "공식공개IE 목록 API실응답확인. 후보·금액·지지/반대는PDF거래에있어자동금액귀속미구현. 최대100건목록수집으로전수공시확보를주장하지않음."
       }
+    },
+    "AK": {
+      "agency": "Alaska Public Offices Commission (APOC)",
+      "url": "https://aws.state.ak.us/ApocReports/Home.aspx",
+      "access": "official_public_Form_15_6_independent_expenditure_search",
+      "authentication": "public_no_key; collector access timed out",
+      "independent_expenditure_mapping": "public_search_identified_adapter_and_access_required",
+      "access_data_file": "usa_governor_source_access/2026/AK.json",
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-09",
+        "endpoints": [
+          {
+            "url": "https://aws.state.ak.us/ApocReports/Home.aspx",
+            "role": "current_public_portal"
+          },
+          {
+            "url": "https://aws.state.ak.us/ApocReports/IndependentExpenditures/IEForms.aspx",
+            "role": "current_public_export"
+          }
+        ],
+        "note_ko": "공식 Form15-6 후보/발의 지지·반대 공시 경로. 후보 캠프 일반비용과 구분. 접근·개정·대상 필드 매핑 미완료."
+      }
     }
   }
 }
