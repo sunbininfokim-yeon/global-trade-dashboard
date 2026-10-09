@@ -12,7 +12,7 @@ from election_watch.federal_matchups import attach_matchups, merge_ballot_review
 ROOT = Path(__file__).resolve().parent
 
 
-def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None):
+def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None, state=None):
     snapshot = json.loads(Path(snapshot_path).read_text())
     if ballot_reviews_path is not None:
         snapshot = merge_ballot_reviews(snapshot, json.loads(Path(ballot_reviews_path).read_text()), as_of)
@@ -22,7 +22,12 @@ def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None):
     if len(usa) != 1:
         raise ValueError('Expected one USA board')
     states = usa[0]['ui_ready']['state_drilldown']['states']
-    usa[0]['ui_ready']['state_drilldown']['states'] = attach_matchups(states, snapshot, as_of)
+    if state is not None and sum(s['id'] == state for s in states) != 1:
+        raise ValueError('Expected one requested state on USA board')
+    reviewed = attach_matchups(states, snapshot, as_of)
+    usa[0]['ui_ready']['state_drilldown']['states'] = [
+        updated if state is None or original['id'] == state else original
+        for original, updated in zip(states, reviewed)]
     content = json.dumps(board, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
     temp = None
     try:
@@ -33,7 +38,7 @@ def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None):
     finally:
         if temp and os.path.exists(temp):
             os.unlink(temp)
-    return len(snapshot['races'])
+    return sum(state is None or race['state'] == state for race in snapshot['races'].values())
 
 
 if __name__ == '__main__':
@@ -42,5 +47,6 @@ if __name__ == '__main__':
     parser.add_argument('--board', type=Path, default=ROOT.parent.parent / 'public/data/elections_board_v1.json')
     parser.add_argument('--ballot-reviews', type=Path, default=ROOT / 'config/usa_polls/ballot_reviews_2026.json')
     parser.add_argument('--as-of', default=datetime.now(timezone.utc).date().isoformat())
+    parser.add_argument('--state', help='Publish only this state; preserve all other state snapshots')
     args = parser.parse_args()
-    print(f'Published {publish(args.snapshot, args.board, args.as_of, args.ballot_reviews)} reviewed display matchups')
+    print(f'Published {publish(args.snapshot, args.board, args.as_of, args.ballot_reviews, args.state)} reviewed display matchups')

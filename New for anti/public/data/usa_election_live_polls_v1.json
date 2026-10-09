@@ -84,16 +84,16 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 121,
-    "excluded_observations": 727,
+    "accepted_observations": 127,
+    "excluded_observations": 722,
     "aggregation_eligible_observations": 93,
-    "reference_only_observations": 28,
+    "reference_only_observations": 34,
     "exclusion_reasons": {
-      "pollster_not_selected": 502,
+      "pollster_not_selected": 497,
       "outside_reviewed_general_period": 113,
       "unregistered_primary_host": 60,
-      "unreviewed_matchup": 2,
       "date_order_or_future": 1,
+      "unreviewed_matchup": 1,
       "unsupported_population": 1,
       "internal_or_partisan": 2,
       "provider_third_candidate_attribution_unverified": 1,
@@ -120,9 +120,10 @@
       "pre_primary_historical_poll_primary_methodology_not_obtained": 1,
       "generic_party_ballot_not_named_race": 2,
       "missing_lv_question_sample_and_pre_primary_hypothetical_field": 3,
-      "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference": 1
+      "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference": 1,
+      "ranked_choice_question_not_reviewed": 1
     },
-    "displayed_observations": 121
+    "displayed_observations": 127
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -174,7 +175,7 @@
       "senate": 35,
       "house": 435
     },
-    "ballot_review_count": 476,
+    "ballot_review_count": 477,
     "meaning_ko": "대상 등록과 여론조사 확보는 다릅니다. 후보 명부·출처·기간 검사를 통과한 관측만 집계합니다."
   },
   "excluded_watch_slots": [
@@ -22704,35 +22705,53 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
+        "Gerald L. Heikes",
         "Mary Peltola",
-        "Dan S. Sullivan",
         "Daniel J. Sullivan Jr.",
-        "Gerald Heikes"
+        "Dan S. Sullivan"
       ],
       "candidates": {
-        "Mary Peltola": {
-          "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "candidate_id": null,
-          "canonical_name": "Mary Peltola"
-        },
-        "Dan S. Sullivan": {
+        "Gerald L. Heikes": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "candidate_id": null,
-          "canonical_name": "Dan S. Sullivan"
-        },
-        "Daniel J. Sullivan Jr.": {
-          "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "candidate_id": null,
-          "canonical_name": "Daniel J. Sullivan Jr."
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "S8AK00140",
+          "canonical_name": "Gerald L. Heikes"
         },
         "Gerald Heikes": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "S8AK00140",
+          "canonical_name": "Gerald L. Heikes"
+        },
+        "Mary Peltola": {
+          "party": "DEM",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "S6AK00276",
+          "canonical_name": "Mary Peltola"
+        },
+        "Daniel J. Sullivan Jr.": {
+          "party": "OTH",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": null,
-          "canonical_name": "Gerald Heikes"
+          "canonical_name": "Daniel J. Sullivan Jr."
+        },
+        "Dan J. Sullivan": {
+          "party": "OTH",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": null,
+          "canonical_name": "Daniel J. Sullivan Jr."
+        },
+        "Dan S. Sullivan": {
+          "party": "REP",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "S4AK00214",
+          "canonical_name": "Dan S. Sullivan"
+        },
+        "Dan Sullivan": {
+          "party": "REP",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "S4AK00214",
+          "canonical_name": "Dan S. Sullivan"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -22749,17 +22768,21 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+      "ballot_system": "ranked_choice",
+      "ballot_system_source_url": "https://www.elections.alaska.gov/election-information/",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 4,
         "parties": [
           "DEM",
+          "OTH",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_ballot",
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -22767,18 +22790,400 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_ballot"
       },
       "race_id": "USA:AK:senate",
-      "observations": [],
+      "observations": [
+        {
+          "id": "us-202qua198b0338",
+          "race_id": "USA:AK:senate",
+          "contest_id": "USA:AK:senate:2026:general",
+          "pollster": "Quantus Insights",
+          "pollster_group": "quantus_insights",
+          "field_start": "2026-09-28",
+          "field_end": "2026-09-30",
+          "provider_record_date": "2026-10-02",
+          "population": "lv",
+          "sample_n": 758,
+          "answers": [
+            {
+              "name": "Mary Peltola",
+              "pct": 47.2,
+              "party": "DEM"
+            },
+            {
+              "name": "Dan Sullivan",
+              "pct": 47.8,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "ballot_question": {
+            "kind": "forced_two_candidate",
+            "question": "Q3+Q4: forced pair with leaners",
+            "compared_candidates": [
+              "Mary Peltola",
+              "Dan Sullivan"
+            ],
+            "label_ko": "강제 양자 선택·기울임 포함 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
+              "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download"
+            ],
+            "primary_toplines": {
+              "Mary Peltola": 47.2,
+              "Dan Sullivan": 47.8
+            },
+            "question_sample_n": 737,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-28",
+                "2026-09-30"
+              ],
+              "study_sample_n": 758,
+              "question_sample_n": 737,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Q3+Q4: forced pair with leaners",
+              "first_choice_is_not_final_count": true,
+              "mode": "SMS-to-mobile",
+              "sampling_frame": "stratified random active registered voter file matched to contact records",
+              "weighting": "raking sex, age, modeled race/ethnicity, modeled education, metro, media market, party; trimmed weights",
+              "question_number": "Q3+Q4",
+              "conditional_leaner_sample_n": 35,
+              "would_not_vote_removed_n": 21,
+              "full_questionnaire_primary_sha256": "7c8c88cf83234fad2acd5fd19d3647e8048c1ce541fefd12eeeb8b1ab375422f",
+              "publisher_party_label_conflict": {
+                "Daniel J. Sullivan Jr.": "publisher REP; official ballot unlabelled; party not copied from poll"
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": 4.0,
+              "confidence_level_pct": 95,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "forced_two_candidate",
+            "sponsor_review": {
+              "primary_commissioners": [],
+              "primary_internal": false,
+              "provider_sponsors": [],
+              "commissioner_disclosure": "publisher source reviewed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        },
+        {
+          "id": "primary-ak-quantus-20260930-first-choice",
+          "race_id": "USA:AK:senate",
+          "contest_id": "USA:AK:senate:2026:general",
+          "pollster": "Quantus Insights",
+          "pollster_group": "quantus_insights",
+          "field_start": "2026-09-28",
+          "field_end": "2026-09-30",
+          "provider_record_date": "2026-10-02",
+          "population": "lv",
+          "sample_n": 758,
+          "answers": [
+            {
+              "name": "Dan Sullivan",
+              "pct": 46.1,
+              "party": "REP"
+            },
+            {
+              "name": "Mary Peltola",
+              "pct": 45.5,
+              "party": "DEM"
+            },
+            {
+              "name": "Daniel J. Sullivan Jr.",
+              "pct": 1.6,
+              "party": "OTH"
+            },
+            {
+              "name": "Gerald Heikes",
+              "pct": 1.3,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
+          "verification": "reviewed_primary_source_snapshot",
+          "methodology_url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
+          "margin_of_error_pp": null,
+          "limitations_ko": "API 미편입 원문 보완 기록. 원문 문서 지문을 재확인하며 장애/변경 시 원래 검토일의 참고 전용 자료를 보존합니다. 새 발표 전체 발견을 보장하지 않습니다.",
+          "primary_source_capture": {
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-09",
+            "checked_at": "2026-10-09T04:59:27.376454+00:00",
+            "documents": [
+              {
+                "url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
+                "status": "unchanged",
+                "sha256": "7c8c88cf83234fad2acd5fd19d3647e8048c1ce541fefd12eeeb8b1ab375422f"
+              }
+            ],
+            "provider_duplicate_ids": [],
+            "reviewed_replaced_provider_ids": [],
+            "separate_question_provider_ids": [
+              "us-202qua198b0338"
+            ]
+          },
+          "ballot_question": {
+            "kind": "first_preference",
+            "question": "Q1: full four-candidate first preference",
+            "compared_candidates": [
+              "Dan Sullivan",
+              "Mary Peltola",
+              "Daniel J. Sullivan Jr.",
+              "Gerald Heikes"
+            ],
+            "label_ko": "4후보 첫 선호 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
+              "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download"
+            ],
+            "primary_toplines": {
+              "Dan Sullivan": 46.1,
+              "Mary Peltola": 45.5,
+              "Daniel J. Sullivan Jr.": 1.6,
+              "Gerald Heikes": 1.3
+            },
+            "question_sample_n": 737,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-28",
+                "2026-09-30"
+              ],
+              "study_sample_n": 758,
+              "question_sample_n": 737,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Q1: full four-candidate first preference",
+              "first_choice_is_not_final_count": true,
+              "mode": "SMS-to-mobile",
+              "sampling_frame": "stratified random active registered voter file matched to contact records",
+              "weighting": "raking sex, age, modeled race/ethnicity, modeled education, metro, media market, party; trimmed weights",
+              "question_number": "Q1",
+              "conditional_leaner_sample_n": null,
+              "would_not_vote_removed_n": 21,
+              "full_questionnaire_primary_sha256": "7c8c88cf83234fad2acd5fd19d3647e8048c1ce541fefd12eeeb8b1ab375422f",
+              "publisher_party_label_conflict": {
+                "Daniel J. Sullivan Jr.": "publisher REP; official ballot unlabelled; party not copied from poll"
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": 4.0,
+              "confidence_level_pct": 95,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "first_preference",
+            "sponsor_review": {
+              "primary_commissioners": [],
+              "primary_internal": false,
+              "provider_sponsors": [],
+              "commissioner_disclosure": "publisher source reviewed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        },
+        {
+          "id": "us-202fabecd2ecd9",
+          "race_id": "USA:AK:senate",
+          "contest_id": "USA:AK:senate:2026:general",
+          "pollster": "Fabrizio, Lee & Associates/Impact Research",
+          "pollster_group": "fabrizio_ward_impact_aarp",
+          "field_start": "2026-09-08",
+          "field_end": "2026-09-11",
+          "provider_record_date": "2026-09-17",
+          "population": "lv",
+          "sample_n": 800,
+          "answers": [
+            {
+              "name": "Mary Peltola",
+              "pct": 53.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Dan Sullivan",
+              "pct": 47.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "AARP"
+          ],
+          "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "ballot_question": {
+            "kind": "simulated_final_round",
+            "question": "Published final RCV reallocation; questionnaire not locally accessible",
+            "compared_candidates": [
+              "Mary Peltola",
+              "Dan Sullivan"
+            ],
+            "label_ko": "순위표 이전 후 최종 모의 결과 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "AARP"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "final_round_active_denominator_not_reviewed",
+              "provider_primary_pollster_label_difference",
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "final_round_active_denominator",
+              "full_questionnaire",
+              "weighting"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/"
+            ],
+            "primary_toplines": {
+              "Mary Peltola": 53.0,
+              "Dan Sullivan": 47.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-08",
+                "2026-09-11"
+              ],
+              "study_sample_n": 800,
+              "question_sample_n": null,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Published final RCV reallocation; questionnaire not locally accessible",
+              "first_choice_is_not_final_count": true,
+              "mode": {
+                "cell_live_pct": 40,
+                "landline_live_pct": 15,
+                "sms_web_pct": 45
+              },
+              "sampling_frame": "random Alaska voter list",
+              "weighting": "not reviewed",
+              "active_final_round_denominator": null,
+              "primary_pollster_label": "Fabrizio Ward / Impact Research",
+              "provider_pollster_label": "Fabrizio, Lee & Associates/Impact Research",
+              "source_access": "primary publisher text via web search; direct HTML/PDF link access 403",
+              "full_questionnaire_checked": false
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": null,
+              "confidence_level_pct": null,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "simulated_final_round",
+            "sponsor_review": {
+              "primary_commissioners": [
+                "AARP"
+              ],
+              "primary_internal": false,
+              "provider_sponsors": [
+                "AARP"
+              ],
+              "commissioner_disclosure": "publisher source reviewed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -22809,8 +23214,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -22828,10 +23233,26 @@
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [],
-          "reference_ids": [],
-          "reference_poll_count": 0,
-          "reference_details": [],
-          "status_note_ko": null,
+          "reference_ids": [
+            "us-202qua198b0338",
+            "primary-ak-quantus-20260930-first-choice"
+          ],
+          "reference_poll_count": 2,
+          "reference_details": [
+            {
+              "id": "us-202qua198b0338",
+              "reasons": [
+                "ranked_choice_separate_question_reference"
+              ]
+            },
+            {
+              "id": "primary-ak-quantus-20260930-first-choice",
+              "reasons": [
+                "ranked_choice_separate_question_reference"
+              ]
+            }
+          ],
+          "status_note_ko": "기간 내 참고 전용 자료는 있으나 우세 집계 가능한 조사는 없습니다.",
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -22842,10 +23263,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:26:00.516906+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:59:12.473203+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:AK:governor": {
       "state": "AK",
@@ -22859,35 +23280,53 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "David Bronson",
-        "Jonathan Kreiss-Tomkins",
+        "Dave Bronson",
+        "Jonathan S. \"JKT\" Kreiss-Tomkins",
         "Treg Taylor",
-        "Bernadette Wilson"
+        "Bernadette M. Wilson"
       ],
       "candidates": {
+        "Dave Bronson": {
+          "party": "REP",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "AK:reported-general:2026:4cafac5d73662596",
+          "canonical_name": "Dave Bronson"
+        },
         "David Bronson": {
           "party": "REP",
-          "source_url": "https://www.nga.org/governors/elections/",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": "AK:reported-general:2026:4cafac5d73662596",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "canonical_name": "Dave Bronson"
+        },
+        "Jonathan S. \"JKT\" Kreiss-Tomkins": {
+          "party": "DEM",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "AK:reported-general:2026:e22c75676f2b5c29",
+          "canonical_name": "Jonathan S. \"JKT\" Kreiss-Tomkins"
         },
         "Jonathan Kreiss-Tomkins": {
           "party": "DEM",
-          "source_url": "https://www.nga.org/governors/elections/",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": "AK:reported-general:2026:e22c75676f2b5c29",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "canonical_name": "Jonathan S. \"JKT\" Kreiss-Tomkins"
         },
         "Treg Taylor": {
           "party": "REP",
-          "source_url": "https://www.nga.org/governors/elections/",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": "AK:reported-general:2026:677c88ad0af1d341",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "canonical_name": "Treg Taylor"
+        },
+        "Bernadette M. Wilson": {
+          "party": "REP",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "AK:reported-general:2026:dd796b13ba73e2b5",
+          "canonical_name": "Bernadette M. Wilson"
         },
         "Bernadette Wilson": {
           "party": "REP",
-          "source_url": "https://www.nga.org/governors/elections/",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": "AK:reported-general:2026:dd796b13ba73e2b5",
-          "identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          "canonical_name": "Bernadette M. Wilson"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -22905,27 +23344,298 @@
         ]
       },
       "governor_roster": {
-        "source_url": "https://www.nga.org/governors/elections/",
-        "reviewed_on": "2026-10-07",
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "reviewed_on": "2026-10-09",
         "status": "reported_general_matchup",
         "hold_reason": null,
         "primary_date": "2026-08-18",
-        "basis": "reported_general_ballot_not_state_certification"
+        "basis": "state_election_agency_general_ballot_listing"
       },
+      "general_period_source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+      "ballot_system": "ranked_choice",
+      "ballot_system_source_url": "https://www.elections.alaska.gov/election-information/",
       "ballot_competition": {
-        "status": "ballot_review_incomplete",
-        "candidate_count": null,
-        "general_unopposed": null,
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "complete_ballot",
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
+        "write_in_candidates": [],
         "no_vote_status": "not_verified",
-        "confirmed_winner": false
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      },
+      "ballot_review": {
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_ballot"
       },
       "race_id": "USA:AK:governor",
-      "observations": [],
+      "observations": [
+        {
+          "id": "gov202cyg016be6c7",
+          "race_id": "USA:AK:governor",
+          "contest_id": "USA:AK:governor:2026:general",
+          "pollster": "Cygnal",
+          "pollster_group": "cygnal",
+          "field_start": "2026-09-24",
+          "field_end": "2026-09-27",
+          "provider_record_date": "2026-10-02",
+          "population": "lv",
+          "sample_n": 502,
+          "answers": [
+            {
+              "name": "Jonathan Kreiss-Tomkins",
+              "pct": 44.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Bernadette Wilson",
+              "pct": 24.0,
+              "party": "REP"
+            },
+            {
+              "name": "David Bronson",
+              "pct": 8.0,
+              "party": "REP"
+            },
+            {
+              "name": "Treg Taylor",
+              "pct": 9.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "ballot_question": {
+            "kind": "first_preference",
+            "question": "Published four-candidate initial ballot; full question number undisclosed",
+            "compared_candidates": [
+              "Jonathan Kreiss-Tomkins",
+              "Bernadette Wilson",
+              "David Bronson",
+              "Treg Taylor"
+            ],
+            "label_ko": "4후보 첫 선호 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": "REP",
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "full_questionnaire_and_commissioner_not_disclosed",
+              "partisan_publisher_reference",
+              "party_commissioned_reference",
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "commissioner",
+              "full_questionnaire"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf"
+            ],
+            "primary_toplines": {
+              "Jonathan Kreiss-Tomkins": 44.0,
+              "Bernadette Wilson": 24.0,
+              "David Bronson": 8.0,
+              "Treg Taylor": 9.0
+            },
+            "question_sample_n": 502,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-24",
+                "2026-09-27"
+              ],
+              "study_sample_n": 502,
+              "question_sample_n": 502,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Published four-candidate initial ballot; full question number undisclosed",
+              "first_choice_is_not_final_count": true,
+              "mode": "live phone and SMS text-to-web",
+              "sampling_frame": "publisher probabilistic design; voter contact frame not disclosed",
+              "weighting": "likely general electorate; benchmarks not disclosed",
+              "undecided_pct": 15,
+              "commissioner": "not disclosed in memo"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": 4.37,
+              "confidence_level_pct": null,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "first_preference",
+            "sponsor_review": {
+              "primary_commissioners": [],
+              "primary_internal": false,
+              "provider_sponsors": [],
+              "commissioner_disclosure": "not disclosed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        },
+        {
+          "id": "gov202fab5e9d8b1c",
+          "race_id": "USA:AK:governor",
+          "contest_id": "USA:AK:governor:2026:general",
+          "pollster": "Fabrizio, Lee & Associates/Impact Research",
+          "pollster_group": "fabrizio_ward_impact_aarp",
+          "field_start": "2026-09-08",
+          "field_end": "2026-09-11",
+          "provider_record_date": "2026-09-17",
+          "population": "lv",
+          "sample_n": 800,
+          "answers": [
+            {
+              "name": "Jonathan Kreiss-Tomkins",
+              "pct": 55.0,
+              "party": "DEM"
+            },
+            {
+              "name": "Bernadette Wilson",
+              "pct": 45.0,
+              "party": "REP"
+            }
+          ],
+          "sponsors": [
+            "AARP"
+          ],
+          "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "ballot_question": {
+            "kind": "simulated_final_round",
+            "question": "Published final RCV reallocation; questionnaire not locally accessible",
+            "compared_candidates": [
+              "Jonathan Kreiss-Tomkins",
+              "Bernadette Wilson"
+            ],
+            "label_ko": "순위표 이전 후 최종 모의 결과 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "AARP"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "final_round_active_denominator_not_reviewed",
+              "provider_primary_pollster_label_difference",
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "final_round_active_denominator",
+              "full_questionnaire",
+              "weighting"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/"
+            ],
+            "primary_toplines": {
+              "Jonathan Kreiss-Tomkins": 55.0,
+              "Bernadette Wilson": 45.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-08",
+                "2026-09-11"
+              ],
+              "study_sample_n": 800,
+              "question_sample_n": null,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Published final RCV reallocation; questionnaire not locally accessible",
+              "first_choice_is_not_final_count": true,
+              "mode": {
+                "cell_live_pct": 40,
+                "landline_live_pct": 15,
+                "sms_web_pct": 45
+              },
+              "sampling_frame": "random Alaska voter list",
+              "weighting": "not reviewed",
+              "active_final_round_denominator": null,
+              "primary_pollster_label": "Fabrizio Ward / Impact Research",
+              "provider_pollster_label": "Fabrizio, Lee & Associates/Impact Research",
+              "source_access": "primary publisher text via web search; direct HTML/PDF link access 403",
+              "full_questionnaire_checked": false
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": null,
+              "confidence_level_pct": null,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "simulated_final_round",
+            "sponsor_review": {
+              "primary_commissioners": [
+                "AARP"
+              ],
+              "primary_internal": false,
+              "provider_sponsors": [
+                "AARP"
+              ],
+              "commissioner_disclosure": "publisher source reviewed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -22956,8 +23666,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -22975,10 +23685,22 @@
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [],
-          "reference_ids": [],
-          "reference_poll_count": 0,
-          "reference_details": [],
-          "status_note_ko": null,
+          "reference_ids": [
+            "gov202cyg016be6c7"
+          ],
+          "reference_poll_count": 1,
+          "reference_details": [
+            {
+              "id": "gov202cyg016be6c7",
+              "reasons": [
+                "full_questionnaire_and_commissioner_not_disclosed",
+                "partisan_publisher_reference",
+                "party_commissioned_reference",
+                "ranked_choice_separate_question_reference"
+              ]
+            }
+          ],
+          "status_note_ko": "기간 내 참고 전용 자료는 있으나 우세 집계 가능한 조사는 없습니다.",
           "lead_counts": {},
           "tie_count": 0,
           "pollster_count": 0,
@@ -22989,10 +23711,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:26:00.516906+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:59:12.473203+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:OR:governor": {
       "state": "OR",
@@ -28124,31 +28846,51 @@
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Nicholas \"Nick\" Begich, III",
-        "Eric Hafner"
+        "Nick Begich",
+        "Eric Hafner",
+        "Bill Hill",
+        "James C. \"Jim\" McDermott"
       ],
       "candidates": {
+        "Nick Begich": {
+          "party": "REP",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "H2AK01083",
+          "canonical_name": "Nick Begich"
+        },
         "Nicholas \"Nick\" Begich, III": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/AK",
-          "candidate_id": null,
-          "canonical_name": "Nicholas \"Nick\" Begich, III"
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "H2AK01083",
+          "canonical_name": "Nick Begich"
         },
         "Eric Hafner": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/AK",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": null,
           "canonical_name": "Eric Hafner"
         },
         "Bill Hill": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/AK",
-          "candidate_id": null,
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": "H6AK01092",
           "canonical_name": "Bill Hill"
         },
         "James C. \"Jim\" McDermott": {
           "party": "LIB",
-          "source_url": "https://www.thegreenpapers.com/G26/AK",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": null,
+          "canonical_name": "James C. \"Jim\" McDermott"
+        },
+        "James McDermott": {
+          "party": "LIB",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "candidate_id": null,
+          "canonical_name": "James C. \"Jim\" McDermott"
+        },
+        "Jim McDermott": {
+          "party": "LIB",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
           "candidate_id": null,
           "canonical_name": "James C. \"Jim\" McDermott"
         }
@@ -28165,6 +28907,9 @@
         "canonical_district": "00",
         "basis": "reviewed_single_seat_apportionment"
       },
+      "general_period_source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+      "ballot_system": "ranked_choice",
+      "ballot_system_source_url": "https://www.elections.alaska.gov/election-information/",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 4,
@@ -28174,10 +28919,10 @@
           "LIB",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/AK",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_ballot",
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -28185,18 +28930,145 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/AK",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_ballot"
       },
       "race_id": "USA:AK:house:00",
-      "observations": [],
+      "observations": [
+        {
+          "id": "us-202fab0388654c",
+          "race_id": "USA:AK:house:00",
+          "contest_id": "USA:AK:house:00:2026:general",
+          "pollster": "Fabrizio, Lee & Associates/Impact Research",
+          "pollster_group": "fabrizio_ward_impact_aarp",
+          "field_start": "2026-09-08",
+          "field_end": "2026-09-11",
+          "provider_record_date": "2026-09-17",
+          "population": "lv",
+          "sample_n": 800,
+          "answers": [
+            {
+              "name": "Nick Begich",
+              "pct": 57.0,
+              "party": "REP"
+            },
+            {
+              "name": "Bill Hill",
+              "pct": 43.0,
+              "party": "IND"
+            }
+          ],
+          "sponsors": [
+            "AARP"
+          ],
+          "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "ballot_question": {
+            "kind": "simulated_final_round",
+            "question": "Published final RCV reallocation; questionnaire not locally accessible",
+            "compared_candidates": [
+              "Nick Begich",
+              "Bill Hill"
+            ],
+            "label_ko": "순위표 이전 후 최종 모의 결과 · 참고",
+            "election_result": false,
+            "aggregation_eligible": false
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": [
+              "AARP"
+            ]
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": false,
+            "reasons": [
+              "final_round_active_denominator_not_reviewed",
+              "provider_primary_pollster_label_difference",
+              "ranked_choice_separate_question_reference"
+            ]
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance",
+              "final_round_active_denominator",
+              "full_questionnaire",
+              "weighting"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/"
+            ],
+            "primary_toplines": {
+              "Nick Begich": 57.0,
+              "Bill Hill": 43.0
+            },
+            "question_sample_n": null,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-08",
+                "2026-09-11"
+              ],
+              "study_sample_n": 800,
+              "question_sample_n": null,
+              "geographic_scope": "Alaska statewide",
+              "question_or_round_checked": "Published final RCV reallocation; questionnaire not locally accessible",
+              "first_choice_is_not_final_count": true,
+              "mode": {
+                "cell_live_pct": 40,
+                "landline_live_pct": 15,
+                "sms_web_pct": 45
+              },
+              "sampling_frame": "random Alaska voter list",
+              "weighting": "not reviewed",
+              "active_final_round_denominator": null,
+              "primary_pollster_label": "Fabrizio Ward / Impact Research",
+              "provider_pollster_label": "Fabrizio, Lee & Associates/Impact Research",
+              "source_access": "primary publisher text via web search; direct HTML/PDF link access 403",
+              "full_questionnaire_checked": false
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_full_study_margin",
+              "half_width_pp": null,
+              "confidence_level_pct": null,
+              "applies_to_final_or_conditional_question": false,
+              "validated_here": false
+            },
+            "ballot_format": "simulated_final_round",
+            "sponsor_review": {
+              "primary_commissioners": [
+                "AARP"
+              ],
+              "primary_internal": false,
+              "provider_sponsors": [
+                "AARP"
+              ],
+              "commissioner_disclosure": "publisher source reviewed"
+            },
+            "limitations_ko": "첫 선호·강제 양자·최종 모의 순위표를 구분한 참고자료이며 일반 우세 집계/승패/색상에 사용하지 않습니다. API의 전체 표본은 최종 유효표 또는 조건부 문항 표본이 아닙니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -28227,8 +29099,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -28260,10 +29132,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:26:00.516906+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:59:12.473203+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:AL:house:01": {
       "state": "AL",
@@ -87072,580 +87944,6 @@
       "verification": "not_accepted_not_verified"
     },
     {
-      "id": "us-202ala6fd3746f",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mi5sviz72222",
-      "field_start": "2026-03-19",
-      "field_end": "2026-03-22",
-      "population": "lv",
-      "sample_n": 1283,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub023ecafb",
-      "race_id": "USA:AK:senate",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/newsletters/playbook/2026/01/21/what-davos-really-thinks-of-trump-00738555?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4d735b47-a8a7-41f4-9c35-277919f359ed",
-      "field_start": "2026-01-16",
-      "field_end": "2026-01-17",
-      "population": "rv",
-      "sample_n": 611,
-      "sponsors": [
-        "Democratic Senatorial Campaign Committee"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ala3b65f6ef",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2011266752693616932",
-      "field_start": "2026-01-08",
-      "field_end": "2026-01-11",
-      "population": "lv",
-      "sample_n": 1681,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alabcabdd28",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6ej2v5yv27",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": 1946,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202ala3cbd5a65",
-      "race_id": "USA:AK:governor",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": 1923,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202ala11d62716",
-      "race_id": "USA:AK:governor",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": 1923,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202alac6fe9b9b",
-      "race_id": "USA:AK:governor",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": 1923,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pubbb8b4b1e",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://hub.nationaljournal.com/new-maps-for-new-york-1?ecid=ACsprvtXCGX_y5aGgL4GVYyMV9Pj7_5mYOX-Ecv59TfcWhUAkRfvxk8ydNp1f2W6B11HWiXOKD8M&utm_campaign=36387909-%5BNJ%5D%202026%20Wake%20Up%20Call&utm_medium=email&_hsenc=p2ANqtz--ypdqFzjt6YlQeSvcQ2L6ur-f3dfrpC3LBhtrLZ4qbOePmR8uo6p_Cyj44MVGYrw4Q0nK8jceKiqibg_VZpQlb2qLJhFLgjXeX0K4fwp0NAbfnvxU&_hsmi=404722735&utm_content=404722735&utm_source=hs_email",
-      "field_start": "2026-02-11",
-      "field_end": "2026-02-12",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Bill Hill"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202datdf44d5f6",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Data for Progress",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.filesforprogress.org/datasets/2025/10/dfp_ak_oct_2025_electoral_and_health.pdf#page=6",
-      "field_start": "2025-10-17",
-      "field_end": "2025-10-23",
-      "population": "rv",
-      "sample_n": 823,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub88aa45c1",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://hub.nationaljournal.com/new-maps-for-new-york-1?ecid=ACsprvtXCGX_y5aGgL4GVYyMV9Pj7_5mYOX-Ecv59TfcWhUAkRfvxk8ydNp1f2W6B11HWiXOKD8M&utm_campaign=36387909-%5BNJ%5D%202026%20Wake%20Up%20Call&utm_medium=email&_hsenc=p2ANqtz--ypdqFzjt6YlQeSvcQ2L6ur-f3dfrpC3LBhtrLZ4qbOePmR8uo6p_Cyj44MVGYrw4Q0nK8jceKiqibg_VZpQlb2qLJhFLgjXeX0K4fwp0NAbfnvxU&_hsmi=404722735&utm_content=404722735&utm_source=hs_email",
-      "field_start": "2026-02-11",
-      "field_end": "2026-02-12",
-      "population": "lv",
-      "sample_n": 600,
-      "sponsors": [
-        "Bill Hill"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alabbd6655e",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/polltracker2024/status/2050660840278229202",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202alafe5b687f",
-      "race_id": "USA:AK:governor",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/PollTracker2024/status/2050660840278229202?s=20",
-      "field_start": "2026-04-16",
-      "field_end": "2026-04-19",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ala3352af00",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mo4ifkz3tc25",
-      "field_start": "2026-06-04",
-      "field_end": "2026-06-07",
-      "population": "lv",
-      "sample_n": 1393,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202datff65423b",
-      "race_id": "USA:AK:senate",
-      "pollster": "Data for Progress",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.dataforprogress.org/blog/2025/10/31/in-the-midst-of-a-health-care-and-affordability-crisis-in-alaska-peltola-and-begich-lead-their-races",
-      "field_start": "2025-10-17",
-      "field_end": "2025-10-23",
-      "population": "lv",
-      "sample_n": 823,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alafbc93030",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/newsletters/playbook/2025/10/21/a-nazi-streak-00616221",
-      "field_start": "2025-10-10",
-      "field_end": "2025-10-15",
-      "population": "lv",
-      "sample_n": 1708,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alab987738a",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/PollTracker2024/status/2059342641041473797",
-      "field_start": "2026-05-14",
-      "field_end": "2026-05-17",
-      "population": "lv",
-      "sample_n": 1401,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alaaac6776a",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.documentcloud.org/documents/26071481-ak-sen-alaska-survey-research-d/",
-      "field_start": "2025-07-29",
-      "field_end": "2025-08-01",
-      "population": "lv",
-      "sample_n": 1613,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202datde291215",
-      "race_id": "USA:AK:senate",
-      "pollster": "Data for Progress",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.dataforprogress.org/blog/2025/8/8/mary-peltola-would-be-front-runner-for-alaska-governor",
-      "field_start": "2025-07-21",
-      "field_end": "2025-07-27",
-      "population": "lv",
-      "sample_n": 678,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202thef47fdc98",
-      "race_id": "USA:AK:house:00",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-alaska-poll-crosstabs.html",
-      "field_start": "2026-06-15",
-      "field_end": "2026-06-29",
-      "population": "lv",
-      "sample_n": 593,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the011805d2",
-      "race_id": "USA:AK:senate",
-      "pollster": "The New York Times/Siena University",
-      "reason": "outside_reviewed_general_period",
-      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-alaska-poll-crosstabs.html",
-      "field_start": "2026-06-15",
-      "field_end": "2026-06-29",
-      "population": "lv",
-      "sample_n": 593,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202ala8d90d3a8",
-      "race_id": "USA:AK:governor",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mq5ysovlis2r",
-      "field_start": "2026-06-30",
-      "field_end": "2026-07-01",
-      "population": "rv",
-      "sample_n": 1528,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the9b589743",
-      "race_id": "USA:AK:house:00",
-      "pollster": "The Bullfinch Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat",
-      "field_start": "2026-07-13",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 546,
-      "sponsors": [
-        "The Independent Center"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alaaa70f06a",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2087253230548107640?s=20",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-05",
-      "population": "lv",
-      "sample_n": 1371,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alae739036c",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-05",
-      "population": "lv",
-      "sample_n": 1371,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202alafabca8f1",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-05",
-      "population": "lv",
-      "sample_n": 1371,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ala8a6a82c0",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
-      "field_start": "2026-08-02",
-      "field_end": "2026-08-05",
-      "population": "lv",
-      "sample_n": 1371,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ala08564c87",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2093483993954144564?s=20",
-      "field_start": "2026-08-20",
-      "field_end": "2026-08-23",
-      "population": "lv",
-      "sample_n": 1872,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202ala6eea5978",
-      "race_id": "USA:AK:senate",
-      "pollster": "Alaska Survey Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/The_Real_ASR/status/2095186398882287632",
-      "field_start": "2026-08-20",
-      "field_end": "2026-08-23",
-      "population": "lv",
-      "sample_n": 1495,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202fabecd2ecd9",
-      "race_id": "USA:AK:senate",
-      "pollster": "Fabrizio, Lee & Associates/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-      "field_start": "2026-09-08",
-      "field_end": "2026-09-11",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "AARP"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202fab5e9d8b1c",
-      "race_id": "USA:AK:governor",
-      "pollster": "Fabrizio, Lee & Associates/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-      "field_start": "2026-09-08",
-      "field_end": "2026-09-11",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "AARP"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202fab0388654c",
-      "race_id": "USA:AK:house:00",
-      "pollster": "Fabrizio, Lee & Associates/Impact Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-      "field_start": "2026-09-08",
-      "field_end": "2026-09-11",
-      "population": "lv",
-      "sample_n": 800,
-      "sponsors": [
-        "AARP"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202co/0acc5699",
-      "race_id": "USA:AK:senate",
-      "pollster": "co/efficient",
-      "reason": "pollster_not_selected",
-      "source_url": "https://battlegrounds.coefficient.org/ak/",
-      "field_start": "2026-09-14",
-      "field_end": "2026-09-17",
-      "population": "lv",
-      "sample_n": 799,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the1da56e0f",
-      "race_id": "USA:AK:house:00",
-      "pollster": "The Bullfinch Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://independentleadershipcouncil.com/press-alaska-at-large/",
-      "field_start": "2026-07-13",
-      "field_end": "2026-07-16",
-      "population": "lv",
-      "sample_n": 546,
-      "sponsors": [
-        "The Independent Center",
-        "The Independent Leadership Council"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202cyg016be6c7",
-      "race_id": "USA:AK:governor",
-      "pollster": "Cygnal",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf",
-      "field_start": "2026-09-24",
-      "field_end": "2026-09-27",
-      "population": "lv",
-      "sample_n": 502,
-      "sponsors": [],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202qua198b0338",
-      "race_id": "USA:AK:senate",
-      "pollster": "Quantus Insights",
-      "reason": "pollster_not_selected",
-      "source_url": "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
-      "field_start": "2026-09-28",
-      "field_end": "2026-09-30",
-      "population": "lv",
-      "sample_n": 758,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the4bdf33e1",
-      "race_id": "USA:AK:house:00",
-      "pollster": "The Bullfinch Group",
-      "reason": "pollster_not_selected",
-      "source_url": "https://cdn.prod.website-files.com/68d1c32ec01e1d1f6a86e801/6abd40f2f3810a4e535a8aa6_Alaska_Topline-Independent_Leadership_Council.pdf",
-      "field_start": "2026-09-01",
-      "field_end": "2026-09-06",
-      "population": "lv",
-      "sample_n": 820,
-      "sponsors": [
-        "Independent Leadership Council"
-      ],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "gov202the33f8c9ea",
-      "race_id": "USA:AK:governor",
-      "pollster": "The New York Times/Siena University",
-      "reason": "unreviewed_matchup",
-      "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
-      "field_start": "2026-09-24",
-      "field_end": "2026-10-01",
-      "population": "lv",
-      "sample_n": 431,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
       "id": "us-202tav22537272",
       "race_id": "USA:KS:senate",
       "pollster": "Tavern Research",
@@ -97050,6 +97348,499 @@
       "internal": false,
       "partisan": "DEM",
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala6fd3746f",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mi5sviz72222",
+      "field_start": "2026-03-19",
+      "field_end": "2026-03-22",
+      "population": "lv",
+      "sample_n": 1283,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub023ecafb",
+      "race_id": "USA:AK:senate",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/newsletters/playbook/2026/01/21/what-davos-really-thinks-of-trump-00738555?nname=playbook&nid=0000014f-1646-d88f-a1cf-5f46b7bd0000&nrid=4d735b47-a8a7-41f4-9c35-277919f359ed",
+      "field_start": "2026-01-16",
+      "field_end": "2026-01-17",
+      "population": "rv",
+      "sample_n": 611,
+      "sponsors": [
+        "Democratic Senatorial Campaign Committee"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala3b65f6ef",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2011266752693616932",
+      "field_start": "2026-01-08",
+      "field_end": "2026-01-11",
+      "population": "lv",
+      "sample_n": 1681,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alabcabdd28",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6ej2v5yv27",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": 1946,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202ala3cbd5a65",
+      "race_id": "USA:AK:governor",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": 1923,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202ala11d62716",
+      "race_id": "USA:AK:governor",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": 1923,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202alac6fe9b9b",
+      "race_id": "USA:AK:governor",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mk6urydmko27",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": 1923,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pubbb8b4b1e",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://hub.nationaljournal.com/new-maps-for-new-york-1?ecid=ACsprvtXCGX_y5aGgL4GVYyMV9Pj7_5mYOX-Ecv59TfcWhUAkRfvxk8ydNp1f2W6B11HWiXOKD8M&utm_campaign=36387909-%5BNJ%5D%202026%20Wake%20Up%20Call&utm_medium=email&_hsenc=p2ANqtz--ypdqFzjt6YlQeSvcQ2L6ur-f3dfrpC3LBhtrLZ4qbOePmR8uo6p_Cyj44MVGYrw4Q0nK8jceKiqibg_VZpQlb2qLJhFLgjXeX0K4fwp0NAbfnvxU&_hsmi=404722735&utm_content=404722735&utm_source=hs_email",
+      "field_start": "2026-02-11",
+      "field_end": "2026-02-12",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Bill Hill"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202datdf44d5f6",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Data for Progress",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.filesforprogress.org/datasets/2025/10/dfp_ak_oct_2025_electoral_and_health.pdf#page=6",
+      "field_start": "2025-10-17",
+      "field_end": "2025-10-23",
+      "population": "rv",
+      "sample_n": 823,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub88aa45c1",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Public Policy Polling",
+      "reason": "pollster_not_selected",
+      "source_url": "https://hub.nationaljournal.com/new-maps-for-new-york-1?ecid=ACsprvtXCGX_y5aGgL4GVYyMV9Pj7_5mYOX-Ecv59TfcWhUAkRfvxk8ydNp1f2W6B11HWiXOKD8M&utm_campaign=36387909-%5BNJ%5D%202026%20Wake%20Up%20Call&utm_medium=email&_hsenc=p2ANqtz--ypdqFzjt6YlQeSvcQ2L6ur-f3dfrpC3LBhtrLZ4qbOePmR8uo6p_Cyj44MVGYrw4Q0nK8jceKiqibg_VZpQlb2qLJhFLgjXeX0K4fwp0NAbfnvxU&_hsmi=404722735&utm_content=404722735&utm_source=hs_email",
+      "field_start": "2026-02-11",
+      "field_end": "2026-02-12",
+      "population": "lv",
+      "sample_n": 600,
+      "sponsors": [
+        "Bill Hill"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alabbd6655e",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/polltracker2024/status/2050660840278229202",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202alafe5b687f",
+      "race_id": "USA:AK:governor",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/PollTracker2024/status/2050660840278229202?s=20",
+      "field_start": "2026-04-16",
+      "field_end": "2026-04-19",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala3352af00",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mo4ifkz3tc25",
+      "field_start": "2026-06-04",
+      "field_end": "2026-06-07",
+      "population": "lv",
+      "sample_n": 1393,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202datff65423b",
+      "race_id": "USA:AK:senate",
+      "pollster": "Data for Progress",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.dataforprogress.org/blog/2025/10/31/in-the-midst-of-a-health-care-and-affordability-crisis-in-alaska-peltola-and-begich-lead-their-races",
+      "field_start": "2025-10-17",
+      "field_end": "2025-10-23",
+      "population": "lv",
+      "sample_n": 823,
+      "sponsors": [],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alafbc93030",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.politico.com/newsletters/playbook/2025/10/21/a-nazi-streak-00616221",
+      "field_start": "2025-10-10",
+      "field_end": "2025-10-15",
+      "population": "lv",
+      "sample_n": 1708,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alab987738a",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/PollTracker2024/status/2059342641041473797",
+      "field_start": "2026-05-14",
+      "field_end": "2026-05-17",
+      "population": "lv",
+      "sample_n": 1401,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alaaac6776a",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.documentcloud.org/documents/26071481-ak-sen-alaska-survey-research-d/",
+      "field_start": "2025-07-29",
+      "field_end": "2025-08-01",
+      "population": "lv",
+      "sample_n": 1613,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202datde291215",
+      "race_id": "USA:AK:senate",
+      "pollster": "Data for Progress",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.dataforprogress.org/blog/2025/8/8/mary-peltola-would-be-front-runner-for-alaska-governor",
+      "field_start": "2025-07-21",
+      "field_end": "2025-07-27",
+      "population": "lv",
+      "sample_n": 678,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202thef47fdc98",
+      "race_id": "USA:AK:house:00",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-alaska-poll-crosstabs.html",
+      "field_start": "2026-06-15",
+      "field_end": "2026-06-29",
+      "population": "lv",
+      "sample_n": 593,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the011805d2",
+      "race_id": "USA:AK:senate",
+      "pollster": "The New York Times/Siena University",
+      "reason": "outside_reviewed_general_period",
+      "source_url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-alaska-poll-crosstabs.html",
+      "field_start": "2026-06-15",
+      "field_end": "2026-06-29",
+      "population": "lv",
+      "sample_n": 593,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202ala8d90d3a8",
+      "race_id": "USA:AK:governor",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://bsky.app/profile/alaskasurvey.bsky.social/post/3mq5ysovlis2r",
+      "field_start": "2026-06-30",
+      "field_end": "2026-07-01",
+      "population": "rv",
+      "sample_n": 1528,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the9b589743",
+      "race_id": "USA:AK:house:00",
+      "pollster": "The Bullfinch Group",
+      "reason": "pollster_not_selected",
+      "source_url": "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat",
+      "field_start": "2026-07-13",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 546,
+      "sponsors": [
+        "The Independent Center"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alaaa70f06a",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2087253230548107640?s=20",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-05",
+      "population": "lv",
+      "sample_n": 1371,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alae739036c",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-05",
+      "population": "lv",
+      "sample_n": 1371,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202alafabca8f1",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-05",
+      "population": "lv",
+      "sample_n": 1371,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala8a6a82c0",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2088053315502498055",
+      "field_start": "2026-08-02",
+      "field_end": "2026-08-05",
+      "population": "lv",
+      "sample_n": 1371,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala08564c87",
+      "race_id": "USA:AK:house:00",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2093483993954144564?s=20",
+      "field_start": "2026-08-20",
+      "field_end": "2026-08-23",
+      "population": "lv",
+      "sample_n": 1872,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202ala6eea5978",
+      "race_id": "USA:AK:senate",
+      "pollster": "Alaska Survey Research",
+      "reason": "pollster_not_selected",
+      "source_url": "https://x.com/The_Real_ASR/status/2095186398882287632",
+      "field_start": "2026-08-20",
+      "field_end": "2026-08-23",
+      "population": "lv",
+      "sample_n": 1495,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202co/0acc5699",
+      "race_id": "USA:AK:senate",
+      "pollster": "co/efficient",
+      "reason": "pollster_not_selected",
+      "source_url": "https://battlegrounds.coefficient.org/ak/",
+      "field_start": "2026-09-14",
+      "field_end": "2026-09-17",
+      "population": "lv",
+      "sample_n": 799,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the1da56e0f",
+      "race_id": "USA:AK:house:00",
+      "pollster": "The Bullfinch Group",
+      "reason": "pollster_not_selected",
+      "source_url": "https://independentleadershipcouncil.com/press-alaska-at-large/",
+      "field_start": "2026-07-13",
+      "field_end": "2026-07-16",
+      "population": "lv",
+      "sample_n": 546,
+      "sponsors": [
+        "The Independent Center",
+        "The Independent Leadership Council"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the4bdf33e1",
+      "race_id": "USA:AK:house:00",
+      "pollster": "The Bullfinch Group",
+      "reason": "pollster_not_selected",
+      "source_url": "https://cdn.prod.website-files.com/68d1c32ec01e1d1f6a86e801/6abd40f2f3810a4e535a8aa6_Alaska_Topline-Independent_Leadership_Council.pdf",
+      "field_start": "2026-09-01",
+      "field_end": "2026-09-06",
+      "population": "lv",
+      "sample_n": 820,
+      "sponsors": [
+        "Independent Leadership Council"
+      ],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "gov202the33f8c9ea",
+      "race_id": "USA:AK:governor",
+      "pollster": "The New York Times/Siena University",
+      "reason": "ranked_choice_question_not_reviewed",
+      "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
+      "field_start": "2026-09-24",
+      "field_end": "2026-10-01",
+      "population": "lv",
+      "sample_n": 431,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -97088,7 +97879,7 @@
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 39,
+        "with_observations": 41,
         "recent_7d": 5,
         "recent_14d": 15
       },
@@ -104362,13 +105153,13 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "reference_only",
         "provider_record_count": 8,
-        "accepted_count": 0,
+        "accepted_count": 2,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
+        "reference_only_count": 2,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-27",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -104380,13 +105171,11 @@
           }
         },
         "rejection_reasons": {
-          "unreviewed_matchup": 1,
-          "pollster_not_selected": 7
+          "ranked_choice_question_not_reviewed": 1,
+          "pollster_not_selected": 5
         },
         "review_queue_ids": [
           "gov202the33f8c9ea",
-          "gov202cyg016be6c7",
-          "gov202fab5e9d8b1c",
           "gov202ala8d90d3a8",
           "gov202alafe5b687f",
           "gov202alac6fe9b9b",
@@ -104408,13 +105197,14 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "reference_only",
         "provider_record_count": 17,
-        "accepted_count": 0,
+        "accepted_count": 3,
+        "reviewed_primary_supplement_count": 1,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
+        "reference_only_count": 3,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-30",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -104426,13 +105216,11 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 16,
+          "pollster_not_selected": 14,
           "outside_reviewed_general_period": 1
         },
         "review_queue_ids": [
-          "us-202qua198b0338",
           "us-202co/0acc5699",
-          "us-202fabecd2ecd9",
           "us-202ala6eea5978",
           "us-202alaaa70f06a",
           "us-202the011805d2",
@@ -105643,13 +106431,13 @@
             "national_scheduled_election"
           ]
         },
-        "status": "review_required",
+        "status": "reference_only",
         "provider_record_count": 12,
-        "accepted_count": 0,
+        "accepted_count": 1,
         "aggregation_eligible_count": 0,
-        "reference_only_count": 0,
+        "reference_only_count": 1,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-11",
         "windows": {
           "7": {
             "status": "no_recent_poll",
@@ -105661,11 +106449,10 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 11,
+          "pollster_not_selected": 10,
           "outside_reviewed_general_period": 1
         },
         "review_queue_ids": [
-          "us-202fab0388654c",
           "us-202the4bdf33e1",
           "us-202ala08564c87",
           "us-202alafabca8f1",
@@ -116425,7 +117212,7 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 26,
+        "with_polls": 27,
         "with_recent_7d": 0,
         "with_recent_14d": 5,
         "with_super_pac": 316,
@@ -116433,7 +117220,7 @@
       },
       "senate": {
         "races": 35,
-        "with_polls": 12,
+        "with_polls": 13,
         "with_recent_7d": 3,
         "with_recent_14d": 5,
         "with_super_pac": 34,
@@ -116441,7 +117228,7 @@
       },
       "governor": {
         "races": 36,
-        "with_polls": 18,
+        "with_polls": 19,
         "with_recent_7d": 4,
         "with_recent_14d": 8,
         "with_super_pac": 0,
@@ -116449,8 +117236,8 @@
       }
     },
     "ballot_counts": {
-      "ballot_review_incomplete": 30,
-      "contested": 455,
+      "ballot_review_incomplete": 29,
+      "contested": 456,
       "minor_party_or_independent_opposition": 5,
       "same_party_contest": 9,
       "official_general_unopposed_listing": 1,
@@ -120518,15 +121305,15 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 3,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 17,
         "rejection_reasons": {
-          "pollster_not_selected": 16,
+          "pollster_not_selected": 14,
           "outside_reviewed_general_period": 1
         },
         "matchup_reviewed": true,
@@ -120535,7 +121322,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -120555,12 +121342,13 @@
           "candidate_count": 4,
           "parties": [
             "DEM",
+            "OTH",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_ballot",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -120578,16 +121366,16 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 2,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 8,
         "rejection_reasons": {
-          "unreviewed_matchup": 1,
-          "pollster_not_selected": 7
+          "ranked_choice_question_not_reviewed": 1,
+          "pollster_not_selected": 5
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -120595,7 +121383,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -120611,11 +121399,21 @@
           "measure": "state_independent_spending_not_federal_super_pac"
         },
         "ballot_competition": {
-          "status": "ballot_review_incomplete",
-          "candidate_count": null,
-          "general_unopposed": null,
+          "status": "contested",
+          "candidate_count": 4,
+          "parties": [
+            "DEM",
+            "REP"
+          ],
+          "coverage": "complete_ballot",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
+          "write_in_candidates": [],
           "no_vote_status": "not_verified",
-          "confirmed_winner": false
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
         }
       },
       "USA:OR:governor": {
@@ -122196,15 +122994,15 @@
             "national_scheduled_election"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "reference_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
+        "poll_observation_count": 1,
         "poll_eligible_count": 0,
         "recent_7d_pollsters": 0,
         "recent_14d_pollsters": 0,
         "provider_record_count": 12,
         "rejection_reasons": {
-          "pollster_not_selected": 11,
+          "pollster_not_selected": 10,
           "outside_reviewed_general_period": 1
         },
         "matchup_reviewed": true,
@@ -122213,7 +123011,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -122237,10 +123035,10 @@
             "LIB",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/AK",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_ballot",
+          "source_url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -145684,9 +146482,7 @@
           ],
           "race_count": 1,
           "scheduled": true,
-          "polls_without_observations": [
-            "USA:AK:senate"
-          ],
+          "polls_without_observations": [],
           "polls_without_7d": [
             "USA:AK:senate"
           ],
@@ -145699,9 +146495,7 @@
           ],
           "race_count": 1,
           "scheduled": true,
-          "polls_without_observations": [
-            "USA:AK:governor"
-          ],
+          "polls_without_observations": [],
           "polls_without_7d": [
             "USA:AK:governor"
           ],
@@ -145716,9 +146510,7 @@
           ],
           "race_count": 1,
           "scheduled": true,
-          "polls_without_observations": [
-            "USA:AK:house:00"
-          ],
+          "polls_without_observations": [],
           "polls_without_7d": [
             "USA:AK:house:00"
           ],
@@ -149828,11 +150620,45 @@
     "AK": {
       "state": "AK",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:26:00.516906+00:00",
-      "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 37
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
+      "captured_at": "2026-10-09T04:59:12.473203+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 37,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-ak-quantus-20260930-first-choice",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T04:59:27.376454+00:00",
+          "documents": [
+            {
+              "url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
+              "status": "unchanged",
+              "sha256": "7c8c88cf83234fad2acd5fd19d3647e8048c1ce541fefd12eeeb8b1ab375422f"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "us-202qua198b0338"
+          ]
+        }
+      ],
+      "primary_rechecked_ids": [
+        "us-202qua198b0338",
+        "primary-ak-quantus-20260930-first-choice",
+        "us-202fabecd2ecd9",
+        "gov202cyg016be6c7",
+        "gov202fab5e9d8b1c",
+        "us-202fab0388654c"
+      ],
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/AK-primary-20261009.json",
+      "primary_review_scope": "Quantus PDF and Cygnal memo checked; AARP primary publisher text checked, full questionnaire inaccessible; all RCV questions reference only",
+      "governor_source_checked_at": "2026-10-09T04:53:55.597272+00:00",
+      "federal_finance_recollected": false,
+      "federal_identity_reviewed_on": "2026-10-09"
     },
     "KS": {
       "state": "KS",

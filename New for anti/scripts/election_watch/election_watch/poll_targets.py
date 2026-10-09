@@ -88,10 +88,23 @@ def apply_targets(policy, catalog, ballots, as_of):
             for name in [candidate['name'], *candidate.get('poll_name_aliases', [])]:
                 require(name not in candidates, 'duplicate ballot alias')
                 candidates[name] = {'party': candidate['party'],
-                    'source_url': candidate['source_url'], 'candidate_id': None,
+                    'source_url': candidate['source_url'],
+                    'candidate_id': candidate.get('candidate_id'),
                     'canonical_name': candidate['name']}
             names.append(candidate['name'])
         require(len(names) == len(set(names)) and names, 'empty/duplicate ballot candidates')
+        if review.get('ballot_system') == 'ranked_choice':
+            require(review['source_role'] == 'state_election_agency'
+                    and review['coverage'] == 'complete_ballot'
+                    and https_url(review.get('ballot_system_source_url')),
+                    'ranked choice ballot evidence required')
+            race['ballot_system'] = 'ranked_choice'
+            race['ballot_system_source_url'] = review['ballot_system_source_url']
+            # All printed candidates, including nonpartisan and same-party
+            # candidates, define the first-choice field. A final pair does not.
+            race['required_candidates'] = names[:]
+            race['candidates'] = candidates
+            race['schedule_status'] = 'reported_general_matchup'
         race['ballot_competition'] = competition(review)
         race['ballot_review'] = {k: review[k] for k in
             ('source_url', 'source_role', 'reviewed_on', 'coverage')}
