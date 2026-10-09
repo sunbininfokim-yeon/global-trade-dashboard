@@ -1,14 +1,15 @@
 {
   "schema_version": "us-tariffs-v1",
-  "as_of": "2026-10-08",
+  "as_of": "2026-10-09",
   "status": "curated",
   "title_ko": "미국 관세·통상 정책 (트럼프 2기, 2025-01-20~)",
-  "note_ko": "수기 정리본이다. 근거는 연방대법원 판결문, USTR·상무부 발표와 이를 요약한 법률·관세 실무 자료다. 2차 자료끼리 날짜·세율이 갈리는 항목은 '확인 필요'로 표시했다. 통관 판단은 연방관보·HTSUS 99장·CBP 안내로 확인할 것.",
+  "note_ko": "국가 카드는 정책 탐색용 수기 정리본이다. 법률상 권한과 실제 발효 조치를 분리했다. 공식 원문 확인은 표시된 항목·공고 범위에 한정하며, 재확인 항목은 현재 세율로 확정하지 않는다. HTS·원산지·수입일·중첩·기업별 AD/CVD 확인 전 계산에 자동 사용하지 않는다.",
   "authorities": {
     "IEEPA": "국제긴급경제권한법 — 국가비상사태를 근거로 한 관세. 2026-02-20 대법원이 관세 권한 없음으로 판결",
     "122": "무역법 122조 — 국제수지 대응 임시 관세, 최대 15%·150일",
     "301": "무역법 301조 — 불공정 무역관행 조사 후 USTR 조치",
-    "232": "무역확장법 232조 — 국가안보 근거 품목별 관세(상무부 조사)"
+    "232": "무역확장법 232조 — 국가안보 근거 품목별 관세(상무부 조사)",
+    "338": "관세법 338조 — 외국의 차별에 대응하는 추가관세·조건부 수입배제 (19 U.S.C. 1338)"
   },
   "measures": [
     {
@@ -17,12 +18,19 @@
       "status": "active",
       "name_ko": "강제노동 301조 관세 (60개 경제권)",
       "started": "2026-07-24",
-      "rate_ko": "10% 또는 12.5% 추가. 일본·한국 12.5%, 대만·EU 10%는 '일반세율 포함 상한형'(일반세율이 그 이상이면 추가 없음, 미만이면 합계를 그 세율로). 중국·베트남 12.5%, 인도·멕시코·캐나다·영국 10%는 일반세율 위에 그대로 추가.",
-      "scope_ko": "미국 수입의 약 99%를 차지하는 60개 경제권이 강제노동 생산품 수입금지를 제대로 집행하지 않았다는 판정. 232조 품목, USMCA 원산지 충족 캐나다·멕시코 상품, 일부 원자재·의약품 등은 제외. 종료일 없음.",
+      "rate_ko": "중국·베트남 등 12.5% 추가, 캐나다·멕시코 등 10% 추가. 한국·일본은 적용 기본세율이 12.5% 미만이면 합계 12.5%, 이상이면 이 조치의 추가세율 0. EU·대만은 같은 방식으로 10%. 기본세율 자체를 낮추는 상한은 아님.",
+      "scope_ko": "공고 Annex I·II의 제품 예외 및 232조 대상 제외. 캐나다·멕시코는 USMCA에 따라 무관세로 신고된 제품 제외. 다른 301조·AD/CVD까지 자동 면제하는 규칙은 아님.",
       "sources": [
-        {"label": "Global Trade Alert — 최종 조치 개요", "url": "https://globaltradealert.org/blog/forced-labour-section-301-final-action"},
-        {"label": "EY — USTR 최종 조치(2026-07-23 발표)", "url": "https://taxnews.ey.com/news/2026-1607-ustr-finalizes-section-301-forced-labor-tariffs-on-60-economies-additional-tariffs-of-10-percent-or-125-percent-take-effect-24-july-2026"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        }
+      ],
+      "verification": "primary_text_checked",
+      "verification_note_ko": "최종 공고의 국가별 결정·USMCA 예외 확인. 개별 HTS 및 이후 모든 변경을 판정하는 계산 규칙은 아직 없음.",
+      "calculation_ready": false,
+      "action_type": "tariff",
+      "verified_at": "2026-10-09"
     },
     {
       "id": "sec232-metals",
@@ -30,12 +38,23 @@
       "status": "active",
       "name_ko": "철강·알루미늄·구리 232조 관세",
       "started": "2025-03-12",
-      "rate_ko": "철강·알루미늄 25%(2025-03-12) → 50%(2025-06-04). 2026-04-06 개편: 금속으로만 된 제품 50%, 상당 부분 금속인 파생제품 25%, 미국산 금속을 쓴 파생제품 10%. 구리 50%(2025-08-01, 일부 25%, 음극동·스크랩 제외).",
-      "scope_ko": "모든 국가. 금속 함량 15% 미만 파생제품 수백 개는 2026-04 대상에서 빠짐. 국가별 예외는 확인 필요.",
+      "rate_ko": "4월 개편의 대상 목록별 50%·25% 및 미국산 금속 요건에 따른 10% 등. 6월 8일부터 Annex I-C 일부 장비는 별도 한시 규칙: 일반 25%, 한국·일본·EU 등은 기본세율과 합계 15%(기본세율 ≥15%면 추가 0). 캐나다·멕시코 USMCA 적격품은 비미국산 가치에 25%를 적용하되 해당 규칙상 총 유효세율 최소 15%.",
+      "scope_ko": "원문 부속서·금속 원산지·제품별 예외 필요. 모든 파생제품에 25% 또는 15%를 일괄 적용하지 않는다. 6월 한시 조치는 2027-12-31까지이며 7월 이후 후속 변경도 개별 확인 필요.",
       "sources": [
-        {"label": "C.H. Robinson — 2026-06 철강·알루미늄·구리 232조 변경", "url": "https://www.chrobinson.com/en-us/resources/insights-and-advisories/client-advisories/2026q2/06-02-2026-client-advisory-updates-to-section-232-tariffs-on-steel-aluminum-copper/"},
-        {"label": "Covington — 현행·예정 232조 조치", "url": "https://www.cov.com/en/news-and-insights/insights/2026/04/current-and-forthcoming-section-232-actions-by-the-trump-administration"}
-      ]
+        {
+          "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        }
+      ],
+      "verification": "primary_text_checked",
+      "verification_note_ko": "4월·6월 원문 조항 확인. 후속 금속 조치 전체 및 현재 HTS 목록 전수 검증은 미완료.",
+      "calculation_ready": false,
+      "action_type": "tariff",
+      "verified_at": "2026-10-09"
     },
     {
       "id": "sec232-autos",
@@ -46,22 +65,46 @@
       "rate_ko": "완성차 25%(2025-04-03), 부품 25%(2025-05-03). 협정국 인하: 일본·한국·EU 15%(일반세율이 15% 이상이면 추가 없음), 대만 부품 15% 상한. 중·대형 트럭 25%(2025-11-01), 버스 10%.",
       "scope_ko": "232조라 2026-02 대법원 판결(IEEPA)의 영향을 받지 않았다. 232조 자동차 관세 대상은 122조·301조 강제노동 관세에서 제외.",
       "sources": [
-        {"label": "CFR — 232조 관세 지도", "url": "https://www.cfr.org/articles/guide-trumps-section-232-tariffs-nine-maps"},
-        {"label": "Legal500 — EU 협정 이행(자동차 15%)", "url": "https://www.legal500.com/intelligence/united-states/international-law/us-implements-eu-trade-deal-reducing-tariffs-on-eu-autos-&-parts-and-eliminating-tariffs-on-certain-other-products"}
-      ]
+        {
+          "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+        },
+        {
+          "label": "CFR — 232조 관세 지도",
+          "url": "https://www.cfr.org/articles/guide-trumps-section-232-tariffs-nine-maps"
+        },
+        {
+          "label": "Legal500 — EU 협정 이행(자동차 15%)",
+          "url": "https://www.legal500.com/intelligence/united-states/international-law/us-implements-eu-trade-deal-reducing-tariffs-on-eu-autos-&-parts-and-eliminating-tariffs-on-certain-other-products"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "sec232-other",
       "authority": "232",
-      "status": "active",
+      "status": "review_required",
       "name_ko": "기타 232조 품목 (목재·반도체·의약품·장비)",
       "started": "2025-10-14",
       "rate_ko": "목재 10%, 주방 캐비닛·가구 25%(2027년 인상 예정, 세율은 자료마다 다름). 첨단 AI용 반도체 25%(2026-01-15, 좁은 범위). 특허 의약품 기본 100%(국가·기업별 낮은 단계, 시행일은 자료마다 달라 확인 필요). 농기계·가정용 공조 25%→15%(2026-06). 드론·부품(2026-09, 확인 필요).",
       "scope_ko": "반도체는 대만 협정처럼 미국 내 투자와 연계한 면세 물량이 있다. 나머지 반도체 범위는 협상 중.",
       "sources": [
-        {"label": "Covington — 현행·예정 232조 조치", "url": "https://www.cov.com/en/news-and-insights/insights/2026/04/current-and-forthcoming-section-232-actions-by-the-trump-administration"},
-        {"label": "상무부 — 대만 협정 팩트시트(2026-01)", "url": "https://www.commerce.gov/news/fact-sheets/2026/01/fact-sheet-restoring-american-semiconductor-manufacturing-leadership"}
-      ]
+        {
+          "label": "Covington — 현행·예정 232조 조치",
+          "url": "https://www.cov.com/en/news-and-insights/insights/2026/04/current-and-forthcoming-section-232-actions-by-the-trump-administration"
+        },
+        {
+          "label": "상무부 — 대만 협정 팩트시트(2026-01)",
+          "url": "https://www.commerce.gov/news/fact-sheets/2026/01/fact-sheet-restoring-american-semiconductor-manufacturing-leadership"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "목재·반도체·의약품·장비·드론은 시행일과 대상이 다름. 기존 묶음을 일괄 시행 중으로 표시하지 않고 제품별 재확인 대상으로 분리.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "sec301-china",
@@ -70,11 +113,25 @@
       "name_ko": "중국 301조 관세 (1기부터) + 미·중 휴전",
       "started": "2018-07-06",
       "rate_ko": "2018~19년 목록 7.5~25%, 2024년 전략 품목(전기차·반도체 등) 최대 100%. 2026-07-24부터 강제노동 301조 12.5%가 그 위에 더해짐.",
-      "scope_ko": "휴전: 2025-05 제네바 합의 → 2025-11 부산 정상회담으로 연장 → 2026-09-24 베선트 재무장관이 2027-01-10까지 추가 연장 발표(공식 문서 전). 2026-09 트럼프·시진핑 회담에서 일부 품목 관세 인하에 합의했으나 대상 금액(300억/600억 달러)과 시행일은 자료가 엇갈림 — 확인 필요.",
+      "scope_ko": "기존 HTS별 301조와 강제노동 301조는 별도 조치. 제품 예외·중첩 확인 필요. 기존 정리본의 2027-01-10 휴전 및 2026-09 관세 인하 발표는 시행 문서 확인 전 현재 세율에 반영하지 않음.",
       "sources": [
-        {"label": "CNBC — 휴전 연장(2026-09-24)", "url": "https://www.cnbc.com/2026/09/24/us-china-trade-truce-bessent-trump-xi.html"},
-        {"label": "Axios — 정상회담 후 관세 합의(2026-09-26)", "url": "https://www.axios.com/2026/09/26/us-china-tariffs-trade-30-billion"}
-      ]
+        {
+          "label": "USTR — 중국 301조 4년 검토 최종 수정 (2024-09-13)",
+          "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2024/september/ustr-finalizes-action-china-tariffs-following-statutory-four-year-review"
+        },
+        {
+          "label": "CNBC — 휴전 연장(2026-09-24)",
+          "url": "https://www.cnbc.com/2026/09/24/us-china-trade-truce-bessent-trump-xi.html"
+        },
+        {
+          "label": "Axios — 정상회담 후 관세 합의(2026-09-26)",
+          "url": "https://www.axios.com/2026/09/26/us-china-tariffs-trade-30-billion"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "sec301-brazil",
@@ -85,8 +142,19 @@
       "rate_ko": "브라질산 다수 품목에 25% 추가 (강제노동 301조와 별도).",
       "scope_ko": "2025-08 IEEPA로 매겼던 브라질 40% 관세가 대법원 판결로 없어진 뒤 301조로 다시 매긴 것.",
       "sources": [
-        {"label": "Grant Thornton — 새 관세 로드맵", "url": "https://www.grantthornton.com/insights/alerts/tax/2026/insights/the-trump-administration-new-tariff-road-map"}
-      ]
+        {
+          "label": "CBP — 브라질 301조 25% 및 예외 (2026-07-22)",
+          "url": "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/42178c8"
+        },
+        {
+          "label": "Grant Thornton — 새 관세 로드맵",
+          "url": "https://www.grantthornton.com/insights/alerts/tax/2026/insights/the-trump-administration-new-tariff-road-map"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "CBP 최초 시행 공고의 25%·예외 확인. 이후 모든 변경 및 개별 제품 예외 재검증은 미완료.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "sec122-global",
@@ -98,9 +166,23 @@
       "rate_ko": "전 세계 10% (15% 인상 예고는 시행되지 않음). 232조 자동차 등은 제외.",
       "how_ended_ko": "법정 기한 150일이 지나 2026-07-24 만료(의회 연장 없음). 같은 날 301조 강제노동 관세로 공백 없이 대체. 2026-05-07 국제무역법원(CIT)이 권한 초과로 판단했으나 원고 3곳에만 적용.",
       "sources": [
-        {"label": "Wiley — 122조 부과와 301조 예고", "url": "https://www.wiley.law/alert-Trump-Imposes-Section-122-Tariffs-After-Halting-IEEPA-Tariffs-Previews-New-Section-301-Investigations"},
-        {"label": "NAFTZ — 122조 만료(2026-07-22)", "url": "https://www.naftz.org/section-122-tariffs-expiring-as-new-trade-actions-continue-july-22-2026/"}
-      ]
+        {
+          "label": "백악관 — 122조 임시 수입부가금 (2026-02-20)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/02/imposing-a-temporary-import-surcharge-to-address-fundamental-international-payments-problems/"
+        },
+        {
+          "label": "Wiley — 122조 부과와 301조 예고",
+          "url": "https://www.wiley.law/alert-Trump-Imposes-Section-122-Tariffs-After-Halting-IEEPA-Tariffs-Previews-New-Section-301-Investigations"
+        },
+        {
+          "label": "NAFTZ — 122조 만료(2026-07-22)",
+          "url": "https://www.naftz.org/section-122-tariffs-expiring-as-new-trade-actions-continue-july-22-2026/"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "ieepa-reciprocal",
@@ -110,11 +192,25 @@
       "started": "2025-04-05",
       "ended": "2026-02-24",
       "rate_ko": "2025-04-05 전 세계 기본 10% → 04-09 국가별 세율 발표 직후 90일 유예 → 2025-08-07 국가별 세율 시행(한국·일본·EU 15% 합의 등).",
-      "how_ended_ko": "2026-02-20 연방대법원 6:3 판결(Learning Resources v. Trump) — IEEPA는 관세 권한을 주지 않는다. CBP가 2026-02-24 입항분부터 징수 중단. 2026-03-04 국제무역법원이 전체 수입자 환급을 명령(규모·지급 상황은 자료마다 다름).",
+      "how_ended_ko": "2026-02-20 연방대법원은 IEEPA가 관세 권한을 부여하지 않는다고 판결했다. 판결과 개별 통관 징수 중단·환급 처리 시점은 별도이며, 환급을 모든 수입자에게 완료한 것으로 해석하지 않는다.",
       "sources": [
-        {"label": "판결문 — Learning Resources, Inc. v. Trump", "url": "https://supreme.justia.com/cases/federal/us/607/24-1287/"},
-        {"label": "Holland & Knight — CIT 환급 명령(2026-03)", "url": "https://www.hklaw.com/en/insights/publications/2026/03/court-of-international-trade-orders-nationwide-tariff-refunds"}
-      ]
+        {
+          "label": "연방대법원 — Learning Resources 판결 (2026-02-20)",
+          "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_new_3135.pdf"
+        },
+        {
+          "label": "판결문 — Learning Resources, Inc. v. Trump",
+          "url": "https://supreme.justia.com/cases/federal/us/607/24-1287/"
+        },
+        {
+          "label": "Holland & Knight — CIT 환급 명령(2026-03)",
+          "url": "https://www.hklaw.com/en/insights/publications/2026/03/court-of-international-trade-orders-nationwide-tariff-refunds"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "ieepa-fentanyl",
@@ -126,8 +222,19 @@
       "rate_ko": "중국 10%(2025-02-04) → 20%(03-04) → 10%(2025-11, 부산 합의). 캐나다·멕시코 25%(2025-03-04, USMCA 충족 상품 제외).",
       "how_ended_ko": "상호관세와 같은 2026-02-20 대법원 판결로 무효, 2026-02-24부터 징수 중단.",
       "sources": [
-        {"label": "Baker Donelson — IEEPA 종료와 122조 시작", "url": "https://www.bakerdonelson.com/trade-policy-shifts-ieepa-tariffs-end-section-122-begins-and-sections-301-and-232-activity-grows"}
-      ]
+        {
+          "label": "연방대법원 — Learning Resources 판결 (2026-02-20)",
+          "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_new_3135.pdf"
+        },
+        {
+          "label": "Baker Donelson — IEEPA 종료와 122조 시작",
+          "url": "https://www.bakerdonelson.com/trade-policy-shifts-ieepa-tariffs-end-section-122-begins-and-sections-301-and-232-activity-grows"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "ieepa-china-escalation",
@@ -139,8 +246,15 @@
       "rate_ko": "상호관세 34% → 84% → 125%(+펜타닐 20% = 145%).",
       "how_ended_ko": "2025-05-12 제네바 합의로 상호관세 10%로 인하(05-14 시행), 이후 휴전 연장. 남은 IEEPA 부분도 2026-02 대법원 판결로 무효.",
       "sources": [
-        {"label": "CRS — 2025 대통령 관세 조치 일지", "url": "https://www.congress.gov/crs-product/R48549"}
-      ]
+        {
+          "label": "CRS — 2025 대통령 관세 조치 일지",
+          "url": "https://www.congress.gov/crs-product/R48549"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
     },
     {
       "id": "ieepa-country-penalties",
@@ -152,78 +266,1000 @@
       "rate_ko": "브라질 40% 추가(2025-08-06), 인도 러시아산 원유 구매를 이유로 25% 추가(2025-08-27).",
       "how_ended_ko": "2026-02-20 대법원 판결로 IEEPA 관세 전부 무효. 브라질은 2026-07-22 301조 25%로 다시 부과.",
       "sources": [
-        {"label": "CRS — 2025 대통령 관세 조치 일지", "url": "https://www.congress.gov/crs-product/R48549"}
-      ]
+        {
+          "label": "연방대법원 — Learning Resources 판결 (2026-02-20)",
+          "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_new_3135.pdf"
+        },
+        {
+          "label": "CRS — 2025 대통령 관세 조치 일지",
+          "url": "https://www.congress.gov/crs-product/R48549"
+        }
+      ],
+      "verification": "needs_review",
+      "verification_note_ko": "기존 정리본. 이번 검토에서 해당 조치의 모든 수정·예외·소송을 재검증하지 않음.",
+      "calculation_ready": false,
+      "action_type": "tariff"
+    },
+    {
+      "id": "sec338-canada-motor-retaliation",
+      "authority": "338",
+      "name_ko": "캐나다 자동차 차별 대응 — 지정 제품 추가관세",
+      "status": "active",
+      "started": "2026-08-22",
+      "rate_ko": "지정 캐나다산 제품에 50% 추가. 9월 15일 대상 목록 변경·해당 조항의 232조 중첩 규칙 수정. 캐나다산 전 품목 50%라는 뜻이 아님.",
+      "scope_ko": "7월 최초 예정일 08-19는 3일 유예됨. 09-08 공고 Annex I A/B·II 및 09-29 수입금지 대상 전환을 함께 확인. 이번 카드는 자동차 차별 대응 공고 범위만 검토.",
+      "sources": [
+        {
+          "label": "백악관 — 캐나다 338조 대상 수정 (2026-09-08, 09-15 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset-canadian-discrimination-against-the-united-states-with-respect-to-motor-vehicles/"
+        },
+        {
+          "label": "백악관 — 캐나다 일부 제품 수입금지 (2026-09-08, 09-29 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued-discrimination-against-the-commerce-of-the-united-states-with-respect-to-motor-vehicles/"
+        }
+      ],
+      "country_scope": [
+        "CAN"
+      ],
+      "action_type": "tariff",
+      "verification": "primary_text_checked",
+      "verified_at": "2026-10-09",
+      "calculation_ready": false,
+      "verification_note_ko": "표시한 원문의 조항 확인. 개별 HTS 적용과 이후 전체 변경·소송 추적은 별도 검토 필요."
+    },
+    {
+      "id": "sec338-canada-motor-import-ban",
+      "authority": "338",
+      "name_ko": "캐나다 지정 제품 수입금지 — 자동차 차별 대응",
+      "status": "active",
+      "started": "2026-09-29",
+      "rate_ko": "세율이 아니라 지정 제품 수입금지. 50% 관세를 내면 수입할 수 있다는 뜻이 아님.",
+      "scope_ko": "09-08 공고 Annex 대상만 적용. 09-29 전에 수입됐으나 소비 신고 전인 물품은 50% 관세 유지 등 경과 규정. 무효 판결 시 대체관세 조항도 존재. 실제 물품은 부속서·CBP 확인.",
+      "sources": [
+        {
+          "label": "백악관 — 캐나다 일부 제품 수입금지 (2026-09-08, 09-29 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued-discrimination-against-the-commerce-of-the-united-states-with-respect-to-motor-vehicles/"
+        }
+      ],
+      "country_scope": [
+        "CAN"
+      ],
+      "action_type": "import_ban",
+      "verification": "primary_text_checked",
+      "verified_at": "2026-10-09",
+      "calculation_ready": false,
+      "verification_note_ko": "표시한 원문의 조항 확인. 개별 HTS 적용과 이후 전체 변경·소송 추적은 별도 검토 필요."
+    },
+    {
+      "id": "sec301-vietnam-ip-investigation",
+      "authority": "301",
+      "name_ko": "베트남 지식재산 보호·집행 조사",
+      "status": "investigation",
+      "started": "2026-05-29",
+      "rate_ko": "조사 개시 공고 확인. 이 조사 자체에 확정 추가세율을 입력하지 않음.",
+      "scope_ko": "USTR 조사 개시와 강제노동 301조 발효 조치를 구분. 이번 확인에서 최종 세율 결정 문서는 검증하지 않음.",
+      "sources": [
+        {
+          "label": "USTR — 베트남 지식재산 301조 조사 개시 공고 (2026-05-29)",
+          "url": "https://ustr.gov/trade-topics/enforcement/section-301-investigations/section-301-investigation-vietnams-acts-policies-and-practices-related-intellectual-property"
+        }
+      ],
+      "country_scope": [
+        "VNM"
+      ],
+      "action_type": "investigation",
+      "verification": "primary_text_checked",
+      "verified_at": "2026-10-09",
+      "calculation_ready": false,
+      "verification_note_ko": "표시한 원문의 조항 확인. 개별 HTS 적용과 이후 전체 변경·소송 추적은 별도 검토 필요."
     }
   ],
   "partners": {
     "KOR": {
       "name_ko": "한국",
-      "summary_ko": "일반 상품은 301조 강제노동 관세 12.5%(상한형). 자동차·부품·목재는 협정으로 232조 15%. 철강·알루미늄·구리는 50/25%.",
+      "summary_ko": "강제노동 301조는 기본세율과 합계 12.5%가 되도록 추가하되 기본세율이 높으면 추가 0. 232조·제품 예외와 협정은 별도 확인.",
       "lines": [
-        {"label_ko": "일반 상품", "rate_ko": "12.5% (일반세율 포함 상한, 2026-07-24~)", "authority": "301"},
-        {"label_ko": "자동차·부품·목재", "rate_ko": "15% (2025-11-01 소급, 일반세율 15% 이상이면 추가 없음)", "authority": "232"},
-        {"label_ko": "철강·알루미늄·구리", "rate_ko": "50% / 파생 25%", "authority": "232"},
-        {"label_ko": "대미 투자 약속", "rate_ko": "3,500억 달러(조선 1,500억 포함) — 2026-09 첫 사업 확정, 세부 조건 재협상 중", "authority": "협정"}
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "기본세율 <12.5%면 기본세율+이 조치=12.5%, ≥12.5%면 추가 0. 제품 예외 별도 (07-24~)",
+          "authority": "301",
+          "verification": "primary_text_checked",
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "measure_ids": [
+            "sec301-forced-labor"
+          ]
+        },
+        {
+          "label_ko": "자동차·부품·목재",
+          "rate_ko": "자동차·부품 및 일부 목제품은 15% 관련 별도 규칙. 대상·시행일이 서로 다르므로 자동차의 11월 1일 기준을 모든 목제품에 적용하지 않음. 원문 재확인 필요.",
+          "authority": "232",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "철강·알루미늄·구리",
+          "rate_ko": "품목·금속 원산지별 50/25/10% 등. 6월 Annex I-C 일부 장비에는 별도 한시 규칙. 최신 HTS 확인 필요.",
+          "authority": "232",
+          "verification": "needs_review",
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ]
+        },
+        {
+          "label_ko": "대미 투자 약속",
+          "rate_ko": "3,500억 달러(조선 1,500억 포함) — 2026-09 첫 사업 확정, 세부 조건 재협상 중",
+          "authority": "협정",
+          "verification": "needs_review"
+        }
       ],
       "sources": [
-        {"label": "The Diplomat — 한·일·대만 새 관세", "url": "https://thediplomat.com/2026/02/new-us-tariffs-same-problems-for-japan-south-korea-and-taiwan/"},
-        {"label": "Japan Times — 한국 첫 투자 사업(2026-09-22)", "url": "https://www.japantimes.co.jp/business/2026/09/22/south-korea-350-billion-us-investment/"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "The Diplomat — 한·일·대만 새 관세",
+          "url": "https://thediplomat.com/2026/02/new-us-tariffs-same-problems-for-japan-south-korea-and-taiwan/"
+        },
+        {
+          "label": "Japan Times — 한국 첫 투자 사업(2026-09-22)",
+          "url": "https://www.japantimes.co.jp/business/2026/09/22/south-korea-350-billion-us-investment/"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "항목별 확인 범위가 다름. 공식 원문 확인은 모든 현행 제품별 세율 검증을 뜻하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
     },
     "JPN": {
       "name_ko": "일본",
-      "summary_ko": "일반 상품 12.5%(상한형). 자동차·부품은 협정으로 232조 15%.",
+      "summary_ko": "강제노동 301조는 기본세율과 합계 12.5%가 되도록 추가하되 기본세율이 높으면 추가 0. 자동차 등 232조는 별도 규칙.",
       "lines": [
-        {"label_ko": "일반 상품", "rate_ko": "12.5% (일반세율 포함 상한, 2026-07-24~)", "authority": "301"},
-        {"label_ko": "자동차·부품", "rate_ko": "15% (일반세율 15% 이상이면 추가 없음)", "authority": "232"},
-        {"label_ko": "철강·알루미늄·구리", "rate_ko": "50% / 파생 25%", "authority": "232"},
-        {"label_ko": "대미 투자 약속", "rate_ko": "최대 5,500억 달러 — 2029-01-19까지, 사업 선정 진행 중", "authority": "협정"}
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "기본세율 <12.5%면 기본세율+이 조치=12.5%, ≥12.5%면 추가 0. 제품 예외 별도 (07-24~)",
+          "authority": "301",
+          "verification": "primary_text_checked",
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "measure_ids": [
+            "sec301-forced-labor"
+          ]
+        },
+        {
+          "label_ko": "자동차·부품",
+          "rate_ko": "15% (일반세율 15% 이상이면 추가 없음)",
+          "authority": "232",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "철강·알루미늄·구리",
+          "rate_ko": "품목·금속 원산지별 50/25/10% 등. 6월 Annex I-C 일부 장비에는 별도 한시 규칙. 최신 HTS 확인 필요.",
+          "authority": "232",
+          "verification": "needs_review",
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ]
+        },
+        {
+          "label_ko": "대미 투자 약속",
+          "rate_ko": "최대 5,500억 달러 — 2029-01-19까지, 사업 선정 진행 중",
+          "authority": "협정",
+          "verification": "needs_review"
+        }
       ],
       "sources": [
-        {"label": "The Diplomat — 한·일·대만 새 관세", "url": "https://thediplomat.com/2026/02/new-us-tariffs-same-problems-for-japan-south-korea-and-taiwan/"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "The Diplomat — 한·일·대만 새 관세",
+          "url": "https://thediplomat.com/2026/02/new-us-tariffs-same-problems-for-japan-south-korea-and-taiwan/"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "항목별 확인 범위가 다름. 공식 원문 확인은 모든 현행 제품별 세율 검증을 뜻하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
     },
     "TWN": {
       "name_ko": "대만",
-      "summary_ko": "일반 상품 10%(상한형). 2026-01 협정으로 자동차 부품·목재 232조 15% 상한, 반도체는 미국 투자 연계 면세 물량.",
+      "summary_ko": "강제노동 301조는 기본세율과 합계 10%가 되도록 추가하되 기본세율이 높으면 추가 0. 반도체·부품 협정의 실제 품목·시행 조건은 별도 확인.",
       "lines": [
-        {"label_ko": "일반 상품", "rate_ko": "10% (일반세율 포함 상한, 2026-07-24~)", "authority": "301"},
-        {"label_ko": "자동차 부품·목재", "rate_ko": "15% 상한 (2026-05-28 확정, 05-01 소급)", "authority": "232"},
-        {"label_ko": "반도체", "rate_ko": "첨단 반도체 25% 대상 — 미국 내 증설 기업은 건설 기간 계획 생산능력의 2.5배까지 면세", "authority": "232"},
-        {"label_ko": "철강·알루미늄·구리", "rate_ko": "50% / 파생 25%", "authority": "232"}
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "기본세율 <10%면 기본세율+이 조치=10%, ≥10%면 추가 0. 제품 예외 별도 (07-24~)",
+          "authority": "301",
+          "verification": "primary_text_checked",
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "measure_ids": [
+            "sec301-forced-labor"
+          ]
+        },
+        {
+          "label_ko": "자동차 부품·목재",
+          "rate_ko": "15% 상한 (2026-05-28 확정, 05-01 소급)",
+          "authority": "232",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "반도체",
+          "rate_ko": "첨단 반도체 25% 대상 — 미국 내 증설 기업은 건설 기간 계획 생산능력의 2.5배까지 면세",
+          "authority": "232",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "철강·알루미늄·구리",
+          "rate_ko": "품목·금속 원산지별 50/25/10% 등. 6월 Annex I-C 일부 장비에는 별도 한시 규칙. 최신 HTS 확인 필요.",
+          "authority": "232",
+          "verification": "needs_review",
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ]
+        }
       ],
       "sources": [
-        {"label": "상무부 — 대만 협정 팩트시트", "url": "https://www.commerce.gov/news/fact-sheets/2026/01/fact-sheet-restoring-american-semiconductor-manufacturing-leadership"},
-        {"label": "Manufacturing Dive — 대만 15%(부품·목재)", "url": "https://www.manufacturingdive.com/news/us-sets-taiwan-tariffs-at-15-on-auto-parts-wood-aircraft-parts/821581/"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "상무부 — 대만 협정 팩트시트",
+          "url": "https://www.commerce.gov/news/fact-sheets/2026/01/fact-sheet-restoring-american-semiconductor-manufacturing-leadership"
+        },
+        {
+          "label": "Manufacturing Dive — 대만 15%(부품·목재)",
+          "url": "https://www.manufacturingdive.com/news/us-sets-taiwan-tariffs-at-15-on-auto-parts-wood-aircraft-parts/821581/"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "항목별 확인 범위가 다름. 공식 원문 확인은 모든 현행 제품별 세율 검증을 뜻하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
     },
     "CHN": {
       "name_ko": "중국",
-      "summary_ko": "기존 301조(7.5~100%)에 강제노동 301조 12.5%가 더해짐. IEEPA 펜타닐·상호관세는 무효. 휴전은 2027-01-10까지(발표 기준).",
+      "summary_ko": "강제노동 301조 12.5%와 기존 중국 301조를 구분한다. 품목 예외·232조 중첩 확인 필요. 휴전 발표만으로 적용세율을 낮추지 않는다.",
       "lines": [
-        {"label_ko": "일반 상품", "rate_ko": "기존 301조 7.5~25% + 12.5% (2026-07-24~)", "authority": "301"},
-        {"label_ko": "전략 품목 (전기차·반도체 등)", "rate_ko": "301조 최대 100%", "authority": "301"},
-        {"label_ko": "철강·알루미늄·구리·자동차", "rate_ko": "232조 50% / 25%", "authority": "232"},
-        {"label_ko": "휴전", "rate_ko": "2027-01-10까지 연장 발표(2026-09-24). 9월 정상회담 관세 인하 품목은 시행 전·확인 필요", "authority": "협정"}
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "강제노동 301조 12.5% 추가(07-24~). 기존 중국 301조는 해당 HTS·예외에 따라 별도 확인.",
+          "authority": "301",
+          "verification": "primary_text_checked",
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "measure_ids": [
+            "sec301-forced-labor",
+            "sec301-china"
+          ]
+        },
+        {
+          "label_ko": "전략 품목 (전기차·반도체 등)",
+          "rate_ko": "301조 최대 100%",
+          "authority": "301",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "철강·알루미늄·구리·자동차",
+          "rate_ko": "품목·금속 원산지별 50/25/10% 등. 6월 Annex I-C 일부 장비에는 별도 한시 규칙. 최신 HTS 확인 필요.",
+          "authority": "232",
+          "verification": "needs_review",
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ]
+        },
+        {
+          "label_ko": "휴전",
+          "rate_ko": "2027-01-10까지 연장 발표(2026-09-24). 9월 정상회담 관세 인하 품목은 시행 전·확인 필요",
+          "authority": "협정",
+          "verification": "needs_review"
+        }
       ],
       "sources": [
-        {"label": "CNBC — 휴전 연장", "url": "https://www.cnbc.com/2026/09/24/us-china-trade-truce-bessent-trump-xi.html"},
-        {"label": "Global Trade Alert — 강제노동 301조", "url": "https://globaltradealert.org/blog/forced-labour-section-301-final-action"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "CNBC — 휴전 연장",
+          "url": "https://www.cnbc.com/2026/09/24/us-china-trade-truce-bessent-trump-xi.html"
+        },
+        {
+          "label": "Global Trade Alert — 강제노동 301조",
+          "url": "https://globaltradealert.org/blog/forced-labour-section-301-final-action"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "항목별 확인 범위가 다름. 공식 원문 확인은 모든 현행 제품별 세율 검증을 뜻하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
     },
     "DEU": {
       "name_ko": "독일 (EU 공통)",
-      "summary_ko": "EU 단위로 적용. 일반 상품 10%(상한형), 자동차·부품 15%. 철강·알루미늄은 50%.",
+      "summary_ko": "독일은 EU 적용 범위로 검토. 강제노동 301조는 기본세율과 합계 10%가 되도록 추가하되 기본세율이 높으면 추가 0. 자동차·금속은 별도 규칙.",
       "lines": [
-        {"label_ko": "일반 상품", "rate_ko": "10% (일반세율 포함 상한, 2026-07-24~)", "authority": "301"},
-        {"label_ko": "자동차·부품", "rate_ko": "15% 또는 일반세율 중 높은 쪽 (2025-08-01 소급). 2026-05 25% 재인상 위협은 미시행", "authority": "232"},
-        {"label_ko": "철강·알루미늄·구리", "rate_ko": "50% / 파생 25%", "authority": "232"}
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "기본세율 <10%면 기본세율+이 조치=10%, ≥10%면 추가 0. 제품 예외 별도 (07-24~)",
+          "authority": "301",
+          "verification": "primary_text_checked",
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "measure_ids": [
+            "sec301-forced-labor"
+          ]
+        },
+        {
+          "label_ko": "자동차·부품",
+          "rate_ko": "15% 또는 일반세율 중 높은 쪽 (2025-08-01 소급). 2026-05 25% 재인상 위협은 미시행",
+          "authority": "232",
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "철강·알루미늄·구리",
+          "rate_ko": "품목·금속 원산지별 50/25/10% 등. 6월 Annex I-C 일부 장비에는 별도 한시 규칙. 최신 HTS 확인 필요.",
+          "authority": "232",
+          "verification": "needs_review",
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ]
+        }
       ],
       "sources": [
-        {"label": "Legal500 — EU 협정 이행", "url": "https://www.legal500.com/intelligence/united-states/international-law/us-implements-eu-trade-deal-reducing-tariffs-on-eu-autos-&-parts-and-eliminating-tariffs-on-certain-other-products"},
-        {"label": "EY — 강제노동 301조 국가별 세율", "url": "https://taxnews.ey.com/news/2026-1607-ustr-finalizes-section-301-forced-labor-tariffs-on-60-economies-additional-tariffs-of-10-percent-or-125-percent-take-effect-24-july-2026"}
-      ]
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "Legal500 — EU 협정 이행",
+          "url": "https://www.legal500.com/intelligence/united-states/international-law/us-implements-eu-trade-deal-reducing-tariffs-on-eu-autos-&-parts-and-eliminating-tariffs-on-certain-other-products"
+        },
+        {
+          "label": "EY — 강제노동 301조 국가별 세율",
+          "url": "https://taxnews.ey.com/news/2026-1607-ustr-finalizes-section-301-forced-labor-tariffs-on-60-economies-additional-tariffs-of-10-percent-or-125-percent-take-effect-24-july-2026"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "항목별 확인 범위가 다름. 공식 원문 확인은 모든 현행 제품별 세율 검증을 뜻하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
+    },
+    "VNM": {
+      "name_ko": "베트남",
+      "summary_ko": "강제노동 301조 12.5% 추가가 기본 출발점이며 제품 예외·232조 적용을 먼저 확인한다. 지식재산 조사와 발효 관세는 별도 표시.",
+      "lines": [
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "12.5% 추가(2026-07-24~). 기본세율·다른 조치 별도, Annex 및 232조 대상 제외.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-forced-labor"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "금속·파생제품",
+          "rate_ko": "50/25/10% 등 대상 목록별 규칙. 6월 일부 장비의 한시 규칙과 후속 개정 확인 필요.",
+          "authority": "232",
+          "measure_ids": [
+            "sec232-metals"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "지식재산 조사",
+          "rate_ko": "조사 개시 확인(2026-05-29). 확정 세율로 표시하지 않음.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-vietnam-ip-investigation"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 베트남 지식재산 301조 조사 개시 공고 (2026-05-29)",
+              "url": "https://ustr.gov/trade-topics/enforcement/section-301-investigations/section-301-investigation-vietnams-acts-policies-and-practices-related-intellectual-property"
+            }
+          ],
+          "verification": "primary_text_checked"
+        }
+      ],
+      "sources": [
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "USTR — 베트남 지식재산 301조 조사 개시 공고 (2026-05-29)",
+          "url": "https://ustr.gov/trade-topics/enforcement/section-301-investigations/section-301-investigation-vietnams-acts-policies-and-practices-related-intellectual-property"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "지정 공고 범위의 선택 검토. 국가의 모든 조치·HTS·기업별 AD/CVD를 포괄하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
+    },
+    "MEX": {
+      "name_ko": "멕시코",
+      "summary_ko": "강제노동 301조 일반 추가세율 10%, USMCA 무관세 신고품 예외. 협정 원산지만으로 모든 무역구제 조치가 없어지는 것은 아님.",
+      "lines": [
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "10% 추가(2026-07-24~). USMCA 무관세 신고품 및 제품 예외 제외.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-forced-labor"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "USMCA 무관세 신고",
+          "rate_ko": "무관세로 신고되는 적격품은 강제노동 301조 추가관세 제외. 232조·338조·AD/CVD 전체 면제는 아님.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-forced-labor"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "자동차·부품",
+          "rate_ko": "232조 별도 적용. USMCA 자동차의 미국산 가치 공제·부품 요건 등 원문 및 후속 규칙 확인. 일괄 0%로 계산하지 않음.",
+          "authority": "232",
+          "measure_ids": [
+            "sec232-autos"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+            }
+          ],
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "금속·파생제품",
+          "rate_ko": "50/25/10% 등 대상 목록별 규칙. 6월 일부 장비의 한시 규칙과 후속 개정 확인 필요.",
+          "authority": "232",
+          "measure_ids": [
+            "sec232-metals"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ],
+          "verification": "primary_text_checked"
+        }
+      ],
+      "sources": [
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "지정 공고 범위의 선택 검토. 국가의 모든 조치·HTS·기업별 AD/CVD를 포괄하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
+    },
+    "CAN": {
+      "name_ko": "캐나다",
+      "summary_ko": "강제노동 301조 일반 10% 추가·USMCA 예외와 232조를 구분한다. 별도로 지정 제품 338조 50% 및 일부 수입금지 존재. 전 품목 세율은 아님.",
+      "lines": [
+        {
+          "label_ko": "일반 상품",
+          "rate_ko": "10% 추가(2026-07-24~). USMCA 무관세 신고품 및 제품 예외 제외.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-forced-labor"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "USMCA 무관세 신고",
+          "rate_ko": "무관세로 신고되는 적격품은 강제노동 301조 추가관세 제외. 232조·338조·AD/CVD 전체 면제는 아님.",
+          "authority": "301",
+          "measure_ids": [
+            "sec301-forced-labor"
+          ],
+          "sources": [
+            {
+              "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+              "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "자동차·부품",
+          "rate_ko": "232조 별도 적용. USMCA 자동차의 미국산 가치 공제·부품 요건 등 원문 및 후속 규칙 확인. 일괄 0%로 계산하지 않음.",
+          "authority": "232",
+          "measure_ids": [
+            "sec232-autos"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+            }
+          ],
+          "verification": "needs_review"
+        },
+        {
+          "label_ko": "금속·파생제품",
+          "rate_ko": "50/25/10% 등 대상 목록별 규칙. 6월 일부 장비의 한시 규칙과 후속 개정 확인 필요.",
+          "authority": "232",
+          "measure_ids": [
+            "sec232-metals"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            },
+            {
+              "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "지정 제품 추가관세",
+          "rate_ko": "50% 추가(08-22~). 09-15 목록·중첩 규칙 수정; 해당 부속서 확인.",
+          "authority": "338",
+          "measure_ids": [
+            "sec338-canada-motor-retaliation"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 캐나다 338조 대상 수정 (2026-09-08, 09-15 시행)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/09/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset-canadian-discrimination-against-the-united-states-with-respect-to-motor-vehicles/"
+            }
+          ],
+          "verification": "primary_text_checked"
+        },
+        {
+          "label_ko": "지정 제품 수입금지",
+          "rate_ko": "09-29~ 지정 제품 금지. 관세 계산과 별도 처리; 경과 규정 존재.",
+          "authority": "338",
+          "measure_ids": [
+            "sec338-canada-motor-import-ban"
+          ],
+          "sources": [
+            {
+              "label": "백악관 — 캐나다 일부 제품 수입금지 (2026-09-08, 09-29 시행)",
+              "url": "https://www.whitehouse.gov/presidential-actions/2026/09/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued-discrimination-against-the-commerce-of-the-united-states-with-respect-to-motor-vehicles/"
+            }
+          ],
+          "verification": "primary_text_checked"
+        }
+      ],
+      "sources": [
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 금속 232조 수정·Annex I-C (2026-06-01)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/06/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 캐나다 338조 대상 수정 (2026-09-08, 09-15 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset-canadian-discrimination-against-the-united-states-with-respect-to-motor-vehicles/"
+        },
+        {
+          "label": "백악관 — 캐나다 일부 제품 수입금지 (2026-09-08, 09-29 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued-discrimination-against-the-commerce-of-the-united-states-with-respect-to-motor-vehicles/"
+        }
+      ],
+      "verified_at": "2026-10-09",
+      "coverage_ko": "지정 공고 범위의 선택 검토. 국가의 모든 조치·HTS·기업별 AD/CVD를 포괄하지 않음.",
+      "legal_tool_ids": [
+        "section232",
+        "section301",
+        "section338",
+        "section201",
+        "ad_cvd",
+        "section307",
+        "section337",
+        "ecra_ear",
+        "ieepa_sanctions",
+        "section122"
+      ],
+      "legal_tools_note_ko": "아래는 법정 요건과 개별 절차를 확인할 검토 목록이다. 이 국가에 모두 적용 중이거나 대통령이 즉시 발동할 수 있다는 뜻이 아니다."
     }
-  }
+  },
+  "audit": {
+    "checked_at": "2026-10-09",
+    "status": "partial",
+    "scope_ko": "강제노동 301조 국가별 세율·USMCA 예외, 금속 232조 4월·6월 수정, 캐나다 자동차 차별 대응 338조 및 베트남 IP 조사 개시를 공식 원문으로 확인. 모든 현행 HTS·소송·기업별 AD/CVD를 전수 확인한 자료는 아님."
+  },
+  "legal_tools": [
+    {
+      "id": "section232",
+      "name_ko": "232조 · 국가안보 품목 조정",
+      "legal_basis": "19 U.S.C. 1862",
+      "availability": "conditional",
+      "trigger_ko": "수입이 국가안보를 해칠 우려라는 법정 판단",
+      "procedure_ko": "상무부 조사·보고 → 대통령 결정 → 포고·부속서·시행 지침 확인",
+      "effect_ko": "품목별 관세·쿼터 등. 국가명만으로 세율 확정 불가.",
+      "sources": [
+        {
+          "label": "백악관 — 금속 232조 개편 (2026-04-02)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/04/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states/"
+        },
+        {
+          "label": "백악관 — 자동차 232조·USMCA 규칙 (2025-03-26)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section301",
+      "name_ko": "301조 · 불공정 무역 대응",
+      "legal_basis": "19 U.S.C. 2411–2420",
+      "availability": "conditional",
+      "trigger_ko": "외국의 문제 행위·정책·관행에 대한 USTR 판단",
+      "procedure_ko": "조사·협의·의견 수렴 → 결정·대상 목록·시행일",
+      "effect_ko": "국가·제품별 추가관세 등. 조사 개시와 발효는 별도.",
+      "sources": [
+        {
+          "label": "USTR — 강제노동 301조 최종 공고·부속서 (2026-07-23)",
+          "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FLIP%20301%20Investigation%20Final%20Action%20FRN%207-23-26%20FINAL.pdf"
+        },
+        {
+          "label": "USTR — 베트남 지식재산 301조 조사 개시 공고 (2026-05-29)",
+          "url": "https://ustr.gov/trade-topics/enforcement/section-301-investigations/section-301-investigation-vietnams-acts-policies-and-practices-related-intellectual-property"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section338",
+      "name_ko": "338조 · 외국의 차별 대응",
+      "legal_basis": "19 U.S.C. 1338",
+      "availability": "conditional",
+      "trigger_ko": "미국 상거래에 불합리·차별적인 부담을 주는 외국 조치에 대한 판단",
+      "procedure_ko": "대통령 사실 판단·포고 → 최초 추가관세는 포고 후 최소 30일 → 수정·후속 조치 확인",
+      "effect_ko": "추가관세 최대 50%. 차별이 유지·강화되고 별도 요건 충족 시 수입배제 가능. 캐나다 사례를 다른 국가에 자동 적용하지 않음.",
+      "sources": [
+        {
+          "label": "백악관 — 캐나다 338조 대상 수정 (2026-09-08, 09-15 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset-canadian-discrimination-against-the-united-states-with-respect-to-motor-vehicles/"
+        },
+        {
+          "label": "백악관 — 캐나다 일부 제품 수입금지 (2026-09-08, 09-29 시행)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/09/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued-discrimination-against-the-commerce-of-the-united-states-with-respect-to-motor-vehicles/"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section201",
+      "name_ko": "201조 · 세이프가드",
+      "legal_basis": "19 U.S.C. 2251–2254",
+      "availability": "conditional",
+      "trigger_ko": "수입 증가가 미국 산업의 심각한 피해의 실질적 원인이라는 판단",
+      "procedure_ko": "USITC 조사·피해 판정 및 구제 권고 → 대통령 결정",
+      "effect_ko": "한시 관세·쿼터 등. 원산지·FTA·개도국 예외를 조치별 확인.",
+      "sources": [
+        {
+          "label": "USITC — 201조 조사",
+          "url": "https://www.usitc.gov/understanding_section_201_safeguard_investigations.htm"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "ad_cvd",
+      "name_ko": "반덤핑·상계관세",
+      "legal_basis": "19 U.S.C. 1671 et seq.; 1673 et seq.",
+      "availability": "conditional",
+      "trigger_ko": "덤핑 또는 상계 가능한 보조금 및 법정 산업피해 요건",
+      "procedure_ko": "상무부 가격·보조금 조사 + USITC 피해 조사 → 명령·기업별 예치율·연례 재심",
+      "effect_ko": "제품 서술 범위·생산자/수출자 조합별 예치 부담. 예치율은 최종 확정세액과 다를 수 있음.",
+      "sources": [
+        {
+          "label": "상무부 — AD/CVD 조사·예치율·사후 정산",
+          "url": "https://www.trade.gov/faq/faqs-final-determination-antidumping-duty-andor-countervailing-duty-investigation"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section307",
+      "name_ko": "307조 · 강제노동 생산품 차단",
+      "legal_basis": "19 U.S.C. 1307",
+      "availability": "conditional",
+      "trigger_ko": "강제노동으로 전부 또는 일부 생산된 물품에 대한 증거",
+      "procedure_ko": "CBP 보류명령·판정 및 개별 물품의 입증 절차 확인",
+      "effect_ko": "보류·수입배제. 국가 전체 추가관세인 강제노동 301조와 다른 수단.",
+      "sources": [
+        {
+          "label": "CBP 자료 — 강제노동 수입금지 근거",
+          "url": "https://www.govinfo.gov/content/pkg/GOVPUB-T-PURL-LPS12191/pdf/GOVPUB-T-PURL-LPS12191.pdf"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section337",
+      "name_ko": "337조 · 지식재산 등 불공정 수입",
+      "legal_basis": "19 U.S.C. 1337",
+      "availability": "conditional",
+      "trigger_ko": "지식재산 침해 등 불공정 행위 및 유형별 법정 요건",
+      "procedure_ko": "USITC 조사·심리·판정 → 구제 명령·정책 검토",
+      "effect_ko": "배제명령·중지명령. 338조와 다르며 국가 단일 관세가 아님.",
+      "sources": [
+        {
+          "label": "USITC — 337조",
+          "url": "https://www.usitc.gov/intellectual_property/about_section_337.htm"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "ecra_ear",
+      "name_ko": "ECRA / EAR · 수출·재수출 통제",
+      "legal_basis": "50 U.S.C. 4801–4852; 15 CFR 730–774",
+      "availability": "conditional",
+      "trigger_ko": "물품·기술의 관할, 분류, 목적지, 최종사용자·용도 요건",
+      "procedure_ko": "BIS 규정·목록·허가 요건과 예외 확인",
+      "effect_ko": "수출·재수출·국내 이전 허가 또는 제한. 미국 수입관세와 방향이 다름.",
+      "sources": [
+        {
+          "label": "BIS — ECRA에 따른 통제",
+          "url": "https://www.bis.gov/emerging-technologies"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "ieepa_sanctions",
+      "name_ko": "IEEPA · 경제제재 (관세 권한과 구분)",
+      "legal_basis": "50 U.S.C. 1701–1708",
+      "availability": "conditional",
+      "trigger_ko": "법정 요건을 갖춘 국가비상사태·제재 프로그램",
+      "procedure_ko": "대통령 명령 → OFAC 프로그램·지정·일반/개별 허가 확인",
+      "effect_ko": "거래·자산·금융 제한. IEEPA 관세 권한은 대법원 판결과 구분하여 현재 관세 계산에 사용하지 않음.",
+      "sources": [
+        {
+          "label": "OFAC — 제재 안내",
+          "url": "https://ofac.treasury.gov/faqs/topic/1501"
+        },
+        {
+          "label": "연방대법원 — Learning Resources 판결 (2026-02-20)",
+          "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_new_3135.pdf"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    },
+    {
+      "id": "section122",
+      "name_ko": "122조 · 국제수지 임시 조치",
+      "legal_basis": "19 U.S.C. 2132",
+      "availability": "conditional",
+      "trigger_ko": "법정 국제수지 문제에 대한 요건 충족",
+      "procedure_ko": "대통령 임시 조치·예외 확인; 150일 이후 연장은 의회 법률 필요",
+      "effect_ko": "임시 부가금 최대 15%·150일 및 수입 제한 수단. 2026년 2월 조치 만료와 법률상 권한의 존속은 별도.",
+      "sources": [
+        {
+          "label": "백악관 — 122조 임시 수입부가금 (2026-02-20)",
+          "url": "https://www.whitehouse.gov/presidential-actions/2026/02/imposing-a-temporary-import-surcharge-to-address-fundamental-international-payments-problems/"
+        }
+      ],
+      "assumed_rate": null,
+      "calculation_ready": false
+    }
+  ]
 }
