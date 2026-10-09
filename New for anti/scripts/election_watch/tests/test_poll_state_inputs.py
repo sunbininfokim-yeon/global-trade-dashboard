@@ -71,7 +71,8 @@ class StateInputTests(unittest.TestCase):
     def test_state_pr_cannot_reintroduce_shared_files(self):
         packet = PACKETS+'CT.json'
         for shared in ('New for anti/public/data/usa_election_live_polls_v1.json',
-                       'New for anti/scripts/election_watch/election_watch/live_polls.py', 'docs/ops/TASKS.md'):
+                       'New for anti/scripts/election_watch/election_watch/live_polls.py', 'docs/ops/TASKS.md',
+                       'New for anti/public/data/usa_election_state_evidence/2026/CT-new.json'):
             self.assertEqual(violations([packet, shared], 'codex/ct-evidence-next'), [shared])
         self.assertFalse(violations([packet], 'codex/ct-evidence-next'))
         self.assertFalse(violations([packet, shared], INTEGRATION))

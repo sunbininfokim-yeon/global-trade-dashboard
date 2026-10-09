@@ -27,7 +27,8 @@ def violations(changed, branch):
         return []  # One explicitly authorized platform integration, not a state task.
     packet_changes = [f for f in changed if f.startswith(PACKETS) and f.endswith('.json')]
     state_task = bool(packet_changes) or bool(__import__('re').search(r'codex/[a-z]{2}-(?:state-)?evidence-', branch))
-    return sorted(set(changed) & SHARED) if state_task else []
+    return sorted(f for f in set(changed) if f in SHARED or
+                  f.startswith(PREFIX+'public/data/usa_election_state_evidence/')) if state_task else []
 
 
 def main():
