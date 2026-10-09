@@ -57,3 +57,7 @@
 - GitHub 검사 결과는 #489 본문에 갱신한다. 검증용 PR 이벤트에서는 refresh job이 건너뛰어 main 수집과 배포를 촉발하지 않는다.
 
 TASK: `T-HOUSE-POLL-FOCUS-20261008`, `T-POLL-DAILY-20261008`.
+
+## GitHub 비교 기준 갱신
+
+첫 업로드의 polling validate는 통과했다(run37917926313). 소유권 guard는 PR에 남아 있던 과거 base SHA `2f941657`로 비교해 이미 main에 있는 매크로/UI/workflow 변경을 이번 PR 변경으로 잡았다. GitHub PR의 base를 main으로 다시 지정해 현재 비교 기준을 갱신했다. 예외 경로는 늘리지 않았고 이번 PR의 실제 main 대비 변경은 여전히 polling workflow 한 개뿐이다. 갱신 후 검사 결과는 PR 본문을 따른다.
