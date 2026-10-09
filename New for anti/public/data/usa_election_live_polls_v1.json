@@ -84,12 +84,12 @@
       "WY"
     ],
     "race_count": 506,
-    "accepted_observations": 119,
-    "excluded_observations": 729,
-    "aggregation_eligible_observations": 91,
+    "accepted_observations": 121,
+    "excluded_observations": 727,
+    "aggregation_eligible_observations": 93,
     "reference_only_observations": 28,
     "exclusion_reasons": {
-      "pollster_not_selected": 514,
+      "pollster_not_selected": 502,
       "outside_reviewed_general_period": 113,
       "unregistered_primary_host": 60,
       "unreviewed_matchup": 2,
@@ -113,12 +113,16 @@
       "historical_pre_primary_poll_not_current_signal": 2,
       "primary_methodology_not_obtained_pre_primary_reference": 1,
       "primary_methodology_sample_not_obtained": 1,
-      "primary_provider_population_conflict": 1,
+      "primary_provider_population_conflict": 4,
       "primary_population_sample_mapping_required": 1,
       "pre_primary_historical_poll_not_general_signal": 1,
-      "missing_sample_and_primary_methodology": 1
+      "missing_sample_and_primary_methodology": 1,
+      "pre_primary_historical_poll_primary_methodology_not_obtained": 1,
+      "generic_party_ballot_not_named_race": 2,
+      "missing_lv_question_sample_and_pre_primary_hypothetical_field": 3,
+      "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference": 1
     },
-    "displayed_observations": 119
+    "displayed_observations": 121
   },
   "watchlist": {
     "reviewed_on": "2026-10-05",
@@ -18510,25 +18514,73 @@
       "poll_type": "us-representative",
       "seat_name": "VA-02",
       "contest_id": "USA:VA:house:02:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Elaine Luria",
-        "Jennifer Kiggans"
+        "Elaine G. Luria",
+        "Jen A. Kiggans"
       ],
       "candidates": {
+        "Elaine G. Luria": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Elaine G. Luria"
+        },
         "Elaine Luria": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Elaine Luria"
+          "canonical_name": "Elaine G. Luria"
+        },
+        "Jen A. Kiggans": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Jen A. Kiggans"
+        },
+        "Jennifer A. \"Jen\" Kiggans": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Jen A. Kiggans"
         },
         "Jennifer Kiggans": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Jennifer Kiggans"
+          "canonical_name": "Jen A. Kiggans"
+        },
+        "Jen Kiggans": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Jen A. Kiggans"
+        },
+        "Geral D. \"Bishop\" Staten": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Geral D. \"Bishop\" Staten"
+        },
+        "Geral Defrance \"Bishop\" Staten": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Geral D. \"Bishop\" Staten"
+        },
+        "J. Matt Baker": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "J. Matt Baker"
+        },
+        "J. Matthew \"Matt\" Baker": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "J. Matt Baker"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -18545,17 +18597,19 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
-        "candidate_count": 2,
+        "candidate_count": 4,
         "parties": [
           "DEM",
+          "IND",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -18563,18 +18617,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:02",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -18605,8 +18659,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -18638,10 +18692,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:WI:house:03": {
       "state": "WI",
@@ -22037,25 +22091,43 @@
       "poll_type": "us-representative",
       "seat_name": "VA-01",
       "contest_id": "USA:VA:house:01:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Shannon Taylor",
-        "Rob Wittman"
+        "Shannon L. Taylor",
+        "Robert J. \"Rob\" Wittman"
       ],
       "candidates": {
+        "Shannon L. Taylor": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Shannon L. Taylor"
+        },
+        "Shannon Leigh Taylor": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Shannon L. Taylor"
+        },
         "Shannon Taylor": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Shannon Taylor"
+          "canonical_name": "Shannon L. Taylor"
+        },
+        "Robert J. \"Rob\" Wittman": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Robert J. \"Rob\" Wittman"
         },
         "Rob Wittman": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Rob Wittman"
+          "canonical_name": "Robert J. \"Rob\" Wittman"
         }
       },
       "selection_reason_ko": "접전 선거 조사 발견 우선순위. 대진 미검증 시 자동 수치 편입 보류.",
@@ -22072,6 +22144,7 @@
           "cook_toss_up_and_lean"
         ]
       },
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 2,
@@ -22079,10 +22152,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -22090,18 +22163,127 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:01",
-      "observations": [],
+      "observations": [
+        {
+          "id": "us-202the7176ba8a",
+          "race_id": "USA:VA:house:01",
+          "contest_id": "USA:VA:house:01:2026:general",
+          "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
+          "pollster_group": "washington_post_schar",
+          "field_start": "2026-09-23",
+          "field_end": "2026-09-28",
+          "provider_record_date": "2026-10-01",
+          "population": "lv",
+          "sample_n": 609,
+          "answers": [
+            {
+              "name": "Rob Wittman",
+              "pct": 46.0,
+              "party": "REP"
+            },
+            {
+              "name": "Shannon Taylor",
+              "pct": 50.0,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+              "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/"
+            ],
+            "primary_toplines": {
+              "Rob Wittman": 46.0,
+              "Shannon Taylor": 50.0
+            },
+            "question_sample_n": 609,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-23",
+                "2026-09-28"
+              ],
+              "geographic_scope": "VA-01_only",
+              "sample_n": 609,
+              "question_sample_n": 609,
+              "mode": {
+                "live_cellphone_pct": 64,
+                "live_landline_pct": 10,
+                "text_to_web_pct": 26
+              },
+              "mode_share_scope": "both districts pooled; district-specific shares not reported",
+              "sampling_frame": "stratified random samples of registered voters from Aristotle voter file; Braun Research interviewing/data processing",
+              "LV_method": "All RV assigned probability of voting; same total sample n as RV, not a separate LV subsample",
+              "question_number": 2,
+              "question_order": "vote likelihood then named ballot; candidate favorability, issues and information questions later",
+              "question_wording_checked": true,
+              "includes_leaners_and_already_voted": true,
+              "weighting": "district-specific race/ethnicity, education, gender-age, inferred party, turnout history/method, region, recalled 2024 presidential choice",
+              "design_effect": 1.31,
+              "non_candidate_responses": {
+                "someone_else": "less_than_0.5_percent",
+                "would_not_vote": 1,
+                "no_opinion_or_skipped": 3
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error_including_design_effect",
+              "half_width_pp": 4.5,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "named_two_candidate_ballot_including_leaners_and_already_voted",
+            "sponsor_review": {
+              "primary_commissioners": [
+                "The Washington Post",
+                "George Mason University Schar School of Policy and Government"
+              ],
+              "jointly_sponsored_and_funded": true,
+              "primary_internal": false,
+              "provider_sponsors": []
+            },
+            "limitations_ko": "2후보·기타응답·미정층과 기투표/기울임 포함을 유지. 수치상 우세만 집계하며 오차범위 내 차이를 당선·통계적 유의성으로 해석하지 않습니다. 기관의 미래 발표를 일괄 승인하지 않습니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -22132,43 +22314,120 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
-          "population": null,
-          "status": "no_recent_poll",
-          "party": null,
-          "leader": null,
+          "from": "2026-09-26",
+          "through": "2026-10-09",
+          "population": "lv",
+          "status": "single_poll_lead",
+          "party": "DEM",
+          "leader": "Shannon Taylor",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
+          "poll_details": [
+            {
+              "id": "us-202the7176ba8a",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-09",
+                "review_sources": [
+                  "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+                  "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/"
+                ],
+                "primary_toplines": {
+                  "Rob Wittman": 46.0,
+                  "Shannon Taylor": 50.0
+                },
+                "question_sample_n": 609,
+                "disclosure_review": {
+                  "population": "LV",
+                  "field_dates": [
+                    "2026-09-23",
+                    "2026-09-28"
+                  ],
+                  "geographic_scope": "VA-01_only",
+                  "sample_n": 609,
+                  "question_sample_n": 609,
+                  "mode": {
+                    "live_cellphone_pct": 64,
+                    "live_landline_pct": 10,
+                    "text_to_web_pct": 26
+                  },
+                  "mode_share_scope": "both districts pooled; district-specific shares not reported",
+                  "sampling_frame": "stratified random samples of registered voters from Aristotle voter file; Braun Research interviewing/data processing",
+                  "LV_method": "All RV assigned probability of voting; same total sample n as RV, not a separate LV subsample",
+                  "question_number": 2,
+                  "question_order": "vote likelihood then named ballot; candidate favorability, issues and information questions later",
+                  "question_wording_checked": true,
+                  "includes_leaners_and_already_voted": true,
+                  "weighting": "district-specific race/ethnicity, education, gender-age, inferred party, turnout history/method, region, recalled 2024 presidential choice",
+                  "design_effect": 1.31,
+                  "non_candidate_responses": {
+                    "someone_else": "less_than_0.5_percent",
+                    "would_not_vote": 1,
+                    "no_opinion_or_skipped": 3
+                  }
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_error_including_design_effect",
+                  "half_width_pp": 4.5,
+                  "confidence_level_pct": null,
+                  "validated_here": false
+                },
+                "ballot_format": "named_two_candidate_ballot_including_leaners_and_already_voted",
+                "sponsor_review": {
+                  "primary_commissioners": [
+                    "The Washington Post",
+                    "George Mason University Schar School of Policy and Government"
+                  ],
+                  "jointly_sponsored_and_funded": true,
+                  "primary_internal": false,
+                  "provider_sponsors": []
+                },
+                "limitations_ko": "2후보·기타응답·미정층과 기투표/기울임 포함을 유지. 수치상 우세만 집계하며 오차범위 내 차이를 당선·통계적 유의성으로 해석하지 않습니다. 기관의 미래 발표를 일괄 승인하지 않습니다."
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "reference_ids": [],
           "reference_poll_count": 0,
           "reference_details": [],
           "status_note_ko": null,
-          "lead_counts": {},
+          "lead_counts": {
+            "Shannon Taylor": 1
+          },
           "tie_count": 0,
-          "pollster_count": 0,
-          "included_ids": [],
+          "pollster_count": 1,
+          "included_ids": [
+            "us-202the7176ba8a"
+          ],
           "conflicting_pollsters": [],
-          "latest_field_end": null
+          "latest_field_end": "2026-09-28"
         }
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:WI:house:01": {
       "state": "WI",
@@ -80560,37 +80819,49 @@
       "poll_type": "us-representative",
       "seat_name": "VA-03",
       "contest_id": "USA:VA:house:03:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Robert Cortez \"Bobby\" Scott",
+        "Robert C. \"Bobby\" Scott",
         "Edwin Rivera, Jr."
       ],
       "candidates": {
+        "Robert C. \"Bobby\" Scott": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Robert C. \"Bobby\" Scott"
+        },
         "Robert Cortez \"Bobby\" Scott": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Robert Cortez \"Bobby\" Scott"
+          "canonical_name": "Robert C. \"Bobby\" Scott"
         },
         "Edwin Rivera, Jr.": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Edwin Rivera, Jr."
         },
         "Makiba A. Gaines": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Makiba A. Gaines"
         },
+        "Stephen C. Woll": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Stephen C. Woll"
+        },
         "Stephen C. \"Steve\" Woll": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Stephen C. \"Steve\" Woll"
+          "canonical_name": "Stephen C. Woll"
         }
       },
       "collection_priority": {
@@ -80600,6 +80871,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 4,
@@ -80608,10 +80880,10 @@
           "IND",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -80619,18 +80891,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:03",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -80661,8 +80933,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -80694,10 +80966,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:04": {
       "state": "VA",
@@ -80707,7 +80979,7 @@
       "poll_type": "us-representative",
       "seat_name": "VA-04",
       "contest_id": "USA:VA:house:04:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
@@ -80717,19 +80989,19 @@
       "candidates": {
         "Jennifer L. McClellan": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Jennifer L. McClellan"
         },
         "Robert P. \"Family Man\" Murray, Jr.": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Robert P. \"Family Man\" Murray, Jr."
         },
         "Joan E. \"Andrews\" Bell": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Joan E. \"Andrews\" Bell"
         }
@@ -80741,6 +81013,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 3,
@@ -80749,10 +81022,10 @@
           "IND",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -80760,18 +81033,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:04",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -80802,8 +81075,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -80835,10 +81108,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:05": {
       "state": "VA",
@@ -80848,31 +81121,61 @@
       "poll_type": "us-representative",
       "seat_name": "VA-05",
       "contest_id": "USA:VA:house:05:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Thomas S. P. \"Tom\" Perriello",
-        "John J. McGuire, III"
+        "Tom S. P. Perriello",
+        "John J. McGuire III"
       ],
       "candidates": {
+        "Tom S. P. Perriello": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Tom S. P. Perriello"
+        },
         "Thomas S. P. \"Tom\" Perriello": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Thomas S. P. \"Tom\" Perriello"
+          "canonical_name": "Tom S. P. Perriello"
+        },
+        "Tom Perriello": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Tom S. P. Perriello"
+        },
+        "John J. McGuire III": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "John J. McGuire III"
         },
         "John J. McGuire, III": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "John J. McGuire, III"
+          "canonical_name": "John J. McGuire III"
+        },
+        "John McGuire": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "John J. McGuire III"
+        },
+        "Cooke C. Harvey": {
+          "party": "IND",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Cooke C. Harvey"
         },
         "Cooke Costa Harvey": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Cooke Costa Harvey"
+          "canonical_name": "Cooke C. Harvey"
         }
       },
       "collection_priority": {
@@ -80882,6 +81185,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 3,
@@ -80890,10 +81194,10 @@
           "IND",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -80901,18 +81205,143 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:05",
-      "observations": [],
+      "observations": [
+        {
+          "id": "us-202thec3b2cee5",
+          "race_id": "USA:VA:house:05",
+          "contest_id": "USA:VA:house:05:2026:general",
+          "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
+          "pollster_group": "washington_post_schar",
+          "field_start": "2026-09-23",
+          "field_end": "2026-09-28",
+          "provider_record_date": "2026-10-01",
+          "population": "lv",
+          "sample_n": 600,
+          "answers": [
+            {
+              "name": "John McGuire",
+              "pct": 51.0,
+              "party": "REP"
+            },
+            {
+              "name": "Tom Perriello",
+              "pct": 45,
+              "party": "DEM"
+            }
+          ],
+          "sponsors": [],
+          "source_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
+          "verification": "reviewed_release_aggregator_import",
+          "methodology_url": "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+          "margin_of_error_pp": null,
+          "limitations_ko": "VoteHub 자동 수집값. 원문 수기 검토의 범위는 source_quality에 별도 표기. 원문별 오차범위·문항별 표본은 API 미제공.",
+          "provider_answer_correction": {
+            "status": "reviewed_primary_answer_correction",
+            "reviewed_on": "2026-10-09",
+            "provider_snapshot_sha256": "0877acc57f6e3038cba47b6e182c851f54c8b43e0753705d5dab9299a6d67f03",
+            "provider_values": {
+              "Tom Perriello": 46.0
+            },
+            "primary_values_used": {
+              "Tom Perriello": 45
+            },
+            "sources": [
+              "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+              "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/"
+            ],
+            "basis_ko": "Post/Schar 원문 Q3와 발행기관 기사 모두 Perriello45, McGuire51. API의 Perriello46을 이 특정 레코드에만 정정하며 원래46과 지문을 보존합니다."
+          },
+          "commissioning": {
+            "internal": false,
+            "partisan": null,
+            "sponsors": []
+          },
+          "source_admission": "reviewed_release",
+          "aggregation_eligibility": {
+            "eligible": true,
+            "reasons": []
+          },
+          "display_group": "general",
+          "source_quality": {
+            "verification_level": "primary_toplines_checked",
+            "methodological_quality": "unrated",
+            "accuracy_grade": null,
+            "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+            "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+            "missing_fields": [
+              "accuracy_grade",
+              "statistical_significance"
+            ],
+            "reviewed_on": "2026-10-09",
+            "review_sources": [
+              "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+              "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/"
+            ],
+            "primary_toplines": {
+              "John McGuire": 51.0,
+              "Tom Perriello": 45
+            },
+            "question_sample_n": 600,
+            "disclosure_review": {
+              "population": "LV",
+              "field_dates": [
+                "2026-09-23",
+                "2026-09-28"
+              ],
+              "geographic_scope": "VA-05_only",
+              "sample_n": 600,
+              "question_sample_n": 600,
+              "mode": {
+                "live_cellphone_pct": 64,
+                "live_landline_pct": 10,
+                "text_to_web_pct": 26
+              },
+              "mode_share_scope": "both districts pooled; district-specific shares not reported",
+              "sampling_frame": "stratified random samples of registered voters from Aristotle voter file; Braun Research interviewing/data processing",
+              "LV_method": "All RV assigned probability of voting; same total sample n as RV, not a separate LV subsample",
+              "question_number": 3,
+              "question_order": "vote likelihood then named ballot; candidate favorability, issues and information questions later",
+              "question_wording_checked": true,
+              "includes_leaners_and_already_voted": true,
+              "weighting": "district-specific race/ethnicity, education, gender-age, inferred party, turnout history/method, region, recalled 2024 presidential choice",
+              "design_effect": 1.34,
+              "non_candidate_responses": {
+                "someone_else": 1,
+                "would_not_vote": 1,
+                "no_opinion_or_skipped": 2
+              }
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error_including_design_effect",
+              "half_width_pp": 4.6,
+              "confidence_level_pct": null,
+              "validated_here": false
+            },
+            "ballot_format": "named_two_candidate_ballot_including_leaners_and_already_voted",
+            "sponsor_review": {
+              "primary_commissioners": [
+                "The Washington Post",
+                "George Mason University Schar School of Policy and Government"
+              ],
+              "jointly_sponsored_and_funded": true,
+              "primary_internal": false,
+              "provider_sponsors": []
+            },
+            "limitations_ko": "2후보·기타응답·미정층과 기투표/기울임 포함을 유지. 수치상 우세만 집계하며 오차범위 내 차이를 당선·통계적 유의성으로 해석하지 않습니다. 기관의 미래 발표를 일괄 승인하지 않습니다."
+          }
+        }
+      ],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -80943,43 +81372,120 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
-          "population": null,
-          "status": "no_recent_poll",
-          "party": null,
-          "leader": null,
+          "from": "2026-09-26",
+          "through": "2026-10-09",
+          "population": "lv",
+          "status": "single_poll_lead",
+          "party": "REP",
+          "leader": "John McGuire",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
+          "poll_details": [
+            {
+              "id": "us-202thec3b2cee5",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "accuracy_grade",
+                  "statistical_significance"
+                ],
+                "reviewed_on": "2026-10-09",
+                "review_sources": [
+                  "https://washingtonpost.com/documents/c5cba6fd-7edb-4550-93c3-0580e8084bfb.pdf",
+                  "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/"
+                ],
+                "primary_toplines": {
+                  "John McGuire": 51.0,
+                  "Tom Perriello": 45
+                },
+                "question_sample_n": 600,
+                "disclosure_review": {
+                  "population": "LV",
+                  "field_dates": [
+                    "2026-09-23",
+                    "2026-09-28"
+                  ],
+                  "geographic_scope": "VA-05_only",
+                  "sample_n": 600,
+                  "question_sample_n": 600,
+                  "mode": {
+                    "live_cellphone_pct": 64,
+                    "live_landline_pct": 10,
+                    "text_to_web_pct": 26
+                  },
+                  "mode_share_scope": "both districts pooled; district-specific shares not reported",
+                  "sampling_frame": "stratified random samples of registered voters from Aristotle voter file; Braun Research interviewing/data processing",
+                  "LV_method": "All RV assigned probability of voting; same total sample n as RV, not a separate LV subsample",
+                  "question_number": 3,
+                  "question_order": "vote likelihood then named ballot; candidate favorability, issues and information questions later",
+                  "question_wording_checked": true,
+                  "includes_leaners_and_already_voted": true,
+                  "weighting": "district-specific race/ethnicity, education, gender-age, inferred party, turnout history/method, region, recalled 2024 presidential choice",
+                  "design_effect": 1.34,
+                  "non_candidate_responses": {
+                    "someone_else": 1,
+                    "would_not_vote": 1,
+                    "no_opinion_or_skipped": 2
+                  }
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_error_including_design_effect",
+                  "half_width_pp": 4.6,
+                  "confidence_level_pct": null,
+                  "validated_here": false
+                },
+                "ballot_format": "named_two_candidate_ballot_including_leaners_and_already_voted",
+                "sponsor_review": {
+                  "primary_commissioners": [
+                    "The Washington Post",
+                    "George Mason University Schar School of Policy and Government"
+                  ],
+                  "jointly_sponsored_and_funded": true,
+                  "primary_internal": false,
+                  "provider_sponsors": []
+                },
+                "limitations_ko": "2후보·기타응답·미정층과 기투표/기울임 포함을 유지. 수치상 우세만 집계하며 오차범위 내 차이를 당선·통계적 유의성으로 해석하지 않습니다. 기관의 미래 발표를 일괄 승인하지 않습니다."
+              },
+              "leading_margin_pp": 6.0,
+              "significance": "not_evaluated"
+            }
+          ],
           "reference_ids": [],
           "reference_poll_count": 0,
           "reference_details": [],
           "status_note_ko": null,
-          "lead_counts": {},
+          "lead_counts": {
+            "John McGuire": 1
+          },
           "tie_count": 0,
-          "pollster_count": 0,
-          "included_ids": [],
+          "pollster_count": 1,
+          "included_ids": [
+            "us-202thec3b2cee5"
+          ],
           "conflicting_pollsters": [],
-          "latest_field_end": null
+          "latest_field_end": "2026-09-28"
         }
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:06": {
       "state": "VA",
@@ -80989,25 +81495,31 @@
       "poll_type": "us-representative",
       "seat_name": "VA-06",
       "contest_id": "USA:VA:house:06:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
         "Beth A. Macy",
-        "Benjamin Lee \"Ben\" Cline"
+        "Ben L. Cline"
       ],
       "candidates": {
         "Beth A. Macy": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Beth A. Macy"
         },
+        "Ben L. Cline": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Ben L. Cline"
+        },
         "Benjamin Lee \"Ben\" Cline": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Benjamin Lee \"Ben\" Cline"
+          "canonical_name": "Ben L. Cline"
         }
       },
       "collection_priority": {
@@ -81017,6 +81529,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 2,
@@ -81024,10 +81537,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81035,18 +81548,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:06",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81077,8 +81590,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81110,10 +81623,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:07": {
       "state": "VA",
@@ -81123,47 +81636,59 @@
       "poll_type": "us-representative",
       "seat_name": "VA-07",
       "contest_id": "USA:VA:house:07:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Yevgeny S. \"Eugene\" Vindman",
-        "Douglas A. \"Doug\" Ollivant"
+        "Eugene S. Vindman",
+        "Doug A. Ollivant"
       ],
       "candidates": {
+        "Eugene S. Vindman": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Eugene S. Vindman"
+        },
         "Yevgeny S. \"Eugene\" Vindman": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Yevgeny S. \"Eugene\" Vindman"
+          "canonical_name": "Eugene S. Vindman"
+        },
+        "Doug A. Ollivant": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Doug A. Ollivant"
         },
         "Douglas A. \"Doug\" Ollivant": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Douglas A. \"Doug\" Ollivant"
+          "canonical_name": "Doug A. Ollivant"
         },
         "Taner E. Demirci Lopez": {
           "party": "LIB",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Taner E. Demirci Lopez"
         },
         "Alaha Ahrar": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Alaha Ahrar"
         },
         "Joshua E. Ertle": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Joshua E. Ertle"
         },
         "Randall A. Terry": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Randall A. Terry"
         }
@@ -81175,6 +81700,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 6,
@@ -81184,10 +81710,10 @@
           "LIB",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81195,18 +81721,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:07",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81237,8 +81763,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81270,10 +81796,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:08": {
       "state": "VA",
@@ -81283,35 +81809,47 @@
       "poll_type": "us-representative",
       "seat_name": "VA-08",
       "contest_id": "USA:VA:house:08:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Donald Sternoff \"Don\" Beyer, Jr.",
-        "Anthony \"Tony\" Sabio"
+        "Donald S. Beyer, Jr.",
+        "Tony A. Sabio"
       ],
       "candidates": {
+        "Donald S. Beyer, Jr.": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Donald S. Beyer, Jr."
+        },
         "Donald Sternoff \"Don\" Beyer, Jr.": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Donald Sternoff \"Don\" Beyer, Jr."
+          "canonical_name": "Donald S. Beyer, Jr."
+        },
+        "Tony A. Sabio": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Tony A. Sabio"
         },
         "Anthony \"Tony\" Sabio": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Anthony \"Tony\" Sabio"
+          "canonical_name": "Tony A. Sabio"
         },
         "Shelly M. Arnoldi": {
           "party": "LIB",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Shelly M. Arnoldi"
         },
         "Tim S. Sharman": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Tim S. Sharman"
         }
@@ -81323,6 +81861,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 4,
@@ -81332,10 +81871,10 @@
           "LIB",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81343,18 +81882,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:08",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81385,8 +81924,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81418,10 +81957,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:09": {
       "state": "VA",
@@ -81431,25 +81970,31 @@
       "poll_type": "us-representative",
       "seat_name": "VA-09",
       "contest_id": "USA:VA:house:09:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
         "Joy A. Powers",
-        "H. Morgan \"Morgan\" Griffith"
+        "H. Morgan Griffith"
       ],
       "candidates": {
         "Joy A. Powers": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Joy A. Powers"
         },
+        "H. Morgan Griffith": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "H. Morgan Griffith"
+        },
         "H. Morgan \"Morgan\" Griffith": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "H. Morgan \"Morgan\" Griffith"
+          "canonical_name": "H. Morgan Griffith"
         }
       },
       "collection_priority": {
@@ -81459,6 +82004,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 2,
@@ -81466,10 +82012,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81477,18 +82023,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:09",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81519,8 +82065,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81552,10 +82098,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:10": {
       "state": "VA",
@@ -81565,29 +82111,35 @@
       "poll_type": "us-representative",
       "seat_name": "VA-10",
       "contest_id": "USA:VA:house:10:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
         "Suhas Subramanyam",
-        "David T. \"Dave\" Beckwith"
+        "Dave T. Beckwith"
       ],
       "candidates": {
         "Suhas Subramanyam": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Suhas Subramanyam"
         },
+        "Dave T. Beckwith": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Dave T. Beckwith"
+        },
         "David T. \"Dave\" Beckwith": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "David T. \"Dave\" Beckwith"
+          "canonical_name": "Dave T. Beckwith"
         },
         "Ahsen Mujeeb Malik": {
           "party": "IND",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Ahsen Mujeeb Malik"
         }
@@ -81599,6 +82151,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 3,
@@ -81607,10 +82160,10 @@
           "IND",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81618,18 +82171,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:10",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81660,8 +82213,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81693,10 +82246,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:house:11": {
       "state": "VA",
@@ -81706,29 +82259,35 @@
       "poll_type": "us-representative",
       "seat_name": "VA-11",
       "contest_id": "USA:VA:house:11:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
         "James R. Walkinshaw",
-        "Arthur Grahame Purves"
+        "Arthur G. Purves"
       ],
       "candidates": {
         "James R. Walkinshaw": {
           "party": "DEM",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "James R. Walkinshaw"
         },
+        "Arthur G. Purves": {
+          "party": "REP",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Arthur G. Purves"
+        },
         "Arthur Grahame Purves": {
           "party": "REP",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Arthur Grahame Purves"
+          "canonical_name": "Arthur G. Purves"
         },
         "Dianne L. Blais": {
           "party": "GRN",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Dianne L. Blais"
         }
@@ -81740,6 +82299,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 3,
@@ -81748,10 +82308,10 @@
           "GRN",
           "REP"
         ],
-        "coverage": "reported_active_candidate_listing",
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "reviewed_on": "2026-10-08",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81759,18 +82319,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.thegreenpapers.com/G26/VA",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-08",
-        "coverage": "reported_active_candidate_listing"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:house:11",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81801,8 +82361,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81834,10 +82394,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VA:senate": {
       "state": "VA",
@@ -81847,23 +82407,29 @@
       "poll_type": "us-senator",
       "seat_name": null,
       "contest_id": "USA:VA:senate:2026:general",
-      "general_from": "2026-09-01",
+      "general_from": "2026-08-05",
       "election_date": "2026-11-03",
       "schedule_status": "reported_general_matchup",
       "required_candidates": [
-        "Mark Warner",
+        "Mark R. Warner",
         "Bert Mizusawa"
       ],
       "candidates": {
+        "Mark R. Warner": {
+          "party": "DEM",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "candidate_id": null,
+          "canonical_name": "Mark R. Warner"
+        },
         "Mark Warner": {
           "party": "DEM",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
-          "canonical_name": "Mark Warner"
+          "canonical_name": "Mark R. Warner"
         },
         "Bert Mizusawa": {
           "party": "REP",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
           "candidate_id": null,
           "canonical_name": "Bert Mizusawa"
         }
@@ -81875,6 +82441,7 @@
         ]
       },
       "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+      "general_period_source_url": "https://www.elections.virginia.gov/news-releases/supreme-court-of-virginia-voids-april-21-redistricting-referendum-2.html",
       "ballot_competition": {
         "status": "contested",
         "candidate_count": 2,
@@ -81882,10 +82449,10 @@
           "DEM",
           "REP"
         ],
-        "coverage": "reported_major_party_field",
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "reviewed_on": "2026-10-07",
-        "general_unopposed": null,
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "reviewed_on": "2026-10-09",
+        "general_unopposed": false,
         "write_in_candidates": [],
         "no_vote_status": "not_verified",
         "no_vote_law_url": null,
@@ -81893,18 +82460,18 @@
         "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
       },
       "ballot_review": {
-        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-        "source_role": "reviewed_secondary_nominee_listing",
-        "reviewed_on": "2026-10-07",
-        "coverage": "reported_major_party_field"
+        "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+        "source_role": "state_election_agency",
+        "reviewed_on": "2026-10-09",
+        "coverage": "complete_active_agency_listing"
       },
       "race_id": "USA:VA:senate",
       "observations": [],
       "windows": {
         "7": {
           "window_days": 7,
-          "from": "2026-10-02",
-          "through": "2026-10-08",
+          "from": "2026-10-03",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81935,8 +82502,8 @@
         },
         "14": {
           "window_days": 14,
-          "from": "2026-09-25",
-          "through": "2026-10-08",
+          "from": "2026-09-26",
+          "through": "2026-10-09",
           "population": null,
           "status": "no_recent_poll",
           "party": null,
@@ -81968,10 +82535,10 @@
       },
       "result": null,
       "phase": "pre_election",
-      "fetched_at": "2026-10-08T07:25:47.493646+00:00",
-      "as_of": "2026-10-08",
+      "fetched_at": "2026-10-09T04:03:52.296309+00:00",
+      "as_of": "2026-10-09",
       "source_status": "ok",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08"
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09"
     },
     "USA:VT:house:00": {
       "state": "VT",
@@ -86499,194 +87066,6 @@
       "field_end": "2026-10-01",
       "population": "lv",
       "sample_n": 682,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub57d326b1",
-      "race_id": "USA:VA:house:01",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.the-downballot.com/p/morning-digest-kansas-republicans",
-      "field_start": "2025-08-08",
-      "field_end": "2025-08-09",
-      "population": "rv",
-      "sample_n": 541,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202pub781e29d3",
-      "race_id": "USA:VA:house:01",
-      "pollster": "Public Policy Polling",
-      "reason": "pollster_not_selected",
-      "source_url": "https://x.com/PollTracker2024/status/1965014578812842210/photo/1",
-      "field_start": "2025-08-08",
-      "field_end": "2025-08-09",
-      "population": "rv",
-      "sample_n": 541,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202rage144569e",
-      "race_id": "USA:VA:house:01",
-      "pollster": "Ragnar Research Partners",
-      "reason": "pollster_not_selected",
-      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
-      "field_start": "2026-03-10",
-      "field_end": "2026-03-12",
-      "population": "lv",
-      "sample_n": 400,
-      "sponsors": [
-        "Conservatives for America"
-      ],
-      "internal": false,
-      "partisan": "REP",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the5a104154",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "rv",
-      "sample_n": 996,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the65a34aca",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "rv",
-      "sample_n": 996,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the592aeef5",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202thecc936039",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the23cfbe50",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "lv",
-      "sample_n": null,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the5f79b2da",
-      "race_id": "USA:VA:senate",
-      "pollster": "The Public Sentiment Institute",
-      "reason": "pollster_not_selected",
-      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
-      "field_start": "2026-06-12",
-      "field_end": "2026-06-16",
-      "population": "rv",
-      "sample_n": 996,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202tul81b19549",
-      "race_id": "USA:VA:house:02",
-      "pollster": "Tulchin Research",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.politico.com/f/?id=0000019f-918b-d49c-ad9f-9fbb88d00000",
-      "field_start": "2026-07-09",
-      "field_end": "2026-07-13",
-      "population": "lv",
-      "sample_n": 700,
-      "sponsors": [
-        "House Majority PAC"
-      ],
-      "internal": false,
-      "partisan": "DEM",
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202the7176ba8a",
-      "race_id": "USA:VA:house:01",
-      "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
-      "field_start": "2026-09-23",
-      "field_end": "2026-09-28",
-      "population": "lv",
-      "sample_n": 609,
-      "sponsors": [],
-      "internal": false,
-      "partisan": null,
-      "verification": "not_accepted_not_verified"
-    },
-    {
-      "id": "us-202thec3b2cee5",
-      "race_id": "USA:VA:house:05",
-      "pollster": "The Washington Post/George Mason University Schar School of Policy and Government",
-      "reason": "pollster_not_selected",
-      "source_url": "https://www.washingtonpost.com/politics/2026/10/01/shannon-taylor-has-edge-over-rob-wittman-virginia-house-district-post-poll-finds/",
-      "field_start": "2026-09-23",
-      "field_end": "2026-09-28",
-      "population": "lv",
-      "sample_n": 600,
       "sponsors": [],
       "internal": false,
       "partisan": null,
@@ -96513,6 +96892,164 @@
       "internal": false,
       "partisan": "DEM",
       "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub57d326b1",
+      "race_id": "USA:VA:house:01",
+      "pollster": "Public Policy Polling",
+      "reason": "pre_primary_historical_poll_primary_methodology_not_obtained",
+      "source_url": "https://www.the-downballot.com/p/morning-digest-kansas-republicans",
+      "field_start": "2025-08-08",
+      "field_end": "2025-08-09",
+      "population": "rv",
+      "sample_n": 541,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202pub781e29d3",
+      "race_id": "USA:VA:house:01",
+      "pollster": "Public Policy Polling",
+      "reason": "generic_party_ballot_not_named_race",
+      "source_url": "https://x.com/PollTracker2024/status/1965014578812842210/photo/1",
+      "field_start": "2025-08-08",
+      "field_end": "2025-08-09",
+      "population": "rv",
+      "sample_n": 541,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202rage144569e",
+      "race_id": "USA:VA:house:01",
+      "pollster": "Ragnar Research Partners",
+      "reason": "generic_party_ballot_not_named_race",
+      "source_url": "https://punchbowl.news/article/campaigns/bad-gop-polls/",
+      "field_start": "2026-03-10",
+      "field_end": "2026-03-12",
+      "population": "lv",
+      "sample_n": 400,
+      "sponsors": [
+        "Conservatives for America"
+      ],
+      "internal": false,
+      "partisan": "REP",
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the5a104154",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "primary_provider_population_conflict",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "rv",
+      "sample_n": 996,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the65a34aca",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "primary_provider_population_conflict",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "rv",
+      "sample_n": 996,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the592aeef5",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202thecc936039",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the23cfbe50",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "lv",
+      "sample_n": null,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202the5f79b2da",
+      "race_id": "USA:VA:senate",
+      "pollster": "The Public Sentiment Institute",
+      "reason": "primary_provider_population_conflict",
+      "source_url": "https://tpsiofficial.substack.com/p/tpsi-new-tpsi-senate-poll-confirms",
+      "field_start": "2026-06-12",
+      "field_end": "2026-06-16",
+      "population": "rv",
+      "sample_n": 996,
+      "sponsors": [],
+      "internal": false,
+      "partisan": null,
+      "verification": "not_accepted_not_verified"
+    },
+    {
+      "id": "us-202tul81b19549",
+      "race_id": "USA:VA:house:02",
+      "pollster": "Tulchin Research",
+      "reason": "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference",
+      "source_url": "https://www.politico.com/f/?id=0000019f-918b-d49c-ad9f-9fbb88d00000",
+      "field_start": "2026-07-09",
+      "field_end": "2026-07-13",
+      "population": "lv",
+      "sample_n": 700,
+      "sponsors": [
+        "House Majority PAC"
+      ],
+      "internal": false,
+      "partisan": "DEM",
+      "verification": "not_accepted_not_verified"
     }
   ],
   "results_collection": {
@@ -96551,9 +97088,9 @@
       },
       "cook_toss_up_and_lean": {
         "race_count": 64,
-        "with_observations": 38,
+        "with_observations": 39,
         "recent_7d": 5,
-        "recent_14d": 14
+        "recent_14d": 15
       },
       "korean_company_facilities": {
         "race_count": 15,
@@ -104953,28 +105490,28 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "status": "review_required",
+        "status": "recent_14d_only",
         "provider_record_count": 4,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-28",
         "windows": {
           "7": {
             "status": "no_recent_poll",
             "pollster_count": 0
           },
           "14": {
-            "status": "no_recent_poll",
-            "pollster_count": 0
+            "status": "single_poll_lead",
+            "pollster_count": 1
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "generic_party_ballot_not_named_race": 2,
+          "pre_primary_historical_poll_primary_methodology_not_obtained": 1
         },
         "review_queue_ids": [
-          "us-202the7176ba8a",
           "us-202rage144569e",
           "us-202pub781e29d3",
           "us-202pub57d326b1"
@@ -105012,7 +105549,7 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference": 1
         },
         "review_queue_ids": [
           "us-202tul81b19549"
@@ -114088,29 +114625,25 @@
             "national_scheduled_election"
           ]
         },
-        "status": "review_required",
+        "status": "recent_14d_only",
         "provider_record_count": 1,
-        "accepted_count": 0,
-        "aggregation_eligible_count": 0,
+        "accepted_count": 1,
+        "aggregation_eligible_count": 1,
         "reference_only_count": 0,
         "matchup_reviewed": true,
-        "latest_accepted_field_end": null,
+        "latest_accepted_field_end": "2026-09-28",
         "windows": {
           "7": {
             "status": "no_recent_poll",
             "pollster_count": 0
           },
           "14": {
-            "status": "no_recent_poll",
-            "pollster_count": 0
+            "status": "single_poll_lead",
+            "pollster_count": 1
           }
         },
-        "rejection_reasons": {
-          "pollster_not_selected": 1
-        },
-        "review_queue_ids": [
-          "us-202thec3b2cee5"
-        ],
+        "rejection_reasons": {},
+        "review_queue_ids": [],
         "finance_join": {
           "race_id": "USA:VA:house:05",
           "file": "usa_election_finance/2026/races/VA-house-05-8f3f3822eeb590c8.json",
@@ -114348,7 +114881,8 @@
           }
         },
         "rejection_reasons": {
-          "pollster_not_selected": 6
+          "missing_lv_question_sample_and_pre_primary_hypothetical_field": 3,
+          "primary_provider_population_conflict": 3
         },
         "review_queue_ids": [
           "us-202thecc936039",
@@ -115891,9 +116425,9 @@
     "counts_by_office": {
       "house": {
         "races": 435,
-        "with_polls": 24,
+        "with_polls": 26,
         "with_recent_7d": 0,
-        "with_recent_14d": 3,
+        "with_recent_14d": 5,
         "with_super_pac": 316,
         "closed_elections": 0
       },
@@ -118744,7 +119278,7 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 1,
         "rejection_reasons": {
-          "pollster_not_selected": 1
+          "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -118752,7 +119286,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -118769,15 +119303,16 @@
         },
         "ballot_competition": {
           "status": "contested",
-          "candidate_count": 2,
+          "candidate_count": 4,
           "parties": [
             "DEM",
+            "IND",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -119863,15 +120398,16 @@
             "cook_toss_up_and_lean"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "recent_14d_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 0,
+        "recent_14d_pollsters": 1,
         "provider_record_count": 4,
         "rejection_reasons": {
-          "pollster_not_selected": 4
+          "generic_party_ballot_not_named_race": 2,
+          "pre_primary_historical_poll_primary_methodology_not_obtained": 1
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -119879,7 +120415,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -119901,10 +120437,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143378,7 +143914,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143401,10 +143937,10 @@
             "IND",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143436,7 +143972,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143459,10 +143995,10 @@
             "IND",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143480,23 +144016,21 @@
             "national_scheduled_election"
           ]
         },
-        "poll_status": "review_required",
+        "poll_status": "recent_14d_only",
         "phase": "pre_election",
-        "poll_observation_count": 0,
-        "poll_eligible_count": 0,
+        "poll_observation_count": 1,
+        "poll_eligible_count": 1,
         "recent_7d_pollsters": 0,
-        "recent_14d_pollsters": 0,
+        "recent_14d_pollsters": 1,
         "provider_record_count": 1,
-        "rejection_reasons": {
-          "pollster_not_selected": 1
-        },
+        "rejection_reasons": {},
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
         "poll_route": {
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143519,10 +144053,10 @@
             "IND",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143554,7 +144088,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143576,10 +144110,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143611,7 +144145,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143635,10 +144169,10 @@
             "LIB",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143670,7 +144204,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143694,10 +144228,10 @@
             "LIB",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143729,7 +144263,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143751,10 +144285,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143786,7 +144320,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143809,10 +144343,10 @@
             "IND",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143844,7 +144378,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143867,10 +144401,10 @@
             "GRN",
             "REP"
           ],
-          "coverage": "reported_active_candidate_listing",
-          "source_url": "https://www.thegreenpapers.com/G26/VA",
-          "reviewed_on": "2026-10-08",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -143896,7 +144430,8 @@
         "recent_14d_pollsters": 0,
         "provider_record_count": 6,
         "rejection_reasons": {
-          "pollster_not_selected": 6
+          "missing_lv_question_sample_and_pre_primary_hypothetical_field": 3,
+          "primary_provider_population_conflict": 3
         },
         "matchup_reviewed": true,
         "poll_comparison_requirement": "required_or_matchup_unreviewed",
@@ -143904,7 +144439,7 @@
           "transport": "VoteHub_public_API",
           "api_key_required": false,
           "status": "connected",
-          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+          "request_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
           "automatic_admission": true,
           "limitations_ko": "미등록 출처·변경 대진은 검토 대기. 제공 API 밖 모든 조사 발견을 보장하지 않습니다."
         },
@@ -143926,10 +144461,10 @@
             "DEM",
             "REP"
           ],
-          "coverage": "reported_major_party_field",
-          "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
-          "reviewed_on": "2026-10-07",
-          "general_unopposed": null,
+          "coverage": "complete_active_agency_listing",
+          "source_url": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/november-3-2026-gen-elect-federal-offices/",
+          "reviewed_on": "2026-10-09",
+          "general_unopposed": false,
           "write_in_candidates": [],
           "no_vote_status": "not_verified",
           "no_vote_law_url": null,
@@ -148282,11 +148817,9 @@
           "race_count": 11,
           "scheduled": true,
           "polls_without_observations": [
-            "USA:VA:house:01",
             "USA:VA:house:02",
             "USA:VA:house:03",
             "USA:VA:house:04",
-            "USA:VA:house:05",
             "USA:VA:house:06",
             "USA:VA:house:07",
             "USA:VA:house:08",
@@ -149278,11 +149811,19 @@
     "VA": {
       "state": "VA",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
-      "captured_at": "2026-10-08T07:25:47.493646+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
+      "captured_at": "2026-10-09T04:03:52.296309+00:00",
       "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4",
-      "provider_records": 12
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 12,
+      "primary_supplement_receipts": [],
+      "primary_rechecked_ids": [
+        "us-202the7176ba8a",
+        "us-202thec3b2cee5"
+      ],
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/VA-primary-20261009.json",
+      "official_ballot_reviewed_on": "2026-10-09",
+      "primary_review_method": "primary_PDF_full_text_and_publisher_article_checked; local_PDF_download_and_page_render_unavailable"
     },
     "AK": {
       "state": "AK",
