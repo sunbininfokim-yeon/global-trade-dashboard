@@ -137,3 +137,5 @@
 | T-NJ-STATE-EVIDENCE-20261009 | C그룹 뉴저지 공식 후보·조사·연방 독립지출 | codex | election_watch NJ config/tests·NJ public data·handoff | codex/nj-evidence-20261009 | review | 공식13선거39명·NJ07 원문1 참고 연결. 하원 현재후보 O관측7→10/12·상원4명 ID. 348poll검사·타주4,644금융파일 보존. 인수: handoff/2026-10-09-codex-state-evidence-NJ.md. 다음 NM→NH. UI/workflow/LETF/배포 제외. |
 
 | T-NM-STATE-EVIDENCE-20261009 | C그룹 뉴멕시코 후보·실제 조사·공시 경로 | codex | election_watch NM config/tests·NM public data·handoff | codex/nm-evidence-20261009 | review | NM5선거·주지사 원문1건 추가/상원576→567검토정정·14일각1. 465검사·타주4,652파일보존. 공식포털403/주지사CFIS매핑미완료. 인수 handoff/2026-10-09-codex-state-evidence-NM.md. 다음NH. UI/workflow/LETF/배포 제외. |
+
+| T-NH-STATE-EVIDENCE-20261009 | C그룹 뉴햄프셔 후보·여론조사·독립지출 연결 | codex | election_watch NH config/tests·NH public data·handoff | codex/nh-evidence-20261009 | review | NH4선거11보조명부·YouGov2원문 관측(상원배분참고/주지사7·14일1기관). NH01오기보류·공식명부/CFS403. 타주4,304파일/날짜 보존. 인수 handoff/2026-10-09-codex-state-evidence-NH.md. AL→NJ→NM→NH 검토 완료, 공시매핑 미완료. UI/workflow/LETF/배포 제외. |
