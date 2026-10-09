@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-09T06:15:28.235434+00:00",
+  "generated_at": "2026-10-09T15:20:27.494170+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,8 +17,8 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 162,
-    "scored": 162,
+    "raw_items": 163,
+    "scored": 163,
     "selected": 40,
     "indicators": 18
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
@@ -418,40 +418,6 @@
       "site_slot": null
     },
     {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-09-25T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "ccdd25279440b2c3",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
@@ -1743,20 +1709,43 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    }
-  ],
-  "pending_review": [
+    },
     {
-      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
-      "country": "EUR",
+      "category": "official_report",
+      "commodities": [],
       "domains": [
         "finance",
         "economy"
       ],
-      "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
+      "series_id": null,
+      "title": {
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.112,
+        "final": 2.112
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    }
+  ],
+  "pending_review": [
     {
       "title": "Monetary Policy Committee dates for 2027",
       "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
@@ -1901,14 +1890,23 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Minutes of the Meeting of the Court of Directors held on 4 June 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-4-june-2026",
-      "country": "GBR",
+      "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "country": "USA",
       "domains": [
-        "economy",
         "finance"
       ],
-      "significance": 1.978,
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -1975,40 +1973,6 @@
       "scores": {
         "significance": 4.094,
         "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-09-25T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
       },
       "rank_reasons": [
         "domains:economy,finance"
@@ -3309,6 +3273,40 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.112,
+        "final": 2.112
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ]
 }
