@@ -7,6 +7,8 @@ import json
 
 ROOT = Path(__file__).resolve().parents[2] / 'New for anti'
 ASSETS = {
+    '/public/data/trade_policy/country_announcements_v1.json': ('public/data/trade_policy/country_announcements_v1.json', 'application/json'),
+    '/public/data/trade_policy/us_sanctions_v1.json': ('public/data/trade_policy/us_sanctions_v1.json', 'application/json'),
     '/export-controls.js': ('export-controls.js', 'text/javascript'),
     '/export-controls.css': ('export-controls.css', 'text/css'),
     '/public/data/trade_policy/us_tariffs_v1.json': ('public/data/trade_policy/us_tariffs_v1.json', 'application/json'),
@@ -21,12 +23,12 @@ nav button{padding:8px 12px;background:#142338;color:#dbeafe;border:1px solid #3
 <nav id="countries" aria-label="국가 선택"></nav><div id="export-controls-content"></div><div id="export-controls-legend" class="hidden"></div></main>
 <script src="/export-controls.js"></script><script>
 (async()=>{const d=await (await fetch('/public/data/trade_policy/us_tariffs_v1.json')).json();
-const names={USA:'미국',...Object.fromEntries(Object.entries(d.partners).map(([iso,p])=>[iso,p.name_ko]))};
+const names={RUS:'러시아',USA:'미국',...Object.fromEntries(Object.entries(d.partners).map(([iso,p])=>[iso,p.name_ko]))};
 const nav=document.getElementById('countries');for(const [iso,name] of Object.entries(names)){const b=document.createElement('button');b.type='button';b.textContent=name;b.onclick=()=>{ExportControls.select(iso);document.title=name+' · 미국 통상 조치 로컬 검토';};nav.append(b);}
 await ExportControls.mount({setHeader(){},setPanels(){},setMap(){},loadWorldGeo:async()=>{},isActive:()=>true,
 worldBaseLayers:()=>[],worldGeo:()=>({type:'FeatureCollection',features:[]}),GeoJsonLayer:class{constructor(o){Object.assign(this,o);}},
 resolveIso3:f=>f?.properties?.iso||'',updateLayers(){},hideTooltip(){},isoLabel:iso=>names[iso]||iso,countryLabel:x=>x});
-ExportControls.select('CAN');
+ExportControls.select('KOR');
 })().catch(e=>{document.getElementById('export-controls-content').textContent='미리보기 실패: '+e.message;});
 </script></html>'''
 

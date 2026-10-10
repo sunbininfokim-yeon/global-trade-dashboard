@@ -1,27 +1,27 @@
 {
-  "generated_at": "2026-10-02T19:59:43.441298+00:00",
+  "generated_at": "2026-10-09T20:09:27.734853+00:00",
   "season": 2026,
   "region": "US Corn Belt",
   "region_note": "8 states, production-weighted: IA IL NE MN IN OH MO SD",
   "enso": {
-    "state": "El Nino",
-    "oni_growing_season": 1.38
+    "state": "strong El Nino",
+    "oni_growing_season": 1.575
   },
   "crops": {
     "corn": {
       "label_ko": "\uc625\uc218\uc218",
       "unit": "bu/acre",
-      "point": 198.0,
+      "point": 201.0,
       "range_68": [
-        193.6,
-        202.4
+        196.3,
+        205.7
       ],
       "range_95": [
-        189.4,
-        206.6
+        191.8,
+        210.2
       ],
       "trend": 198.5,
-      "weather_effect": -0.5,
+      "weather_effect": 2.5,
       "last_actual": {
         "year": 2025,
         "yield": 200.2
@@ -30,47 +30,73 @@
         "critical_days": {
           "observed": 496,
           "forecast": 0,
-          "climatology": 0
+          "scenario": 0
         },
         "observed_share": 1.0
       },
       "skill": {
         "method": "forward-chaining, trend refit inside each fold",
-        "skill_vs_trend_only": 0.693,
-        "detrended_r2": 0.906,
-        "sigma_used": 4.37,
-        "model_sigma": 4.37,
+        "skill_vs_trend_only": 0.671,
+        "end_of_season_skill": 0.671,
+        "detrended_r2": 0.892,
+        "sigma_used": 4.65,
+        "model_sigma": 4.68,
         "train_window_years": null,
         "low_confidence": false
+      },
+      "inseason": {
+        "mode": "forecast",
+        "skill_now": 0.671,
+        "observed_through": "2026-08-31",
+        "known_through": "2026-08-31",
+        "n_scenarios": 1,
+        "scenario_years": null,
+        "scenario_spread_sd": 0.0,
+        "percentiles": {
+          "p10": 195.0,
+          "p50": 201.0,
+          "p90": 207.0
+        },
+        "skill_by_date": {
+          "06-01": -0.028,
+          "06-30": 0.093,
+          "07-31": 0.505,
+          "08-31": 0.671
+        }
       },
       "trained_years": [
         1992,
         2025
       ],
       "weather_inputs": {
-        "july_edd_anom": 0.672,
-        "julaug_edd_anom": 0.36,
-        "julaug_vpd_anom": 0.196,
-        "julaug_precip_anom": 0.91,
         "preseason_precip_anom": -0.553,
-        "julaug_soil_anom": -0.155,
-        "oni_growing": 1.38
+        "june_edd_anom": -0.384,
+        "june_precip_anom": 0.38,
+        "june_vpd_anom": -0.143,
+        "july_edd_anom": 0.672,
+        "july_precip_anom": 0.042,
+        "july_vpd_anom": 0.475,
+        "july_soil_anom": -0.473,
+        "august_edd_anom": -0.241,
+        "august_precip_anom": 1.231,
+        "august_vpd_anom": -0.217,
+        "august_soil_anom": 0.317
       }
     },
     "soybeans": {
       "label_ko": "\ub300\ub450",
       "unit": "bu/acre",
-      "point": 58.1,
+      "point": 58.3,
       "range_68": [
-        56.0,
-        60.1
+        56.2,
+        60.4
       ],
       "range_95": [
-        54.0,
-        62.2
+        54.2,
+        62.4
       ],
       "trend": 57.6,
-      "weather_effect": 0.4,
+      "weather_effect": 0.7,
       "last_actual": {
         "year": 2025,
         "yield": 58.7625
@@ -79,46 +105,61 @@
         "critical_days": {
           "observed": 496,
           "forecast": 0,
-          "climatology": 0
+          "scenario": 0
         },
         "observed_share": 1.0
       },
       "skill": {
         "method": "forward-chaining, trend refit inside each fold",
-        "skill_vs_trend_only": 0.186,
-        "detrended_r2": 0.201,
+        "skill_vs_trend_only": 0.387,
+        "end_of_season_skill": 0.387,
+        "detrended_r2": 0.547,
         "sigma_used": 2.09,
-        "model_sigma": 2.09,
+        "model_sigma": 2.1,
         "train_window_years": null,
-        "low_confidence": true
+        "low_confidence": false
+      },
+      "inseason": {
+        "mode": "forecast",
+        "skill_now": 0.387,
+        "observed_through": "2026-08-31",
+        "known_through": "2026-08-31",
+        "n_scenarios": 1,
+        "scenario_years": null,
+        "scenario_spread_sd": 0.0,
+        "percentiles": {
+          "p10": 55.6,
+          "p50": 58.3,
+          "p90": 61.0
+        },
+        "skill_by_date": {
+          "06-01": 0.007,
+          "06-30": 0.202,
+          "07-31": 0.269,
+          "08-31": 0.387
+        }
       },
       "trained_years": [
         1992,
         2025
       ],
       "weather_inputs": {
-        "august_edd_anom": -0.291,
-        "august_precip_anom": 1.231,
-        "august_soil_anom": 0.317,
-        "august_tmean_anom": 0.301,
-        "august_vpd_anom": -0.217,
-        "julaug_edd_anom": 0.322,
-        "julaug_gdd_anom": 0.904,
-        "julaug_precip_anom": 0.91,
-        "julaug_soil_anom": -0.155,
-        "julaug_vpd_anom": 0.196,
-        "july_edd_anom": 0.63,
-        "july_precip_anom": 0.042,
-        "july_soil_anom": -0.473,
-        "july_tmean_anom": 0.83,
-        "july_vpd_anom": 0.475,
+        "preseason_precip_anom": -0.553,
         "june_edd_anom": -0.419,
         "june_precip_anom": 0.38,
+        "june_vpd_anom": -0.143,
         "june_soil_anom": -0.4,
         "june_tmean_anom": -0.232,
-        "june_vpd_anom": -0.143,
-        "preseason_precip_anom": -0.553,
-        "oni_growing": 1.38
+        "july_edd_anom": 0.63,
+        "july_precip_anom": 0.042,
+        "july_vpd_anom": 0.475,
+        "july_soil_anom": -0.473,
+        "july_tmean_anom": 0.83,
+        "august_edd_anom": -0.291,
+        "august_precip_anom": 1.231,
+        "august_vpd_anom": -0.217,
+        "august_soil_anom": 0.317,
+        "august_tmean_anom": 0.301
       }
     },
     "winter_wheat": {
@@ -150,12 +191,14 @@
       "skill": {
         "method": "forward-chaining, trend refit inside each fold",
         "skill_vs_trend_only": 0.313,
+        "end_of_season_skill": 0.313,
         "detrended_r2": 0.521,
         "sigma_used": 3.63,
         "model_sigma": 3.63,
         "train_window_years": null,
         "low_confidence": false
       },
+      "inseason": null,
       "trained_years": [
         1992,
         2025
@@ -165,17 +208,17 @@
     "spring_wheat": {
       "label_ko": "\ubd04\ubc00",
       "unit": "bu/acre",
-      "point": 50.3,
+      "point": 50.4,
       "range_68": [
         45.5,
         55.2
       ],
       "range_95": [
-        40.8,
-        59.8
+        40.9,
+        59.9
       ],
       "trend": 49.1,
-      "weather_effect": 1.2,
+      "weather_effect": 1.3,
       "last_actual": {
         "year": 2025,
         "yield": 50.86000000000001
@@ -191,12 +234,14 @@
       "skill": {
         "method": "forward-chaining, trend refit inside each fold",
         "skill_vs_trend_only": 0.134,
+        "end_of_season_skill": 0.134,
         "detrended_r2": 0.247,
         "sigma_used": 4.85,
         "model_sigma": 4.85,
         "train_window_years": 20,
         "low_confidence": true
       },
+      "inseason": null,
       "trained_years": [
         1992,
         2025
@@ -206,38 +251,40 @@
     "cotton": {
       "label_ko": "\uba74\ud654",
       "unit": "lb/acre",
-      "point": 582.2,
+      "point": 582.8,
       "range_68": [
-        496.3,
-        668.1
+        497.6,
+        668.0
       ],
       "range_95": [
-        413.8,
-        750.6
+        415.8,
+        749.8
       ],
       "trend": 690.1,
-      "weather_effect": -107.8,
+      "weather_effect": -107.2,
       "last_actual": {
         "year": 2025,
         "yield": 701.389419141162
       },
       "season_progress": {
         "critical_days": {
-          "observed": 300,
-          "forecast": 5,
+          "observed": 305,
+          "forecast": 0,
           "climatology": 0
         },
-        "observed_share": 0.984
+        "observed_share": 1.0
       },
       "skill": {
         "method": "forward-chaining, trend refit inside each fold",
         "skill_vs_trend_only": 0.21,
+        "end_of_season_skill": 0.21,
         "detrended_r2": 0.205,
-        "sigma_used": 85.91,
+        "sigma_used": 85.21,
         "model_sigma": 85.21,
         "train_window_years": null,
         "low_confidence": false
       },
+      "inseason": null,
       "trained_years": [
         1992,
         2025
@@ -254,17 +301,17 @@
         "corn": {
           "label_ko": "\uc625\uc218\uc218",
           "unit": "bu/acre",
-          "point": 198.0,
+          "point": 201.0,
           "range_68": [
-            193.6,
-            202.4
+            196.3,
+            205.7
           ],
           "range_95": [
-            189.4,
-            206.6
+            191.8,
+            210.2
           ],
           "trend": 198.5,
-          "weather_effect": -0.5,
+          "weather_effect": 2.5,
           "last_actual": {
             "year": 2025,
             "yield": 200.2
@@ -273,47 +320,73 @@
             "critical_days": {
               "observed": 496,
               "forecast": 0,
-              "climatology": 0
+              "scenario": 0
             },
             "observed_share": 1.0
           },
           "skill": {
             "method": "forward-chaining, trend refit inside each fold",
-            "skill_vs_trend_only": 0.693,
-            "detrended_r2": 0.906,
-            "sigma_used": 4.37,
-            "model_sigma": 4.37,
+            "skill_vs_trend_only": 0.671,
+            "end_of_season_skill": 0.671,
+            "detrended_r2": 0.892,
+            "sigma_used": 4.65,
+            "model_sigma": 4.68,
             "train_window_years": null,
             "low_confidence": false
+          },
+          "inseason": {
+            "mode": "forecast",
+            "skill_now": 0.671,
+            "observed_through": "2026-08-31",
+            "known_through": "2026-08-31",
+            "n_scenarios": 1,
+            "scenario_years": null,
+            "scenario_spread_sd": 0.0,
+            "percentiles": {
+              "p10": 195.0,
+              "p50": 201.0,
+              "p90": 207.0
+            },
+            "skill_by_date": {
+              "06-01": -0.028,
+              "06-30": 0.093,
+              "07-31": 0.505,
+              "08-31": 0.671
+            }
           },
           "trained_years": [
             1992,
             2025
           ],
           "weather_inputs": {
-            "july_edd_anom": 0.672,
-            "julaug_edd_anom": 0.36,
-            "julaug_vpd_anom": 0.196,
-            "julaug_precip_anom": 0.91,
             "preseason_precip_anom": -0.553,
-            "julaug_soil_anom": -0.155,
-            "oni_growing": 1.38
+            "june_edd_anom": -0.384,
+            "june_precip_anom": 0.38,
+            "june_vpd_anom": -0.143,
+            "july_edd_anom": 0.672,
+            "july_precip_anom": 0.042,
+            "july_vpd_anom": 0.475,
+            "july_soil_anom": -0.473,
+            "august_edd_anom": -0.241,
+            "august_precip_anom": 1.231,
+            "august_vpd_anom": -0.217,
+            "august_soil_anom": 0.317
           }
         },
         "soybeans": {
           "label_ko": "\ub300\ub450",
           "unit": "bu/acre",
-          "point": 58.1,
+          "point": 58.3,
           "range_68": [
-            56.0,
-            60.1
+            56.2,
+            60.4
           ],
           "range_95": [
-            54.0,
-            62.2
+            54.2,
+            62.4
           ],
           "trend": 57.6,
-          "weather_effect": 0.4,
+          "weather_effect": 0.7,
           "last_actual": {
             "year": 2025,
             "yield": 58.7625
@@ -322,46 +395,61 @@
             "critical_days": {
               "observed": 496,
               "forecast": 0,
-              "climatology": 0
+              "scenario": 0
             },
             "observed_share": 1.0
           },
           "skill": {
             "method": "forward-chaining, trend refit inside each fold",
-            "skill_vs_trend_only": 0.186,
-            "detrended_r2": 0.201,
+            "skill_vs_trend_only": 0.387,
+            "end_of_season_skill": 0.387,
+            "detrended_r2": 0.547,
             "sigma_used": 2.09,
-            "model_sigma": 2.09,
+            "model_sigma": 2.1,
             "train_window_years": null,
-            "low_confidence": true
+            "low_confidence": false
+          },
+          "inseason": {
+            "mode": "forecast",
+            "skill_now": 0.387,
+            "observed_through": "2026-08-31",
+            "known_through": "2026-08-31",
+            "n_scenarios": 1,
+            "scenario_years": null,
+            "scenario_spread_sd": 0.0,
+            "percentiles": {
+              "p10": 55.6,
+              "p50": 58.3,
+              "p90": 61.0
+            },
+            "skill_by_date": {
+              "06-01": 0.007,
+              "06-30": 0.202,
+              "07-31": 0.269,
+              "08-31": 0.387
+            }
           },
           "trained_years": [
             1992,
             2025
           ],
           "weather_inputs": {
-            "august_edd_anom": -0.291,
-            "august_precip_anom": 1.231,
-            "august_soil_anom": 0.317,
-            "august_tmean_anom": 0.301,
-            "august_vpd_anom": -0.217,
-            "julaug_edd_anom": 0.322,
-            "julaug_gdd_anom": 0.904,
-            "julaug_precip_anom": 0.91,
-            "julaug_soil_anom": -0.155,
-            "julaug_vpd_anom": 0.196,
-            "july_edd_anom": 0.63,
-            "july_precip_anom": 0.042,
-            "july_soil_anom": -0.473,
-            "july_tmean_anom": 0.83,
-            "july_vpd_anom": 0.475,
+            "preseason_precip_anom": -0.553,
             "june_edd_anom": -0.419,
             "june_precip_anom": 0.38,
+            "june_vpd_anom": -0.143,
             "june_soil_anom": -0.4,
             "june_tmean_anom": -0.232,
-            "june_vpd_anom": -0.143,
-            "preseason_precip_anom": -0.553,
-            "oni_growing": 1.38
+            "july_edd_anom": 0.63,
+            "july_precip_anom": 0.042,
+            "july_vpd_anom": 0.475,
+            "july_soil_anom": -0.473,
+            "july_tmean_anom": 0.83,
+            "august_edd_anom": -0.291,
+            "august_precip_anom": 1.231,
+            "august_vpd_anom": -0.217,
+            "august_soil_anom": 0.317,
+            "august_tmean_anom": 0.301
           }
         }
       }
@@ -400,12 +488,14 @@
           "skill": {
             "method": "forward-chaining, trend refit inside each fold",
             "skill_vs_trend_only": 0.313,
+            "end_of_season_skill": 0.313,
             "detrended_r2": 0.521,
             "sigma_used": 3.63,
             "model_sigma": 3.63,
             "train_window_years": null,
             "low_confidence": false
           },
+          "inseason": null,
           "trained_years": [
             1992,
             2025
@@ -422,17 +512,17 @@
         "spring_wheat": {
           "label_ko": "\ubd04\ubc00",
           "unit": "bu/acre",
-          "point": 50.3,
+          "point": 50.4,
           "range_68": [
             45.5,
             55.2
           ],
           "range_95": [
-            40.8,
-            59.8
+            40.9,
+            59.9
           ],
           "trend": 49.1,
-          "weather_effect": 1.2,
+          "weather_effect": 1.3,
           "last_actual": {
             "year": 2025,
             "yield": 50.86000000000001
@@ -448,12 +538,14 @@
           "skill": {
             "method": "forward-chaining, trend refit inside each fold",
             "skill_vs_trend_only": 0.134,
+            "end_of_season_skill": 0.134,
             "detrended_r2": 0.247,
             "sigma_used": 4.85,
             "model_sigma": 4.85,
             "train_window_years": 20,
             "low_confidence": true
           },
+          "inseason": null,
           "trained_years": [
             1992,
             2025
@@ -470,38 +562,40 @@
         "cotton": {
           "label_ko": "\uba74\ud654",
           "unit": "lb/acre",
-          "point": 582.2,
+          "point": 582.8,
           "range_68": [
-            496.3,
-            668.1
+            497.6,
+            668.0
           ],
           "range_95": [
-            413.8,
-            750.6
+            415.8,
+            749.8
           ],
           "trend": 690.1,
-          "weather_effect": -107.8,
+          "weather_effect": -107.2,
           "last_actual": {
             "year": 2025,
             "yield": 701.389419141162
           },
           "season_progress": {
             "critical_days": {
-              "observed": 300,
-              "forecast": 5,
+              "observed": 305,
+              "forecast": 0,
               "climatology": 0
             },
-            "observed_share": 0.984
+            "observed_share": 1.0
           },
           "skill": {
             "method": "forward-chaining, trend refit inside each fold",
             "skill_vs_trend_only": 0.21,
+            "end_of_season_skill": 0.21,
             "detrended_r2": 0.205,
-            "sigma_used": 85.91,
+            "sigma_used": 85.21,
             "model_sigma": 85.21,
             "train_window_years": null,
             "low_confidence": false
           },
+          "inseason": null,
           "trained_years": [
             1992,
             2025
