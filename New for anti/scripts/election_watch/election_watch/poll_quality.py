@@ -76,6 +76,36 @@ def corrected_provider_source(raw, review, as_of):
         'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
 
 
+def corrected_provider_sample(raw, review, as_of):
+    """Use a primary question's n only for an unchanged, explicitly reviewed import."""
+    correction = review.get('provider_sample_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(not review.get('provider_answer_correction') and not review.get('provider_source_correction'),
+            'combined_provider_corrections_require_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_sample_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    n = correction['question_sample_n']
+    require(type(n) is int and n > 0 and n != raw.get('sample_size')
+            and n == review.get('question_sample_n')
+            and raw.get('sample_size') == correction.get('original_provider_sample_n')
+            and admission.get('provider_url') == raw.get('url')
+            and admission.get('pollster') == raw['pollster']
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('sources') and review.get('disclosure_review'), 'unverified_sample_correction')
+    values = review.get('primary_toplines', {})
+    require(len(values) >= 2 and set(values) == {a['choice'] for a in raw['answers']}
+            and all(abs(a['pct'] - values[a['choice']]) <= .51 for a in raw['answers']),
+            'sample_correction_primary_topline_mismatch')
+    corrected = deepcopy(raw); corrected['sample_size'] = n
+    return corrected, {'status': 'reviewed_primary_question_sample_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'original_provider_sample_n': raw['sample_size'], 'question_sample_n': n,
+        'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
+
+
 def source_quality(row, reviews, as_of):
     base = {'verification_level': 'partial', 'methodological_quality': 'unrated',
             'accuracy_grade': None, 'label_ko': '출처 연결 · 집계값 부분 검증',

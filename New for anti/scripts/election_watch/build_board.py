@@ -42,7 +42,8 @@ USA_STATE_ABBR = {
 
 
 def load_json(path: Path) -> Dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    from election_watch.polls import read
+    return read(path)
 
 
 def load_profile(iso3: str) -> Optional[Dict[str, Any]]:

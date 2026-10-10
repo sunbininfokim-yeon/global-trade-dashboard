@@ -22,6 +22,10 @@ DAILY_POLLING_PATHS = frozenset({
     '.github/workflows/us_election_polls_refresh.yml',
 })
 
+# 2026-10-10 user-requested root fix for state-stack/generated-data conflicts.
+# The existing polling workflow is the sole workflow exception.
+STATE_INTEGRATION_BRANCH = 'codex/election-state-integration-20261010'
+
 # User requested monthly acquisition and existing Cloudflare-key integration
 # on 2026-10-07. No UI, wrangler settings or shared deployment workflow grant.
 COMMODITY_BRANCH = 'codex/commodity-monthly-automation'
@@ -35,4 +39,5 @@ COMMODITY_PATHS = frozenset({
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
+            STATE_INTEGRATION_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS}.get(branch, frozenset())
