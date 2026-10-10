@@ -114,6 +114,18 @@
         return announcementsPromise;
     };
 
+    // US sanctions pilot is a separate evidence snapshot, not a country risk score.
+    const SANCTIONS_URL = '/public/data/trade_policy/us_sanctions_v1.json';
+    let sanctions = null;
+    let sanctionsPromise = null;
+    const loadSanctions = () => {
+        if (!sanctionsPromise) sanctionsPromise = fetch(SANCTIONS_URL, { cache: 'no-cache' })
+            .then((r) => { if (!r.ok) throw new Error(`sanctions ${r.status}`); return r.json(); })
+            .then((d) => { sanctions = d; return d; })
+            .catch(() => { sanctions = { error: true }; return sanctions; });
+        return sanctionsPromise;
+    };
+
     // control.measure (pipeline gemini.MEASURES), same words as trade.js's box.
     const NOTICE_MEASURE_KO = {
         entity_list: '통제명단', export_restriction: '수출통제', export_ban: '수출금지',
@@ -296,6 +308,8 @@
         issuer: 'all',
         noticeMeasure: 'all',
         noticePages: {},
+        sanctionsViews: {},
+        sanctionsPages: {},
         iso: null,
         panel: null,
         legend: null,
@@ -305,6 +319,71 @@
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (ch) => (
         { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
     const safeUrl = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
+
+    const SANCTION_VIEWS = { banks: '은행·금융', industries: '산업', goods: '물품·예외 허가', companies: '주요 기업' };
+    const SANCTION_KINDS = { blocking: 'SDN · 자산동결', sectoral: 'SSI · 특정 금융·부문 제한',
+        securities: 'NS-CMIC · 특정 증권투자 제한', bank_account: 'CAPTA · 환거래 계좌 제한',
+        export_license: 'Entity List · 수출허가 요건', export_denial: 'DPL · 수출권한 제한',
+        verification: 'UVL · 검증 미완료', military_end_use: '군사 최종사용자 통제', menu_based: '지정별 선택적 제한', other: '별도 조치 확인' };
+    const SECTORS_KO = { bank: '은행', energy: '에너지', metals: '금속', semiconductors: '반도체', electronics: '전자',
+        telecom: '통신', batteries: '배터리', automotive: '자동차', power_equipment: '전력기기', manufacturing: '제조업', trading: '종합상사' };
+    const sanctionsTiming = (m, now = Date.now()) => {
+        if (m.status !== 'time_limited_authorization') return m.status === 'conditional_exposure' ? '거래 조건에 따른 위험' : '선택 검토한 제한·요건';
+        const end = Date.parse(m.expires_at);
+        if (!Number.isFinite(end)) return '허가 기한 미확인';
+        return now >= end ? '허가 기한 경과 · 연장 확인 필요' : '거래 한시 허용 · 전면 해제 아님';
+    };
+    const sanctionsDeadline = (value) => Number.isFinite(Date.parse(value))
+        ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZoneName: 'short' }).format(new Date(value))
+        : '확인 필요';
+    const sanctionsMeasureHtml = (m) => `<li class="uss-card">
+        <div class="uss-meta">${esc(sanctionsTiming(m))}</div><strong>${esc(m.title_ko)}</strong>
+        <p>${esc(m.summary_ko)}</p><div class="uss-meta">${esc(m.legal_basis)}</div>
+        ${m.expires_at ? `<p class="uss-deadline">허가 만료: ${esc(sanctionsDeadline(m.expires_at))} (미국 동부 시간)</p>` : ''}
+        <a href="${esc(safeUrl(m.source_url))}" target="_blank" rel="noopener noreferrer">공식 근거 ↗</a></li>`;
+    const sanctionsCompanyHtml = (c) => {
+        const status = c.status === 'listed_in_snapshot' ? 'CSL 명단 일치' : c.status === 'identity_review' ? '동일 법인 확인 필요' : '입력한 이름의 정확 일치 없음';
+        const hits = (c.matches || []).map((m) => `<li><strong>${esc(SANCTION_KINDS[m.restriction_kind] || '개별 제한 확인')}</strong>
+            <div>${esc(m.name)}</div><div class="uss-meta">${esc(m.source)} · ID ${esc(m.source_id)}</div>
+            <div>${esc(m.validity === 'expired_or_ends_today' ? '명시된 종료일 경과 또는 당일 · 현행 적용 별도 확인' : m.validity === 'future' ? '명시된 시작일 전' : m.validity === 'date_review' ? '기간 해석 확인 필요' : '명단 기재 확인 · 거래별 예외·기간 별도 확인')}</div>
+            ${m.start_date || m.end_date ? `<div class="uss-meta">시작 ${esc(m.start_date || '미기재')} · 종료 ${esc(m.end_date || '미기재')}</div>` : ''}
+            ${m.programs ? `<div class="uss-meta">프로그램 ${esc(m.programs)}</div>` : ''}
+            ${m.license_requirement ? `<p>${esc(m.license_requirement)}</p>` : ''}
+            <a href="${esc(safeUrl(m.source_list_url))}" target="_blank" rel="noopener noreferrer">원기관 명단 ↗</a></li>`).join('');
+        return `<li class="uss-card"><div class="uss-meta">${esc(SECTORS_KO[c.sector] || c.sector)} · ${esc(status)}</div>
+            <strong>${esc(c.name_ko)}</strong><div class="uss-meta">${esc(c.screen_names?.[0])}</div>
+            ${hits ? `<details><summary>제한 종류·법인 근거 ${(c.matches || []).length}개</summary><ul class="uss-matches">${hits}</ul></details>`
+                : '<p>이름 대조 결과이며 제재 면제·거래 허용 판정이 아닙니다. 별칭·자회사·소유구조·거래 조건은 추가 확인이 필요합니다.</p>'}</li>`;
+    };
+    const sanctionsSectionHtml = (iso) => {
+        if (!['RUS', 'CHN', 'KOR', 'JPN'].includes(iso)) return '';
+        if (!sanctions || sanctions.error || !sanctions.countries?.[iso] || !Array.isArray(sanctions.companies) || !Array.isArray(sanctions.measures))
+            return '<section class="uss-section"><h4>미국 제재·거래 제한</h4><p class="ec-warn">제재 검토 자료를 불러오지 못했습니다.</p></section>';
+        const country = sanctions.countries[iso];
+        const view = ui.sanctionsViews[iso] || 'banks';
+        const measures = sanctions.measures.filter((m) => m.countries.includes(iso) && m.category === view);
+        const companies = sanctions.companies.filter((c) => c.country === iso &&
+            (view === 'companies' || (view === 'banks' && c.sector === 'bank') || (view === 'industries' && c.sector !== 'bank')));
+        const pages = Math.max(1, Math.ceil(companies.length / 5));
+        const page = Math.max(1, Math.min(pages, Number(ui.sanctionsPages[iso]) || 1));
+        const shown = companies.slice((page - 1) * 5, page * 5);
+        const age = (Date.now() - Date.parse(sanctions.checked_on)) / 86400000;
+        return `<section class="uss-section" aria-label="${esc(country.name_ko)} 관련 미국 제재">
+            <h4>미국 제재·거래 제한 <span class="uss-meta">4개국 시범</span></h4>
+            <p class="uss-scope">${esc(country.program_scope_ko)}</p>
+            <p class="uss-meta">확인 ${esc(sanctions.checked_on)} · ${age > 7 ? '확인일 경과 · 최신 명단 재확인 필요' : '공식 자료의 선택 검토본'} · 국가 전체 제재와 개별 법인 지정은 다릅니다.</p>
+            <div class="uss-tabs" role="group" aria-label="제재 구분">${Object.entries(SANCTION_VIEWS).map(([key,label]) => `<button type="button" data-ec-sanctions-view="${key}" aria-pressed="${view === key}">${label}</button>`).join('')}</div>
+            ${measures.length ? `<ul class="uss-list">${measures.map(sanctionsMeasureHtml).join('')}</ul>` : ''}
+            ${companies.length ? `<h5>${view === 'companies' ? '주요 기업' : view === 'banks' ? '선정 은행' : '선정 산업 기업'} · ${companies.length}개 법인</h5>
+            <ul class="uss-list">${shown.map(sanctionsCompanyHtml).join('')}</ul>
+            <nav class="uss-pages" aria-label="기업 페이지">${Array.from({length:pages},(_,i) => `<button type="button" data-ec-sanctions-page="${i+1}" ${page === i+1 ? 'aria-current="page"' : ''}>${i+1}</button>`).join('')}
+            <span>${(page-1)*5+1}–${Math.min(page*5,companies.length)} / ${companies.length}</span></nav>` : ''}
+            <details class="uss-coverage"><summary>선정·대조 범위와 한계</summary><p>${esc(sanctions.selection_ko)}</p>
+            <p>${esc(sanctions.screening_scope_ko)}</p><p>조회되지 않아도 ‘제재 없음’으로 판정하지 않습니다. 자산동결 대상자의 합산 50% 소유 규칙과 계열사 검토는 별도이며 NS-CMIC에 일괄 적용하지 않습니다. DoD·UFLPA 등 CSL 밖 명단은 이번 대조에 포함하지 않았습니다.</p>
+            <a href="https://www.trade.gov/consolidated-screening-list" target="_blank" rel="noopener noreferrer">미 상무부 CSL 범위 ↗</a> ·
+            <a href="https://ofac.treasury.gov/faqs/401" target="_blank" rel="noopener noreferrer">OFAC 소유구조 규칙 ↗</a></details>
+        </section>`;
+    };
 
     const visibleControls = () => (doc?.controls || [])
         .filter((c) => ui.category === 'all' || c.category === ui.category);
@@ -878,9 +957,10 @@
             ${sections ? `<h4 class="ec-sect">현행 조치 (수기 정리)</h4>${sections}` : ''}
             ${noticeBlock(`${name} 규제 기관이 낸 공고`, issued, 'issued')}
             ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, 'aimed')}`}
-            ${total || (iso === 'USA' && ui.usView === 'tariffs') || usTariffs?.partners?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
+            ${total || (iso === 'USA' && ui.usView === 'tariffs') || usTariffs?.partners?.[iso] || sanctions?.countries?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
                 아직 원문을 확인하지 않은 것일 수 있습니다 — 통제가 없다는 뜻은 아닙니다.</p>`}
             ${announcementsHtml(iso)}
+            ${sanctionsSectionHtml(iso)}
             ${footerHtml()}`;
     };
 
@@ -1036,6 +1116,16 @@
         if ((v = attr('data-ec-tab'))) {
             ui.tab = v; ui.iso = null; ui.commodity = null; ui.noticePages = {}; redraw(); return;
         }
+        if ((v = attr('data-ec-sanctions-view'))) {
+            if (!ui.iso || !Object.hasOwn(SANCTION_VIEWS, v)) return;
+            ui.sanctionsViews[ui.iso] = v; ui.sanctionsPages[ui.iso] = 1;
+            const top = ui.panel.scrollTop; renderPanel(); ui.panel.scrollTop = top; return;
+        }
+        if ((v = attr('data-ec-sanctions-page'))) {
+            if (!ui.iso || !/^\d+$/.test(v)) return;
+            ui.sanctionsPages[ui.iso] = Number(v);
+            const top = ui.panel.scrollTop; renderPanel(); ui.panel.scrollTop = top; return;
+        }
         if ((v = attr('data-ec-usview'))) {
             ui.usView = v; renderPanel(); return;
         }
@@ -1091,7 +1181,7 @@
         host.setPanels();
         if (ui.panel) ui.panel.innerHTML = '<p class="ec-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         host.setMap([], onMapClick, onMapHover);
-        await Promise.all([load(), loadNotices(), loadUsTariffs(), loadAnnouncements(), host.loadWorldGeo()]);
+        await Promise.all([load(), loadNotices(), loadUsTariffs(), loadAnnouncements(), loadSanctions(), host.loadWorldGeo()]);
         if (!host.isActive()) return;
         if (!doc) {
             if (ui.panel) ui.panel.innerHTML = '<p class="ec-warn">수출통제 목록을 불러오지 못했습니다.</p>';
