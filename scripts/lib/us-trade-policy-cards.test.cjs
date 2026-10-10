@@ -11,7 +11,7 @@ function renderer(input = data) {
     const window = {};
     const exposed = source.replace('    window.ExportControls = {', `
     usTariffs = input;
-    window.testTradeCards = { partnerHtml, tariffPhase, usTariffSectionHtml, negotiationsHtml, negotiationScheduleState };
+    window.testTradeCards = { ui, partnerHtml, tariffPhase, usTariffSectionHtml, negotiationsHtml, negotiationScheduleState };
     window.ExportControls = {`);
     vm.runInNewContext(exposed, { window, input, Intl, console });
     return window.testTradeCards;
@@ -58,9 +58,11 @@ test('investigations and unverified mixed measures are not ended or effective ta
     assert.equal(r.tariffPhase({ status: 'active', started: '2027-01-01' }), 'pending');
     assert.equal(r.tariffPhase({ status: 'active', ended: '2026-09-01' }), 'history');
     assert.equal(r.tariffPhase({ status: 'unknown' }), 'pending');
-    const html = r.usTariffSectionHtml();
-    const live = html.split('시행 중인 제도')[1].split('조사·시행 예정·재확인')[0];
+    r.ui.tariffView = 'live';
+    const live = r.usTariffSectionHtml().split('시행 중인 제도')[1];
     assert.ok(!live.includes(investigation.name_ko));
+    r.ui.tariffView = 'possible';
+    assert.ok(r.usTariffSectionHtml().includes(investigation.name_ko));
     for (const m of data.measures.filter(m => m.authority === 'IEEPA')) assert.equal(r.tariffPhase(m), 'history');
 });
 
