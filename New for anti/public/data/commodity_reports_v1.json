@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-10T14:40:57.346594+00:00",
+  "generated_at": "2026-10-10T20:18:27.845383+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,15 +17,15 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 37,
-    "sources_failed": 1,
-    "raw_items": 643,
-    "scored": 176,
-    "unclassified": 382,
+    "sources_ok": 36,
+    "sources_failed": 2,
+    "raw_items": 642,
+    "scored": 174,
+    "unclassified": 383,
     "rejected": 56,
-    "published": 164,
+    "published": 162,
     "commodities": 29,
-    "buckets": 98
+    "buckets": 97
   },
   "feed_status": [
     {
@@ -90,7 +90,7 @@
     {
       "source_id": "int_fao_newsroom",
       "ok": true,
-      "count": 19,
+      "count": 18,
       "error": null,
       "mode": "live"
     },
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 42 reports linked, 6 read, 30 already known",
+      "note": "45 list pages, 42 reports linked, 4 read, 32 already known",
       "archived": 10
     },
     {
@@ -235,10 +235,11 @@
     },
     {
       "source_id": "ru_government_docs",
-      "ok": true,
-      "count": 1,
-      "error": null,
-      "mode": "live"
+      "ok": false,
+      "count": 0,
+      "error": "ConnectionResetError: [Errno 104] Connection reset by peer",
+      "mode": "live",
+      "carried_over": 1
     },
     {
       "source_id": "in_dgft_notifications",
@@ -824,15 +825,8 @@
       "VNM": [
         "2147f5407a8ae8de"
       ],
-      "ARG": [
-        "e36e7155dc085ab6",
-        "21c3dd4f0cf93fd0"
-      ],
       "CHN": [
         "6e3880b1a989890a"
-      ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
       ],
       "USA": [
         "0466c9487c9388ef",
@@ -843,6 +837,9 @@
       ],
       "_global": [
         "976dad99c36e6871"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "corn": {
@@ -1081,6 +1078,19 @@
         "c15a313674037476"
       ]
     },
+    "zinc": {
+      "_global": [
+        "959d91c46a9a7514"
+      ],
+      "CAN": [
+        "929e1ee5c8475871"
+      ]
+    },
+    "lead": {
+      "_global": [
+        "959d91c46a9a7514"
+      ]
+    },
     "chromium": {
       "TUR": [
         "89c2ae835e6ab4cd"
@@ -1093,19 +1103,6 @@
       "IND": [
         "5666fbe7cf9fc7d8",
         "bc829361bcef186f"
-      ]
-    },
-    "zinc": {
-      "_global": [
-        "959d91c46a9a7514"
-      ],
-      "CAN": [
-        "929e1ee5c8475871"
-      ]
-    },
-    "lead": {
-      "_global": [
-        "959d91c46a9a7514"
       ]
     },
     "graphite": {
@@ -1180,7 +1177,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.209,
+      "importance": 6.179,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1213,7 +1210,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.822,
+      "importance": 5.793,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1246,7 +1243,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.316,
+      "importance": 5.294,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1279,7 +1276,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.111,
+      "importance": 5.087,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1312,7 +1309,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.724,
+      "importance": 4.703,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1344,7 +1341,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.719,
+      "importance": 4.696,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1376,7 +1373,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.624,
+      "importance": 4.602,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1409,7 +1406,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.624,
+      "importance": 4.602,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1443,7 +1440,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.185,
+      "importance": 4.165,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1475,7 +1472,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.164,
+      "importance": 4.147,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1505,7 +1502,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.974,
+      "importance": 3.955,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1536,44 +1533,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.883,
+      "importance": 3.864,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
-    },
-    {
-      "id": "e36e7155dc085ab6",
-      "title": {
-        "original": "Argentina: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
-      "published_at": "2026-10-07T12:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.793,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-10T14:40:57.346594+00:00"
     },
     {
       "id": "9307f930910dd12d",
@@ -1599,7 +1565,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.73,
+      "importance": 3.714,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1631,7 +1597,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.725,
+      "importance": 3.708,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1662,7 +1628,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.657,
+      "importance": 3.647,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1695,7 +1661,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.651,
+      "importance": 3.633,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1726,7 +1692,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.651,
+      "importance": 3.633,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1757,7 +1723,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.615,
+      "importance": 3.605,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1790,7 +1756,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.608,
+      "importance": 3.598,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1823,7 +1789,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.414,
+      "importance": 3.398,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1854,7 +1820,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.374,
+      "importance": 3.359,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1887,7 +1853,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.374,
+      "importance": 3.359,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1918,7 +1884,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.374,
+      "importance": 3.359,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1949,7 +1915,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.311,
+      "importance": 3.296,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1980,7 +1946,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.249,
+      "importance": 3.235,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2011,7 +1977,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.23,
+      "importance": 3.22,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -2019,35 +1985,6 @@
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "0eb0404d29d2bbc2",
-      "title": {
-        "original": "Senegal: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
-      "published_at": "2026-09-17T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.18,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2073,12 +2010,41 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.179,
+      "importance": 3.173,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
         "revision_language",
         "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "0eb0404d29d2bbc2",
+      "title": {
+        "original": "Senegal: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease 4 percent to 980,000 HA while production is forecast to...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/senegal-cotton-and-products-update",
+      "published_at": "2026-09-17T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.169,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -2106,7 +2072,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.108,
+      "importance": 3.1,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2138,7 +2104,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.048,
+      "importance": 3.033,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2170,7 +2136,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.036,
+      "importance": 3.028,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2200,7 +2166,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.98,
+      "importance": 2.966,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -2231,7 +2197,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.956,
+      "importance": 2.947,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2239,37 +2205,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.92,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-10T14:40:57.346594+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -2294,7 +2229,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.92,
+      "importance": 2.909,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2326,7 +2261,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.92,
+      "importance": 2.909,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2357,7 +2292,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.847,
+      "importance": 2.841,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2389,7 +2324,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.672,
+      "importance": 2.659,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2507,7 +2442,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.402,
+      "importance": 2.399,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2539,7 +2474,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.376,
+      "importance": 2.366,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2667,7 +2602,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.313,
+      "importance": 2.304,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2699,7 +2634,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.194,
+      "importance": 2.188,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2731,7 +2666,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.173,
+      "importance": 2.17,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2763,7 +2698,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.155,
+      "importance": 2.145,
       "reasons": [
         "country_in_text"
       ],
@@ -2793,7 +2728,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.094,
+      "importance": 2.085,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2826,7 +2761,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.084,
+      "importance": 2.075,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2867,7 +2802,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.921,
+      "importance": 1.914,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2898,7 +2833,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.902,
+      "importance": 1.894,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2930,7 +2865,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.747,
+      "importance": 1.738,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -3043,7 +2978,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.647,
+      "importance": 1.639,
       "reasons": [
         "country_in_text"
       ],
@@ -3083,106 +3018,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.593,
+      "importance": 1.589,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "89c2ae835e6ab4cd",
-      "title": {
-        "original": "Chromium Trioxide From the Republic of Türkiye: Final Affirmative Determination of Sales at Less Than Fair Value",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that chromium trioxide from the Republic of T[uuml]rkiye (T[uuml]rkiye) is being, or is likely to be, sold in the United States at less than fair value (LTFV). The period of investigation (POI) is July 1, 2024, through June 30, 2025.",
-      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20697/chromium-trioxide-from-the-republic-of-trkiye-final-affirmative-determination-of-sales-at-less-than",
-      "published_at": "2026-10-08T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "chromium"
-      ],
-      "countries": [
-        "TUR",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.561,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
-    },
-    {
-      "id": "5666fbe7cf9fc7d8",
-      "title": {
-        "original": "Chromium Trioxide From India: Final Affirmative Countervailing Duty Determination",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that countervailable subsidies are being provided to producers and exporters of chromium trioxide from India during the period of investigation (POI), January 1, 2024, through December 31, 2024.",
-      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20696/chromium-trioxide-from-india-final-affirmative-countervailing-duty-determination",
-      "published_at": "2026-10-08T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "chromium"
-      ],
-      "countries": [
-        "IND",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.561,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
-    },
-    {
-      "id": "bc829361bcef186f",
-      "title": {
-        "original": "Chromium Trioxide From India: Final Affirmative Determination of Sales at Less Than Fair Value",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that chromium trioxide from India is being, or is likely to be, sold in the United States at less than fair value (LTFV). The period of investigation (POI) is July 1, 2024, through June 30, 2025.",
-      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20695/chromium-trioxide-from-india-final-affirmative-determination-of-sales-at-less-than-fair-value",
-      "published_at": "2026-10-08T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "chromium"
-      ],
-      "countries": [
-        "IND",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.561,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
     },
     {
       "id": "c6333ba481073b9b",
@@ -3244,6 +3086,99 @@
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
+      "id": "89c2ae835e6ab4cd",
+      "title": {
+        "original": "Chromium Trioxide From the Republic of Türkiye: Final Affirmative Determination of Sales at Less Than Fair Value",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that chromium trioxide from the Republic of T[uuml]rkiye (T[uuml]rkiye) is being, or is likely to be, sold in the United States at less than fair value (LTFV). The period of investigation (POI) is July 1, 2024, through June 30, 2025.",
+      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20697/chromium-trioxide-from-the-republic-of-trkiye-final-affirmative-determination-of-sales-at-less-than",
+      "published_at": "2026-10-08T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "TUR",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.554,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
+    },
+    {
+      "id": "5666fbe7cf9fc7d8",
+      "title": {
+        "original": "Chromium Trioxide From India: Final Affirmative Countervailing Duty Determination",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that countervailable subsidies are being provided to producers and exporters of chromium trioxide from India during the period of investigation (POI), January 1, 2024, through December 31, 2024.",
+      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20696/chromium-trioxide-from-india-final-affirmative-countervailing-duty-determination",
+      "published_at": "2026-10-08T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "IND",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.554,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
+    },
+    {
+      "id": "bc829361bcef186f",
+      "title": {
+        "original": "Chromium Trioxide From India: Final Affirmative Determination of Sales at Less Than Fair Value",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) determines that chromium trioxide from India is being, or is likely to be, sold in the United States at less than fair value (LTFV). The period of investigation (POI) is July 1, 2024, through June 30, 2025.",
+      "url": "https://www.federalregister.gov/documents/2026/10/08/2026-20695/chromium-trioxide-from-india-final-affirmative-determination-of-sales-at-less-than-fair-value",
+      "published_at": "2026-10-08T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "IND",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.554,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
+    },
+    {
       "id": "b8e0e19f0f00a266",
       "title": {
         "original": "¡Crece la participación de la mujer en la minería del cobre!",
@@ -3266,7 +3201,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.543,
+      "importance": 1.539,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3296,7 +3231,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.54,
+      "importance": 1.537,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -3326,7 +3261,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.523,
+      "importance": 1.516,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
@@ -3353,7 +3288,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.507,
+      "importance": 1.5,
       "reasons": [
         "country_in_text"
       ],
@@ -3396,7 +3331,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.49,
+      "importance": 1.488,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3428,7 +3363,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.476,
+      "importance": 1.469,
       "reasons": [
         "country_in_text"
       ],
@@ -3641,7 +3576,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.426,
+      "importance": 1.419,
       "reasons": [
         "country_in_text"
       ],
@@ -3671,7 +3606,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.426,
+      "importance": 1.419,
       "reasons": [
         "country_in_text"
       ],
@@ -3701,7 +3636,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.426,
+      "importance": 1.419,
       "reasons": [
         "country_in_text"
       ],
@@ -3731,7 +3666,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.423,
+      "importance": 1.419,
       "reasons": [
         "country_in_text"
       ],
@@ -3761,7 +3696,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.399,
+      "importance": 1.393,
       "reasons": [
         "country_in_text"
       ],
@@ -3790,7 +3725,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.389,
+      "importance": 1.382,
       "reasons": [
         "country_in_text"
       ],
@@ -3833,7 +3768,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.358,
+      "importance": 1.352,
       "reasons": [
         "country_in_text"
       ],
@@ -3989,7 +3924,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.334,
+      "importance": 1.329,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4021,7 +3956,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.333,
+      "importance": 1.327,
       "reasons": [
         "country_in_text"
       ],
@@ -4052,7 +3987,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.333,
+      "importance": 1.327,
       "reasons": [
         "country_in_text"
       ],
@@ -4082,7 +4017,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.327,
+      "importance": 1.323,
       "reasons": [
         "country_in_text"
       ],
@@ -4113,7 +4048,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.275,
+      "importance": 1.272,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4144,7 +4079,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.273,
+      "importance": 1.269,
       "reasons": [
         "country_in_text"
       ],
@@ -4173,7 +4108,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.267,
+      "importance": 1.262,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4189,48 +4124,6 @@
       },
       "agency_url": "http://government.ru/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
-    },
-    {
-      "id": "500ccb61f23619e0",
-      "title": {
-        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
-        "original_lang": "en",
-        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
-        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260930",
-      "published_at": "2026-09-30T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "LBY"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.26,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
-        "items": [],
-        "targets": [
-          "BLR",
-          "LBY"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "d4de362acb2f5bd7",
@@ -4254,13 +4147,55 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.259,
+      "importance": 1.258,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
       ],
       "agency_url": "https://worldsteel.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "500ccb61f23619e0",
+      "title": {
+        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
+        "original_lang": "en",
+        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
+        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260930",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "LBY"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.255,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "LBY"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "59d7681e3c02b816",
@@ -4284,7 +4219,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.237,
+      "importance": 1.232,
       "reasons": [
         "country_in_text"
       ],
@@ -4324,51 +4259,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.225,
+      "importance": 1.22,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
-    },
-    {
-      "id": "846a4ec9ba0dc965",
-      "title": {
-        "original": "Issuance of Amended Venezuela General Licenses",
-        "original_lang": "en",
-        "ko": "개정 베네수엘라 일반 면허 발급",
-        "en": "Issuance of Amended Venezuela General Licenses"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260928",
-      "published_at": "2026-09-28T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "VEN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.215,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "export_restriction",
-        "items": [],
-        "targets": [
-          "VEN"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "11ac17f1a9aa9e08",
@@ -4521,6 +4415,47 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "846a4ec9ba0dc965",
+      "title": {
+        "original": "Issuance of Amended Venezuela General Licenses",
+        "original_lang": "en",
+        "ko": "개정 베네수엘라 일반 면허 발급",
+        "en": "Issuance of Amended Venezuela General Licenses"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260928",
+      "published_at": "2026-09-28T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "VEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.21,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "181e4ee82214496a",
       "title": {
         "original": "EIA expects highest natural gas inventories in a decade heading into winter",
@@ -4543,7 +4478,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.201,
+      "importance": 1.199,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4577,7 +4512,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.199,
+      "importance": 1.194,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4616,7 +4551,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.197,
+      "importance": 1.193,
       "reasons": [
         "country_in_text"
       ],
@@ -4646,7 +4581,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.196,
+      "importance": 1.193,
       "reasons": [
         "country_in_text"
       ],
@@ -4676,7 +4611,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.176,
+      "importance": 1.173,
       "reasons": [
         "country_in_text"
       ],
@@ -4704,7 +4639,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.175,
+      "importance": 1.172,
       "reasons": [
         "has_figure"
       ],
@@ -4735,7 +4670,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.174,
+      "importance": 1.169,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4773,7 +4708,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.163,
+      "importance": 1.16,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4804,7 +4739,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.126,
+      "importance": 1.124,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4833,7 +4768,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.119,
+      "importance": 1.114,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -4860,7 +4795,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.113,
+      "importance": 1.109,
       "reasons": [
         "country_in_text"
       ],
@@ -5623,7 +5558,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.027,
+      "importance": 1.023,
       "reasons": [
         "country_in_text"
       ],
@@ -5665,7 +5600,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.011,
+      "importance": 1.008,
       "reasons": [
         "country_in_text"
       ],
@@ -5709,37 +5644,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.008,
+      "importance": 1.006,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "c4debe37366d175b",
-      "title": {
-        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
-      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
-      "published_at": "2026-09-21T20:26:55+00:00",
-      "agency": "International Aluminium Institute",
-      "agency_ko": "국제알루미늄협회(IAI)",
-      "source_id": "int_iai",
-      "commodities": [
-        "aluminum"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.008,
-      "reasons": [],
-      "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -5765,9 +5674,35 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.008,
+      "importance": 1.004,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c4debe37366d175b",
+      "title": {
+        "original": "Nespresso expands curbside aluminium recycling in Westchester County, with IAI supporting demand for recycled metal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A new collaboration is making it easier for households in New York’s Westchester County to recycle small aluminium items, and the International Aluminium Institute is helping ensure that recovered metal finds its way back into use. Announced on 21 September, the initiative allows residents across the County’s Refuse Disposal District to place used Nespresso capsules and other small, non-ferrous aluminium items directly into their curbside recycling bins. The programme reaches more than 900,000 residents and processes materials locally at the Department of Environmental Facilities’ Material…",
+      "url": "https://international-aluminium.org/nespresso-expands-curbside-aluminium-recycling-in-westchester-county-with-iai-supporting-demand-for-recycled-metal/",
+      "published_at": "2026-09-21T20:26:55+00:00",
+      "agency": "International Aluminium Institute",
+      "agency_ko": "국제알루미늄협회(IAI)",
+      "source_id": "int_iai",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.004,
+      "reasons": [],
+      "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -5792,7 +5727,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.007,
+      "importance": 1.002,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5830,7 +5765,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.996,
+      "importance": 0.993,
       "reasons": [
         "country_in_text"
       ],
@@ -5871,7 +5806,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.987,
+      "importance": 0.983,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5899,7 +5834,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.967,
+      "importance": 0.964,
       "reasons": [
         "country_in_text"
       ],
@@ -5942,7 +5877,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.956,
+      "importance": 0.953,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6053,7 +5988,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.952,
+      "importance": 0.948,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6093,7 +6028,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.925,
+      "importance": 0.923,
       "reasons": [
         "country_in_text"
       ],
@@ -6122,7 +6057,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.912,
+      "importance": 0.909,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6162,7 +6097,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.885,
+      "importance": 0.883,
       "reasons": [
         "country_in_text"
       ],
@@ -6191,7 +6126,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.871,
+      "importance": 0.867,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6229,7 +6164,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.749,
+      "importance": 0.748,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -6255,7 +6190,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.727,
+      "importance": 0.725,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6283,7 +6218,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.713,
+      "importance": 0.712,
       "reasons": [
         "country_in_text"
       ],
@@ -6326,7 +6261,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.675,
+      "importance": 0.674,
       "reasons": [
         "country_in_text"
       ],
@@ -6357,7 +6292,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.675,
+      "importance": 0.674,
       "reasons": [
         "country_in_text"
       ],
@@ -6469,7 +6404,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.584,
+      "importance": 0.582,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -6497,7 +6432,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.583,
+      "importance": 0.582,
       "reasons": [
         "country_in_text"
       ],
@@ -6527,7 +6462,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.538,
+      "importance": 0.537,
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
@@ -6658,7 +6593,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.475,
+      "importance": 0.474,
       "reasons": [],
       "agency_url": "https://silverinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
