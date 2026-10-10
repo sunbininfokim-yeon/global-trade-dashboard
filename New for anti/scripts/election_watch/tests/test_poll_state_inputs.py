@@ -10,7 +10,8 @@ from unittest.mock import patch
 
 from election_watch.polls import read
 from election_watch.state_inputs import CONFIG, CATALOGS, apply_operations, digest, packets, validate_packet
-from election_watch.poll_run_capture import make_capture, validate_capture
+from election_watch.poll_run_capture import make_capture, validate_capture, restore_ballots
+from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.poll_refresh_provenance import retain_state_provenance
 from freeze_state_inputs import make_operations
 from check_state_packet_changes import violations, PACKETS, INTEGRATION
@@ -72,11 +73,14 @@ class StateInputTests(unittest.TestCase):
         packet = PACKETS+'CT.json'
         for shared in ('New for anti/public/data/usa_election_live_polls_v1.json',
                        'New for anti/scripts/election_watch/election_watch/live_polls.py', 'docs/ops/TASKS.md',
+                       'New for anti/scripts/election_watch/refresh_governor_finance_audit.py',
                        'New for anti/public/data/usa_election_state_evidence/2026/CT-new.json'):
             self.assertEqual(violations([packet, shared], 'codex/ct-evidence-next'), [shared])
         self.assertFalse(violations([packet], 'codex/ct-evidence-next'))
         self.assertFalse(violations([packet, shared], INTEGRATION))
         self.assertTrue(violations([packet, shared], INTEGRATION+'-extra'))
+        self.assertFalse(violations([packet, 'New for anti/scripts/election_watch/election_watch/governor_ct.py'], 'codex/ct-evidence-next'))
+        self.assertTrue(violations([packet, PACKETS+'AL.json'], 'codex/ct-evidence-next'))
 
     def test_offline_rebuild_preserves_other_states_dates_and_focus(self):
         def baseline(name):
@@ -125,6 +129,30 @@ class StateInputTests(unittest.TestCase):
         retain_state_provenance(board, history, old, [packet])
         self.assertEqual(board['state_captures'], old['state_captures'])
 
+    def test_reviewed_state_document_needs_no_shared_host_registry_edit(self):
+        import hashlib
+        entry = deepcopy(next(o['value'] for p in packets() for o in p['config_operations']
+            if o['file']=='usa_polls/primary_supplements_2026.json' and o['action']=='append_item'))
+        body = b'%PDF-synthetic-reviewed-fixture'
+        entry['documents'] = [{'url':'https://new-reviewed-publisher.example/poll.pdf',
+                               'sha256':hashlib.sha256(body).hexdigest()}]
+        packet = {'state':entry['state'], 'config_operations':[{'file':'usa_polls/primary_supplements_2026.json',
+                   'path':['records'], 'action':'append_item', 'value':deepcopy(entry)}]}
+        class Response:
+            status=200
+            def geturl(self): return 'https://new-reviewed-publisher.example/poll.pdf'
+            def read(self,*args): return body
+            def __enter__(self): return self
+            def __exit__(self,*args): return False
+        snapshot = {'schema':'usa_reviewed_primary_poll_supplements_v1','cycle':2026,'records':[entry]}
+        with patch('election_watch.state_inputs.packets', return_value=[packet]):
+            rows, receipts = merge_primary_supplements([], snapshot, '2026-10-09', opener=lambda *a,**k:Response())
+            self.assertEqual(receipts[0]['status'], 'primary_documents_rechecked')
+            self.assertEqual(len(rows), 1)
+            entry['documents'][0]['url'] = 'https://new-reviewed-publisher.example/another-poll.pdf'
+            with self.assertRaisesRegex(ValueError, 'unreviewed primary document'):
+                merge_primary_supplements([], snapshot, '2026-10-09', opener=lambda *a,**k:Response())
+
 
 class PublicationRetryTests(unittest.TestCase):
     def capture(self):
@@ -138,6 +166,16 @@ class PublicationRetryTests(unittest.TestCase):
         self.assertEqual(payload['primary_receipts'][0]['original_reviewed_on'], '2026-10-08')
         payload['rows'][0]['id'] = 'changed'
         with self.assertRaisesRegex(ValueError, 'changed'): validate_capture(payload)
+
+    def test_official_ballot_capture_survives_retry_and_holds_newer_main_conflict(self):
+        rid = 'USA:FL:house:01'; before = {'state':'FL','candidates':['old nominee']}
+        updated = {'state':'FL','candidates':['officially refreshed nominee']}
+        from election_watch.polls import digest as capture_digest
+        captured = {rid:{'before_sha256':capture_digest(before), 'value':updated}}
+        self.assertEqual(restore_ballots({'races':{rid:before}}, captured)['races'][rid], updated)
+        self.assertEqual(restore_ballots({'races':{rid:updated}}, captured)['races'][rid], updated)
+        with self.assertRaisesRegex(ValueError, 'newer main review'):
+            restore_ballots({'races':{rid:{'state':'FL','candidates':['later withdrawal']}}}, captured)
 
     def test_invalid_checkpoint_source_or_future_date_is_rejected(self):
         for url, day in [('https://example.org/', '2026-10-09'),

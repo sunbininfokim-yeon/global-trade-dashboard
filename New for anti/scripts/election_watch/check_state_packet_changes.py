@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """State input PRs must not also write shared catalogs or generated boards."""
 import argparse
+import re
 import subprocess
 from election_watch.state_inputs import CATALOGS, CONFIG, packets
 from election_watch.polls import read
@@ -26,9 +27,21 @@ def violations(changed, branch):
     if branch == INTEGRATION:
         return []  # One explicitly authorized platform integration, not a state task.
     packet_changes = [f for f in changed if f.startswith(PACKETS) and f.endswith('.json')]
-    state_task = bool(packet_changes) or bool(__import__('re').search(r'codex/[a-z]{2}-(?:state-)?evidence-', branch))
-    return sorted(f for f in set(changed) if f in SHARED or
-                  f.startswith(PREFIX+'public/data/usa_election_state_evidence/')) if state_task else []
+    match = re.search(r'codex/([a-z]{2})-(?:state-)?evidence-', branch)
+    state_task = bool(packet_changes) or bool(match)
+    if not state_task:
+        return []
+    states = {f.removeprefix(PACKETS).removesuffix('.json') for f in packet_changes}
+    if match: states.add(match[1].upper())
+    def common_code(file):
+        if not file.startswith(PREFIX+'scripts/election_watch/') or not file.endswith('.py') or '/tests/' in file:
+            return False
+        # State-owned adapters may change; common collectors/builders may not.
+        return not any(re.search(rf'(^|_){s.lower()}(_|\.py$)', file.rsplit('/',1)[-1]) for s in states)
+    bad = {f for f in changed if f in SHARED or common_code(f) or
+           f.startswith(PREFIX+'public/data/usa_election_state_evidence/')}
+    if len(states) > 1: bad.update(packet_changes)
+    return sorted(bad)
 
 
 def main():

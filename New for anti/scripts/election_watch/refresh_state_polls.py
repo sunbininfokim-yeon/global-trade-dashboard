@@ -43,7 +43,11 @@ def main():
         policy['states']=[args.state]
         rows,url=fetch_polls(policy['cycle'],args.as_of)
         provider_rows=rows
-        rows,primary_receipts=merge_primary_supplements(rows,read(config/'primary_supplements_2026.json'),args.as_of,[args.state])
+        primary_snapshot=read(config/'primary_supplements_2026.json')
+        # Explicit review collection may use the exact temporarily reviewed
+        # state entry before freeze moves it into the committed state packet.
+        reviewed_entries=[e for e in primary_snapshot['records'] if e['state']==args.state] if args.packet else ()
+        rows,primary_receipts=merge_primary_supplements(rows,primary_snapshot,args.as_of,[args.state],reviewed_entries=reviewed_entries)
         capture=build_live(rows,policy,read(config/'results_2026.json'),args.as_of,checked,url)
         finance=load_finance_links(args.public/'usa_election_finance_index_v1.json',2026)
         attach_coverage(capture,provider_rows,policy,finance);attach_gaps(capture,finance)

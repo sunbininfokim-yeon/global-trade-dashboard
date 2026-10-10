@@ -3,7 +3,7 @@
 import argparse
 from datetime import datetime, timezone
 from pathlib import Path
-from election_watch.polls import read, atomic
+from election_watch.polls import read, atomic, digest
 from election_watch.live_polls import (apply_watchlist, build_live, close_finished_races,
                                       fetch_polls, poll_history, validated_results)
 from election_watch.poll_priorities import apply_priorities, attach_coverage, load_finance_links
@@ -55,7 +55,7 @@ def main():
     p.add_argument("--house-focus", type=Path, help="House Lean/Toss-Up review priority policy")
     p.add_argument("--ratings", type=Path, default=ROOT.parent.parent/"public/data/usa_election_ratings_review_v1.json")
     args = p.parse_args()
-    from election_watch.poll_run_capture import validate_capture, make_capture
+    from election_watch.poll_run_capture import validate_capture, make_capture, restore_ballots
     retry = validate_capture(read(args.retry_capture)) if args.retry_capture else None
     if retry:
         if args.input: raise ValueError('ambiguous polling replay')
@@ -74,12 +74,18 @@ def main():
             raise ValueError('Newer national collection already published; older retry held')
     health = args.output.with_name('usa_election_live_polls_status_v1.json')
     ballot_health = {'status': 'not_configured'}
+    ballot_capture = {}
     ballots = None
     def refresh_ballots():
-        nonlocal ballot_health
+        nonlocal ballot_health, ballot_capture, ballots
         if not ballots:
             return
         ballot_health = {'status': 'reviewed_snapshot', 'reviewed_on': ballots['reviewed_on']}
+        if retry:
+            ballot_capture = retry['ballot_capture']
+            ballots = restore_ballots(ballots, ballot_capture)
+            ballot_health = retry['ballot_health']
+            return
         if not args.input and not retry:
             try:
                 florida = fetch_florida(args.as_of)
@@ -91,6 +97,7 @@ def main():
                         aliases = previous.get(candidate['name'], {}).get('poll_name_aliases')
                         if aliases:
                             candidate['poll_name_aliases'] = aliases
+                    ballot_capture[rid] = {'before_sha256':digest(ballots['races'].get(rid)), 'value':review}
                 ballots['races'].update(florida['races'])
                 ballot_health = {'status': 'ok', 'source_url': florida['source_url'],
                     'source_sha256': florida['source_sha256'], 'checked_on': florida['checked_on'], 'races': 30}
@@ -126,10 +133,11 @@ def main():
         primary_receipts = retry['primary_receipts'] if retry else []
         if production_policy and not args.input and not retry:
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
-        if args.capture_output and not args.input:
-            atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts))
         refresh_ballots()
         policy = selected_policy()
+        if args.capture_output and not args.input:
+            atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts,
+                                                    ballot_capture, ballot_health))
         policy['quality_reviews'] = quality['reviews']
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
         if primary_receipts:

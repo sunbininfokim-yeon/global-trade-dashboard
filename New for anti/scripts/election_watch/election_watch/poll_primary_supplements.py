@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from .polls import require
 from .poll_quality import answer_correction_fingerprint
+from .state_inputs import primary_document_approved
 
 # Reviewed publishers with finite release URLs and SHA-256 snapshots below.
 # New releases still require a committed record/document review.
@@ -88,7 +89,7 @@ def primary_html_fingerprint(body):
     return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
 
 
-def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen):
+def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen, reviewed_entries=()):
     require(snapshot['schema']=='usa_reviewed_primary_poll_supplements_v1'
             and snapshot['cycle']==2026, 'primary supplement schema/cycle')
     output=deepcopy(rows);receipts=[];seen=set()
@@ -102,6 +103,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         documents=entry['documents'];require(documents, 'missing reviewed primary documents')
         for document in documents:
             parsed=urlparse(document['url'])
+            state_review = primary_document_approved(entry, document) or entry in reviewed_entries
             require(parsed.scheme=='https' and not parsed.username and not parsed.password
                     and (parsed.hostname in PRIMARY_PDF_HOSTS and parsed.path.endswith('.pdf')
                          or document['url'] in PRIMARY_PDF_RELEASES
@@ -109,7 +111,11 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document.get('format') == 'reviewed_html_article_v1'
                             and document['url'] in PRIMARY_HTML_RELEASES
                          or document.get('format') == 'reviewed_surveyusa_report_v1'
-                            and document['url'] in PRIMARY_SURVEYUSA_RELEASES)
+                            and document['url'] in PRIMARY_SURVEYUSA_RELEASES
+                         or state_review and (parsed.path.endswith(('.pdf','.xlsx'))
+                            or document.get('format') == 'reviewed_html_article_v1'
+                            or document.get('format') == 'reviewed_surveyusa_report_v1'
+                                and str(document.get('report_id','')).isdigit()))
                     and len(document['sha256'])==64, 'unreviewed primary document')
         # Replace a verified provider typo only for the exact reviewed snapshot.
         # Changed records still undergo the standard same-wave conflict check.
@@ -141,7 +147,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                 if document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
                 elif document.get('format') == 'reviewed_surveyusa_report_v1':
-                    digest = surveyusa_html_fingerprint(body, PRIMARY_SURVEYUSA_RELEASES[document['url']])
+                    digest = surveyusa_html_fingerprint(body, str(document.get('report_id') or PRIMARY_SURVEYUSA_RELEASES[document['url']]))
                 else:
                     require(body.startswith(b'%PDF-') if urlparse(document['url']).path.endswith('.pdf') else body.startswith(b'PK\x03\x04'), 'primary document format changed')
                     digest=hashlib.sha256(body).hexdigest()

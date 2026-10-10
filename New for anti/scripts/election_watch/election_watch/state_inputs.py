@@ -42,9 +42,10 @@ def validate_packet(packet, state_names):
     ids = {r['id'] for r in rows}
     if len(ids) != len(rows):
         raise ValueError('state input duplicate record')
+    def owned_subject(subject):
+        return subject == f'2026 {state_names[state]}' or bool(re.fullmatch(rf'2026 {state}-\d{{2}}', subject))
     for row in rows:
-        if not (row['subject'] == f'2026 {state_names[state]}' or
-                re.fullmatch(rf'2026 {state}-\d{{2}}', row['subject'])):
+        if not owned_subject(row['subject']):
             raise ValueError('state input contains another state')
     seen = set()
     for op in packet['config_operations']:
@@ -69,6 +70,9 @@ def validate_packet(packet, state_names):
                 raise ValueError('missing state input precondition')
         if not owned:
             raise ValueError('state input operation outside owned state')
+        if (file=='usa_polls/primary_supplements_2026.json' and action=='append_item'
+                and not owned_subject(op['value']['record']['subject'])):
+            raise ValueError('state primary review contains another state')
         key = (file, tuple(path), action, digest(op.get('value')) if action.endswith('item') else '')
         if key in seen:
             raise ValueError('duplicate state input operation')
@@ -134,3 +138,16 @@ def overlay(path, value, root=CONFIG):
     for packet in packets(root):
         value = apply_operations(value, [o for o in packet['config_operations'] if o['file'] == relative])
     return value
+
+
+def primary_document_approved(entry, document):
+    """An exact reviewed state entry can approve one file, never a CDN host."""
+    for packet in packets():
+        if packet['state'] != entry['state']:
+            continue
+        for op in packet['config_operations']:
+            if (op['file']=='usa_polls/primary_supplements_2026.json' and op['path']==['records']
+                    and op['action']=='append_item' and op['value']==entry
+                    and document in op['value']['documents']):
+                return True
+    return False
