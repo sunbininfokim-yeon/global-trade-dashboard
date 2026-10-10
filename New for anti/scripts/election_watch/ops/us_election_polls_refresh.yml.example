@@ -1,8 +1,10 @@
+# Keep the existing workflow_run identifier in deploy.yml; schedule is daily.
 name: US election polls weekly
+run-name: US election polls daily (${{ github.event_name }})
 
 on:
   schedule:
-    - cron: '10 21 * * 0' # Monday 06:10 KST weekly; includes post-election health/results refresh
+    - cron: '10 21 * * *' # Daily 06:10 KST; includes post-election health/results refresh
   workflow_dispatch:
   pull_request:
     paths:

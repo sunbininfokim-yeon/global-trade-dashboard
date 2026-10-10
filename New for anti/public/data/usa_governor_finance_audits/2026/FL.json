@@ -1,0 +1,123 @@
+{
+  "schema": "usa_governor_finance_audit_v1",
+  "state": "FL",
+  "cycle": 2026,
+  "captured_at": "2026-10-08T11:47:12.987555+00:00",
+  "status": "collected_normalization_held",
+  "source_url": "https://dos.elections.myflorida.com/campaign-finance/expenditures/",
+  "sources": [
+    {
+      "export_url": "https://dos.elections.myflorida.com/cgi-bin/expend.exe",
+      "query": {
+        "election": "20261103-GEN",
+        "search_on": "4",
+        "ComName": "",
+        "ComNameSrch": "2",
+        "committee": "ECO",
+        "CanFName": "",
+        "CanLName": "",
+        "CanNameSrch": "2",
+        "office": "All",
+        "cdistrict": "",
+        "cgroup": "",
+        "party": "All",
+        "cfname": "",
+        "clname": "",
+        "namesearch": "2",
+        "ccity": "",
+        "cstate": "",
+        "czipcode": "",
+        "cpurpose": "",
+        "cdollar_minimum": "",
+        "cdollar_maximum": "",
+        "rowlimit": "1000",
+        "csort1": "DAT",
+        "csort2": "CAN",
+        "cdatefrom": "",
+        "cdateto": "",
+        "queryformat": "2",
+        "Submit": "Submit"
+      },
+      "columns": [
+        "Candidate/Committee",
+        "Date",
+        "Amount",
+        "Payee Name",
+        "Address",
+        "City State Zip",
+        "Purpose",
+        "Type"
+      ],
+      "rows": 172,
+      "tsv_sha256": "9ef3e31c31832847392a187596fc08c3ce197a9bba55db02e8cb1a9dd1a8ad24",
+      "encoding": "windows-1252"
+    }
+  ],
+  "input_records": 172,
+  "current_governor_target_records": null,
+  "export_scope": "ECO_general_expenditures_only_not_verified_independent_expenditures",
+  "all_state_ie_coverage": "not_established",
+  "row_limit": 1000,
+  "source_total_count": null,
+  "completeness": "no_source_total_or_filing_reconciliation",
+  "first_reported_expenditure_on": "2025-01-06",
+  "last_reported_expenditure_on": "2026-10-01",
+  "report_year_counts": {
+    "2025": 95,
+    "2026": 77
+  },
+  "reported_types": {
+    "MON": 166,
+    "REF": 2,
+    "ECC": 4
+  },
+  "reported_committees": {
+    "Florida True (ECO)": 8,
+    "Taxpayers for Public Integrity (ECO)": 34,
+    "Common Sense (ECO)": 9,
+    "Election Integrity Brigade of Miami-Dade (ECO)": 50,
+    "Accountability in Government (ECO)": 2,
+    "Honesty and Integrity for Broward Citize (ECO)": 1,
+    "Keeping Citizens First, Inc. (ECO)": 9,
+    "Floridians for Fiscal Responsibility (ECO)": 10,
+    "Affordable Living Florida (ECO)": 14,
+    "Friends of LaVon Bracy Davis (ECO)": 26,
+    "Voter Interest Group (ECO)": 1,
+    "Pets Vote (ECO)": 1,
+    "Nature Coast Conservatives (ECO)": 7
+  },
+  "identical_row_occurrences": 7,
+  "candidate_audits": [
+    {
+      "candidate_id": "FL:reported-general:2026:416c41ced29ced6f",
+      "name": "Byron Donalds",
+      "party": "REP",
+      "reported_rows": null,
+      "support_cents": null,
+      "oppose_cents": null,
+      "amount_status": "target_and_direction_not_present"
+    },
+    {
+      "candidate_id": "FL:reported-general:2026:e7f324b83f9cddb4",
+      "name": "David Jolly",
+      "party": "DEM",
+      "reported_rows": null,
+      "support_cents": null,
+      "oppose_cents": null,
+      "amount_status": "target_and_direction_not_present"
+    }
+  ],
+  "hold_reasons": [
+    "eco_export_not_independent_expenditure_classification",
+    "target_candidate_office_and_support_oppose_not_present",
+    "transaction_identity_and_amendment_lineage_missing",
+    "full_public_filing_reconciliation_required"
+  ],
+  "limitations_ko": [
+    "공식 공개 ECO 지출 검색 TSV의 제한 범위 수집 감사입니다. PAC·독립지출 신고자 전체나 주지사 지출 전수 수집이 아닙니다.",
+    "ECO 조직의 일반 지출을 후보별 독립지출로 간주하지 않습니다. 후보 대상·지지/반대·거래ID·정정 관계가 없어 금액과 대상 건수는 null입니다.",
+    "목적 문구·단체 이름·금액·Type(MON/ECC/REF)으로 후보 지지·반대를 추정하지 않습니다. 음수 반환도 일반 지출 자료에 보존하고 합산하지 않습니다.",
+    "날짜는 지급 내역 날짜이며 최신 신고일·본선 기준일이 아닙니다. 검색 선거 선택만으로 경선·본선 구분을 확정하지 않습니다.",
+    "1000행 제한 도달·빈 응답·HTML 오류·스키마 변경·조회 실패 시 기존 감사와 금융 파일의 원래 기준일을 보존합니다."
+  ]
+}
