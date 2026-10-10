@@ -48,7 +48,8 @@ def main():
     # Source failures leave their last good files intact. Healthy sources still advance.
     try:
         from refresh_governor_matchups import ROSTERS
-        build(args.public, cadence=args.cadence, governor_rosters=json.loads(ROSTERS.read_text()) if ROSTERS.exists() else None)
+        from election_watch.polls import read
+        build(args.public, cadence=args.cadence, governor_rosters=read(ROSTERS) if ROSTERS.exists() else None)
         map_status = 'success'
     except (ValueError, OSError, KeyError, AssertionError, TypeError, SourceError):
         map_status = 'failed'

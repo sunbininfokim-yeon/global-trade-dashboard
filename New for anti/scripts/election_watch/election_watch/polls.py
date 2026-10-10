@@ -25,7 +25,10 @@ def digest(value):
 
 
 def read(path):
-    return json.loads(Path(path).read_text())
+    # State packets are reviewed source inputs. Public/generated JSON and test
+    # fixtures remain ordinary JSON; only exact production catalogs use them.
+    from .state_inputs import overlay
+    return overlay(path, json.loads(Path(path).read_text()))
 
 
 def atomic(path, value):

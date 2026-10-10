@@ -8,21 +8,26 @@ from pathlib import Path
 import tempfile
 
 from election_watch.federal_matchups import attach_matchups, merge_ballot_reviews
+from election_watch.polls import read
 
 ROOT = Path(__file__).resolve().parent
 
 
-def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None):
-    snapshot = json.loads(Path(snapshot_path).read_text())
+def publish(snapshot_path, board_path, as_of, ballot_reviews_path=None, state=None):
+    snapshot = read(snapshot_path)
     if ballot_reviews_path is not None:
-        snapshot = merge_ballot_reviews(snapshot, json.loads(Path(ballot_reviews_path).read_text()), as_of)
+        snapshot = merge_ballot_reviews(snapshot, read(ballot_reviews_path), as_of)
     board_path = Path(board_path)
     board = json.loads(board_path.read_text())
     usa = [c for c in board['countries'] if c['iso3'] == 'USA']
     if len(usa) != 1:
         raise ValueError('Expected one USA board')
     states = usa[0]['ui_ready']['state_drilldown']['states']
-    usa[0]['ui_ready']['state_drilldown']['states'] = attach_matchups(states, snapshot, as_of)
+    if state is not None and state not in {s['id'] for s in states}:
+        raise ValueError('Unknown state in board')
+    selected = states if state is None else [s for s in states if s['id'] == state]
+    updated = {s['id']: s for s in attach_matchups(selected, snapshot, as_of)}
+    usa[0]['ui_ready']['state_drilldown']['states'] = [updated.get(s['id'], s) for s in states]
     content = json.dumps(board, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
     temp = None
     try:
@@ -42,5 +47,6 @@ if __name__ == '__main__':
     parser.add_argument('--board', type=Path, default=ROOT.parent.parent / 'public/data/elections_board_v1.json')
     parser.add_argument('--ballot-reviews', type=Path, default=ROOT / 'config/usa_polls/ballot_reviews_2026.json')
     parser.add_argument('--as-of', default=datetime.now(timezone.utc).date().isoformat())
+    parser.add_argument('--state', help='Republish only this state; preserve other state projections')
     args = parser.parse_args()
-    print(f'Published {publish(args.snapshot, args.board, args.as_of, args.ballot_reviews)} reviewed display matchups')
+    print(f'Published {publish(args.snapshot, args.board, args.as_of, args.ballot_reviews, args.state)} reviewed display matchups')
