@@ -102,6 +102,18 @@
         return noticesPromise;
     };
 
+    // Independently reviewed country news; never mixed into the export-control feed.
+    const ANNOUNCEMENTS_URL = '/public/data/trade_policy/country_announcements_v1.json';
+    let announcements = null;
+    let announcementsPromise = null;
+    const loadAnnouncements = () => {
+        if (!announcementsPromise) announcementsPromise = fetch(ANNOUNCEMENTS_URL, { cache: 'no-cache' })
+            .then((r) => { if (!r.ok) throw new Error(`country announcements ${r.status}`); return r.json(); })
+            .then((d) => { announcements = d; return d; })
+            .catch(() => { announcements = { error: true }; return announcements; });
+        return announcementsPromise;
+    };
+
     // control.measure (pipeline gemini.MEASURES), same words as trade.js's box.
     const NOTICE_MEASURE_KO = {
         entity_list: '통제명단', export_restriction: '수출통제', export_ban: '수출금지',
@@ -283,13 +295,12 @@
         noticeScope: 'controls', // 'controls' | 'all' (adds sanctions/enforcement)
         issuer: 'all',
         noticeMeasure: 'all',
-        shown: 0,
+        noticePages: {},
         iso: null,
         panel: null,
         legend: null,
     };
-    const NOTICE_PAGE = 40;
-    const NOTICE_IN_COUNTRY = 12;
+    const NOTICE_PAGE = 5;
 
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (ch) => (
         { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -461,6 +472,63 @@
         </li>`;
     };
 
+    const newestNotices = (rows) => [...new Map(rows.map((r) => [r.id || r.url, r])).values()]
+        .sort((a, b) => noticeDate(b).localeCompare(noticeDate(a)) || String(a.id || a.url).localeCompare(String(b.id || b.url)));
+
+    const pageNotices = (rows, key) => {
+        const sorted = newestNotices(rows);
+        const pages = Math.max(1, Math.ceil(sorted.length / NOTICE_PAGE));
+        const requested = Number(ui.noticePages[key]) || 1;
+        const page = Math.max(1, Math.min(pages, Math.floor(requested)));
+        ui.noticePages[key] = page;
+        return { rows: sorted.slice((page - 1) * NOTICE_PAGE, page * NOTICE_PAGE), page, pages, total: sorted.length };
+    };
+    const pagedNoticesHtml = (rows, key, render = noticeHtml) => {
+        const p = pageNotices(rows, key);
+        if (!p.total) return '<p class="ec-empty">조건에 맞는 공고가 없습니다.</p>';
+        const buttons = Array.from({ length: p.pages }, (_, i) => `<button type="button"
+            data-ec-notice-page="${i + 1}" data-ec-notice-key="${esc(key)}"
+            ${p.page === i + 1 ? 'aria-current="page"' : ''} aria-label="${i + 1}페이지">${i + 1}</button>`).join('');
+        return `<div data-ec-notice-list="${esc(key)}"><ul class="ec-notices">${p.rows.map(render).join('')}</ul>
+            <nav class="ec-pagination" aria-label="공고 페이지">${buttons}
+            <span>${(p.page - 1) * NOTICE_PAGE + 1}–${Math.min(p.page * NOTICE_PAGE, p.total)} / ${p.total}건</span></nav></div>`;
+    };
+
+    const announcementEligible = (r, iso) => {
+        const w = announcements?.window;
+        if (!w || !/^\d{4}-\d{2}-\d{2}$/.test(r.published_at || '')
+            || r.published_at < w.from || r.published_at > w.through || r.published_at > TODAY) return false;
+        let host;
+        try { host = new URL(r.url).hostname; } catch { return false; }
+        const usOfficial = host.endsWith('.gov') || host === 'content.govdelivery.com';
+        const krOfficial = host.endsWith('.go.kr');
+        if (r.issuer === 'USA') return usOfficial;
+        return r.issuer === iso && krOfficial && r.speaker?.statement_verified === true
+            && ['president', 'prime_minister', 'deputy_prime_minister', 'cabinet_minister'].includes(r.speaker.rank);
+    };
+    const ANNOUNCEMENT_KINDS = {
+        joint_statement: '공동성명', cooperation: '협력 발표', implementation_guidance: '시행 안내',
+        policy_action: '정책 조치 발표', minister_statement: '한국 장관급 발언', trade_remedy: '무역구제 공고',
+    };
+    const announcementHtml = (r) => `<li class="ec-notice">
+        <div class="ec-n-meta"><span class="ec-n-date">${esc(r.published_at)}</span>
+        <span class="ec-n-body">${esc(r.agency_ko)}</span><span class="ec-n-measure">${esc(ANNOUNCEMENT_KINDS[r.kind] || r.kind)}</span></div>
+        <a class="ec-n-title" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener noreferrer">${esc(r.title?.ko || r.title?.original)} <span class="ec-n-go">원문 ↗</span></a>
+        <p class="ec-n-summary">${esc(r.summary_ko)}</p>
+        <div class="ec-n-tags">${esc(r.relation)}${r.event_date ? ` · 행사 ${esc(r.event_date)}` : ''}
+        · ${r.verification === 'official_text_checked' ? '공식 본문 확인' : '공식 제목·발행일 확인 / 본문 상세 미검증'}${r.document_number ? ` · FR ${esc(r.document_number)}` : ''}</div></li>`;
+    const announcementsHtml = (iso) => {
+        if (iso !== 'KOR') return '';
+        const heading = '<h4 class="ec-cat">한국 관련 미국 발표·고위급 동향</h4>';
+        if (!announcements || announcements.error || !announcements.countries?.[iso] || !announcements.window) {
+            return heading + '<p class="ec-warn">공식 동향 자료를 불러오지 못했습니다.</p>';
+        }
+        const rows = newestNotices(announcements.countries[iso].filter((r) => announcementEligible(r, iso))).slice(0, 40);
+        return `${heading}<p class="ec-foot">${esc(announcements.window.from)}~${esc(announcements.window.through)} · ${rows.length}건 · 확인 ${esc(announcements.checked_on)}<br>
+            미국 발표 중심 · 한국은 장관급 이상 발언만 · 일부 공식 자료를 선별한 검토본입니다. 발언·협의와 규제 시행은 구분합니다.</p>
+            ${pagedNoticesHtml(rows, `${iso}:announcements`, announcementHtml)}`;
+    };
+
     const scopeToggleHtml = () => {
         const hidden = (notices?.items || []).filter((it) => !CONTROL_NOTICE_MEASURES.has(it.control.measure)).length;
         if (!hidden) return '';
@@ -516,16 +584,13 @@
                 ${esc(m === 'all' ? '모든 조치' : (NOTICE_MEASURE_KO[m] || m))} <span>${n}</span></button>`;
         }).join('');
         const list = visibleNotices();
-        const shown = list.slice(0, ui.shown || NOTICE_PAGE);
-        const more = list.length - shown.length;
+
         ui.panel.innerHTML = `
             ${tabsHtml()}
             <div class="ec-filters" role="group" aria-label="발표국">${issuerChips}</div>
             <div class="ec-filters" role="group" aria-label="조치 종류">${measureChips}</div>
             ${scopeToggleHtml()}
-            ${shown.length ? `<ul class="ec-notices">${shown.map(noticeHtml).join('')}</ul>`
-                : '<p class="ec-empty">조건에 맞는 공고가 없습니다.</p>'}
-            ${more > 0 ? `<button type="button" class="ec-more" data-ec-more>공고 ${Math.min(more, NOTICE_PAGE)}건 더 보기 (남은 ${more}건)</button>` : ''}
+            ${pagedNoticesHtml(list, 'all')}
             ${noticeFootHtml()}`;
     };
 
@@ -796,10 +861,9 @@
         }).join('');
         const issued = noticeItems().filter((it) => it.control.issuer === iso);
         const aimed = noticeItems().filter((it) => (it.control.targets || []).includes(iso));
-        const noticeBlock = (title, rows, allLink) => (rows.length ? `
+        const noticeBlock = (title, rows, key) => (rows.length ? `
             <h4 class="ec-cat">${esc(title)} <span class="ec-cat-n">${rows.length}건</span></h4>
-            <ul class="ec-notices">${rows.slice(0, NOTICE_IN_COUNTRY).map(noticeHtml).join('')}</ul>
-            ${rows.length > NOTICE_IN_COUNTRY && allLink ? `<button type="button" class="ec-more" data-ec-issuer-all="${esc(iso)}">최근 공고 탭에서 ${rows.length}건 모두 보기</button>` : ''}` : '');
+            ${pagedNoticesHtml(rows, `${iso}:${key}`)}` : '');
         const total = list.length + issued.length + aimed.length;
         ui.panel.innerHTML = `
             <button type="button" class="ec-back" data-ec-back>← 전체 국가</button>
@@ -812,10 +876,11 @@
             ${iso !== 'USA' ? usPartnerSectionHtml(iso) : ''}
             ${iso === 'USA' && ui.usView === 'tariffs' ? '' : `
             ${sections ? `<h4 class="ec-sect">현행 조치 (수기 정리)</h4>${sections}` : ''}
-            ${noticeBlock(`${name} 규제 기관이 낸 공고`, issued, true)}
-            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, false)}`}
+            ${noticeBlock(`${name} 규제 기관이 낸 공고`, issued, 'issued')}
+            ${noticeBlock(`${name}을(를) 겨냥한 공고`, aimed, 'aimed')}`}
             ${total || (iso === 'USA' && ui.usView === 'tariffs') || usTariffs?.partners?.[iso] ? '' : `<p class="ec-empty">정리된 수출통제 조치도, 최근 공고도 없습니다.<br>
                 아직 원문을 확인하지 않은 것일 수 있습니다 — 통제가 없다는 뜻은 아닙니다.</p>`}
+            ${announcementsHtml(iso)}
             ${footerHtml()}`;
     };
 
@@ -931,6 +996,7 @@
 
     const select = (iso) => {
         ui.iso = iso || null;
+        ui.noticePages = {};
         redraw();
     };
 
@@ -968,7 +1034,7 @@
         const attr = (name) => t.closest(`[${name}]`)?.getAttribute(name);
         let v;
         if ((v = attr('data-ec-tab'))) {
-            ui.tab = v; ui.iso = null; ui.commodity = null; ui.shown = 0; redraw(); return;
+            ui.tab = v; ui.iso = null; ui.commodity = null; ui.noticePages = {}; redraw(); return;
         }
         if ((v = attr('data-ec-usview'))) {
             ui.usView = v; renderPanel(); return;
@@ -981,25 +1047,28 @@
         }
         if (t.matches('[data-ec-scope]')) {
             ui.noticeScope = t.checked ? 'all' : 'controls';
-            ui.noticeMeasure = 'all'; ui.shown = 0; redraw(); return;
+            ui.noticeMeasure = 'all'; ui.noticePages = {}; redraw(); return;
         }
         if ((v = attr('data-ec-category'))) {
             ui.category = v; ui.iso = null; redraw(); return;
         }
         if ((v = attr('data-ec-issuer'))) {
-            ui.issuer = v; ui.noticeMeasure = 'all'; ui.shown = 0; redraw(); return;
+            ui.issuer = v; ui.noticeMeasure = 'all'; ui.noticePages = {}; redraw(); return;
         }
         if ((v = attr('data-ec-nmeasure'))) {
-            ui.noticeMeasure = v; ui.shown = 0; redraw(); return;
+            ui.noticeMeasure = v; ui.noticePages = {}; redraw(); return;
         }
         if ((v = attr('data-ec-issuer-all'))) {
-            ui.tab = 'notices'; ui.issuer = v; ui.noticeMeasure = 'all'; ui.shown = 0; ui.iso = null; redraw(); return;
+            ui.tab = 'notices'; ui.issuer = v; ui.noticeMeasure = 'all'; ui.noticePages = {}; ui.iso = null; redraw(); return;
         }
-        if (t.closest('[data-ec-more]')) {
+        if ((v = attr('data-ec-notice-page'))) {
+            const key = attr('data-ec-notice-key');
+            if (!key || !/^\d+$/.test(v)) return;
             const top = ui.panel.scrollTop;
-            ui.shown = (ui.shown || NOTICE_PAGE) + NOTICE_PAGE;
-            renderNoticesPanel();
+            ui.noticePages[key] = Number(v);
+            renderPanel();
             ui.panel.scrollTop = top;
+            ui.panel.querySelector(`[data-ec-notice-key="${CSS.escape(key)}"][aria-current="page"]`)?.focus({ preventScroll: true });
             return;
         }
         if ((v = attr('data-ec-iso'))) { select(v); return; }
@@ -1022,7 +1091,7 @@
         host.setPanels();
         if (ui.panel) ui.panel.innerHTML = '<p class="ec-empty">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
         host.setMap([], onMapClick, onMapHover);
-        await Promise.all([load(), loadNotices(), loadUsTariffs(), host.loadWorldGeo()]);
+        await Promise.all([load(), loadNotices(), loadUsTariffs(), loadAnnouncements(), host.loadWorldGeo()]);
         if (!host.isActive()) return;
         if (!doc) {
             if (ui.panel) ui.panel.innerHTML = '<p class="ec-warn">수출통제 목록을 불러오지 못했습니다.</p>';

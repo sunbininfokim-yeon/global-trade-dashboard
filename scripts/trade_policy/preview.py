@@ -7,6 +7,7 @@ import json
 
 ROOT = Path(__file__).resolve().parents[2] / 'New for anti'
 ASSETS = {
+    '/public/data/trade_policy/country_announcements_v1.json': ('public/data/trade_policy/country_announcements_v1.json', 'application/json'),
     '/export-controls.js': ('export-controls.js', 'text/javascript'),
     '/export-controls.css': ('export-controls.css', 'text/css'),
     '/public/data/trade_policy/us_tariffs_v1.json': ('public/data/trade_policy/us_tariffs_v1.json', 'application/json'),
@@ -26,7 +27,7 @@ const nav=document.getElementById('countries');for(const [iso,name] of Object.en
 await ExportControls.mount({setHeader(){},setPanels(){},setMap(){},loadWorldGeo:async()=>{},isActive:()=>true,
 worldBaseLayers:()=>[],worldGeo:()=>({type:'FeatureCollection',features:[]}),GeoJsonLayer:class{constructor(o){Object.assign(this,o);}},
 resolveIso3:f=>f?.properties?.iso||'',updateLayers(){},hideTooltip(){},isoLabel:iso=>names[iso]||iso,countryLabel:x=>x});
-ExportControls.select('CAN');
+ExportControls.select('KOR');
 })().catch(e=>{document.getElementById('export-controls-content').textContent='미리보기 실패: '+e.message;});
 </script></html>'''
 
