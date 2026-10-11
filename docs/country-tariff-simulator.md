@@ -6,6 +6,7 @@
 직접 경로는 `/policy/us/simulator`다. 이 PR은 정책 자료 조사·반덤핑 사건 모니터와 독립적이다.
 
 [데스크톱 검증 화면](previews/country-tariff-simulator-desktop.png) · [360px 모바일 검증 화면](previews/country-tariff-simulator-mobile.png)
+· [누락 입력 이동·강조 화면](previews/country-tariff-validation-mobile.png)
 
 ## 무엇을 분석하나
 
@@ -16,7 +17,7 @@
 단순한 `기존 수입액 × 관세 변화`와 달리, 수출자의 가격 조정, 미국 구매자의
 수요 감소, 경쟁 공급국으로의 전환을 함께 풀어낸다. 이 반응은 입력한 탄력성에 의존한다.
 
-구매액·공급탄력성은 **학습용 가정**이다. 관세는 **2026-10-11에 부분 검토한 대표 HTS·원산지·조건별 정책 스냅샷**에서 시작한다. 완전한 현행 세율 서비스나 자동 갱신 수집기가 아니다. 반도체 메모리·타이어는 출처 있는 대체탄력성 근사값을 제공한다. 결과는 계속 조건부 시뮬레이션으로 표시한다.
+구매액·공급탄력성은 **학습용 가정**이다. 관세는 **2026-10-11에 부분 검토한 대표 HTS·원산지·조건별 정책 스냅샷**에서 시작한다. 완전한 현행 세율 서비스나 자동 갱신 수집기가 아니다. 아래 6개 품목은 출처 있는 대체탄력성 시작값을, 그중 3개는 시장 수요탄력성 시작값도 제공한다. 미확보 매개변수는 사용자 가정으로 구분한다. 결과는 계속 조건부 시뮬레이션으로 표시한다.
 
 ## 사용 순서
 
@@ -31,6 +32,9 @@
 
 입력을 바꾸면 이전 결과 표시를 유지하면서 재계산 필요 문구와 흐린 표시를 띄운다.
 재계산 전에는 저장할 수 없다. 오류가 나도 이전 정상 결과를 새 결과로 취급하지 않는다.
+미입력·공백·범위 오류 또는 현행 관세 미선택이 있으면 폼 순서상 첫 수정 대상에 스크롤하고 포커스를 옮긴다.
+접힌 ‘조건·별도 추가세’도 자동으로 펼친다. 입력칸 강조, 바로 아래 오류, `aria-invalid`와 설명 연결을 함께 제공한다.
+수정 시 표시를 해제하며 다음 계산에서 남은 오류를 다시 찾는다. 기업 탭에도 같은 동작을 제공한다.
 탭 이동 중 입력은 메모리에 보존되며 새로고침 시 초기 입력으로 돌아간다. 최초 진입에는 결과를 미리 계산하지 않는다. 품목·원산지 변경 시 관세 경로와 조건 확인을 초기화한다. 품목 변경 시 탄력성도 새 품목의 문헌값 또는 명시된 사용자 가정으로 초기화한다. 자동 저장·서버 전송은 없다.
 
 ### 엔진 회귀검증용 가상 예시 (화면 초기값과 별개)
@@ -99,13 +103,21 @@
 
 재현: DataWeb에서 HTS6=850423/854460/853521/854232/870323/401110/590220, 연도=2025, 소비용 수입 통관가액, 국가=All/Break Out Countries, HTS6별 상세 조회 후 국가 금액 내림차순. 세부 대표 HTS의 시장 점유율로 자동 사용하지 않는다.
 
-| 대표 품목 | σ 초기값 | 근거·해석 |
-|---|---:|---|
-| 메모리 반도체 | 3.32 | [USITC 연구진 2023, 표 4](https://www.usitc.gov/sites/default/files/publications/332/working_papers/us_exposure_to_the_taiwanese_semiconductor_industry_11-21-2023_508.pdf#page=23), 2021년 자료 기반 부문 보정값. 현재 기업별 추정치 아님. η=-1은 사용자 가정 |
-| 승용차용 타이어 | 4.5 | [USITC Pub.5212, 2021, II-30~31](https://www.usitc.gov/sites/default/files/publications/701_731/pub5212.pdf#page=125)의 PVLT σ=3~6 범위 중간값을 선택. η=-0.375도 문헌 -0.50~-0.25의 중간값. σ=3/4.5/6 민감도 제공 |
-| 나머지 5개 품목 | 4 (사용자 가정) | 대표 사양에 맞는 문헌값 미확보. 시장 추정치로 표시하지 않음. η=-1도 사용자 가정 |
+| 대표 품목 | σ 초기값 | η 초기값 | 근거·적용 범위 |
+|---|---:|---:|---|
+| 전력용 변압기 | 3.5 | −0.15 | [USITC Pub.5531 (2024), II-30~31](https://www.usitc.gov/sites/default/files/publications/701_731/pub5531.pdf#page=122). σ=2~5, η=−0.25~−0.05의 중간값. 60MVA 이상 미국 대형 변압기 자료를 10MVA 초과 대표 HTS에 대용. 10~60MVA 자체 추정치 아님 |
+| 차단기·배전기기 | 3.0 | −1 (가정) | [USITC 연구진 (2004), 표 1 p.13, BEA 530300](https://www.usitc.gov/publications/332/ec200401a.pdf#page=14). 과거 Switchgear and switchboard apparatus 산업 모형값. 현재 해당 전압 차단기만의 실측값 아님 |
+| 메모리 반도체 | 3.32 | −1 (가정) | [USITC 연구진 (2023), 표 4](https://www.usitc.gov/sites/default/files/publications/332/working_papers/us_exposure_to_the_taiwanese_semiconductor_industry_11-21-2023_508.pdf#page=23). 2021년 자료 기반 메모리 부문 보정값 |
+| 가솔린 승용차 | 7.58 | −0.82 | σ: [USITC Pub.5443 (2023), p.163](https://www.usitc.gov/publications/332/pub5443.pdf#page=165), 2021년 무역자료의 승용차·경트럭 추정치. η: [EPA-420-R-21-019 (2021), §5.1](https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P1013TYN.TXT), 미국 신차 총수요 문헌 범위 −1.27~−0.37의 중간값을 이 도구가 선택. 공식 권장값·메타분석 평균 아님. 가솔린 1.5~3L만의 추정치 아님 |
+| 승용차용 타이어 | 4.5 | −0.375 | [USITC Pub.5212 (2021), II-30~31](https://www.usitc.gov/sites/default/files/publications/701_731/pub5212.pdf#page=124). PVLT σ=3~6, η=−0.50~−0.25 범위의 중간값 |
+| 폴리에스터 타이어코드 | 3.5 | −1 (가정) | [USITC 연구진 (2004), 표 1 p.15, BEA 170700](https://www.usitc.gov/publications/332/ec200401a.pdf#page=16). 과거 Tire cord and fabrics 산업 모형값. 폴리에스터 단독·현재 실측값 아님 |
+| 전력 케이블·직접 정의 | 4 (가정) | −1 (가정) | 대표 사양에 적합한 값 미확보. 다른 소재·품목의 탄력성을 임의 전용하지 않음 |
 
-타이어 문헌은 미국산·수입산 간 대체를 다루므로 모든 외국 간 대체에 동일 σ를 적용하는 것은 이 비중첩 모형의 근사다. 반도체 참고 연구의 공급능력 제약·2단계 공급 충격 전체를 재현하지 않는다. 공급탄력성 1.5/3은 기존 학습용 가정으로 유지한다. 사용자가 σ/η를 편집하면 문헌 자동 적용 상태를 해제한다.
+변압기·타이어 문헌은 미국산·수입산 간 대체를 다루므로 모든 외국 간 대체에 동일 σ를 적용하는 것은 이 비중첩 모형의 근사다. 연구 범위·연도가 다른 매개변수를 결합한 조건부 보정이며, 검증된 현재 산업 전망은 아니다. 반도체 연구의 공급능력 제약·2단계 충격이나 자동차 중고차시장 피드백은 재현하지 않는다. 공급탄력성 1.5/3은 학습용 가정으로 유지한다.
+
+문헌 범위가 있는 σ에는 변압기 2/3.5/5, 타이어 3/4.5/6 민감도를 제공한다. 자동차 σ의 통계적 신뢰구간을 발생 시나리오 범위로 자동 변환하지 않는다. η 범위는 출처 안내·JSON에 남기며 현재 민감도 패널은 σ만 변경한다.
+
+품목 선택 시 해당 시작값을 자동 적용한다. σ 또는 η를 직접 편집하면 **그 매개변수만** 사용자 가정으로 전환하며 다른 값의 출처를 보존한다. ‘문헌 기본값 적용’은 확보된 매개변수만 되돌린다. JSON의 `calibration.elasticity.sigma`/`eta`는 각각 값·근거 유형·원문·연도·적용 범위·문헌 범위를 보관한다. 미확보·수정된 값에는 문헌 출처를 부여하지 않는다. 2004년 값은 UI에서도 과거 산업 대용값으로 표시한다.
 
 σ는 **공급국 간 상대가격 변화에 따른 구매 전환**을 나타낸다. η는 **미국 해당 품목시장 전체의 가격지수 변화에 따른 총수요 반응**이다. η=-1이면 작은 가격지수 1% 상승에 총수요가 약 1% 감소하는 가정이다. σ와 η는 품목·시장·기간에 따라 달라지므로 산업 전체에 통용되는 보편 상수가 아니다. 이 구분의 모형 근거는 [Riker & Schreiber (2020), §2.1](https://www.usitc.gov/sites/default/files/data/gravity/structural_equations_for_pe_models_in_group_1.pdf)이다.
 
@@ -141,7 +153,9 @@ r_qi = P^(η+σ) × r_ci^(−σ)
   직접 시뮬레이터 진입은 overview/즐겨찾기 조회를 기다리지 않는다. DB 장애 화면에서도 토글은 유지한다.
 - `New for anti/policy-simulator/country-model.mjs`: DOM·네트워크·저장 없는 순수 수치 엔진.
 - `New for anti/policy-simulator/view.mjs`, `style.css`: 입력, 결과, 가정 민감도, 저장, 전용 스타일.
-- `New for anti/policy-simulator/policy-catalog.mjs`: 대표 품목·명시적 조건별 관세 규칙·문헌 탄력성.
+- `New for anti/policy-simulator/policy-catalog.mjs`: 대표 품목·명시적 조건별 관세 규칙·입력 보정.
+- `New for anti/policy-simulator/elasticities.mjs`: 문헌값·연도·산업 범위·σ/η별 근거와 수정 상태.
+- `New for anti/policy-simulator/form-validation.mjs`: 국가·기업 공통 입력 검사·펼침·스크롤·포커스·접근성 오류 안내.
 - `New for anti/policy-simulator/suppliers-2025.mjs`: 공개 공급국 집계 스냅샷.
 - `scripts/trade_policy/preview_country_simulator.py`: 실제 policy.js·공용 CSS와 빈 overview fixture를 사용하는 loopback 미리보기.
 
@@ -153,10 +167,12 @@ HTML의 스크립트 버전이나 공유 배포 설정을 바꾸지 않고 기�
 ## 검증 및 미리보기
 
 ```bash
-node --test scripts/lib/country-tariff-model.test.mjs scripts/lib/country-tariff-catalog.test.mjs scripts/lib/country-tariff-navigation.test.cjs scripts/lib/policy-favorites-ui.test.js scripts/lib/policy-search-ui.test.js
+node --test scripts/lib/company-tariff-model.test.mjs scripts/lib/country-tariff-model.test.mjs scripts/lib/country-tariff-catalog.test.mjs scripts/lib/country-tariff-navigation.test.cjs scripts/lib/policy-favorites-ui.test.js scripts/lib/policy-search-ui.test.js
 python3 scripts/trade_policy/preview_country_simulator.py --port 8773
 # 별도 터미널, playwright가 설치된 환경
 node scripts/trade_policy/test_country_simulator_browser.cjs
+node scripts/trade_policy/test_company_simulator_browser.cjs
+node scripts/trade_policy/test_simulator_validation_browser.cjs
 ```
 
 `PLAYWRIGHT_MODULE`로 로컬 Playwright 패키지 경로를 지정할 수 있다. loopback 주소만 테스트한다.
@@ -164,10 +180,11 @@ node scripts/trade_policy/test_country_simulator_browser.cjs
 
 2026-10-11 확인:
 
-- Node 32개: 수치·정책/자료 계약·탐색 20개, 기존 즐겨찾기·정책 검색 12개 통과.
+- Node 48개: 국가 수치9·기업 수치12·정책/자료 계약11·탐색4·기존 즐겨찾기/검색12개 통과.
 - 소유권 회귀 7개 통과. UI·배포 가드 예외 추가 없음.
 - 브라우저: 직접 진입·상단 모형 원문·현행 15% 기준·조건별 10% 비교·직접 입력칸 조건부 노출·미확인 국가 직접 세율/출처·탄력성 문헌값/범위/품목 변경 초기화·공급국 추가/삭제/관심국 변경·JSON 다운로드·문자열 escape·
   의회/행정부 왕복·뒤로/앞으로·새로고침·390/360px·DB 장애 독립 동작 통과.
+- 별도 브라우저: 모든 품목의 초기 σ/η, 독립 수정·복원·출처, 360px에서 실제 포커스·요소 위치·가로 넘침, 공백·미입력·범위·관세 미선택·출처·합산 한도·접힌 추가세·확인란·기업 공급 한도·국가 연결 누락·이전 결과/저장 보호 통과.
 - 계산 중 `/api/*` 요청 0건. 유료 AI 호출 0건.
 - 공식 Excel 기존 저장값 benchmark: `Model!B5:B9=1,10,10,6,−1`, B13:B15=100,100,100,
   B27=0/B28=0.25. 최종 구매가격 DKL19:21과 수량 DKL22:24 대비 차이 각각 <0.01%p.

@@ -17,6 +17,8 @@ ASSETS = {
     '/policy-simulator/country-model.mjs': ('policy-simulator/country-model.mjs', 'text/javascript'),
     '/policy-simulator/company-model.mjs': ('policy-simulator/company-model.mjs', 'text/javascript'),
     '/policy-simulator/company-view.mjs': ('policy-simulator/company-view.mjs', 'text/javascript'),
+    '/policy-simulator/elasticities.mjs': ('policy-simulator/elasticities.mjs', 'text/javascript'),
+    '/policy-simulator/form-validation.mjs': ('policy-simulator/form-validation.mjs', 'text/javascript'),
     '/policy-simulator/view.mjs': ('policy-simulator/view.mjs', 'text/javascript'),
     '/policy-simulator/policy-catalog.mjs': ('policy-simulator/policy-catalog.mjs', 'text/javascript'),
     '/policy-simulator/suppliers-2025.mjs': ('policy-simulator/suppliers-2025.mjs', 'text/javascript'),

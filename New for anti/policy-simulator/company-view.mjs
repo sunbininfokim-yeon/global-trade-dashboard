@@ -1,5 +1,6 @@
 import { simulateCompany, COMPANY_SOURCES, COMPANY_MODEL_VERSION } from './company-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, newRow, policyOptions, tariffPair, missingPolicyReason } from './policy-catalog.mjs';
+import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, p = 2) => v == null ? '산출 불가' : Number(v).toLocaleString('ko-KR', { minimumFractionDigits: p, maximumFractionDigits: p });
@@ -34,7 +35,7 @@ function tariffEditor() {
 }
 function editor() {
   const p = PRODUCTS[draft.product], isProxy = draft.response_mode === 'country';
-  return `<form data-company-form><div class="ts-fields">
+  return `<form data-company-form novalidate><div class="ts-fields">
     <label class="ts-wide">기업·사업 이름<input data-company-key="company" aria-label="기업 이름" value="${esc(draft.company)}" maxlength="100" required><small>이름을 넣어도 기업 실적·원가가 자동 조회되지는 않습니다.</small></label>
     <label>분석 품목<select data-company-key="product" aria-label="기업 분석 품목">${options(Object.fromEntries(Object.entries(PRODUCTS).map(([id, v]) => [id, v.label])), draft.product)}</select></label>
     <label>제품 원산지<select data-company-key="origin" aria-label="기업 제품 원산지">${options(Object.fromEntries(Object.entries(COUNTRIES).filter(([id]) => id !== 'ROW')), draft.origin)}</select><small>기업 본사 소재지가 아닌 제품의 실제 원산지</small></label>
@@ -44,7 +45,7 @@ function editor() {
     <p class="ts-help">동일한 한 제품의 판매 단위를 사용하세요. 통관 단가는 관세 제외 수취단가와 같다고 가정합니다. 변동원가에는 기업이 부담하는 제조·수출 운송비 등을 포함합니다.</p>
     <div class="ts-fields">${field('price', '기준 통관 단가', 0.000001, 1e12)}${field('quantity', '기준 판매량', 0.000001, 1e12)}${field('cost', '단위 변동원가', 0, 1e12)}${field('fixed_cost', '기간 고정비', 0, 1e15, '이 제품·사업에 배분한 분석 기간의 고정비')}${field('cost_change_pct', '변동원가 변화율 %', -100, 1000)}${field('capacity', '최대 공급 가능 물량', 0.000001, 1e12, '선택 사항 · 공란이면 공급 한도 미반영', true)}</div>
     ${tariffEditor()}
-    <label class="ts-confirm"><input type="checkbox" data-company-key="policy_confirmed" aria-label="기업 관세 적용 조건 확인"${draft.policy_confirmed ? ' checked' : ''}>제품·원산지·예외·별도 추가세와 양쪽 관세 조건을 확인했습니다.</label>
+    <label class="ts-confirm"><input type="checkbox" data-company-key="policy_confirmed" aria-label="기업 관세 적용 조건 확인" required${draft.policy_confirmed ? ' checked' : ''}>제품·원산지·예외·별도 추가세와 양쪽 관세 조건을 확인했습니다.</label>
     <div class="ts-section-label"><h3>가격과 판매량 반응</h3></div>
     <label>반응 방식<select data-company-key="response_mode" aria-label="기업 반응 방식"><option value="manual"${!isProxy ? ' selected' : ''}>기업 가정으로 가격·판매량 계산</option><option value="country"${isProxy ? ' selected' : ''}>국가 계산의 원산지 평균 반응 연결</option></select></label>
     ${isProxy ? `<p class="ts-help" data-company-link-note>${draft.country_inputs ? `연결됨: ${esc(draft.country_inputs.period)} · ${esc(COUNTRIES[draft.origin])}. 연결 시점의 국가 평균 반응을 기업에 적용하는 대용 시나리오입니다. 국가 입력의 후속 변경은 자동 반영되지 않습니다.` : '국가 탭에서 같은 품목·원산지·관세로 계산한 후 아래 버튼을 누르세요.'}</p>
@@ -91,12 +92,13 @@ export function mountCompany(root, { getCountryResult }) {
   const controller = new AbortController(), signal = controller.signal;
   const paint = () => { root.querySelector('[data-company-editor]').innerHTML = editor(); };
   const markDirty = () => {
+    clearFormErrors(root);
     dirty = true; error = '';
     const exp = root.querySelector('[data-company-export]'), stale = root.querySelector('[data-company-stale]'), output = root.querySelector('[data-company-calculated]');
     if (exp) exp.disabled = true; if (stale) stale.hidden = false; if (output) output.classList.add('is-stale');
     root.querySelector('[data-company-error]').hidden = true;
   };
-  const fail = err => { error = err.message; const box = root.querySelector('[data-company-error]'); box.textContent = error; box.hidden = false; };
+  const fail = (err, element) => { error = err.message; showFormError(root, root.querySelector('[data-company-error]'), { message: error, element }); };
   const unconfirm = () => { draft.policy_confirmed = false; const c = root.querySelector('[data-company-key="policy_confirmed"]'); if (c) c.checked = false; };
   root.addEventListener('input', event => {
     const el = event.target;
@@ -119,6 +121,13 @@ export function mountCompany(root, { getCountryResult }) {
     if (!event.target.matches('[data-company-form]')) return;
     event.preventDefault();
     try {
+      const issues = [];
+      try { tariffPair(draft.product, draft.tariff); } catch (err) { issues.push({ element: root.querySelector(`[data-company-tariff="${err.field}"]`), message: err.message }); }
+      if (draft.capacity !== '' && Number(draft.capacity) < Number(draft.quantity)) issues.push({ element: root.querySelector('[data-company-key="capacity"]'), message: '최대 공급 가능 물량은 기준 판매량 이상이어야 합니다.' });
+      if (draft.response_mode === 'country' && (!draft.country_inputs || draft.country_inputs.product !== draft.product || !draft.country_inputs.rows.some(r => r.country === draft.origin))) issues.push({ element: root.querySelector('[data-company-link]'), message: '같은 품목·원산지의 국가 결과를 먼저 연결하세요.' });
+      const issue = firstFormIssue(event.target, issues);
+      if (issue) { markDirty(); fail(new Error(issue.message), issue.element); return; }
+      clearFormErrors(root);
       const p = tariffPair(draft.product, draft.tariff);
       const next = simulateCompany({ ...draft, ...p, tariff_provenance: { ...p.provenance, ...(draft.tariff.linked_provenance ? { status: 'linked_country_scenario', linked_provenance: draft.tariff.linked_provenance } : {}) },
         calibration: { policy_as_of: POLICY_AS_OF, hts: PRODUCTS[draft.product].hts || null, scope: PRODUCTS[draft.product].scope, company_data_basis: 'user_assumption', firm_elasticity_basis: 'user_assumption' } });
@@ -139,7 +148,7 @@ export function mountCompany(root, { getCountryResult }) {
         draft.tariff = { ...newRow(draft.product, draft.origin), baseline_policy: draft.origin === 'USA' ? 'domestic' : 'manual', scenario_policy: draft.origin === 'USA' ? 'current' : 'manual',
           manual_before: row.tariff_before, manual_after: row.tariff_after, tariff_note: `국가 시나리오 연결 · ${country.inputs.period}`, linked_provenance: row.provenance };
         unconfirm(); paint();
-      } catch (err) { fail(err); }
+      } catch (err) { fail(err, button); }
     } else if (button.hasAttribute('data-company-export') && !dirty && result) {
       const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), sources: COMPANY_SOURCES, ...result }, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = 'company-tariff-scenario.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);

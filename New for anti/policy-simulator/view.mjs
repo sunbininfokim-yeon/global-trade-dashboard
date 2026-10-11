@@ -1,6 +1,7 @@
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
-import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput } from './policy-catalog.mjs';
+import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput, elasticityCalibration } from './policy-catalog.mjs';
 import { companyMarkup, mountCompany } from './company-view.mjs';
+import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, places = 2) => Number(v).toLocaleString('ko-KR', { minimumFractionDigits: places, maximumFractionDigits: places });
@@ -15,7 +16,7 @@ let stylePromise;
 export function prepare() {
   if (!stylePromise) stylePromise = new Promise((resolve, reject) => {
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=3', import.meta.url).href;
+    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=4', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('시뮬레이터 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -31,13 +32,14 @@ function rates(row) {
   catch { return '현행 관세 확인 필요'; }
 }
 function elasticitySources() {
-  const e = PRODUCTS[draft.product].elasticity;
-  const literature = draft.elasticity_basis === 'literature' && e;
-  const reference = e ? `<a href="${e.source.url}" target="_blank" rel="noopener noreferrer">${esc(e.source.title)}</a>` : '';
-  return `<p data-sigma-basis><b>대체탄력성 σ:</b> ${literature ? `문헌 기반 근사값 · ${reference}` : '사용자 가정 · 현재 입력값의 실측 근거는 등록되지 않았습니다.'}</p>
-    <p data-eta-basis><b>시장 수요탄력성 η:</b> ${literature && e.eta !== undefined ? `문헌 범위의 중간값 · ${reference}` : '사용자 가정 · 현재 입력값의 실측 근거는 등록되지 않았습니다. 초기 -1도 학습용 가정입니다.'}</p>
-    ${e ? `<p>${esc(e.note)}${literature ? '' : ` 참고 문헌: ${reference} (현재 입력에 자동 적용되지 않음).`}</p><button type="button" class="ts-text-button" data-literature>문헌 기본값 적용</button>` : '<p>이 대표 품목에 맞는 탄력성 문헌은 확보하지 못했습니다. 초기 σ=4, η=-1은 사용자가 조정하는 학습용 가정입니다.</p>'}
-    <small data-elasticity-basis>${literature ? (e.eta === undefined ? 'σ는 문헌 기반 근사값 · η는 사용자 가정' : '문헌 범위의 중간값 적용 중') : '사용자 가정 적용 중'}</small>
+  const e = PRODUCTS[draft.product].elasticity, c = elasticityCalibration(draft);
+  const basis = { literature_range_midpoint: '문헌 범위의 중간값', literature_review_midpoint: '문헌 검토 범위의 중간값', historical_sector_proxy: '과거 산업 모형 대용값', literature_proxy: '문헌 기반 근사값' };
+  const describe = p => p.kind === 'user_assumption' ? '사용자 가정 · 이 입력의 문헌값은 미확보이거나 직접 수정했습니다.'
+    : `${basis[p.kind]} · <a href="${p.source.url}" target="_blank" rel="noopener noreferrer">${esc(p.source.title)}</a>${p.range ? ` · 범위 ${p.range.join('~')}` : ''}<br><small>${esc(p.scope)}</small>`;
+  return `<p data-sigma-basis><b>대체탄력성 σ:</b> ${describe(c.sigma)}</p>
+    <p data-eta-basis><b>시장 수요탄력성 η:</b> ${describe(c.eta)}</p>
+    ${e ? `<p>${esc(e.note)}</p><button type="button" class="ts-text-button" data-literature>문헌 기본값 적용</button>` : '<p>이 대표 품목에 맞는 문헌값 미확보. 초기 σ=4, η=-1은 학습용 가정입니다.</p>'}
+    <small data-elasticity-basis>σ: ${basis[c.sigma.kind] || '사용자 가정'} · η: ${basis[c.eta.kind] || '사용자 가정'}. 직접 수정하면 해당 값만 사용자 가정으로 전환됩니다.</small>
     <p>품목·시장·분석 기간에 따라 달라지는 값입니다. 모든 기업과 산업에 공통으로 적용되는 상수가 아닙니다. <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">탄력성의 역할: 모형 원문 §2.1</a></p>`;
 }
 function tariffEditor(row, i) {
@@ -67,10 +69,10 @@ function editor() {
   const profile = PRODUCTS[draft.product];
   const focusChoices = Object.fromEntries(draft.rows.filter(row => !['USA', 'ROW'].includes(row.country)).map(row => [row.country, name(row.country)]));
   const suppliers = SUPPLIER_SNAPSHOT.products[draft.product];
-  return `<form data-sim-form>
+  return `<form data-sim-form novalidate>
     <div class="ts-fields">
       <label>분석 품목<select data-key="product" aria-label="분석 품목">${options(productLabels, draft.product)}</select></label>
-      <label>관심 공급국<select data-key="focus" aria-label="관심 공급국">${options(focusChoices, draft.focus)}</select></label>
+      <label>관심 공급국<select data-key="focus" aria-label="관심 공급국" required>${options(focusChoices, draft.focus)}</select></label>
       <label class="ts-wide">구매액 기준 연도·기간<input data-key="period" aria-label="구매액 기준 연도·기간" value="${esc(draft.period)}" maxlength="80" required><small>구매액을 집계한 기간입니다. 관세 검토일과 다를 수 있습니다.</small></label>
     </div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>
@@ -95,7 +97,7 @@ function editor() {
     <div class="ts-section-label"><h3>현행 관세와 비교 시나리오</h3><span>${POLICY_AS_OF} 검토 스냅샷</span></div>
     <p class="ts-help">현재 제도의 조건별 조합입니다. 품목·원산지·소재 요건이 바뀌어야 적용되는 경로도 있습니다. 임의의 새 관세율은 ‘직접 입력’을 선택하세요.</p>
     ${draft.rows.map(tariffEditor).join('')}
-    <label class="ts-confirm"><input type="checkbox" data-key="policy_confirmed" aria-label="관세 적용 조건 확인"${draft.policy_confirmed ? ' checked' : ''}>선택한 양쪽 관세의 HTS·원산지·예외·별도 추가세 조건에 맞는 거래를 비교합니다.</label>
+    <label class="ts-confirm"><input type="checkbox" data-key="policy_confirmed" aria-label="관세 적용 조건 확인" required${draft.policy_confirmed ? ' checked' : ''}>선택한 양쪽 관세의 HTS·원산지·예외·별도 추가세 조건에 맞는 거래를 비교합니다.</label>
     <div class="ts-fields ts-elasticities">
       <label>대체탄력성 σ ${numberInput(draft.sigma, 'data-key="sigma" aria-label="대체탄력성" min="0.1" max="20" aria-describedby="ts-sigma-help"')}<small id="ts-sigma-help">공급국 간 상대가격 변화에 따른 구매 전환. 클수록 쉽게 다른 공급국으로 전환합니다.</small></label>
       <label>시장 수요탄력성 η ${numberInput(draft.eta, 'data-key="eta" aria-label="시장 수요탄력성" min="-10" max="-0.05"')}<small>미국 해당 품목시장 전체의 가격·수요 반응. η=-1이면 시장 가격지수 1% 상승 시 전체 수요가 약 1% 감소합니다.</small></label>
@@ -174,6 +176,7 @@ function countryMarkup() {
 function mountCountry(root) {
   const controller = new AbortController(), signal = controller.signal;
   const markDirty = () => {
+    clearFormErrors(root);
     dirty = true;
     const stale = root.querySelector('[data-stale]'), calculated = root.querySelector('[data-calculated]'), exp = root.querySelector('[data-export]');
     if (stale) stale.hidden = false;
@@ -197,7 +200,7 @@ function mountCountry(root) {
       } else {
         draft[key] = key === 'policy_confirmed' ? el.checked : el.value;
         if (key === 'sigma' || key === 'eta') {
-          draft.elasticity_basis = 'manual';
+          draft.elasticity_overrides[key] = true;
           root.querySelector('[data-elasticity-source]').innerHTML = elasticitySources();
         }
         if (key === 'focus') root.querySelectorAll('.ts-input-table tbody tr').forEach((row, i) => row.classList.toggle('ts-focus-row', draft.rows[i].country === draft.focus));
@@ -229,13 +232,20 @@ function mountCountry(root) {
     if (!event.target.matches('[data-sim-form]')) return;
     event.preventDefault();
     try {
+      const issues = draft.rows.map((row, i) => {
+        try { tariffPair(draft.product, row); } catch (err) { return { element: root.querySelector(`[data-row="${i}"][data-field="${err.field}"]`), message: err.message }; }
+        return null;
+      });
+      const issue = firstFormIssue(event.target, issues);
+      if (issue) { markDirty(); error = issue.message; showFormError(root, root.querySelector('[data-sim-error]'), issue); return; }
+      clearFormErrors(root);
       const next = simulate(modelInput(draft));
       result = next; dirty = false; error = '';
       root.querySelector('[data-results]').innerHTML = results();
       root.querySelector('[data-sim-error]').hidden = true;
     } catch (err) {
       markDirty(); error = err.message;
-      const box = root.querySelector('[data-sim-error]'); box.textContent = error; box.hidden = false;
+      showFormError(root, root.querySelector('[data-sim-error]'), { message: error });
     }
   }, { signal });
   root.addEventListener('click', event => {
@@ -244,7 +254,7 @@ function mountCountry(root) {
       draft = initialDraft(); result = null; dirty = true; error = ''; root.innerHTML = countryMarkup();
     } else if (button.hasAttribute('data-literature')) {
       const e = PRODUCTS[draft.product].elasticity;
-      if (e) { draft.sigma = e.sigma; if (e.eta !== undefined) draft.eta = e.eta; draft.elasticity_basis = 'literature'; paintEditor(); markDirty(); }
+      if (e) { draft.sigma = e.sigma; if (e.eta !== undefined) draft.eta = e.eta; draft.elasticity_basis = 'literature'; draft.elasticity_overrides = {}; paintEditor(); markDirty(); }
     } else if ((button.hasAttribute('data-add') || button.dataset.supplier) && draft.rows.length < 8) {
       const country = button.dataset.supplier || Object.keys(COUNTRIES).find(code => code !== 'USA' && code !== 'ROW' && !draft.rows.some(row => row.country === code));
       if (country && !draft.rows.some(row => row.country === country)) { draft.rows.push(newRow(draft.product, country)); unconfirm(); paintEditor(); markDirty(); }
