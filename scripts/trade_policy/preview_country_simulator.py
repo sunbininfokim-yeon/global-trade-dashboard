@@ -15,6 +15,8 @@ ASSETS = {
     '/style.css': ('style.css', 'text/css'),
     '/policy-evidence.js': ('policy-evidence.js', 'text/javascript'),
     '/policy-simulator/country-model.mjs': ('policy-simulator/country-model.mjs', 'text/javascript'),
+    '/policy-simulator/company-model.mjs': ('policy-simulator/company-model.mjs', 'text/javascript'),
+    '/policy-simulator/company-view.mjs': ('policy-simulator/company-view.mjs', 'text/javascript'),
     '/policy-simulator/view.mjs': ('policy-simulator/view.mjs', 'text/javascript'),
     '/policy-simulator/policy-catalog.mjs': ('policy-simulator/policy-catalog.mjs', 'text/javascript'),
     '/policy-simulator/suppliers-2025.mjs': ('policy-simulator/suppliers-2025.mjs', 'text/javascript'),
@@ -23,7 +25,7 @@ ASSETS = {
 OVERVIEW = {'congress_overview': {'committees': [], 'stage_counts': {}},
             'executive_overview': {'agencies': []}, 'policy_areas': [], 'cfr_titles': []}
 HTML = '''<!doctype html><html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>국가 관세 시뮬레이터 · 로컬 검토</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>국가·기업 관세 시뮬레이터 · 로컬 검토</title>
 <link rel="stylesheet" href="/style.css"><style>
 body{display:block!important;overflow:auto!important;background:#0b1220;color:#e2e8f0;margin:0;font-family:system-ui,sans-serif}
 .preview-top{border-bottom:1px solid #27364a;padding:15px 24px;font-size:13px;display:flex;gap:20px;align-items:center}.preview-top b{color:#5de0ce}.preview-top small{color:#9baec2;font-size:11px}

@@ -1,5 +1,6 @@
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput } from './policy-catalog.mjs';
+import { companyMarkup, mountCompany } from './company-view.mjs';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, places = 2) => Number(v).toLocaleString('ko-KR', { minimumFractionDigits: places, maximumFractionDigits: places });
@@ -7,13 +8,14 @@ const signed = v => `${v > 0.00001 ? '+' : ''}${fmt(Math.abs(v) < 0.00001 ? 0 : 
 const name = code => COUNTRIES[code] || code;
 const options = (values, selected) => Object.entries(values).map(([key, label]) => `<option value="${key}"${key === selected ? ' selected' : ''}>${esc(label)}</option>`).join('');
 let draft = initialDraft(), result = null, dirty = true, error = '';
+let activeTab = 'country';
 const productLabels = Object.fromEntries(Object.entries(PRODUCTS).map(([id, p]) => [id, p.label]));
 let stylePromise;
 
 export function prepare() {
   if (!stylePromise) stylePromise = new Promise((resolve, reject) => {
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=2', import.meta.url).href;
+    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=3', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('시뮬레이터 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -153,9 +155,8 @@ function results() {
     </div>`;
 }
 
-export function markup() {
-  return `<div class="ts-app">
-    <nav class="ts-tabs" aria-label="시뮬레이터 유형"><button type="button" aria-pressed="true">국가</button><button type="button" disabled aria-pressed="false">기업 <span>준비 중</span></button></nav>
+function countryMarkup() {
+  return `<div data-country-simulator>
     <div class="ts-intro"><div><span class="ts-eyebrow">미국 수입시장 · 국가별 공급 반응</span><h1>관세가 바뀌면, 공급은 어디로 이동할까요?</h1>
       <p>같은 품목을 공급하는 국가들의 가격·판매량·점유율을 비교합니다.</p></div><span class="ts-badge">구매액은 가상 초기값</span></div>
     <p class="ts-model-source">모형 근거: <a href="${SOURCES[0].url}" target="_blank" rel="noopener noreferrer">USITC CES Tariff Model</a> · <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">Riker & Schreiber (2020) §2.1</a>의 국가별 부분균형 구조를 참고했습니다.</p>
@@ -170,7 +171,7 @@ export function markup() {
   </div>`;
 }
 
-export function mount(root) {
+function mountCountry(root) {
   const controller = new AbortController(), signal = controller.signal;
   const markDirty = () => {
     dirty = true;
@@ -240,7 +241,7 @@ export function mount(root) {
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
     if (button.hasAttribute('data-reset')) {
-      draft = initialDraft(); result = null; dirty = true; error = ''; root.innerHTML = markup();
+      draft = initialDraft(); result = null; dirty = true; error = ''; root.innerHTML = countryMarkup();
     } else if (button.hasAttribute('data-literature')) {
       const e = PRODUCTS[draft.product].elasticity;
       if (e) { draft.sigma = e.sigma; if (e.eta !== undefined) draft.eta = e.eta; draft.elasticity_basis = 'literature'; paintEditor(); markDirty(); }
@@ -259,4 +260,26 @@ export function mount(root) {
     }
   }, { signal });
   return () => controller.abort();
+}
+
+export function markup() {
+  return `<div class="ts-app"><nav class="ts-tabs" aria-label="시뮬레이터 유형"><button type="button" data-simulator-tab="country" aria-pressed="${activeTab === 'country'}">국가</button><button type="button" data-simulator-tab="company" aria-pressed="${activeTab === 'company'}">기업</button></nav><div data-simulator-view>${activeTab === 'country' ? countryMarkup() : companyMarkup()}</div></div>`;
+}
+export function mount(root) {
+  const controller = new AbortController();
+  let cleanup;
+  const attach = () => {
+    const body = root.querySelector('[data-simulator-view]');
+    cleanup = activeTab === 'country' ? mountCountry(body) : mountCompany(body, { getCountryResult: () => dirty ? null : result });
+  };
+  root.addEventListener('click', event => {
+    const button = event.target.closest('[data-simulator-tab]');
+    if (!button || !root.contains(button) || button.dataset.simulatorTab === activeTab) return;
+    cleanup?.(); activeTab = button.dataset.simulatorTab;
+    root.querySelectorAll('[data-simulator-tab]').forEach(tab => tab.setAttribute('aria-pressed', String(tab.dataset.simulatorTab === activeTab)));
+    root.querySelector('[data-simulator-view]').innerHTML = activeTab === 'country' ? countryMarkup() : companyMarkup();
+    attach();
+  }, { signal: controller.signal });
+  attach();
+  return () => { cleanup?.(); controller.abort(); };
 }

@@ -15,7 +15,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await page.goto(`${base}/policy/us/simulator`);
     await page.getByRole('heading', { name: '현행 관세를 기준으로 비교합니다' }).waitFor();
     assert.equal(requests.filter(p => p.startsWith('/api/')).length, 0);
-    assert.ok(await page.getByRole('button', { name: '기업 준비 중' }).isDisabled());
+    assert.ok(await page.getByRole('button', { name: '기업', exact: true }).isEnabled());
     assert.equal(await page.getByLabel('한국 가정 관세', { exact: true }).count(), 0);
     assert.match(await page.locator('[data-rate="1"]').innerText(), /15.0% → 15.0%/);
     const modelY = await page.locator('.ts-model-source').evaluate(el => el.getBoundingClientRect().top);
