@@ -21,6 +21,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     const modelY = await page.locator('.ts-model-source').evaluate(el => el.getBoundingClientRect().top);
     const editorY = await page.locator('[data-editor]').evaluate(el => el.getBoundingClientRect().top);
     assert.ok(modelY < editorY);
+    assert.match(await page.locator('[data-purchase-help]').innerText(), /관세 변경 전.*관세 포함.*2,500만 달러/);
+    assert.match(await page.locator('[data-sigma-basis]').innerText(), /사용자 가정/);
+    assert.match(await page.locator('[data-eta-basis]').innerText(), /사용자 가정/);
 
     await page.getByLabel('한국 비교할 관세', { exact: true }).selectOption('us_metal');
     assert.match(await page.locator('[data-rate="1"]').innerText(), /15.0% → 10.0%/);
@@ -71,6 +74,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await page.getByLabel('한국 가정 관세', { exact: true }).count(), 0);
     assert.ok(!(await page.getByLabel('관세 적용 조건 확인').isChecked()));
     assert.match(await page.locator('[data-elasticity-source]').innerText(), /2021/);
+    assert.match(await page.locator('[data-sigma-basis]').innerText(), /문헌 기반 근사값/);
+    assert.match(await page.locator('[data-eta-basis]').innerText(), /문헌 범위의 중간값/);
     await page.getByLabel('한국 비교할 관세').selectOption('manual');
     await page.getByLabel('한국 가정 관세', { exact: true }).fill('25');
     await page.getByLabel('관세 적용 조건 확인').check();
@@ -79,6 +84,12 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.match(await page.locator('.ts-sensitivity').innerText(), /6.0/);
     await page.getByLabel('분석 품목').selectOption('semiconductor');
     assert.equal(await page.getByLabel('대체탄력성', { exact: true }).inputValue(), '3.32');
+    assert.match(await page.locator('[data-sigma-basis]').innerText(), /문헌 기반 근사값/);
+    assert.match(await page.locator('[data-eta-basis]').innerText(), /사용자 가정/);
+    assert.match(await page.locator('[data-sigma-basis] a').getAttribute('href'), /us_exposure_to_the_taiwanese_semiconductor_industry/);
+    await page.getByLabel('시장 수요탄력성', { exact: true }).fill('-0.8');
+    assert.match(await page.locator('[data-sigma-basis]').innerText(), /사용자 가정/);
+    assert.match(await page.locator('[data-eta-basis]').innerText(), /사용자 가정/);
     await page.getByLabel('분석 품목').selectOption('transformer');
     assert.equal(await page.getByLabel('대체탄력성', { exact: true }).inputValue(), '4');
     assert.match(await page.locator('[data-elasticity-source]').innerText(), /학습용 가정/);

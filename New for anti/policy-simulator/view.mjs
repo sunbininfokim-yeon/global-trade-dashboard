@@ -28,6 +28,16 @@ function rates(row) {
   try { const pair = tariffPair(draft.product, row); return `${fmt(pair.tariff_before, 1)}% → ${fmt(pair.tariff_after, 1)}%`; }
   catch { return '현행 관세 확인 필요'; }
 }
+function elasticitySources() {
+  const e = PRODUCTS[draft.product].elasticity;
+  const literature = draft.elasticity_basis === 'literature' && e;
+  const reference = e ? `<a href="${e.source.url}" target="_blank" rel="noopener noreferrer">${esc(e.source.title)}</a>` : '';
+  return `<p data-sigma-basis><b>대체탄력성 σ:</b> ${literature ? `문헌 기반 근사값 · ${reference}` : '사용자 가정 · 현재 입력값의 실측 근거는 등록되지 않았습니다.'}</p>
+    <p data-eta-basis><b>시장 수요탄력성 η:</b> ${literature && e.eta !== undefined ? `문헌 범위의 중간값 · ${reference}` : '사용자 가정 · 현재 입력값의 실측 근거는 등록되지 않았습니다. 초기 -1도 학습용 가정입니다.'}</p>
+    ${e ? `<p>${esc(e.note)}${literature ? '' : ` 참고 문헌: ${reference} (현재 입력에 자동 적용되지 않음).`}</p><button type="button" class="ts-text-button" data-literature>문헌 기본값 적용</button>` : '<p>이 대표 품목에 맞는 탄력성 문헌은 확보하지 못했습니다. 초기 σ=4, η=-1은 사용자가 조정하는 학습용 가정입니다.</p>'}
+    <small data-elasticity-basis>${literature ? (e.eta === undefined ? 'σ는 문헌 기반 근사값 · η는 사용자 가정' : '문헌 범위의 중간값 적용 중') : '사용자 가정 적용 중'}</small>
+    <p>품목·시장·분석 기간에 따라 달라지는 값입니다. 모든 기업과 산업에 공통으로 적용되는 상수가 아닙니다. <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">탄력성의 역할: 모형 원문 §2.1</a></p>`;
+}
 function tariffEditor(row, i) {
   if (row.country === 'USA') return '';
   const choices = policyOptions(draft.product, row.country);
@@ -52,7 +62,7 @@ function tariffEditor(row, i) {
     </details></section>`;
 }
 function editor() {
-  const profile = PRODUCTS[draft.product], e = profile.elasticity;
+  const profile = PRODUCTS[draft.product];
   const focusChoices = Object.fromEntries(draft.rows.filter(row => !['USA', 'ROW'].includes(row.country)).map(row => [row.country, name(row.country)]));
   const suppliers = SUPPLIER_SNAPSHOT.products[draft.product];
   return `<form data-sim-form>
@@ -63,6 +73,7 @@ function editor() {
     </div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>
     <div class="ts-section-label"><h3>시장과 공급국</h3><span>구매액 단위: 백만 달러</span></div>
+    <p class="ts-help" data-purchase-help>기준 구매액은 관세 변경 전 기준 기간에 미국 구매자가 각 공급국의 해당 품목에 쓴 관세 포함 금액입니다. 한국 행의 25는 2,500만 달러입니다. 미국 행에는 미국산 제품 구매액을 넣습니다.</p>
     <div class="ts-scroll"><table class="ts-input-table"><caption class="ts-sr">같은 품목·기간·관세 포함 구매액을 입력하세요.</caption>
       <thead><tr><th>공급국</th><th>기준 구매액</th><th>공급탄력성</th><th><span class="ts-sr">제거</span></th></tr></thead>
       <tbody>${draft.rows.map((row, i) => {
@@ -84,10 +95,10 @@ function editor() {
     ${draft.rows.map(tariffEditor).join('')}
     <label class="ts-confirm"><input type="checkbox" data-key="policy_confirmed" aria-label="관세 적용 조건 확인"${draft.policy_confirmed ? ' checked' : ''}>선택한 양쪽 관세의 HTS·원산지·예외·별도 추가세 조건에 맞는 거래를 비교합니다.</label>
     <div class="ts-fields ts-elasticities">
-      <label>대체탄력성 σ ${numberInput(draft.sigma, 'data-key="sigma" aria-label="대체탄력성" min="0.1" max="20" aria-describedby="ts-sigma-help"')}<small id="ts-sigma-help">클수록 다른 공급국으로 쉽게 전환</small></label>
-      <label>시장 수요탄력성 η ${numberInput(draft.eta, 'data-key="eta" aria-label="시장 수요탄력성" min="-10" max="-0.05"')}<small>음수 · 절댓값이 클수록 가격에 민감</small></label>
+      <label>대체탄력성 σ ${numberInput(draft.sigma, 'data-key="sigma" aria-label="대체탄력성" min="0.1" max="20" aria-describedby="ts-sigma-help"')}<small id="ts-sigma-help">공급국 간 상대가격 변화에 따른 구매 전환. 클수록 쉽게 다른 공급국으로 전환합니다.</small></label>
+      <label>시장 수요탄력성 η ${numberInput(draft.eta, 'data-key="eta" aria-label="시장 수요탄력성" min="-10" max="-0.05"')}<small>미국 해당 품목시장 전체의 가격·수요 반응. η=-1이면 시장 가격지수 1% 상승 시 전체 수요가 약 1% 감소합니다.</small></label>
     </div>
-    <div class="ts-elasticity-source" data-elasticity-source>${e ? `<a href="${e.source.url}" target="_blank" rel="noopener noreferrer">${esc(e.source.title)}</a><p>${esc(e.note)}</p><button type="button" class="ts-text-button" data-literature>문헌 기본값 적용</button>` : '<p>이 대표 품목에 맞는 탄력성 문헌은 확보하지 못했습니다. 초기 σ=4, η=-1은 사용자가 조정하는 학습용 가정입니다.</p>'}<small data-elasticity-basis>${draft.elasticity_basis === 'literature' ? '문헌 기반 근사값 적용 중' : '사용자 가정 적용 중'}</small></div>
+    <div class="ts-elasticity-source" data-elasticity-source>${elasticitySources()}</div>
     <details class="ts-explainer"><summary>입력 기준과 계산 범위</summary>
       <p>공급탄력성 초기값은 미국 1.5, 외국 3인 학습용 가정입니다. 제품 선택만으로 시장 구매액·공급탄력성이 실측값으로 바뀌지 않습니다.</p>
       <p>구매액은 관세 포함 구매자 지출입니다. DataWeb 통관가액은 국내 출하·관세·유통 마진을 맞추기 전에는 이 구매액과 다릅니다.</p>
@@ -186,7 +197,7 @@ export function mount(root) {
         draft[key] = key === 'policy_confirmed' ? el.checked : el.value;
         if (key === 'sigma' || key === 'eta') {
           draft.elasticity_basis = 'manual';
-          root.querySelector('[data-elasticity-basis]').textContent = '사용자 가정 적용 중';
+          root.querySelector('[data-elasticity-source]').innerHTML = elasticitySources();
         }
         if (key === 'focus') root.querySelectorAll('.ts-input-table tbody tr').forEach((row, i) => row.classList.toggle('ts-focus-row', draft.rows[i].country === draft.focus));
       }

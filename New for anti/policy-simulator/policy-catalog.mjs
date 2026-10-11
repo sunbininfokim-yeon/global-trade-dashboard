@@ -23,7 +23,7 @@ export const POLICY_SOURCES = {
   china: { title: 'USTR 중국 301 목록·예외', url: 'https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions' },
 };
 const semiconductorSource = { title: 'USITC 연구진 (2023), 표 4 · 메모리 σ=3.32', url: 'https://www.usitc.gov/sites/default/files/publications/332/working_papers/us_exposure_to_the_taiwanese_semiconductor_industry_11-21-2023_508.pdf#page=23' };
-const tireSource = { title: 'USITC Pub.5212 (2021), II-30~31 · σ=3~6', url: 'https://www.usitc.gov/sites/default/files/publications/701_731/pub5212.pdf#page=125' };
+const tireSource = { title: 'USITC Pub.5212 (2021), II-30~31 · σ=3~6 · η=-0.50~-0.25', url: 'https://www.usitc.gov/sites/default/files/publications/701_731/pub5212.pdf#page=124' };
 export const PRODUCTS = {
   transformer: { label: '전력용 변압기', hts: '8504.23.00', hts6: '850423', mfn: 1.6, family: 'metal_floor',
     scope: '액체절연 · 10MVA 초과. 철강 중량 15% 이상인 Annex III 제품을 비교합니다. 60MVA 이상 한국산은 A-580-867 등 AD 적용 여부·기업 세율을 별도 확인하세요.' },
