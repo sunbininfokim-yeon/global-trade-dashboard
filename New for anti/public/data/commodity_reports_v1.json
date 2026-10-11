@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-11T20:32:17.242562+00:00",
+  "generated_at": "2026-10-11T23:56:20.233952+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,31 +17,31 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 37,
-    "sources_failed": 1,
-    "raw_items": 642,
-    "scored": 174,
-    "unclassified": 383,
+    "sources_ok": 34,
+    "sources_failed": 4,
+    "raw_items": 612,
+    "scored": 176,
+    "unclassified": 351,
     "rejected": 56,
-    "published": 162,
+    "published": 164,
     "commodities": 29,
-    "buckets": 97
+    "buckets": 98
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": true,
-      "count": 10,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
       "mode": "live"
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": true,
-      "count": 1,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno 101] Network is unreachable>",
       "mode": "live",
-      "archived": 4
+      "carried_over": 4
     },
     {
       "source_id": "us_nass_asb",
@@ -103,9 +103,9 @@
     },
     {
       "source_id": "in_pib_agriculture",
-      "ok": true,
-      "count": 20,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>",
       "mode": "live"
     },
     {
@@ -121,8 +121,8 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "43 list pages, 42 reports linked, 4 read, 32 already known; 2 failed",
-      "archived": 10
+      "note": "43 list pages, 41 reports linked, 7 read, 29 already known; 2 failed",
+      "archived": 11
     },
     {
       "source_id": "my_mpob",
@@ -824,8 +824,15 @@
       "VNM": [
         "2147f5407a8ae8de"
       ],
+      "ARG": [
+        "e36e7155dc085ab6",
+        "21c3dd4f0cf93fd0"
+      ],
       "CHN": [
         "6e3880b1a989890a"
+      ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
       ],
       "USA": [
         "0466c9487c9388ef",
@@ -836,9 +843,6 @@
       ],
       "_global": [
         "976dad99c36e6871"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
       ]
     },
     "corn": {
@@ -1176,7 +1180,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 6.054,
+      "importance": 6.037,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1209,7 +1213,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.672,
+      "importance": 5.655,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1242,7 +1246,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.198,
+      "importance": 5.184,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1275,7 +1279,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.985,
+      "importance": 4.971,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1308,7 +1312,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.614,
+      "importance": 4.602,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1340,7 +1344,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.601,
+      "importance": 4.588,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1372,7 +1376,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.51,
+      "importance": 4.498,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1405,7 +1409,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.51,
+      "importance": 4.497,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1439,7 +1443,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.081,
+      "importance": 4.07,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1471,7 +1475,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.076,
+      "importance": 4.066,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1501,7 +1505,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.875,
+      "importance": 3.864,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1532,13 +1536,44 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.784,
+      "importance": 3.773,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
+    },
+    {
+      "id": "e36e7155dc085ab6",
+      "title": {
+        "original": "Argentina: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
+      "published_at": "2026-10-07T12:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.687,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-11T23:56:20.233952+00:00"
     },
     {
       "id": "9307f930910dd12d",
@@ -1564,7 +1599,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.65,
+      "importance": 3.641,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1596,7 +1631,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.633,
+      "importance": 3.622,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1627,7 +1662,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.605,
+      "importance": 3.599,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1660,7 +1695,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.564,
+      "importance": 3.559,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1669,6 +1704,39 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "937f667ad21463f2",
+      "title": {
+        "original": "Brazil: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Brazil has raised its mandatory anhydrous ethanol blend in gasoline to 32%, a temporary measure designed to reduce gasoline imports and absorb the country's...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-biofuels-annual",
+      "published_at": "2026-09-02T10:49:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "light_oils"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.552,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "5deae7d73e06d45b",
@@ -1693,7 +1761,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.561,
+      "importance": 3.551,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1724,46 +1792,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.561,
+      "importance": 3.551,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-06T18:41:39.172320+00:00"
-    },
-    {
-      "id": "937f667ad21463f2",
-      "title": {
-        "original": "Brazil: Biofuels Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Brazil has raised its mandatory anhydrous ethanol blend in gasoline to 32%, a temporary measure designed to reduce gasoline imports and absorb the country's...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-biofuels-annual",
-      "published_at": "2026-09-02T10:49:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "light_oils"
-      ],
-      "countries": [
-        "BRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.557,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "6a457a61ab01128e",
@@ -1788,7 +1823,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.329,
+      "importance": 3.319,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1819,7 +1854,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.296,
+      "importance": 3.287,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1852,7 +1887,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.296,
+      "importance": 3.287,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1883,7 +1918,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.296,
+      "importance": 3.287,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1914,7 +1949,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.235,
+      "importance": 3.226,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1945,7 +1980,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.177,
+      "importance": 3.171,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1978,7 +2013,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.176,
+      "importance": 3.167,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2009,7 +2044,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.146,
+      "importance": 3.142,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2040,7 +2075,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.121,
+      "importance": 3.114,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -2071,7 +2106,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.063,
+      "importance": 3.058,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2103,7 +2138,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.994,
+      "importance": 2.989,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2135,7 +2170,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.971,
+      "importance": 2.962,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2168,7 +2203,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.909,
+      "importance": 2.904,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2198,12 +2233,43 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.906,
+      "importance": 2.898,
       "reasons": [
         "series:USDA_GAIN"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-07T21:36:58.262771+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.853,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-11T23:56:20.233952+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -2228,7 +2294,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.86,
+      "importance": 2.853,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2260,7 +2326,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.86,
+      "importance": 2.853,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2291,7 +2357,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.813,
+      "importance": 2.809,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2323,7 +2389,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.603,
+      "importance": 2.596,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2441,7 +2507,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.385,
+      "importance": 2.383,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2570,7 +2636,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.321,
+      "importance": 2.315,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2601,7 +2667,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.265,
+      "importance": 2.259,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2633,7 +2699,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.163,
+      "importance": 2.159,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2665,7 +2731,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.158,
+      "importance": 2.156,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2697,7 +2763,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.1,
+      "importance": 2.094,
       "reasons": [
         "country_in_text"
       ],
@@ -2727,7 +2793,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.05,
+      "importance": 2.045,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2760,7 +2826,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.036,
+      "importance": 2.031,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2801,7 +2867,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.885,
+      "importance": 1.881,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2832,7 +2898,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.863,
+      "importance": 1.859,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2864,7 +2930,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.703,
+      "importance": 1.698,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -2977,7 +3043,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.606,
+      "importance": 1.601,
       "reasons": [
         "country_in_text"
       ],
@@ -3017,7 +3083,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.573,
+      "importance": 1.571,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3106,7 +3172,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.523,
+      "importance": 1.521,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -3137,7 +3203,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.522,
+      "importance": 1.52,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3169,7 +3235,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.522,
+      "importance": 1.517,
       "reasons": [
         "country_in_text"
       ],
@@ -3200,7 +3266,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.522,
+      "importance": 1.517,
       "reasons": [
         "country_in_text"
       ],
@@ -3231,7 +3297,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.522,
+      "importance": 1.517,
       "reasons": [
         "country_in_text"
       ],
@@ -3260,7 +3326,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.487,
+      "importance": 1.483,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
@@ -3289,7 +3355,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.476,
+      "importance": 1.475,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3320,7 +3386,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.469,
+      "importance": 1.464,
       "reasons": [
         "country_in_text"
       ],
@@ -3532,7 +3598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.439,
+      "importance": 1.435,
       "reasons": [
         "country_in_text"
       ],
@@ -3575,7 +3641,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.398,
+      "importance": 1.395,
       "reasons": [
         "country_in_text"
       ],
@@ -3605,7 +3671,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.393,
+      "importance": 1.389,
       "reasons": [
         "country_in_text"
       ],
@@ -3635,7 +3701,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.393,
+      "importance": 1.389,
       "reasons": [
         "country_in_text"
       ],
@@ -3665,7 +3731,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.393,
+      "importance": 1.389,
       "reasons": [
         "country_in_text"
       ],
@@ -3695,7 +3761,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.367,
+      "importance": 1.364,
       "reasons": [
         "country_in_text"
       ],
@@ -3724,7 +3790,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.355,
+      "importance": 1.351,
       "reasons": [
         "country_in_text"
       ],
@@ -3893,7 +3959,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.327,
+      "importance": 1.324,
       "reasons": [
         "country_in_text"
       ],
@@ -3923,7 +3989,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.309,
+      "importance": 1.307,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -3954,7 +4020,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.305,
+      "importance": 1.303,
       "reasons": [
         "country_in_text"
       ],
@@ -3985,7 +4051,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.303,
+      "importance": 1.299,
       "reasons": [
         "country_in_text"
       ],
@@ -4016,7 +4082,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.303,
+      "importance": 1.299,
       "reasons": [
         "country_in_text"
       ],
@@ -4047,7 +4113,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.262,
+      "importance": 1.26,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4077,7 +4143,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.253,
+      "importance": 1.252,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -4108,7 +4174,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.25,
+      "importance": 1.247,
       "reasons": [
         "country_in_text"
       ],
@@ -4137,7 +4203,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.238,
+      "importance": 1.235,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4176,7 +4242,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.232,
+      "importance": 1.228,
       "reasons": [
         "country_in_text"
       ],
@@ -4368,7 +4434,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.209,
+      "importance": 1.206,
       "reasons": [
         "country_in_text"
       ],
@@ -4408,7 +4474,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.198,
+      "importance": 1.195,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -4436,7 +4502,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.191,
+      "importance": 1.19,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4466,7 +4532,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.188,
+      "importance": 1.185,
       "reasons": [
         "country_in_text"
       ],
@@ -4508,7 +4574,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.178,
+      "importance": 1.175,
       "reasons": [
         "country_in_text"
       ],
@@ -4539,7 +4605,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.172,
+      "importance": 1.17,
       "reasons": [
         "country_in_text"
       ],
@@ -4572,7 +4638,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.171,
+      "importance": 1.168,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4608,7 +4674,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.16,
+      "importance": 1.159,
       "reasons": [
         "has_figure"
       ],
@@ -4638,7 +4704,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.16,
+      "importance": 1.159,
       "reasons": [
         "country_in_text"
       ],
@@ -4668,7 +4734,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.149,
+      "importance": 1.147,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4700,7 +4766,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.147,
+      "importance": 1.144,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4738,7 +4804,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.113,
+      "importance": 1.112,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4767,7 +4833,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.094,
+      "importance": 1.091,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -4794,7 +4860,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.09,
+      "importance": 1.088,
       "reasons": [
         "country_in_text"
       ],
@@ -5557,7 +5623,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.007,
+      "importance": 1.005,
       "reasons": [
         "country_in_text"
       ],
@@ -5600,7 +5666,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.999,
+      "importance": 0.998,
       "reasons": [
         "country_in_text"
       ],
@@ -5629,7 +5695,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.992,
+      "importance": 0.99,
       "reasons": [
         "country_in_text"
       ],
@@ -5673,7 +5739,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.991,
+      "importance": 0.989,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5699,7 +5765,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.988,
+      "importance": 0.985,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5726,7 +5792,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.983,
+      "importance": 0.981,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5764,7 +5830,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.978,
+      "importance": 0.976,
       "reasons": [
         "country_in_text"
       ],
@@ -5805,7 +5871,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.969,
+      "importance": 0.967,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5917,7 +5983,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.95,
+      "importance": 0.948,
       "reasons": [
         "country_in_text"
       ],
@@ -5960,7 +6026,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.941,
+      "importance": 0.94,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5987,7 +6053,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.93,
+      "importance": 0.928,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6027,7 +6093,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.915,
+      "importance": 0.914,
       "reasons": [
         "country_in_text"
       ],
@@ -6056,7 +6122,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.894,
+      "importance": 0.892,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6096,7 +6162,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.873,
+      "importance": 0.872,
       "reasons": [
         "country_in_text"
       ],
@@ -6125,7 +6191,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.853,
+      "importance": 0.851,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6163,7 +6229,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.743,
+      "importance": 0.742,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -6189,7 +6255,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.717,
+      "importance": 0.716,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6433,7 +6499,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.577,
+      "importance": 0.576,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -6461,7 +6527,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.535,
+      "importance": 0.534,
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
@@ -6489,7 +6555,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.52,
+      "importance": 0.519,
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
@@ -6516,7 +6582,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.516,
+      "importance": 0.515,
       "reasons": [],
       "board": "export_controls",
       "control": {
