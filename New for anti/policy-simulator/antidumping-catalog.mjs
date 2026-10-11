@@ -5,6 +5,24 @@ export const AD_CATALOG = {
   "coverage": "selected_official_notices_only",
   "coverage_note": "선별한 공식 공고의 기업별 마진·예치 조건을 확인한 자료입니다. 사건 전체 정정·법원 명령·CBP 지침을 전수 확인한 현재 적용 세율 서비스는 아닙니다. 기업·제품 범위·수출자/생산자 조합을 확인해야 하며 누락 구간은 미확인입니다.",
   "documents": {
+    "2023-05386": {
+      "document_id": "2023-05386",
+      "published": "2023-03-16",
+      "kind": "historical_rate_basis",
+      "title": "변압기 2020–2021 최종결과 · 효성 4.32%의 과거 개별조사 근거",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2023-03-16/html/2023-05386.htm",
+      "notes": "효성 개별조사 마진 4.32%의 출처 설명용. 다른 구간의 현재 세율·법인 승계에 자동 적용하지 않습니다.",
+      "verified_on": "2026-10-11"
+    },
+    "ACCESS-4943770-02": {
+      "document_id": "ACCESS-4943770-02",
+      "dated": "2026-08-10",
+      "kind": "decision_memorandum",
+      "title": "변압기 2023–2024 최종결과 결정문 · Comment 7",
+      "url": "https://access.trade.gov/frnotices",
+      "notes": "ACCESS 공개 FR Notices: 사건 A-580-867, POR 2023-08-01~2024-07-31, Final Decision Memo, 바코드 4943770-02. p.2 절차 이력, pp.23–24 상무부의 비선정 마진 판단. 상무부의 설명이며 법원의 확정 판단은 아닙니다.",
+      "verified_on": "2026-10-11"
+    },
     "2012-21613": {
       "document_id": "2012-21613",
       "published": "2012-08-31",
@@ -38,7 +56,7 @@ export const AD_CATALOG = {
       "kind": "review_final",
       "title": "변압기 2023–2024 최종결과",
       "url": "https://www.govinfo.gov/content/pkg/FR-2026-08-14/pdf/2026-16663.pdf",
-      "notes": "두 조사기업 0%, 비선정 LS·효성 4.32%. 최종 공고는 다른 합리적 방법을 사용했다고 설명합니다. 상세 결정문은 별도 ACCESS 확인이 필요합니다.",
+      "notes": "두 조사기업 0%, 비선정 LS·효성 4.32%. ACCESS 4943770-02 Comment 7의 상무부 설명도 확인했습니다.",
       "verified_on": "2026-10-11"
     },
     "2026-20160": {
@@ -206,7 +224,7 @@ export const AD_CATALOG = {
               "entirely_facts_available": false
             }
           ],
-          "reason": "조사기업 둘 다 0%이나 다른 합리적 방법으로 비선정 기업 4.32%. 세부 산정 근거는 ACCESS 결정문 확인 필요.",
+          "reason": "조사기업 둘 다 0%이나 상무부는 다른 합리적 방법을 채택. 효성은 과거 개별조사 4.32% 유지, LS는 과거 배정 16.87% 대신 효성의 4.32%를 부여. ACCESS 4943770-02 Comment 7의 상무부 설명이며 법원 판단은 아닙니다.",
           "rule_basis": "해당 공고: §735(c)(5)를 행정재심 지침으로 참조"
         }
       ],

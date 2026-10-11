@@ -79,7 +79,7 @@ export function nonSelectedScenario(input) {
     else included.push({ ...item, rate, weight: row.weight });
   }
   const out = { educational_only: true, process: 'market_economy_administrative_review', included: included.map(({ rate, weight, ...x }) => x), excluded, rate_pct: null };
-  if (!included.length) return { ...out, status: 'requires_reasonable_method', reason: '유효한 개별 마진이 없습니다. Commerce의 다른 합리적 방법 확인이 필요하며 0%로 산정하지 않습니다.' };
+  if (!included.length) return { ...out, status: 'requires_reasonable_method', reason: '통상 가중평균에 포함할 마진이 없습니다. 기대방법을 포함한 합리적 산정과, 그 방법에서 벗어날 경우 근거 검토가 필요합니다. 0% 배정이 가능한 경우도 있지만 이 교육용 계산에서 자동으로 0%나 다른 양의 세율을 확정하지 않습니다. Commerce의 다른 합리적 방법 판단은 해당 결정문에서 확인하세요.' };
   if (included.length === 1) return { ...out, status: 'single_eligible_scenario', rate_pct: included[0].margin_pct, reason: '제외 조건 후 남은 한 마진을 반영한 원리 예시입니다.' };
   if (!input.equal_weights_assumption && included.some(r => r.weight == null || String(r.weight).trim() === '')) return { ...out, status: 'weights_required', reason: '공개된 산정 가중치가 없으면 실제 비선정 기업 세율을 재구성할 수 없습니다. 가중치를 입력하거나 동일 가중 가정을 선택하세요.' };
   let sum = 0n, weighted = 0n;

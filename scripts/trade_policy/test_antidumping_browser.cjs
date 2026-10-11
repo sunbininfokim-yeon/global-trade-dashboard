@@ -16,7 +16,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.goto(`${base}/policy/us/simulator`); await tab('반덤핑');
     await page.getByRole('heading', { name: '반덤핑 예치금과 재심 결과를 비교하세요' }).waitFor();
     assert.match(await page.locator('[data-ad-reference]').innerText(), /4.32%/);
-    assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '');
+    assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '1000000');
+    await field('대상 수입 신고가격 · USD').fill('');
     await calc(); assert.ok(await field('대상 수입 신고가격 · USD').evaluate(el => document.activeElement === el && el.getAttribute('aria-invalid') === 'true'));
     await field('대상 수입 신고가격 · USD').fill('1000000'); await field('가정 AD 예치율 %').fill('16.87'); await field('연 금융비용률 %').fill('5'); await field('예치 기간 · 일').fill('180');
     await confirm(); await calc(); let r = await json(); assert.equal(r.reference_deposit_usd, '43200.00'); assert.equal(r.reference_financing_cost_usd, '1065.21'); assert.equal(r.reference.company.id, 'hyosung');

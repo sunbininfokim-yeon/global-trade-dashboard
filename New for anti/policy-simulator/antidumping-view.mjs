@@ -1,16 +1,20 @@
 import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
 import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
+import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, reviewProgress } from './antidumping-guide.mjs';
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = v => v == null ? '미확인' : Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
 const money = v => { if (v == null) return '산출 불가'; const negative = v.startsWith('-'), [whole, fraction] = v.replace(/^-/, '').split('.'); return `${negative ? '-' : ''}${BigInt(whole).toLocaleString('en-US')}.${fraction}`; };
 const link = d => `<a href="${esc(d.url)}" target="_blank" rel="noopener noreferrer">${esc(d.document_id || d.label)}</a>`;
 const selectedCase = () => catalog.cases.find(c => c.case_id === draft.case_id);
-const initial = () => ({ reference_mode: 'published', case_id: 'A-580-867', company_id: 'hyosung', entry_date: catalog.checked_on,
-  entered_value_usd: '', scenario_rate_pct: '', annual_finance_pct: '0', holding_days: '0', scope_confirmed: false, identity_confirmed: false,
-  manual_case_id: '', company_name: '', reference_rate_pct: '', reference_url: '', reference_note: '' });
+const initial = () => {
+  const context = { reference_mode: 'published', case_id: 'A-580-867', company_id: 'hyosung', entry_date: catalog.checked_on };
+  return { ...context, ...createADExample(context).values, scope_confirmed: false, identity_confirmed: false,
+    manual_case_id: '', company_name: '', reference_rate_pct: '', reference_url: '', reference_note: '' };
+};
 let draft = initial(), result = null, dirty = true, methodResult = null;
+let example = createADExample(draft), editedFields = new Set(), processRecordId = '';
 let methodSegment = '2026-16663', methodRows = [], equalWeights = false;
 function seedMethod() {
   const s = selectedCase().segments.find(s => s.document_id === methodSegment) || selectedCase().segments.at(-1);
@@ -22,7 +26,8 @@ seedMethod();
 export function selectAntidumping({ case_id, company_id }) {
   const c = catalog.cases.find(c => c.case_id === case_id);
   if (!c?.companies.some(x => x.id === company_id)) return;
-  draft = { ...initial(), case_id, company_id }; result = null; dirty = true;
+  draft = { ...initial(), case_id, company_id }; example = createADExample(draft); Object.assign(draft, example.values);
+  editedFields = new Set(); processRecordId = ''; result = null; dirty = true;
   methodSegment = c.segments.at(-1).document_id; seedMethod();
 }
 function input(key, label, { type = 'number', min = '0', max = '10000', value = draft[key], help = '', step = '0.000001', required = true } = {}) {
@@ -38,7 +43,7 @@ function referencePanel() {
   return `<div class="ts-fields"><label>반덤핑 사건<select data-ad-key="case_id" aria-label="반덤핑 사건">${catalog.cases.map(c => `<option value="${c.case_id}"${c.case_id === draft.case_id ? ' selected' : ''}>${c.product} · ${c.case_id}</option>`).join('')}</select></label>
     <label>공고에 기재된 법인<select data-ad-key="company_id" aria-label="반덤핑 기업">${c.companies.map(x => `<option value="${x.id}"${x.id === draft.company_id ? ' selected' : ''}>${x.name}</option>`).join('')}<option value="unknown"${draft.company_id === 'unknown' ? ' selected' : ''}>목록에 없는 법인 · 미확인</option></select></label></div>
     <div class="ts-ad-reference" data-ad-reference><span>선별 최종 공고의 AD 예치 참고율</span><strong>${reference.rate_pct == null ? '미확인' : `${fmt(reference.rate_pct)}%`}</strong>
-    ${reference.document ? `<p>${esc(reference.company.official_name)}<br>발효 ${reference.effective} · POR ${reference.por_start} ~ ${reference.por_end}<br>공식 공고 ${link(reference.document)}</p>` : ''}<p>${esc(reference.reason)}</p></div>
+    ${reference.document ? `<p>${esc(reference.company.official_name)}<br>발효 ${reference.effective} · POR ${reference.por_start} ~ ${reference.por_end}<br>공식 공고 ${link(reference.document)}</p>` : ''}<p>${esc(reference.reason)}</p>${c.case_id === 'A-580-867' && reference.document?.document_id === '2026-16663' && ['ls', 'hyosung'].includes(draft.company_id) ? `<details><summary>4.32%의 근거 확인</summary><p>효성의 과거 개별조사 마진은 ${link(catalog.documents['2023-05386'])}에서 4.32%였습니다. 2026년 상무부는 과거 마진 변동과 이번 조사기업의 0% 결과 등을 고려해 효성은 4.32%를 유지하고, 개별조사 이력이 없는 LS에는 종전 배정 16.87% 대신 효성의 4.32%를 부여했습니다.</p><p>${link(catalog.documents['ACCESS-4943770-02'])} · 바코드 4943770-02, Comment 7, pp.23–24. 이는 상무부가 밝힌 판단 근거입니다. 비공개 거래자료 없이 실제 계산 마진을 재현하거나 소송 결론을 단정하지 않습니다.</p></details>` : ''}</div>
     <p class="ts-product-scope"><b>대상 범위 확인</b><br>${esc(c.scope.description)}<br>${c.scope.hts.length ? `HTS 참고: ${esc(c.scope.hts.join(', '))} · ` : ''}범위 근거 ${link(catalog.documents[c.scope.document_id])}</p>`;
 }
 function history() {
@@ -49,19 +54,42 @@ function history() {
     <p class="ts-help">미수록은 0%가 아닙니다. 수록한 최종 공고의 참고율이며 모든 후속 변경을 확인한 실시간 적용 세율은 아닙니다.</p></section>`;
 }
 function editor() {
-  return `<form data-ad-form novalidate><label>예치율 근거<select data-ad-key="reference_mode" aria-label="예치율 근거"><option value="published"${draft.reference_mode === 'published' ? ' selected' : ''}>등록된 공식 공고</option><option value="manual"${draft.reference_mode === 'manual' ? ' selected' : ''}>다른 사건·기업 · 직접 확인한 예치율</option></select></label>
+  return `<form data-ad-form novalidate><div class="ts-ad-example"><b>처음에는 예시값으로 시작하세요</b><p>확인된 변압기·타이어 품목에 계산용 금액을 넣었습니다. 금리·기간·비교율은 산업 평균이나 해당 회사의 실제 값이 아닙니다. 직접 입력으로 바꿀 수 있습니다.</p><button type="button" data-ad-example>이 품목의 예시값 채우기</button><div data-ad-input-guide>${inputGuide()}</div></div><label>예치율 근거<select data-ad-key="reference_mode" aria-label="예치율 근거"><option value="published"${draft.reference_mode === 'published' ? ' selected' : ''}>등록된 공식 공고</option><option value="manual"${draft.reference_mode === 'manual' ? ' selected' : ''}>다른 사건·기업 · 직접 확인한 예치율</option></select></label>
     ${input('entry_date', '통관일', { type: 'date', help: `공식 공고 자료 확인일 ${catalog.checked_on}. POR와 통관 발효일은 다릅니다.` })}${referencePanel()}
-    <h3>대상 거래와 비교할 예치율</h3><div class="ts-fields">${input('entered_value_usd', '대상 수입 신고가격 · USD', { min: '0.01', max: '1000000000000', help: '회사 매출이 아닌 해당 수입 거래의 총 신고가격' })}${input('scenario_rate_pct', '가정 AD 예치율 %', { help: '비교용 가정. 미래 판정 예측값이 아닙니다.' })}${input('annual_finance_pct', '연 금융비용률 %', { max: '100', help: '0이면 금융비용 미반영' })}${input('holding_days', '예치 기간 · 일', { max: '36500', step: '1', help: '사용자 가정 · 실제 정산 일정을 추정하지 않습니다.' })}</div>
+    <h3>어느 금액의 수입에, 몇 %를 비교하나요?</h3><div class="ts-fields">${input('entered_value_usd', '대상 수입 신고가격 · USD', { min: '0.01', max: '1000000000000', help: '해당 거래 전체 금액. 1개 제품 가격·회사 매출과 다릅니다.' })}${input('scenario_rate_pct', '가정 AD 예치율 %', { help: '초기값: 공표 참고율 +5%p. 미래 판정 예측값이 아닙니다.' })}${input('annual_finance_pct', '연 금융비용률 %', { max: '100', help: '예시 5%. 실제 자금조달 금리로 수정. 0이면 미반영.' })}${input('holding_days', '예치 기간 · 일', { max: '36500', step: '1', help: '예시 365일. 재심 종료일·환급일을 뜻하지 않습니다.' })}</div>
+    <div class="ts-ad-periods" aria-label="예치 기간 비교"><span>기간 가정 바꾸기</span>${[90, 365, 730].map(days => `<button type="button" data-ad-days="${days}">${days}일</button>`).join('')}</div>
     <label class="ts-confirm"><input type="checkbox" data-ad-key="scope_confirmed" aria-label="AD 제품 범위 확인"${draft.scope_confirmed ? ' checked' : ''} required><span>제품 사양·원산지가 사건의 서술 범위에 포함되는지 확인했습니다.</span></label>
     <label class="ts-confirm"><input type="checkbox" data-ad-key="identity_confirmed" aria-label="AD 법인 적용 조건 확인"${draft.identity_confirmed ? ' checked' : ''} required><span>생산자·수출자의 정확한 법인명과 예치율 적용 조건을 확인했습니다.</span></label>
     <div class="ts-actions"><button class="ts-primary" type="submit">AD 예치 부담 계산</button><button type="button" data-ad-reset>반덤핑 입력 초기화</button></div><p class="ts-error" data-ad-error role="alert" hidden></p></form>`;
 }
+const fieldNames = { entered_value_usd: '거래 총액', scenario_rate_pct: '비교 예치율', annual_finance_pct: '연 자금비용률', holding_days: '묶이는 기간', entry_date: '통관 가정일' };
+function inputGuide() {
+  const notes = describeADInputs(draft, example, [...editedFields]);
+  return `<details><summary>입력값의 의미와 예시 근거</summary><dl>${notes.map(x => `<div><dt>${fieldNames[x.key]} · ${x.origin === 'editable_example' ? '예시' : '직접 입력'} ${esc(x.value || '미입력')}${x.key.includes('pct') ? '%' : x.key === 'entered_value_usd' ? ' USD' : x.key === 'holding_days' ? '일' : ''}</dt><dd>${esc(x.note)}</dd></div>`).join('')}</dl><p>거래 규모가 달라도 예치액은 신고가격에 비례합니다. 업종 평균 거래액·기업 차입금리·정산일은 공개 공고에서 확인할 수 없어 실제 값으로 단정하지 않았습니다.</p></details>`;
+}
+function processStepsMarkup(steps, guide = false) {
+  return `<ol class="ts-ad-steps">${steps.map(s => `<li data-ad-stage="${s.id}" data-state="${s.state || 'guide'}"><details><summary><i aria-hidden="true"></i><span><b>${esc(s.label)}</b><small>${esc(s.agency)}</small><em>${s.event ? `${s.event.date || '날짜 미수록'} · ${s.state === 'latest' ? '수록 최신 근거' : '확인됨'}` : guide ? '일반 절차 안내' : '진행 근거 미확인'}</em></span></summary><p>${esc(s.description)}</p>${s.event ? `<p>${esc(s.event.note)}</p><p>${link(s.event.document)}</p>` : ''}<p>${link(AD_PROCESS_SOURCES[s.source])}</p></details></li>`).join('')}</ol>`;
+}
+function processMarkup() {
+  const c = selectedCase(), records = reviewRecords(draft.case_id, draft.company_id);
+  const record = records.find(r => r.id === processRecordId) || records[0];
+  processRecordId = record?.id || '';
+  const progress = record ? reviewProgress(draft.case_id, record.id) : null, manual = draft.reference_mode === 'manual';
+  return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>누가 결정하고, 어디까지 진행됐나요?</h2><span>공식 자료 확인 ${catalog.checked_on}</span></div>
+    <div class="ts-ad-roles"><p><b>상무부</b><span>덤핑 여부·마진과 재심 결과</span></p><p><b>USITC</b><span>신규 조사 등의 미국 산업피해</span></p><p><b>CBP · 세관</b><span>예치금 수납·수입 건별 관세 정산</span></p><p><b>CIT · 항소법원</b><span>행정판단의 적법성 심사</span></p></div>
+    <p class="ts-help">예치금은 최종 세금이 아닙니다. 재심·적용되는 법원 판단과 세관 정산에 따라 추가 납부 또는 환급이 생길 수 있습니다. 소송에서 졌다고 예치금 전액이 그대로 최종 관세가 되는 구조는 아닙니다.</p>
+    ${!manual && progress ? `<label class="ts-ad-process-picker">진행을 볼 재심 대상 기간<select data-ad-process-record aria-label="진행을 볼 재심 대상 기간">${records.map(r => `<option value="${r.id}"${r.id === record.id ? ' selected' : ''}>${r.por_start} ~ ${r.por_end}${r.id === records[0].id ? ' · 수록 최신 기간' : ''}</option>`).join('')}</select></label><p class="ts-help">${esc(c.case_id)} · ${esc(c.product)} · 이 기간의 사건 진행 표시입니다. 위 통관일의 예치 참고율과 별개이며, 기간을 바꿔도 계산 세율은 바뀌지 않습니다. 기업별 재심 취소·후속 정정 등 미수록 변경은 추가 확인이 필요합니다.</p><div class="ts-ad-legend"><span>● 확인됨</span><span>● 수록 최신 근거</span><span>○ 미확인</span></div>${processStepsMarkup(progress.stages)}
+    ${progress.deposit ? `<p class="ts-basis">별도 경로 · 이후 통관의 새 예치율: ${progress.deposit.date}부터 해당 공고의 조건에 따라 적용 · ${link(catalog.documents[progress.deposit.source])}. 과거 POR 거래의 정산 완료·환급일을 뜻하지 않습니다.</p>` : `<p class="ts-basis">이 재심의 새 예치율은 아직 수록하지 않았습니다. 개시만으로 기존 참고율을 바꾸지 않습니다.</p>`}` : '<p class="ts-basis">다른 사건·미확인 법인은 실제 진행 기록이 연결되지 않았습니다. 아래는 일반 절차 안내이며 해당 기업이 도달한 단계 표시가 아닙니다.</p>'}
+    <details class="ts-ad-route"><summary>소송·항소 경로 · CIT → 환송 또는 판결 → Federal Circuit → 대법원 심리허가</summary><p>선택한 재심·기업의 법원 사건번호·명령을 이 자료에서 확인하지 못했습니다. 소송이 없다는 뜻이 아닙니다. 접수·금지명령·판결·항소를 각각 확인해야 불이 들어옵니다. 환송은 상무부 재결정과 CIT 재심사로 되돌아갈 수 있으며, 재심과 소송은 병행될 수 있습니다.</p>${processStepsMarkup(progress && !manual ? progress.litigation : AD_PROCESS_STEPS.litigation, manual || !progress)}</details>
+    <details class="ts-ad-route"><summary>처음 반덤핑 명령이 생기는 절차 · 신규 조사</summary><p>기존 명령의 연례 재심과 구분합니다. 상무부가 덤핑을, USITC가 산업피해를 따로 판단합니다. 아래는 일반 경로로, 특정 사건의 앞 단계를 자동 완료 처리하지 않습니다. 조사 중지·철회 등 별도 경로도 가능합니다. ${link(AD_PROCESS_SOURCES.injury)}</p>${processStepsMarkup(AD_PROCESS_STEPS.investigation, true)}</details>
+    <p class="ts-help">날짜 경과만으로 다음 단계에 불이 켜지지 않습니다. 수록 공고에 나온 사건·POR·공식 행위만 표시합니다. 법원·CBP의 실제 진행 자동 갱신은 아직 연결되지 않았습니다.</p></section>`;
+}
 function output() {
-  if (!result) return `<div class="ts-empty"><h2>공표 세율로 예치 부담을 비교합니다</h2><p>사건·기업·통관일을 고른 뒤 해당 거래의 신고가격과 비교할 예치율을 입력하세요. 실제 공표율과 사용자가 넣는 거래·가정을 구분합니다.</p></div>${history()}`;
+  if (!result) return `<div class="ts-empty"><h2>공표 세율로 예치 부담을 비교합니다</h2><p>예시 금액·기간이 채워져 있습니다. 실제 거래에 맞게 수정하고 제품 범위·법인 조건을 확인하면 계산할 수 있습니다.</p></div>${history()}`;
   const r = result;
   return `<div data-ad-calculated class="${dirty ? 'is-stale' : ''}"><div class="ts-section-label"><h2>AD 현금예치 부담 비교</h2><button type="button" class="ts-export" data-ad-export${dirty ? ' disabled' : ''}>반덤핑 JSON 저장</button></div><p data-ad-stale class="ts-stale"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 다시 계산하세요.</p>
     ${r.status === 'unresolved' ? `<p class="ts-unverified">${esc(r.reference.reason)}</p><p>예치액을 산출하지 않았습니다. 공식 자료를 추가 확인하거나 출처를 남기고 직접 입력하세요.</p>` : `<p>${esc(r.reference.company.name)} · ${esc(r.reference.case_id)} · ${esc(r.reference.entry_date)} 통관 가정</p><p class="ts-help">${r.reference.status === 'published_reference' ? `선별 공표 참고율 ${fmt(r.reference.rate_pct)}% · ${link(r.reference.document)}` : `사용자 확인 참고율 ${fmt(r.reference.rate_pct)}% · ${link({ url: r.reference.source.url, label: '입력 출처' })}`}</p>
-    <div class="ts-kpis"><div><span>기준 AD 예치액</span><strong>$${money(r.reference_deposit_usd)}</strong></div><div><span>가정 AD 예치액</span><strong>$${money(r.scenario_deposit_usd)}</strong></div><div><span>추가로 묶이는 현금</span><strong>$${money(r.deposit_change_usd)}</strong></div></div>
+    <p class="ts-help">거래금액·금리·기간·비교율은 ${r.input_guidance.some(x => x.origin === 'editable_example') ? '예시 또는 사용자 입력' : '사용자 입력'}입니다. 최종 관세나 회사의 실제 수입 실적을 확정하지 않습니다.</p><div class="ts-kpis"><div><span>기준 AD 예치액</span><strong>$${money(r.reference_deposit_usd)}</strong></div><div><span>가정 AD 예치액</span><strong>$${money(r.scenario_deposit_usd)}</strong></div><div><span>추가로 묶이는 현금</span><strong>$${money(r.deposit_change_usd)}</strong></div></div>
     <section class="ts-result-block"><h3>자금 부담</h3><div class="ts-scroll"><table class="ts-output-table"><thead><tr><th>USD</th><th>공표·확인 참고율</th><th>가정 예치율</th><th>차이</th></tr></thead><tbody><tr><th>현금예치</th><td>${money(r.reference_deposit_usd)}</td><td>${money(r.scenario_deposit_usd)}</td><td>${money(r.deposit_change_usd)}</td></tr><tr><th>가정 기간 금융비용</th><td>${money(r.reference_financing_cost_usd)}</td><td>${money(r.scenario_financing_cost_usd)}</td><td>${money(r.financing_change_usd)}</td></tr></tbody></table></div><p class="ts-help">${esc(r.limitations.join(' '))}</p></section>`}</div>${history()}`;
 }
 function methodOutput() {
@@ -79,26 +107,34 @@ function methodEditor() {
 export function antidumpingMarkup() {
   return `<div data-ad-simulator><div class="ts-intro"><div><span class="ts-eyebrow">반덤핑 · 사건과 법인별 공식 공고</span><h1>반덤핑 예치금과 재심 결과를 비교하세요</h1><p>실제 공표 세율 이력과 거래 가정에 따른 현금 부담을 함께 봅니다.</p></div><span class="ts-badge">2개 사건 · 7개 법인</span></div>
     <p class="ts-model-source">근거: 미국 상무부의 Federal Register 공고 · 자료 확인 ${catalog.checked_on}. 공표 마진, 현금예치, 사후 관세 확정을 구분합니다.</p><div class="ts-basis">${esc(catalog.coverage_note)}</div>
-    <div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건과 거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div><div data-ad-method>${methodEditor()}</div>
+    <div data-ad-process>${processMarkup()}</div><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건과 거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div><div data-ad-method>${methodEditor()}</div>
     <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>이 화면은 선별 공고 자료이며 자동 갱신·메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
 export function mountAntidumping(root) {
   const controller = new AbortController(), signal = controller.signal;
-  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); };
-  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); };
+  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); };
+  const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
+  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };
+  const syncExample = () => {
+    example = createADExample(draft);
+    for (const key of AD_GUIDE_FIELDS) if (key !== 'entry_date' && !editedFields.has(key)) draft[key] = example.values[key];
+  };
   root.addEventListener('input', event => {
     const el = event.target;
     if (el.dataset.adKey) {
       const key = el.dataset.adKey; draft[key] = el.type === 'checkbox' ? el.checked : el.value;
+      if (AD_GUIDE_FIELDS.includes(key)) editedFields.add(key);
       if (['reference_mode', 'case_id', 'company_id', 'entry_date', 'manual_case_id', 'company_name', 'reference_rate_pct', 'reference_url', 'reference_note'].includes(key)) {
         unconfirm();
         if (key === 'case_id') { draft.company_id = selectedCase().companies[0].id; methodSegment = selectedCase().segments.at(-1).document_id; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); }
+        if (['reference_mode', 'case_id', 'company_id', 'entry_date'].includes(key)) syncExample();
         if (el.matches('select')) paint();
-        else { root.querySelectorAll('[data-ad-key$="confirmed"]').forEach(c => { c.checked = false; }); if (key === 'entry_date' && draft.reference_mode === 'published') root.querySelector('[data-ad-reference]').outerHTML = (() => { const t = document.createElement('div'); t.innerHTML = referencePanel(); return t.querySelector('[data-ad-reference]').outerHTML; })(); }
+        else { root.querySelectorAll('[data-ad-key$="confirmed"]').forEach(c => { c.checked = false; }); if (key === 'entry_date' && draft.reference_mode === 'published') { root.querySelector('[data-ad-reference]').outerHTML = (() => { const t = document.createElement('div'); t.innerHTML = referencePanel(); return t.querySelector('[data-ad-reference]').outerHTML; })(); root.querySelector('[data-ad-key="scenario_rate_pct"]').value = draft.scenario_rate_pct; } }
       }
       clear();
-    } else if (el.hasAttribute('data-ad-segment')) { methodSegment = el.value; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
+    } else if (el.hasAttribute('data-ad-process-record')) { processRecordId = el.value; root.querySelector('[data-ad-process]').innerHTML = processMarkup(); }
+    else if (el.hasAttribute('data-ad-segment')) { methodSegment = el.value; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
     else if (el.hasAttribute('data-ad-equal')) { equalWeights = el.checked; methodResult = null; root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
     else if (el.dataset.adMethodKey) { methodRows[Number(el.closest('[data-ad-method-row]').dataset.adMethodRow)][el.dataset.adMethodKey] = el.type === 'checkbox' ? el.checked : el.value; methodResult = null; clearFormErrors(root.querySelector('[data-ad-method]')); root.querySelector('[data-ad-method-error]').hidden = true; root.querySelector('[data-ad-method-output]').innerHTML = methodOutput(); }
   }, { signal });
@@ -110,12 +146,14 @@ export function mountAntidumping(root) {
     try {
       clearFormErrors(root); box.hidden = true;
       if (method) { methodResult = nonSelectedScenario({ rows: methodRows, equal_weights_assumption: equalWeights }); root.querySelector('[data-ad-method-output]').innerHTML = methodOutput(); }
-      else { result = simulateDeposit({ ...draft, case_id: draft.reference_mode === 'manual' ? draft.manual_case_id : draft.case_id }); dirty = false; root.querySelector('[data-ad-results]').innerHTML = output(); }
+      else { result = { ...simulateDeposit({ ...draft, case_id: draft.reference_mode === 'manual' ? draft.manual_case_id : draft.case_id }), input_guidance: describeADInputs(draft, example, [...editedFields]) }; dirty = false; root.querySelector('[data-ad-results]').innerHTML = output(); }
     } catch (err) { showFormError(root, box, { message: err.message }); }
   }, { signal });
   root.addEventListener('click', event => {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
-    if (el.hasAttribute('data-ad-reset')) { draft = initial(); result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
+    if (el.hasAttribute('data-ad-reset')) { draft = initial(); example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
+    else if (el.hasAttribute('data-ad-example')) { draft.entry_date = catalog.checked_on; example = createADExample(draft); Object.assign(draft, example.values); editedFields = new Set(); unconfirm(); dirty = true; paint(); }
+    else if (el.hasAttribute('data-ad-days')) { draft.holding_days = el.dataset.adDays; editedFields.add('holding_days'); root.querySelector('[data-ad-key="holding_days"]').value = draft.holding_days; clear(); }
     else if (el.hasAttribute('data-ad-add') || el.hasAttribute('data-ad-remove')) { if (el.hasAttribute('data-ad-add') && methodRows.length < 30) methodRows.push({ name: '', margin_pct: '', weight: '', entirely_facts_available: false }); else if (el.hasAttribute('data-ad-remove') && methodRows.length > 1) methodRows.splice(Number(el.dataset.adRemove), 1); methodResult = null; root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
     else if (el.hasAttribute('data-ad-export') && !dirty && result) { const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), ...result }, null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = 'antidumping-deposit-scenario.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
   }, { signal });
