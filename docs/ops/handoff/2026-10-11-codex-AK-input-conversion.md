@@ -9,3 +9,5 @@
 AK 기존 회귀11검사 통과. 기반 polling412·finance68·federal6·선거JS51 통과. packet 변경 범위 및 최신 main 원본 precondition 검사를 추가 적용한다. 생성 결과는 `/private/tmp/b-preview-AK`에서만 확인했고 커밋하지 않는다.
 
 후보·조사·공시의 실제 한계는 기존 `2026-10-09-codex-state-evidence-AK.md`에 그대로 남아 있다. APOC 접근 장애, 미검증 RCV 새 발표 및 본선 FEC 지출 공백을 완결로 바꾸지 않는다. NE 재개·병합·배포·workflow dispatch 없음.
+
+원격 오프라인 재생성 후 JS 테스트에서 10/7 고정 시각이 10/9 검토 AK 명부를 미래 자료로 거부했다. #508의 원래 테스트 시계 보정을 이관했다. 명부 검토일에 표시를 확인하고 별도 미래 명부 거부 검사는 그대로 유지한다. 제품 UI 코드는 변경하지 않는다.
