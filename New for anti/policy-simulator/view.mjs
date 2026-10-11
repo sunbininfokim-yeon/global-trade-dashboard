@@ -1,21 +1,19 @@
-import { example, simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
+import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
+import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput } from './policy-catalog.mjs';
 
-const COUNTRIES = { USA: '미국', KOR: '한국', CHN: '중국', JPN: '일본', VNM: '베트남', MEX: '멕시코',
-  CAN: '캐나다', IND: '인도', DEU: '독일', FRA: '프랑스', GBR: '영국', TWN: '대만', BRA: '브라질', ROW: '기타국 합계' };
-const PRODUCTS = { transformer: '전력용 변압기', cable: '전력 케이블', switchgear: '차단기·배전기기',
-  semiconductor: '반도체', vehicle: '자동차', tire: '타이어', fiber: '산업용 섬유', custom: '직접 정의한 품목' };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, places = 2) => Number(v).toLocaleString('ko-KR', { minimumFractionDigits: places, maximumFractionDigits: places });
 const signed = v => `${v > 0.00001 ? '+' : ''}${fmt(Math.abs(v) < 0.00001 ? 0 : v)}`;
 const name = code => COUNTRIES[code] || code;
 const options = (values, selected) => Object.entries(values).map(([key, label]) => `<option value="${key}"${key === selected ? ' selected' : ''}>${esc(label)}</option>`).join('');
-let draft = example(), result = simulate(draft), dirty = false, error = '';
+let draft = initialDraft(), result = null, dirty = true, error = '';
+const productLabels = Object.fromEntries(Object.entries(PRODUCTS).map(([id, p]) => [id, p.label]));
 let stylePromise;
 
 export function prepare() {
   if (!stylePromise) stylePromise = new Promise((resolve, reject) => {
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=1', import.meta.url).href;
+    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=2', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('시뮬레이터 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -26,51 +24,87 @@ export function prepare() {
 function numberInput(value, attrs) {
   return `<input type="number" inputmode="decimal" step="any" value="${esc(value)}" ${attrs} required>`;
 }
+function rates(row) {
+  try { const pair = tariffPair(draft.product, row); return `${fmt(pair.tariff_before, 1)}% → ${fmt(pair.tariff_after, 1)}%`; }
+  catch { return '현행 관세 확인 필요'; }
+}
+function tariffEditor(row, i) {
+  if (row.country === 'USA') return '';
+  const choices = policyOptions(draft.product, row.country);
+  const current = { ...(choices.length ? {} : { unresolved: '현행 조합 미확인 · 아래에서 선택' }),
+    ...Object.fromEntries(choices.map(c => [c.id, `${c.label} · ${fmt(c.rate, 1)}%`])), manual: '확인한 현행 합산율 직접 입력' };
+  const scenarios = { current: '현재 관세 유지', ...Object.fromEntries(choices.map(c => [c.id, `${c.label} · ${fmt(c.rate, 1)}%`])), manual: '직접 입력' };
+  const selected = choices.filter(c => [row.baseline_policy, row.scenario_policy].includes(c.id));
+  const refs = [...new Map(selected.flatMap(c => c.sources).map(s => [s.url, s])).values()];
+  return `<section class="ts-tariff-card" data-tariff-card="${i}">
+    <div class="ts-section-label"><h3>${esc(name(row.country))} 관세</h3><strong data-rate="${i}">${rates(row)}</strong></div>
+    <div class="ts-fields"><label>현행 관세 조합<select data-row="${i}" data-field="baseline_policy" aria-label="${name(row.country)} 현행 관세 조합">${options(current, row.baseline_policy)}</select></label>
+      <label>비교할 관세<select data-row="${i}" data-field="scenario_policy" aria-label="${name(row.country)} 비교할 관세">${options(scenarios, row.scenario_policy)}</select></label>
+      ${row.baseline_policy === 'manual' ? `<label>현행 합산 관세 %${numberInput(row.manual_before, `data-row="${i}" data-field="manual_before" min="0" max="300" aria-label="${name(row.country)} 확인한 현행 관세"`)}</label>
+        <label>현행 관세 출처·확인 내용<input data-row="${i}" data-field="tariff_note" aria-label="${name(row.country)} 현행 관세 출처" value="${esc(row.tariff_note)}" maxlength="500" required></label>` : ''}
+      ${row.scenario_policy === 'manual' ? `<label class="ts-wide">직접 입력한 가정 합산 관세 %${numberInput(row.manual_after, `data-row="${i}" data-field="manual_after" min="0" max="300" aria-label="${name(row.country)} 가정 관세"`)}<small>추가세까지 포함한 총 세율. 현행 정책으로 확정된 값이 아닙니다.</small></label>` : ''}
+    </div>
+    ${!choices.length ? `<p class="ts-help ts-unverified">${esc(missingPolicyReason(draft.product, row.country))}</p>` : ''}
+    <details class="ts-policy-details"><summary>적용 조건·별도 추가세·공식 출처</summary>
+      ${selected.map(c => `<p><b>${esc(c.label)}</b> — ${esc(c.condition)}</p>`).join('')}
+      <label>별도 추가종가세 % · AD/CVD 등 확인한 가정${numberInput(row.extra_duty, `data-row="${i}" data-field="extra_duty" min="0" max="300" aria-label="${name(row.country)} 별도 추가세"`)}<small>정책 조합에만 합산합니다. 직접 입력한 총 세율에는 다시 더하지 않습니다. 0%는 미적용 가정이며, 반덤핑 예치율을 확정 관세로 판정하는 기능은 아닙니다.</small></label>
+      <p>${refs.map(s => `<a href="${s.url}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>`).join(' · ')}</p>
+    </details></section>`;
+}
 function editor() {
+  const profile = PRODUCTS[draft.product], e = profile.elasticity;
   const focusChoices = Object.fromEntries(draft.rows.filter(row => !['USA', 'ROW'].includes(row.country)).map(row => [row.country, name(row.country)]));
+  const suppliers = SUPPLIER_SNAPSHOT.products[draft.product];
   return `<form data-sim-form>
     <div class="ts-fields">
-      <label>분석 품목<select data-key="product" aria-label="분석 품목">${options(PRODUCTS, draft.product)}</select></label>
+      <label>분석 품목<select data-key="product" aria-label="분석 품목">${options(productLabels, draft.product)}</select></label>
       <label>관심 공급국<select data-key="focus" aria-label="관심 공급국">${options(focusChoices, draft.focus)}</select></label>
-      <label class="ts-wide">기준 기간<input data-key="period" aria-label="기준 기간" value="${esc(draft.period)}" maxlength="80" required></label>
+      <label class="ts-wide">구매액 기준 연도·기간<input data-key="period" aria-label="구매액 기준 연도·기간" value="${esc(draft.period)}" maxlength="80" required><small>구매액을 집계한 기간입니다. 관세 검토일과 다를 수 있습니다.</small></label>
     </div>
-    <div class="ts-section-label"><h3>공급국과 관세 가정</h3><span>구매액 단위: 백만 달러</span></div>
+    <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>
+    <div class="ts-section-label"><h3>시장과 공급국</h3><span>구매액 단위: 백만 달러</span></div>
     <div class="ts-scroll"><table class="ts-input-table"><caption class="ts-sr">같은 품목·기간·관세 포함 구매액을 입력하세요.</caption>
-      <thead><tr><th>공급국</th><th>기준 구매액</th><th>기존 관세 %</th><th>가정 관세 %</th><th>공급탄력성</th><th><span class="ts-sr">제거</span></th></tr></thead>
+      <thead><tr><th>공급국</th><th>기준 구매액</th><th>공급탄력성</th><th><span class="ts-sr">제거</span></th></tr></thead>
       <tbody>${draft.rows.map((row, i) => {
         const countries = Object.fromEntries(Object.entries(COUNTRIES).filter(([key]) => key === row.country || !draft.rows.some(r => r.country === key)));
         return `<tr${row.country === draft.focus ? ' class="ts-focus-row"' : ''}>
           <td><select data-row="${i}" data-field="country" aria-label="공급국 ${i + 1}">${options(countries, row.country)}</select></td>
           <td>${numberInput(row.expenditure, `data-row="${i}" data-field="expenditure" min="0.000001" max="1000000000" aria-label="${name(row.country)} 기준 구매액"`)}</td>
-          <td>${numberInput(row.tariff_before, `data-row="${i}" data-field="tariff_before" min="0" max="300" aria-label="${name(row.country)} 기존 관세"${row.country === 'USA' ? ' readonly' : ''}`)}</td>
-          <td>${numberInput(row.tariff_after, `data-row="${i}" data-field="tariff_after" min="0" max="300" aria-label="${name(row.country)} 가정 관세"${row.country === 'USA' ? ' readonly' : ''}`)}</td>
           <td>${numberInput(row.supply_elasticity, `data-row="${i}" data-field="supply_elasticity" min="0" max="100" aria-label="${name(row.country)} 공급탄력성"`)}</td>
           <td><button type="button" class="ts-remove" data-remove="${i}" aria-label="${name(row.country)} 제거"${draft.rows.length <= 2 ? ' disabled' : ''}>×</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>
-    <p class="ts-mobile-hint">표를 좌우로 밀면 공급탄력성·제거 열도 볼 수 있습니다.</p>
-    <button type="button" class="ts-text-button" data-add${draft.rows.length >= 8 ? ' disabled' : ''}>+ 공급국 추가 <span>최대 8개</span></button>
-    <p class="ts-help">구매액은 미국 구매자가 지출한 관세 포함 금액입니다. 국가를 추가하면 ‘기타국 합계’에서 해당 국가를 빼서 중복을 피하세요. 구매액 0인 공급국은 제거하세요.</p>
+    ${suppliers ? `<div class="ts-suppliers"><p>추가할 공급국 · <a href="${SUPPLIER_SNAPSHOT.url}" target="_blank" rel="noopener noreferrer">USITC 2025 수입액 상위 8개국</a> · HS ${suppliers.hts6}</p>
+      <div>${suppliers.suppliers.map((s, i) => `<button type="button" data-supplier="${s.country}" title="2025 소비용 수입 통관가액 ${fmt(s.customs_value_usd / 1e6, 1)} 백만 달러"${draft.rows.length >= 8 || draft.rows.some(r => r.country === s.country) ? ' disabled' : ''}>${i + 1}. ${esc(s.label_ko)}</button>`).join('')}</div>
+      <small>HS6 범위의 실제 수입 공급국입니다. 대표 HTS보다 범위가 넓을 수 있으며, 기업 소재지·제조지 순위와는 다릅니다.</small></div>` : ''}
+    <button type="button" class="ts-text-button" data-add${draft.rows.length >= 8 ? ' disabled' : ''}>+ 다른 공급국 추가 <span>최대 8개</span></button>
+    <p class="ts-help">구매액·공급탄력성은 가상 초기값입니다. 국가 추가 시 구매액은 비워 둡니다. 기타국 합계에서 새 국가를 빼서 중복을 피하세요. 미국 국내 공급은 수입 통계에 포함되지 않습니다.</p>
+    <div class="ts-section-label"><h3>현행 관세와 비교 시나리오</h3><span>${POLICY_AS_OF} 검토 스냅샷</span></div>
+    <p class="ts-help">현재 제도의 조건별 조합입니다. 품목·원산지·소재 요건이 바뀌어야 적용되는 경로도 있습니다. 임의의 새 관세율은 ‘직접 입력’을 선택하세요.</p>
+    ${draft.rows.map(tariffEditor).join('')}
+    <label class="ts-confirm"><input type="checkbox" data-key="policy_confirmed" aria-label="관세 적용 조건 확인"${draft.policy_confirmed ? ' checked' : ''}>선택한 양쪽 관세의 HTS·원산지·예외·별도 추가세 조건에 맞는 거래를 비교합니다.</label>
     <div class="ts-fields ts-elasticities">
       <label>대체탄력성 σ ${numberInput(draft.sigma, 'data-key="sigma" aria-label="대체탄력성" min="0.1" max="20" aria-describedby="ts-sigma-help"')}<small id="ts-sigma-help">클수록 다른 공급국으로 쉽게 전환</small></label>
-      <label>시장 수요탄력성 η ${numberInput(draft.eta, 'data-key="eta" aria-label="시장 수요탄력성" min="-10" max="-0.05" aria-describedby="ts-eta-help"')}<small id="ts-eta-help">음수 · 절댓값이 클수록 가격에 민감</small></label>
+      <label>시장 수요탄력성 η ${numberInput(draft.eta, 'data-key="eta" aria-label="시장 수요탄력성" min="-10" max="-0.05"')}<small>음수 · 절댓값이 클수록 가격에 민감</small></label>
     </div>
-    <details class="ts-explainer"><summary>탄력성과 관세율은 어떻게 입력하나요?</summary>
-      <p>공급탄력성은 생산자가격 변화에 대한 공급량 반응입니다. 0은 생산량 고정, 값이 크면 공급 확대가 쉽다는 가정입니다. 자동 추정값이 아닙니다.</p>
-      <p>기존 10%, 가정 30%이면 구매가격의 관세 인자는 1.30 ÷ 1.10입니다. 입력한 관세율은 적용 가능성을 검토한 종가세 시나리오이며, 정책 카드의 문장을 숫자로 변환하지 않습니다.</p>
-      <p>제품을 바꿔도 구매액과 탄력성은 실제 산업 자료로 바뀌지 않습니다. 같은 품목 범위와 기간으로 다시 보정하세요. DataWeb의 통관가액은 국내 출하·관세·유통 마진을 맞추기 전에는 이 구매액과 다릅니다.</p>
+    <div class="ts-elasticity-source" data-elasticity-source>${e ? `<a href="${e.source.url}" target="_blank" rel="noopener noreferrer">${esc(e.source.title)}</a><p>${esc(e.note)}</p><button type="button" class="ts-text-button" data-literature>문헌 기본값 적용</button>` : '<p>이 대표 품목에 맞는 탄력성 문헌은 확보하지 못했습니다. 초기 σ=4, η=-1은 사용자가 조정하는 학습용 가정입니다.</p>'}<small data-elasticity-basis>${draft.elasticity_basis === 'literature' ? '문헌 기반 근사값 적용 중' : '사용자 가정 적용 중'}</small></div>
+    <details class="ts-explainer"><summary>입력 기준과 계산 범위</summary>
+      <p>공급탄력성 초기값은 미국 1.5, 외국 3인 학습용 가정입니다. 제품 선택만으로 시장 구매액·공급탄력성이 실측값으로 바뀌지 않습니다.</p>
+      <p>구매액은 관세 포함 구매자 지출입니다. DataWeb 통관가액은 국내 출하·관세·유통 마진을 맞추기 전에는 이 구매액과 다릅니다.</p>
+      <p>정책 조합은 확인한 대표 사양에만 적용합니다. 종량세·TRQ·환급·기업별 AD/CVD 판정·모든 예외를 자동 계산하지 않습니다. 미확인은 0%로 채우지 않습니다.</p>
     </details>
     <label class="ts-source-label">입력 자료·가정 메모<textarea data-key="source_note" aria-label="입력 자료·가정 메모" maxlength="1000" rows="2">${esc(draft.source_note)}</textarea></label>
-    <div class="ts-actions"><button class="ts-primary" type="submit">시나리오 계산 <span aria-hidden="true">→</span></button><button type="button" data-reset>가상 예시로 초기화</button></div>
+    <div class="ts-actions"><button class="ts-primary" type="submit">시나리오 계산 <span aria-hidden="true">→</span></button><button type="button" data-reset>입력 초기화</button></div>
     <p class="ts-error" role="alert" data-sim-error${error ? '' : ' hidden'}>${esc(error)}</p>
   </form>`;
 }
 
 function results() {
+  if (!result) return `<div class="ts-empty-result"><span class="ts-eyebrow">관세 조건을 확인하고 계산하세요</span><h2>현행 관세를 기준으로 비교합니다</h2><p>먼저 왼쪽에서 품목·공급국과 관세 조합을 선택하세요. 직접 입력은 선택했을 때만 열립니다.</p><p>시작 구매액은 가상값이며, 현재 관세 유지끼리 비교하면 변화는 0입니다.</p></div>`;
   const r = result, focus = r.rows.find(row => row.country === r.inputs.focus);
   const country = name(focus.country), input = r.inputs.rows.find(row => row.country === focus.country);
   return `<div class="ts-result-heading"><div><span class="ts-eyebrow">조건부 시뮬레이션 · 가정값</span><h2>${esc(country)} 공급에 미치는 영향</h2>
-    <p>${esc(PRODUCTS[r.inputs.product] || r.inputs.product)} · ${esc(r.inputs.period)} · 관세 ${fmt(input.tariff_before, 1)}% → ${fmt(input.tariff_after, 1)}%</p></div>
+    <p>${esc(PRODUCTS[r.inputs.product]?.label || r.inputs.product)} · ${esc(r.inputs.period)} · 관세 ${fmt(input.tariff_before, 1)}% → ${fmt(input.tariff_after, 1)}%</p></div>
     <button type="button" class="ts-export" data-export${dirty ? ' disabled' : ''}>결과 JSON 저장</button></div>
     <p class="ts-stale" data-stale role="status"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 아래는 이전 계산 결과입니다. 다시 계산하세요.</p>
     <div class="ts-calculated${dirty ? ' is-stale' : ''}" data-calculated>
@@ -112,13 +146,14 @@ export function markup() {
   return `<div class="ts-app">
     <nav class="ts-tabs" aria-label="시뮬레이터 유형"><button type="button" aria-pressed="true">국가</button><button type="button" disabled aria-pressed="false">기업 <span>준비 중</span></button></nav>
     <div class="ts-intro"><div><span class="ts-eyebrow">미국 수입시장 · 국가별 공급 반응</span><h1>관세가 바뀌면, 공급은 어디로 이동할까요?</h1>
-      <p>같은 품목을 공급하는 국가들의 가격·판매량·점유율을 비교합니다.</p></div><span class="ts-badge">가상 데이터로 시작</span></div>
-    <div class="ts-basis"><strong>현재 입력은 학습용 가정입니다.</strong> 실제 적용 세율·산업 전망이 아닙니다. 국가 GDP가 아닌 미국 단일 품목시장을 계산합니다.</div>
+      <p>같은 품목을 공급하는 국가들의 가격·판매량·점유율을 비교합니다.</p></div><span class="ts-badge">구매액은 가상 초기값</span></div>
+    <p class="ts-model-source">모형 근거: <a href="${SOURCES[0].url}" target="_blank" rel="noopener noreferrer">USITC CES Tariff Model</a> · <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">Riker & Schreiber (2020) §2.1</a>의 국가별 부분균형 구조를 참고했습니다.</p>
+    <div class="ts-basis"><strong>현행 정책 조건 + 사용자 시장 가정</strong> 관세는 ${POLICY_AS_OF}의 제한된 검토 스냅샷입니다. 자동 갱신되지 않습니다. 국가 GDP가 아닌 미국 단일 품목시장을 계산합니다.</div>
     <div class="ts-layout"><section class="ts-editor" aria-label="시나리오 입력"><div class="ts-panel-title"><span>01</span><h2>비교할 시장을 설정하세요</h2></div><div data-editor>${editor()}</div></section>
       <section class="ts-results" data-results aria-label="시나리오 계산 결과">${results()}</section></div>
     <footer class="ts-footer"><details><summary>모형 근거와 계산 범위</summary><p>USITC 연구진의 비중첩 CES 부분균형 모형(2020, §2.1)을 참고했습니다. 공급국별 수요와 공급이 같아지는 가격을 직접 계산하며, 공식 USITC 전망이나 Excel 실행 결과가 아닙니다.</p>
       <p>완전경쟁·고정된 공급국 구성·동일 품목·기간을 가정합니다. 신규 진입, 생산능력 한도, 환율, 보복관세, 제3국 재판매, 공급망 연쇄효과, GDP·고용, 기업 이익과 AD/CVD 법적 세율은 계산하지 않습니다.</p>
-      <p>실제 분석에는 HS/HTS 범위, 국내 출하·수입을 맞춘 구매액, 검토된 종가세율과 문헌·자료 기반 탄력성이 필요합니다. 품목 선택만으로 보정되지 않습니다.</p>
+      <p>실제 분석에는 HS/HTS 범위, 국내 출하·수입을 맞춘 구매액, 검토된 종가세율과 문헌·자료 기반 탄력성이 필요합니다. 공급국 통계는 2025년 HS6 소비용 수입 통관가액 상위 8개국입니다. 관세 대표 HTS의 세부 사양과 다를 수 있으며 구매액에 자동 주입하지 않습니다.</p>
       <p>${SOURCES.map(source => `<a href="${source.url}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>`).join(' · ')}</p>
       <p>버전 ${MODEL_VERSION} · 브라우저 내 계산 · 입력값은 서버로 전송하거나 자동 저장하지 않습니다.</p></details></footer>
   </div>`;
@@ -128,27 +163,51 @@ export function mount(root) {
   const controller = new AbortController(), signal = controller.signal;
   const markDirty = () => {
     dirty = true;
-    root.querySelector('[data-stale]').hidden = false;
-    root.querySelector('[data-calculated]').classList.add('is-stale');
-    root.querySelector('[data-export]').disabled = true;
+    const stale = root.querySelector('[data-stale]'), calculated = root.querySelector('[data-calculated]'), exp = root.querySelector('[data-export]');
+    if (stale) stale.hidden = false;
+    if (calculated) calculated.classList.add('is-stale');
+    if (exp) exp.disabled = true;
     error = ''; root.querySelector('[data-sim-error]').hidden = true;
   };
   const paintEditor = () => { root.querySelector('[data-editor]').innerHTML = editor(); };
+  const unconfirm = () => { draft.policy_confirmed = false; const el = root.querySelector('[data-key="policy_confirmed"]'); if (el) el.checked = false; };
   const update = event => {
     const el = event.target;
     if (el.dataset.key) {
-      draft[el.dataset.key] = el.value;
-      if (el.dataset.key === 'focus') root.querySelectorAll('.ts-input-table tbody tr').forEach((row, i) => row.classList.toggle('ts-focus-row', draft.rows[i].country === draft.focus));
+      const key = el.dataset.key;
+      if (key === 'product') {
+        const next = initialDraft(el.value);
+        draft = { ...draft, ...next, period: draft.period, source_note: draft.source_note,
+          rows: draft.rows.map(row => newRow(el.value, row.country, row.expenditure)) };
+        draft.focus = draft.rows.find(row => row.country === draft.focus)?.country || draft.rows.find(row => !['USA', 'ROW'].includes(row.country))?.country || '';
+        // Purchase values are retained only as user assumptions, never relabeled observations.
+        paintEditor();
+      } else {
+        draft[key] = key === 'policy_confirmed' ? el.checked : el.value;
+        if (key === 'sigma' || key === 'eta') {
+          draft.elasticity_basis = 'manual';
+          root.querySelector('[data-elasticity-basis]').textContent = '사용자 가정 적용 중';
+        }
+        if (key === 'focus') root.querySelectorAll('.ts-input-table tbody tr').forEach((row, i) => row.classList.toggle('ts-focus-row', draft.rows[i].country === draft.focus));
+      }
       markDirty();
     }
     if (el.dataset.row !== undefined) {
-      const row = draft.rows[Number(el.dataset.row)], old = row.country;
-      row[el.dataset.field] = el.value;
-      if (el.dataset.field === 'country') {
-        if (row.country === 'USA') row.tariff_before = row.tariff_after = 0;
-        if (draft.focus === old) draft.focus = row.country;
+      const row = draft.rows[Number(el.dataset.row)], field = el.dataset.field, old = row.country;
+      row[field] = el.value;
+      if (['country', 'baseline_policy', 'scenario_policy', 'manual_before', 'manual_after', 'extra_duty', 'tariff_note'].includes(field)) unconfirm();
+      if (field === 'country') {
+        draft.rows[Number(el.dataset.row)] = newRow(draft.product, el.value, row.expenditure);
+        if (draft.focus === old) draft.focus = el.value;
         if (['USA', 'ROW'].includes(draft.focus)) draft.focus = draft.rows.find(r => !['USA', 'ROW'].includes(r.country))?.country || '';
         paintEditor();
+      } else if (['baseline_policy', 'scenario_policy'].includes(field)) {
+        // Do not carry a previously typed manual rate into another selected path.
+        if (field === 'baseline_policy') { row.manual_before = ''; row.tariff_note = ''; }
+        else row.manual_after = '';
+        paintEditor();
+      } else {
+        const badge = root.querySelector(`[data-rate="${el.dataset.row}"]`); if (badge) badge.textContent = rates(row);
       }
       markDirty();
     }
@@ -158,7 +217,7 @@ export function mount(root) {
     if (!event.target.matches('[data-sim-form]')) return;
     event.preventDefault();
     try {
-      const next = simulate(draft);
+      const next = simulate(modelInput(draft));
       result = next; dirty = false; error = '';
       root.querySelector('[data-results]').innerHTML = results();
       root.querySelector('[data-sim-error]').hidden = true;
@@ -170,12 +229,15 @@ export function mount(root) {
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
     if (button.hasAttribute('data-reset')) {
-      draft = example(); result = simulate(draft); dirty = false; error = ''; root.innerHTML = markup();
-    } else if (button.hasAttribute('data-add') && draft.rows.length < 8) {
-      const country = Object.keys(COUNTRIES).find(code => code !== 'USA' && code !== 'ROW' && !draft.rows.some(row => row.country === code));
-      if (country) { draft.rows.push({ country, expenditure: '', tariff_before: 0, tariff_after: 0, supply_elasticity: 3 }); paintEditor(); markDirty(); }
+      draft = initialDraft(); result = null; dirty = true; error = ''; root.innerHTML = markup();
+    } else if (button.hasAttribute('data-literature')) {
+      const e = PRODUCTS[draft.product].elasticity;
+      if (e) { draft.sigma = e.sigma; if (e.eta !== undefined) draft.eta = e.eta; draft.elasticity_basis = 'literature'; paintEditor(); markDirty(); }
+    } else if ((button.hasAttribute('data-add') || button.dataset.supplier) && draft.rows.length < 8) {
+      const country = button.dataset.supplier || Object.keys(COUNTRIES).find(code => code !== 'USA' && code !== 'ROW' && !draft.rows.some(row => row.country === code));
+      if (country && !draft.rows.some(row => row.country === country)) { draft.rows.push(newRow(draft.product, country)); unconfirm(); paintEditor(); markDirty(); }
     } else if (button.dataset.remove !== undefined && draft.rows.length > 2) {
-      draft.rows.splice(Number(button.dataset.remove), 1);
+      draft.rows.splice(Number(button.dataset.remove), 1); unconfirm();
       if (!draft.rows.some(row => row.country === draft.focus)) draft.focus = draft.rows.find(row => !['USA', 'ROW'].includes(row.country))?.country || '';
       paintEditor(); markDirty();
     } else if (button.hasAttribute('data-export') && !dirty) {

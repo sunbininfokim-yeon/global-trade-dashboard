@@ -35,13 +35,16 @@ export function validate(input) {
     const after = number(row.tariff_after, `${row.country} 가정 관세`, 0, 300);
     if (row.country === 'USA' && (before !== 0 || after !== 0)) throw new ModelError('미국 국내 공급에는 수입관세를 적용할 수 없습니다.');
     return { country: row.country, expenditure, tariff_before: before, tariff_after: after,
+      ...(row.provenance ? { provenance: structuredClone(row.provenance) } : {}),
       supply_elasticity: number(row.supply_elasticity, `${row.country} 공급탄력성`, 0, 100) };
   });
   if (!seen.has(input.focus) || input.focus === 'USA' || input.focus === 'ROW') throw new ModelError('입력한 수출국 중 관심국가를 선택하세요.');
   return { sigma, eta, rows, focus: input.focus,
     product: String(input.product || 'custom').slice(0, 80), period: String(input.period || '가상 연간 기준').slice(0, 80),
     // Editing a sample does not make it verified observed data.
-    basis: 'user_scenario', source_note: String(input.source_note || '사용자 가정 · 실제 시장 보정 전').slice(0, 1000) };
+    basis: 'user_scenario', source_note: String(input.source_note || '사용자 가정 · 실제 시장 보정 전').slice(0, 1000),
+    ...(input.calibration ? { calibration: structuredClone(input.calibration) } : {}),
+    ...(input.sensitivity_sigmas ? { sensitivity_sigmas: input.sensitivity_sigmas.map(v => number(v, '민감도 대체탄력성', 0.1, 20)) } : {}) };
 }
 
 function logSumExp(terms) {
@@ -146,7 +149,7 @@ function solve(config) {
 
 export function simulate(input, includeSensitivity = true) {
   const config = validate(input), result = solve(config);
-  if (includeSensitivity) result.sensitivity = [...new Set([Math.max(0.1, config.sigma / 2), config.sigma, Math.min(20, config.sigma * 1.5)])]
+  if (includeSensitivity) result.sensitivity = [...new Set(config.sensitivity_sigmas || [Math.max(0.1, config.sigma / 2), config.sigma, Math.min(20, config.sigma * 1.5)])]
     .sort((a, b) => a - b).map(sigma => {
       try {
         const trial = solve({ ...config, sigma }), focus = trial.rows.find(row => row.country === config.focus);

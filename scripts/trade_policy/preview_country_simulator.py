@@ -16,6 +16,8 @@ ASSETS = {
     '/policy-evidence.js': ('policy-evidence.js', 'text/javascript'),
     '/policy-simulator/country-model.mjs': ('policy-simulator/country-model.mjs', 'text/javascript'),
     '/policy-simulator/view.mjs': ('policy-simulator/view.mjs', 'text/javascript'),
+    '/policy-simulator/policy-catalog.mjs': ('policy-simulator/policy-catalog.mjs', 'text/javascript'),
+    '/policy-simulator/suppliers-2025.mjs': ('policy-simulator/suppliers-2025.mjs', 'text/javascript'),
     '/policy-simulator/style.css': ('policy-simulator/style.css', 'text/css'),
 }
 OVERVIEW = {'congress_overview': {'committees': [], 'stage_counts': {}},
