@@ -7,7 +7,7 @@
 - checkout: `/Users/yeoninair/Documents/해운 데이터/us-nh-state-evidence-20261009`
 - branch: `codex/election-research-rules-20261011`
 - 확인한 main: `82c29fe32f8ec5bd433da33ed811869bb278e86a`
-- PR base: 공용 기반 #524, `codex/election-b-foundation-20261011`, `96d2de79ef3a87df694853fc11ab24071381ab0c`.
+- PR base: 공용 기반 #524, `codex/election-b-foundation-20261011`, `32fa4760ded80b83ed93c80d8d627c3231a9e92d`. 시작 base는 `96d2de79`이며 독립 검토 후 공용 JS 날짜 fixture를 기반으로 이관했다.
 - #518은 main에 병합됨. #524·AK #525·KS #526은 확인 당시 OPEN/미병합이다. 이 규칙 PR도 #524를 기반으로 하며 주별 PR 위에 쌓지 않는다. #524 반영 후 main으로 base를 변경해 검증한다.
 - NE 중지·미커밋 자료 보존을 유지한다. 이번에 신규 주 조사·API 수집·전국 JSON 생성/커밋·main 병합·배포·production dispatch는 하지 않았다.
 
@@ -42,5 +42,7 @@ Claude 등 외부 도구는 이 앱의 메시지 도구로 직접 수신 여부�
 ## 독립 검토 보완
 
 다른 선거 세션이 #529에서 공용 Python fixture/helper/test와 공용 JS test를 주별 packet과 함께 바꿔도 검사에서 빠지는 것을 지적했다. 해당 주 이름의 Python test만 허용하고 공용 Python 테스트 자산 및 선거 JS 테스트는 별도 기반 PR로 분리하도록 차단·회귀 검사를 추가했다. 기존 AK #525의 공용 JS 날짜 fixture 변경도 공용 기반 #524로 이동해 같은 규칙을 적용한다.
+
+이관 후 AK head `c68e8721`의 전체 파일 트리는 종전 `abbdf8c5`와 동일하며 변경된 것은 기반 ancestry뿐이다. #524 대비 AK PR diff에는 이제 공용 JS 테스트가 없다. 새 범위 검사로 AK/KS 모두 통과했고, 공용 fixture의 JS 51개 및 최종 범위 회귀 10개가 통과했다.
 
 `us_superpac_refresh.yml`과 `elections_eop_monthly.yml`의 별도 concurrency 및 공용 board 게시의 `git pull --rebase --autostash` 사용을 원문에서 재확인했다. polling 게시기만 안전 재생성 방식이므로 자동 게시 전체 충돌 해결이라고 표현하지 않는다. 두 workflow 보강은 해당 소유자의 별도 후속 범위이며 이번에 수정/dispatch/배포하지 않는다.
