@@ -1,8 +1,8 @@
 {
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
-  "as_of": "2026-10-09",
-  "generated_at": "2026-10-09T10:25:40.340222+00:00",
+  "as_of": "2026-10-11",
+  "generated_at": "2026-10-11T00:16:19.749666+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1057,11 +1057,11 @@
     },
     "senate": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 45 · 공화 46 · 무소속 2 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 44 · 공화 47 · 무소속 2 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 100,
       "scenario_counts": {
-        "DEM": 45,
-        "GOP": 46,
+        "DEM": 44,
+        "GOP": 47,
         "IND": 2
       },
       "unresolved_seats": 7,
@@ -1077,13 +1077,14 @@
         },
         "recent_poll_lead": {},
         "single_poll_lead": {
-          "DEM": 2
+          "GOP": 1,
+          "DEM": 1
         },
         "certified_result": {}
       },
       "single_poll_lead_counts": {
-        "DEM": 2,
-        "GOP": 0,
+        "DEM": 1,
+        "GOP": 1,
         "IND": 0
       },
       "scenario_counts_without_single_polls": {
@@ -1094,12 +1095,12 @@
       "unresolved_without_single_polls": 9,
       "conditional_bounds": {
         "DEM": {
-          "min": 45,
-          "max": 52
+          "min": 44,
+          "max": 51
         },
         "GOP": {
-          "min": 46,
-          "max": 53
+          "min": 47,
+          "max": 54
         },
         "IND": {
           "min": 2,
@@ -1292,18 +1293,18 @@
           "race_id": "USA:IA:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "tie",
+          "basis": "single_poll_lead",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
-            "agreement_fraction": 0.5,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -1370,135 +1371,34 @@
               },
               "leading_margin_pp": 2.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "primary-suffolk-ia-senate-20261007",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "response_rate",
-                  "landline_cell_mix"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                ],
-                "primary_toplines": {
-                  "Ashley Hinson": 43.6,
-                  "Josh Turek": 48.0,
-                  "Thomas Laehn": 2.2
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-10-01",
-                    "2026-10-04"
-                  ],
-                  "question_wording_checked": true,
-                  "question": "Q7 initial three-certified-candidate first choice; rotated. Q8 second-choice base11 excluded.",
-                  "mode": "live telephone; landline and cell",
-                  "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                  "lv_screen": {
-                    "very_likely": 470,
-                    "somewhat_likely": 30
-                  },
-                  "geography": "Iowa statewide; five published regions across99counties",
-                  "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                  "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                  "weighting": null,
-                  "non_candidate_responses": {
-                    "undecided": 5.6,
-                    "refused": 0.6
-                  },
-                  "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                  "excluded_geographies": [
-                    "Muscatine County bellwether N300"
-                  ],
-                  "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "response_rate",
-                    "landline_cell_mix"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": 95,
-                  "scope": "500_statewide_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "multi_candidate",
-                "sponsor_review": {
-                  "conducted_by": "Suffolk University Political Research Center",
-                  "commissioner": "Suffolk University",
-                  "additional_sponsor": null,
-                  "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                },
-                "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-              },
-              "leading_margin_pp": 4.4,
-              "significance": "not_evaluated"
             }
           ],
-          "included_poll_ids": []
+          "included_poll_ids": [
+            "us-202cnnc393624c"
+          ]
         },
         {
           "race_id": "USA:ME:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "us-202mare89f317d",
-              "source_quality": {
-                "verification_level": "partial",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "출처 연결 · 집계값 부분 검증",
-                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                "missing_fields": [
-                  "margin_of_error_pp",
-                  "question_sample_n",
-                  "primary_values_rechecked"
-                ]
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "us-202mare89f317d"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:MI:senate",
@@ -1864,7 +1764,7 @@
     },
     "governor": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 50,
       "scenario_counts": {
         "DEM": 21,
@@ -1881,25 +1781,23 @@
           "DEM": 13,
           "GOP": 11
         },
-        "recent_poll_lead": {
-          "DEM": 1
-        },
+        "recent_poll_lead": {},
         "single_poll_lead": {
-          "DEM": 1
+          "DEM": 2
         },
         "certified_result": {}
       },
       "single_poll_lead_counts": {
-        "DEM": 1,
+        "DEM": 2,
         "GOP": 0,
         "IND": 0
       },
       "scenario_counts_without_single_polls": {
-        "DEM": 20,
+        "DEM": 19,
         "GOP": 19,
         "IND": 0
       },
-      "unresolved_without_single_polls": 11,
+      "unresolved_without_single_polls": 12,
       "conditional_bounds": {
         "DEM": {
           "min": 21,
@@ -2009,7 +1907,7 @@
           "basis": "rated_baseline_assumption",
           "party_abbr": "DEM",
           "conclusion_ko": "민주당 기초 유지 가정",
-          "poll_status": "single_poll_lead",
+          "poll_status": "no_recent_poll",
           "evidence_quality": null,
           "poll_details": [],
           "included_poll_ids": []
@@ -2101,17 +1999,17 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "recent_poll_lead",
+          "basis": "single_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 조사상 우세",
-          "poll_status": "poll_lead",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -2179,93 +2077,10 @@
               },
               "leading_margin_pp": 9.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "primary-suffolk-ia-governor-20261007",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "response_rate",
-                  "landline_cell_mix"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                ],
-                "primary_toplines": {
-                  "Zach Lahn": 42.8,
-                  "Rob Sand": 54.8
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-10-01",
-                    "2026-10-04"
-                  ],
-                  "question_wording_checked": true,
-                  "question": "Q9 two-certified-candidate vote or lean; rotated.",
-                  "mode": "live telephone; landline and cell",
-                  "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                  "lv_screen": {
-                    "very_likely": 470,
-                    "somewhat_likely": 30
-                  },
-                  "geography": "Iowa statewide; five published regions across99counties",
-                  "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                  "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                  "weighting": null,
-                  "non_candidate_responses": {
-                    "undecided": 2.2,
-                    "refused": 0.2
-                  },
-                  "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                  "excluded_geographies": [
-                    "Muscatine County bellwether N300"
-                  ],
-                  "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "response_rate",
-                    "landline_cell_mix"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": 95,
-                  "scope": "500_statewide_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "two_candidate_with_leaners",
-                "sponsor_review": {
-                  "conducted_by": "Suffolk University Political Research Center",
-                  "commissioner": "Suffolk University",
-                  "additional_sponsor": null,
-                  "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                },
-                "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-              },
-              "leading_margin_pp": 12.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "gov202cnn1640632d",
-            "primary-suffolk-ia-governor-20261007"
+            "gov202cnn1640632d"
           ]
         },
         {
@@ -2570,7 +2385,7 @@
           "basis": "rated_baseline_assumption",
           "party_abbr": "GOP",
           "conclusion_ko": "공화당 기초 유지 가정",
-          "poll_status": "no_recent_poll",
+          "poll_status": "single_poll_lead",
           "evidence_quality": null,
           "poll_details": [],
           "included_poll_ids": []
@@ -3743,11 +3558,11 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 45 · 공화 46 · 무소속 2 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 44 · 공화 47 · 무소속 2 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
-            "DEM": 45,
-            "GOP": 46,
+            "DEM": 44,
+            "GOP": 47,
             "IND": 2
           },
           "unresolved_seats": 7,
@@ -3763,13 +3578,14 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 2
+              "GOP": 1,
+              "DEM": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 2,
-            "GOP": 0,
+            "DEM": 1,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -3780,12 +3596,12 @@
           "unresolved_without_single_polls": 9,
           "conditional_bounds": {
             "DEM": {
-              "min": 45,
-              "max": 52
+              "min": 44,
+              "max": 51
             },
             "GOP": {
-              "min": 46,
-              "max": 53
+              "min": 47,
+              "max": 54
             },
             "IND": {
               "min": 2,
@@ -3978,18 +3794,18 @@
               "race_id": "USA:IA:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "tie",
+              "basis": "single_poll_lead",
+              "party_abbr": "GOP",
+              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "multiple_sources",
-                "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
-                "agreement_fraction": 0.5,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -4056,135 +3872,34 @@
                   },
                   "leading_margin_pp": 2.0,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "primary-suffolk-ia-senate-20261007",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "accuracy_grade",
-                      "statistical_significance",
-                      "full_weight_calculation",
-                      "design_effect",
-                      "response_rate",
-                      "landline_cell_mix"
-                    ],
-                    "reviewed_on": "2026-10-08",
-                    "review_sources": [
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                      "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                    ],
-                    "primary_toplines": {
-                      "Ashley Hinson": 43.6,
-                      "Josh Turek": 48.0,
-                      "Thomas Laehn": 2.2
-                    },
-                    "question_sample_n": 500,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 500,
-                      "field_dates": [
-                        "2026-10-01",
-                        "2026-10-04"
-                      ],
-                      "question_wording_checked": true,
-                      "question": "Q7 initial three-certified-candidate first choice; rotated. Q8 second-choice base11 excluded.",
-                      "mode": "live telephone; landline and cell",
-                      "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                      "lv_screen": {
-                        "very_likely": 470,
-                        "somewhat_likely": 30
-                      },
-                      "geography": "Iowa statewide; five published regions across99counties",
-                      "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                      "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                      "weighting": null,
-                      "non_candidate_responses": {
-                        "undecided": 5.6,
-                        "refused": 0.6
-                      },
-                      "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                      "excluded_geographies": [
-                        "Muscatine County bellwether N300"
-                      ],
-                      "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                      "missing_fields": [
-                        "full_weight_calculation",
-                        "design_effect",
-                        "response_rate",
-                        "landline_cell_mix"
-                      ]
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": 95,
-                      "scope": "500_statewide_LV",
-                      "validated_here": false
-                    },
-                    "ballot_format": "multi_candidate",
-                    "sponsor_review": {
-                      "conducted_by": "Suffolk University Political Research Center",
-                      "commissioner": "Suffolk University",
-                      "additional_sponsor": null,
-                      "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                    },
-                    "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-                  },
-                  "leading_margin_pp": 4.4,
-                  "significance": "not_evaluated"
                 }
               ],
-              "included_poll_ids": []
+              "included_poll_ids": [
+                "us-202cnnc393624c"
+              ]
             },
             {
               "race_id": "USA:ME:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
-                "agreement_fraction": 1.0,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "us-202mare89f317d",
-                  "source_quality": {
-                    "verification_level": "partial",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "출처 연결 · 집계값 부분 검증",
-                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                    "missing_fields": [
-                      "margin_of_error_pp",
-                      "question_sample_n",
-                      "primary_values_rechecked"
-                    ]
-                  },
-                  "leading_margin_pp": 4.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "us-202mare89f317d"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:MI:senate",
@@ -4550,7 +4265,7 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 21 · 공화 19 · 무소속 0 · 미정 10. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
             "DEM": 21,
@@ -4567,25 +4282,23 @@
               "DEM": 13,
               "GOP": 11
             },
-            "recent_poll_lead": {
-              "DEM": 1
-            },
+            "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 1
+              "DEM": 2
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 1,
+            "DEM": 2,
             "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 20,
+            "DEM": 19,
             "GOP": 19,
             "IND": 0
           },
-          "unresolved_without_single_polls": 11,
+          "unresolved_without_single_polls": 12,
           "conditional_bounds": {
             "DEM": {
               "min": 21,
@@ -4695,7 +4408,7 @@
               "basis": "rated_baseline_assumption",
               "party_abbr": "DEM",
               "conclusion_ko": "민주당 기초 유지 가정",
-              "poll_status": "single_poll_lead",
+              "poll_status": "no_recent_poll",
               "evidence_quality": null,
               "poll_details": [],
               "included_poll_ids": []
@@ -4787,17 +4500,17 @@
               "race_id": "USA:IA:governor",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "recent_poll_lead",
+              "basis": "single_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 조사상 우세",
-              "poll_status": "poll_lead",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "multiple_sources",
-                "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -4865,93 +4578,10 @@
                   },
                   "leading_margin_pp": 9.0,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "primary-suffolk-ia-governor-20261007",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "accuracy_grade",
-                      "statistical_significance",
-                      "full_weight_calculation",
-                      "design_effect",
-                      "response_rate",
-                      "landline_cell_mix"
-                    ],
-                    "reviewed_on": "2026-10-08",
-                    "review_sources": [
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                      "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                    ],
-                    "primary_toplines": {
-                      "Zach Lahn": 42.8,
-                      "Rob Sand": 54.8
-                    },
-                    "question_sample_n": 500,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 500,
-                      "field_dates": [
-                        "2026-10-01",
-                        "2026-10-04"
-                      ],
-                      "question_wording_checked": true,
-                      "question": "Q9 two-certified-candidate vote or lean; rotated.",
-                      "mode": "live telephone; landline and cell",
-                      "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                      "lv_screen": {
-                        "very_likely": 470,
-                        "somewhat_likely": 30
-                      },
-                      "geography": "Iowa statewide; five published regions across99counties",
-                      "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                      "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                      "weighting": null,
-                      "non_candidate_responses": {
-                        "undecided": 2.2,
-                        "refused": 0.2
-                      },
-                      "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                      "excluded_geographies": [
-                        "Muscatine County bellwether N300"
-                      ],
-                      "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                      "missing_fields": [
-                        "full_weight_calculation",
-                        "design_effect",
-                        "response_rate",
-                        "landline_cell_mix"
-                      ]
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": 95,
-                      "scope": "500_statewide_LV",
-                      "validated_here": false
-                    },
-                    "ballot_format": "two_candidate_with_leaners",
-                    "sponsor_review": {
-                      "conducted_by": "Suffolk University Political Research Center",
-                      "commissioner": "Suffolk University",
-                      "additional_sponsor": null,
-                      "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                    },
-                    "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-                  },
-                  "leading_margin_pp": 12.0,
-                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
-                "gov202cnn1640632d",
-                "primary-suffolk-ia-governor-20261007"
+                "gov202cnn1640632d"
               ]
             },
             {
@@ -5256,7 +4886,7 @@
               "basis": "rated_baseline_assumption",
               "party_abbr": "GOP",
               "conclusion_ko": "공화당 기초 유지 가정",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": null,
               "poll_details": [],
               "included_poll_ids": []
@@ -6424,18 +6054,18 @@
           "race_id": "USA:IA:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "tie",
+          "basis": "single_poll_lead",
+          "party_abbr": "GOP",
+          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
-            "agreement_fraction": 0.5,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -6502,135 +6132,34 @@
               },
               "leading_margin_pp": 2.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "primary-suffolk-ia-senate-20261007",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "response_rate",
-                  "landline_cell_mix"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                ],
-                "primary_toplines": {
-                  "Ashley Hinson": 43.6,
-                  "Josh Turek": 48.0,
-                  "Thomas Laehn": 2.2
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-10-01",
-                    "2026-10-04"
-                  ],
-                  "question_wording_checked": true,
-                  "question": "Q7 initial three-certified-candidate first choice; rotated. Q8 second-choice base11 excluded.",
-                  "mode": "live telephone; landline and cell",
-                  "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                  "lv_screen": {
-                    "very_likely": 470,
-                    "somewhat_likely": 30
-                  },
-                  "geography": "Iowa statewide; five published regions across99counties",
-                  "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                  "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                  "weighting": null,
-                  "non_candidate_responses": {
-                    "undecided": 5.6,
-                    "refused": 0.6
-                  },
-                  "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                  "excluded_geographies": [
-                    "Muscatine County bellwether N300"
-                  ],
-                  "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "response_rate",
-                    "landline_cell_mix"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": 95,
-                  "scope": "500_statewide_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "multi_candidate",
-                "sponsor_review": {
-                  "conducted_by": "Suffolk University Political Research Center",
-                  "commissioner": "Suffolk University",
-                  "additional_sponsor": null,
-                  "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                },
-                "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-              },
-              "leading_margin_pp": 4.4,
-              "significance": "not_evaluated"
             }
           ],
-          "included_poll_ids": []
+          "included_poll_ids": [
+            "us-202cnnc393624c"
+          ]
         },
         {
           "race_id": "USA:ME:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "us-202mare89f317d",
-              "source_quality": {
-                "verification_level": "partial",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "출처 연결 · 집계값 부분 검증",
-                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                "missing_fields": [
-                  "margin_of_error_pp",
-                  "question_sample_n",
-                  "primary_values_rechecked"
-                ]
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "us-202mare89f317d"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:MI:senate",
@@ -6839,17 +6368,17 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "recent_poll_lead",
+          "basis": "single_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 조사상 우세",
-          "poll_status": "poll_lead",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -6917,93 +6446,10 @@
               },
               "leading_margin_pp": 9.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "primary-suffolk-ia-governor-20261007",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "response_rate",
-                  "landline_cell_mix"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_marginals.pdf?hash=2D72AC4AC373F8C2FA39466A7E5CD59D2370B6F9&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_press_release.pdf?hash=852F6DBE08B4578F2FDC2AB4F0027BD8AC054A31&la=en",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_7_2026_iowa_statewide_tables.pdf?hash=F71C48A70C548C2B240C000595F11C1227E76643&la=en",
-                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states"
-                ],
-                "primary_toplines": {
-                  "Zach Lahn": 42.8,
-                  "Rob Sand": 54.8
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-10-01",
-                    "2026-10-04"
-                  ],
-                  "question_wording_checked": true,
-                  "question": "Q9 two-certified-candidate vote or lean; rotated.",
-                  "mode": "live telephone; landline and cell",
-                  "sampling_frame": "probability-proportionate-to-size telephone numbers by area adult population; household very/somewhat likely November voters",
-                  "lv_screen": {
-                    "very_likely": 470,
-                    "somewhat_likely": 30
-                  },
-                  "geography": "Iowa statewide; five published regions across99counties",
-                  "question_sample_source": "statewide marginals p2 and tables Q7/Q9 explicitly N500",
-                  "demographic_design": "gender/race/education/age/party quotas based on2020exit polls,Census2020,ACS2022,current voter registration",
-                  "weighting": null,
-                  "non_candidate_responses": {
-                    "undecided": 2.2,
-                    "refused": 0.2
-                  },
-                  "registration_disclosure_conflict": "methodology calls sample registered voters; marginals Q2 also has3 self-described not registered. Preserve disclosure, do not assert all500 are verified registered.",
-                  "excluded_geographies": [
-                    "Muscatine County bellwether N300"
-                  ],
-                  "excluded_question": "Q8 second-choice base11; county, subgroup, and issue/approval questions not statewide initial ballot",
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "response_rate",
-                    "landline_cell_mix"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": 95,
-                  "scope": "500_statewide_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "two_candidate_with_leaners",
-                "sponsor_review": {
-                  "conducted_by": "Suffolk University Political Research Center",
-                  "commissioner": "Suffolk University",
-                  "additional_sponsor": null,
-                  "basis": "institutional press release names Suffolk poll; no campaign sponsor disclosed"
-                },
-                "limitations_ko": "특정 주 전체 원문 수치/표본/문항/방법 대조. Muscatine300명·2순위11명과 분리. 집계 우세는 당선확정·정확도등급·격차 유의성 판정이 아닙니다. 등록상태 공개 불일치 및 상세 가중 미공개를 보존합니다."
-              },
-              "leading_margin_pp": 12.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "gov202cnn1640632d",
-            "primary-suffolk-ia-governor-20261007"
+            "gov202cnn1640632d"
           ]
         },
         {
@@ -7307,14 +6753,14 @@
       "chambers": {
         "house": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 200 · 공화 196 · 무소속 0 · 미정 39. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 200 · 공화 195 · 무소속 0 · 미정 40. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 435,
           "scenario_counts": {
             "DEM": 200,
-            "GOP": 196,
+            "GOP": 195,
             "IND": 0
           },
-          "unresolved_seats": 39,
+          "unresolved_seats": 40,
           "buckets": {
             "retained": {},
             "rated_baseline_assumption": {
@@ -7323,14 +6769,13 @@
             },
             "recent_poll_lead": {},
             "single_poll_lead": {
-              "DEM": 3,
-              "GOP": 1
+              "DEM": 3
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 3,
-            "GOP": 1,
+            "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -7342,15 +6787,15 @@
           "conditional_bounds": {
             "DEM": {
               "min": 200,
-              "max": 239
+              "max": 240
             },
             "GOP": {
-              "min": 196,
+              "min": 195,
               "max": 235
             },
             "IND": {
               "min": 0,
-              "max": 39
+              "max": 40
             }
           },
           "ratings_as_of": "2026-09-25",
@@ -7874,83 +7319,24 @@
               "race_id": "USA:WA:house:03",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "GOP",
-              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
-                "agreement_fraction": 1.0,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "us-202dhmdd00a623",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "historical_accuracy_rating",
-                      "candidate_gap_significance"
-                    ],
-                    "reviewed_on": "2026-10-06",
-                    "review_sources": [
-                      "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/",
-                      "https://www.opb.org/pdf/OPB%20Fall%202026%20Election%20Survey--Toplines%20(Washington%20Abridged)--September%202026_1790882419395.pdf"
-                    ],
-                    "primary_toplines": {
-                      "Marie Gluesenkamp Perez": 47,
-                      "John Braun": 48
-                    },
-                    "question_sample_n": 543,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 543,
-                      "field_dates": [
-                        "2026-09-17",
-                        "2026-09-27"
-                      ],
-                      "mode": "live telephone and text-to-online",
-                      "sampling_frame": "WA-03 registered voter file; 600 RV and 543 modeled LV",
-                      "weighting": "quotas for age, gender, party, area, race/ethnicity, income, education; modeled LV uses intent/history",
-                      "sponsor": "Oregon Public Broadcasting",
-                      "question_wording_checked": true
-                    },
-                    "reported_precision": {
-                      "kind": "reported_margin_of_error",
-                      "half_width_pp": 4.2,
-                      "confidence_level_pct": 95,
-                      "scope": "likely_voter_subsample",
-                      "model_details_verified": false
-                    },
-                    "ballot_format": "candidate_ballot_with_leaners_and_undecided",
-                    "sponsor_review": {
-                      "provider_sponsors": [
-                        "Oregon Public Broadcasting"
-                      ],
-                      "partisan": null,
-                      "internal": false,
-                      "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
-                    },
-                    "limitations_ko": "공개 원문 첫 응답 44/46과 기울어진 미정층 포함 47/48을 구분. API는 후자이며 전체 RV 600 대신 LV 543 사용. 단일 조사이며 격차 유의성 평가 없음."
-                  },
-                  "leading_margin_pp": 1.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "us-202dhmdd00a623"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:WI:house:03",
@@ -8608,14 +7994,14 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 47 · 공화 46 · 무소속 2 · 미정 5. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 48 · 공화 46 · 무소속 2 · 미정 4. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
-            "DEM": 47,
+            "DEM": 48,
             "GOP": 46,
             "IND": 2
           },
-          "unresolved_seats": 5,
+          "unresolved_seats": 4,
           "buckets": {
             "retained": {
               "GOP": 31,
@@ -8627,36 +8013,36 @@
               "GOP": 15
             },
             "recent_poll_lead": {
-              "DEM": 2
+              "DEM": 1
             },
             "single_poll_lead": {
-              "DEM": 2
+              "DEM": 4
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 2,
+            "DEM": 4,
             "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 45,
+            "DEM": 44,
             "GOP": 46,
             "IND": 2
           },
-          "unresolved_without_single_polls": 7,
+          "unresolved_without_single_polls": 8,
           "conditional_bounds": {
             "DEM": {
-              "min": 47,
+              "min": 48,
               "max": 52
             },
             "GOP": {
               "min": 46,
-              "max": 51
+              "max": 50
             },
             "IND": {
               "min": 2,
-              "max": 7
+              "max": 6
             }
           },
           "ratings_as_of": "2026-09-23",
@@ -8730,7 +8116,7 @@
               "basis": "rated_baseline_assumption",
               "party_abbr": "DEM",
               "conclusion_ko": "민주당 기초 유지 가정",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": null,
               "poll_details": [],
               "included_poll_ids": []
@@ -8799,24 +8185,44 @@
               "race_id": "USA:NC:senate",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
-                "agreement_fraction": null,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202eas168b53d4",
+                  "source_quality": {
+                    "verification_level": "partial",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "출처 연결 · 집계값 부분 검증",
+                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                    "missing_fields": [
+                      "margin_of_error_pp",
+                      "question_sample_n",
+                      "primary_values_rechecked"
+                    ]
+                  },
+                  "leading_margin_pp": 7.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202eas168b53d4"
+              ]
             },
             {
               "race_id": "USA:AK:senate",
@@ -9240,17 +8646,17 @@
               "race_id": "USA:OH:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "recent_poll_lead",
+              "basis": "single_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 조사상 우세",
-              "poll_status": "poll_lead",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "multiple_sources",
-                "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -9318,78 +8724,10 @@
                   },
                   "leading_margin_pp": 6.0,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "primary-suffolk-oh-senate-20261002",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "accuracy_grade",
-                      "statistical_significance",
-                      "full_weight_calculation",
-                      "design_effect",
-                      "reported_precision_confidence_level"
-                    ],
-                    "reviewed_on": "2026-10-08",
-                    "review_sources": [
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
-                    ],
-                    "primary_toplines": {
-                      "Sherrod Brown": 46.6,
-                      "Jon Husted": 44,
-                      "Greg Levy": 1,
-                      "William B. Redpath": 2
-                    },
-                    "question_sample_n": 500,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 500,
-                      "field_dates": [
-                        "2026-09-23",
-                        "2026-09-27"
-                      ],
-                      "question_wording_checked": true,
-                      "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
-                      "mode": "live telephone",
-                      "weighting": null,
-                      "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
-                      "lv_screen": "very/somewhatlikelyNovembervote",
-                      "question": "Q8 named4candidate voteorlean; rotated",
-                      "non_candidate_responses": {
-                        "write_in": 0,
-                        "undecided": 6,
-                        "refused": 0.4
-                      },
-                      "missing_fields": [
-                        "full_weight_calculation",
-                        "design_effect",
-                        "reported_precision_confidence_level"
-                      ]
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": null,
-                      "scope": "500_LV",
-                      "validated_here": false
-                    },
-                    "ballot_format": "multi_candidate_with_leaners",
-                    "sponsor_review": {
-                      "commissioner": "USA TODAY Network Ohio"
-                    },
-                    "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다."
-                  },
-                  "leading_margin_pp": 2.6,
-                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
-                "us-202cnna1713372",
-                "primary-suffolk-oh-senate-20261002"
+                "us-202cnna1713372"
               ]
             },
             {
@@ -9735,14 +9073,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 22 · 공화 22 · 무소속 0 · 미정 6. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 22 · 공화 21 · 무소속 0 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
             "DEM": 22,
-            "GOP": 22,
+            "GOP": 21,
             "IND": 0
           },
-          "unresolved_seats": 6,
+          "unresolved_seats": 7,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -9758,13 +9096,13 @@
             },
             "single_poll_lead": {
               "DEM": 1,
-              "GOP": 2
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 1,
-            "GOP": 2,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -9776,15 +9114,15 @@
           "conditional_bounds": {
             "DEM": {
               "min": 22,
-              "max": 28
+              "max": 29
             },
             "GOP": {
-              "min": 22,
+              "min": 21,
               "max": 28
             },
             "IND": {
               "min": 0,
-              "max": 6
+              "max": 7
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -9906,7 +9244,7 @@
               "basis": "rated_baseline_assumption",
               "party_abbr": "DEM",
               "conclusion_ko": "민주당 기초 유지 가정",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": null,
               "poll_details": [],
               "included_poll_ids": []
@@ -10416,94 +9754,24 @@
               "race_id": "USA:NV:governor",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "GOP",
-              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
-                "agreement_fraction": 1.0,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "primary-noble-nv-governor-lv-20261006",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "accuracy_grade",
-                      "candidate_gap_significance",
-                      "question_sample_n",
-                      "response_rate"
-                    ],
-                    "reviewed_on": "2026-10-08",
-                    "review_sources": [
-                      "https://www.noblepredictiveinsights.com/post/lombardo-tries-to-escape-trump-s-orbit-up-2-over-ford",
-                      "https://7453540.fs1.hubspotusercontent-na1.net/hubfs/7453540/NVPOP/2026/Sept%202026%20NVPOP/260921_NVPOP_%20Election%20PR%20poll%20report.xlsx"
-                    ],
-                    "primary_toplines": {
-                      "Joe Lombardo": 42.0,
-                      "Aaron Ford": 40.0,
-                      "Danielle Ford": 7.0
-                    },
-                    "question_sample_n": null,
-                    "disclosure_review": {
-                      "sample_n": 708,
-                      "total_registered_n": 800,
-                      "likely_voter_n": 708,
-                      "population": "LV",
-                      "mode": "opt-in online panel",
-                      "sampling_frame": "Nevada registered voters online panel; LV screening questions",
-                      "weighting": "gender,region,age,party,race/ethnicity,education,2024vote recall using recent voter file,NevadaSOS,Census",
-                      "field_dates": [
-                        "2026-09-22",
-                        "2026-09-26"
-                      ],
-                      "question_wording_checked": true,
-                      "question": "initial governor ballot RV/LV!A50:B57; issue trust questions not vote intention",
-                      "undecided_pct": 9,
-                      "none_of_these_candidates_pct": 2,
-                      "another_candidate_not_listed_pct": 1,
-                      "sheet": "LV",
-                      "question_sample_n_not_inferred_from_weighted_n": true,
-                      "phase": "post_primary_general"
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_error",
-                      "half_width_pp": 3.68,
-                      "confidence_level_pct": null,
-                      "model_details_verified": false,
-                      "scope": "LV",
-                      "validated_here": false
-                    },
-                    "ballot_format": "three_candidate_initial_with_undecided",
-                    "sponsor_review": {
-                      "commissioner": "Noble Predictive Insights self-published",
-                      "provider_internal": false,
-                      "provider_partisan": null,
-                      "provider_sponsors": [],
-                      "scope": "공개 의뢰자와 API필드 검토; 기관 정치중립·정확도 인증 아님"
-                    },
-                    "limitations_ko": "RV/LV 별도 표본·초기문항. 단일기간수치상우세는통계적유의성/당선확률아님. 가중빈도N을실제문항별응답자로역산하지않음."
-                  },
-                  "leading_margin_pp": 2.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "primary-noble-nv-governor-lv-20261006"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:OH:governor",
@@ -10519,7 +9787,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 3,
+                "independent_pollster_count": 2,
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -10631,79 +9899,11 @@
                   },
                   "leading_margin_pp": 4.0,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "gov202sufa08bfacb",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "accuracy_grade",
-                      "statistical_significance",
-                      "full_weight_calculation",
-                      "design_effect",
-                      "reported_precision_confidence_level"
-                    ],
-                    "reviewed_on": "2026-10-08",
-                    "review_sources": [
-                      "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
-                      "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
-                    ],
-                    "primary_toplines": {
-                      "Amy Acton": 50.4,
-                      "Vivek Ramaswamy": 41.4,
-                      "Don Kissick": 2.8
-                    },
-                    "question_sample_n": 500,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 500,
-                      "field_dates": [
-                        "2026-09-23",
-                        "2026-09-27"
-                      ],
-                      "question_wording_checked": true,
-                      "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
-                      "mode": "live telephone",
-                      "weighting": null,
-                      "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
-                      "lv_screen": "very/somewhatlikelyNovembervote",
-                      "question": "Q9 named3candidate voteorlean; rotated",
-                      "non_candidate_responses": {
-                        "write_in": 0.2,
-                        "undecided": 4.8,
-                        "refused": 0.4
-                      },
-                      "missing_fields": [
-                        "full_weight_calculation",
-                        "design_effect",
-                        "reported_precision_confidence_level"
-                      ]
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": null,
-                      "scope": "500_LV",
-                      "validated_here": false
-                    },
-                    "ballot_format": "multi_candidate_with_leaners",
-                    "sponsor_review": {
-                      "commissioner": "USA TODAY Network Ohio"
-                    },
-                    "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다."
-                  },
-                  "leading_margin_pp": 9.0,
-                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "gov202cnn61f54c15",
-                "gov202the240fb48b",
-                "gov202sufa08bfacb"
+                "gov202the240fb48b"
               ]
             },
             {
@@ -10986,7 +10186,7 @@
               "basis": "rated_baseline_assumption",
               "party_abbr": "GOP",
               "conclusion_ko": "공화당 기초 유지 가정",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": null,
               "poll_details": [],
               "included_poll_ids": []
@@ -11632,83 +10832,24 @@
           "race_id": "USA:WA:house:03",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "GOP",
-          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "us-202dhmdd00a623",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "historical_accuracy_rating",
-                  "candidate_gap_significance"
-                ],
-                "reviewed_on": "2026-10-06",
-                "review_sources": [
-                  "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/",
-                  "https://www.opb.org/pdf/OPB%20Fall%202026%20Election%20Survey--Toplines%20(Washington%20Abridged)--September%202026_1790882419395.pdf"
-                ],
-                "primary_toplines": {
-                  "Marie Gluesenkamp Perez": 47,
-                  "John Braun": 48
-                },
-                "question_sample_n": 543,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 543,
-                  "field_dates": [
-                    "2026-09-17",
-                    "2026-09-27"
-                  ],
-                  "mode": "live telephone and text-to-online",
-                  "sampling_frame": "WA-03 registered voter file; 600 RV and 543 modeled LV",
-                  "weighting": "quotas for age, gender, party, area, race/ethnicity, income, education; modeled LV uses intent/history",
-                  "sponsor": "Oregon Public Broadcasting",
-                  "question_wording_checked": true
-                },
-                "reported_precision": {
-                  "kind": "reported_margin_of_error",
-                  "half_width_pp": 4.2,
-                  "confidence_level_pct": 95,
-                  "scope": "likely_voter_subsample",
-                  "model_details_verified": false
-                },
-                "ballot_format": "candidate_ballot_with_leaners_and_undecided",
-                "sponsor_review": {
-                  "provider_sponsors": [
-                    "Oregon Public Broadcasting"
-                  ],
-                  "partisan": null,
-                  "internal": false,
-                  "scope": "원문 의뢰자 표기 및 API 내부·정파 필드. 기관의 정치적 중립성 인증 아님."
-                },
-                "limitations_ko": "공개 원문 첫 응답 44/46과 기울어진 미정층 포함 47/48을 구분. API는 후자이며 전체 RV 600 대신 LV 543 사용. 단일 조사이며 격차 유의성 평가 없음."
-              },
-              "leading_margin_pp": 1.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "us-202dhmdd00a623"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:WI:house:03",
@@ -12366,24 +11507,44 @@
           "race_id": "USA:NC:senate",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
-            "agreement_fraction": null,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202eas168b53d4",
+              "source_quality": {
+                "verification_level": "partial",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "출처 연결 · 집계값 부분 검증",
+                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
+                "missing_fields": [
+                  "margin_of_error_pp",
+                  "question_sample_n",
+                  "primary_values_rechecked"
+                ]
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202eas168b53d4"
+          ]
         },
         {
           "race_id": "USA:AK:senate",
@@ -12807,17 +11968,17 @@
           "race_id": "USA:OH:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "recent_poll_lead",
+          "basis": "single_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 조사상 우세",
-          "poll_status": "poll_lead",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -12885,78 +12046,10 @@
               },
               "leading_margin_pp": 6.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "primary-suffolk-oh-senate-20261002",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "reported_precision_confidence_level"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
-                ],
-                "primary_toplines": {
-                  "Sherrod Brown": 46.6,
-                  "Jon Husted": 44,
-                  "Greg Levy": 1,
-                  "William B. Redpath": 2
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-09-23",
-                    "2026-09-27"
-                  ],
-                  "question_wording_checked": true,
-                  "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
-                  "mode": "live telephone",
-                  "weighting": null,
-                  "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
-                  "lv_screen": "very/somewhatlikelyNovembervote",
-                  "question": "Q8 named4candidate voteorlean; rotated",
-                  "non_candidate_responses": {
-                    "write_in": 0,
-                    "undecided": 6,
-                    "refused": 0.4
-                  },
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "reported_precision_confidence_level"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": null,
-                  "scope": "500_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "multi_candidate_with_leaners",
-                "sponsor_review": {
-                  "commissioner": "USA TODAY Network Ohio"
-                },
-                "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다."
-              },
-              "leading_margin_pp": 2.6,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnna1713372",
-            "primary-suffolk-oh-senate-20261002"
+            "us-202cnna1713372"
           ]
         },
         {
@@ -13587,94 +12680,24 @@
           "race_id": "USA:NV:governor",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "GOP",
-          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
-            "agreement_fraction": 1.0,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "primary-noble-nv-governor-lv-20261006",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "candidate_gap_significance",
-                  "question_sample_n",
-                  "response_rate"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.noblepredictiveinsights.com/post/lombardo-tries-to-escape-trump-s-orbit-up-2-over-ford",
-                  "https://7453540.fs1.hubspotusercontent-na1.net/hubfs/7453540/NVPOP/2026/Sept%202026%20NVPOP/260921_NVPOP_%20Election%20PR%20poll%20report.xlsx"
-                ],
-                "primary_toplines": {
-                  "Joe Lombardo": 42.0,
-                  "Aaron Ford": 40.0,
-                  "Danielle Ford": 7.0
-                },
-                "question_sample_n": null,
-                "disclosure_review": {
-                  "sample_n": 708,
-                  "total_registered_n": 800,
-                  "likely_voter_n": 708,
-                  "population": "LV",
-                  "mode": "opt-in online panel",
-                  "sampling_frame": "Nevada registered voters online panel; LV screening questions",
-                  "weighting": "gender,region,age,party,race/ethnicity,education,2024vote recall using recent voter file,NevadaSOS,Census",
-                  "field_dates": [
-                    "2026-09-22",
-                    "2026-09-26"
-                  ],
-                  "question_wording_checked": true,
-                  "question": "initial governor ballot RV/LV!A50:B57; issue trust questions not vote intention",
-                  "undecided_pct": 9,
-                  "none_of_these_candidates_pct": 2,
-                  "another_candidate_not_listed_pct": 1,
-                  "sheet": "LV",
-                  "question_sample_n_not_inferred_from_weighted_n": true,
-                  "phase": "post_primary_general"
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_error",
-                  "half_width_pp": 3.68,
-                  "confidence_level_pct": null,
-                  "model_details_verified": false,
-                  "scope": "LV",
-                  "validated_here": false
-                },
-                "ballot_format": "three_candidate_initial_with_undecided",
-                "sponsor_review": {
-                  "commissioner": "Noble Predictive Insights self-published",
-                  "provider_internal": false,
-                  "provider_partisan": null,
-                  "provider_sponsors": [],
-                  "scope": "공개 의뢰자와 API필드 검토; 기관 정치중립·정확도 인증 아님"
-                },
-                "limitations_ko": "RV/LV 별도 표본·초기문항. 단일기간수치상우세는통계적유의성/당선확률아님. 가중빈도N을실제문항별응답자로역산하지않음."
-              },
-              "leading_margin_pp": 2.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "primary-noble-nv-governor-lv-20261006"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:OH:governor",
@@ -13690,7 +12713,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 3,
+            "independent_pollster_count": 2,
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
@@ -13802,79 +12825,11 @@
               },
               "leading_margin_pp": 4.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "gov202sufa08bfacb",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "accuracy_grade",
-                  "statistical_significance",
-                  "full_weight_calculation",
-                  "design_effect",
-                  "reported_precision_confidence_level"
-                ],
-                "reviewed_on": "2026-10-08",
-                "review_sources": [
-                  "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center/polls/other-states#collapse-September-29-2026-Ohio-Governor-and-US-Senate-with-USA-TODAY-Network-Ohio",
-                  "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en"
-                ],
-                "primary_toplines": {
-                  "Amy Acton": 50.4,
-                  "Vivek Ramaswamy": 41.4,
-                  "Don Kissick": 2.8
-                },
-                "question_sample_n": 500,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 500,
-                  "field_dates": [
-                    "2026-09-23",
-                    "2026-09-27"
-                  ],
-                  "question_wording_checked": true,
-                  "sampling_frame": "landline/cell countyPPS expectedlikelyvoters; youngestadulthousehold",
-                  "mode": "live telephone",
-                  "weighting": null,
-                  "demographic_design": "priorOHmidtermexitpolls,Census2020,latestACS;5regions",
-                  "lv_screen": "very/somewhatlikelyNovembervote",
-                  "question": "Q9 named3candidate voteorlean; rotated",
-                  "non_candidate_responses": {
-                    "write_in": 0.2,
-                    "undecided": 4.8,
-                    "refused": 0.4
-                  },
-                  "missing_fields": [
-                    "full_weight_calculation",
-                    "design_effect",
-                    "reported_precision_confidence_level"
-                  ]
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": null,
-                  "scope": "500_LV",
-                  "validated_here": false
-                },
-                "ballot_format": "multi_candidate_with_leaners",
-                "sponsor_review": {
-                  "commissioner": "USA TODAY Network Ohio"
-                },
-                "limitations_ko": "원문수치·기간·표본·질문·모집/가중공개사항대조. 초기/leaned/강제문항·LV/RV·같은파동을구분. 기관정확도·격차유의성·당선확률미평가. 기간밖자료는최신우세로쓰지않습니다."
-              },
-              "leading_margin_pp": 9.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "gov202cnn61f54c15",
-            "gov202the240fb48b",
-            "gov202sufa08bfacb"
+            "gov202the240fb48b"
           ]
         },
         {
