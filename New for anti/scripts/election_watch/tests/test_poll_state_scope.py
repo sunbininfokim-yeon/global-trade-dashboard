@@ -49,6 +49,15 @@ class StateResearchScopeTests(unittest.TestCase):
                    'docs/ops/handoff/2026-10-11-codex-state-evidence-CT.md']
         self.assertFalse(violations(changed, 'codex/ct-evidence-next'))
 
+    def test_shared_python_helpers_tests_and_js_tests_need_separate_foundation(self):
+        for shared in (BACKEND+'tests/poll_config_fixture.py', BACKEND+'tests/test_live_polls.py',
+                       BACKEND+'tests/test_poll_state_scope.py',
+                       'New for anti/js/elections/tests/poll-window.test.mjs'):
+            for marker in (PACKETS+'CT.json', REVIEW):
+                with self.subTest(marker=marker, shared=shared):
+                    self.assertEqual(violations([marker, shared], 'codex/ct-evidence-review'), [shared])
+            self.assertFalse(violations([shared], 'codex/election-b-foundation-20261011'))
+
     def test_unlisted_national_data_config_and_agent_rules_are_protected(self):
         for shared in (PUBLIC+'usa_election_finance_index_v1.json',
                        PUBLIC+'usa_governor_finance/2026/CT.json',

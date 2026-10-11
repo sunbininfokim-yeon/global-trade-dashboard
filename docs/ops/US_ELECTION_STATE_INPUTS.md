@@ -51,7 +51,7 @@
    python3 check_state_packet_changes.py --base-ref <PR-base-SHA> --head-ref HEAD --branch <branch>
    ```
 
-   polling·finance·JS·소유권·deploy-chain 검사를 실행하고 주별 인수 문서에 출처, 기준일, 보류, 자료 부족을 기록한다. 공용 JS 테스트 fixture/날짜 수정은 별도 기반 PR로 분리한다. PR diff에 공용 생성물이나 공용 목록이 없는지 확인한다.
+   polling·finance·JS·소유권·deploy-chain 검사를 실행하고 주별 인수 문서에 출처, 기준일, 보류, 자료 부족을 기록한다. 주별 PR의 Python 테스트는 해당 주가 이름에 있는 테스트 파일만 허용한다. 공용 Python 테스트/helper/fixture 및 선거 JS 테스트의 fixture/날짜 수정은 별도 기반 PR로 분리하며 검사에서도 차단한다. PR diff에 공용 생성물이나 공용 목록이 없는지 확인한다.
 
 ## 주별 인수 문서와 종료
 
@@ -84,6 +84,8 @@ main 수집은 최신 검토 목록과 공개 API·원문으로 정상 실행한
 게시 충돌 시 수집 입력과 원문 확인 영수증을 runner 임시 체크포인트로 보존한다. 최신 main을 가져와 같은 입력을 현재 코드·검토 목록으로 재검증하고 산출물을 다시 만든다. 새 수집 시각을 만들지 않는다. 더 최신 전국 수집이 이미 게시됐다면 오래된 재시도를 보류한다. 세 번 실패하면 실패를 표시하며 artifact를 보존한다. 생성 JSON을 git rebase/merge로 합치지 않는다. 체크아웃 초기화는 main Actions의 일회성 작업 공간에서만 실행한다.
 
 workflow 직접 실행, main 병합, 배포는 사용자 결정이다. 다른 월별 EOP/선거자금 workflow의 과거 게시 절차까지 이번 예외로 변경하지 않는다. 그 작성자들이 동시에 board를 쓰더라도 polling 게시 측은 최신 main에서 다시 생성하며, 다른 workflow 자체의 재시도 방식 보강은 해당 소유자가 별도로 처리한다.
+
+현재 확인한 `us_superpac_refresh.yml`과 `elections_eop_monthly.yml`은 서로 다른 concurrency group을 쓰고 공용 `elections_board_v1.json`을 게시할 때 `git pull --rebase --autostash`를 사용한다. 따라서 자동 게시 전체의 충돌이 해결된 상태는 아니다. 이 두 게시기의 안전 재생성/재시도 보강은 별도 담당 PR로 처리하며, 이번 규칙 PR에서 해당 workflow를 수정하거나 운영 실행하지 않는다.
 
 ## 기존 스택 처리
 

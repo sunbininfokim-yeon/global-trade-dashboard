@@ -38,3 +38,9 @@ Claude 등 외부 도구는 이 앱의 메시지 도구로 직접 수신 여부�
 ## 남은 적용 단계
 
 사용자/통합 담당이 #524와 이 PR의 순서를 확정해 main에 반영해야 새 CI 범위 검사가 전체 저장소에 적용된다. 독립 AK/KS 입력 PR은 공통 기반 의존성을 유지하며 서로 위에 쌓지 않는다. 동일 주·동일 공용 코드의 동시 변경은 담당 조율이 필요하다. 파일 분리는 모든 종류의 충돌을 없앤다는 보장이 아니다.
+
+## 독립 검토 보완
+
+다른 선거 세션이 #529에서 공용 Python fixture/helper/test와 공용 JS test를 주별 packet과 함께 바꿔도 검사에서 빠지는 것을 지적했다. 해당 주 이름의 Python test만 허용하고 공용 Python 테스트 자산 및 선거 JS 테스트는 별도 기반 PR로 분리하도록 차단·회귀 검사를 추가했다. 기존 AK #525의 공용 JS 날짜 fixture 변경도 공용 기반 #524로 이동해 같은 규칙을 적용한다.
+
+`us_superpac_refresh.yml`과 `elections_eop_monthly.yml`의 별도 concurrency 및 공용 board 게시의 `git pull --rebase --autostash` 사용을 원문에서 재확인했다. polling 게시기만 안전 재생성 방식이므로 자동 게시 전체 충돌 해결이라고 표현하지 않는다. 두 workflow 보강은 해당 소유자의 별도 후속 범위이며 이번에 수정/dispatch/배포하지 않는다.

@@ -87,9 +87,16 @@ def violations(changed, branch):
             return False
         # State-owned adapters may change; common collectors/builders may not.
         return not any(re.search(rf'(^|_){s.lower()}(_|\.py$)', file.rsplit('/',1)[-1]) for s in states)
-    bad = {f for f in changed if f in SHARED or common_code(f) or
+    def common_test(file):
+        if not file.startswith(PREFIX+'scripts/election_watch/tests/'):
+            return False
+        name = file.rsplit('/', 1)[-1]
+        # Only a state-named Python test belongs to the state research PR.
+        # Shared fixtures/helpers and nationwide regression tests need a foundation.
+        return not (name.startswith('test_') and name.endswith('.py') and named_states(file) == states)
+    bad = {f for f in changed if f in SHARED or common_code(f) or common_test(f) or
            f.startswith('.github/workflows/') or
-           (f.startswith(PREFIX+'js/elections/') and '/tests/' not in f) or
+           f.startswith(PREFIX+'js/elections/') or
            (f.startswith(CONFIG_PREFIX) and input_state(f) not in states) or
            (f.startswith(PUBLIC_PREFIX) and input_state(f) not in states) or
            bool(named_states(f) - states)}
