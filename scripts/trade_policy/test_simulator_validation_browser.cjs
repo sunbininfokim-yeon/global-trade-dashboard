@@ -87,6 +87,11 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await page.screenshot({ path: '/tmp/country-tariff-validation-mobile.png', fullPage: false });
 
     await page.getByRole('button', { name: '기업', exact: true }).click();
+    await field('실제 기업 선택').selectOption('manual');
+    await field('기업 이름').fill('가상 수출기업');
+    await field('기업 분석 품목').selectOption('transformer');
+    await field('기업 제품 원산지').selectOption('KOR');
+    for (const [label, value] of [['기업 분석 기간', '테스트 입력 · 연간'], ['기업 기준 판매량', '10000'], ['기업 단위 변동원가', '70'], ['기업 기간 고정비', '100000']]) await field(label).fill(value);
     await field('기업 기준 통관 단가').fill('');
     await calculate(); await assertTarget('기업 기준 통관 단가');
     await field('기업 기준 통관 단가').fill('100');

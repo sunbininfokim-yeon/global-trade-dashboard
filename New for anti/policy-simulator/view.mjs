@@ -1,6 +1,7 @@
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput, elasticityCalibration } from './policy-catalog.mjs';
 import { companyMarkup, mountCompany } from './company-view.mjs';
+import { antidumpingMarkup, mountAntidumping, selectAntidumping } from './antidumping-view.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -273,22 +274,25 @@ function mountCountry(root) {
 }
 
 export function markup() {
-  return `<div class="ts-app"><nav class="ts-tabs" aria-label="시뮬레이터 유형"><button type="button" data-simulator-tab="country" aria-pressed="${activeTab === 'country'}">국가</button><button type="button" data-simulator-tab="company" aria-pressed="${activeTab === 'company'}">기업</button></nav><div data-simulator-view>${activeTab === 'country' ? countryMarkup() : companyMarkup()}</div></div>`;
+  return `<div class="ts-app"><nav class="ts-tabs" aria-label="시뮬레이터 유형"><button type="button" data-simulator-tab="country" aria-pressed="${activeTab === 'country'}">국가</button><button type="button" data-simulator-tab="antidumping" aria-pressed="${activeTab === 'antidumping'}">반덤핑</button><button type="button" data-simulator-tab="company" aria-pressed="${activeTab === 'company'}">기업</button></nav><div data-simulator-view>${activeMarkup()}</div></div>`;
 }
+const activeMarkup = () => activeTab === 'country' ? countryMarkup() : activeTab === 'antidumping' ? antidumpingMarkup() : companyMarkup();
 export function mount(root) {
   const controller = new AbortController();
   let cleanup;
   const attach = () => {
     const body = root.querySelector('[data-simulator-view]');
-    cleanup = activeTab === 'country' ? mountCountry(body) : mountCompany(body, { getCountryResult: () => dirty ? null : result });
+    cleanup = activeTab === 'country' ? mountCountry(body) : activeTab === 'antidumping' ? mountAntidumping(body) : mountCompany(body, { getCountryResult: () => dirty ? null : result, openAntidumping: selection => { selectAntidumping(selection); switchTab('antidumping'); } });
+  };
+  const switchTab = tab => {
+    cleanup?.(); activeTab = tab;
+    root.querySelectorAll('[data-simulator-tab]').forEach(t => t.setAttribute('aria-pressed', String(t.dataset.simulatorTab === activeTab)));
+    root.querySelector('[data-simulator-view]').innerHTML = activeMarkup(); attach();
   };
   root.addEventListener('click', event => {
     const button = event.target.closest('[data-simulator-tab]');
     if (!button || !root.contains(button) || button.dataset.simulatorTab === activeTab) return;
-    cleanup?.(); activeTab = button.dataset.simulatorTab;
-    root.querySelectorAll('[data-simulator-tab]').forEach(tab => tab.setAttribute('aria-pressed', String(tab.dataset.simulatorTab === activeTab)));
-    root.querySelector('[data-simulator-view]').innerHTML = activeTab === 'country' ? countryMarkup() : companyMarkup();
-    attach();
+    if (['country', 'company', 'antidumping'].includes(button.dataset.simulatorTab)) switchTab(button.dataset.simulatorTab);
   }, { signal: controller.signal });
   attach();
   return () => { cleanup?.(); controller.abort(); };

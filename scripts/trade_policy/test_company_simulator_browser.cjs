@@ -15,6 +15,13 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
       const promise = page.waitForEvent('download'); await page.getByRole('button', { name: '기업 JSON 저장', exact: true }).click();
       return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8'));
     };
+    const fillProductScenario = async () => {
+      await page.getByLabel('실제 기업 선택', { exact: true }).selectOption('manual');
+      await page.getByLabel('기업 이름', { exact: true }).fill('가상 수출기업');
+      await page.getByLabel('기업 분석 품목').selectOption('transformer');
+      await page.getByLabel('기업 제품 원산지').selectOption('KOR');
+      for (const [label, value] of [['기업 분석 기간', '테스트 입력 · 연간'], ['기업 기준 통관 단가', '100'], ['기업 기준 판매량', '10000'], ['기업 단위 변동원가', '70'], ['기업 기간 고정비', '100000']]) await page.getByLabel(label, { exact: true }).fill(value);
+    };
     await page.goto(`${base}/policy/us/simulator`);
     await page.getByLabel('한국 비교할 관세').selectOption('manual');
     await page.getByLabel('한국 가정 관세', { exact: true }).fill('25');
@@ -23,7 +30,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
     await page.getByRole('button', { name: '기업', exact: true }).click();
     await page.getByRole('heading', { name: '관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?' }).waitFor();
-    assert.equal(await page.getByLabel('기업 기준 통관 단가', { exact: true }).inputValue(), '100');
+    assert.equal(await page.getByLabel('기업 기준 통관 단가', { exact: true }).inputValue(), '');
+    assert.match(await page.locator('[data-company-public]').innerText(), /효성중공업/);
+    await fillProductScenario();
     await page.getByRole('button', { name: '기업 시나리오 계산' }).click();
     assert.match(await page.locator('[data-company-error]').innerText(), /조건/);
     await page.getByLabel('기업 관세 적용 조건 확인').check();
@@ -71,6 +80,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     assert.match(await page.locator('[data-company-error]').innerText(), /같은 품목/);
     assert.ok(await page.getByRole('button', { name: '기업 JSON 저장' }).isDisabled());
     await page.getByRole('button', { name: '기업 입력 초기화' }).click();
+    await fillProductScenario();
     await page.getByLabel('기업 비교할 관세').selectOption('manual');
     await page.getByLabel('기업 가정 총 관세').fill('25');
     await page.getByLabel('기업 경쟁 제품 기준 가격', { exact: true }).fill('120');

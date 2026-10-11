@@ -1,0 +1,56 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const base = process.env.SIMULATOR_PREVIEW_URL || 'http://127.0.0.1:8773';
+if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback preview may be tested.');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1080 } }), errors = [], requests = [];
+    page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
+    const field = name => page.getByLabel(name, { exact: true });
+    const tab = name => page.getByRole('button', { name, exact: true }).click();
+    const calc = () => tab('AD 예치 부담 계산');
+    const confirm = async () => { await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check(); };
+    const json = async () => { const promise = page.waitForEvent('download'); await tab('반덤핑 JSON 저장'); return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8')); };
+    await page.goto(`${base}/policy/us/simulator`); await tab('반덤핑');
+    await page.getByRole('heading', { name: '반덤핑 예치금과 재심 결과를 비교하세요' }).waitFor();
+    assert.match(await page.locator('[data-ad-reference]').innerText(), /4.32%/);
+    assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '');
+    await calc(); assert.ok(await field('대상 수입 신고가격 · USD').evaluate(el => document.activeElement === el && el.getAttribute('aria-invalid') === 'true'));
+    await field('대상 수입 신고가격 · USD').fill('1000000'); await field('가정 AD 예치율 %').fill('16.87'); await field('연 금융비용률 %').fill('5'); await field('예치 기간 · 일').fill('180');
+    await confirm(); await calc(); let r = await json(); assert.equal(r.reference_deposit_usd, '43200.00'); assert.equal(r.reference_financing_cost_usd, '1065.21'); assert.equal(r.reference.company.id, 'hyosung');
+    await page.screenshot({ path: '/tmp/antidumping-desktop.png', fullPage: true });
+    await field('반덤핑 기업').selectOption('ls'); await field('통관일').fill('2026-02-10');
+    assert.match(await page.locator('[data-ad-reference]').innerText(), /16.87%/); assert.ok(!(await field('AD 법인 적용 조건 확인').isChecked())); assert.ok(await page.locator('[data-ad-stale]').isVisible()); assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장' }).isDisabled());
+    await confirm(); await calc(); r = await json(); assert.equal(r.reference.document.document_id, '2025-05960');
+    await field('반덤핑 기업').selectOption('unknown'); await confirm(); await calc(); r = await json(); assert.equal(r.status, 'unresolved'); assert.equal(r.reference_deposit_usd, null);
+    await field('반덤핑 기업').selectOption('ls'); await field('통관일').fill('2026-10-12'); await confirm(); await calc(); assert.equal((await json()).status, 'unresolved');
+    await field('반덤핑 사건').selectOption('A-580-908'); await field('통관일').fill('2026-10-11'); assert.match(await page.locator('[data-ad-reference]').innerText(), /13.03%/);
+    await confirm(); await calc(); assert.equal((await json()).reference.company.id, 'hankook');
+    await page.locator('.ts-ad-method summary').click(); await tab('비선정 산정 경로 비교'); assert.match(await page.locator('[data-ad-method-output]').innerText(), /가중치/);
+    await field('동일 가중치 가정').check(); await tab('비선정 산정 경로 비교'); assert.match(await page.locator('[data-ad-method-output]').innerText(), /10.53/);
+    await field('반덤핑 사건').selectOption('A-580-867'); await page.locator('.ts-ad-method summary').click(); await tab('비선정 산정 경로 비교'); assert.match(await page.locator('[data-ad-method-output]').innerText(), /다른 합리적 방법/);
+    await field('비선정 산정 사례').selectOption('2025-05960'); await tab('비선정 산정 경로 비교'); assert.match(await page.locator('[data-ad-method-output]').innerText(), /16.87/);
+    await tab('조사기업 추가'); await tab('비선정 산정 경로 비교'); assert.ok(await field('조사기업 3 이름').evaluate(el => document.activeElement === el));
+    await page.locator('[data-ad-remove="2"]').click();
+    await field('예치율 근거').selectOption('manual');
+    for (const [name, value] of [['AD 사건번호', 'A-000-123'], ['생산자·수출자 법인명', '<img src=x onerror=alert(1)>'], ['직접 확인한 AD 예치율 %', '7.25'], ['예치율 출처 URL', 'https://www.govinfo.gov/example'], ['예치율 적용 근거', '테스트 직접 확인값 · 실제 판정 아님']]) await field(name).fill(value);
+    await confirm(); await calc(); r = await json(); assert.equal(r.reference_deposit_usd, '72500.00'); assert.equal(r.reference.status, 'user_verified_reference'); assert.equal(await page.locator('[data-ad-results] img').count(), 0);
+    await tab('반덤핑 입력 초기화'); await field('대상 수입 신고가격 · USD').fill('1000000'); await field('가정 AD 예치율 %').fill('16.87'); await field('연 금융비용률 %').fill('5'); await field('예치 기간 · 일').fill('180'); await confirm(); await calc();
+    await page.setViewportSize({ width: 360, height: 844 }); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    await page.screenshot({ path: '/tmp/antidumping-mobile.png', fullPage: true });
+    await tab('기업'); assert.equal(await field('실제 기업 선택').inputValue(), 'hyosung');
+    const names = { 'ls-cable': 'LS전선', taihan: '대한전선', kia: '기아', hyosung: '효성중공업', 'hs-materials': 'HS효성첨단소재', hankook: '한국타이어앤테크놀로지' };
+    for (const [id, name] of Object.entries(names)) {
+      await field('실제 기업 선택').selectOption(id); assert.equal(await field('기업 이름').inputValue(), name); assert.equal(await field('기업 기준 통관 단가').inputValue(), ''); assert.equal(await field('기업 단위 변동원가').inputValue(), ''); assert.equal(await field('기업 제품 원산지').inputValue(), ''); assert.match(await page.locator('[data-company-public]').innerText(), /2025 매출/); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }
+    assert.match(await page.locator('[data-company-public]').innerText(), /타이어 사업부/);
+    await tab('이 기업의 반덤핑 사건 보기 →'); assert.equal(await field('반덤핑 사건').inputValue(), 'A-580-908'); assert.equal(await field('반덤핑 기업').inputValue(), 'hankook'); assert.ok(!(await field('AD 제품 범위 확인').isChecked()));
+    await tab('기업'); await field('실제 기업 선택').selectOption('hyosung'); await page.screenshot({ path: '/tmp/company-real-mobile.png', fullPage: true }); await page.setViewportSize({ width: 1440, height: 1080 }); await page.screenshot({ path: '/tmp/company-real-desktop.png', fullPage: true });
+    await tab('이 기업의 반덤핑 사건 보기 →'); assert.equal(await field('반덤핑 기업').inputValue(), 'hyosung');
+    await tab('의회'); await tab('관세 시뮬레이터'); assert.equal(await page.locator('[data-ad-form]').count(), 1);
+    assert.deepEqual(errors, []); assert.equal(requests.filter(u => new URL(u).pathname.startsWith('/api/') && !u.endsWith('/api/us/overview')).length, 0); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
+    console.log('PASS: official AD cases/company/date boundaries; null vs zero; direct-reference source; exact deposit/finance JSON; non-selected all-zero/weights; escaped data; six real company context/missing private data; company→AD; stale/focus; 360px; navigation cleanup; no external/API/AI calls.');
+  } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exitCode = 1; });
