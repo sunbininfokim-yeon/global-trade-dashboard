@@ -170,7 +170,7 @@ class NewHampshireEvidenceTests(unittest.TestCase):
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             read(ROOT/'config/governor_matchups/2026.json'), polls,
             load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026),
-            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), DAY,
+            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), max(DAY, polls['as_of']),
             read(CONFIG/'state_finance_identities_2026.json'), governor_access={'NH':access})
         self.assertEqual(state['live_capture_receipt']['governor_source_checked_at'], access['checked_at'])
         self.assertEqual(state['work_status'], 'live_poll_sources_reviewed_finance_blocked')
