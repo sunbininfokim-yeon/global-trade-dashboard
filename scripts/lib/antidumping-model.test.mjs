@@ -73,13 +73,18 @@ test('missing weights do not become a silent average; equal weights are an expli
   const r = nonSelectedScenario({ ...p, equal_weights_assumption: true }); assert.equal(r.rate_pct, '10.525000'); assert.equal(r.status, 'equal_weight_scenario'); assert.equal(r.educational_only, true);
   assert.throws(() => nonSelectedScenario({ rows: [] })); assert.throws(() => nonSelectedScenario({ rows: [{ margin_pct: '10', weight: '0' }, { margin_pct: '20', weight: '0' }] }));
 });
-test('six named companies have official financial context, consistent KRW units and no invented US product data', () => {
-  assert.equal(Object.keys(COMPANY_PROFILES).length, 6);
+test('seven named companies have official financial context, consistent KRW units and no invented US product data', () => {
+  assert.equal(Object.keys(COMPANY_PROFILES).length, 7);
   for (const p of Object.values(COMPANY_PROFILES)) {
     assert.equal(p.financial.unit, 'KRW million'); assert.equal(p.financial.use, 'context_only'); assert.match(p.financial.source_url, /^https:/);
     for (const key of ['product_origin', 'product_price', 'product_quantity', 'product_variable_cost', 'product_fixed_cost']) assert.equal(p[key], null);
   }
   assert.equal(COMPANY_PROFILES['ls-cable'].ad, null); assert.equal(COMPANY_PROFILES.hyosung.ad.case_id, 'A-580-867'); assert.equal(COMPANY_PROFILES.hankook.ad.case_id, 'A-580-908');
+  const ls = COMPANY_PROFILES['ls-electric'];
+  assert.equal(ls.financial.revenue, 4965799); assert.equal(ls.financial.operating_profit, 426407); assert.equal(ls.financial.checked_on, '2026-10-12');
+  assert.deepEqual(ls.ad, { case_id: 'A-580-867', company_id: 'ls' });
+  assert.equal(lookupAD({ ...ls.ad, entry_date: '2026-10-11' }).company.official_name, 'LS Electric Co., Ltd.');
+  assert.equal(COMPANY_PROFILES['ls-cable'].financial.checked_on, '2026-10-11');
   assert.equal(COMPANY_PROFILES.hankook.financial.revenue, 10318600); assert.match(COMPANY_PROFILES.hankook.financial.scope, /타이어 사업부/);
 });
 test('real financial context is serialized but cannot substitute for missing product unit cost', () => {

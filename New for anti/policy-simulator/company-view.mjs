@@ -1,7 +1,7 @@
 import { simulateCompany, COMPANY_SOURCES, COMPANY_MODEL_VERSION } from './company-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, newRow, policyOptions, tariffPair, missingPolicyReason } from './policy-catalog.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
-import { COMPANY_PROFILES, COMPANY_DATA_CHECKED_ON, companyCalibration } from './company-profiles.mjs';
+import { COMPANY_PROFILES, companyCalibration } from './company-profiles.mjs';
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, p = 2) => v == null ? '산출 불가' : Number(v).toLocaleString('ko-KR', { minimumFractionDigits: p, maximumFractionDigits: p });
@@ -16,7 +16,7 @@ function publicContext() {
   const p = COMPANY_PROFILES[draft.profile_id];
   if (!p) return '<p class="ts-help">분석할 실제 기업·제품의 자료를 입력하세요. 제품별 미국 판매와 원가는 별도 자료가 필요합니다.</p>';
   const f = p.financial;
-  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p><div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${COMPANY_DATA_CHECKED_ON}</p><p>${esc(p.note)}</p><p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 위 재무 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${p.ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
+  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p><div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p><p>${esc(p.note)}</p><p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 위 재무 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${p.ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
 }
 function field(key, label, min, max, help = '', optional = false) {
   return `<label>${label}<input type="number" inputmode="decimal" step="any" data-company-key="${key}" aria-label="기업 ${label}" value="${esc(draft[key])}" min="${min}" max="${max}"${optional ? '' : ' required'}>${help ? `<small>${help}</small>` : ''}</label>`;
@@ -84,7 +84,7 @@ function results() {
     </div>`;
 }
 export function companyMarkup() {
-  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">6개 실제 기업 · 공식 자료</span></div>
+  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">${Object.keys(COMPANY_PROFILES).length}개 실제 기업 · 공식 자료</span></div>
     <p class="ts-model-source">계산 근거: 기업 가격·손익의 명시적 산식. 국가 연결은 <a href="https://www.usitc.gov/ces_tariff_model" target="_blank" rel="noopener noreferrer">USITC CES 기반 시장 반응</a>을 참고합니다.</p>
     <div class="ts-basis"><strong>제품 손익 스트레스 테스트</strong> 관세는 ${POLICY_AS_OF} 부분 검토 스냅샷. 기업 원가·계약·탄력성은 사용자 가정입니다. 입력값은 브라우저 안에서만 계산합니다.</div>
     <div class="ts-layout"><section class="ts-editor" aria-label="기업 시나리오 입력"><div class="ts-panel-title"><span>02</span><h2>기업의 판매와 원가를 입력하세요</h2></div><div data-company-editor>${editor()}</div></section><section class="ts-results" data-company-results aria-label="기업 계산 결과">${results()}</section></div>

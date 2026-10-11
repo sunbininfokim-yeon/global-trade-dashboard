@@ -1,10 +1,11 @@
 # 요청 기업의 공개 데이터 확보 결과
 
-확인: 2026-10-11. 비교 기간은 공통 2025년 연간. 이는 각 회사의 최신 분기 실적을 모두 수집했다는 뜻이 아니다. 모든 수치는 원화이며 제품 손익 입력(USD)과 구분한다.
+확인: 기존 6개사 2026-10-11, LS일렉트릭 2026-10-12. 비교 기간은 공통 2025년 연간. 이는 각 회사의 최신 분기 실적을 모두 수집했다는 뜻이 아니다. 모든 수치는 원화이며 제품 손익 입력(USD)과 구분한다.
 
 | 기업 | 매출 · 억원 | 영업이익 · 억원 | 확인 범위·공식 출처 |
 |---|---:|---:|---|
 | LS전선 | 75,882 | 2,798 | [LS그룹의 LS전선 회사 실적](https://lsholdings.com/ko/ir/investment). LS ELECTRIC 실적과 별도 행. |
+| LS일렉트릭 | 49,657.99 | 4,264.07 | [LS ELECTRIC 연결 요약손익계산서](https://www.ls-electric.com/ko/company/invest/result), 제52기 2025년. 전력·자동화 사업 및 자회사를 포함한 연결 실적으로 미국향 변압기 매출이 아님. |
 | 대한전선 | 36,360 | 1,286 | [회사 보도자료의 2025 연결 실적 비교표](https://www.taihan.com/news/pr/releaseDetail?idx=439). |
 | 기아 | 1,141,409.19 | 90,781.48 | [K-IFRS 연결 요약손익계산서](https://worldwide.kia.com/en/company/investor-relations/financial/summary-statements). 원문 단위 백만원. |
 | 효성중공업 | 59,685.12 | 7,469.68 | [연결 손익계산서](https://www.hyosungheavyindustries.com/kr/company/ir/financial/income-statement). 전력기기 외 건설 등도 포함. |
@@ -17,7 +18,7 @@
 
 | 자료 | 이번 확보 상태 | 사용 방법 / 추가 조건 |
 |---|---|---|
-| 기업·주요 제품군 | 6개사 등록 | 실제 제품의 상세 규격·HTS·생산지 결정은 별도. LS/대한전선은 알루미늄 특정 규격에 자동 배정하지 않고 품목 직접 정의로 시작. |
+| 기업·주요 제품군 | 7개사 등록 | 실제 제품의 상세 규격·HTS·생산지 결정은 별도. LS전선/대한전선은 알루미늄 특정 규격에 자동 배정하지 않고 품목 직접 정의로 시작. |
 | 공식 전사/타이어 부문 매출·영업이익 | 위 표 수치 구조화 | 회사 규모·사업 범위 참고만 표시. 제품의 매출·원가로 자동 대입하지 않음. |
 | 사업보고서·감사보고서·IR 다운로드 | [기아](https://worldwide.kia.com/ko/company/investor-relations/financial/reports), [효성중공업](https://www.hyosungheavyindustries.com/kr/company/ir/archive/financial-statements), [HS효성첨단소재](https://www.hshyosungadvancedmaterials.com/kr/ir/report), [LS그룹](https://lsholdings.com/ko/ir/investment), [대한전선](https://www.taihan.com), [한국타이어](https://www.hankooktire.com/global/en/investors/financial-information-results/financial-results.html) 공개 경로 확인 | 다운로드 경로 확보와 모든 주석의 구조화는 다름. 분기별 자동 수집을 연결하지 않음. 이번 공식 페이지 접근에는 API 키를 사용하지 않음. |
 | 한국산 특정 품목의 미국 수입·공급국 집계 | 국가 시뮬레이터에 DataWeb 2025 공급국 집계 기존 연결 | 시장 노출 참고. 특정 회사 매출로 이름을 바꾸지 않음. |
