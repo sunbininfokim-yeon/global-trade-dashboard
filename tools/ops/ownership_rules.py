@@ -26,6 +26,11 @@ DAILY_POLLING_PATHS = frozenset({
 # The existing polling workflow is the sole workflow exception.
 STATE_INTEGRATION_BRANCH = 'codex/election-state-integration-20261010'
 
+# 2026-10-11: user requested rules for subsequent state research and other
+# sessions. Include source-only PRs in the existing polling validation hook.
+# This allows only that workflow, never deploy.yml or production dispatch.
+STATE_RESEARCH_RULES_BRANCH = 'codex/election-research-rules-20261011'
+
 # User requested monthly acquisition and existing Cloudflare-key integration
 # on 2026-10-07. No UI, wrangler settings or shared deployment workflow grant.
 COMMODITY_BRANCH = 'codex/commodity-monthly-automation'
@@ -40,4 +45,5 @@ def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
             STATE_INTEGRATION_BRANCH: DAILY_POLLING_PATHS,
+            STATE_RESEARCH_RULES_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS}.get(branch, frozenset())

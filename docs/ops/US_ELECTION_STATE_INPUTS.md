@@ -9,7 +9,19 @@
 - 전국 산출물: main의 기존 polling workflow가 게시한다. 주별 PR에 live/history/forecast/board/index/공용 상태 JSON이나 공용 검토 목록을 커밋하지 않는다.
 - `TASKS.md`에는 플랫폼 작업 한 행만 둔다. 개별 주 진행 기록은 주별 인수 문서에 둔다.
 
-`check_state_packet_changes.py`가 주별 입력 또는 주별 evidence 브랜치와 공용 파일 변경의 동반을 차단한다. 기반 통합 예외는 정확한 브랜치 `codex/election-state-integration-20261010` 하나다. workflow 소유권 예외도 기존 polling workflow 하나뿐이다. deploy.yml은 변경하지 않는다.
+`check_state_packet_changes.py`가 packet뿐 아니라 주별 원문 검토·감사·접근 입력만 추가하는 임의 이름의 브랜치도 검사한다. 이 자료 경로도 기존 polling workflow의 PR 검사 대상이다. 공용 설정/전국 산출물·다른 주 자료·에이전트 공통 규칙·workflow/선거 UI의 동반 변경을 차단한다. 주별 테스트/어댑터/인수 문서의 타주 혼입과 미병합 주별 입력을 포함한 PR base도 차단한다. 이미 병합된 #518의 일회성 다주 통합 예외는 종료하며 브랜치 이름에 따른 주별 검사 우회는 허용하지 않는다. 이번 규칙 PR `codex/election-research-rules-20261011`의 소유권 예외도 기존 polling workflow 한 개에만 한정하며 주별 분리 검사 예외는 아니다. deploy.yml은 변경하지 않는다.
+
+## 세션 시작과 담당 확인
+
+이 규칙은 Codex·Claude·Cursor 등 조사 도구와 브랜치 이름에 관계없이 적용한다.
+
+1. 현재 git root·worktree·브랜치·미커밋 변경을 확인하고 최신 `origin/main`을 fetch한다. 대화에 적힌 옛 SHA/PR 상태는 현재 GitHub 상태와 대조한다. 기존 WIP를 reset/stash하거나 타 세션의 checkout을 바꾸지 않는다.
+2. 열린 선거 PR·주별 인수 문서·실행 중인 세션/수집 PID·잠금/Actions를 확인한다. 같은 주가 진행 중이면 중복 수집·동시 편집하지 않고 대기하거나 사용자 지정의 다른 미담당 주를 맡는다. 새 예약도 이 확인을 먼저 한다.
+3. 한 세션은 한 주·한 전용 worktree·한 PR을 맡는다. 담당은 해당 PR과 주별 인수 문서에 남긴다. `TASKS.md`나 공용 sequence/index에 주별 진행 행을 계속 추가하지 않는다.
+4. 최신 main에서 독립 분기한다. 공용 기능이 아직 main에 없으면 **packet 없는 별도 기반 PR**을 명시하고 그 같은 기반에서 주별 PR을 각각 분기할 수 있다. 주별 PR끼리 연결하지 않는다. 기반이 병합되면 각 PR의 base를 main으로 맞추고 재검증한다.
+5. 오래된 worktree에서는 작업 전 최신 main의 이 문서를 읽는다. 공용 코드/규칙 갱신이 필요하면 해당 기반 PR만 반영하고, 다른 주의 옛 생성 산출물을 가져오지 않는다. 시작 프롬프트는 `START_PROMPTS.md`의 미국 선거 절을 쓴다.
+
+서로 다른 주의 입력은 파일과 키를 분리해 독립 검토할 수 있다. 같은 주를 두 세션이 수정하거나 공용 코드를 동시에 수정하는 충돌은 자동으로 해결하지 않으며 담당 조율·별도 기반 PR에서 해결한다.
 
 ## 주별 작업 절차
 
@@ -33,7 +45,25 @@
    ```
 
    이는 원래 입력의 재검증·재생성이며 신규 수집이 아니다. 실제 요청은 2번에서 수행한다. 생성 결과는 PR에 커밋하지 않는다.
-5. polling·finance·JS·소유권·deploy-chain 검사를 실행하고 주별 인수 문서에 출처, 기준일, 보류, 자료 부족을 기록한다. PR diff에 공용 생성물이나 공용 목록이 없는지 확인한다.
+5. PR의 실제 base SHA를 기준으로 범위 검사를 실행한다. `origin/main`이 최신이어야 미병합 주별 base를 정확히 구분한다. 기반 PR의 SHA를 쓰는 경우에도 같은 검사다.
+
+   ```sh
+   python3 check_state_packet_changes.py --base-ref <PR-base-SHA> --head-ref HEAD --branch <branch>
+   ```
+
+   polling·finance·JS·소유권·deploy-chain 검사를 실행하고 주별 인수 문서에 출처, 기준일, 보류, 자료 부족을 기록한다. 공용 JS 테스트 fixture/날짜 수정은 별도 기반 PR로 분리한다. PR diff에 공용 생성물이나 공용 목록이 없는지 확인한다.
+
+## 주별 인수 문서와 종료
+
+`docs/ops/handoff/<날짜>-<agent>-state-evidence-<STATE>.md`처럼 주와 담당이 구분되는 자기 파일을 쓴다. 최소 기록:
+
+- 담당 주·세션, worktree 절대 경로·브랜치·PR, 시작 main SHA·실제 PR base SHA·기반 PR 의존성.
+- 신규로 요청해 받은 수집인지, 원래 입력을 재생성한 것인지. 원래 수집일·원문 URL/문서 지문·영수증.
+- 후보 명부/여론조사/연방 IE/주지사 주별 IE의 관측·조사 없음·보류·출처 장애·미지원 구분. 결측을 0이나 승패로 만들지 않는다.
+- 변경한 입력 경로·임시 재생성 위치·타주/원래 날짜/`house_poll_focus` 보존 검사·검사 결과.
+- 실제 완료와 남은 장애, 다음 주의 기존 순서 및 현재 담당 여부, 병합/배포 여부.
+
+신규 API 키·유료 권한이 필요하면 그 수집만 멈추고 사용자에게 요청한다. 키를 메시지·문서·커밋·예약에 복사하지 않는다. 재설정 기능은 사용자만 직접 클릭한다. 이번 주 완료가 다른 주의 자동 시작이나 병합·배포 승인을 뜻하지 않는다.
 
 ## 검토 목록 로딩
 

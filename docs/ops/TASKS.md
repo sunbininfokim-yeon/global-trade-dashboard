@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| ELECTION-RESEARCH-RULES-20261011 | 이후 주별 조사·다른 세션 공통 규칙 및 범위 검사 | codex | AGENTS/CLAUDE·시작 프롬프트·선거 입력 규칙·state scope 검사/tests·기존 polling workflow의 PR 경로·정확한 한 파일 소유권 예외 | `codex/election-research-rules-20261011` | review | 사용자 10/11 요청. 공용 기반 #524 의존, 주별 PR 스택·타주 혼입·공용 산출물 동반 변경 차단. 신규 조사/생성물 커밋·UI/deploy.yml·병합/배포 없음. 검증/세션 전달은 전용 인수 문서. |
 | ELECTION-B-FOUNDATION-20261011 | #518 이후 AK·KS 입력 전환 기반과 기존 PR/JS 감사 | codex | election_watch 공용 RCV/원문/공시 CLI·어댑터·projection 및 tests, 인수 문서 | `codex/election-b-foundation-20261011` | review | 주별 입력은 독립 PR. polling412·finance68·federal6·JS51, 위원회/메일링68 통과. 전국 생성물/workflow/UI/LETF·병합·배포 제외. NE 중지 보존. |
 | ELECTION-STATE-INTEGRATION-20261010 | 선거 주별 스택·일일 게시 반복 충돌 방지와 A 통합 | codex | 주별 입력·오프라인 재생성·공용 로더·게시 재시도·검사·인수 문서; 기존 polling workflow 한 개 | `codex/election-state-integration-20261010` | review | NE 중지·보존. A CT/AL/NJ/NM/NH 입력 분리, 전국 생성물 PR 제외. polling 405·finance 68·federal 6·JS 51·ops 10 및 deploy-chain 39 통과. B AK/KS는 A main 반영 후. deploy.yml/UI/LETF 변경·병합·배포·workflow dispatch 없음. |
 | COMMODITY-MONTHLY-20261007 | 월별 총계 선택·갱신·Cloudflare 관세청 키 연결·최신성 감시 | codex | commodity_trade 수집·검증·데이터, `_worker.js` 월별 조회/보호 중계, 전용 refresh/watchdog workflow, 소유권 scope tests·인수 문서 | `codex/commodity-monthly-automation` | review | 사용자 2026-10-07 진행 지시. Worker·전용 workflow 2개만 정확한 브랜치 예외. UI·wrangler·공용 deploy 변경 금지. 병합/배포 미실행, 중계 토큰 설정 및 운영 한국 호출은 인수 후 검증. |
