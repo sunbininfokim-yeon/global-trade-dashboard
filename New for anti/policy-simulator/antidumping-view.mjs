@@ -70,12 +70,28 @@ function inputGuide() {
 function processStepsMarkup(steps, guide = false) {
   return `<ol class="ts-ad-steps">${steps.map(s => `<li data-ad-stage="${s.id}" data-state="${s.state || 'guide'}"><details><summary><i aria-hidden="true"></i><span><b>${esc(s.label)}</b><small>${esc(s.agency)}</small><em>${s.event ? `${s.event.date || '날짜 미수록'} · ${s.state === 'latest' ? '수록 최신 근거' : '확인됨'}` : guide ? '일반 절차 안내' : '진행 근거 미확인'}</em></span></summary><p>${esc(s.description)}</p>${s.event ? `<p>${esc(s.event.note)}</p><p>${link(s.event.document)}</p>` : ''}<p>${link(AD_PROCESS_SOURCES[s.source])}</p></details></li>`).join('')}</ol>`;
 }
+function processSelection() {
+  const c = selectedCase(), manual = draft.reference_mode === 'manual';
+  const company = c.companies.find(x => x.id === draft.company_id);
+  const labels = { 'A-580-867': '변압기', 'A-580-908': '타이어' };
+  return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">
+    <fieldset><legend>1. 산업 · 품목 선택</legend><div class="ts-ad-industries">${catalog.cases.map(x => `<button type="button" data-ad-case="${x.case_id}" aria-label="${esc(labels[x.case_id] || x.product)}" aria-pressed="${x.case_id === c.case_id}">${esc(labels[x.case_id] || x.product)}<small>${esc(x.product)}</small></button>`).join('')}</div></fieldset>
+    <fieldset><legend>2. 기업 선택 <span>${c.companies.length}개 기업</span></legend><div class="ts-ad-companies">${c.companies.map(x => {
+      let reference;
+      try { reference = lookupAD({ ...draft, reference_mode: 'published', company_id: x.id }); } catch { reference = { rate_pct: null }; }
+      return `<button type="button" data-ad-company="${x.id}" aria-label="${esc(x.name)}" aria-pressed="${!manual && x.id === draft.company_id}"><b>${esc(x.name)}</b><small>공표 참고율 ${reference.rate_pct == null ? '미확인' : `${fmt(reference.rate_pct)}%`}</small></button>`;
+    }).join('')}</div></fieldset>
+    <p class="ts-ad-selection-context" role="status">${manual ? '다른 사건·기업 직접 입력 중 · 위 기업을 누르면 등록된 공식 공고로 전환합니다.' : `선택: ${esc(c.product)} → <b>${esc(company?.name || '목록에 없는 법인 · 미확인')}</b> · ${esc(c.case_id)}`}</p>
+    <p class="ts-help">한국산 제품의 수록 사건입니다. 기업을 누르면 아래 단계·공표 참고율·계산 입력이 함께 바뀝니다. 참고율은 통관 가정일 ${esc(draft.entry_date)} 기준 선별 공고 값이며, 최신 재심의 진행 단계와는 별개입니다.</p>
+  </div>`;
+}
 function processMarkup() {
   const c = selectedCase(), records = reviewRecords(draft.case_id, draft.company_id);
   const record = records.find(r => r.id === processRecordId) || records[0];
   processRecordId = record?.id || '';
   const progress = record ? reviewProgress(draft.case_id, record.id) : null, manual = draft.reference_mode === 'manual';
   return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>누가 결정하고, 어디까지 진행됐나요?</h2><span>공식 자료 확인 ${catalog.checked_on}</span></div>
+    ${processSelection()}
     <div class="ts-ad-roles"><p><b>상무부</b><span>덤핑 여부·마진과 재심 결과</span></p><p><b>USITC</b><span>신규 조사 등의 미국 산업피해</span></p><p><b>CBP · 세관</b><span>예치금 수납·수입 건별 관세 정산</span></p><p><b>CIT · 항소법원</b><span>행정판단의 적법성 심사</span></p></div>
     <p class="ts-help">예치금은 최종 세금이 아닙니다. 재심·적용되는 법원 판단과 세관 정산에 따라 추가 납부 또는 환급이 생길 수 있습니다. 소송에서 졌다고 예치금 전액이 그대로 최종 관세가 되는 구조는 아닙니다.</p>
     ${!manual && progress ? `<label class="ts-ad-process-picker">진행을 볼 재심 대상 기간<select data-ad-process-record aria-label="진행을 볼 재심 대상 기간">${records.map(r => `<option value="${r.id}"${r.id === record.id ? ' selected' : ''}>${r.por_start} ~ ${r.por_end}${r.id === records[0].id ? ' · 수록 최신 기간' : ''}</option>`).join('')}</select></label><p class="ts-help">${esc(c.case_id)} · ${esc(c.product)} · 이 기간의 사건 진행 표시입니다. 위 통관일의 예치 참고율과 별개이며, 기간을 바꿔도 계산 세율은 바뀌지 않습니다. 기업별 재심 취소·후속 정정 등 미수록 변경은 추가 확인이 필요합니다.</p><div class="ts-ad-legend"><span>● 확인됨</span><span>● 수록 최신 근거</span><span>○ 미확인</span></div>${processStepsMarkup(progress.stages)}
@@ -114,11 +130,20 @@ export function mountAntidumping(root) {
   const controller = new AbortController(), signal = controller.signal;
   const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
-  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); };
+  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('.ts-ad-selection').outerHTML = processSelection(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };
   const syncExample = () => {
     example = createADExample(draft);
     for (const key of AD_GUIDE_FIELDS) if (key !== 'entry_date' && !editedFields.has(key)) draft[key] = example.values[key];
+  };
+  const chooseContext = (caseId, companyId) => {
+    const c = catalog.cases.find(x => x.case_id === caseId);
+    if (!c?.companies.some(x => x.id === companyId)) return;
+    const changedCase = draft.case_id !== caseId;
+    if (!changedCase && draft.reference_mode === 'published' && draft.company_id === companyId) return;
+    draft.reference_mode = 'published'; draft.case_id = caseId; draft.company_id = companyId;
+    if (changedCase) { processRecordId = ''; methodSegment = c.segments.at(-1).document_id; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); }
+    unconfirm(); syncExample(); dirty = true; paint();
   };
   root.addEventListener('input', event => {
     const el = event.target;
@@ -151,7 +176,18 @@ export function mountAntidumping(root) {
   }, { signal });
   root.addEventListener('click', event => {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
-    if (el.hasAttribute('data-ad-reset')) { draft = initial(); example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
+    if (el.hasAttribute('data-ad-case')) {
+      const caseId = el.dataset.adCase, c = catalog.cases.find(x => x.case_id === caseId);
+      if (!c) return;
+      chooseContext(caseId, caseId === draft.case_id && c.companies.some(x => x.id === draft.company_id) ? draft.company_id : c.companies[0].id);
+      root.querySelector(`[data-ad-case="${caseId}"]`).focus({ preventScroll: true });
+    }
+    else if (el.hasAttribute('data-ad-company')) {
+      const companyId = el.dataset.adCompany;
+      chooseContext(draft.case_id, companyId);
+      root.querySelector(`[data-ad-company="${companyId}"]`).focus({ preventScroll: true });
+    }
+    else if (el.hasAttribute('data-ad-reset')) { draft = initial(); example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
     else if (el.hasAttribute('data-ad-example')) { draft.entry_date = catalog.checked_on; example = createADExample(draft); Object.assign(draft, example.values); editedFields = new Set(); unconfirm(); dirty = true; paint(); }
     else if (el.hasAttribute('data-ad-days')) { draft.holding_days = el.dataset.adDays; editedFields.add('holding_days'); root.querySelector('[data-ad-key="holding_days"]').value = draft.holding_days; clear(); }
     else if (el.hasAttribute('data-ad-add') || el.hasAttribute('data-ad-remove')) { if (el.hasAttribute('data-ad-add') && methodRows.length < 30) methodRows.push({ name: '', margin_pct: '', weight: '', entirely_facts_available: false }); else if (el.hasAttribute('data-ad-remove') && methodRows.length > 1) methodRows.splice(Number(el.dataset.adRemove), 1); methodResult = null; root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
