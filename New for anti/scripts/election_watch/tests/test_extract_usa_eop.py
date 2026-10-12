@@ -111,6 +111,12 @@ class ExtractUsaEopTests(unittest.TestCase):
         )
         self.assertTrue(all(url.startswith("http") for url in CABINET_OFFICIAL_URLS.values()))
 
+    def test_cabinet_url_survives_name_spelling_change(self):
+        self.assertEqual(
+            CABINET_OFFICIAL_URLS["Keith Sonderling"],
+            CABINET_OFFICIAL_URLS["Keith E. Sonderling"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
