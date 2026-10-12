@@ -161,4 +161,4 @@ git push -u origin codex/country-tariff-simulator-20261011
 - OCTG2026-19529 POR2023-09~2024-08의 SeAH9.80/NEXTEEL29.94 최종마진 표만 표시. simple-average cash 문구와 개별표 대응은 추가 지침 확인 필요, 예치율null·기존강관0.80 미상속. 유압실린더2026-18706/19374는 실제제품 범위와 기업 대상확정 없이 원문 연결. 기존5계산사건/33법인 유지.
 - 3탭 접힌 공식자료 확인 결과·작은 설명·원문·확인일, 국가/기업 JSON product_verification 추가. 미수집 공급국 통계는 JSON 출처·연도null 수정. 자동수집·현재율확정 아님.
 - Node89·소유권7·브라우저4(신규 검증/산업전수/AD선택/기업), 40프로필22품목·360px·15→30·null·원산지 격리 통과. docs/previews/automotive-verification-{desktop,mobile}.png 육안확인. 상세 docs/policy-product-verification-20261012.md(51건 수기목록 포함).
-- 같은 PR#528 후속, localhost33997 재시작. main병합·운영배포·DB·수집·메일·유료AI 호출 없음.
+- 같은 PR#528 후속, localhost:8773 미리보기 재시작. main병합·운영배포·DB·수집·메일·유료AI 호출 없음.
