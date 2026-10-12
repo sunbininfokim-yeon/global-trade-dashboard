@@ -58,3 +58,20 @@ test('every recorded event resolves to an official source and stays within evide
   }
   assert.match(AD_CATALOG.documents['ACCESS-4943770-02'].notes, /4943770-02/);
 });
+
+test('steel examples and POR progress keep preliminary zero separate from final deposit and unknown stages', () => {
+  for (const [case_id, company_id, rate] of [['A-580-883', 'posco-pic', '6.22'], ['A-580-897', 'seah', '5.80']]) {
+    const example = createADExample(context({ case_id, company_id }));
+    assert.equal(example.values.entered_value_usd, '100000'); assert.equal(example.values.scenario_rate_pct, rate);
+    assert.match(example.notes.entered_value_usd, /실제 거래가가 아닙니다/);
+  }
+  const newer = reviewProgress('A-580-897', 'welded-pipe-2024-25');
+  assert.equal(newer.latest_stage, 'preliminary'); assert.equal(newer.deposit, undefined);
+  assert.equal(newer.stages.find(x => x.id === 'final').state, 'unknown');
+  const older = reviewProgress('A-580-897', 'welded-pipe-2023-24');
+  assert.equal(older.latest_stage, 'final'); assert.equal(older.deposit.date, '2026-05-01');
+  assert.equal(older.stages.find(x => x.id === 'liquidation').state, 'unknown');
+  const steel = reviewProgress('A-580-883', 'hot-rolled-2023-24');
+  assert.equal(steel.stages.find(x => x.id === 'initiation').state, 'unknown');
+  assert.equal(steel.latest_stage, 'final');
+});

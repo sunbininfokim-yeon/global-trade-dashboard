@@ -30,6 +30,8 @@ export function companyCalibration(id) {
 export const COMPANY_INDUSTRIES = [
   { id: 'transformer', label: '변압기', product: 'transformer', description: '한국산 대형 전력용 변압기', case_id: 'A-580-867', profiles: ['ls-electric', 'hyosung'] },
   { id: 'tire', label: '타이어', product: 'tire', description: '한국산 승용차·경트럭 타이어', case_id: 'A-580-908', profiles: ['hankook'] },
+  { id: 'hot-rolled', label: '철강 · 열연강판', product: 'custom', description: '한국산 특정 열연 평판강 제품', case_id: 'A-580-883', profiles: [] },
+  { id: 'welded-pipe', label: '강관 · 대구경 용접강관', product: 'custom', description: '한국산 대구경 용접강관', case_id: 'A-580-897', profiles: [] },
   { id: 'cable', label: '전력 케이블', product: 'custom', description: '초고압·해저·산업용 전선', case_id: null, profiles: ['ls-cable', 'taihan'] },
   { id: 'switchgear', label: '차단기·배전기기', product: 'switchgear', description: '차단기·배전반 등 전력기기', case_id: null, profiles: ['ls-electric', 'hyosung'] },
   { id: 'vehicle', label: '자동차', product: 'vehicle', description: '대표 입력은 가솔린 승용차', case_id: null, profiles: ['kia'] },

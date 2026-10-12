@@ -3,6 +3,8 @@ import { lookupAD } from './antidumping-model.mjs';
 
 // Demonstration transaction totals, not estimated industry averages or company sales.
 export const AD_EXAMPLES = {
+  'A-580-883': { label: '철강 · 열연강판', value: '100000', note: '10만 USD의 열연강판 거래 총액 예시입니다. 산업 평균이나 현대제철·포스코의 실제 거래가가 아닙니다.' },
+  'A-580-897': { label: '강관 · 대구경 용접강관', value: '100000', note: '10만 USD의 강관 거래 총액 예시입니다. 강관 1개 가격·산업 평균·회사 실제 거래가가 아닙니다.' },
   'A-580-867': { label: '대형 전력용 변압기', value: '1000000', note: '100만 USD 규모의 거래를 비교하는 예시입니다. 변압기 1대의 평균 가격이나 효성·LS의 실제 거래가가 아닙니다.' },
   'A-580-908': { label: '승용차·경트럭 타이어', value: '100000', note: '10만 USD 규모의 여러 타이어 수입 거래를 비교하는 예시입니다. 타이어 1개 가격이나 한국타이어의 실제 거래가가 아닙니다.' },
 };
@@ -54,6 +56,18 @@ export const AD_PROCESS_SOURCES = {
 // Actual progress requires a sourced event for this case AND this review period.
 // Neither an event in another POR nor the passage of a deadline completes a stage.
 export const AD_REVIEW_RECORDS = [
+  { id: 'hot-rolled-2023-24', case_id: 'A-580-883', por_start: '2023-10-01', por_end: '2024-09-30', companies: ['hyundai-steel', 'posco-pic'],
+    events: [{ stage: 'preliminary', date: '2026-01-08', source: '2026-09707', note: '최종 공고 Background가 인용한 예비결과 발행일입니다.' },
+      { stage: 'final', date: '2026-05-14', source: '2026-09707', note: '현대제철 1.49%, POSCO/PIC 1.22% 최종결과. CBP 정산·법원 판단의 완료를 뜻하지 않습니다.' }],
+    deposit: { date: '2026-05-14', source: '2026-09707' } },
+  { id: 'welded-pipe-2024-25', case_id: 'A-580-897', por_start: '2024-05-01', por_end: '2025-04-30', companies: ['hyundai-pipe', 'seah'],
+    events: [{ stage: 'initiation', date: '2025-06-25', source: '2026-15399', note: '예비 공고 Background의 개시일 인용입니다.' },
+      { stage: 'selection', date: '2025-08-27', source: '2026-15399', note: '예비 공고 Background에서 현대스틸파이프·세아제강의 선정일을 확인했습니다.' },
+      { stage: 'preliminary', date: '2026-07-30', source: '2026-15399', note: '두 기업 모두 예비 마진 0%. 이전 POR의 최종 예치 참고율은 자동 변경하지 않습니다.' }] },
+  { id: 'welded-pipe-2023-24', case_id: 'A-580-897', por_start: '2023-05-01', por_end: '2024-04-30', companies: ['hyundai-pipe', 'seah'],
+    events: [{ stage: 'preliminary', date: '2025-08-29', source: '2026-08489', note: '최종 공고 Background가 인용한 예비결과 발행일입니다.' },
+      { stage: 'final', date: '2026-05-01', source: '2026-08489', note: '현대스틸파이프 0%, 세아제강 0.80% 최종결과. 실제 수입자별 관세 정산과 구분합니다.' }],
+    deposit: { date: '2026-05-01', source: '2026-08489' } },
   { id: 'lpt-2025-26', case_id: 'A-580-867', por_start: '2025-08-01', por_end: '2026-07-31', companies: ['hyundai', 'iljin', 'ls', 'hyosung'],
     events: [{ stage: 'initiation', date: '2026-10-01', source: '2026-20160', note: '이 공고에서 네 법인의 행정재심 개시를 확인했습니다. 새 예치율이나 개별조사 선정 결과가 아닙니다.' }] },
   { id: 'lpt-2023-24', case_id: 'A-580-867', por_start: '2023-08-01', por_end: '2024-07-31', companies: ['hyundai', 'iljin', 'ls', 'hyosung'],

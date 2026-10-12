@@ -13,7 +13,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     const picker = page.locator('.ts-ad-selection');
     const company = id => picker.locator(`[data-ad-company="${id}"]`);
     await page.goto(`${base}/policy/us/simulator`); await click('반덤핑');
-    assert.equal(await picker.locator('[data-ad-case], [data-ad-industry]').count(), 6);
+    assert.equal(await picker.locator('[data-ad-case], [data-ad-industry]').count(), 8);
     assert.equal(await picker.locator('[data-ad-company]').count(), 4);
     assert.ok(await picker.evaluate(el => el.compareDocumentPosition(document.querySelector('[data-ad-editor]')) & Node.DOCUMENT_POSITION_FOLLOWING));
     for (const [id, name, rate] of [['hyundai', 'HD현대일렉트릭', '0%'], ['iljin', '일진전기', '0%'], ['ls', 'LS일렉트릭', '4.32%'], ['hyosung', '효성중공업', '4.32%']]) {
@@ -64,6 +64,39 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await field('통관일').inputValue(), '');
     assert.match(await company('iljin').innerText(), /미확인/);
     await click('이 품목의 예시값 채우기'); await click('효성중공업');
+    // Newly sourced cases must work through the actual selector/calculation path.
+    for (const [industry, caseId, recordId, companies] of [
+      ['철강 · 열연강판', 'A-580-883', 'hot-rolled-2023-24', [['현대제철', 'hyundai-steel', '1.49%'], ['포스코·포스코인터내셔널', 'posco-pic', '1.22%']]],
+      ['강관 · 대구경 용접강관', 'A-580-897', 'welded-pipe-2024-25', [['현대스틸파이프', 'hyundai-pipe', '0%'], ['세아제강', 'seah', '0.8%']]],
+    ]) {
+      await click(industry);
+      assert.equal(await field('반덤핑 사건').inputValue(), caseId);
+      assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), recordId);
+      assert.equal(await picker.locator('[data-ad-company]').count(), 2);
+      for (const [name, id, rate] of companies) {
+        await click(name);
+        assert.equal(await field('반덤핑 기업').inputValue(), id);
+        assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), rate);
+        assert.ok(await company(id).evaluate(el => document.activeElement === el));
+      }
+      await click('이 품목의 예시값 채우기');
+      await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check();
+      await click('AD 예치 부담 계산');
+      assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장', exact: true }).isEnabled());
+    }
+    assert.equal(await page.locator('[data-ad-stage="preliminary"]').getAttribute('data-state'), 'latest');
+    assert.equal(await page.locator('[data-ad-stage="final"]').getAttribute('data-state'), 'unknown');
+    assert.match(await page.locator('[data-ad-calculated]').innerText(), /800\.00/);
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-2023-24');
+    assert.equal(await page.locator('[data-ad-stage="final"]').getAttribute('data-state'), 'latest');
+    assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '0.8%');
+    await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-steel-desktop.png' });
+    await page.setViewportSize({ width: 360, height: 844 });
+    for (const industry of ['철강 · 열연강판', '강관 · 대구경 용접강관']) {
+      await click(industry); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }
+    await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-steel-mobile.png' });
+    await page.setViewportSize({ width: 1440, height: 1080 });
     // An expanded industry is not a new verified AD case. No inherited rate,
     // history, process lamps or calculated result may survive that boundary.
     for (const [industry, names] of [
@@ -124,6 +157,6 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.ok(await company('hyosung').evaluate(el => document.activeElement === el));
     await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-selection-mobile.png' });
     assert.deepEqual(errors, []); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
-    console.log('PASS: six industry groups; four transformer/three tire companies; expanded company discovery without inherited AD rates, history or stages; company/product handoff and cable HTS isolation; bidirectional selectors; POR isolation; preserved edits and stale results; manual and empty-date recovery; focus; 360px; no external calls.');
+    console.log('PASS: eight industry groups; four transformer/three tire/four steel company groups; official final/preliminary separation and new calculations; expanded company discovery without inherited AD rates, history or stages; company/product handoff and cable HTS isolation; bidirectional selectors; POR isolation; preserved edits and stale results; manual and empty-date recovery; focus; 360px; no external calls.');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

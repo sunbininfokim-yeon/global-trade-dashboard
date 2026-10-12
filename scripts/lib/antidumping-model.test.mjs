@@ -7,7 +7,7 @@ import { simulateCompany } from '../../New for anti/policy-simulator/company-mod
 const lookup = (company_id = 'ls', entry_date = '2026-10-11', case_id = 'A-580-867') => lookupAD({ company_id, entry_date, case_id });
 const scenario = extra => ({ case_id: 'A-580-867', company_id: 'ls', entry_date: '2026-10-11', entered_value_usd: '1000000', scenario_rate_pct: '16.87', annual_finance_pct: '5', holding_days: '180', scope_confirmed: true, identity_confirmed: true, ...extra });
 test('curated catalog has unique official document and company keys; only final notices have effective deposit rates', () => {
-  const ids = new Set(); assert.equal(AD_CATALOG.cases.length, 2);
+  const ids = new Set(); assert.equal(AD_CATALOG.cases.length, 4);
   for (const c of AD_CATALOG.cases) {
     assert.equal(new Set(c.companies.map(x => x.id)).size, c.companies.length);
     for (const s of c.segments) {
@@ -91,4 +91,33 @@ test('real financial context is serialized but cannot substitute for missing pro
   const p = { company: '효성중공업', origin: 'KOR', product: 'transformer', policy_confirmed: true, price: 100, quantity: 10000, cost: 70, fixed_cost: 100000, cost_change_pct: 0, tariff_before: 15, tariff_after: 15, absorption_pct: 50, price_elasticity: 2, locked_share_pct: 0, competitor_change_pct: 0, market_change_pct: 0, calibration: companyCalibration('hyosung') };
   const r = simulateCompany(p); assert.equal(r.profit_after, 200000); assert.equal(r.inputs.calibration.public_company_context.financial.revenue, 5968512);
   assert.throws(() => simulateCompany({ ...p, cost: '' }));
+});
+
+test('steel references respect final effective dates, case-specific identity and later preliminary results', () => {
+  for (const [caseId, id, rate, effective, previous] of [
+    ['A-580-883', 'hyundai-steel', '1.49', '2026-05-14', '2026-05-13'],
+    ['A-580-883', 'posco-pic', '1.22', '2026-05-14', '2026-05-13'],
+    ['A-580-897', 'hyundai-pipe', '0', '2026-05-01', '2026-04-30'],
+    ['A-580-897', 'seah', '0.80', '2026-05-01', '2026-04-30'],
+  ]) {
+    assert.equal(lookup(id, previous, caseId).rate_pct, null);
+    assert.equal(lookup(id, effective, caseId).rate_pct, rate);
+    assert.equal(lookup(id, '2026-10-11', caseId).rate_pct, rate);
+    assert.equal(lookup('unknown', effective, caseId).rate_pct, null);
+    assert.equal(lookup(id, '2026-10-12', caseId).rate_pct, null);
+  }
+  const seah = lookup('seah', '2026-07-30', 'A-580-897');
+  assert.equal(seah.rate_pct, '0.80'); assert.equal(seah.document.document_id, '2026-08489');
+  assert.equal(lookup('hyundai-steel', '2026-10-11', 'A-580-897').rate_pct, null);
+  assert.equal(lookup('hyundai-pipe', '2026-10-11', 'A-580-883').rate_pct, null);
+  assert.equal(lookup('POSCO Holdings', '2026-10-11', 'A-580-883').rate_pct, null);
+  assert.equal(AD_CATALOG.documents['2026-09707'].verified_on, '2026-10-12');
+  assert.equal(AD_CATALOG.documents['2026-16663'].verified_on, '2026-10-11');
+});
+test('steel deposit scenarios retain only the selected AD burden, including a published zero', () => {
+  const seah = simulateDeposit(scenario({ case_id: 'A-580-897', company_id: 'seah', entered_value_usd: '100000', scenario_rate_pct: '5.80' }));
+  assert.equal(seah.reference_deposit_usd, '800.00'); assert.equal(seah.scenario_deposit_usd, '5800.00');
+  assert.equal(seah.reference.company.official_name, 'SeAH Steel Corporation');
+  assert.equal(simulateDeposit(scenario({ case_id: 'A-580-897', company_id: 'hyundai-pipe' })).reference_deposit_usd, '0.00');
+  assert.match(seah.limitations.join(' '), /CVD/);
 });
