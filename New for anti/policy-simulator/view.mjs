@@ -17,7 +17,7 @@ let stylePromise;
 export function prepare() {
   if (!stylePromise) stylePromise = new Promise((resolve, reject) => {
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=4', import.meta.url).href;
+    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=5', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('시뮬레이터 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -77,7 +77,7 @@ function editor() {
       <label class="ts-wide">구매액 기준 연도·기간<input data-key="period" aria-label="구매액 기준 연도·기간" value="${esc(draft.period)}" maxlength="80" required><small>구매액을 집계한 기간입니다. 관세 검토일과 다를 수 있습니다.</small></label>
     </div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>
-    <div class="ts-section-label"><h3>시장과 공급국</h3><span>구매액 단위: 백만 달러</span></div>
+    <div class="ts-section-label"><h3>시장·공급국</h3><span>구매액 단위: 백만 달러</span></div>
     <p class="ts-help" data-purchase-help>기준 구매액은 관세 변경 전 기준 기간에 미국 구매자가 각 공급국의 해당 품목에 쓴 관세 포함 금액입니다. 한국 행의 25는 2,500만 달러입니다. 미국 행에는 미국산 제품 구매액을 넣습니다.</p>
     <div class="ts-scroll"><table class="ts-input-table"><caption class="ts-sr">같은 품목·기간·관세 포함 구매액을 입력하세요.</caption>
       <thead><tr><th>공급국</th><th>기준 구매액</th><th>공급탄력성</th><th><span class="ts-sr">제거</span></th></tr></thead>
@@ -95,7 +95,7 @@ function editor() {
       <small>HS6 범위의 실제 수입 공급국입니다. 대표 HTS보다 범위가 넓을 수 있으며, 기업 소재지·제조지 순위와는 다릅니다.</small></div>` : ''}
     <button type="button" class="ts-text-button" data-add${draft.rows.length >= 8 ? ' disabled' : ''}>+ 다른 공급국 추가 <span>최대 8개</span></button>
     <p class="ts-help">구매액·공급탄력성은 가상 초기값입니다. 국가 추가 시 구매액은 비워 둡니다. 기타국 합계에서 새 국가를 빼서 중복을 피하세요. 미국 국내 공급은 수입 통계에 포함되지 않습니다.</p>
-    <div class="ts-section-label"><h3>현행 관세와 비교 시나리오</h3><span>${POLICY_AS_OF} 검토 스냅샷</span></div>
+    <div class="ts-section-label"><h3>현행 관세·비교 시나리오</h3><span>${POLICY_AS_OF} 검토 스냅샷</span></div>
     <p class="ts-help">현재 제도의 조건별 조합입니다. 품목·원산지·소재 요건이 바뀌어야 적용되는 경로도 있습니다. 임의의 새 관세율은 ‘직접 입력’을 선택하세요.</p>
     ${draft.rows.map(tariffEditor).join('')}
     <label class="ts-confirm"><input type="checkbox" data-key="policy_confirmed" aria-label="관세 적용 조건 확인" required${draft.policy_confirmed ? ' checked' : ''}>선택한 양쪽 관세의 HTS·원산지·예외·별도 추가세 조건에 맞는 거래를 비교합니다.</label>
@@ -116,10 +116,10 @@ function editor() {
 }
 
 function results() {
-  if (!result) return `<div class="ts-empty-result"><span class="ts-eyebrow">관세 조건을 확인하고 계산하세요</span><h2>현행 관세를 기준으로 비교합니다</h2><p>먼저 왼쪽에서 품목·공급국과 관세 조합을 선택하세요. 직접 입력은 선택했을 때만 열립니다.</p><p>시작 구매액은 가상값이며, 현재 관세 유지끼리 비교하면 변화는 0입니다.</p></div>`;
+  if (!result) return `<div class="ts-empty-result"><span class="ts-eyebrow">계산 전 · 관세 조건 확인</span><h2>국가별 영향 비교</h2><p>먼저 왼쪽에서 품목·공급국과 관세 조합을 선택하세요. 직접 입력은 선택했을 때만 열립니다.</p><p>시작 구매액은 가상값이며, 현재 관세 유지끼리 비교하면 변화는 0입니다.</p></div>`;
   const r = result, focus = r.rows.find(row => row.country === r.inputs.focus);
   const country = name(focus.country), input = r.inputs.rows.find(row => row.country === focus.country);
-  return `<div class="ts-result-heading"><div><span class="ts-eyebrow">조건부 시뮬레이션 · 가정값</span><h2>${esc(country)} 공급에 미치는 영향</h2>
+  return `<div class="ts-result-heading"><div><span class="ts-eyebrow">조건부 시뮬레이션 · 가정값</span><h2>${esc(country)} 공급 변화</h2>
     <p>${esc(PRODUCTS[r.inputs.product]?.label || r.inputs.product)} · ${esc(r.inputs.period)} · 관세 ${fmt(input.tariff_before, 1)}% → ${fmt(input.tariff_after, 1)}%</p></div>
     <button type="button" class="ts-export" data-export${dirty ? ' disabled' : ''}>결과 JSON 저장</button></div>
     <p class="ts-stale" data-stale role="status"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 아래는 이전 계산 결과입니다. 다시 계산하세요.</p>
@@ -129,7 +129,7 @@ function results() {
         <div><span>${esc(country)} 공급자 매출</span><strong>${signed(focus.revenue_change_pct)}<small>%</small></strong><small>관세 제외 · 기업 이익 아님</small></div>
         <div><span>미국 시장 가격지수</span><strong>${signed(r.market_price_change_pct)}<small>%</small></strong><small>해당 품목의 구매가격</small></div>
       </div>
-      <section class="ts-result-block"><div class="ts-section-label"><h3>공급은 어디로 이동하나요?</h3><span>국가별 판매량 변화</span></div>
+      <section class="ts-result-block"><div class="ts-section-label"><h3>공급국별 물량 변화</h3><span>국가별 판매량 변화</span></div>
         <div class="ts-bars">${r.rows.map(row => {
           const change = row.volume_change_pct, max = Math.max(1, ...r.rows.map(x => Math.abs(x.volume_change_pct)));
           return `<div class="ts-bar-row"><span>${esc(name(row.country))}</span><div class="ts-bar-track"><span class="ts-zero"></span><i class="${change < 0 ? 'ts-negative' : 'ts-positive'}" style="width:${Math.abs(change) / max * 48}%;${change < 0 ? `right:50%` : 'left:50%'}"></i></div><b>${signed(change)}%</b></div>`;
@@ -144,12 +144,12 @@ function results() {
           <td>${fmt(row.revenue_before)} → ${fmt(row.revenue_after)}</td></tr>`).join('')}</tbody></table></div>
         <p class="ts-help">생산자가격은 관세를 제외한 가격입니다. 수출자가 가격을 낮춰 관세 부담 일부를 흡수할 수 있습니다.</p>
       </section>
-      <section class="ts-result-block"><div class="ts-section-label"><h3>다른 가정이면 얼마나 달라지나요?</h3><span>대체탄력성만 변경</span></div>
+      <section class="ts-result-block"><div class="ts-section-label"><h3>대체탄력성별 민감도</h3><span>대체탄력성만 변경</span></div>
         <div class="ts-sensitivity">${r.sensitivity.map(s => `<div${s.sigma === r.inputs.sigma ? ' class="is-selected"' : ''}><span>σ = ${fmt(s.sigma, 1)}${s.sigma === r.inputs.sigma ? ' · 입력값' : ''}</span>
           ${s.status === 'calculated' ? `<strong>${signed(s.volume_change_pct)}%</strong><small>${esc(country)} 판매량</small>` : '<strong>계산 불가</strong>'}</div>`).join('')}</div>
         <p class="ts-help">가능한 가정을 비교한 값입니다. 발생 확률이나 통계적 신뢰구간이 아닙니다.</p>
       </section>
-      <details class="ts-explainer ts-market-totals"><summary>미국 전체 품목시장·관세수입 보기</summary>
+      <details class="ts-explainer ts-market-totals"><summary>미국 품목시장·관세수입</summary>
         <dl><div><dt>CES 집계 수량지수 변화</dt><dd>${signed(r.market_quantity_change_pct)}%</dd></div>
           <div><dt>관세 포함 전체 구매액</dt><dd>${fmt(r.spending_before)} → ${fmt(r.spending_after)} 백만 달러</dd></div>
           <div><dt>미국 관세수입</dt><dd>${fmt(r.duties_before)} → ${fmt(r.duties_after)} 백만 달러</dd></div></dl>
@@ -160,11 +160,19 @@ function results() {
 
 function countryMarkup() {
   return `<div data-country-simulator>
-    <div class="ts-intro"><div><span class="ts-eyebrow">미국 수입시장 · 국가별 공급 반응</span><h1>관세가 바뀌면, 공급은 어디로 이동할까요?</h1>
+    <div class="ts-intro"><div><span class="ts-eyebrow">미국 수입시장 · 국가별 공급 반응</span><h1>국가별 관세 영향</h1>
       <p>같은 품목을 공급하는 국가들의 가격·판매량·점유율을 비교합니다.</p></div><span class="ts-badge">구매액은 가상 초기값</span></div>
     <p class="ts-model-source">모형 근거: <a href="${SOURCES[0].url}" target="_blank" rel="noopener noreferrer">USITC CES Tariff Model</a> · <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">Riker & Schreiber (2020) §2.1</a>의 국가별 부분균형 구조를 참고했습니다.</p>
+    <details class="ts-explainer ts-logic"><summary>계산 원리·용어</summary>
+      <p class="ts-logic-flow">관세 변화 → 구매가격 변화 → 공급국 전환·시장 수요 변화 → 가격·판매량 비교</p>
+      <dl><div><dt>계산 대상</dt><dd>미국의 한 품목시장입니다. 공급국별 수요와 공급이 같아지는 가격을 구합니다. 국가 경제 전체의 전망은 아닙니다.</dd></div>
+      <div><dt>대체탄력성 σ</dt><dd>상대가격이 바뀔 때 다른 공급국 제품으로 구매를 옮기는 정도입니다. 클수록 쉽게 전환합니다.</dd></div>
+      <div><dt>시장 수요탄력성 η</dt><dd>이 품목의 시장 가격이 바뀔 때 전체 수요가 변하는 정도입니다. 음수이며, 절댓값이 클수록 수요 반응이 큽니다.</dd></div>
+      <div><dt>공급탄력성</dt><dd>생산자가 받는 가격이 바뀔 때 공급량이 반응하는 정도입니다. 초기값은 실측치가 아닌 학습용 가정입니다.</dd></div></dl>
+      <p><a href="${SOURCES[0].url}" target="_blank" rel="noopener noreferrer">USITC 모형 소개·Excel 원본 ↗</a> · <a href="${SOURCES[1].url}" target="_blank" rel="noopener noreferrer">계산 구조 원문 §2.1 ↗</a>. 이 화면은 해당 구조를 참고한 자체 계산이며, 공식 전망이나 Excel 실행 결과가 아닙니다.</p>
+    </details>
     <div class="ts-basis"><strong>현행 정책 조건 + 사용자 시장 가정</strong> 관세는 ${POLICY_AS_OF}의 제한된 검토 스냅샷입니다. 자동 갱신되지 않습니다. 국가 GDP가 아닌 미국 단일 품목시장을 계산합니다.</div>
-    <div class="ts-layout"><section class="ts-editor" aria-label="시나리오 입력"><div class="ts-panel-title"><span>01</span><h2>비교할 시장을 설정하세요</h2></div><div data-editor>${editor()}</div></section>
+    <div class="ts-layout"><section class="ts-editor" aria-label="시나리오 입력"><div class="ts-panel-title"><span>01</span><h2>시장·관세 조건</h2></div><div data-editor>${editor()}</div></section>
       <section class="ts-results" data-results aria-label="시나리오 계산 결과">${results()}</section></div>
     <footer class="ts-footer"><details><summary>모형 근거와 계산 범위</summary><p>USITC 연구진의 비중첩 CES 부분균형 모형(2020, §2.1)을 참고했습니다. 공급국별 수요와 공급이 같아지는 가격을 직접 계산하며, 공식 USITC 전망이나 Excel 실행 결과가 아닙니다.</p>
       <p>완전경쟁·고정된 공급국 구성·동일 품목·기간을 가정합니다. 신규 진입, 생산능력 한도, 환율, 보복관세, 제3국 재판매, 공급망 연쇄효과, GDP·고용, 기업 이익과 AD/CVD 법적 세율은 계산하지 않습니다.</p>

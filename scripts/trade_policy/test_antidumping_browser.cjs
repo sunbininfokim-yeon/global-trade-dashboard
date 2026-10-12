@@ -14,7 +14,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     const confirm = async () => { await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check(); };
     const json = async () => { const promise = page.waitForEvent('download'); await tab('반덤핑 JSON 저장'); return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8')); };
     await page.goto(`${base}/policy/us/simulator`); await tab('반덤핑');
-    await page.getByRole('heading', { name: '반덤핑 예치금과 재심 결과를 비교하세요' }).waitFor();
+    await page.getByRole('heading', { name: '반덤핑 예치 부담·재심 현황' }).waitFor();
     assert.match(await page.locator('[data-ad-reference]').innerText(), /4.32%/);
     assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '1000000');
     await field('대상 수입 신고가격 · USD').fill('');
@@ -47,7 +47,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
       await field('실제 기업 선택').selectOption(id); assert.equal(await field('기업 이름').inputValue(), name); assert.equal(await field('기업 기준 통관 단가').inputValue(), ''); assert.equal(await field('기업 단위 변동원가').inputValue(), ''); assert.equal(await field('기업 제품 원산지').inputValue(), ''); assert.match(await page.locator('[data-company-public]').innerText(), /2025 매출/); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     }
     assert.match(await page.locator('[data-company-public]').innerText(), /타이어 사업부/);
-    await tab('이 기업의 반덤핑 사건 보기 →'); assert.equal(await field('반덤핑 사건').inputValue(), 'A-580-908'); assert.equal(await field('반덤핑 기업').inputValue(), 'hankook'); assert.ok(!(await field('AD 제품 범위 확인').isChecked()));
+    await tab('반덤핑 사건 확인 →'); assert.equal(await field('반덤핑 사건').inputValue(), 'A-580-908'); assert.equal(await field('반덤핑 기업').inputValue(), 'hankook'); assert.ok(!(await field('AD 제품 범위 확인').isChecked()));
     await tab('기업'); await field('실제 기업 선택').selectOption('ls-electric');
     assert.equal(await field('기업 분석 품목').inputValue(), 'transformer');
     const lsPanel = await page.locator('[data-company-public]').innerText();
@@ -56,13 +56,13 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.screenshot({ path: '/tmp/company-ls-electric-mobile.png' });
     await page.setViewportSize({ width: 1440, height: 1080 });
     await page.screenshot({ path: '/tmp/company-ls-electric-desktop.png' });
-    await tab('이 기업의 반덤핑 사건 보기 →');
+    await tab('반덤핑 사건 확인 →');
     assert.equal(await field('반덤핑 사건').inputValue(), 'A-580-867'); assert.equal(await field('반덤핑 기업').inputValue(), 'ls');
     assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '4.32%');
     assert.equal(await page.locator('[data-ad-company="ls"]').getAttribute('aria-pressed'), 'true');
     await page.setViewportSize({ width: 360, height: 844 });
     await tab('기업'); await field('실제 기업 선택').selectOption('hyosung'); await page.screenshot({ path: '/tmp/company-real-mobile.png', fullPage: true }); await page.setViewportSize({ width: 1440, height: 1080 }); await page.screenshot({ path: '/tmp/company-real-desktop.png', fullPage: true });
-    await tab('이 기업의 반덤핑 사건 보기 →'); assert.equal(await field('반덤핑 기업').inputValue(), 'hyosung');
+    await tab('반덤핑 사건 확인 →'); assert.equal(await field('반덤핑 기업').inputValue(), 'hyosung');
     await tab('의회'); await tab('관세 시뮬레이터'); assert.equal(await page.locator('[data-ad-form]').count(), 1);
     assert.deepEqual(errors, []); assert.equal(requests.filter(u => new URL(u).pathname.startsWith('/api/') && !u.endsWith('/api/us/overview')).length, 0); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
     console.log('PASS: official AD cases/company/date boundaries; null vs zero; direct-reference source; exact deposit/finance JSON; non-selected all-zero/weights; escaped data; seven real company contexts/missing private data; LS Electric financial date and company→AD mapping; stale/focus; 360px; navigation cleanup; no external/API/AI calls.');

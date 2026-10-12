@@ -46,11 +46,11 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await stage('final').getAttribute('data-state'), 'unknown');
     await field('진행을 볼 재심 대상 기간').selectOption('tires-2023-24');
     assert.equal(await stage('final').getAttribute('data-state'), 'latest');
-    await button('이 품목의 예시값 채우기'); assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '100000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '18.03');
+    await button('품목 예시 적용'); assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '100000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '18.03');
     await field('반덤핑 기업').selectOption('nexen'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '13.02');
     await field('반덤핑 기업').selectOption('unknown'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '');
     assert.equal(await field('진행을 볼 재심 대상 기간').count(), 0); assert.match(await page.locator('[data-ad-process]').innerText(), /실제 진행 기록이 연결되지 않았습니다/);
-    await field('예치율 근거').selectOption('manual'); await button('이 품목의 예시값 채우기');
+    await field('예치율 근거').selectOption('manual'); await button('품목 예시 적용');
     assert.equal(await field('직접 확인한 AD 예치율 %').inputValue(), ''); assert.equal(await field('가정 AD 예치율 %').inputValue(), '');
     await button('AD 예치 부담 계산'); assert.ok(await field('AD 사건번호').evaluate(el => document.activeElement === el));
     await button('반덤핑 입력 초기화'); await confirm(); await button('AD 예치 부담 계산');

@@ -78,7 +78,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await extra.fill('0');
     await calculate(); await assertTarget('관세 적용 조건 확인');
     await field('관세 적용 조건 확인').check(); await calculate();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     assert.ok(await page.getByRole('button', { name: '결과 JSON 저장', exact: true }).isEnabled());
     await field('구매액 기준 연도·기간').fill('');
     await calculate(); await assertTarget('구매액 기준 연도·기간');

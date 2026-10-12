@@ -27,9 +27,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.getByLabel('한국 가정 관세', { exact: true }).fill('25');
     await page.getByLabel('관세 적용 조건 확인', { exact: true }).check();
     await page.getByRole('button', { name: '시나리오 계산', exact: false }).click();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     await page.getByRole('button', { name: '기업', exact: true }).click();
-    await page.getByRole('heading', { name: '관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?' }).waitFor();
+    await page.getByRole('heading', { name: '기업별 관세·손익 분석' }).waitFor();
     assert.equal(await page.getByLabel('기업 기준 통관 단가', { exact: true }).inputValue(), '');
     assert.match(await page.locator('[data-company-public]').innerText(), /효성중공업/);
     await fillProductScenario();
@@ -55,7 +55,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     assert.equal(await page.locator('[data-company-results] img').count(), 0);
     assert.match(await page.locator('[data-company-results] h2').innerText(), /<img src=x/);
     await page.getByRole('button', { name: '국가', exact: true }).click();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     assert.equal(await page.getByLabel('한국 가정 관세', { exact: true }).inputValue(), '25');
     await page.getByRole('button', { name: '기업', exact: true }).click();
     assert.equal(await page.getByLabel('기업 수출자 흡수율 %', { exact: true }).inputValue(), '100');
@@ -103,9 +103,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.getByRole('heading', { name: '가상 수출기업 · 제품 손익' }).waitFor();
     assert.equal(await page.locator('[data-company-form]').count(), 1);
     await page.reload();
-    await page.getByRole('heading', { name: '현행 관세를 기준으로 비교합니다' }).waitFor();
+    await page.getByRole('heading', { name: '국가별 영향 비교' }).waitFor();
     await page.getByRole('button', { name: '기업', exact: true }).click();
-    await page.getByRole('heading', { name: '관세 대응이 제품 손익에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '기업 제품별 손익 비교' }).waitFor();
     assert.equal(requests.filter(p => p.startsWith('/api/') && p !== '/api/us/overview').length, 0);
     assert.deepEqual(errors, []);
     console.log('PASS: company accounting/absorption; policy/manual inputs; stale/export; JSON provenance; escaped names; country proxy import/mismatch; tab state/cleanup; Congress/reload; 390/360px; no calculation API calls.');

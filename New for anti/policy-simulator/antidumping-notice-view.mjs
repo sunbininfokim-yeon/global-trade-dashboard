@@ -14,7 +14,7 @@ export function noticeReviewMarkup(snapshot, caseId) {
     const valid = /^\d{4}-\d{5}$/.test(n.document_id) && /^\d{4}-\d{2}-\d{2}$/.test(n.published);
     const href = valid ? `https://www.govinfo.gov/content/pkg/FR-${n.published}/html/${n.document_id}.htm` : null;
     const review = resolveNoticeReview(n, caseId);
-    const label = review ? `${review.disposition === 'applied_history' ? '진행·이력 반영' : review.disposition === 'held_conflict' ? '보류' : '안내 공고 확인'} · ${review.label}` : statuses[n.review_status] || '검토 필요';
+    const label = review?.disposition === 'held_conflict' ? review.label : review ? `${review.disposition === 'applied_history' ? '진행·이력 반영' : '안내 공고 확인'} · ${review.label}` : statuses[n.review_status] || '검토 필요';
     return `<li><span>${esc(n.published)} · ${esc(label)}</span><b>${esc(n.title)}</b>${review ? `<small>${esc(review.note)}${review.por_start ? ` · POR ${esc(review.por_start)} ~ ${esc(review.por_end)}` : ''}<br>이 원문 버전 검토 ${esc(review.reviewed_on)} · 예치율 변경 없음</small>` : ''}${href ? `<a href="${href}" target="_blank" rel="noopener noreferrer">공식 원문 ${esc(n.document_id)}</a>` : '<small>원문 식별자 미확인</small>'}</li>`;
   };
   return `<details class="ts-ad-notices" data-ad-notices><summary>새 공고 확인 · ${esc(caseId)} · 검토 반영 ${reviewed}건 · 검토 대기 ${pending}건${held ? ` (보류 ${held}건)` : ''}</summary>

@@ -68,7 +68,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await field('통관일').fill(''); await click('일진전기');
     assert.equal(await field('통관일').inputValue(), '');
     assert.match(await company('iljin').innerText(), /미확인/);
-    await click('이 품목의 예시값 채우기'); await click('효성중공업');
+    await click('품목 예시 적용'); await click('효성중공업');
     // Newly sourced cases must work through the actual selector/calculation path.
     for (const [industry, caseId, recordId, companies] of [
       ['철강 · 열연강판', 'A-580-883', 'hot-rolled-2023-24', [['현대제철', 'hyundai-steel', '1.49%'], ['포스코·포스코인터내셔널', 'posco-pic', '1.22%']]],
@@ -86,7 +86,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
         assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), rate);
         assert.ok(await company(id).evaluate(el => document.activeElement === el));
       }
-      await click('이 품목의 예시값 채우기');
+      await click('품목 예시 적용');
       await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check();
       await click('AD 예치 부담 계산');
       assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장', exact: true }).isEnabled());
@@ -166,17 +166,17 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
       ['탄소섬유', 'HS효성첨단소재', 'hs-materials', 'carbon-fiber'],
       ['유정용 강관 · OCTG', '세아제강', 'ad-seah', 'octg'],
     ]) {
-      await click(industry); await click(companyName); await click('이 기업·품목의 손익 시나리오 보기 →');
+      await click(industry); await click(companyName); await click('기업·품목 손익 분석 →');
       assert.equal(await field('실제 기업 선택').inputValue(), companyId);
       assert.equal(await field('기업 분석 품목').inputValue(), product);
       assert.equal(await field('기업 제품 원산지').inputValue(), '');
       assert.equal(await field('기업 기준 통관 단가').inputValue(), '');
-      assert.equal(await page.getByRole('button', { name: '이 기업의 반덤핑 사건 보기 →', exact: true }).count(), 0);
+      assert.equal(await page.getByRole('button', { name: '반덤핑 사건 확인 →', exact: true }).count(), 0);
       if (product === 'switchgear') {
         await field('기업 분석 품목').selectOption('transformer');
-        assert.ok(await page.getByRole('button', { name: '이 기업의 반덤핑 사건 보기 →', exact: true }).isVisible());
+        assert.ok(await page.getByRole('button', { name: '반덤핑 사건 확인 →', exact: true }).isVisible());
         await field('기업 분석 품목').selectOption('switchgear');
-        assert.equal(await page.getByRole('button', { name: '이 기업의 반덤핑 사건 보기 →', exact: true }).count(), 0);
+        assert.equal(await page.getByRole('button', { name: '반덤핑 사건 확인 →', exact: true }).count(), 0);
       }
       await click('반덤핑');
       assert.equal(await picker.locator('[data-ad-profile][aria-pressed="true"]').count(), 1);

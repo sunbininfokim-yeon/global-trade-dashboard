@@ -27,7 +27,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     assert.equal(await field('실제 기업 선택').locator('option[value="ad-lg-chem"]').count(), 1);
     await field('실제 기업 선택').selectOption('ad-lg-chem');
     assert.equal(await field('기업 분석 품목').inputValue(), 'sap');
-    await click('이 기업의 반덤핑 사건 보기 →');
+    await click('반덤핑 사건 확인 →');
     assert.equal(await field('반덤핑 기업').inputValue(), 'lg-chem');
     assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '0%');
     for (const industry of COMPANY_INDUSTRIES) {

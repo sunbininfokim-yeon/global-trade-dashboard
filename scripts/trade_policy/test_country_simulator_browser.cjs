@@ -13,7 +13,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     page.on('pageerror', err => errors.push(err.message));
     page.on('request', request => requests.push(new URL(request.url()).pathname));
     await page.goto(`${base}/policy/us/simulator`);
-    await page.getByRole('heading', { name: '현행 관세를 기준으로 비교합니다' }).waitFor();
+    await page.getByRole('heading', { name: '국가별 영향 비교' }).waitFor();
     assert.equal(requests.filter(p => p.startsWith('/api/')).length, 0);
     assert.ok(await page.getByRole('button', { name: '기업', exact: true }).isEnabled());
     assert.equal(await page.getByLabel('한국 가정 관세', { exact: true }).count(), 0);
@@ -29,7 +29,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.match(await page.locator('[data-rate="1"]').innerText(), /15.0% → 10.0%/);
     await page.getByLabel('관세 적용 조건 확인', { exact: true }).check();
     await page.getByRole('button', { name: '시나리오 계산' }).click();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     assert.match(await page.locator('.ts-kpis').innerText(), /\+/);
     await page.getByLabel('한국 비교할 관세', { exact: true }).selectOption('manual');
     await page.getByLabel('한국 가정 관세', { exact: true }).fill('40');
@@ -55,7 +55,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await page.getByLabel('관심 공급국', { exact: true }).selectOption('MEX');
     await page.getByLabel('관세 적용 조건 확인').check();
     await page.getByRole('button', { name: '시나리오 계산' }).click();
-    await page.getByRole('heading', { name: '멕시코 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '멕시코 공급 변화' }).waitFor();
     assert.equal(await page.locator('.ts-bar-row').count(), 4);
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', { name: '결과 JSON 저장' }).click();
@@ -96,7 +96,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await page.getByLabel('구매액 기준 연도·기간').fill('<img src=x onerror=alert(1)>');
     await page.getByLabel('관세 적용 조건 확인').check();
     await page.getByRole('button', { name: '시나리오 계산' }).click();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     assert.equal(await page.locator('.ts-result-heading img').count(), 0);
     assert.match(await page.locator('.ts-result-heading').innerText(), /<img src=x/);
 
@@ -105,13 +105,13 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(new URL(page.url()).pathname, '/policy/us');
     await page.getByRole('button', { name: '행정부', exact: true }).click();
     await page.getByRole('button', { name: '관세 시뮬레이터', exact: true }).click();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     assert.equal(await page.locator('[data-sim-form]').count(), 1);
     assert.equal(new URL(page.url()).pathname, '/policy/us/simulator');
     await page.goBack();
     await page.waitForURL('**/policy/us/executive');
     await page.goForward();
-    await page.getByRole('heading', { name: '한국 공급에 미치는 영향' }).waitFor();
+    await page.getByRole('heading', { name: '한국 공급 변화' }).waitFor();
     await page.getByRole('button', { name: '입력 초기화' }).click();
     await page.getByLabel('분석 품목').selectOption('tire');
     await page.getByLabel('한국 비교할 관세').selectOption('manual');
@@ -126,14 +126,14 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     }
     await page.screenshot({ path: '/tmp/country-tariff-mobile.png', fullPage: true });
     await page.reload();
-    await page.getByRole('heading', { name: '현행 관세를 기준으로 비교합니다' }).waitFor();
+    await page.getByRole('heading', { name: '국가별 영향 비교' }).waitFor();
 
     const offline = await browser.newPage();
     await offline.route('**/api/us/overview', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"DB unavailable"}' }));
     await offline.goto(`${base}/policy/us`);
     await offline.getByText('정책 데이터를 불러오지 못했습니다', { exact: true }).waitFor();
     await offline.getByRole('button', { name: '관세 시뮬레이터', exact: true }).click();
-    await offline.getByRole('heading', { name: '현행 관세를 기준으로 비교합니다' }).waitFor();
+    await offline.getByRole('heading', { name: '국가별 영향 비교' }).waitFor();
     assert.deepEqual(errors, []);
     console.log('PASS: current-policy defaults/conditions; conditional manual inputs; published elasticity defaults/range; product resets; supplier statistics; source ordering; render; tariff recalculation; stale/export guard; country add/remove/focus; JSON download; escaped input; Congress/executive/back/forward/reload; 390/360px; DB outage independence; no calculation API calls.');
   } finally { await browser.close(); }

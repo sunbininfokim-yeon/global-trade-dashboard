@@ -31,7 +31,7 @@ function publicContext() {
   const productSource = COMPANY_INDUSTRIES.find(i => i.product === draft.product && i.profiles.includes(p.id))?.source;
   const context = f ? `<div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p>`
     : `<p class="ts-unverified">재무 미수록 · 관보의 법인·제품·재심 자료만 확인했습니다.</p><p class="ts-help">${esc(p.official_name)} · <a href="${esc(p.source.url)}" target="_blank" rel="noopener noreferrer">${esc(p.source.title)}</a> · 확인 ${esc(p.source.checked_on)}</p>`;
-  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p>${context}<p>${esc(p.note)}</p>${productSource ? `<p class="ts-help">선택 품목의 별도 근거: <a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a> · 확인 2026-10-12</p>` : ''}<p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 공개 재무·관보 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
+  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 공식 자료</h3><p>${esc(p.products)}</p>${context}<p>${esc(p.note)}</p>${productSource ? `<p class="ts-help">선택 품목의 별도 근거: <a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a> · 확인 2026-10-12</p>` : ''}<p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 공개 재무·관보 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>반덤핑 사건 확인 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
 }
 function field(key, label, min, max, help = '', optional = false) {
   return `<label>${label}<input type="number" inputmode="decimal" step="any" data-company-key="${key}" aria-label="기업 ${label}" value="${esc(draft[key])}" min="${min}" max="${max}"${optional ? '' : ' required'}>${help ? `<small>${help}</small>` : ''}</label>`;
@@ -64,12 +64,12 @@ function editor() {
     <label>제품 원산지<select data-company-key="origin" aria-label="기업 제품 원산지" required>${options({ '': '제품 원산지 선택', ...Object.fromEntries(Object.entries(COUNTRIES).filter(([id]) => id !== 'ROW')) }, draft.origin)}</select><small>기업 본사 소재지가 아닌 제품의 실제 원산지</small></label>
     <label class="ts-wide">분석 기간<input data-company-key="period" aria-label="기업 분석 기간" value="${esc(draft.period)}" maxlength="100" required></label></div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(p.hts || '직접 정의')}</b><br>${esc(p.scope)}</p>
-    <div class="ts-section-label"><h3>기준 판매와 원가</h3><span>단가·금액: USD</span></div>
+    <div class="ts-section-label"><h3>기준 판매·원가</h3><span>단가·금액: USD</span></div>
     <p class="ts-help">동일한 한 제품의 판매 단위를 사용하세요. 통관 단가는 관세 제외 수취단가와 같다고 가정합니다. 변동원가에는 기업이 부담하는 제조·수출 운송비 등을 포함합니다.</p>
     <div class="ts-fields">${field('price', '기준 통관 단가', 0.000001, 1e12)}${field('quantity', '기준 판매량', 0.000001, 1e12)}${field('cost', '단위 변동원가', 0, 1e12)}${field('fixed_cost', '기간 고정비', 0, 1e15, '이 제품·사업에 배분한 분석 기간의 고정비')}${field('cost_change_pct', '변동원가 변화율 %', -100, 1000)}${field('capacity', '최대 공급 가능 물량', 0.000001, 1e12, '선택 사항 · 공란이면 공급 한도 미반영', true)}</div>
     ${tariffEditor()}
     <label class="ts-confirm"><input type="checkbox" data-company-key="policy_confirmed" aria-label="기업 관세 적용 조건 확인" required${draft.policy_confirmed ? ' checked' : ''}>제품·원산지·예외·별도 추가세와 양쪽 관세 조건을 확인했습니다.</label>
-    <div class="ts-section-label"><h3>가격과 판매량 반응</h3></div>
+    <div class="ts-section-label"><h3>가격·판매량 반응</h3></div>
     <label>반응 방식<select data-company-key="response_mode" aria-label="기업 반응 방식"><option value="manual"${!isProxy ? ' selected' : ''}>기업 가정으로 가격·판매량 계산</option><option value="country"${isProxy ? ' selected' : ''}>국가 계산의 원산지 평균 반응 연결</option></select></label>
     ${isProxy ? `<p class="ts-help" data-company-link-note>${draft.country_inputs ? `연결됨: ${esc(draft.country_inputs.period)} · ${esc(COUNTRIES[draft.origin])}. 연결 시점의 국가 평균 반응을 기업에 적용하는 대용 시나리오입니다. 국가 입력의 후속 변경은 자동 반영되지 않습니다.` : '국가 탭에서 같은 품목·원산지·관세로 계산한 후 아래 버튼을 누르세요.'}</p>
     <button type="button" class="ts-text-button" data-company-link>최신 국가 계산 결과 연결</button><p class="ts-help">수동 방식의 흡수율·탄력성·계약·경쟁 가격·시장 수요 가정은 중복 적용하지 않습니다. 원가 변화와 공급 한도는 반영합니다.</p>` : `<div class="ts-fields ts-elasticities">
@@ -85,7 +85,7 @@ function editor() {
     <p class="ts-error" role="alert" data-company-error${error ? '' : ' hidden'}>${esc(error)}</p></form>`;
 }
 function results() {
-  if (!result) return `<div class="ts-empty-result"><span class="ts-eyebrow">실제 기업 자료 · 제품별 사용자 시나리오</span><h2>관세 대응이 제품 손익에 미치는 영향</h2><p>공식 재무를 참고하고 분석할 한 제품의 원가·미국 거래·경쟁 반응을 입력하면 판매량과 손익을 계산합니다. 공개자료로 확인되지 않은 단가·원가·물량은 공란입니다.</p><p>반덤핑 예치 부담은 반덤핑 탭에서 별도로 비교할 수 있습니다.</p></div>`;
+  if (!result) return `<div class="ts-empty-result"><span class="ts-eyebrow">실제 기업 자료 · 제품별 사용자 시나리오</span><h2>기업 제품별 손익 비교</h2><p>공식 재무를 참고하고 분석할 한 제품의 원가·미국 거래·경쟁 반응을 입력하면 판매량과 손익을 계산합니다. 공개자료로 확인되지 않은 단가·원가·물량은 공란입니다.</p><p>반덤핑 예치 부담은 반덤핑 탭에서 별도로 비교할 수 있습니다.</p></div>`;
   const r = result;
   const cell = (title, before, after, suffix = '', digits = 2) => `<tr><th>${title}</th><td>${fmt(before, digits)}${suffix}</td><td>${fmt(after, digits)}${suffix}</td></tr>`;
   return `<div class="ts-result-heading"><div><span class="ts-eyebrow">${r.inputs.response_mode === 'country' ? '국가 평균 반응을 적용한 기업 시나리오' : '기업 가정에 따른 조건부 시나리오'}</span><h2>${esc(r.inputs.company)} · 제품 손익</h2><p>${esc(r.inputs.period)} · ${esc(COUNTRIES[r.inputs.origin])} · 관세 ${fmt(r.inputs.tariff_before, 1)}% → ${fmt(r.inputs.tariff_after, 1)}%</p></div><button type="button" class="ts-export" data-company-export${dirty ? ' disabled' : ''}>기업 JSON 저장</button></div>
@@ -94,15 +94,22 @@ function results() {
     <section class="ts-result-block"><h3>가격·원가·손익 비교</h3><div class="ts-scroll"><table class="ts-output-table"><thead><tr><th>항목</th><th>기준</th><th>시나리오</th></tr></thead><tbody>
       ${cell('수취·통관 단가', r.price_before, r.price_after)}${cell('관세 포함 구매가격', r.buyer_price_before, r.buyer_price_after)}${cell('단위 변동원가', r.unit_cost_before, r.unit_cost_after)}${cell('판매량', r.quantity_before, r.quantity_after)}${cell('매출 · USD', r.revenue_before, r.revenue_after, '', 0)}${cell('기여이익 · USD', r.contribution_before, r.contribution_after, '', 0)}${cell('제품 손익 · USD', r.profit_before, r.profit_after, '', 0)}${cell('제품 손익률', r.margin_before_pct, r.margin_after_pct, '%')}
       </tbody></table></div><p class="ts-help">제품 손익 = (수취단가 − 단위 변동원가) × 판매량 − 기간 고정비. 수입자 납부 관세는 기업 비용에서 다시 차감하지 않습니다.</p></section>
-    <section class="ts-result-block"><h3>손익분기점과 경쟁 조건</h3><dl class="ts-company-metrics"><div><dt>손익분기 판매량</dt><dd>${fmt(r.break_even_quantity)}${r.break_even_status === 'above_capacity' ? ' · 공급 한도 초과' : r.break_even_status === 'nonpositive_contribution' ? ' · 단위 기여이익이 0 이하' : ''}</dd></div><div><dt>현재 판매량에서 감당 가능한 단위 변동원가</dt><dd>${fmt(r.unit_cost_ceiling)} USD</dd></div><div><dt>경쟁 제품 대비 구매가격 차이</dt><dd>${r.price_gap_pct == null ? '경쟁 제품 가격 미입력' : `${signed(r.price_gap_pct)}%`}</dd></div></dl><p class="ts-help">손익분기 판매량은 현재 시나리오 단가·원가가 유지된다는 조건입니다. 가격 차이만으로 고객 전환 여부를 확정하지 않습니다.</p>${r.capacity_binding ? '<p class="ts-unverified">입력한 공급 한도 때문에 판매량 증가가 제한됐습니다.</p>' : ''}</section>
+    <section class="ts-result-block"><h3>손익분기·경쟁 조건</h3><dl class="ts-company-metrics"><div><dt>손익분기 판매량</dt><dd>${fmt(r.break_even_quantity)}${r.break_even_status === 'above_capacity' ? ' · 공급 한도 초과' : r.break_even_status === 'nonpositive_contribution' ? ' · 단위 기여이익이 0 이하' : ''}</dd></div><div><dt>현재 판매량에서 감당 가능한 단위 변동원가</dt><dd>${fmt(r.unit_cost_ceiling)} USD</dd></div><div><dt>경쟁 제품 대비 구매가격 차이</dt><dd>${r.price_gap_pct == null ? '경쟁 제품 가격 미입력' : `${signed(r.price_gap_pct)}%`}</dd></div></dl><p class="ts-help">손익분기 판매량은 현재 시나리오 단가·원가가 유지된다는 조건입니다. 가격 차이만으로 고객 전환 여부를 확정하지 않습니다.</p>${r.capacity_binding ? '<p class="ts-unverified">입력한 공급 한도 때문에 판매량 증가가 제한됐습니다.</p>' : ''}</section>
     ${r.sensitivity.length ? `<section class="ts-result-block"><h3>수출자 흡수율별 대응 비교</h3><div class="ts-scroll"><table class="ts-output-table"><thead><tr><th>흡수율</th><th>수취단가</th><th>물량 변화</th><th>제품 손익 · USD</th></tr></thead><tbody>${r.sensitivity.map(s => `<tr${s.absorption_pct === r.inputs.absorption_pct ? ' class="ts-focus-row"' : ''}><th>${fmt(s.absorption_pct, 0)}%</th><td>${fmt(s.price_after)}</td><td>${signed(s.quantity_change_pct)}%</td><td>${fmt(s.profit_after, 0)}</td></tr>`).join('')}</tbody></table></div><p class="ts-help">다른 가정은 고정한 비교입니다. 최적 계약이나 발생 확률을 추정한 값은 아닙니다.</p></section>` : '<p class="ts-help">국가 결과의 원산지 평균 가격·물량을 적용했습니다. 기업별 고객·제품 경쟁력은 별도로 보정해야 합니다.</p>'}
     </div>`;
 }
 export function companyMarkup() {
-  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">${Object.keys(COMPANY_PROFILES).length}개 기업·법인그룹 · 공식 자료</span></div>
+  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>기업별 관세·손익 분석</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">${Object.keys(COMPANY_PROFILES).length}개 기업·법인그룹 · 공식 자료</span></div>
     <p class="ts-model-source">계산 근거: 기업 가격·손익의 명시적 산식. 국가 연결은 <a href="https://www.usitc.gov/ces_tariff_model" target="_blank" rel="noopener noreferrer">USITC CES 기반 시장 반응</a>을 참고합니다.</p>
+    <details class="ts-explainer ts-logic"><summary>계산 원리·용어</summary>
+      <p class="ts-logic-flow">관세 부담 분담 → 수취단가·구매가격 변화 → 판매량 변화 → 제품 손익 비교</p>
+      <dl><div><dt>수출자 흡수율</dt><dd>관세 변화분을 수출자가 단가 조정으로 부담하는 비율입니다. 0%는 구매자 전가, 100%는 구매가격 유지 가정입니다.</dd></div>
+      <div><dt>제품 손익</dt><dd>(수취단가 − 단위 변동원가) × 판매량 − 기간 고정비. 한 제품의 입력 가정에 따른 결과이며 전사 영업이익과 다릅니다.</dd></div>
+      <div><dt>기업 반응·국가 연결</dt><dd>기업의 가격·판매량 반응을 직접 가정하거나 국가 탭의 원산지 평균 반응을 연결합니다. 실제 기업의 반응을 추정한 값은 아닙니다.</dd></div></dl>
+      <p>기업 손익은 자체 산식입니다. 전체 산식은 하단 ‘기업 모형 산식·출처·계산 범위’에 있습니다. 국가 연결의 참고 모형은 <a href="https://www.usitc.gov/ces_tariff_model" target="_blank" rel="noopener noreferrer">USITC CES 원문 ↗</a>에서 확인할 수 있습니다.</p>
+    </details>
     <div class="ts-basis"><strong>제품 손익 스트레스 테스트</strong> 관세는 ${POLICY_AS_OF} 부분 검토 스냅샷. 기업 원가·계약·탄력성은 사용자 가정입니다. 입력값은 브라우저 안에서만 계산합니다.</div>
-    <div class="ts-layout"><section class="ts-editor" aria-label="기업 시나리오 입력"><div class="ts-panel-title"><span>02</span><h2>기업의 판매와 원가를 입력하세요</h2></div><div data-company-editor>${editor()}</div></section><section class="ts-results" data-company-results aria-label="기업 계산 결과">${results()}</section></div>
+    <div class="ts-layout"><section class="ts-editor" aria-label="기업 시나리오 입력"><div class="ts-panel-title"><span>02</span><h2>판매·원가 조건</h2></div><div data-company-editor>${editor()}</div></section><section class="ts-results" data-company-results aria-label="기업 계산 결과">${results()}</section></div>
     <footer class="ts-footer"><details><summary>기업 모형 산식·출처·계산 범위</summary><p>수출자 흡수율은 기존 통관 단가 기준 관세 변화분을 나누는 가정입니다. 바뀐 통관 단가에 새 관세를 적용하므로 관세 과세표준과 할인 효과를 중복 계산하지 않습니다.</p>
     <pre class="ts-company-formula">수취단가₁ = 수취단가₀ × [1 + 관세₀ + (1 − 흡수율) × (관세₁ − 관세₀)] ÷ (1 + 관세₁)
 구매가격 = 수취단가 × (1 + 관세)
