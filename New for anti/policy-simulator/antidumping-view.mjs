@@ -2,6 +2,7 @@ import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
 import { AD_DISCOVERY } from './antidumping-discovery-snapshot.mjs';
 import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
 import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES, companyCalibration } from './company-profiles.mjs';
+import { productVerification, verificationMarkup } from './product-verification.mjs';
 import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, reviewProgress } from './antidumping-guide.mjs';
@@ -96,12 +97,16 @@ function companySearchResults() {
   const matches = c.companies.filter(x => query ? [x.name, x.official_name, ...x.aliases].some(n => n.toLocaleLowerCase().includes(query)) : !featured.includes(x));
   return `<p class="ts-help" role="status">${query ? `검색 결과 ${matches.length}개` : `추가 법인 ${matches.length}개`} · 회사 규모·시장점유율 순위가 아닙니다.</p><div class="ts-ad-companies">${matches.map(companyButton).join('')}</div>`;
 }
+function verificationLabel(product) {
+  const v = productVerification(product);
+  return v?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건·마진 확인 · 예치율 검토' : v?.ad.status === 'related_scope_review_required' ? '관련 조사 확인 · 제품 범위 검토' : v ? '한국 사건 목록 검토 · 예치율 미확정' : 'AD 공고·세율 미확인';
+}
 function processSelection() {
   const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
   if (!industry.case_id) return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">${industryPicker()}
-    <fieldset><legend>2. 기업 선택 <span>${industry.profiles.length}개 기업</span></legend><div class="ts-ad-companies">${industry.profiles.map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>AD 공고·세율 미확인</small></button>`).join('')}</div></fieldset>
+    <fieldset><legend>2. 기업 선택 <span>${industry.profiles.length}개 기업</span></legend><div class="ts-ad-companies">${industry.profiles.map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>${esc(verificationLabel(industry.product))}</small></button>`).join('')}</div></fieldset>
     <p class="ts-ad-selection-context" role="status">선택: ${esc(industry.label)} → <b>${esc(COMPANY_PROFILES[profileId].name)}</b> · AD 자료 미연결</p>
-    <p class="ts-help">공식 자료의 제품군을 연결했습니다. 이 품목의 AD 적용 여부·세율·재심 진행은 아직 확인하지 않았습니다. 미확인은 0%를 뜻하지 않습니다.${industry.source ? ` <a href="${esc(industry.source)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a>` : ''}</p></div>`;
+    <p class="ts-help">공식 제품군과 한국 활성 사건 목록의 확인 결과를 연결했습니다. 아래 공식 자료 확인 결과에서 조사 범위와 남은 확인사항을 볼 수 있습니다. 기업별 AD 예치율 미확정은 0%를 뜻하지 않습니다.${industry.source ? ` <a href="${esc(industry.source)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a>` : ''}</p></div>`;
   const company = c.companies.find(x => x.id === draft.company_id);
   return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">
     ${industryPicker()}
@@ -113,15 +118,17 @@ function processSelection() {
 }
 function industryPicker() {
   const family = selectedIndustry().family;
-  return `<fieldset><legend>1. 산업 → 품목 선택</legend><label class="ts-ad-family">산업 분야<select data-ad-family aria-label="산업 분야">${INDUSTRY_FAMILIES.map(x => `<option value="${x.id}"${x.id === family ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><div class="ts-ad-industries">${COMPANY_INDUSTRIES.filter(x => x.family === family).map(x => `<button type="button" ${x.case_id ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id ? '공식 AD 공고 연결' : '기업 연결 · AD 미확인'}</small></button>`).join('')}</div></fieldset>`;
+  return `<fieldset><legend>1. 산업 → 품목 선택</legend><label class="ts-ad-family">산업 분야<select data-ad-family aria-label="산업 분야">${INDUSTRY_FAMILIES.map(x => `<option value="${x.id}"${x.id === family ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><div class="ts-ad-industries">${COMPANY_INDUSTRIES.filter(x => x.family === family).map(x => `<button type="button" ${x.case_id ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id ? '공식 AD 공고 연결' : esc(verificationLabel(x.product))}</small></button>`).join('')}</div></fieldset>`;
 }
 function coverageGap() {
   const industry = selectedIndustry(), p = COMPANY_PROFILES[profileId];
   const productSource = companyCalibration(profileId, industry.product).selected_product_source?.url;
-  return `<div class="ts-ad-gap" data-ad-gap><h3>${esc(p.name)} · ${esc(industry.label)}</h3><p class="ts-unverified">이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.</p><p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button><p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
+  const verification = productVerification(industry.product);
+  const gap = verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
+  return `<div class="ts-ad-gap" data-ad-gap><h3>${esc(p.name)} · ${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? `<p class="ts-help" data-verification-status>${esc(verification.ad.label)}</p>` : ''}${verificationMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button><p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
-  if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">선택한 품목의 실제 사건·POR·단계 기록은 미확인입니다. 아래에서 확보가 필요한 자료를 확인할 수 있습니다.</p></section>`;
+  if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">확인한 사건 검색 결과·관세 조건과 기업별 적용 여부를 구분합니다. 예치율이 확정되지 않은 품목에는 계산·진행 불을 표시하지 않습니다.</p></section>`;
   const c = selectedCase(), records = reviewRecords(draft.case_id, draft.company_id);
   const record = records.find(r => r.id === processRecordId) || records[0];
   processRecordId = record?.id || '';
@@ -137,7 +144,7 @@ function processMarkup() {
     <p class="ts-help">날짜 경과만으로 다음 단계에 불이 켜지지 않습니다. 수록 공고에 나온 사건·POR·공식 행위만 표시합니다. 법원·CBP의 실제 진행 자동 갱신은 아직 연결되지 않았습니다.</p></section>`;
 }
 function output() {
-  if (!hasADCase()) return '<div class="ts-empty"><h2>공식 AD 자료 미연결</h2><p>이 선택에는 예치액·공표 세율·단계 결과를 표시하지 않습니다. 기업 손익 시나리오는 별도 화면에서 입력할 수 있습니다.</p></div>';
+  if (!hasADCase()) return '<div class="ts-empty"><h2>기업별 AD 예치율 미확정</h2><p>이 선택에는 예치액·공표 세율·단계 결과를 표시하지 않습니다. 기업 손익 시나리오는 별도 화면에서 입력할 수 있습니다.</p></div>';
   if (!result) return `<div class="ts-empty"><h2>반덤핑 예치 부담 비교</h2><p>예시 금액·기간이 채워져 있습니다. 실제 거래에 맞게 수정하고 제품 범위·법인 조건을 확인하면 계산할 수 있습니다.</p></div>${history()}`;
   const r = result;
   return `<div data-ad-calculated class="${dirty ? 'is-stale' : ''}"><div class="ts-section-label"><h2>AD 현금예치 부담 비교</h2><button type="button" class="ts-export" data-ad-export${dirty ? ' disabled' : ''}>반덤핑 JSON 저장</button></div><p data-ad-stale class="ts-stale"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 다시 계산하세요.</p>

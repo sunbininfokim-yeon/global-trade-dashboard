@@ -101,7 +101,8 @@ test('automotive company and product boundaries do not inherit unrelated AD case
   assert.match(companyCalibration('hyundai-motor','vehicle-phev').selected_product_source.url, /hyundai\.com/);
   assert.match(companyCalibration('hl-mando','auto-steering').selected_product_source.url, /hlmando\.com/);
   for (const p of ['auto-brake','auto-steering','auto-suspension','auto-electric-drive']) {
-    assert.equal(PRODUCTS[p].hts, ''); assert.deepEqual(policyOptions(p,'KOR'), []);
+    if (p === 'auto-electric-drive') { assert.equal(PRODUCTS[p].hts, ''); assert.deepEqual(policyOptions(p,'KOR'), []); }
+    else { assert.ok(PRODUCTS[p].hts); assert.equal(policyOptions(p,'KOR')[0].rate, 15); }
     assert.equal(elasticityCalibration(initialDraft(p)).sigma.kind,'user_assumption');
   }
 });

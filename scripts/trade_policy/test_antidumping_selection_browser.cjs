@@ -155,7 +155,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
       for (const name of names) {
         await click(name);
         assert.match(await picker.locator('.ts-ad-selection-context').innerText(), new RegExp(name));
-        assert.match(await page.locator('[data-ad-gap]').innerText(), /공고와 예치율은 아직 연결하지 않았습니다/);
+        assert.match(await page.locator('[data-ad-gap]').innerText(), industry === '유정용 강관 · OCTG' ? /공식 사건과 과거 최종 마진을 확인/ : industry === '현가 시스템' ? /관련 조사 공고 확인/ : /공고와 예치율은 아직 연결하지 않았습니다/);
         assert.equal(await page.locator('[data-ad-reference], [data-ad-calculated], [data-ad-stage], [data-ad-method-form]').count(), 0);
         assert.equal(await page.getByRole('button', { name: 'AD 예치 부담 계산', exact: true }).count(), 0);
       }

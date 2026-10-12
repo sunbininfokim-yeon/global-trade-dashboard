@@ -29,7 +29,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await field('기업 제품 원산지').selectOption('KOR');
     assert.match(await page.locator('[data-company-rate]').innerText(), /15.0% → 15.0%/);
     await field('기업 분석 품목').selectOption('auto-brake');
-    assert.equal(await field('기업 현행 관세 조합').inputValue(), 'unresolved');
+    assert.equal(await field('기업 현행 관세 조합').inputValue(), 'standard');
+    assert.match(await page.locator('[data-company-rate]').innerText(), /15.0% → 15.0%/);
     await click('국가');
     for (const product of ['vehicle-hev','vehicle-phev','vehicle-ev']) {
       await field('분석 품목').selectOption(product);

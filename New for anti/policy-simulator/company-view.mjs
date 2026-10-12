@@ -2,6 +2,7 @@ import { simulateCompany, COMPANY_SOURCES, COMPANY_MODEL_VERSION } from './compa
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, newRow, policyOptions, tariffPair, missingPolicyReason } from './policy-catalog.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { COMPANY_PROFILES, COMPANY_INDUSTRIES, companyCalibration, companyADLink } from './company-profiles.mjs';
+import { productVerification, verificationMarkup } from './product-verification.mjs';
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, p = 2) => v == null ? '산출 불가' : Number(v).toLocaleString('ko-KR', { minimumFractionDigits: p, maximumFractionDigits: p });
@@ -27,12 +28,12 @@ export function selectCompanyProfile(profileId, product = COMPANY_PROFILES[profi
 function publicContext() {
   const p = COMPANY_PROFILES[draft.profile_id];
   if (!p) return '<p class="ts-help">분석할 실제 기업·제품의 자료를 입력하세요. 제품별 미국 판매와 원가는 별도 자료가 필요합니다.</p>';
-  const f = p.financial, ad = companyADLink(draft.profile_id, draft.product);
+  const f = p.financial, ad = companyADLink(draft.profile_id, draft.product), verification = productVerification(draft.product, draft.origin);
   const industry = COMPANY_INDUSTRIES.find(i => i.product === draft.product && i.profiles.includes(p.id));
   const productSource = industry?.sources?.[p.id] || industry?.source;
   const context = f ? `<div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p>`
     : `<p class="ts-unverified">재무 미수록 · ${p.ad ? '관보의 법인·제품·재심' : '기업 공식 제품'} 자료만 확인했습니다.</p><p class="ts-help">${esc(p.official_name)} · <a href="${esc(p.source.url)}" target="_blank" rel="noopener noreferrer">${esc(p.source.title)}</a> · 확인 ${esc(p.source.checked_on)}</p>`;
-  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 공식 자료</h3><p>${esc(p.products)}</p>${context}<p>${esc(p.note)}</p>${productSource ? `<p class="ts-help">선택 품목의 별도 근거: <a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a> · 확인 2026-10-12</p>` : ''}<p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 공개 재무·관보 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>반덤핑 사건 확인 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
+  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 공식 자료</h3><p>${esc(p.products)}</p>${context}<p>${esc(p.note)}</p>${productSource ? `<p class="ts-help">선택 품목의 별도 근거: <a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a> · 확인 2026-10-12</p>` : ''}<p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 공개 재무·관보 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>반덤핑 사건 확인 →</button>' : verification ? '<p class="ts-unverified">AD 예치율 미확정 · 아래 공식 자료 확인 결과에서 검토 범위와 남은 조건을 확인할 수 있습니다.</p>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
 }
 function field(key, label, min, max, help = '', optional = false) {
   return `<label>${label}<input type="number" inputmode="decimal" step="any" data-company-key="${key}" aria-label="기업 ${label}" value="${esc(draft[key])}" min="${min}" max="${max}"${optional ? '' : ' required'}>${help ? `<small>${help}</small>` : ''}</label>`;
@@ -65,6 +66,7 @@ function editor() {
     <label>제품 원산지<select data-company-key="origin" aria-label="기업 제품 원산지" required>${options({ '': '제품 원산지 선택', ...Object.fromEntries(Object.entries(COUNTRIES).filter(([id]) => id !== 'ROW')) }, draft.origin)}</select><small>기업 본사 소재지가 아닌 제품의 실제 원산지</small></label>
     <label class="ts-wide">분석 기간<input data-company-key="period" aria-label="기업 분석 기간" value="${esc(draft.period)}" maxlength="100" required></label></div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(p.hts || '직접 정의')}</b><br>${esc(p.scope)}</p>${p.classification_checked_on ? `<p class="ts-help" data-classification-basis>품목 분류·기본 관세 확인 ${p.classification_checked_on} · <a href="https://hts.usitc.gov/search?query=${encodeURIComponent(p.hts)}" target="_blank" rel="noopener noreferrer">USITC HTS 원문 ↗</a>. 이 날짜는 다른 품목의 관세·통계 갱신일이 아닙니다.</p>` : ''}
+    ${verificationMarkup(draft.product, draft.origin)}
     <div class="ts-section-label"><h3>기준 판매·원가</h3><span>단가·금액: USD</span></div>
     <p class="ts-help">동일한 한 제품의 판매 단위를 사용하세요. 통관 단가는 관세 제외 수취단가와 같다고 가정합니다. 변동원가에는 기업이 부담하는 제조·수출 운송비 등을 포함합니다.</p>
     <div class="ts-fields">${field('price', '기준 통관 단가', 0.000001, 1e12)}${field('quantity', '기준 판매량', 0.000001, 1e12)}${field('cost', '단위 변동원가', 0, 1e12)}${field('fixed_cost', '기간 고정비', 0, 1e15, '이 제품·사업에 배분한 분석 기간의 고정비')}${field('cost_change_pct', '변동원가 변화율 %', -100, 1000)}${field('capacity', '최대 공급 가능 물량', 0.000001, 1e12, '선택 사항 · 공란이면 공급 한도 미반영', true)}</div>
@@ -163,7 +165,7 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
       clearFormErrors(root);
       const p = tariffPair(draft.product, draft.tariff);
       const next = simulateCompany({ ...draft, ...p, tariff_provenance: { ...p.provenance, ...(draft.tariff.linked_provenance ? { status: 'linked_country_scenario', linked_provenance: draft.tariff.linked_provenance } : {}) },
-        calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: PRODUCTS[draft.product].classification_checked_on || null, hts: PRODUCTS[draft.product].hts || null, scope: PRODUCTS[draft.product].scope, ...companyCalibration(draft.profile_id, draft.product) } });
+        calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: PRODUCTS[draft.product].classification_checked_on || null, hts: PRODUCTS[draft.product].hts || null, scope: PRODUCTS[draft.product].scope, product_verification: productVerification(draft.product, draft.origin), ...companyCalibration(draft.profile_id, draft.product) } });
       result = next; dirty = false; error = ''; root.querySelector('[data-company-results]').innerHTML = results(); root.querySelector('[data-company-error]').hidden = true;
     } catch (err) { markDirty(); fail(err); }
   }, { signal });

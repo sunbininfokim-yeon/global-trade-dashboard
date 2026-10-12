@@ -3,6 +3,7 @@ import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, new
 import { companyMarkup, mountCompany, selectCompanyProfile } from './company-view.mjs';
 import { antidumpingMarkup, mountAntidumping, selectAntidumping } from './antidumping-view.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
+import { verificationMarkup } from './product-verification.mjs';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, places = 2) => Number(v).toLocaleString('ko-KR', { minimumFractionDigits: places, maximumFractionDigits: places });
@@ -77,6 +78,7 @@ function editor() {
       <label class="ts-wide">구매액 기준 연도·기간<input data-key="period" aria-label="구매액 기준 연도·기간" value="${esc(draft.period)}" maxlength="80" required><small>구매액을 집계한 기간입니다. 관세 검토일과 다를 수 있습니다.</small></label>
     </div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>${profile.classification_checked_on ? `<p class="ts-help" data-classification-basis>품목 분류·기본 관세 확인 ${profile.classification_checked_on} · <a href="https://hts.usitc.gov/search?query=${encodeURIComponent(profile.hts)}" target="_blank" rel="noopener noreferrer">USITC HTS 원문 ↗</a>. 이 날짜는 다른 품목의 관세·통계 갱신일이 아닙니다.</p>` : ''}
+    ${verificationMarkup(draft.product, draft.focus)}
     <div class="ts-section-label"><h3>시장·공급국</h3><span>구매액 단위: 백만 달러</span></div>
     <p class="ts-help" data-purchase-help>기준 구매액은 관세 변경 전 기준 기간에 미국 구매자가 각 공급국의 해당 품목에 쓴 관세 포함 금액입니다. 한국 행의 25는 2,500만 달러입니다. 미국 행에는 미국산 제품 구매액을 넣습니다.</p>
     <div class="ts-scroll"><table class="ts-input-table"><caption class="ts-sr">같은 품목·기간·관세 포함 구매액을 입력하세요.</caption>

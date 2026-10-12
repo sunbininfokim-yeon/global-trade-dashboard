@@ -1,5 +1,6 @@
 import { SUPPLIER_SNAPSHOT } from './suppliers-2025.mjs';
 import { ELASTICITIES, elasticityCalibration } from './elasticities.mjs';
+import { productVerification } from './product-verification.mjs';
 export { elasticityCalibration };
 
 // A bounded review snapshot, not a live tariff classification service. Rates are
@@ -45,9 +46,9 @@ export const PRODUCTS = {
     elasticity: ELASTICITIES['vehicle-phev'], scope: '가솔린 엔진·전기 모터 겸용, 외부 충전 가능 승용차. 일반 HEV·디젤 하이브리드와 구분합니다. 한국·일본 232 조건부 조합만 제공하며 실제 차종의 HTS·원산지를 확인하세요.' },
   'vehicle-ev': { label: '자동차 · 전기 승용차 BEV', hts: '8703.80.00', hts6: '870380', mfn: 2.5, family: 'auto', classification_checked_on: '2026-10-12',
     elasticity: ELASTICITIES['vehicle-ev'], scope: '전기 모터만으로 구동하는 완성 승용차. 트럭·버스·배터리·구동 부품과 구분합니다. 한국·일본 232 조건부 조합만 제공하며 중국 301·USMCA 원산지는 별도 확인합니다.' },
-  'auto-brake': { label: '자동차 부품 · 제동 시스템', hts: '', scope: '브레이크·전자제동 시스템의 실제 형태·구성·HTS·원산지와 자동차 부품 232 대상 목록을 확인하세요. 완성차 관세를 자동 적용하지 않습니다.' },
-  'auto-steering': { label: '자동차 부품 · 조향 시스템', hts: '', scope: '기계식·전자식 조향장치의 제품 형태·HTS·원산지·232 대상 여부를 확인하세요. 제동·현가·완성차와 분리합니다.' },
-  'auto-suspension': { label: '자동차 부품 · 현가 시스템', hts: '', scope: '서스펜션의 실제 부품·구성·HTS·원산지를 확인하세요. 자동차 부품 전체에 한 가지 세율을 적용하지 않습니다.' },
+  'auto-brake': { label: '자동차 부품 · 제동 시스템', hts: '8708.30.50', hts6: '870830', mfn: 2.5, family: 'auto_parts', classification_checked_on: '2026-10-12', scope: '대표 사양: 농업용 트랙터 이외 차량의 브레이크·서보브레이크 및 부분품. 실제 전자제어 단품·구성에 따라 분류가 다를 수 있습니다. 한국·일본 승용차·경트럭용 지정 부품의 조건부 경로이며 회사 제품 전체에 적용하지 않습니다.' },
+  'auto-steering': { label: '자동차 부품 · 조향 시스템', hts: '8708.94.50.00', hts6: '870894', mfn: 2.5, family: 'auto_parts', classification_checked_on: '2026-10-12', scope: '대표 사양: 농업용 트랙터 이외 차량의 조향 휠·칼럼·박스 완성품. 주철·기타 부분품과 전자제어 단품은 별도 분류. 한국·일본 승용차·경트럭용 지정 부품의 적용 조건을 확인하세요.' },
+  'auto-suspension': { label: '자동차 부품 · 현가 시스템', hts: '8708.80.16', hts6: '870880', mfn: 2.5, family: 'auto_parts', classification_checked_on: '2026-10-12', scope: '대표 사양: 농업용 트랙터 이외 차량의 현가 시스템 중 McPherson strut 이외. strut·주철/기타 부분품은 별도 분류. 한국·일본 승용차·경트럭용 지정 부품의 적용 조건과 유압실린더 AD 조사 범위를 별도 확인하세요.' },
   'auto-electric-drive': { label: '자동차 부품 · 전동화 구동·전력변환', hts: '', scope: '모터·인버터·전력변환 장치는 각각 분류가 다를 수 있습니다. 실제 형태·HTS·원산지·232/다른 추가세를 확인하세요. 전기차 완성차 관세를 대신 적용하지 않습니다.' },
   tire: { label: '타이어 · 승용차용', hts: '4011.10.10', hts6: '401110', mfn: 4, family: 'ordinary',
     scope: '승용차용 신품 래디얼 타이어 대표 사양. AD/CVD는 기업·사건별이므로 추가세 입력에서 확인하세요.',
@@ -100,6 +101,9 @@ export function policyOptions(product, country) {
     ...(country === 'KOR' ? [make('fta_us_metal', 'KORUS 0% + 미국산 금속 232 10%p', 10, [POLICY_SOURCES.metals, POLICY_SOURCES.metalUpdate], scope + 'KORUS 특혜와 미국산 금속 85% 요건을 함께 충족.')] : []),
   ];
   if (p.family === 'memory') return [make('standard', '일반관세 0% + 강제노동 301 품목 예외', 0, [POLICY_SOURCES.forcedLabor, POLICY_SOURCES.forcedLaborAnnex], scope + '메모리 HTS 8542.32.00의 Annex (b) 예외. 기존 중국 301은 이 예외와 다릅니다.')];
+  if (p.family === 'auto_parts') return ['KOR','JPN'].includes(country) ? [make('standard', '지정 자동차 부품 232 · 조건부 합산 15%', Math.max(p.mfn, 15), [country === 'KOR' ? POLICY_SOURCES.koreaAuto : POLICY_SOURCES.japanAuto,
+    { title: '현행 HTS 자동차 부품 232 · 2026-10-12 확인', url: `https://hts.usitc.gov/search?query=${country === 'KOR' ? '9903.94.63' : '9903.94.43'}` },
+    { title: '현행 Chapter 99 · Note 33(g)/(l)/(t)', url: 'https://hts.usitc.gov/reststop/file?release=currentRelease&filename=Chapter%2099' }], scope + 'Note 33(g)의 승용차·경트럭용 지정 부품에 한정. 일반관세를 다시 더하지 않음. 중대형 트럭·다른 부품·수입조정 상계·AD/CVD·별도 추가세는 별도 검토.')] : [];
   if (p.family === 'auto') return ['KOR', 'JPN'].includes(country) ? [make('standard', '일반관세 + 자동차 232 · 합산 15% 하한', Math.max(p.mfn, 15), [country === 'KOR' ? POLICY_SOURCES.koreaAuto : POLICY_SOURCES.japanAuto, { title: '현행 HTS 자동차 232 · 2026-10-12 확인', url: `https://hts.usitc.gov/search?query=${country === 'KOR' ? '9903.94.61' : '9903.94.41'}` }, POLICY_SOURCES.forcedLabor], scope + 'U.S. note 33(b)의 완성 승용차에 한정. 강제노동 301과 중복 합산하지 않습니다.')] : [];
   const floor = EU.has(country) || country === 'TWN' ? 10 : ['KOR', 'JPN', 'CHE'].includes(country) ? 12.5 : null;
   const additional = ten.has(country) ? 10 : 12.5;
@@ -146,11 +150,11 @@ export function initialDraft(product = 'transformer') {
 }
 export function modelInput(draft) {
   if (!draft.policy_confirmed) throw new Error('선택한 관세 조합의 적용 조건과 별도 추가세를 확인해 주세요.');
-  const p = PRODUCTS[draft.product], elasticity = elasticityCalibration(draft);
+  const p = PRODUCTS[draft.product], elasticity = elasticityCalibration(draft), suppliers = SUPPLIER_SNAPSHOT.products[draft.product];
   return { ...draft, rows: draft.rows.map(row => ({ ...row, ...tariffPair(draft.product, row) })),
     calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: p.classification_checked_on || null, hts: p.hts, product_scope: p.scope, purchase_basis: 'user_assumption',
-      policy_confirmation: 'user_confirmed_conditions', supplier_statistics_year: 2025,
-      supplier_source: { url: SUPPLIER_SNAPSHOT.url, fetched_at: SUPPLIER_SNAPSHOT.fetched_at, hts6: p.hts6 || null, flow: SUPPLIER_SNAPSHOT.flow, measure: SUPPLIER_SNAPSHOT.measure },
-      elasticity },
+      policy_confirmation: 'user_confirmed_conditions', supplier_statistics_year: suppliers ? SUPPLIER_SNAPSHOT.year : null,
+      supplier_source: suppliers ? { url: SUPPLIER_SNAPSHOT.url, fetched_at: SUPPLIER_SNAPSHOT.fetched_at, hts6: suppliers.hts6, flow: SUPPLIER_SNAPSHOT.flow, measure: SUPPLIER_SNAPSHOT.measure } : null,
+      product_verification: draft.rows.map(row => productVerification(draft.product, row.country)).filter(Boolean), elasticity },
     ...(elasticity.sigma.range ? { sensitivity_sigmas: [elasticity.sigma.range[0], Number(draft.sigma), elasticity.sigma.range[1]] } : {}) };
 }
