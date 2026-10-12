@@ -1,4 +1,6 @@
 import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
+import { AD_DISCOVERY } from './antidumping-discovery-snapshot.mjs';
+import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
 import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES } from './company-profiles.mjs';
 import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
@@ -159,11 +161,12 @@ export function antidumpingMarkup() {
   return `<div data-ad-simulator><div class="ts-intro"><div><span class="ts-eyebrow">반덤핑 · 사건과 법인별 공식 공고</span><h1>반덤핑 예치금과 재심 결과를 비교하세요</h1><p>실제 공표 세율 이력과 거래 가정에 따른 현금 부담을 함께 봅니다.</p></div><span class="ts-badge">${catalog.cases.length}개 사건 · ${catalog.cases.reduce((sum, c) => sum + c.companies.length, 0)}개 기업·법인그룹</span></div>
     <p class="ts-model-source">근거: 미국 상무부의 Federal Register 공고 · 자료 확인 ${catalog.checked_on}. 공표 마진, 현금예치, 사후 관세 확정을 구분합니다.</p><div class="ts-basis">${esc(catalog.coverage_note)}</div>
     <div data-ad-process>${processMarkup()}</div><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건과 거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div><div data-ad-method>${methodEditor()}</div>
-    <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>이 화면은 선별 공고 자료이며 자동 갱신·메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
+    <div data-ad-notice-review>${noticeReviewMarkup(AD_DISCOVERY, hasADCase() ? draft.case_id : null)}</div>
+    <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>로컬 수집기의 공고 발견 목록을 별도로 제공합니다. 세율·단계의 자동 적용과 메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
 export function mountAntidumping(root, { openCompany } = {}) {
   const controller = new AbortController(), signal = controller.signal;
-  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); };
+  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = noticeReviewMarkup(AD_DISCOVERY, hasADCase() ? draft.case_id : null); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
   const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('.ts-ad-selection').outerHTML = processSelection(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };

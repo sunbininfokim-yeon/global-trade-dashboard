@@ -117,3 +117,13 @@ git push -u origin codex/country-tariff-simulator-20261011
 - OCTG/트럭버스/탄소섬유/아라미드 등은 기업 공식 제품 페이지로만 연결, AD 미확인. 해당 source를 기업 JSON에 저장. 케이블 세분 품목 및 신제품에 미검증 HTS·관세·문헌 탄력성을 자동 복사하지 않음.
 - 검증: Node62, 소유권 회귀7. 브라우저5종(기존 AD/guide/기업/선택창/37개 프로필 전수) 통과; 실제0/미확인, 15/6 재심, 마진과 예치율, 변경 후 결과 제거, 360px, escape, 외부/API/AI 호출 없음. docs/previews/antidumping-industries-{desktop,mobile}.png.
 - 같은 PR #528 후속. 로컬 통합 화면의 강관 전체 기업 목록을 펼쳐 유지. 병합·운영 배포·DB·수집·메일·유료 AI 호출 없음.
+
+
+### 2026-10-12 공식 공고 발견·검토 목록
+- 전용 로컬 수집기 `scripts/trade_policy/discover_antidumping_notices.mjs` 추가. Federal Register API + GovInfo 원문으로 선별 5사건/2026-01-01~10-12 조회 성공. 총 23공고, 기존 카탈로그 8건/검토 대기 15건. 새 세율 15개라는 뜻이 아니며 기존 8건도 원문과 계산 카탈로그의 일치가 자동 승인된 상태는 아님.
+- 스냅샷: `New for anti/policy-simulator/antidumping-discovery-snapshot.mjs`. 로컬 원문·체크포인트 `/tmp/chokemonitor-ad-review-20261012-final/`. 이번에는 단발 조회만 실행. 계속 운영하려면 Documents/policy-downloads/antidumping-review 사용. `/tmp`는 장기 보관 장소가 아님.
+- 최소 1.5초·최대 80요청·사건당 최대 2페이지·30초 타임아웃. 403/429 전체 중단과 최소 4시간/Retry-After 쿨다운. 사건 전체 완료 후 성공 워터마크·원자 저장, 중간 실패 시 기존 자료 보존. 잠금/PID·동일 범위 실패 사건만 resume. 원문/정정 정보 변경·검색 누락은 재검토 표시. GovInfo 고정폭 표의 줄바꿈과 날짜/담당자 열 사이에 나뉜 사건번호 검증.
+- 반덤핑 탭 하단 ‘새 공고 확인’: 사건별 최신 5건/이전 공고, 마지막 성공 한국시간, 검토 표시. 다른 품목으로 자료가 넘어가지 않음. 법적 효력·예치율·단계 승격과 분리하며 계산 모델은 스냅샷을 참조하지 않음. 자동 발송 없음.
+- 강관 21개사의 0.80% 배정 마진은 확인하되 예치 조항의 기업 범위가 명확하지 않아 cash null 유지. 타이어 2026-08285 재심 철회/2026-18185 새 POR 개시/2026-19931 일몰재심(원문 국가 표기 불일치) 발견 기록. 예비/일몰/철회를 새 미래 예치율로 적용하지 않음.
+- Node 76·소유권 7 통과. 브라우저 3종(공고 검토/15품목·37기업/입력 안내·단계) 통과, 360px·escape·외부 API/AI 호출 없음. `docs/previews/antidumping-notice-review-{desktop,mobile}.png`. 상세 `docs/antidumping-notice-review.md`.
+- 기존 PR #528 후속. main 병합·운영 배포·DB·메일·기존 수집기/워크플로 변경 없음. 유료 AI 호출 없음. 상시 예약 및 검토 후 세율/단계 갱신은 미연결.
