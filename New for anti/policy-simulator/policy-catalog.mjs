@@ -46,6 +46,16 @@ export const PRODUCTS = {
     elasticity: ELASTICITIES.fiber,
     scope: '폴리에스터 타이어코드 직물 대표 사양. 나일론·아라미드·탄소섬유는 별도 품목입니다. 일부 국가의 섬유 쿼터는 직접 확인합니다.' },
   custom: { label: '직접 정의한 품목', hts: '', scope: '품목·원산지별로 검토한 현행 합산 종가세율을 직접 입력하세요.' },
+  'power-cable': { label: '초고압 전력 케이블', hts: '', scope: '도체·전압·절연·커넥터·원산지를 확인하세요. 대표 알루미늄 케이블의 HTS·세율을 자동 적용하지 않습니다.' },
+  'submarine-cable': { label: '해저 전력 케이블', hts: '', scope: '도체·전압·절연·구조에 따른 실제 분류와 합산 관세를 확인하세요.' },
+  'industrial-cable': { label: '산업용 전선', hts: '', scope: '전압·용도·도체·커넥터에 따른 실제 분류와 관세를 확인하세요.' },
+  'hot-rolled': { label: '특정 열연 평판강', hts: '', scope: '성분·두께·폭·가공·원산지와 AD/CVD·232 적용을 개별 확인하세요.' },
+  'welded-pipe': { label: '대구경 용접강관', hts: '', scope: '직경·소재·용도·제외 조건을 확인하세요. OCTG와 동일하지 않습니다.' },
+  octg: { label: '유정용 강관 · OCTG', hts: '', scope: 'OCTG 사건·제품 범위를 별도로 확인하세요. 대구경 용접강관의 세율을 대신 쓰지 않습니다.' },
+  'truck-tire': { label: '트럭·버스 타이어', hts: '', scope: '차종·사양·원산지·사건 범위를 확인하세요. 승용차·경트럭 타이어 공고를 자동 적용하지 않습니다.' },
+  'carbon-fiber': { label: '탄소섬유', hts: '', scope: '섬유·직물·프리프레그 등 실제 형태를 확인하세요. 폴리에스터 타이어코드 HTS·탄력성·관세를 대신 쓰지 않습니다.' },
+  aramid: { label: '아라미드', hts: '', scope: '원사·직물 등 형태와 원산지에 맞는 관세·제품 범위를 확인하세요.' },
+  sap: { label: '고흡수성 수지 · SAP', hts: '', scope: '성분·형태·명령의 서술 범위를 확인하세요. 다른 석유화학 제품 전체에 확대하지 않습니다.' },
 };
 const EU = new Set(['DEU', 'FRA', 'AUT', 'NLD', 'POL', 'ITA', 'SWE', 'SVK', 'PRT']);
 const ten = new Set(['IND', 'GBR', 'KHM', 'MYS', 'IDN']);

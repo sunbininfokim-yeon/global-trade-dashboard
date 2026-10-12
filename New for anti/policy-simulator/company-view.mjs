@@ -1,7 +1,7 @@
 import { simulateCompany, COMPANY_SOURCES, COMPANY_MODEL_VERSION } from './company-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, newRow, policyOptions, tariffPair, missingPolicyReason } from './policy-catalog.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
-import { COMPANY_PROFILES, companyCalibration } from './company-profiles.mjs';
+import { COMPANY_PROFILES, COMPANY_INDUSTRIES, companyCalibration, companyADLink } from './company-profiles.mjs';
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, p = 2) => v == null ? '산출 불가' : Number(v).toLocaleString('ko-KR', { minimumFractionDigits: p, maximumFractionDigits: p });
@@ -12,16 +12,26 @@ const initial = (profileId = 'hyosung') => ({ profile_id: profileId, company: CO
   capacity: '', competitor_price: '', response_mode: 'manual', policy_confirmed: false, country_inputs: null,
   tariff: newRow(COMPANY_PROFILES[profileId]?.product || 'custom', ''), source_note: '기업 공식 재무는 참고용입니다. 이 제품의 실제 미국향 거래·원가·계약 자료를 입력하세요. 반응 계수는 사용자 가정입니다.' });
 let draft = initial(), result = null, dirty = true, error = '';
+let companyQuery = '';
+function companyOptions() {
+  const query = companyQuery.trim().toLocaleLowerCase();
+  const candidates = Object.entries(COMPANY_PROFILES).filter(([id, p]) => id === draft.profile_id || [p.name, p.official_name || '', p.products].some(x => x.toLocaleLowerCase().includes(query)));
+  return options({ ...Object.fromEntries(candidates.map(([id, p]) => [id, p.name])), manual: '다른 기업 · 직접 입력' }, draft.profile_id);
+}
 export function selectCompanyProfile(profileId, product = COMPANY_PROFILES[profileId]?.product) {
   if (!COMPANY_PROFILES[profileId] || !PRODUCTS[product]) return;
   draft = { ...initial(profileId), product, tariff: newRow(product, '') };
+  companyQuery = '';
   result = null; dirty = true; error = '';
 }
 function publicContext() {
   const p = COMPANY_PROFILES[draft.profile_id];
   if (!p) return '<p class="ts-help">분석할 실제 기업·제품의 자료를 입력하세요. 제품별 미국 판매와 원가는 별도 자료가 필요합니다.</p>';
-  const f = p.financial, ad = p.ad && draft.product === p.product;
-  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p><div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p><p>${esc(p.note)}</p><p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 위 재무 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
+  const f = p.financial, ad = companyADLink(draft.profile_id, draft.product);
+  const productSource = COMPANY_INDUSTRIES.find(i => i.product === draft.product && i.profiles.includes(p.id))?.source;
+  const context = f ? `<div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p>`
+    : `<p class="ts-unverified">재무 미수록 · 관보의 법인·제품·재심 자료만 확인했습니다.</p><p class="ts-help">${esc(p.official_name)} · <a href="${esc(p.source.url)}" target="_blank" rel="noopener noreferrer">${esc(p.source.title)}</a> · 확인 ${esc(p.source.checked_on)}</p>`;
+  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p>${context}<p>${esc(p.note)}</p>${productSource ? `<p class="ts-help">선택 품목의 별도 근거: <a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a> · 확인 2026-10-12</p>` : ''}<p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 공개 재무·관보 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
 }
 function field(key, label, min, max, help = '', optional = false) {
   return `<label>${label}<input type="number" inputmode="decimal" step="any" data-company-key="${key}" aria-label="기업 ${label}" value="${esc(draft[key])}" min="${min}" max="${max}"${optional ? '' : ' required'}>${help ? `<small>${help}</small>` : ''}</label>`;
@@ -48,7 +58,7 @@ function tariffEditor() {
 }
 function editor() {
   const p = PRODUCTS[draft.product], isProxy = draft.response_mode === 'country';
-  return `<form data-company-form novalidate><label>실제 기업 선택<select data-company-profile aria-label="실제 기업 선택">${options({ ...Object.fromEntries(Object.entries(COMPANY_PROFILES).map(([id, p]) => [id, p.name])), manual: '다른 기업 · 직접 입력' }, draft.profile_id)}</select></label>${publicContext()}<div class="ts-fields">
+  return `<form data-company-form novalidate><label>기업명·품목으로 찾기<input type="search" data-company-search aria-label="기업 목록 검색" maxlength="100" value="${esc(companyQuery)}" placeholder="기업명 또는 제품명"></label><label>실제 기업 선택<select data-company-profile aria-label="실제 기업 선택">${companyOptions()}</select></label>${publicContext()}<div class="ts-fields">
     <label class="ts-wide">기업·사업 이름<input data-company-key="company" aria-label="기업 이름" value="${esc(draft.company)}" maxlength="100"${draft.profile_id !== 'manual' ? ' readonly' : ''} required><small>공시 참고 자료와 이 제품의 거래 입력은 구분합니다.</small></label>
     <label>분석 품목<select data-company-key="product" aria-label="기업 분석 품목">${options(Object.fromEntries(Object.entries(PRODUCTS).map(([id, v]) => [id, v.label])), draft.product)}</select></label>
     <label>제품 원산지<select data-company-key="origin" aria-label="기업 제품 원산지" required>${options({ '': '제품 원산지 선택', ...Object.fromEntries(Object.entries(COUNTRIES).filter(([id]) => id !== 'ROW')) }, draft.origin)}</select><small>기업 본사 소재지가 아닌 제품의 실제 원산지</small></label>
@@ -89,7 +99,7 @@ function results() {
     </div>`;
 }
 export function companyMarkup() {
-  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">${Object.keys(COMPANY_PROFILES).length}개 실제 기업 · 공식 자료</span></div>
+  return `<div data-company-simulator><div class="ts-intro"><div><span class="ts-eyebrow">기업 · 한 제품 · 한 원산지</span><h1>관세 부담을 나누면, 제품 손익은 어떻게 바뀔까요?</h1><p>가격 전가·단가 인하·고객 전환과 원가를 함께 비교합니다.</p></div><span class="ts-badge">${Object.keys(COMPANY_PROFILES).length}개 기업·법인그룹 · 공식 자료</span></div>
     <p class="ts-model-source">계산 근거: 기업 가격·손익의 명시적 산식. 국가 연결은 <a href="https://www.usitc.gov/ces_tariff_model" target="_blank" rel="noopener noreferrer">USITC CES 기반 시장 반응</a>을 참고합니다.</p>
     <div class="ts-basis"><strong>제품 손익 스트레스 테스트</strong> 관세는 ${POLICY_AS_OF} 부분 검토 스냅샷. 기업 원가·계약·탄력성은 사용자 가정입니다. 입력값은 브라우저 안에서만 계산합니다.</div>
     <div class="ts-layout"><section class="ts-editor" aria-label="기업 시나리오 입력"><div class="ts-panel-title"><span>02</span><h2>기업의 판매와 원가를 입력하세요</h2></div><div data-company-editor>${editor()}</div></section><section class="ts-results" data-company-results aria-label="기업 계산 결과">${results()}</section></div>
@@ -115,7 +125,8 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
   const unconfirm = () => { draft.policy_confirmed = false; const c = root.querySelector('[data-company-key="policy_confirmed"]'); if (c) c.checked = false; };
   root.addEventListener('input', event => {
     const el = event.target;
-    if (el.hasAttribute('data-company-profile')) { draft = initial(el.value); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
+    if (el.hasAttribute('data-company-search')) { companyQuery = el.value; root.querySelector('[data-company-profile]').innerHTML = companyOptions(); }
+    else if (el.hasAttribute('data-company-profile')) { draft = initial(el.value); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
     else if (el.dataset.companyKey) {
       const key = el.dataset.companyKey;
       draft[key] = key === 'policy_confirmed' ? el.checked : el.value;
@@ -144,14 +155,14 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
       clearFormErrors(root);
       const p = tariffPair(draft.product, draft.tariff);
       const next = simulateCompany({ ...draft, ...p, tariff_provenance: { ...p.provenance, ...(draft.tariff.linked_provenance ? { status: 'linked_country_scenario', linked_provenance: draft.tariff.linked_provenance } : {}) },
-        calibration: { policy_as_of: POLICY_AS_OF, hts: PRODUCTS[draft.product].hts || null, scope: PRODUCTS[draft.product].scope, ...companyCalibration(draft.profile_id) } });
+        calibration: { policy_as_of: POLICY_AS_OF, hts: PRODUCTS[draft.product].hts || null, scope: PRODUCTS[draft.product].scope, ...companyCalibration(draft.profile_id, draft.product) } });
       result = next; dirty = false; error = ''; root.querySelector('[data-company-results]').innerHTML = results(); root.querySelector('[data-company-error]').hidden = true;
     } catch (err) { markDirty(); fail(err); }
   }, { signal });
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
-    if (button.hasAttribute('data-company-ad')) { const p = COMPANY_PROFILES[draft.profile_id], ad = p?.ad; if (ad && draft.product === p.product) openAntidumping?.(ad); }
-    else if (button.hasAttribute('data-company-reset')) { draft = initial(); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
+    if (button.hasAttribute('data-company-ad')) { const ad = companyADLink(draft.profile_id, draft.product); if (ad) openAntidumping?.(ad); }
+    else if (button.hasAttribute('data-company-reset')) { companyQuery = ''; draft = initial(); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
     else if (button.hasAttribute('data-company-link')) {
       markDirty();
       try {

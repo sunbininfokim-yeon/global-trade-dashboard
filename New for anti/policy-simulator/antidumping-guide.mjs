@@ -3,6 +3,7 @@ import { lookupAD } from './antidumping-model.mjs';
 
 // Demonstration transaction totals, not estimated industry averages or company sales.
 export const AD_EXAMPLES = {
+  'A-580-914': { label: '고흡수성 수지 · SAP', value: '100000', note: '10만 USD의 SAP 거래 총액 예시입니다. LG화학 실제 거래가나 산업 평균이 아닙니다.' },
   'A-580-883': { label: '철강 · 열연강판', value: '100000', note: '10만 USD의 열연강판 거래 총액 예시입니다. 산업 평균이나 현대제철·포스코의 실제 거래가가 아닙니다.' },
   'A-580-897': { label: '강관 · 대구경 용접강관', value: '100000', note: '10만 USD의 강관 거래 총액 예시입니다. 강관 1개 가격·산업 평균·회사 실제 거래가가 아닙니다.' },
   'A-580-867': { label: '대형 전력용 변압기', value: '1000000', note: '100만 USD 규모의 거래를 비교하는 예시입니다. 변압기 1대의 평균 가격이나 효성·LS의 실제 거래가가 아닙니다.' },
@@ -56,6 +57,20 @@ export const AD_PROCESS_SOURCES = {
 // Actual progress requires a sourced event for this case AND this review period.
 // Neither an event in another POR nor the passage of a deadline completes a stage.
 export const AD_REVIEW_RECORDS = [
+  { id: 'sap-2023-24', case_id: 'A-580-914', por_start: '2023-12-01', por_end: '2024-11-30', companies: ['lg-chem'],
+    events: [{ stage: 'preliminary', date: '2026-05-22', source: '2026-19625', note: '최종 공고 Background가 인용한 예비결과 발행일입니다.' },
+      { stage: 'final', date: '2026-09-25', source: '2026-19625', note: 'LG Chem, Ltd. 0.00% 최종 마진. 실제 수입 정산·법원 판단 완료를 뜻하지 않습니다.' }],
+    deposit: { date: '2026-09-25', source: '2026-19625' } },
+  { id: 'welded-pipe-nonselected-2024-25', case_id: 'A-580-897', por_start: '2024-05-01', por_end: '2025-04-30', companies: ['chang-won', 'dong-yang', 'eew-korea', 'histeel', 'hyundai-rb', 'nexteel'],
+    events: [{ stage: 'initiation', date: '2025-06-25', source: '2026-15399', note: '예비 공고 Background가 인용한 재심 개시일입니다.' },
+      { stage: 'preliminary', date: '2026-07-30', source: '2026-15399', note: 'Appendix III의 비선정 6개사에 예비 마진 0.80%를 배정했습니다. 개별조사 기업으로 선정되었다는 뜻이 아니며 미래 예치율 변경도 아닙니다.' }] },
+  { id: 'welded-pipe-rescinded-2024-25', case_id: 'A-580-897', por_start: '2024-05-01', por_end: '2025-04-30',
+    companies: ['aju', 'daiduck', 'dongbu', 'eew-khpc', 'geumok', 'hansol', 'husteel', 'il-jin-nts', 'kiduck', 'kum-kang', 'kumsoo', 'seonghwa', 'sin-e', 'steel-flower', 'weltech'],
+    events: [{ stage: 'initiation', date: '2025-06-25', source: '2026-15399', note: '해당 POR의 재심 개시일입니다.' }],
+    status: 'rescinded', status_event: { date: '2026-07-30', source: '2026-15399', note: 'Appendix II의 15개사는 이 POR에 재심 대상 거래가 없어 재심이 철회되었습니다. 0% 판정·반덤핑 명령 폐지·관세 정산 완료를 뜻하지 않습니다.' } },
+  { id: 'welded-pipe-nonselected-2023-24', case_id: 'A-580-897', por_start: '2023-05-01', por_end: '2024-04-30',
+    companies: AD_CATALOG.cases.find(c => c.case_id === 'A-580-897').companies.filter(c => !['hyundai-pipe', 'seah'].includes(c.id)).map(c => c.id),
+    events: [{ stage: 'final', date: '2026-05-01', source: '2026-08489', note: 'Appendix II의 비선정 21개사 최종 배정 마진 0.80%. 해당 법인의 미래 통관 예치율은 별도로 확인하지 않았습니다.' }] },
   { id: 'hot-rolled-2023-24', case_id: 'A-580-883', por_start: '2023-10-01', por_end: '2024-09-30', companies: ['hyundai-steel', 'posco-pic'],
     events: [{ stage: 'preliminary', date: '2026-01-08', source: '2026-09707', note: '최종 공고 Background가 인용한 예비결과 발행일입니다.' },
       { stage: 'final', date: '2026-05-14', source: '2026-09707', note: '현대제철 1.49%, POSCO/PIC 1.22% 최종결과. CBP 정산·법원 판단의 완료를 뜻하지 않습니다.' }],
@@ -124,10 +139,10 @@ export function reviewProgress(caseId, recordId) {
   const r = AD_REVIEW_RECORDS.find(r => r.case_id === caseId && r.id === recordId);
   if (!r) throw new Error('선택한 사건의 재심 기록을 확인하세요.');
   const last = AD_PROCESS_STEPS.review.findLast(s => r.events.some(e => e.stage === s.id));
-  return { ...structuredClone(r), checked_on: AD_CATALOG.checked_on, latest_stage: last.id,
+  return { ...structuredClone(r), checked_on: AD_CATALOG.checked_on, latest_stage: r.status === 'rescinded' ? 'rescinded' : last.id,
     stages: AD_PROCESS_STEPS.review.map(s => {
       const event = r.events.find(e => e.stage === s.id);
-      return { ...s, state: event ? (s.id === last.id ? 'latest' : 'confirmed') : 'unknown', event: event ? { ...event, document: structuredClone(AD_CATALOG.documents[event.source]) } : null };
+      return { ...s, state: event ? (s.id === last.id && r.status !== 'rescinded' ? 'latest' : 'confirmed') : 'unknown', event: event ? { ...event, document: structuredClone(AD_CATALOG.documents[event.source]) } : null };
     }),
     // This curated dataset has no verified docket for these PORs. Empty is not proof of no lawsuit.
     litigation: AD_PROCESS_STEPS.litigation.map(s => ({ ...s, state: 'unknown', event: null })),

@@ -112,6 +112,15 @@ export const AD_CATALOG = {
       "url": "https://www.govinfo.gov/content/pkg/FR-2026-07-30/html/2026-15399.htm",
       "notes": "두 개별조사 기업의 예비 마진은 0%. 예비결과가 SeAH의 기존 최종 예치 참고율 0.80%를 변경하지 않습니다.",
       "verified_on": "2026-10-12"
+    },
+    "2026-19625": {
+      "document_id": "2026-19625",
+      "published": "2026-09-25",
+      "kind": "review_final",
+      "title": "한국산 고흡수성 수지(SAP) 2023–2024 최종결과",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-09-25/pdf/2026-19625.pdf",
+      "notes": "LG Chem, Ltd. 0.00% 최종 마진과 발행일부터 0% 예치 조건. 원 명령 범위는 인용 결정문에서 별도 확인.",
+      "verified_on": "2026-10-12"
     }
   },
   "cases": [
@@ -426,6 +435,132 @@ export const AD_CATALOG = {
           "name": "세아제강",
           "official_name": "SeAH Steel Corporation",
           "aliases": []
+        },
+        {
+          "id": "aju",
+          "name": "AJU Besteel Co., Ltd.",
+          "official_name": "AJU Besteel Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "chang-won",
+          "name": "Chang Won Bending Co., Ltd.",
+          "official_name": "Chang Won Bending Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "daiduck",
+          "name": "Daiduck Piping Co., Ltd.",
+          "official_name": "Daiduck Piping Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "dong-yang",
+          "name": "Dong Yang Steel Pipe Co., Ltd.",
+          "official_name": "Dong Yang Steel Pipe Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "dongbu",
+          "name": "Dongbu Incheon Steel Co., Ltd.",
+          "official_name": "Dongbu Incheon Steel Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "eew-khpc",
+          "name": "EEW KHPC Co., Ltd.",
+          "official_name": "EEW KHPC Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "eew-korea",
+          "name": "EEW Korea Co., Ltd.",
+          "official_name": "EEW Korea Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "geumok",
+          "name": "Geumok Tech. Co. Ltd.",
+          "official_name": "Geumok Tech. Co. Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "hansol",
+          "name": "Hansol Metal Co. Ltd.",
+          "official_name": "Hansol Metal Co. Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "histeel",
+          "name": "하이스틸",
+          "official_name": "HiSteel Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "husteel",
+          "name": "휴스틸",
+          "official_name": "Husteel Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "hyundai-rb",
+          "name": "Hyundai RB Co., Ltd.",
+          "official_name": "Hyundai RB Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "il-jin-nts",
+          "name": "Il Jin Nts Co. Ltd.",
+          "official_name": "Il Jin Nts Co. Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "kiduck",
+          "name": "Kiduck Industries Co., Ltd.",
+          "official_name": "Kiduck Industries Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "kum-kang",
+          "name": "Kum Kang Kind. Co., Ltd.",
+          "official_name": "Kum Kang Kind. Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "kumsoo",
+          "name": "Kumsoo Connecting Co., Ltd.",
+          "official_name": "Kumsoo Connecting Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "nexteel",
+          "name": "넥스틸",
+          "official_name": "Nexteel Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "seonghwa",
+          "name": "Seonghwa Industrial Co., Ltd.",
+          "official_name": "Seonghwa Industrial Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "sin-e",
+          "name": "SIN-E B&P Co., Ltd.",
+          "official_name": "SIN-E B&P Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "steel-flower",
+          "name": "Steel Flower Co., Ltd.",
+          "official_name": "Steel Flower Co., Ltd.",
+          "aliases": []
+        },
+        {
+          "id": "weltech",
+          "name": "WELTECH Co., Ltd.",
+          "official_name": "WELTECH Co., Ltd.",
+          "aliases": []
         }
       ],
       "scope": {
@@ -453,9 +588,177 @@ export const AD_CATALOG = {
               "margin_pct": "0.80",
               "examined": true,
               "entirely_facts_available": false
+            },
+            {
+              "company_id": "aju",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "chang-won",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "daiduck",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "dong-yang",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "dongbu",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "eew-khpc",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "eew-korea",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "geumok",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "hansol",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "histeel",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "husteel",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "hyundai-rb",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "il-jin-nts",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "kiduck",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "kum-kang",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "kumsoo",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "nexteel",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "seonghwa",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "sin-e",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "steel-flower",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "weltech",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
             }
           ],
-          "reason": "개별조사 기업 현대스틸파이프 0%, 세아제강 0.80%. 공고 각주 2의 현대제철 승계 설명을 다른 사건·법인에 자동 적용하지 않습니다. 사후 정산액·CVD·추가 관세와 구분합니다.",
+          "reason": "개별조사 기업 현대스틸파이프 0%, 세아제강 0.80%. 공고 각주 2의 현대제철 승계 설명을 다른 사건·법인에 자동 적용하지 않습니다. 사후 정산액·CVD·추가 관세와 구분합니다. Appendix II/III의 비선정 기업도 별도로 수록했습니다. 배정 마진과 미래 통관 예치율을 동일하다고 자동 판단하지 않습니다.",
           "rule_basis": "해당 공고의 Final/Preliminary Results와 Cash Deposit Requirements · 19 U.S.C. §1675(a)(2)(C)"
         },
         {
@@ -476,10 +779,107 @@ export const AD_CATALOG = {
               "margin_pct": "0",
               "examined": true,
               "entirely_facts_available": false
+            },
+            {
+              "company_id": "chang-won",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "dong-yang",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "eew-korea",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "histeel",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "hyundai-rb",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
+            },
+            {
+              "company_id": "nexteel",
+              "margin_pct": "0.80",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null,
+              "deposit_note": "이 POR의 비선정 배정 마진은 0.80%입니다. 해당 법인의 미래 통관 예치율 적용 조건은 별도로 확인하지 않아 자동 계산하지 않습니다."
             }
           ],
-          "reason": "다음 POR의 두 조사기업 예비 마진은 0%입니다. 새 예치 조건은 최종결과 공표 후 발효하므로 이 예비결과만으로 기존 예치 참고율을 바꾸지 않습니다.",
+          "reason": "다음 POR의 두 조사기업 예비 마진은 0%입니다. 새 예치 조건은 최종결과 공표 후 발효하므로 이 예비결과만으로 기존 예치 참고율을 바꾸지 않습니다. Appendix II/III의 비선정 기업도 별도로 수록했습니다. 배정 마진과 미래 통관 예치율을 동일하다고 자동 판단하지 않습니다. 15개사는 해당 POR의 거래 부재로 재심이 철회되었습니다. 무관세·명령 폐지 판정이 아닙니다.",
           "rule_basis": "해당 공고의 Final/Preliminary Results와 Cash Deposit Requirements · 19 U.S.C. §1675(a)(2)(C)"
+        }
+      ],
+      "reviews": [],
+      "litigation": [],
+      "featured_company_ids": [
+        "hyundai-pipe",
+        "seah",
+        "histeel",
+        "husteel",
+        "nexteel"
+      ]
+    },
+    {
+      "case_id": "A-580-914",
+      "product": "화학 소재 · 고흡수성 수지(SAP)",
+      "country": "KR",
+      "order_date": null,
+      "companies": [
+        {
+          "id": "lg-chem",
+          "name": "LG화학",
+          "official_name": "LG Chem, Ltd.",
+          "aliases": []
+        }
+      ],
+      "scope": {
+        "description": "한국산 특정 고흡수성 수지(SAP). 이 공고에는 범위 전문이 없으므로 인용된 원 명령·예비 결정문에서 성분·형태·포함 및 제외 조건을 확인해야 합니다. 다른 LG화학 제품이나 석유화학 전체에 적용하지 않습니다.",
+        "document_id": "2026-19625",
+        "hts": [],
+        "automatic_determination": false
+      },
+      "segments": [
+        {
+          "document_id": "2026-19625",
+          "por_start": "2023-12-01",
+          "por_end": "2024-11-30",
+          "stage": "final",
+          "cash_deposit_effective": "2026-09-25",
+          "rates": [
+            {
+              "company_id": "lg-chem",
+              "margin_pct": "0.00",
+              "deposit_rate_pct": "0",
+              "examined": true,
+              "entirely_facts_available": false
+            }
+          ],
+          "reason": "최종 공고가 LG Chem, Ltd. 0.00%와 발행일부터 0% 현금예치 조건을 명시합니다. 원산지·제품·수출자/생산자 적용 조건을 확인해야 하며 다른 기업에 0%를 확대하지 않습니다.",
+          "rule_basis": "2026-19625 Final Results / Cash Deposit Requirements · §751(a)(2)(C)"
         }
       ],
       "reviews": [],

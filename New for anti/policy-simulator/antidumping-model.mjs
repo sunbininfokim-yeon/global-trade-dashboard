@@ -29,9 +29,11 @@ export function lookupAD(input, catalog = AD_CATALOG) {
   const segment = candidates.sort((a, b) => b.cash_deposit_effective.localeCompare(a.cash_deposit_effective))[0];
   if (!segment) return { ...base, reason: '이 날짜·기업의 최종 공고가 수록되지 않았습니다. 미확인을 0%로 계산하지 않습니다.' };
   const rate = segment.rates.find(r => r.company_id === company.id);
-  return { ...base, status: 'published_reference', rate_pct: Number(rate.margin_pct) < 0.5 ? '0' : rate.margin_pct, margin_pct: rate.margin_pct,
-    effective: segment.cash_deposit_effective, por_start: segment.por_start, por_end: segment.por_end, examined: rate.examined,
-    document: structuredClone(catalog.documents[segment.document_id]), reason: segment.reason };
+  const evidence = { margin_pct: rate.margin_pct, por_start: segment.por_start, por_end: segment.por_end, examined: rate.examined,
+    document: structuredClone(catalog.documents[segment.document_id]) };
+  if (rate.deposit_rate_pct === null) return { ...base, ...evidence, reason: rate.deposit_note };
+  return { ...base, ...evidence, status: 'published_reference', rate_pct: rate.deposit_rate_pct ?? (Number(rate.margin_pct) < 0.5 ? '0' : rate.margin_pct),
+    effective: segment.cash_deposit_effective, reason: segment.reason };
 }
 export function simulateDeposit(input) {
   if (input.scope_confirmed !== true) throw new Error('제품 범위와 실제 원산지의 포함 조건을 확인해 주세요.');

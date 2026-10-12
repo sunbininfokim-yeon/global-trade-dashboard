@@ -7,7 +7,7 @@ import { simulateCompany } from '../../New for anti/policy-simulator/company-mod
 const lookup = (company_id = 'ls', entry_date = '2026-10-11', case_id = 'A-580-867') => lookupAD({ company_id, entry_date, case_id });
 const scenario = extra => ({ case_id: 'A-580-867', company_id: 'ls', entry_date: '2026-10-11', entered_value_usd: '1000000', scenario_rate_pct: '16.87', annual_finance_pct: '5', holding_days: '180', scope_confirmed: true, identity_confirmed: true, ...extra });
 test('curated catalog has unique official document and company keys; only final notices have effective deposit rates', () => {
-  const ids = new Set(); assert.equal(AD_CATALOG.cases.length, 4);
+  const ids = new Set(); assert.equal(AD_CATALOG.cases.length, 5);
   for (const c of AD_CATALOG.cases) {
     assert.equal(new Set(c.companies.map(x => x.id)).size, c.companies.length);
     for (const s of c.segments) {
@@ -74,9 +74,11 @@ test('missing weights do not become a silent average; equal weights are an expli
   assert.throws(() => nonSelectedScenario({ rows: [] })); assert.throws(() => nonSelectedScenario({ rows: [{ margin_pct: '10', weight: '0' }, { margin_pct: '20', weight: '0' }] }));
 });
 test('seven named companies have official financial context, consistent KRW units and no invented US product data', () => {
-  assert.equal(Object.keys(COMPANY_PROFILES).length, 7);
+  assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial).length, 7);
+  assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial === null).length, 30);
   for (const p of Object.values(COMPANY_PROFILES)) {
-    assert.equal(p.financial.unit, 'KRW million'); assert.equal(p.financial.use, 'context_only'); assert.match(p.financial.source_url, /^https:/);
+    if (p.financial) { assert.equal(p.financial.unit, 'KRW million'); assert.equal(p.financial.use, 'context_only'); assert.match(p.financial.source_url, /^https:/); }
+    else { assert.match(p.source.url, /^https:\/\/www.govinfo.gov\//); assert.ok(p.official_name); }
     for (const key of ['product_origin', 'product_price', 'product_quantity', 'product_variable_cost', 'product_fixed_cost']) assert.equal(p[key], null);
   }
   assert.equal(COMPANY_PROFILES['ls-cable'].ad, null); assert.equal(COMPANY_PROFILES.hyosung.ad.case_id, 'A-580-867'); assert.equal(COMPANY_PROFILES.hankook.ad.case_id, 'A-580-908');
