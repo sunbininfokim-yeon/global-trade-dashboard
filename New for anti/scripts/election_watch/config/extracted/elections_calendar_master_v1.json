@@ -1,7 +1,7 @@
 {
   "schema": "elections_calendar_master_v1",
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-16T11:46:28.658479+00:00",
+  "as_of": "2026-10-12",
+  "generated_at": "2026-10-12T10:28:44.915042+00:00",
   "sources": [
     "config/calendars/*_2026.json (board tracked countries)",
     "https://en.wikipedia.org/wiki/2026_national_electoral_calendar",
@@ -1686,8 +1686,9 @@
       "sources": [
         "bundeswahlleiterin",
         "sachsen_anhalt_faq",
-        "https://wahlergebnisse.sachsen-anhalt.de/wahlen/lt26/erg_land.html",
-        "https://www.tagesschau.de/inland/innenpolitik/landtagswahl-sachsen-anhalt-180.html"
+        "https://wahlergebnisse.sachsen-anhalt.de/wahlen/lt26/downloads/Sitzverteilung_LT_2026.csv",
+        "https://wahlen.sachsen-anhalt.de/fileadmin/Bibliothek/Politik_und_Verwaltung/MI/wahlen/Pressemitteilungen/2026_09_22_Endgueltiges_Ergebnis_der_Landtagswahl_festgestellt.pdf",
+        "https://www.landtag.sachsen-anhalt.de/artikel/sachsen-anhalt-waehlte-einen-neuen-landtag"
       ],
       "system_id": "deu-landtag-st",
       "contested_ko": "주의회 정수 97",
@@ -1739,9 +1740,9 @@
           "https://wahlen.sachsen-anhalt.de/fileadmin/Bibliothek/Politik_und_Verwaltung/MI/wahlen/Pressemitteilungen/2021_06_21_Endgueltiges_Wahlergebnis.pdf"
         ]
       },
-      "result": "AfD 39 · CDU 15 · SPD 8 · GRÜNE 8 · LINKE 8 · BSW 5 (잠정)",
-      "result_summary": "2026-09-06. 잠정 확정(vorläufiges Endergebnis): 제2표 AfD 43.8 · CDU 17.2 · SPD 9.3. 주선관위 최종 공고 전.",
-      "notes": "의석은 tagesschau가 전한 잠정 배분. 최종은 wahlergebnisse.sachsen-anhalt.de 공고로 교체.",
+      "result": "AfD 39 · CDU 15 · SPD 8 · GRÜNE 8 · LINKE 8 · BSW 5 (83석)",
+      "result_summary": "2026-09-06 투표, 2026-09-22 주선거위원회 확정. 투표율 77.8%. 제2표: AfD 43.79, CDU 17.23, SPD 9.30, GRÜNE 8.93, LINKE 8.56, BSW 5.27. 의석은 공식 의석표(전체 83). FDP 2.58%는 봉쇄 미달이라 의석 칸을 두지 않음. 주의회 보도는 잠정 의석과 동일하다고 밝힘.",
+      "notes": "previous.vote_pct 는 2021년 제2표. contested_ko 의 97은 2021년 의회 규모이고, 2026년 확정 의회는 83석.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -1780,14 +1781,18 @@
       "type": "local",
       "label_ko": "오키나와현 지사",
       "date": "2026-09-13",
-      "status": "scheduled",
+      "status": "completed",
       "level": "prefecture_governor",
-      "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
-      "sources": [
-        "go2senkyo_2026"
-      ],
       "system_id": "jpn-prefecture-governor",
       "contested_ko": "지사 1인",
+      "winner": "古謝げんた (무소속)",
+      "result": "古謝げんた 423,124 · 玉城デニー 276,060",
+      "result_summary": "2026-09-13 투개표. 현 선관위 개표속보(2026-09-16 오키나와시 보고 정정): 유효 712,120. 고사 겐타(무소속) 423,124, 다마키 데니(무소속) 276,060. 투표율 퍼센트는 이 속보 PDF에 없어 적지 않음.",
+      "notes": "고사는 자민·유신·국민·참정·보수·공명 현본부가 추천. 추천은 보도(니케이·오키나와타임스)이고 득표는 현 선관위 PDF.",
+      "sources": [
+        "go2senkyo_2026",
+        "https://www.pref.okinawa.lg.jp/_res/projects/default_project/_page_/001/040/303/chijisenkaihyou_teisei.pdf"
+      ],
       "iso3": "JPN",
       "date_end": null
     },
@@ -1797,10 +1802,10 @@
       "label_ko": "국가두마 투표 개시",
       "date": "2026-09-18",
       "date_end": "2026-09-20",
-      "status": "scheduled",
+      "status": "completed",
       "system_id": "rus-duma",
       "contested_ko": "전체 450석 — 3일 투표(18–20)의 첫날",
-      "notes": "정본 선거일(대통령령)은 rus-2026-duma 의 2026-09-20. 이 행은 world_by_month (iso3, date) 조인용.",
+      "notes": "정본 선거일(대통령령)은 rus-2026-duma 의 2026-09-20. 의석 결과는 그 행. 이 행은 world_by_month (iso3, date) 조인용.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
@@ -1817,13 +1822,16 @@
         "2026-09-18",
         "2026-09-20"
       ],
-      "status": "scheduled",
-      "notes": "450 seats; decree day 09-20; voting 18–20 Sep. previous.vote_pct 는 2021 연방명부 득표율. 세계 타임라인 2026-09-18 행은 rus-2026-duma-voting-start 로 조인.",
+      "status": "completed",
+      "notes": "450 seats; decree day 09-20; voting 18–20 Sep. previous.vote_pct 는 2021 연방명부 득표율. 2026 의석은 두마가 전한 중앙선관위 의석이고 연방명부 득표율은 이 보도에 없어 적지 않음. 세계 타임라인 2026-09-18 행은 rus-2026-duma-voting-start 로 조인.",
+      "result": "UR 349 · CPRF 37 · LDPR 23 · NL 19 · SR 17 · Rodina 1 · 무소속 4",
+      "result_summary": "투표 2026-09-18..20. 중앙선관위가 2026-09-25 집계(국가두마 보도). 투표율 59.80%. 통합러시아 349(개헌 과반), 공산 37, 자민 23, 새로운 사람들 19, 정의러시아 17, 조국 1, 무소속 4.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
         "tass_2026-06-16",
-        "invest_lens_elections"
+        "invest_lens_elections",
+        "http://duma.gov.ru/news/64124/"
       ],
       "market_significance_invest_lens": 1,
       "system_id": "rus-duma",
@@ -1943,10 +1951,12 @@
       "type": "local",
       "label_ko": "메클렌부르크포어포메른 주의회",
       "date": "2026-09-20",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "bundeswahlleiterin",
-        "landtag_mv"
+        "landtag_mv",
+        "https://www.landtag-mv.de/aktuelles/artikel/landtagswahl-2026-endgueltiges-amtliches-wahlergebnis-steht-fest",
+        "https://bundeswahlleiterin.de/service/landtagswahlen/land-13.html"
       ],
       "system_id": "deu-landtag-mv",
       "contested_ko": "법정 정수 71. 초과로 확대 가능",
@@ -1997,6 +2007,9 @@
           "https://www.laiv-mv.de/Wahlen/Landtagswahlen/2021/"
         ]
       },
+      "result": "AfD 32 · SPD 29 · LINKE 5 · GRÜNE 5 (71석)",
+      "result_summary": "2026-09-20 투표, 2026-09-30 주선거위원회 확정. 투표율 78.0%. 제2표: AfD 38.2, SPD 35.5, LINKE 6.5, GRÜNE 5.7. CDU 4.9·FDP 1.0은 5% 봉쇄 미달이라 의석 없음. 잠정 의석과 동일.",
+      "notes": "previous.vote_pct 는 2021년 제2표. 연방선거관리인 표의 의석 합계는 71.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -2005,9 +2018,11 @@
       "type": "local",
       "label_ko": "베를린 주의회(Abgeordnetenhaus)",
       "date": "2026-09-20",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
-        "bundeswahlleiterin"
+        "bundeswahlleiterin",
+        "https://www.berlin.de/wahlen/pressemitteilungen/2026/20260921_vorlaeufiges-ergebnis-festgestellt.pdf",
+        "https://www.tagesspiegel.de/berlin/dpa-wahlergebnis-steht-fest-amtlich-berliner-parlament-kleiner-als-zunachst-gedacht-16152248.html"
       ],
       "system_id": "deu-landtag-berlin",
       "contested_ko": "법정 정수 130. 초과·보정으로 확대 가능",
@@ -2052,7 +2067,9 @@
           "https://www.wahlen-berlin.de/"
         ]
       },
-      "notes": "직전은 2023-02-12 반복선거(2021 무효). 2026-09-20 실시 예정.",
+      "result": "LINKE 45 · CDU 33 · AfD 29 · GRÜNE 25 · SPD 21 (153석)",
+      "result_summary": "2026-09-20 투표. 2026-10-12 주선거위원회 확정(dpa): 제2표 LINKE 25.7 · CDU 18.8 · AfD 16.3 · GRÜNE 14.3 · SPD 12.1. 스판다우 1 재검표로 지역구가 CDU에서 AfD로 바뀌며 당초 잠정 158석이 153석이 됨. berlin.de 의석 PDF는 같은 날 조회 시 아직 잠정 158석 파일이었음.",
+      "notes": "직전은 2023-02-12 반복선거(2021 무효). 득표율 소수 한 자리는 위원회 확정을 전한 dpa. 보정 산식에 대한 이의는 위원회가 선거법을 근거로 기각.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -2061,11 +2078,15 @@
       "type": "general",
       "label_ko": "상원(Sénat) 간선",
       "date": "2026-09-27",
-      "status": "scheduled",
-      "notes": "간선. 일반 유권자 투표 아님. 일자 공고 전 캘린더는 date=불명 이었음.",
+      "status": "completed",
+      "notes": "간선. 아래 숫자는 시리즈 2 178석의 내무부 nuance 가 아니라, 2026-10-12 상원 사이트 기준 전체 348석의 교섭단체(본원+apparentés+rattachés)다. 둘을 합산하지 않음.",
+      "result": "LR 124 · UCI 63 · SER 62 · CRCE-K 18 · RDSE 18 · RDPI 16 · GEST 15 · LIRT 15 · UNT 15 · 무소속 2",
+      "result_summary": "2026-09-27 시리즈 2 178석 선출, 임기 2026-10-01. 2026-10-05 교섭단체 제출, 상원 명부 2026-10-12: LR 124, 중도·무소속연합 63, 사회·생태·공화 62, 공산 18, RDSE 18, RDPI 16, 생태 15, 무소속공화 15, 국민연합·UDR의 UNT 15, 비교섭 2.",
       "sources": [
         "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053925339",
         "https://senatoriales2026.senat.fr/",
+        "https://www.senat.fr/senateurs/grp.html",
+        "https://www.senat.fr/connaitre-le-senat/renouvellement-des-instances-du-senat-2026.html",
         "wiki_national_calendar_2026"
       ],
       "date_note": "décret n° 2026-301 (2026-04-21). world_by_month 기존 값 2026-09 을 일자로 맞춤.",
@@ -2079,11 +2100,12 @@
       "type": "general",
       "label_ko": "총선·대선 1차(대통령·의회·주지사)",
       "date": "2026-10-04",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "wiki_bra_2026",
         "tse",
-        "invest_lens_elections"
+        "invest_lens_elections",
+        "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica"
       ],
       "market_significance_invest_lens": 3,
       "system_id": "bra-president",
@@ -2121,7 +2143,10 @@
           "incumbent": false
         }
       ],
-      "notes": "1차 같은 날 하원·상원·주지사도 뽑는다. 하원 2022 의석은 bra-chamber 제도 행 참고. previous 는 대선 결선(의석 배분 기준이 아닌 유효표).",
+      "winner": "결선: Flávio Bolsonaro (PL) · Lula (PT)",
+      "result": "PL 47.03 · PT 45.16 (유효표, 개표 99.99%)",
+      "result_summary": "TSE 2026-10-05 00:11 기준 개표 99.99%. 플라비우 보우소나루(PL) 56,104,268표 47.03%, 룰라(PT) 53,876,617표 45.16%. 유효표 125,272,513. 백표 2,300,781(1.84%), 무효 3,674,149(2.93%). 총화 완료·당선 증서가 아님. 하원·상원·주지사 의석은 이 보도에 없어 적지 않음.",
+      "notes": "1차 같은 날 하원·상원·주지사도 뽑는다. 그 의석은 아직 이 행에 없음. previous 는 2022 대선 결선(의석 배분 기준이 아닌 유효표).",
       "iso3": "BRA",
       "date_end": null
     },
@@ -2170,8 +2195,8 @@
       "type": "general",
       "label_ko": "대선·주지사 결선(해당 시)",
       "date": "2026-10-25",
-      "status": "tentative",
-      "notes": "1차 과반 미달 시",
+      "status": "scheduled",
+      "notes": "TSE가 1차(개표 99.99% 시점)에서 플라비우 보우소나루(PL)와 룰라(PT)의 대선 결선을 확인. 주지사 결선 명단은 이 보도에 없음.",
       "sources": [
         "wiki_bra_2026",
         "tse"
