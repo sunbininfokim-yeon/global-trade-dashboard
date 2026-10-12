@@ -39,6 +39,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await field('산업 분야').selectOption('steel'); await click('강관 · 대구경 용접강관');
     await page.locator('[data-ad-all]>summary').click();
     await field('반덤핑 전체 기업 검색').fill('AJU'); await click('AJU Besteel Co., Ltd.');
+    assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), 'welded-pipe-2025-26');
+    assert.equal(await page.locator('[data-ad-stage=initiation]').getAttribute('data-state'), 'latest');
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-rescinded-2024-25');
     assert.ok(await page.locator('[data-ad-rescinded]').isVisible());
     await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-industries-desktop.png' });
     await page.setViewportSize({ width: 360, height: 844 });

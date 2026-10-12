@@ -121,6 +121,86 @@ export const AD_CATALOG = {
       "url": "https://www.govinfo.gov/content/pkg/FR-2026-09-25/pdf/2026-19625.pdf",
       "notes": "LG Chem, Ltd. 0.00% 최종 마진과 발행일부터 0% 예치 조건. 원 명령 범위는 인용 결정문에서 별도 확인.",
       "verified_on": "2026-10-12"
+    },
+    "2026-18185": {
+      "document_id": "2026-18185",
+      "published": "2026-09-04",
+      "kind": "initiation",
+      "title": "Initiation of Antidumping and Countervailing Duty Administrative Reviews",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-09-04/html/2026-18185.htm",
+      "notes": "제조사 3개 법인의 새 POR 개시를 연결했습니다. 별도로 나열된 미국 계열사는 제조사와 합치지 않으며 개별조사 선정·예치율 변경은 미확인입니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "059254c404721e5dc689e76f9f4265e7136c74eb2387382f5c467ad03f7ed959"
+    },
+    "2026-08285": {
+      "document_id": "2026-08285",
+      "published": "2026-04-29",
+      "kind": "rescission",
+      "title": "Passenger Vehicle and Light Truck Tires From the Republic of Korea: Rescission of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-04-29/html/2026-08285.htm",
+      "notes": "요청 철회에 따른 해당 POR 재심 철회입니다. 무관세·명령 폐지·CBP 정산 완료가 아니며 통관 당시 예치율에 따른 사후 부과 지시 예정과 구분합니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "5b9280ac41f33a172b3f35ed88dcfd32c01ffb3477e4cd51155b8afefc22b19a"
+    },
+    "2026-00190": {
+      "document_id": "2026-00190",
+      "published": "2026-01-08",
+      "kind": "review_preliminary",
+      "title": "Passenger Vehicle and Light Truck Tires From the Republic of Korea: Preliminary Results of Antidumping Duty Administrative Review; 2023-2024",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-01-08/html/2026-00190.htm",
+      "notes": "예비 마진 한국타이어 9.10%, 넥센 5.57%, 비선정 금호 7.34%와 개시일을 기록했습니다. 각주 4의 연도·각주 8의 메모 POR 불일치는 채택하지 않았습니다. 예치율은 변경하지 않습니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "da2656cb9b7d35513905881debea2b7643511a50e312d707c758ca1626cbbb13"
+    },
+    "2026-00181": {
+      "document_id": "2026-00181",
+      "published": "2026-01-08",
+      "kind": "review_preliminary",
+      "title": "Certain Hot-Rolled Steel Flat Products From the Republic of Korea: Preliminary Results and Rescission, In Part, of Antidumping Duty Administrative Review; 2023-2024",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-01-08/html/2026-00181.htm",
+      "notes": "현대제철 1.49%, POSCO/PIC 단일 법인그룹 1.22%의 예비 마진과 개시일을 기록했습니다. 다른 46개사의 부분 철회를 이 두 응답기업에 적용하지 않습니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "a2187e9a065ced2eaf61a3ad6f84ea6c2ed4790b0e2a26a82c66571e6c86d0dd"
+    },
+    "2025-24273": {
+      "document_id": "2025-24273",
+      "published": "2026-01-05",
+      "kind": "initiation",
+      "title": "Initiation of Antidumping and Countervailing Duty Administrative Reviews",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-01-05/html/2025-24273.htm",
+      "notes": "현대제철 및 POSCO·PIC가 각각 개시 목록에 있습니다. 기존 POSCO/PIC 프로필에 두 명칭의 개시 사실만 연결하며 이번 POR의 단일기업 취급·선정·새 세율은 확정하지 않습니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "16578bb9274b4a68a96631cc26282094d63d1e2ba9cc4723b8015cee460eb6cd"
+    },
+    "2026-13892": {
+      "document_id": "2026-13892",
+      "published": "2026-07-09",
+      "kind": "initiation",
+      "title": "Initiation of Antidumping and Countervailing Duty Administrative Reviews",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-07-09/html/2026-13892.htm",
+      "notes": "공고의 28개 명칭 중 수록한 23개 법인의 개시를 연결했습니다. HISTEEL/H Steel 표기는 원문 병기 기준입니다. 다른 5개사에 세율을 복사하지 않으며 이번 POR의 선정·예비·최종결과는 미확인입니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "759f253458b15ba027657154a03210541ab08bc6afccd3f6240400d063c2aca5"
+    },
+    "2026-10344": {
+      "document_id": "2026-10344",
+      "published": "2026-05-22",
+      "kind": "review_preliminary",
+      "title": "Certain Superabsorbent Polymers From the Republic of Korea: Preliminary Results of Antidumping Duty Administrative Review; 2023-2024",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-05-22/html/2026-10344.htm",
+      "notes": "LG Chem 0.00% 예비 마진과 개시일을 기록했습니다. 예비결과만으로 예치율을 바꾸지 않으며 기존 최종결과의 예치 조건과 분리합니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "fc592289d1b58a69d4e3d7b82babfca08c787bb92f719b7a465ee47d6f5493d6"
+    },
+    "2026-03417": {
+      "document_id": "2026-03417",
+      "published": "2026-02-20",
+      "kind": "initiation",
+      "title": "Initiation of Antidumping and Countervailing Duty Administrative Reviews",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-02-20/html/2026-03417.htm",
+      "notes": "LG Chem의 새 POR 행정재심 개시를 확인했습니다. 선정·예비·최종결과·새 예치율은 이 공고로 확인되지 않습니다.",
+      "verified_on": "2026-10-12",
+      "content_hash": "9e9e4dd9bfcfc4726e98a5715f0f9ddad96717a9f930f7bcdb0e08bd1c8c859a"
     }
   },
   "cases": [
@@ -333,6 +413,38 @@ export const AD_CATALOG = {
       },
       "segments": [
         {
+          "document_id": "2026-00190",
+          "por_start": "2023-07-01",
+          "por_end": "2024-06-30",
+          "stage": "preliminary",
+          "cash_deposit_effective": null,
+          "rates": [
+            {
+              "company_id": "hankook",
+              "margin_pct": "9.10",
+              "examined": true,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            },
+            {
+              "company_id": "nexen",
+              "margin_pct": "5.57",
+              "examined": true,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            },
+            {
+              "company_id": "kumho",
+              "margin_pct": "7.34",
+              "examined": false,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            }
+          ],
+          "reason": "해당 POR의 과거 예비 마진입니다. 행정재심 예비결과는 미래 현금예치율로 적용하지 않습니다.",
+          "rule_basis": "preliminary_review_not_deposit_activation"
+        },
+        {
           "document_id": "2026-14027",
           "por_start": "2023-07-01",
           "por_end": "2024-06-30",
@@ -391,6 +503,31 @@ export const AD_CATALOG = {
         "automatic_determination": false
       },
       "segments": [
+        {
+          "document_id": "2026-00181",
+          "por_start": "2023-10-01",
+          "por_end": "2024-09-30",
+          "stage": "preliminary",
+          "cash_deposit_effective": null,
+          "rates": [
+            {
+              "company_id": "hyundai-steel",
+              "margin_pct": "1.49",
+              "examined": true,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            },
+            {
+              "company_id": "posco-pic",
+              "margin_pct": "1.22",
+              "examined": true,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            }
+          ],
+          "reason": "해당 POR의 과거 예비 마진입니다. 행정재심 예비결과는 미래 현금예치율로 적용하지 않습니다.",
+          "rule_basis": "preliminary_review_not_deposit_activation"
+        },
         {
           "document_id": "2026-09707",
           "por_start": "2023-10-01",
@@ -863,6 +1000,24 @@ export const AD_CATALOG = {
         "automatic_determination": false
       },
       "segments": [
+        {
+          "document_id": "2026-10344",
+          "por_start": "2023-12-01",
+          "por_end": "2024-11-30",
+          "stage": "preliminary",
+          "cash_deposit_effective": null,
+          "rates": [
+            {
+              "company_id": "lg-chem",
+              "margin_pct": "0.00",
+              "examined": true,
+              "entirely_facts_available": false,
+              "deposit_rate_pct": null
+            }
+          ],
+          "reason": "해당 POR의 과거 예비 마진입니다. 행정재심 예비결과는 미래 현금예치율로 적용하지 않습니다.",
+          "rule_basis": "preliminary_review_not_deposit_activation"
+        },
         {
           "document_id": "2026-19625",
           "por_start": "2023-12-01",

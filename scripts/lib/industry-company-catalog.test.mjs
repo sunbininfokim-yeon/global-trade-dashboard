@@ -30,7 +30,8 @@ test('assigned historical margins never become an unverified cash deposit or a f
 test('next pipe POR partitions 15 rescissions and 6 continuing nonselected firms; neither shares respondent selection', () => {
   let rescinded = 0, continuing = 0;
   for (const c of pipe.companies.slice(2)) {
-    const [latest, historical] = reviewRecords(pipe.case_id, c.id), p = reviewProgress(pipe.case_id, latest.id);
+    const [current, latest, historical] = reviewRecords(pipe.case_id, c.id), p = reviewProgress(pipe.case_id, latest.id);
+    assert.equal(current.por_start, '2025-05-01'); assert.equal(reviewProgress(pipe.case_id, current.id).latest_stage, 'initiation');
     assert.equal(latest.por_start, '2024-05-01'); assert.equal(historical.por_start, '2023-05-01');
     assert.equal(p.stages.find(s => s.id === 'selection').state, 'unknown');
     assert.equal(p.stages.find(s => s.id === 'final').state, 'unknown');

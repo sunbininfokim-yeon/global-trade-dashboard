@@ -54,7 +54,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await field('반덤핑 사건').inputValue(), 'A-580-908');
     assert.equal(await picker.locator('[data-ad-company]').count(), 3);
     assert.equal(await picker.locator('[data-ad-company="hyosung"]').count(), 0);
-    assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), 'tires-2023-24');
+    assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), 'tires-2025-26');
     await click('넥센타이어'); assert.equal(await field('반덤핑 기업').inputValue(), 'nexen');
     await field('반덤핑 기업').selectOption('kumho');
     assert.equal(await company('kumho').getAttribute('aria-pressed'), 'true');
@@ -76,7 +76,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     ]) {
       await click(industry);
       assert.equal(await field('반덤핑 사건').inputValue(), caseId);
-      assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), recordId);
+      assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), caseId === 'A-580-897' ? 'welded-pipe-2025-26' : 'hot-rolled-2024-25');
+      assert.equal(await page.locator('[data-ad-stage=initiation]').getAttribute('data-state'), 'latest');
       assert.equal(await picker.locator('[data-ad-company]').count(), caseId === 'A-580-897' ? 23 : 2);
       assert.equal(await picker.locator('[data-ad-company]:visible').count(), caseId === 'A-580-897' ? 5 : 2);
       for (const [name, id, rate] of companies) {
@@ -90,6 +91,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
       await click('AD 예치 부담 계산');
       assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장', exact: true }).isEnabled());
     }
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-2024-25');
     assert.equal(await page.locator('[data-ad-stage="preliminary"]').getAttribute('data-state'), 'latest');
     assert.equal(await page.locator('[data-ad-stage="final"]').getAttribute('data-state'), 'unknown');
     assert.match(await page.locator('[data-ad-calculated]').innerText(), /800\.00/);
@@ -104,6 +106,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await field('반덤핑 기업').inputValue(), 'aju');
     assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '미확인');
     assert.match(await page.locator('[data-ad-reference]').innerText(), /배정 마진 0.8%/);
+    assert.equal(await field('진행을 볼 재심 대상 기간').inputValue(), 'welded-pipe-2025-26');
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-rescinded-2024-25');
     assert.ok(await page.locator('[data-ad-rescinded]').isVisible());
     assert.equal(await page.locator('[data-ad-stage="preliminary"]').getAttribute('data-state'), 'unknown');
     assert.equal(await page.locator('[data-ad-stage="final"]').getAttribute('data-state'), 'unknown');
@@ -113,6 +117,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await picker.locator('img').count(), 0);
     await field('반덤핑 전체 기업 검색').fill('하이스틸'); await click('하이스틸');
     assert.equal(await page.locator('[data-ad-rescinded]').count(), 0);
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-nonselected-2024-25');
     assert.equal(await page.locator('[data-ad-stage="preliminary"]').getAttribute('data-state'), 'latest');
     assert.equal(await page.locator('[data-ad-stage="selection"]').getAttribute('data-state'), 'unknown');
     await field('반덤핑 전체 기업 검색').fill('');
@@ -121,6 +126,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await picker.locator('[data-ad-company]:visible').count(), 5);
     await click('고흡수성 수지 · SAP'); await click('LG화학');
     assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '0%');
+    assert.equal(await page.locator('[data-ad-stage="initiation"]').getAttribute('data-state'), 'latest');
+    await field('진행을 볼 재심 대상 기간').selectOption('sap-2023-24');
     assert.equal(await page.locator('[data-ad-stage="final"]').getAttribute('data-state'), 'latest');
     await click('강관 · 대구경 용접강관');
     await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-steel-desktop.png' });

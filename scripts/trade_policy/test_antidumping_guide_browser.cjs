@@ -24,7 +24,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.equal(await stage('final').getAttribute('data-state'), 'latest');
     assert.equal(await stage('liquidation').getAttribute('data-state'), 'unknown');
     assert.equal(await field('가정 AD 예치율 %').inputValue(), '9.32'); // Progress POR does not pick an entry rate.
-    await stage('selection').locator('summary').click(); assert.match(await stage('selection').innerText(), /2024-10-30/);
+    assert.equal(await stage('selection').getAttribute('data-state'), 'unknown'); // Hyosung was not individually selected.
     await page.locator('.ts-ad-route').first().locator('summary').first().click();
     assert.equal(await stage('cit_filed').getAttribute('data-state'), 'unknown');
     assert.equal(await stage('remand').getAttribute('data-state'), 'unknown');
@@ -42,6 +42,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await field('반덤핑 사건').selectOption('A-580-908');
     assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '2500000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '12');
     assert.ok(!(await field('AD 법인 적용 조건 확인').isChecked()));
+    assert.equal(await stage('initiation').getAttribute('data-state'), 'latest');
+    assert.equal(await stage('final').getAttribute('data-state'), 'unknown');
+    await field('진행을 볼 재심 대상 기간').selectOption('tires-2023-24');
     assert.equal(await stage('final').getAttribute('data-state'), 'latest');
     await button('이 품목의 예시값 채우기'); assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '100000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '18.03');
     await field('반덤핑 기업').selectOption('nexen'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '13.02');

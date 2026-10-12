@@ -22,6 +22,7 @@ ASSETS = {
     '/policy-simulator/antidumping-model.mjs': ('policy-simulator/antidumping-model.mjs', 'text/javascript'),
     '/policy-simulator/antidumping-view.mjs': ('policy-simulator/antidumping-view.mjs', 'text/javascript'),
     '/policy-simulator/antidumping-notice-view.mjs': ('policy-simulator/antidumping-notice-view.mjs', 'text/javascript'),
+    '/policy-simulator/antidumping-notice-reviews.mjs': ('policy-simulator/antidumping-notice-reviews.mjs', 'text/javascript'),
     '/policy-simulator/antidumping-discovery-snapshot.mjs': ('policy-simulator/antidumping-discovery-snapshot.mjs', 'text/javascript'),
     '/policy-simulator/antidumping-guide.mjs': ('policy-simulator/antidumping-guide.mjs', 'text/javascript'),
     '/policy-simulator/elasticities.mjs': ('policy-simulator/elasticities.mjs', 'text/javascript'),

@@ -124,8 +124,8 @@ function processMarkup() {
   const c = selectedCase(), records = reviewRecords(draft.case_id, draft.company_id);
   const record = records.find(r => r.id === processRecordId) || records[0];
   processRecordId = record?.id || '';
-  const progress = record ? reviewProgress(draft.case_id, record.id) : null, manual = draft.reference_mode === 'manual';
-  return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>누가 결정하고, 어디까지 진행됐나요?</h2><span>공식 자료 확인 ${catalog.checked_on}</span></div>
+  const progress = record ? reviewProgress(draft.case_id, record.id, draft.company_id) : null, manual = draft.reference_mode === 'manual';
+  return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>누가 결정하고, 어디까지 진행됐나요?</h2><span>진행 근거 확인 ${progress?.checked_on || catalog.checked_on}</span></div>
     ${processSelection()}
     <div class="ts-ad-roles"><p><b>상무부</b><span>덤핑 여부·마진과 재심 결과</span></p><p><b>USITC</b><span>신규 조사 등의 미국 산업피해</span></p><p><b>CBP · 세관</b><span>예치금 수납·수입 건별 관세 정산</span></p><p><b>CIT · 항소법원</b><span>행정판단의 적법성 심사</span></p></div>
     <p class="ts-help">예치금은 최종 세금이 아닙니다. 재심·적용되는 법원 판단과 세관 정산에 따라 추가 납부 또는 환급이 생길 수 있습니다. 소송에서 졌다고 예치금 전액이 그대로 최종 관세가 되는 구조는 아닙니다.</p>

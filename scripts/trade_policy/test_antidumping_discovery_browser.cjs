@@ -17,7 +17,10 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.getByRole('button', { name: '강관 · 대구경 용접강관', exact: true }).click();
     assert.match(await notices.locator('summary').first().innerText(), /A-580-897/);
     await notices.locator('summary').first().click();
-    assert.match(await notices.innerText(), /2026-13892/); // Newly discovered initiation; never auto-promoted to a rate.
+    assert.match(await notices.innerText(), /2026-13892/);
+    assert.match(await notices.locator('summary').first().innerText(), /검토 반영 2건 · 검토 대기 0건/);
+    assert.match(await notices.innerText(), /진행·이력 반영/);
+    assert.equal(await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).inputValue(), 'welded-pipe-2025-26'); // Newly discovered initiation; never auto-promoted to a rate.
     const before = await page.locator('[data-ad-reference]>strong').innerText();
     assert.match(before, /0%|0.8%/);
     const bounds = await notices.evaluate(el => el.getBoundingClientRect()); assert.ok(bounds.width > 0);
@@ -26,11 +29,25 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await notices.scrollIntoViewIfNeeded();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     await notices.screenshot({ path: '/tmp/antidumping-notice-review-mobile.png' });
+    await page.getByLabel('산업 분야', { exact: true }).selectOption('tires');
+    await page.getByRole('button', { name: '타이어', exact: true }).click();
+    assert.match(await notices.locator('summary').first().innerText(), /검토 반영 6건 · 검토 대기 1건/);
+    await notices.locator('summary').first().click();
+    assert.match(await notices.innerText(), /국가 표기 불일치/);
+    await page.getByLabel('반덤핑 기업', { exact: true }).selectOption('kumho');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2023-24');
+    assert.equal(await page.locator('[data-ad-stage=selection]').getAttribute('data-state'), 'unknown');
+    await page.getByLabel('반덤핑 기업', { exact: true }).selectOption('hankook');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2023-24');
+    assert.equal(await page.locator('[data-ad-stage=selection]').getAttribute('data-state'), 'confirmed');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2024-25-rescinded');
+    assert.ok(await page.locator('[data-ad-rescinded]').isVisible());
+    assert.equal(await page.locator('[data-ad-reference]>strong').innerText(), '13.03%');
     await page.getByLabel('산업 분야', { exact: true }).selectOption('cables');
     await page.getByRole('button', { name: '전력 케이블', exact: true }).click();
     assert.equal(await page.locator('[data-ad-notices]').count(), 0);
     assert.match(await page.locator('[data-ad-notice-review]').innerText(), /まだ|아직/);
     assert.deepEqual(errors, []); assert.ok(requests.every(url => new URL(url).hostname === '127.0.0.1'));
-    console.log('PASS discovery UI: case isolation, unactivated candidates, preserved rates, no external calls, 360px');
+    console.log('PASS reviewed notices UI: current POR initiation, 14 reviewed/1 held, company-specific selection, historical withdrawal with unchanged cash reference, case isolation, 360px and no external calls');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exit(1); });

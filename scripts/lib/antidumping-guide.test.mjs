@@ -31,7 +31,7 @@ test('export provenance distinguishes unchanged examples from edited values and 
   assert.equal(describeADInputs({ ...filled, company_id: 'ls' }, example).find(x => x.key === 'scenario_rate_pct').origin, 'user_input');
 });
 test('progress isolates case, review period and recorded companies; mutation cannot alter source records', () => {
-  const newer = reviewProgress('A-580-867', 'lpt-2025-26'), previous = reviewProgress('A-580-867', 'lpt-2023-24');
+  const newer = reviewProgress('A-580-867', 'lpt-2025-26'), previous = reviewProgress('A-580-867', 'lpt-2023-24', 'hyundai');
   assert.equal(newer.latest_stage, 'initiation'); assert.equal(newer.stages.find(x => x.id === 'final').state, 'unknown');
   assert.equal(previous.latest_stage, 'final'); assert.equal(previous.stages.find(x => x.id === 'liquidation').state, 'unknown');
   assert.equal(previous.stages.find(x => x.id === 'selection').event.date, '2024-10-30');
@@ -44,7 +44,7 @@ test('progress isolates case, review period and recorded companies; mutation can
 test('later final results do not invent earlier stages, CBP liquidation, court filings or future dates', () => {
   const sparse = reviewProgress('A-580-867', 'lpt-2022-23');
   assert.equal(sparse.stages.filter(x => x.state !== 'unknown').length, 1);
-  const tires = reviewProgress('A-580-908', 'tires-2023-24');
+  const tires = reviewProgress('A-580-908', 'tires-2023-24', 'hankook');
   assert.equal(tires.stages.find(x => x.id === 'selection').event.date, null);
   for (const p of [sparse, tires]) { assert.ok(p.litigation.every(x => x.state === 'unknown' && x.event === null)); assert.equal(p.stages.find(x => x.id === 'liquidation').state, 'unknown'); }
   assert.ok(tires.litigation.some(x => x.id === 'remand')); assert.ok(tires.litigation.some(x => x.id === 'injunction'));
@@ -72,6 +72,6 @@ test('steel examples and POR progress keep preliminary zero separate from final 
   assert.equal(older.latest_stage, 'final'); assert.equal(older.deposit.date, '2026-05-01');
   assert.equal(older.stages.find(x => x.id === 'liquidation').state, 'unknown');
   const steel = reviewProgress('A-580-883', 'hot-rolled-2023-24');
-  assert.equal(steel.stages.find(x => x.id === 'initiation').state, 'unknown');
+  assert.equal(steel.stages.find(x => x.id === 'initiation').event.date, '2024-11-14');
   assert.equal(steel.latest_stage, 'final');
 });
