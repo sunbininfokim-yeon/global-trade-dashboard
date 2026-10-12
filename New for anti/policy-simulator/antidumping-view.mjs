@@ -1,7 +1,7 @@
 import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
 import { AD_DISCOVERY } from './antidumping-discovery-snapshot.mjs';
 import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
-import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES } from './company-profiles.mjs';
+import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES, companyCalibration } from './company-profiles.mjs';
 import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, reviewProgress } from './antidumping-guide.mjs';
@@ -117,7 +117,8 @@ function industryPicker() {
 }
 function coverageGap() {
   const industry = selectedIndustry(), p = COMPANY_PROFILES[profileId];
-  return `<div class="ts-ad-gap" data-ad-gap><h3>${esc(p.name)} · ${esc(industry.label)}</h3><p class="ts-unverified">이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.</p><p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button><p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
+  const productSource = companyCalibration(profileId, industry.product).selected_product_source?.url;
+  return `<div class="ts-ad-gap" data-ad-gap><h3>${esc(p.name)} · ${esc(industry.label)}</h3><p class="ts-unverified">이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.</p><p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button><p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
   if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">선택한 품목의 실제 사건·POR·단계 기록은 미확인입니다. 아래에서 확보가 필요한 자료를 확인할 수 있습니다.</p></section>`;

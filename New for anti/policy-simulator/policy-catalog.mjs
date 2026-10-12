@@ -39,6 +39,16 @@ export const PRODUCTS = {
   vehicle: { label: '자동차 · 가솔린 승용', hts: '8703.23.01', hts6: '870323', mfn: 2.5, family: 'auto',
     elasticity: ELASTICITIES.vehicle,
     scope: '배기량 1.5~3L 승용차 대표 사양. 한국·일본의 232 합산 15% 조합만 제공하며 다른 원산지는 직접 확인이 필요합니다.' },
+  'vehicle-hev': { label: '자동차 · 하이브리드 HEV', hts: '8703.40.00', hts6: '870340', mfn: 2.5, family: 'auto', classification_checked_on: '2026-10-12',
+    elasticity: ELASTICITIES['vehicle-hev'], scope: '가솔린 엔진·전기 모터 겸용, 외부 충전 불가 승용차. 디젤·PHEV·미국 현지 생산과 구분합니다. 한국·일본 232 조건부 조합만 제공하며 실제 차종의 HTS·원산지를 확인하세요.' },
+  'vehicle-phev': { label: '자동차 · 플러그인 하이브리드 PHEV', hts: '8703.60.00', hts6: '870360', mfn: 2.5, family: 'auto', classification_checked_on: '2026-10-12',
+    elasticity: ELASTICITIES['vehicle-phev'], scope: '가솔린 엔진·전기 모터 겸용, 외부 충전 가능 승용차. 일반 HEV·디젤 하이브리드와 구분합니다. 한국·일본 232 조건부 조합만 제공하며 실제 차종의 HTS·원산지를 확인하세요.' },
+  'vehicle-ev': { label: '자동차 · 전기 승용차 BEV', hts: '8703.80.00', hts6: '870380', mfn: 2.5, family: 'auto', classification_checked_on: '2026-10-12',
+    elasticity: ELASTICITIES['vehicle-ev'], scope: '전기 모터만으로 구동하는 완성 승용차. 트럭·버스·배터리·구동 부품과 구분합니다. 한국·일본 232 조건부 조합만 제공하며 중국 301·USMCA 원산지는 별도 확인합니다.' },
+  'auto-brake': { label: '자동차 부품 · 제동 시스템', hts: '', scope: '브레이크·전자제동 시스템의 실제 형태·구성·HTS·원산지와 자동차 부품 232 대상 목록을 확인하세요. 완성차 관세를 자동 적용하지 않습니다.' },
+  'auto-steering': { label: '자동차 부품 · 조향 시스템', hts: '', scope: '기계식·전자식 조향장치의 제품 형태·HTS·원산지·232 대상 여부를 확인하세요. 제동·현가·완성차와 분리합니다.' },
+  'auto-suspension': { label: '자동차 부품 · 현가 시스템', hts: '', scope: '서스펜션의 실제 부품·구성·HTS·원산지를 확인하세요. 자동차 부품 전체에 한 가지 세율을 적용하지 않습니다.' },
+  'auto-electric-drive': { label: '자동차 부품 · 전동화 구동·전력변환', hts: '', scope: '모터·인버터·전력변환 장치는 각각 분류가 다를 수 있습니다. 실제 형태·HTS·원산지·232/다른 추가세를 확인하세요. 전기차 완성차 관세를 대신 적용하지 않습니다.' },
   tire: { label: '타이어 · 승용차용', hts: '4011.10.10', hts6: '401110', mfn: 4, family: 'ordinary',
     scope: '승용차용 신품 래디얼 타이어 대표 사양. AD/CVD는 기업·사건별이므로 추가세 입력에서 확인하세요.',
     elasticity: ELASTICITIES.tire },
@@ -90,7 +100,7 @@ export function policyOptions(product, country) {
     ...(country === 'KOR' ? [make('fta_us_metal', 'KORUS 0% + 미국산 금속 232 10%p', 10, [POLICY_SOURCES.metals, POLICY_SOURCES.metalUpdate], scope + 'KORUS 특혜와 미국산 금속 85% 요건을 함께 충족.')] : []),
   ];
   if (p.family === 'memory') return [make('standard', '일반관세 0% + 강제노동 301 품목 예외', 0, [POLICY_SOURCES.forcedLabor, POLICY_SOURCES.forcedLaborAnnex], scope + '메모리 HTS 8542.32.00의 Annex (b) 예외. 기존 중국 301은 이 예외와 다릅니다.')];
-  if (p.family === 'auto') return ['KOR', 'JPN'].includes(country) ? [make('standard', '일반관세 + 자동차 232 · 합산 15% 하한', Math.max(p.mfn, 15), [country === 'KOR' ? POLICY_SOURCES.koreaAuto : POLICY_SOURCES.japanAuto, POLICY_SOURCES.forcedLabor], scope + '완성 승용차. 강제노동 301과 중복 합산하지 않습니다.')] : [];
+  if (p.family === 'auto') return ['KOR', 'JPN'].includes(country) ? [make('standard', '일반관세 + 자동차 232 · 합산 15% 하한', Math.max(p.mfn, 15), [country === 'KOR' ? POLICY_SOURCES.koreaAuto : POLICY_SOURCES.japanAuto, { title: '현행 HTS 자동차 232 · 2026-10-12 확인', url: `https://hts.usitc.gov/search?query=${country === 'KOR' ? '9903.94.61' : '9903.94.41'}` }, POLICY_SOURCES.forcedLabor], scope + 'U.S. note 33(b)의 완성 승용차에 한정. 강제노동 301과 중복 합산하지 않습니다.')] : [];
   const floor = EU.has(country) || country === 'TWN' ? 10 : ['KOR', 'JPN', 'CHE'].includes(country) ? 12.5 : null;
   const additional = ten.has(country) ? 10 : 12.5;
   const total = floor === null ? p.mfn + additional : Math.max(p.mfn, floor);
@@ -138,7 +148,7 @@ export function modelInput(draft) {
   if (!draft.policy_confirmed) throw new Error('선택한 관세 조합의 적용 조건과 별도 추가세를 확인해 주세요.');
   const p = PRODUCTS[draft.product], elasticity = elasticityCalibration(draft);
   return { ...draft, rows: draft.rows.map(row => ({ ...row, ...tariffPair(draft.product, row) })),
-    calibration: { policy_as_of: POLICY_AS_OF, hts: p.hts, product_scope: p.scope, purchase_basis: 'user_assumption',
+    calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: p.classification_checked_on || null, hts: p.hts, product_scope: p.scope, purchase_basis: 'user_assumption',
       policy_confirmation: 'user_confirmed_conditions', supplier_statistics_year: 2025,
       supplier_source: { url: SUPPLIER_SNAPSHOT.url, fetched_at: SUPPLIER_SNAPSHOT.fetched_at, hts6: p.hts6 || null, flow: SUPPLIER_SNAPSHOT.flow, measure: SUPPLIER_SNAPSHOT.measure },
       elasticity },

@@ -75,10 +75,11 @@ test('missing weights do not become a silent average; equal weights are an expli
 });
 test('seven named companies have official financial context, consistent KRW units and no invented US product data', () => {
   assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial).length, 7);
-  assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial === null).length, 30);
+  assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial === null && p.ad).length, 30);
+  assert.equal(Object.values(COMPANY_PROFILES).filter(p => p.financial === null && !p.ad).length, 3);
   for (const p of Object.values(COMPANY_PROFILES)) {
     if (p.financial) { assert.equal(p.financial.unit, 'KRW million'); assert.equal(p.financial.use, 'context_only'); assert.match(p.financial.source_url, /^https:/); }
-    else { assert.match(p.source.url, /^https:\/\/www.govinfo.gov\//); assert.ok(p.official_name); }
+    else { assert.match(p.source.url, p.ad ? /^https:\/\/www.govinfo.gov\// : /^https:\/\/www\.(hyundai|mobis|hlmando)\.com\//); assert.ok(p.official_name); }
     for (const key of ['product_origin', 'product_price', 'product_quantity', 'product_variable_cost', 'product_fixed_cost']) assert.equal(p[key], null);
   }
   assert.equal(COMPANY_PROFILES['ls-cable'].ad, null); assert.equal(COMPANY_PROFILES.hyosung.ad.case_id, 'A-580-867'); assert.equal(COMPANY_PROFILES.hankook.ad.case_id, 'A-580-908');

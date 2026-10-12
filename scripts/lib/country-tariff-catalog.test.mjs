@@ -135,3 +135,20 @@ test('public supplier snapshot is product-specific, descending and contains vali
   assert.equal(SUPPLIER_SNAPSHOT.products.transformer.suppliers[0].country, 'MEX');
   assert.equal(SUPPLIER_SNAPSHOT.products.fiber.suppliers[0].country, 'VNM');
 });
+
+test('HEV, PHEV and BEV use distinct reviewed classification; origin gaps and broad elasticity proxies remain explicit', () => {
+  const codes = {'vehicle-hev':'8703.40.00','vehicle-phev':'8703.60.00','vehicle-ev':'8703.80.00'};
+  for (const [product, code] of Object.entries(codes)) {
+    assert.equal(PRODUCTS[product].hts,code); assert.equal(PRODUCTS[product].classification_checked_on,'2026-10-12');
+    for (const country of ['KOR','JPN']) assert.equal(policyOptions(product,country)[0].rate,15);
+    for (const country of ['CHN','CAN','MEX','DEU']) assert.deepEqual(policyOptions(product,country),[]);
+    assert.match(PRODUCTS[product].elasticity.note, /전용 추정치는 미확보/);
+    const draft = initialDraft(product); draft.policy_confirmed = true;
+    draft.rows[1].scenario_policy = 'manual'; draft.rows[1].manual_after = 30;
+    const result = simulate(modelInput(draft));
+    assert.ok(result.rows.find(x=>x.country==='KOR').volume_change_pct < 0);
+    assert.equal(result.inputs.calibration.classification_checked_on,'2026-10-12');
+    assert.equal(result.inputs.calibration.policy_as_of,'2026-10-11');
+    assert.match(result.inputs.calibration.elasticity.sigma.scope,/경트럭/);
+  }
+});

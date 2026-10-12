@@ -26,6 +26,11 @@ export const ELASTICITIES = {
     note: '2004년 연구진의 타이어코드·직물 산업 모형값입니다. 폴리에스터만의 현재 실측값은 아니며, η 문헌값은 미확보입니다.' },
 };
 
+// Broad light-vehicle proxies, explicitly not powertrain-specific estimates.
+for (const [id, label] of [['vehicle-hev', 'HEV'], ['vehicle-phev', 'PHEV'], ['vehicle-ev', 'BEV']]) {
+  ELASTICITIES[id] = { ...ELASTICITIES.vehicle, note: `${label} 전용 추정치는 미확보입니다. 승용차·경트럭 전체의 σ와 신차 총수요 η를 넓은 산업 대용값으로 사용합니다. ${ELASTICITIES.vehicle.note}` };
+}
+
 export function elasticityCalibration(draft) {
   const e = ELASTICITIES[draft.product];
   const parameter = key => {

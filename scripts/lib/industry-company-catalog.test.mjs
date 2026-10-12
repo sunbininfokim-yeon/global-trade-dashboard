@@ -56,7 +56,7 @@ test('LG Chem SAP official zero begins at the final effective date and does not 
   assert.equal(companyADLink('ad-lg-chem', 'aramid'), null);
 });
 test('six core industrial families plus existing autos preserve distinct products and evidence gaps', () => {
-  assert.equal(INDUSTRY_FAMILIES.length, 7); assert.equal(COMPANY_INDUSTRIES.length, 15);
+  assert.equal(INDUSTRY_FAMILIES.length, 7); assert.equal(COMPANY_INDUSTRIES.length, 22);
   for (const industry of COMPANY_INDUSTRIES) {
     assert.ok(PRODUCTS[industry.product]); assert.ok(INDUSTRY_FAMILIES.some(f => f.id === industry.family));
     assert.ok(industry.profiles.length); assert.ok(industry.profiles.every(id => COMPANY_PROFILES[id]));
@@ -87,4 +87,21 @@ test('all curated notice entities have selectable profiles with source provenanc
   }
   assert.ok(pipe.featured_company_ids.length <= 8);
   assert.ok(Object.values(COMPANY_PROFILES).every(p => p.market_share == null && p.domestic_rank == null));
+});
+
+test('automotive company and product boundaries do not inherit unrelated AD cases or fabricated input data', () => {
+  const auto = COMPANY_INDUSTRIES.filter(x => x.family === 'auto');
+  assert.equal(auto.length, 8);
+  assert.deepEqual(auto.filter(x => x.profiles.includes('hyundai-motor')).map(x => x.product), ['vehicle','vehicle-hev','vehicle-phev','vehicle-ev']);
+  for (const group of auto) for (const id of group.profiles) {
+    assert.equal(group.case_id, null); assert.equal(companyADLink(id, group.product), null);
+    assert.equal(COMPANY_PROFILES[id].product_origin, null); assert.equal(COMPANY_PROFILES[id].product_price, null);
+    if (id !== 'kia') assert.equal(COMPANY_PROFILES[id].financial, null);
+  }
+  assert.match(companyCalibration('hyundai-motor','vehicle-phev').selected_product_source.url, /hyundai\.com/);
+  assert.match(companyCalibration('hl-mando','auto-steering').selected_product_source.url, /hlmando\.com/);
+  for (const p of ['auto-brake','auto-steering','auto-suspension','auto-electric-drive']) {
+    assert.equal(PRODUCTS[p].hts, ''); assert.deepEqual(policyOptions(p,'KOR'), []);
+    assert.equal(elasticityCalibration(initialDraft(p)).sigma.kind,'user_assumption');
+  }
 });

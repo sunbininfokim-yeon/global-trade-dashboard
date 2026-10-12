@@ -12,7 +12,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     const field = name => page.getByLabel(name, { exact: true });
     const click = name => page.getByRole('button', { name, exact: true }).click();
     await page.goto(`${base}/policy/us/simulator`); await click('기업');
-    assert.equal(await field('실제 기업 선택').locator('option').count(), 38);
+    assert.equal(await field('실제 기업 선택').locator('option').count(), Object.keys(COMPANY_PROFILES).length + 1);
     for (const p of Object.values(COMPANY_PROFILES)) {
       await field('실제 기업 선택').selectOption(p.id);
       const context = await page.locator('[data-company-public]').innerText();
@@ -23,6 +23,27 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
       assert.equal(await field('기업 제품 원산지').inputValue(), '');
       assert.equal(await field('기업 분석 품목').inputValue(), p.product);
     }
+    await field('실제 기업 선택').selectOption('hyundai-motor');
+    await field('기업 분석 품목').selectOption('vehicle-ev');
+    assert.match(await page.locator('[data-company-public]').innerText(), /기업 공식 제품/);
+    await field('기업 제품 원산지').selectOption('KOR');
+    assert.match(await page.locator('[data-company-rate]').innerText(), /15.0% → 15.0%/);
+    await field('기업 분석 품목').selectOption('auto-brake');
+    assert.equal(await field('기업 현행 관세 조합').inputValue(), 'unresolved');
+    await click('국가');
+    for (const product of ['vehicle-hev','vehicle-phev','vehicle-ev']) {
+      await field('분석 품목').selectOption(product);
+      assert.match(await page.locator('[data-classification-basis]').innerText(), /2026-10-12/);
+      assert.match(await page.locator('[data-elasticity-source]').innerText(), /전용 추정치는 미확보/);
+      await field('한국 비교할 관세').selectOption('manual');
+      await field('한국 가정 관세').fill('30');
+      await field('관세 적용 조건 확인').check(); await click('시나리오 계산');
+      assert.match(await page.locator('.ts-kpis>div').first().innerText(), /-/);
+      await field('공급국 2').selectOption('CHN');
+      assert.equal(await field('중국 현행 관세 조합').inputValue(), 'unresolved');
+      await field('공급국 2').selectOption('KOR');
+    }
+    await click('기업');
     await field('기업 목록 검색').fill('LG Chem');
     assert.equal(await field('실제 기업 선택').locator('option[value="ad-lg-chem"]').count(), 1);
     await field('실제 기업 선택').selectOption('ad-lg-chem');
@@ -65,6 +86,6 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     assert.equal(await field('시장 수요탄력성').inputValue(), '-1');
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     assert.deepEqual(errors, []); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
-    console.log('PASS: all 37 official company/group profiles; financial null and blank private inputs; English company search; SAP company→AD link; all 15 product selectors; source-only product gaps; OCTG not inheriting pipe AD/tariff; appendix search/15-firm rescission; 360px and escaped searches; no external calls.');
+    console.log('PASS: all 40 official company/group profiles; financial null and blank private inputs; English company search; SAP company→AD link; all 22 product selectors; source-only product gaps; OCTG not inheriting pipe AD/tariff; appendix search/15-firm rescission; 360px and escaped searches; no external calls.');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

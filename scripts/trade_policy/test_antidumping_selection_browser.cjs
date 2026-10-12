@@ -9,7 +9,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     const errors = [], requests = [];
     page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
     const field = name => page.getByLabel(name, { exact: true });
-    const families = { '변압기': 'power', '차단기·배전기기': 'power', '전력 케이블': 'cables', '해저 케이블': 'cables', '산업용 전선': 'cables', '철강 · 열연강판': 'steel', '강관 · 대구경 용접강관': 'steel', '유정용 강관 · OCTG': 'steel', '타이어': 'tires', '트럭·버스 타이어': 'tires', '산업용 섬유': 'materials', '탄소섬유': 'materials', '아라미드': 'materials', '고흡수성 수지 · SAP': 'chemicals', '자동차': 'other' };
+    const families = { '변압기': 'power', '차단기·배전기기': 'power', '전력 케이블': 'cables', '해저 케이블': 'cables', '산업용 전선': 'cables', '철강 · 열연강판': 'steel', '강관 · 대구경 용접강관': 'steel', '유정용 강관 · OCTG': 'steel', '타이어': 'tires', '트럭·버스 타이어': 'tires', '산업용 섬유': 'materials', '탄소섬유': 'materials', '아라미드': 'materials', '고흡수성 수지 · SAP': 'chemicals', '가솔린 승용차': 'auto', '하이브리드 · HEV': 'auto', '플러그인 하이브리드 · PHEV': 'auto', '전기 승용차 · BEV': 'auto', '제동 시스템': 'auto', '조향 시스템': 'auto', '현가 시스템': 'auto', '전동화 구동·전력변환': 'auto' };
     const click = async name => {
       if (families[name] && await field('산업 분야').inputValue() !== families[name]) await field('산업 분야').selectOption(families[name]);
       await page.getByRole('button', { name, exact: true }).click();
@@ -142,7 +142,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     for (const [industry, names] of [
       ['전력 케이블', ['LS전선', '대한전선']],
       ['차단기·배전기기', ['LS일렉트릭', '효성중공업']],
-      ['자동차', ['기아']],
+      ['가솔린 승용차', ['기아', '현대자동차']],
+      ['하이브리드 · HEV', ['기아', '현대자동차']], ['플러그인 하이브리드 · PHEV', ['기아', '현대자동차']], ['전기 승용차 · BEV', ['기아', '현대자동차']],
+      ['제동 시스템', ['현대모비스', 'HL만도']], ['조향 시스템', ['현대모비스', 'HL만도']], ['현가 시스템', ['HL만도']], ['전동화 구동·전력변환', ['현대모비스']],
       ['산업용 섬유', ['HS효성첨단소재']],
       ['해저 케이블', ['LS전선', '대한전선']], ['산업용 전선', ['LS전선', '대한전선']],
       ['유정용 강관 · OCTG', ['세아제강']], ['트럭·버스 타이어', ['한국타이어앤테크놀로지']],
@@ -161,7 +163,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     for (const [industry, companyName, companyId, product] of [
       ['전력 케이블', '대한전선', 'taihan', 'power-cable'],
       ['차단기·배전기기', 'LS일렉트릭', 'ls-electric', 'switchgear'],
-      ['자동차', '기아', 'kia', 'vehicle'],
+      ['가솔린 승용차', '기아', 'kia', 'vehicle'],
       ['산업용 섬유', 'HS효성첨단소재', 'hs-materials', 'fiber'],
       ['탄소섬유', 'HS효성첨단소재', 'hs-materials', 'carbon-fiber'],
       ['유정용 강관 · OCTG', '세아제강', 'ad-seah', 'octg'],
@@ -192,7 +194,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     await page.locator('[data-ad-simulator]').screenshot({ path: '/tmp/antidumping-industry-gap-desktop.png' });
     await page.setViewportSize({ width: 360, height: 844 });
     assert.equal(await picker.locator('.ts-ad-industries').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length), 2);
-    for (const industry of ['전력 케이블', '차단기·배전기기', '자동차', '산업용 섬유']) {
+    for (const industry of ['전력 케이블', '차단기·배전기기', '가솔린 승용차', '산업용 섬유']) {
       await click(industry); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     }
     await page.locator('[data-ad-simulator]').screenshot({ path: '/tmp/antidumping-industry-gap-mobile.png' });
@@ -202,6 +204,6 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     assert.ok(await company('hyosung').evaluate(el => document.activeElement === el));
     await page.locator('[data-ad-process]').screenshot({ path: '/tmp/antidumping-selection-mobile.png' });
     assert.deepEqual(errors, []); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
-    console.log('PASS: six core families/15 products; five official cases/33 entities; 23 pipe entities; featured/full Korean-English search; 15 rescissions/6 continuing nonselected firms; SAP zero; no unverified deposits; official final/preliminary separation and new calculations; expanded company discovery without inherited AD rates, history or stages; company/product handoff and cable HTS isolation; bidirectional selectors; POR isolation; preserved edits and stale results; manual and empty-date recovery; focus; 360px; no external calls.');
+    console.log('PASS: seven industry families/22 products; five official cases/33 entities; 23 pipe entities; featured/full Korean-English search; 15 rescissions/6 continuing nonselected firms; SAP zero; no unverified deposits; official final/preliminary separation and new calculations; expanded company discovery without inherited AD rates, history or stages; company/product handoff and cable HTS isolation; bidirectional selectors; POR isolation; preserved edits and stale results; manual and empty-date recovery; focus; 360px; no external calls.');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

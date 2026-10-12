@@ -13,7 +13,7 @@ export const COMPANY_PROFILES = {
   taihan: profile('taihan', '대한전선', 'custom', '초고압·해저 케이블, 산업전선', 3636000, 128600, '대한전선 연결 실적 · 회사 보도자료의 연간 비교표',
     'https://www.taihan.com/news/pr/releaseDetail?idx=439', '공시·IR과 생산거점 자료를 확보할 수 있습니다. 공개 전사 실적에서 미국향 특정 케이블의 가격·원가를 분리하지 않았습니다.'),
   kia: profile('kia', '기아', 'vehicle', '내연기관·하이브리드·전기차', 114140919, 9078148, '기아 K-IFRS 연결 손익계산서',
-    'https://worldwide.kia.com/en/company/investor-relations/financial/summary-statements', '대표 자동차 입력은 가솔린 1.5~3L 범위입니다. EV·다른 차종이나 미국 현지 생산에 그대로 적용할 수 없습니다. 연결 매출을 대미 수출 매출로 사용하지 않습니다.'),
+    'https://worldwide.kia.com/en/company/investor-relations/financial/summary-statements', '가솔린·HEV·PHEV·전기 승용차를 별도 품목으로 선택하세요. 제품의 실제 생산지·원산지와 사양을 확인하며 미국 현지 생산에 한국산 수입관세를 적용하지 않습니다. 연결 매출을 대미 수출 매출로 사용하지 않습니다.'),
   hyosung: profile('hyosung', '효성중공업', 'transformer', '전력용 변압기·차단기·배전반 및 건설', 5968512, 746968, '효성중공업 연결 손익계산서',
     'https://www.hyosungheavyindustries.com/kr/company/ir/financial/income-statement', '전사 실적에는 다른 전력기기·건설도 포함됩니다. 한국산 60MVA 이상 대형 변압기는 A-580-867 공식 공고에서 별도로 확인할 수 있습니다.', { case_id: 'A-580-867', company_id: 'hyosung' }),
   'hs-materials': profile('hs-materials', 'HS효성첨단소재', 'fiber', '타이어보강재·탄소재료·아라미드·산업용 원사', 3283045, 157433, 'HS효성첨단소재 연결 손익계산서',
@@ -21,9 +21,23 @@ export const COMPANY_PROFILES = {
   hankook: profile('hankook', '한국타이어앤테크놀로지', 'tire', '승용차·경트럭 등 타이어', 10318600, 1684300, '타이어 사업부 · 전 세계 실적 · 회사 발표',
     'https://www.hankooktire.com/us/en/company/media-center/media-detail.632666.html?contentType=&tabCode=', '한온시스템을 포함한 연결 전사 매출 21,202,200백만원과 구분한 타이어 부문입니다. 북미 매출은 한국산 수입액과 다릅니다. 한국산 승용차·경트럭 타이어는 A-580-908 공고를 확인하세요.', { case_id: 'A-580-908', company_id: 'hankook' }),
 };
+// Manufacturer product evidence only; no invented financial or US shipment inputs.
+const autoProfile = (id, name, officialName, product, products, url, title) => ({ id, name, official_name: officialName, product, products,
+  financial: null, source: { url, title, checked_on: '2026-10-12' },
+  note: '기업 공식 제품 자료를 연결했습니다. 실제 제품의 생산지·원산지·사양·미국향 거래·원가는 별도 확인이 필요합니다. 완성차 232와 기업·품목별 반덤핑은 서로 다른 조치이며, 이 프로필의 AD 적용 여부는 미확인입니다.',
+  ad: null, missing: [...missing], product_origin: null, product_price: null, product_quantity: null, product_variable_cost: null, product_fixed_cost: null });
+Object.assign(COMPANY_PROFILES, {
+  'hyundai-motor': autoProfile('hyundai-motor', '현대자동차', 'Hyundai Motor Company', 'vehicle', '가솔린·하이브리드·플러그인 하이브리드·전기 승용차',
+    'https://www.hyundai.com/eu/en/models/suv-cars.html', '현대자동차 공식 SUV·동력원 소개'),
+  'hyundai-mobis': autoProfile('hyundai-mobis', '현대모비스', 'Hyundai Mobis Co., Ltd.', 'auto-brake', '제동·조향·전동화 구동·전력변환 시스템',
+    'https://www.mobis.com/en/aboutus/aboutus.do', '현대모비스 공식 제품·사업 소개'),
+  'hl-mando': autoProfile('hl-mando', 'HL만도', 'HL Mando Corporation', 'auto-brake', '제동·조향·현가 시스템',
+    'https://www.hlmando.com/en/hl-mando/global-network.do', 'HL만도 공식 제동·조향·현가 생산거점 소개'),
+});
 export function companyCalibration(id, product = COMPANY_PROFILES[id]?.product) {
   const p = COMPANY_PROFILES[id];
-  const productSource = COMPANY_INDUSTRIES.find(i => i.product === product && i.profiles.includes(id))?.source;
+  const industry = COMPANY_INDUSTRIES.find(i => i.product === product && i.profiles.includes(id));
+  const productSource = industry?.sources?.[id] || industry?.source;
   return { company_data_basis: 'user_product_inputs', firm_elasticity_basis: 'user_assumption', ...(p ? { public_company_context: structuredClone(p) } : {}),
     ...(productSource ? { selected_product_source: { product, url: productSource, checked_on: '2026-10-12' } } : {}) };
 }
@@ -34,7 +48,7 @@ export const INDUSTRY_FAMILIES = [
   { id: 'power', label: '전력기기' }, { id: 'cables', label: '전선·케이블' },
   { id: 'steel', label: '철강·강관' }, { id: 'tires', label: '타이어' },
   { id: 'materials', label: '첨단 산업소재' }, { id: 'chemicals', label: '화학 소재' },
-  { id: 'other', label: '기타 · 자동차' },
+  { id: 'auto', label: '자동차·부품' },
 ];
 export const COMPANY_INDUSTRIES = [
   { id: 'transformer', family: 'power', label: '변압기', product: 'transformer', description: '한국산 대형 전력용 변압기', case_id: 'A-580-867', profiles: ['ls-electric', 'hyosung'] },
@@ -51,7 +65,14 @@ export const COMPANY_INDUSTRIES = [
   { id: 'carbon-fiber', family: 'materials', label: '탄소섬유', product: 'carbon-fiber', description: 'TANSOME · 타이어코드와 분리', case_id: null, profiles: ['hs-materials'], source: 'https://www.hshyosungadvancedmaterials.com/en/business/carbon-fiber' },
   { id: 'aramid', family: 'materials', label: '아라미드', product: 'aramid', description: 'ALKEX · 타이어코드와 분리', case_id: null, profiles: ['hs-materials'], source: 'https://www.hshyosungadvancedmaterials.com/kr/business/aramid-yarn' },
   { id: 'sap', family: 'chemicals', label: '고흡수성 수지 · SAP', product: 'sap', description: '한국산 특정 고흡수성 수지', case_id: 'A-580-914', profiles: [] },
-  { id: 'vehicle', family: 'other', label: '자동차', product: 'vehicle', description: '대표 입력은 가솔린 승용차', case_id: null, profiles: ['kia'] },
+  { id: 'vehicle', family: 'auto', label: '가솔린 승용차', product: 'vehicle', description: '배기량 1.5~3L · 다른 동력원과 분리', case_id: null, profiles: ['kia', 'hyundai-motor'] },
+  { id: 'vehicle-hev', family: 'auto', label: '하이브리드 · HEV', product: 'vehicle-hev', description: '가솔린·전기 겸용 · 외부 충전 불가', case_id: null, profiles: ['kia', 'hyundai-motor'], sources: { kia: 'https://www.kia.com/us/en/ev', 'hyundai-motor': 'https://www.hyundai.com/eu/en/models/suv-cars.html' } },
+  { id: 'vehicle-phev', family: 'auto', label: '플러그인 하이브리드 · PHEV', product: 'vehicle-phev', description: '가솔린·전기 겸용 · 외부 충전 가능', case_id: null, profiles: ['kia', 'hyundai-motor'], sources: { kia: 'https://www.kia.com/us/en/ev', 'hyundai-motor': 'https://www.hyundai.com/eu/en/models/hybrid-cars/plug-in-hybrid.html' } },
+  { id: 'vehicle-ev', family: 'auto', label: '전기 승용차 · BEV', product: 'vehicle-ev', description: '전기 모터만으로 구동 · 부품과 분리', case_id: null, profiles: ['kia', 'hyundai-motor'], sources: { kia: 'https://www.kia.com/us/en/ev', 'hyundai-motor': 'https://www.hyundai.com/eu/en/models/suv-cars.html' } },
+  { id: 'auto-brake', family: 'auto', label: '제동 시스템', product: 'auto-brake', description: '브레이크·전자제동 · 형태별 HTS 확인', case_id: null, profiles: ['hyundai-mobis', 'hl-mando'], sources: { 'hyundai-mobis': 'https://www.mobis.com/en/aboutus/aboutus.do', 'hl-mando': 'https://www.hlmando.com/en/hl-mando/global-network.do' } },
+  { id: 'auto-steering', family: 'auto', label: '조향 시스템', product: 'auto-steering', description: '조향장치·전자조향 · 부품별 분류', case_id: null, profiles: ['hyundai-mobis', 'hl-mando'], sources: { 'hyundai-mobis': 'https://www.mobis.com/en/aboutus/aboutus.do', 'hl-mando': 'https://www.hlmando.com/en/hl-mando/global-network.do' } },
+  { id: 'auto-suspension', family: 'auto', label: '현가 시스템', product: 'auto-suspension', description: '서스펜션 · 개별 제품·원산지 확인', case_id: null, profiles: ['hl-mando'], source: 'https://www.hlmando.com/en/hl-mando/global-network.do' },
+  { id: 'auto-electric-drive', family: 'auto', label: '전동화 구동·전력변환', product: 'auto-electric-drive', description: '구동 모터·인버터 · 완성차와 별도 분류', case_id: null, profiles: ['hyundai-mobis'], source: 'https://www.mobis.com/en/aboutus/aboutus.do' },
 ];
 
 // Every named entity in the curated notices remains selectable, irrespective of
