@@ -8,7 +8,9 @@ import subprocess
 import sys
 from priority_universe import PRIORITY_REPORTERS
 from national_source_registry import automated_reporters
-from pipeline_store import atomic_json
+from pipeline_store import atomic_json, read_json
+from observation_health import product_health
+from resume_queue import queue_health
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC = ROOT.parents[1] / 'public/data'
@@ -45,12 +47,12 @@ def run_stage(name, argv, status, timeout=1800):
         # Copy only known non-secret numeric/status fields, never stdout text.
         try:
             summary = json.loads(result.stdout.decode().splitlines()[-1])
-            for key in ('planned_jobs', 'network_requests', 'unfinished_jobs'):
+            for key in ('planned_jobs', 'network_requests', 'unfinished_jobs', 'pending_jobs', 'empty_jobs'):
                 if type(summary.get(key)) is int:
                     stage[key] = summary[key]
             if summary.get('stop_reason') in ('rate_limited', 'auth_required', 'network_error'):
                 stage['stop_reason'] = summary['stop_reason']
-            if code == 0 and stage.get('unfinished_jobs', 0):
+            if code == 0 and stage.get('pending_jobs', stage.get('unfinished_jobs', 0)):
                 stage['status'] = 'partial'
         except (ValueError, IndexError, UnicodeError):
             stage['status'] = 'failed'
@@ -80,7 +82,7 @@ def observation_health(data_dir=PUBLIC):
                         'latest_observed_month': max(observed_months(panel), default=None)}
     countries = {iso: {k: c.get(k) for k in ('world_latest_period', 'bilateral_latest_period')}
                  for iso, c in coverage.get('countries', {}).items()}
-    return {'assets': assets, 'countries': countries,
+    return {'assets': assets, 'countries': countries, 'products': product_health(coverage),
             'scope': 'priority_panels_and_bilateral; raw observed months, not display eligibility'}
 
 
@@ -88,6 +90,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch', type=int, choices=range(3), required=True)
     parser.add_argument('--skip-global', action='store_true', help='targeted smoke run only')
+    parser.add_argument('--resume-only', action='store_true', help='bounded bilateral continuation, no World/source refetch')
     args = parser.parse_args()
     now = datetime.now(timezone.utc)
     status_path = PUBLIC/'commodity_trade_refresh_status_v1.json'
@@ -95,6 +98,11 @@ def main():
     status = dict(schema_version='commodity-trade-refresh-status-v1', last_attempt_at=now.isoformat(),
                   last_success_at=previous.get('last_success_at'), batch=args.batch, stages=[],
                   scope='smoke' if args.skip_global else 'scheduled', auth={}, status='running')
+    status['run_kind'] = 'resume' if args.resume_only else 'full'
+    status['last_full_attempt_at'] = previous.get('last_full_attempt_at') if args.resume_only or args.skip_global else now.isoformat()
+    status['last_full_status'] = previous.get('last_full_status')
+    status['last_full_execution_status'] = previous.get('last_full_execution_status')
+    status['last_successful_execution_at'] = previous.get('last_successful_execution_at')
     atomic_json(status_path, status)
     gateway = bool(os.getenv('TRADE_GATEWAY_URL') and os.getenv('TRADE_PIPELINE_TOKEN'))
     korea = bool(os.getenv('KOREA_CUSTOMS_SERVICE_KEY')) or gateway
@@ -102,31 +110,49 @@ def main():
                       'korea_direct_key_present':bool(os.getenv('KOREA_CUSTOMS_SERVICE_KEY')),
                       'gateway_configured':gateway}
     try:
-        if not args.skip_global:
+        if not args.skip_global and not args.resume_only:
             run_stage('global_sources', ['build_monthly.py'], status, 3600)
         reporters = list(PRIORITY_REPORTERS)[args.batch*9:(args.batch+1)*9]
-        for iso in reporters:
+        for iso in ([] if args.resume_only else reporters):
             run_stage('preview_'+iso, ['build_comtrade_priority_monthly.py','--reporters',iso,
                 '--months','6','--max-requests','12','--min-interval-seconds','3'],status)
-        for iso in automated_reporters() + (['KOR'] if korea else []):
+        for iso in ([] if args.resume_only else automated_reporters() + (['KOR'] if korea else [])):
             run_stage('national_'+iso,['build_national_priority_monthly.py','--reporters',iso,
                 '--months','3','--max-requests','72','--min-interval-seconds','3'],status)
         if not korea:
-            status['stages'].append({'stage':'national_KOR','status':'auth_required','exit_code':None})
-        run_stage('saudi_bulletin',['build_saudi_bulletin.py'],status)
+            status['stages'].append({'stage':'national_KOR','status':'auth_required','exit_code':None,
+                                    'required':False, 'note':'optional_source_not_configured'})
+        if not args.resume_only:
+            run_stage('saudi_bulletin',['build_saudi_bulletin.py'],status)
         mode = 'gateway' if gateway else 'direct' if os.getenv('COMTRADE_API_KEY') else 'preview'
         checkpoint = Path(os.environ.get('TRADE_CHECKPOINT', '/tmp/commodity-trade-checkpoint.json'))
+        policy_monitor = checkpoint.parent/'policy-source-checks.json'
+        if not args.resume_only:
+            run_stage('policy_source_checks', ['check_export_policy_sources.py', '--out',str(policy_monitor),
+                                               '--max-requests','4'],status)
+        policy_args = ['--policy-monitor',str(policy_monitor)] if policy_monitor.exists() else []
         run_stage('bilateral',['build_bilateral.py','--fetch','--mode',mode,'--reporters',','.join(reporters),
             '--hs','all','--period-strategy','observed','--months','1','--max-requests','60',
-            '--interval','3','--checkpoint',str(checkpoint)],status)
-        if korea:
+            '--interval','3','--checkpoint',str(checkpoint),'--resume-plan',f'comtrade-batch-{args.batch}',*policy_args],status)
+        if korea and not args.resume_only:
             run_stage('bilateral_KOR',['build_bilateral.py','--fetch','--mode','gateway' if gateway else 'direct',
                 '--source','korea_customs','--reporters','KOR','--hs','all','--hs-version','HSK',
                 '--months','3','--max-requests','60','--interval','3','--checkpoint',str(checkpoint)],status)
         run_stage('coverage',['monthly_coverage.py'],status)
         valid = run_stage('release_gate',['validate_release.py'],status)
         status['status'] = 'completed' if valid and all(s['status']=='completed' for s in status['stages']) else 'partial'
-        if status['status']=='completed' and not args.skip_global:
+        # Completion of bounded execution is distinct from worldwide acquisition.
+        required = [s for s in status['stages'] if s.get('required',True)]
+        status['execution_status'] = 'completed' if valid and all(
+            s.get('exit_code',0) == 0 and not s.get('source_failures')
+            and s['status'] != 'failed' for s in required) else 'failed'
+        status['coverage_status'] = 'partial_observed_not_global_coverage'
+        if status['execution_status'] == 'completed':
+            status['last_successful_execution_at'] = datetime.now(timezone.utc).isoformat()
+        if not args.resume_only and not args.skip_global:
+            status['last_full_status'] = status['status']
+            status['last_full_execution_status'] = status['execution_status']
+        if status['status']=='completed' and not args.skip_global and not args.resume_only:
             status['last_success_at'] = datetime.now(timezone.utc).isoformat()
         return 0 if valid else 1
     finally:
@@ -135,6 +161,9 @@ def main():
             status['status']='failed'
         try:
             status['observations'] = observation_health()
+            checkpoint_path = Path(os.environ.get('TRADE_CHECKPOINT', '/tmp/commodity-trade-checkpoint.json'))
+            if checkpoint_path.exists():
+                status['queues'] = queue_health(read_json(checkpoint_path))
         except (OSError, ValueError, KeyError, TypeError):
             status['observation_health_unavailable'] = True
         atomic_json(status_path,status)

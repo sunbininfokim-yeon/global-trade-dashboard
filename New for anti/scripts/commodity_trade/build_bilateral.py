@@ -17,6 +17,7 @@ from pipeline_store import atomic_json, read_json, single_writer
 from priority_universe import PRIORITY_REPORTERS, PRIORITY_COMMODITIES
 from export_control_screen import screen, coverage, with_documents
 from monthly_coverage import observed_targets, PANEL_NAMES
+from resume_queue import resume_plan, pending_ids, SETTLED
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC = ROOT.parent.parent / 'public/data'
@@ -38,8 +39,16 @@ def read_controls(path):
         return None
     controls = []
     for module in manifest.get('modules') or []:
-        body = read_json(path / module['file'])
-        controls.extend((body or {}).get('controls') or [])
+        filename = module['file']
+        target = (path / filename).resolve()
+        if not target.is_relative_to(path.resolve()):
+            raise ContractError('catalogue module outside catalogue directory')
+        body = read_json(target)
+        if not isinstance(body, dict) or not isinstance(body.get('controls'),list):
+            raise ContractError('catalogue module missing or invalid')
+        controls.extend(body['controls'])
+    if not manifest.get('modules'):
+        raise ContractError('catalogue modules missing')
     return {**{k: v for k, v in manifest.items() if k != 'modules'}, 'controls': controls}
 
 
@@ -138,6 +147,7 @@ def publish(state, out_dir, catalogue, *, as_of, monitor=None):
                                    hs=m['hs'], period=m['period'], frequency=m['frequency'], catalogue=catalogue,
                                    as_of=as_of, monitor=monitor)}
     manifest = {'schema': 'commodity-trade-bilateral-index-v1', 'generated_at': datetime.now(timezone.utc).isoformat(),
+                'policy_screen_checked_as_of':as_of, 'policy_catalogue_as_of':catalogue.get('as_of'),
                 'coverage': 'observed_partitions_only', 'entries': entries,
                 'jobs': state.get('jobs', {}), 'export_control_coverage': coverage(catalogue),
                 'policy_source_checks': monitor or {'status': 'not_checked'},
@@ -166,6 +176,7 @@ def main(argv=None):
     p.add_argument('--panel', type=Path, action='append',
                    help='observed strategy inputs; defaults to Comtrade and national priority panels')
     p.add_argument('--cycle', default=today.strftime('%Y-%m'))
+    p.add_argument('--resume-plan', help='checkpoint queue key; unfinished plans survive month rollover')
     p.add_argument('--max-requests', type=int, default=12)
     p.add_argument('--interval', type=float, default=3)
     p.add_argument('--checkpoint', type=Path, required=True, help='persist outside public; restore across CI runs')
@@ -222,11 +233,18 @@ def main(argv=None):
             if not status.get('query_meta') and old.get('query_meta') and old.get('partners'):
                 if make_job(old['query_meta'], old['partners'])['id'] == jid:
                     status['query_meta'], status['partners'] = old['query_meta'], old['partners']
+        if args.resume_plan and args.fetch:
+            plan = resume_plan(state, args.resume_plan, jobs, args.cycle)
+            jobs, args.cycle = plan['jobs'], plan['cycle']
+            # Persist the complete plan BEFORE the first request or interruption.
+            atomic_json(args.checkpoint, state)
         provider = Provider(args.mode, interval=args.interval)
         stop_reason = None
         if args.fetch:
             r = execute_plan(jobs, state, cycle=args.cycle, max_requests=args.max_requests, provider=provider,
-                             checkpoint=lambda s: atomic_json(args.checkpoint, s))
+                             checkpoint=lambda s: atomic_json(args.checkpoint, s),
+                             settled_statuses=SETTLED if args.resume_plan else {'ok'},
+                             max_attempts_per_cycle=3 if args.resume_plan else None)
             state = r['state']
             stop_reason = r['stop_reason']
         # Metadata-only migration for prior checkpoints; never fabricates jobs
@@ -250,6 +268,10 @@ def main(argv=None):
         print(json.dumps({'planned_jobs': len(jobs), 'network_requests': provider.calls,
                           'published_parts': len(manifest['entries']), 'statuses': counts,
                           'unfinished_jobs': len(r['unfinished']) if args.fetch else len(jobs),
+                          'pending_jobs': len(pending_ids(jobs, state, args.cycle)),
+                          'empty_jobs': sum(state['jobs'].get(j['id'], {}).get('cycle') == args.cycle
+                                            and state['jobs'].get(j['id'], {}).get('status') == 'empty' for j in jobs),
+                          'cycle': args.cycle,
                           'stop_reason': stop_reason}, ensure_ascii=False))
         return 3 if stop_reason == 'rate_limited' else 2 if stop_reason else 0
 
