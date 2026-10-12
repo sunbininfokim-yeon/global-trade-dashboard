@@ -1,4 +1,5 @@
 import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
+import { COMPANY_INDUSTRIES, COMPANY_PROFILES } from './company-profiles.mjs';
 import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, reviewProgress } from './antidumping-guide.mjs';
@@ -14,6 +15,9 @@ const initial = () => {
     manual_case_id: '', company_name: '', reference_rate_pct: '', reference_url: '', reference_note: '' };
 };
 let draft = initial(), result = null, dirty = true, methodResult = null;
+let industryId = 'transformer', profileId = '';
+const selectedIndustry = () => COMPANY_INDUSTRIES.find(x => x.id === industryId);
+const hasADCase = () => Boolean(selectedIndustry().case_id);
 let example = createADExample(draft), editedFields = new Set(), processRecordId = '';
 let methodSegment = '2026-16663', methodRows = [], equalWeights = false;
 function seedMethod() {
@@ -26,6 +30,7 @@ seedMethod();
 export function selectAntidumping({ case_id, company_id }) {
   const c = catalog.cases.find(c => c.case_id === case_id);
   if (!c?.companies.some(x => x.id === company_id)) return;
+  industryId = COMPANY_INDUSTRIES.find(x => x.case_id === case_id).id; profileId = '';
   draft = { ...initial(), case_id, company_id }; example = createADExample(draft); Object.assign(draft, example.values);
   editedFields = new Set(); processRecordId = ''; result = null; dirty = true;
   methodSegment = c.segments.at(-1).document_id; seedMethod();
@@ -54,6 +59,7 @@ function history() {
     <p class="ts-help">미수록은 0%가 아닙니다. 수록한 최종 공고의 참고율이며 모든 후속 변경을 확인한 실시간 적용 세율은 아닙니다.</p></section>`;
 }
 function editor() {
+  if (!hasADCase()) return coverageGap();
   return `<form data-ad-form novalidate><div class="ts-ad-example"><b>처음에는 예시값으로 시작하세요</b><p>확인된 변압기·타이어 품목에 계산용 금액을 넣었습니다. 금리·기간·비교율은 산업 평균이나 해당 회사의 실제 값이 아닙니다. 직접 입력으로 바꿀 수 있습니다.</p><button type="button" data-ad-example>이 품목의 예시값 채우기</button><div data-ad-input-guide>${inputGuide()}</div></div><label>예치율 근거<select data-ad-key="reference_mode" aria-label="예치율 근거"><option value="published"${draft.reference_mode === 'published' ? ' selected' : ''}>등록된 공식 공고</option><option value="manual"${draft.reference_mode === 'manual' ? ' selected' : ''}>다른 사건·기업 · 직접 확인한 예치율</option></select></label>
     ${input('entry_date', '통관일', { type: 'date', help: `공식 공고 자료 확인일 ${catalog.checked_on}. POR와 통관 발효일은 다릅니다.` })}${referencePanel()}
     <h3>어느 금액의 수입에, 몇 %를 비교하나요?</h3><div class="ts-fields">${input('entered_value_usd', '대상 수입 신고가격 · USD', { min: '0.01', max: '1000000000000', help: '해당 거래 전체 금액. 1개 제품 가격·회사 매출과 다릅니다.' })}${input('scenario_rate_pct', '가정 AD 예치율 %', { help: '초기값: 공표 참고율 +5%p. 미래 판정 예측값이 아닙니다.' })}${input('annual_finance_pct', '연 금융비용률 %', { max: '100', help: '예시 5%. 실제 자금조달 금리로 수정. 0이면 미반영.' })}${input('holding_days', '예치 기간 · 일', { max: '36500', step: '1', help: '예시 365일. 재심 종료일·환급일을 뜻하지 않습니다.' })}</div>
@@ -71,11 +77,14 @@ function processStepsMarkup(steps, guide = false) {
   return `<ol class="ts-ad-steps">${steps.map(s => `<li data-ad-stage="${s.id}" data-state="${s.state || 'guide'}"><details><summary><i aria-hidden="true"></i><span><b>${esc(s.label)}</b><small>${esc(s.agency)}</small><em>${s.event ? `${s.event.date || '날짜 미수록'} · ${s.state === 'latest' ? '수록 최신 근거' : '확인됨'}` : guide ? '일반 절차 안내' : '진행 근거 미확인'}</em></span></summary><p>${esc(s.description)}</p>${s.event ? `<p>${esc(s.event.note)}</p><p>${link(s.event.document)}</p>` : ''}<p>${link(AD_PROCESS_SOURCES[s.source])}</p></details></li>`).join('')}</ol>`;
 }
 function processSelection() {
-  const c = selectedCase(), manual = draft.reference_mode === 'manual';
+  const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
+  if (!industry.case_id) return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">${industryPicker()}
+    <fieldset><legend>2. 기업 선택 <span>${industry.profiles.length}개 기업</span></legend><div class="ts-ad-companies">${industry.profiles.map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>AD 공고·세율 미확인</small></button>`).join('')}</div></fieldset>
+    <p class="ts-ad-selection-context" role="status">선택: ${esc(industry.label)} → <b>${esc(COMPANY_PROFILES[profileId].name)}</b> · AD 자료 미연결</p>
+    <p class="ts-help">기존 기업의 제품군을 연결했습니다. 이 품목의 AD 적용 여부·세율·재심 진행은 아직 확인하지 않았습니다. 미확인은 0%를 뜻하지 않습니다.</p></div>`;
   const company = c.companies.find(x => x.id === draft.company_id);
-  const labels = { 'A-580-867': '변압기', 'A-580-908': '타이어' };
   return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">
-    <fieldset><legend>1. 산업 · 품목 선택</legend><div class="ts-ad-industries">${catalog.cases.map(x => `<button type="button" data-ad-case="${x.case_id}" aria-label="${esc(labels[x.case_id] || x.product)}" aria-pressed="${x.case_id === c.case_id}">${esc(labels[x.case_id] || x.product)}<small>${esc(x.product)}</small></button>`).join('')}</div></fieldset>
+    ${industryPicker()}
     <fieldset><legend>2. 기업 선택 <span>${c.companies.length}개 기업</span></legend><div class="ts-ad-companies">${c.companies.map(x => {
       let reference;
       try { reference = lookupAD({ ...draft, reference_mode: 'published', company_id: x.id }); } catch { reference = { rate_pct: null }; }
@@ -85,7 +94,15 @@ function processSelection() {
     <p class="ts-help">한국산 제품의 수록 사건입니다. 기업을 누르면 아래 단계·공표 참고율·계산 입력이 함께 바뀝니다. 참고율은 통관 가정일 ${esc(draft.entry_date)} 기준 선별 공고 값이며, 최신 재심의 진행 단계와는 별개입니다.</p>
   </div>`;
 }
+function industryPicker() {
+  return `<fieldset><legend>1. 산업 · 품목 선택</legend><div class="ts-ad-industries">${COMPANY_INDUSTRIES.map(x => `<button type="button" ${x.case_id ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id ? '공식 AD 공고 연결' : '기업 연결 · AD 미확인'}</small></button>`).join('')}</div></fieldset>`;
+}
+function coverageGap() {
+  const industry = selectedIndustry(), p = COMPANY_PROFILES[profileId];
+  return `<div class="ts-ad-gap" data-ad-gap><h3>${esc(p.name)} · ${esc(industry.label)}</h3><p class="ts-unverified">이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.</p><p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}<button type="button" class="ts-text-button" data-ad-open-company>이 기업·품목의 손익 시나리오 보기 →</button><p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
+}
 function processMarkup() {
+  if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업과 기업을 선택하세요</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">선택한 품목의 실제 사건·POR·단계 기록은 미확인입니다. 아래에서 확보가 필요한 자료를 확인할 수 있습니다.</p></section>`;
   const c = selectedCase(), records = reviewRecords(draft.case_id, draft.company_id);
   const record = records.find(r => r.id === processRecordId) || records[0];
   processRecordId = record?.id || '';
@@ -101,6 +118,7 @@ function processMarkup() {
     <p class="ts-help">날짜 경과만으로 다음 단계에 불이 켜지지 않습니다. 수록 공고에 나온 사건·POR·공식 행위만 표시합니다. 법원·CBP의 실제 진행 자동 갱신은 아직 연결되지 않았습니다.</p></section>`;
 }
 function output() {
+  if (!hasADCase()) return '<div class="ts-empty"><h2>공식 AD 자료가 연결되면 계산할 수 있습니다</h2><p>이 선택에는 예치액·공표 세율·단계 결과를 표시하지 않습니다. 기업 손익 시나리오는 별도 화면에서 입력할 수 있습니다.</p></div>';
   if (!result) return `<div class="ts-empty"><h2>공표 세율로 예치 부담을 비교합니다</h2><p>예시 금액·기간이 채워져 있습니다. 실제 거래에 맞게 수정하고 제품 범위·법인 조건을 확인하면 계산할 수 있습니다.</p></div>${history()}`;
   const r = result;
   return `<div data-ad-calculated class="${dirty ? 'is-stale' : ''}"><div class="ts-section-label"><h2>AD 현금예치 부담 비교</h2><button type="button" class="ts-export" data-ad-export${dirty ? ' disabled' : ''}>반덤핑 JSON 저장</button></div><p data-ad-stale class="ts-stale"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 다시 계산하세요.</p>
@@ -113,6 +131,7 @@ function methodOutput() {
   return `<p><b>${methodResult.rate_pct == null ? '세율 자동 산정 불가' : `교육용 산정값 ${fmt(methodResult.rate_pct)}%`}</b><br>${esc(methodResult.reason)}</p>${methodResult.excluded.map(x => `<p class="ts-help">제외: ${esc(x.name)} ${fmt(x.margin_pct)}% · ${esc(x.reason)}</p>`).join('')}`;
 }
 function methodEditor() {
+  if (!hasADCase()) return '';
   const c = selectedCase();
   return `<details class="ts-ad-method"><summary>비선정 기업 세율은 어떻게 달라지나요? · 교육용 산정</summary><p>시장경제 국가의 행정재심 원리 비교입니다. 조사기업의 0%·미소마진·전적으로 가용정보에 의존한 마진을 제외합니다. 모두 제외되면 다른 합리적 방법이 필요합니다.</p>
     <label>공표 사례 불러오기<select data-ad-segment aria-label="비선정 산정 사례">${c.segments.map(s => `<option value="${s.document_id}"${s.document_id === methodSegment ? ' selected' : ''}>${s.document_id} · ${s.stage === 'final' ? '최종' : '예비'}</option>`).join('')}</select></label>
@@ -126,9 +145,9 @@ export function antidumpingMarkup() {
     <div data-ad-process>${processMarkup()}</div><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건과 거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div><div data-ad-method>${methodEditor()}</div>
     <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>이 화면은 선별 공고 자료이며 자동 갱신·메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
-export function mountAntidumping(root) {
+export function mountAntidumping(root, { openCompany } = {}) {
   const controller = new AbortController(), signal = controller.signal;
-  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); };
+  const paint = () => { root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
   const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('.ts-ad-selection').outerHTML = processSelection(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };
@@ -140,7 +159,8 @@ export function mountAntidumping(root) {
     const c = catalog.cases.find(x => x.case_id === caseId);
     if (!c?.companies.some(x => x.id === companyId)) return;
     const changedCase = draft.case_id !== caseId;
-    if (!changedCase && draft.reference_mode === 'published' && draft.company_id === companyId) return;
+    if (hasADCase() && !changedCase && draft.reference_mode === 'published' && draft.company_id === companyId) return;
+    industryId = COMPANY_INDUSTRIES.find(x => x.case_id === caseId).id; profileId = '';
     draft.reference_mode = 'published'; draft.case_id = caseId; draft.company_id = companyId;
     if (changedCase) { processRecordId = ''; methodSegment = c.segments.at(-1).document_id; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); }
     unconfirm(); syncExample(); dirty = true; paint();
@@ -152,7 +172,7 @@ export function mountAntidumping(root) {
       if (AD_GUIDE_FIELDS.includes(key)) editedFields.add(key);
       if (['reference_mode', 'case_id', 'company_id', 'entry_date', 'manual_case_id', 'company_name', 'reference_rate_pct', 'reference_url', 'reference_note'].includes(key)) {
         unconfirm();
-        if (key === 'case_id') { draft.company_id = selectedCase().companies[0].id; methodSegment = selectedCase().segments.at(-1).document_id; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); }
+        if (key === 'case_id') { industryId = COMPANY_INDUSTRIES.find(x => x.case_id === draft.case_id).id; profileId = ''; draft.company_id = selectedCase().companies[0].id; methodSegment = selectedCase().segments.at(-1).document_id; seedMethod(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); }
         if (['reference_mode', 'case_id', 'company_id', 'entry_date'].includes(key)) syncExample();
         if (el.matches('select')) paint();
         else { root.querySelectorAll('[data-ad-key$="confirmed"]').forEach(c => { c.checked = false; }); if (key === 'entry_date' && draft.reference_mode === 'published') { root.querySelector('[data-ad-reference]').outerHTML = (() => { const t = document.createElement('div'); t.innerHTML = referencePanel(); return t.querySelector('[data-ad-reference]').outerHTML; })(); root.querySelector('[data-ad-key="scenario_rate_pct"]').value = draft.scenario_rate_pct; } }
@@ -187,7 +207,18 @@ export function mountAntidumping(root) {
       chooseContext(draft.case_id, companyId);
       root.querySelector(`[data-ad-company="${companyId}"]`).focus({ preventScroll: true });
     }
-    else if (el.hasAttribute('data-ad-reset')) { draft = initial(); example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
+    else if (el.hasAttribute('data-ad-industry')) {
+      const industry = COMPANY_INDUSTRIES.find(x => x.id === el.dataset.adIndustry);
+      if (!industry || industry.case_id || industry.id === industryId) return;
+      industryId = industry.id; profileId = industry.profiles[0]; result = null; dirty = true; unconfirm(); paint();
+      root.querySelector(`[data-ad-industry="${industryId}"]`).focus({ preventScroll: true });
+    }
+    else if (el.hasAttribute('data-ad-profile')) {
+      if (!selectedIndustry().profiles.includes(el.dataset.adProfile) || profileId === el.dataset.adProfile) return;
+      profileId = el.dataset.adProfile; paint(); root.querySelector(`[data-ad-profile="${profileId}"]`).focus({ preventScroll: true });
+    }
+    else if (el.hasAttribute('data-ad-open-company') && !hasADCase()) openCompany?.(profileId, selectedIndustry().product);
+    else if (el.hasAttribute('data-ad-reset')) { draft = initial(); industryId = 'transformer'; profileId = ''; example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
     else if (el.hasAttribute('data-ad-example')) { draft.entry_date = catalog.checked_on; example = createADExample(draft); Object.assign(draft, example.values); editedFields = new Set(); unconfirm(); dirty = true; paint(); }
     else if (el.hasAttribute('data-ad-days')) { draft.holding_days = el.dataset.adDays; editedFields.add('holding_days'); root.querySelector('[data-ad-key="holding_days"]').value = draft.holding_days; clear(); }
     else if (el.hasAttribute('data-ad-add') || el.hasAttribute('data-ad-remove')) { if (el.hasAttribute('data-ad-add') && methodRows.length < 30) methodRows.push({ name: '', margin_pct: '', weight: '', entirely_facts_available: false }); else if (el.hasAttribute('data-ad-remove') && methodRows.length > 1) methodRows.splice(Number(el.dataset.adRemove), 1); methodResult = null; root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }

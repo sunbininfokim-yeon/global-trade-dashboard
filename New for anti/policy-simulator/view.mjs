@@ -1,6 +1,6 @@
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput, elasticityCalibration } from './policy-catalog.mjs';
-import { companyMarkup, mountCompany } from './company-view.mjs';
+import { companyMarkup, mountCompany, selectCompanyProfile } from './company-view.mjs';
 import { antidumpingMarkup, mountAntidumping, selectAntidumping } from './antidumping-view.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 
@@ -282,7 +282,7 @@ export function mount(root) {
   let cleanup;
   const attach = () => {
     const body = root.querySelector('[data-simulator-view]');
-    cleanup = activeTab === 'country' ? mountCountry(body) : activeTab === 'antidumping' ? mountAntidumping(body) : mountCompany(body, { getCountryResult: () => dirty ? null : result, openAntidumping: selection => { selectAntidumping(selection); switchTab('antidumping'); } });
+    cleanup = activeTab === 'country' ? mountCountry(body) : activeTab === 'antidumping' ? mountAntidumping(body, { openCompany: (profileId, product) => { selectCompanyProfile(profileId, product); switchTab('company'); } }) : mountCompany(body, { getCountryResult: () => dirty ? null : result, openAntidumping: selection => { selectAntidumping(selection); switchTab('antidumping'); } });
   };
   const switchTab = tab => {
     cleanup?.(); activeTab = tab;

@@ -12,11 +12,16 @@ const initial = (profileId = 'hyosung') => ({ profile_id: profileId, company: CO
   capacity: '', competitor_price: '', response_mode: 'manual', policy_confirmed: false, country_inputs: null,
   tariff: newRow(COMPANY_PROFILES[profileId]?.product || 'custom', ''), source_note: '기업 공식 재무는 참고용입니다. 이 제품의 실제 미국향 거래·원가·계약 자료를 입력하세요. 반응 계수는 사용자 가정입니다.' });
 let draft = initial(), result = null, dirty = true, error = '';
+export function selectCompanyProfile(profileId, product = COMPANY_PROFILES[profileId]?.product) {
+  if (!COMPANY_PROFILES[profileId] || !PRODUCTS[product]) return;
+  draft = { ...initial(profileId), product, tariff: newRow(product, '') };
+  result = null; dirty = true; error = '';
+}
 function publicContext() {
   const p = COMPANY_PROFILES[draft.profile_id];
   if (!p) return '<p class="ts-help">분석할 실제 기업·제품의 자료를 입력하세요. 제품별 미국 판매와 원가는 별도 자료가 필요합니다.</p>';
-  const f = p.financial;
-  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p><div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p><p>${esc(p.note)}</p><p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 위 재무 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${p.ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
+  const f = p.financial, ad = p.ad && draft.product === p.product;
+  return `<div class="ts-company-public" data-company-public><h3>${esc(p.name)} · 확보한 공식 자료</h3><p>${esc(p.products)}</p><div class="ts-fields"><div><small>2025 매출 · 억원</small><strong>${fmt(f.revenue / 100, 2)}</strong></div><div><small>2025 영업이익 · 억원</small><strong>${fmt(f.operating_profit / 100, 2)}</strong></div></div><p class="ts-help">${esc(f.scope)} · <a href="${esc(f.source_url)}" target="_blank" rel="noopener noreferrer">공식 원문</a> · 확인 ${esc(f.checked_on)}</p><p>${esc(p.note)}</p><p class="ts-help"><b>추가로 필요한 거래 자료:</b> ${esc(p.missing.join(' / '))}. 위 재무 수치를 제품 손익 입력칸에 자동 대입하지 않습니다.</p>${ad ? '<button type="button" class="ts-text-button" data-company-ad>이 기업의 반덤핑 사건 보기 →</button>' : '<p class="ts-unverified">이 기업·제품의 AD 적용 여부는 이번 등록 사건에서 확인하지 않았습니다. 미확인은 무관세를 뜻하지 않습니다.</p>'}</div>`;
 }
 function field(key, label, min, max, help = '', optional = false) {
   return `<label>${label}<input type="number" inputmode="decimal" step="any" data-company-key="${key}" aria-label="기업 ${label}" value="${esc(draft[key])}" min="${min}" max="${max}"${optional ? '' : ' required'}>${help ? `<small>${help}</small>` : ''}</label>`;
@@ -145,7 +150,7 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
   }, { signal });
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
-    if (button.hasAttribute('data-company-ad')) { const ad = COMPANY_PROFILES[draft.profile_id]?.ad; if (ad) openAntidumping?.(ad); }
+    if (button.hasAttribute('data-company-ad')) { const p = COMPANY_PROFILES[draft.profile_id], ad = p?.ad; if (ad && draft.product === p.product) openAntidumping?.(ad); }
     else if (button.hasAttribute('data-company-reset')) { draft = initial(); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
     else if (button.hasAttribute('data-company-link')) {
       markDirty();
