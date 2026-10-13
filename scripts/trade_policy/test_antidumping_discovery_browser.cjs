@@ -47,7 +47,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.getByLabel('산업 분야', { exact: true }).selectOption('cables');
     await page.getByRole('button', { name: '전력 케이블', exact: true }).click();
     assert.equal(await page.locator('[data-ad-notices]').count(), 0);
-    assert.match(await page.locator('[data-ad-notice-review]').innerText(), /まだ|아직/);
+    assert.match(await page.locator('[data-industry-monitor]').innerText(), /개별 시행·조사 공고 목록 미수록/);
     assert.deepEqual(errors, []); assert.ok(requests.every(url => new URL(url).hostname === '127.0.0.1'));
     console.log('PASS reviewed notices UI: current POR initiation, 14 reviewed/1 held, company-specific selection, historical withdrawal with unchanged cash reference, case isolation, 360px and no external calls');
   } finally { await browser.close(); }

@@ -170,3 +170,9 @@ git push -u origin codex/country-tariff-simulator-20261011
 - 선택 예치 계산 접힘, 기업 손익→AD 기존 명시적 기업 이동은 계산기 열기. 수식·세율·확인일·DB/수집/메일 변경 없음. 전용CSS v6.
 - Node90·소유권7·브라우저7 통과/360px·입력보존·기업/전체 철회 분리·기존 예치계산. 공고 발견 브라우저는 숨긴 텍스트 검사 실패를 textContent/명시적 펼침으로 수정했으나 재실행 미완료(구문 통과). CUA의 기존 오류 탭 접근 보안정책 거부, 우회하지 않음.
 - 상세 docs/antidumping-monitor.md, docs/previews/antidumping-monitor-{desktop,mobile}.png. localhost:8773 preview 재시작. PR#528 후속이며 main병합/운영배포/유료AI 없음. .DS_Store 기존 변경은 보존·미커밋.
+
+
+### 2026-10-13 미연결 산업 공고·근거 연결
+- 계산 사건 여부와 모니터 자료를 분리. 새 industry-monitor.mjs로 AD미등록17품목 연결. 자동차7/한국232 2025-21940(발행12/4·PartA통관11/1), OCTG2026-19529 최종결과, 현가 관련 유압실린더2026-18706/19374. 8품목은 선별공고·9품목은 기존 정책/분류/기업 근거만 연결. 전수 최신 수집·예치율 확정 아님.
+- 원산지/제품 격리·공고순서·분류 출처·회사 근거, calculation_enabled:false. 기존 AD5/법인33/세율·단계 변경 없음. Node95·소유권7·preview asset map 통과. 실제 mount 이벤트 메모리 하네스 전환 검증, 새 브라우저 스모크/화면은 미완료(기존 오류탭 정책거부로 우회 안함).
+- localhost:8773 preview 새 모듈 등록 후 재시작. docs/industry-monitor-connections.md, 같은 PR#528 후속. 운영배포/DB/수집/메일/유료AI 없음.

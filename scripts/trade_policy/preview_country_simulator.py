@@ -30,6 +30,7 @@ ASSETS = {
     '/policy-simulator/view.mjs': ('policy-simulator/view.mjs', 'text/javascript'),
     '/policy-simulator/policy-catalog.mjs': ('policy-simulator/policy-catalog.mjs', 'text/javascript'),
     '/policy-simulator/product-verification.mjs': ('policy-simulator/product-verification.mjs', 'text/javascript'),
+    '/policy-simulator/industry-monitor.mjs': ('policy-simulator/industry-monitor.mjs', 'text/javascript'),
     '/policy-simulator/suppliers-2025.mjs': ('policy-simulator/suppliers-2025.mjs', 'text/javascript'),
     '/policy-simulator/style.css': ('policy-simulator/style.css', 'text/css'),
 }

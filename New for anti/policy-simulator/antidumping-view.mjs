@@ -1,5 +1,6 @@
 import { AD_CATALOG as catalog } from './antidumping-catalog.mjs';
 import { AD_DISCOVERY } from './antidumping-discovery-snapshot.mjs';
+import { industryMonitorMarkup } from './industry-monitor.mjs';
 import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
 import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES, companyCalibration } from './company-profiles.mjs';
 import { productVerification, verificationMarkup } from './product-verification.mjs';
@@ -123,6 +124,9 @@ function industryPicker() {
   const family = selectedIndustry().family;
   return `<fieldset><legend>1. 산업 → 품목 선택</legend><label class="ts-ad-family">산업 분야<select data-ad-family aria-label="산업 분야">${INDUSTRY_FAMILIES.map(x => `<option value="${x.id}"${x.id === family ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><div class="ts-ad-industries">${COMPANY_INDUSTRIES.filter(x => x.family === family).map(x => `<button type="button" ${x.case_id ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id ? '공식 AD 공고 연결' : esc(verificationLabel(x.product))}</small></button>`).join('')}</div></fieldset>`;
 }
+function monitorNotices() {
+  return hasADCase() ? noticeReviewMarkup(AD_DISCOVERY, draft.case_id) : industryMonitorMarkup(selectedIndustry().product);
+}
 function coverageGap() {
   const industry = selectedIndustry(), p = overview ? null : COMPANY_PROFILES[profileId];
   const productSource = p ? companyCalibration(profileId, industry.product).selected_product_source?.url : null;
@@ -131,7 +135,7 @@ function coverageGap() {
   return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? `<p class="ts-help" data-verification-status>${esc(verification.ad.label)}</p>` : ''}${verificationMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
-  if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">확인한 사건 검색 결과·관세 조건과 기업별 적용 여부를 구분합니다. 예치율이 확정되지 않은 품목에는 계산·진행 불을 표시하지 않습니다.</p></section>`;
+  if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">확인한 공식 공고·관세 근거는 아래에 표시합니다. AD 예치율이나 기업별 적용이 미확정이어도 공고를 볼 수 있으며, 다른 제도의 공고로 AD 단계 불을 켜지 않습니다.</p></section>`;
   const c = selectedCase(), records = overview ? caseReviewRecords(draft.case_id) : reviewRecords(draft.case_id, draft.company_id);
   const record = records.find(r => r.id === processRecordId) || records[0];
   processRecordId = record?.id || '';
@@ -169,7 +173,7 @@ function methodEditor() {
     <div data-ad-method-output aria-live="polite">${methodOutput()}</div><p class="ts-help">이 결과를 기업의 예치율로 자동 적용하지 않습니다. ${link(catalog.documents[methodSegment])} · <a href="https://www.govinfo.gov/content/pkg/USCODE-2024-title19/pdf/USCODE-2024-title19-chap4-subtitleIV-partII-sec1673d.pdf" target="_blank" rel="noopener noreferrer">19 U.S.C. §1673d(c)(5) · 2024 법전</a>. 신규 조사·중국 등 비시장경제의 별도율·CVD에는 이 경로를 적용하지 않습니다.</p></details>`;
 }
 export function antidumpingMarkup() {
-  return `<div data-ad-simulator><div class="ts-intro"><div><span class="ts-eyebrow">반덤핑 · 사건과 법인별 공식 공고</span><h1>반덤핑 공고·재심 현황</h1><p>대상 품목의 공식 공고와 조사·재심 흐름을 확인합니다. 기업 선택과 거래 계산은 필요할 때 이용합니다.</p></div><span class="ts-badge">${catalog.cases.length}개 사건 · ${catalog.cases.reduce((sum, c) => sum + c.companies.length, 0)}개 기업·법인그룹</span></div>
+  return `<div data-ad-simulator><div class="ts-intro"><div><span class="ts-eyebrow">반덤핑 · 사건과 법인별 공식 공고</span><h1>통상 공고·반덤핑 재심 현황</h1><p>대상 품목의 공식 공고와 조사·재심 흐름을 확인합니다. 기업 선택과 거래 계산은 필요할 때 이용합니다.</p></div><span class="ts-badge">${catalog.cases.length}개 사건 · ${catalog.cases.reduce((sum, c) => sum + c.companies.length, 0)}개 기업·법인그룹</span></div>
     <p class="ts-model-source">근거: 미국 상무부의 Federal Register 공고 · 자료 확인 ${catalog.checked_on}. 공표 마진, 현금예치, 사후 관세 확정을 구분합니다.</p><div class="ts-basis">${esc(catalog.coverage_note)}</div>
     <details class="ts-explainer ts-logic"><summary>계산 원리·용어</summary>
       <p class="ts-logic-flow">사건·제품·법인·통관일 확인 → 예치 참고율 확인 → 신고가격 × 예치율 ÷ 100</p>
@@ -179,12 +183,12 @@ export function antidumpingMarkup() {
       <div><dt>자금 부담</dt><dd>예치액 × 연 금융비용률 ÷ 100 × 예치 일수 ÷ 365. 사용자 금리·기간에 따른 가정 비용이며 세관이 확정한 이자가 아닙니다.</dd></div></dl>
       <p><a href="https://www.trade.gov/antidumping-and-countervailing-duty-frequently-asked-questions" target="_blank" rel="noopener noreferrer">상무부 재심·예치금 안내 ↗</a> · <a href="https://www.ecfr.gov/current/title-19/chapter-III/part-351/subpart-B/section-351.212" target="_blank" rel="noopener noreferrer">관세 확정 규정 19 CFR §351.212 ↗</a>. 선택한 사건·기업의 근거 공고는 단계 카드와 세율 이력에서 확인할 수 있습니다.</p>
     </details>
-    <p class="ts-help" data-ad-origin>대상 원산지: 한국 · 현재 수록 사건은 한국산입니다. 기업 본사·선적 항구와 구분하며 다른 원산지의 AD 적용은 미검토입니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${noticeReviewMarkup(AD_DISCOVERY, hasADCase() ? draft.case_id : null)}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div>
+    <p class="ts-help" data-ad-origin>대상 원산지: 한국 · 현재 수록 사건은 한국산입니다. 기업 본사·선적 항구와 구분하며 다른 원산지의 AD 적용은 미검토입니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${monitorNotices()}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div>
     <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>로컬 수집기의 공고 발견 목록을 별도로 제공합니다. 세율·단계의 자동 적용과 메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
 export function mountAntidumping(root, { openCompany } = {}) {
   const controller = new AbortController(), signal = controller.signal;
-  const paint = () => { root.querySelector('[data-ad-calculator]').open = calculatorOpen; root.querySelector('[data-ad-history]').innerHTML = hasADCase() ? history() : coverageGap(); root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = noticeReviewMarkup(AD_DISCOVERY, hasADCase() ? draft.case_id : null); };
+  const paint = () => { root.querySelector('[data-ad-calculator]').open = calculatorOpen; root.querySelector('[data-ad-history]').innerHTML = hasADCase() ? history() : coverageGap(); root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = monitorNotices(); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
   const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('.ts-ad-selection').outerHTML = processSelection(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };

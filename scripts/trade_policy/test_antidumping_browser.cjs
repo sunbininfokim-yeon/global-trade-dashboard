@@ -16,7 +16,7 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     await page.goto(`${base}/policy/us/simulator`); await tab('반덤핑');
     await page.locator('[data-ad-company="hyosung"]').click();
     await page.locator('[data-ad-calculator]>summary').click();
-    await page.getByRole('heading', { name: '반덤핑 공고·재심 현황' }).waitFor();
+    await page.getByRole('heading', { name: '통상 공고·반덤핑 재심 현황' }).waitFor();
     assert.match(await page.locator('[data-ad-reference]').innerText(), /4.32%/);
     assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '1000000');
     await field('대상 수입 신고가격 · USD').fill('');
