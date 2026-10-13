@@ -13,6 +13,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     const click = async name => {
       if (families[name] && await field('산업 분야').inputValue() !== families[name]) await field('산업 분야').selectOption(families[name]);
       await page.getByRole('button', { name, exact: true }).click();
+      // This regression exercises the optional calculator explicitly.
+      if (await page.locator('[data-ad-calculator]:not([open]) [data-ad-form]').count()) await page.locator('[data-ad-calculator]>summary').click();
     };
     const picker = page.locator('.ts-ad-selection');
     const company = id => picker.locator(`[data-ad-company="${id}"]:visible`);

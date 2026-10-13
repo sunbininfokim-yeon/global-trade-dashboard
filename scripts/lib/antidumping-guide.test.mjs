@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { AD_CATALOG } from '../../New for anti/policy-simulator/antidumping-catalog.mjs';
 import { simulateDeposit } from '../../New for anti/policy-simulator/antidumping-model.mjs';
-import { createADExample, describeADInputs, AD_REVIEW_RECORDS, reviewRecords, reviewProgress } from '../../New for anti/policy-simulator/antidumping-guide.mjs';
+import { createADExample, describeADInputs, AD_REVIEW_RECORDS, reviewRecords, caseReviewRecords, reviewProgress } from '../../New for anti/policy-simulator/antidumping-guide.mjs';
 const context = (extra = {}) => ({ reference_mode: 'published', case_id: 'A-580-867', company_id: 'hyosung', entry_date: '2026-10-11', ...extra });
 
 test('product examples supply transaction totals and explicit financial assumptions, not industry estimates', () => {
@@ -74,4 +74,17 @@ test('steel examples and POR progress keep preliminary zero separate from final 
   const steel = reviewProgress('A-580-883', 'hot-rolled-2023-24');
   assert.equal(steel.stages.find(x => x.id === 'initiation').event.date, '2024-11-14');
   assert.equal(steel.latest_stage, 'final');
+});
+
+
+test('case overview excludes firm rescissions and individually scoped selection events', () => {
+  const records = caseReviewRecords('A-580-897');
+  assert.ok(records.length > 0); assert.ok(records.every(r => r.status !== 'rescinded'));
+  const overview = reviewProgress('A-580-867', 'lpt-2023-24');
+  assert.equal(overview.stages.find(s => s.id === 'selection').state, 'unknown');
+  assert.equal(overview.stages.find(s => s.id === 'final').state, 'latest');
+  assert.ok(overview.events.every(e => !e.companies));
+  const copied = caseReviewRecords('A-580-867'); copied[0].events.length = 0;
+  assert.ok(caseReviewRecords('A-580-867')[0].events.length > 0);
+  assert.deepEqual(caseReviewRecords('unknown'), []);
 });

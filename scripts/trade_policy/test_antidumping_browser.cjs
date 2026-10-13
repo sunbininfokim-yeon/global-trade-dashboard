@@ -14,7 +14,9 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback previ
     const confirm = async () => { await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check(); };
     const json = async () => { const promise = page.waitForEvent('download'); await tab('반덤핑 JSON 저장'); return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8')); };
     await page.goto(`${base}/policy/us/simulator`); await tab('반덤핑');
-    await page.getByRole('heading', { name: '반덤핑 예치 부담·재심 현황' }).waitFor();
+    await page.locator('[data-ad-company="hyosung"]').click();
+    await page.locator('[data-ad-calculator]>summary').click();
+    await page.getByRole('heading', { name: '반덤핑 공고·재심 현황' }).waitFor();
     assert.match(await page.locator('[data-ad-reference]').innerText(), /4.32%/);
     assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '1000000');
     await field('대상 수입 신고가격 · USD').fill('');

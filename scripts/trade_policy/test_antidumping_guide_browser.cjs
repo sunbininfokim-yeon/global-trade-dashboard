@@ -15,6 +15,8 @@ if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback p
     const confirm = async () => { await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check(); };
     const json = async () => { const promise = page.waitForEvent('download'); await button('반덤핑 JSON 저장'); return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8')); };
     await page.goto(`${base}/policy/us/simulator`); await button('반덤핑');
+    await page.locator('[data-ad-company="hyosung"]').click();
+    await page.locator('[data-ad-calculator]>summary').click();
     for (const [label, value] of [['대상 수입 신고가격 · USD', '1000000'], ['가정 AD 예치율 %', '9.32'], ['연 금융비용률 %', '5'], ['예치 기간 · 일', '365'], ['통관일', '2026-10-11']]) assert.equal(await field(label).inputValue(), value);
     assert.equal(await stage('initiation').getAttribute('data-state'), 'latest');
     assert.equal(await stage('final').getAttribute('data-state'), 'unknown');

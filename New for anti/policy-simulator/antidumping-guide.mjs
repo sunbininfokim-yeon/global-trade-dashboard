@@ -153,6 +153,11 @@ export const AD_PROCESS_STEPS = {
 export function reviewRecords(caseId, companyId) {
   return AD_REVIEW_RECORDS.filter(r => r.case_id === caseId && r.companies.includes(companyId)).sort((a, b) => b.por_start.localeCompare(a.por_start)).map(r => structuredClone(r));
 }
+// Case overview excludes firm-specific rescissions; they remain in company views.
+export function caseReviewRecords(caseId) {
+  return AD_REVIEW_RECORDS.filter(r => r.case_id === caseId && r.status !== 'rescinded')
+    .sort((a, b) => b.por_start.localeCompare(a.por_start)).map(r => structuredClone(r));
+}
 export function reviewProgress(caseId, recordId, companyId = null) {
   const r = AD_REVIEW_RECORDS.find(r => r.case_id === caseId && r.id === recordId);
   if (!r || (companyId && !r.companies.includes(companyId))) throw new Error('선택한 사건·기업의 재심 기록을 확인하세요.');

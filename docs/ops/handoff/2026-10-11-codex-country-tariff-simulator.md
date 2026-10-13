@@ -162,3 +162,11 @@ git push -u origin codex/country-tariff-simulator-20261011
 - 3탭 접힌 공식자료 확인 결과·작은 설명·원문·확인일, 국가/기업 JSON product_verification 추가. 미수집 공급국 통계는 JSON 출처·연도null 수정. 자동수집·현재율확정 아님.
 - Node89·소유권7·브라우저4(신규 검증/산업전수/AD선택/기업), 40프로필22품목·360px·15→30·null·원산지 격리 통과. docs/previews/automotive-verification-{desktop,mobile}.png 육안확인. 상세 docs/policy-product-verification-20261012.md(51건 수기목록 포함).
 - 같은 PR#528 후속, localhost:8773 미리보기 재시작. main병합·운영배포·DB·수집·메일·유료AI 호출 없음.
+
+
+### 2026-10-13 공고 중심 반덤핑 모니터
+- 기본 산업/품목→품목전체, 기업 선택사항. 한국산 수록 범위 명시, 타국/선적항구로 자료 추정 금지. 공표마진·공고 검토를 계산기 밖으로 이동.
+- 전체 재심 기록에서 법인별 철회 제외·기업 지정 선정 이벤트 제외·기업 예치 발효 미표시. 기업 선택 시 기존 개별 진행/철회와 근거 제공. 전체로 돌아가 계산기 접기·거래 편집값 보존. 미확인 품목은 기업 없는 제품 근거 표시.
+- 선택 예치 계산 접힘, 기업 손익→AD 기존 명시적 기업 이동은 계산기 열기. 수식·세율·확인일·DB/수집/메일 변경 없음. 전용CSS v6.
+- Node90·소유권7·브라우저7 통과/360px·입력보존·기업/전체 철회 분리·기존 예치계산. 공고 발견 브라우저는 숨긴 텍스트 검사 실패를 textContent/명시적 펼침으로 수정했으나 재실행 미완료(구문 통과). CUA의 기존 오류 탭 접근 보안정책 거부, 우회하지 않음.
+- 상세 docs/antidumping-monitor.md, docs/previews/antidumping-monitor-{desktop,mobile}.png. localhost:8773 preview 재시작. PR#528 후속이며 main병합/운영배포/유료AI 없음. .DS_Store 기존 변경은 보존·미커밋.
