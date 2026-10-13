@@ -8,6 +8,7 @@ from election_watch.poll_targets import apply_targets
 from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize, summarize
 from publish_state_packets import rebuild
+from election_watch.superpac import build_snapshot
 
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'config'
@@ -57,6 +58,9 @@ class MaineEvidenceTests(unittest.TestCase):
         self.assertTrue(all(r['state']=='ME' for r in capture['spending']))
         self.assertEqual(capture['publication_status'],'review_input_only_national_finance_publisher_not_replaced')
         self.assertNotIn('api_key',json.dumps(capture['sources']))
+        replay=build_snapshot(2026,capture['candidates'],capture['raw_records'])
+        self.assertEqual(replay['spending'],capture['spending'])
+        self.assertEqual(replay['quality'],capture['quality'])
 
     def test_replay_preserves_all_other_races_history_and_original_dates(self):
         old=read(PUBLIC/'usa_election_live_polls_v1.json')

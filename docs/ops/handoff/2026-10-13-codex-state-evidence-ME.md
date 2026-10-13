@@ -22,6 +22,7 @@
 
 - 제공된 FEC 키를 실행 중 표준입력으로만 받아 후보 신원을 확인하고 정기 Schedule E를 실제 조회했다. 키는 파일·명령 인자·로그·PR에 기록하지 않았다. 키를 다음 세션에 전달하지 않는다.
 - 현행 연방 후보6명 ID를 고유 연결했고, 5요청으로 219행을 받았다. 기존 정정/중복/메모 검증에서 210행이 편입됐으며 O/U/V/W 등 분류와 지지/반대를 보존했다. 긴급 24/48시간 보고를 포함하는 실시간 총액이 아니다.
+- 원래 FEC 응답 행의 지문과 정규화에 필요한 필드만 보존하고 불필요한 연락처/주소를 제외했다. 필드 투영에서 정규화 합계·그룹·편입/제외 건수가 원래 결과와 동일함을 검사했다.
 - 새 후보 ID는 공식 명부 operation에 반영했다. FEC 새 조회는 packet의 `federal_finance_review` 검토 부록으로 남긴다. **이 부록을 읽어 전국 금융 합계를 게시하는 소비기는 아직 없다.** 기존 금융 합계/기준일을 바꾸지 않았으며, 새 210행이 지도에 공개됐다고 표시하지 않는다. 기존 전국 FEC 수집/정규화/지도 게시 경로의 후보 연결은 사용하고, 해당 전국 재수집 성공 후 금액 갱신을 별도 확인해야 한다.
 - ME 공식 Ethics/현행 disclosure portal을 공시 출처 디렉터리에 주별 operation으로 연결했다. 후보별 주지사 IE 정규화는 미구현이며 값은 null/명시 상태다. 캠프 수입·일반 비용을 IE로 변환하지 않는다. 공식 안내: https://www.maine.gov/ethics/political-activity/clean-election-contributions/independent-expenditures . 현행 포털: https://www.mainecampaignfinancedisclosure.com/public .
 - CBS 발표도 발견했으나 이번 API snapshot에 없고 문항별 표본/대진 검토가 완료되지 않아 수치 편입하지 않았다. 모든 지역지/기관의 신규 발표가 자동 발견된다는 보장은 없다.
