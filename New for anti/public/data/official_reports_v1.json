@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-12T17:59:54.584505+00:00",
+  "generated_at": "2026-10-13T02:03:42.189538+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 157,
-    "scored": 157,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 163,
+    "scored": 163,
     "selected": 40,
-    "indicators": 18
+    "indicators": 17
   },
   "feed_status": [
     {
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -328,20 +328,6 @@
       "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "published_at": "2026-10-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "published_at": "2026-09-25T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1710,53 +1696,41 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    }
-  ],
-  "pending_review": [
-    {
-      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
-      "country": "EUR",
       "domains": [
         "finance",
         "economy"
       ],
-      "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
+      "series_id": null,
+      "title": {
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.112,
+        "final": 2.112
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    }
+  ],
+  "pending_review": [
     {
       "title": "Monetary Policy Committee dates for 2027",
       "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
@@ -1903,6 +1877,16 @@
     {
       "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
       "country": "USA",
       "domains": [
         "finance"
@@ -3275,39 +3259,38 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
-        "finance"
+        "finance",
+        "economy"
       ],
-      "series_id": "JP_BOJ_POLICY",
+      "series_id": null,
       "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
         "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
       },
       "summary": "",
       "scores": {
-        "significance": 2.306,
-        "final": 2.306
+        "significance": 2.112,
+        "final": 2.112
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
+        "domains:economy,finance"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "finance.policy"
+      "site_slot": null
     }
   ]
 }
