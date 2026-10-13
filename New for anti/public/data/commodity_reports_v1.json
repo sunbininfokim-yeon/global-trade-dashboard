@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-12T18:10:44.995321+00:00",
+  "generated_at": "2026-10-13T02:13:32.410529+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,44 +17,44 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 33,
-    "sources_failed": 5,
-    "raw_items": 558,
-    "scored": 176,
-    "unclassified": 325,
-    "rejected": 39,
-    "published": 164,
+    "sources_ok": 37,
+    "sources_failed": 1,
+    "raw_items": 650,
+    "scored": 175,
+    "unclassified": 391,
+    "rejected": 56,
+    "published": 163,
     "commodities": 29,
-    "buckets": 98
+    "buckets": 97
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
+      "ok": true,
+      "count": 1,
+      "error": null,
       "mode": "live",
-      "carried_over": 4
+      "archived": 4
     },
     {
       "source_id": "us_nass_asb",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_news",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "42 list pages, 43 reports linked, 9 read, 27 already known; 3 failed",
+      "note": "45 list pages, 44 reports linked, 7 read, 29 already known",
       "archived": 13
     },
     {
@@ -215,7 +215,8 @@
       "ok": true,
       "count": 11,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 1
     },
     {
       "source_id": "us_ofac_recent_actions",
@@ -311,12 +312,13 @@
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 1,
+    "annotated": 2,
     "reused": 50,
     "error": null
   },
   "boards": {
     "export_controls": [
+      "86f680f62484ba7d",
       "38b8b7f9ad0f103f",
       "add281ec9d9fcd56",
       "58852feb849a95c0",
@@ -825,15 +827,8 @@
       "VNM": [
         "2147f5407a8ae8de"
       ],
-      "ARG": [
-        "e36e7155dc085ab6",
-        "21c3dd4f0cf93fd0"
-      ],
       "CHN": [
         "6e3880b1a989890a"
-      ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
       ],
       "USA": [
         "0466c9487c9388ef",
@@ -844,6 +839,9 @@
       ],
       "_global": [
         "976dad99c36e6871"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
       ]
     },
     "corn": {
@@ -1181,7 +1179,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.946,
+      "importance": 5.907,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1214,7 +1212,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.567,
+      "importance": 5.528,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1247,7 +1245,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.114,
+      "importance": 5.084,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1280,7 +1278,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.897,
+      "importance": 4.865,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1313,7 +1311,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.537,
+      "importance": 4.509,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1345,7 +1343,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.519,
+      "importance": 4.489,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1377,7 +1375,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.431,
+      "importance": 4.402,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1410,7 +1408,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.431,
+      "importance": 4.402,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1442,7 +1440,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.015,
+      "importance": 3.992,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1476,7 +1474,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.009,
+      "importance": 3.982,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1506,7 +1504,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.806,
+      "importance": 3.78,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1537,44 +1535,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.714,
+      "importance": 3.689,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
-    },
-    {
-      "id": "e36e7155dc085ab6",
-      "title": {
-        "original": "Argentina: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
-      "published_at": "2026-10-07T12:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.631,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-12T18:10:44.995321+00:00"
     },
     {
       "id": "9307f930910dd12d",
@@ -1600,7 +1567,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.594,
+      "importance": 3.574,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1632,7 +1599,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.568,
+      "importance": 3.555,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1665,7 +1632,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.568,
+      "importance": 3.544,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1696,7 +1663,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.529,
+      "importance": 3.516,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1729,7 +1696,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.522,
+      "importance": 3.51,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1762,7 +1729,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.498,
+      "importance": 3.475,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1793,7 +1760,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.498,
+      "importance": 3.475,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1824,7 +1791,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.269,
+      "importance": 3.247,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1855,7 +1822,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.241,
+      "importance": 3.22,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1888,7 +1855,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.241,
+      "importance": 3.22,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1919,7 +1886,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.241,
+      "importance": 3.22,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1950,7 +1917,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.181,
+      "importance": 3.162,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1981,7 +1948,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.14,
+      "importance": 3.126,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1989,6 +1956,39 @@
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "dcc6cf91ba76aab6",
+      "title": {
+        "original": "Argentina: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s fuel ethanol production is forecast to reach a record 1.35 billion liters in 2026, driven by record domestic consumption, additional corn-based...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/argentina-biofuels-annual",
+      "published_at": "2026-08-20T15:59:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.115,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -2014,46 +2014,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.124,
+      "importance": 3.105,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-01T00:19:44.698546+00:00"
-    },
-    {
-      "id": "dcc6cf91ba76aab6",
-      "title": {
-        "original": "Argentina: Biofuels Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Argentina’s fuel ethanol production is forecast to reach a record 1.35 billion liters in 2026, driven by record domestic consumption, additional corn-based...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/argentina-biofuels-annual",
-      "published_at": "2026-08-20T15:59:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "corn"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.123,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "0eb0404d29d2bbc2",
@@ -2076,7 +2043,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.079,
+      "importance": 3.064,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure"
@@ -2107,7 +2074,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.031,
+      "importance": 3.02,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2139,7 +2106,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.964,
+      "importance": 2.954,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2171,7 +2138,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.917,
+      "importance": 2.897,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2204,7 +2171,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.876,
+      "importance": 2.864,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2234,43 +2201,12 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.854,
+      "importance": 2.835,
       "reasons": [
         "series:USDA_GAIN"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-07T21:36:58.262771+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.817,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-12T18:10:44.995321+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -2295,7 +2231,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.817,
+      "importance": 2.802,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2327,7 +2263,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.817,
+      "importance": 2.802,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2358,7 +2294,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.788,
+      "importance": 2.78,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2390,7 +2326,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.555,
+      "importance": 2.537,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2508,7 +2444,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.373,
+      "importance": 2.369,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2637,7 +2573,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.283,
+      "importance": 2.269,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2668,7 +2604,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.231,
+      "importance": 2.218,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2700,7 +2636,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.147,
+      "importance": 2.143,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2733,7 +2669,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.141,
+      "importance": 2.133,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2764,7 +2700,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.062,
+      "importance": 2.048,
       "reasons": [
         "country_in_text"
       ],
@@ -2794,7 +2730,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.019,
+      "importance": 2.008,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2827,7 +2763,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.002,
+      "importance": 1.99,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2868,7 +2804,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.86,
+      "importance": 1.851,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2899,45 +2835,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.837,
+      "importance": 1.827,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "00abaa8d059c1ade",
-      "title": {
-        "original": "EIA Gasoline and Diesel Fuel Update (weekly retail prices): Data For 10/05/26",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Summary Excerpt: Regular Gasoline Retail Price (Dollars per Gallon) 4.354 .. U.S. 4.147 ... East Coast 4.343 .... New England 4.363 .... Central Atlantic 3.959 .... Lower Atlantic 4.109 ... Midwest 3.911 ... Gulf Coast 4.417 ... Rocky Mountain 5.727 ... West Coast 5.116 ... West Coast less California States 6.227 .... California 4.020 .... Colorado 3.970 .... Florida 4.302 .... Massachusetts 4.200 .... Minnesota 4.380 .... New York 3.829 .... Ohio 3.874 .... Texas 5.424 .... Washington Cities 4.333 .... Boston 4.633 .... Chicago 3.859 .... Cleveland 3.979 .... Denver 3.836 .... Houston 6.209…",
-      "url": "http://www.eia.gov/petroleum/gasdiesel/",
-      "published_at": "2026-10-06T14:18:36+00:00",
-      "agency": "U.S. Energy Information Administration",
-      "agency_ko": "미국 에너지정보청(EIA)",
-      "source_id": "us_eia_gasoline_diesel",
-      "commodities": [
-        "light_oils"
-      ],
-      "countries": [
-        "USA",
-        "GBR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.673,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
     },
     {
       "id": "743d54b554614f5d",
@@ -3020,6 +2924,38 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "00abaa8d059c1ade",
+      "title": {
+        "original": "EIA Gasoline and Diesel Fuel Update (weekly retail prices): Data For 10/05/26",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Summary Excerpt: Regular Gasoline Retail Price (Dollars per Gallon) 4.354 .. U.S. 4.147 ... East Coast 4.343 .... New England 4.363 .... Central Atlantic 3.959 .... Lower Atlantic 4.109 ... Midwest 3.911 ... Gulf Coast 4.417 ... Rocky Mountain 5.727 ... West Coast 5.116 ... West Coast less California States 6.227 .... California 4.020 .... Colorado 3.970 .... Florida 4.302 .... Massachusetts 4.200 .... Minnesota 4.380 .... New York 3.829 .... Ohio 3.874 .... Texas 5.424 .... Washington Cities 4.333 .... Boston 4.633 .... Chicago 3.859 .... Cleveland 3.979 .... Denver 3.836 .... Houston 6.209…",
+      "url": "http://www.eia.gov/petroleum/gasdiesel/",
+      "published_at": "2026-10-06T14:18:36+00:00",
+      "agency": "U.S. Energy Information Administration",
+      "agency_ko": "미국 에너지정보청(EIA)",
+      "source_id": "us_eia_gasoline_diesel",
+      "commodities": [
+        "light_oils"
+      ],
+      "countries": [
+        "USA",
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.662,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
       "id": "58852feb849a95c0",
       "title": {
         "original": "TEI 2026 Siapkan Zona Khusus Kopi, Teh, dan Kakao, Permudah Buyer di Area Pameran",
@@ -3044,7 +2980,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.577,
+      "importance": 1.567,
       "reasons": [
         "country_in_text"
       ],
@@ -3060,37 +2996,6 @@
       },
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-06T11:28:52.962079+00:00"
-    },
-    {
-      "id": "3ff8c2dd8b700c92",
-      "title": {
-        "original": "Kenya: Dry Weather Decimates Kenyan Harvest",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "FAS Nairobi is downgrading Kenya’s marketing year 2026/27 corn production forecast by 51 percent to 2.2 million metric tons after a severe mid-year dry period...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/kenya-dry-weather-decimates-kenyan-harvest",
-      "published_at": "2026-08-28T07:27:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "corn"
-      ],
-      "countries": [
-        "KEN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.559,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "c6333ba481073b9b",
@@ -3152,6 +3057,37 @@
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
+      "id": "3ff8c2dd8b700c92",
+      "title": {
+        "original": "Kenya: Dry Weather Decimates Kenyan Harvest",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Nairobi is downgrading Kenya’s marketing year 2026/27 corn production forecast by 51 percent to 2.2 million metric tons after a severe mid-year dry period...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/kenya-dry-weather-decimates-kenyan-harvest",
+      "published_at": "2026-08-28T07:27:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.554,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "5f087a520744649c",
       "title": {
         "original": "July 2026 crude steel production",
@@ -3173,7 +3109,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.51,
+      "importance": 1.506,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -3204,7 +3140,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.508,
+      "importance": 1.502,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3236,7 +3172,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.494,
+      "importance": 1.484,
       "reasons": [
         "country_in_text"
       ],
@@ -3267,7 +3203,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.494,
+      "importance": 1.484,
       "reasons": [
         "country_in_text"
       ],
@@ -3298,45 +3234,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.494,
+      "importance": 1.484,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
-    },
-    {
-      "id": "9fc6c0f2f5e3568a",
-      "title": {
-        "original": "Higher tin prices and output lift MSC Q2 revenue",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
-      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
-      "published_at": "2026-08-17T09:32:03+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "MYS",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.466,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "4098432089e3ba07",
@@ -3509,6 +3412,39 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "9fc6c0f2f5e3568a",
+      "title": {
+        "original": "Higher tin prices and output lift MSC Q2 revenue",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
+      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
+      "published_at": "2026-08-17T09:32:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "MYS",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.463,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "976dad99c36e6871",
       "title": {
         "original": "European Union: European Commission Authorizes Seven GE Crops for Import",
@@ -3530,7 +3466,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.462,
+      "importance": 1.453,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
@@ -3557,7 +3493,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.442,
+      "importance": 1.432,
       "reasons": [
         "country_in_text"
       ],
@@ -3599,7 +3535,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.413,
+      "importance": 1.403,
       "reasons": [
         "country_in_text"
       ],
@@ -3642,7 +3578,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.38,
+      "importance": 1.373,
       "reasons": [
         "country_in_text"
       ],
@@ -3672,7 +3608,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.37,
+      "importance": 1.361,
       "reasons": [
         "country_in_text"
       ],
@@ -3702,7 +3638,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.37,
+      "importance": 1.361,
       "reasons": [
         "country_in_text"
       ],
@@ -3732,7 +3668,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.37,
+      "importance": 1.361,
       "reasons": [
         "country_in_text"
       ],
@@ -3888,7 +3824,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.345,
+      "importance": 1.337,
       "reasons": [
         "country_in_text"
       ],
@@ -3917,7 +3853,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.331,
+      "importance": 1.322,
       "reasons": [
         "country_in_text"
       ],
@@ -3935,6 +3871,43 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-06T01:25:06.814619+00:00"
+    },
+    {
+      "id": "86f680f62484ba7d",
+      "title": {
+        "original": "关于《民用航空领域相关两用物项出口凭证管理办法》公开征求意见的通知",
+        "original_lang": "zh",
+        "ko": "'민간항공 분야 관련 이중용도 품목 수출 증명서 관리 방법'에 대한 공개 의견 수렴 통지",
+        "en": "Notice on Public Solicitation of Opinions on the 'Administrative Measures for Export Certificates of Related Dual-Use Items in the Civil Aviation Field'"
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_6878d2c700114ad39a0e1d3958b02ee6.html",
+      "published_at": "2026-10-13T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.297,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "CHN",
+        "issuer_body": "MOFCOM Bureau of Industry Security, Import and Export Control",
+        "issuer_body_ko": "중국 상무부 산업안전·수출입통제국",
+        "measure": "guidance",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-13T02:13:32.410529+00:00"
     },
     {
       "id": "3cbc48c76fcf7031",
@@ -3960,7 +3933,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.305,
+      "importance": 1.297,
       "reasons": [
         "country_in_text"
       ],
@@ -3990,7 +3963,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.293,
+      "importance": 1.286,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4021,7 +3994,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.29,
+      "importance": 1.285,
       "reasons": [
         "country_in_text"
       ],
@@ -4052,7 +4025,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.281,
+      "importance": 1.274,
       "reasons": [
         "country_in_text"
       ],
@@ -4083,7 +4056,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.281,
+      "importance": 1.274,
       "reasons": [
         "country_in_text"
       ],
@@ -4114,7 +4087,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.253,
+      "importance": 1.25,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4144,7 +4117,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.249,
+      "importance": 1.247,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -4175,51 +4148,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.233,
+      "importance": 1.227,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "40c416f81351d284",
-      "title": {
-        "original": "Правительство продлило временный запрет на вывоз отдельных видов топлива производителями",
-        "original_lang": "ru",
-        "ko": "정부가 생산업체의 특정 유형 연료 수출에 대한 임시 금지 조치를 연장했습니다.",
-        "en": "The Government extended the temporary ban on the export of certain types of fuel by producers"
-      },
-      "summary": "Постановление от 29 сентября 2026 года №1252",
-      "url": "http://government.ru/docs/60024/",
-      "published_at": "2026-09-30T07:00:00+00:00",
-      "agency": "Government of the Russian Federation",
-      "agency_ko": "러시아 연방정부",
-      "source_id": "ru_government_docs",
-      "commodities": [],
-      "countries": [
-        "RUS"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.218,
-      "reasons": [],
-      "board": "export_controls",
-      "control": {
-        "issuer": "RUS",
-        "issuer_body": "Government of the Russian Federation",
-        "issuer_body_ko": "러시아 연방정부",
-        "measure": "export_ban",
-        "items": [],
-        "targets": [
-          "RUS"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "http://government.ru/",
-      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
       "id": "11ac17f1a9aa9e08",
@@ -4372,6 +4306,45 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "40c416f81351d284",
+      "title": {
+        "original": "Правительство продлило временный запрет на вывоз отдельных видов топлива производителями",
+        "original_lang": "ru",
+        "ko": "정부가 생산업체의 특정 유형 연료 수출에 대한 임시 금지 조치를 연장했습니다.",
+        "en": "The Government extended the temporary ban on the export of certain types of fuel by producers"
+      },
+      "summary": "Постановление от 29 сентября 2026 года №1252",
+      "url": "http://government.ru/docs/60024/",
+      "published_at": "2026-09-30T07:00:00+00:00",
+      "agency": "Government of the Russian Federation",
+      "agency_ko": "러시아 연방정부",
+      "source_id": "ru_government_docs",
+      "commodities": [],
+      "countries": [
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.211,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "RUS",
+        "issuer_body": "Government of the Russian Federation",
+        "issuer_body_ko": "러시아 연방정부",
+        "measure": "export_ban",
+        "items": [],
+        "targets": [
+          "RUS"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "http://government.ru/",
+      "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
+    },
+    {
       "id": "500ccb61f23619e0",
       "title": {
         "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
@@ -4393,7 +4366,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.212,
+      "importance": 1.204,
       "reasons": [
         "country_in_text"
       ],
@@ -4435,7 +4408,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.19,
+      "importance": 1.183,
       "reasons": [
         "country_in_text"
       ],
@@ -4477,7 +4450,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.184,
+      "importance": 1.182,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4506,7 +4479,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.178,
+      "importance": 1.172,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -4533,7 +4506,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.169,
+      "importance": 1.162,
       "reasons": [
         "country_in_text"
       ],
@@ -4575,7 +4548,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.165,
+      "importance": 1.16,
       "reasons": [
         "country_in_text"
       ],
@@ -4606,53 +4579,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.155,
+      "importance": 1.149,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "c15a313674037476",
-      "title": {
-        "original": "HR CPO dan HPE Biji Kakao Naik, HPE Getah Pinus Turun, HPE Produk Kulit Tetap, HPE Produk Kayu Bervariasi pada Oktober 2026",
-        "original_lang": "id",
-        "ko": "2026년 10월 CPO 및 카카오콩 기준수출가격 상승, 소나무 고무 기준수출가격 하락, 피혁제품 기준수출가격 유지, 목재제품 기준수출가격 변동",
-        "en": "Benchmark Export Prices for CPO and Cocoa Beans Rise, Pine Gum Benchmark Export Price Falls, Leather Product Benchmark Export Prices Remain, Wood Product Benchmark Export Prices Vary in October 2026"
-      },
-      "summary": "Jakarta, 1 Oktober 2026 – Harga Referensi (HR) komoditas minyak kelapa sawit (Crude Palm Oil/CPO) untuk penetapan Bea Keluar (BK) dan tarif Badan Layanan Umum Badan Pengelola Dana Perkebunan (BLU BPDP), atau dikenal sebagai Pungutan Ekspor (PE), untuk periode 1–31 Oktober 2026, ditetapkan sebesar USD 1.042,15 per metrik ton (MT). Nilai tersebut naik USD 34,64 atau 3,44 persen dari HR CPO periode 1–30 September 2026 yang sebesar USD 1.007,51 per MT.“Terjadi kenaikan HR CPO periode Oktober 2026 dibandingkan periode September 2026. Mengacu pada Peraturan Menteri Keuangan (PMK) yang berlaku…",
-      "url": "https://www.kemendag.go.id/berita/siaran-pers/hr-cpo-dan-hpe-biji-kakao-naik-hpe-getah-pinus-turun-hpe-produk-kulit-tetap-hpe-produk-kayu-bervariasi-pada-oktober-2026",
-      "published_at": "2026-10-01T14:15:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "cocoa",
-        "palm_oil",
-        "rubber"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.152,
-      "reasons": [],
-      "board": "export_controls",
-      "control": {
-        "issuer": "IDN",
-        "issuer_body": "Ministry of Trade of Indonesia",
-        "issuer_body_ko": "인도네시아 무역부",
-        "measure": "export_restriction",
-        "items": [],
-        "targets": [],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
       "id": "022ee0b6016f3dd5",
@@ -4675,7 +4607,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.15,
+      "importance": 1.147,
       "reasons": [
         "has_figure"
       ],
@@ -4705,12 +4637,53 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.15,
+      "importance": 1.146,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c15a313674037476",
+      "title": {
+        "original": "HR CPO dan HPE Biji Kakao Naik, HPE Getah Pinus Turun, HPE Produk Kulit Tetap, HPE Produk Kayu Bervariasi pada Oktober 2026",
+        "original_lang": "id",
+        "ko": "2026년 10월 CPO 및 카카오콩 기준수출가격 상승, 소나무 고무 기준수출가격 하락, 피혁제품 기준수출가격 유지, 목재제품 기준수출가격 변동",
+        "en": "Benchmark Export Prices for CPO and Cocoa Beans Rise, Pine Gum Benchmark Export Price Falls, Leather Product Benchmark Export Prices Remain, Wood Product Benchmark Export Prices Vary in October 2026"
+      },
+      "summary": "Jakarta, 1 Oktober 2026 – Harga Referensi (HR) komoditas minyak kelapa sawit (Crude Palm Oil/CPO) untuk penetapan Bea Keluar (BK) dan tarif Badan Layanan Umum Badan Pengelola Dana Perkebunan (BLU BPDP), atau dikenal sebagai Pungutan Ekspor (PE), untuk periode 1–31 Oktober 2026, ditetapkan sebesar USD 1.042,15 per metrik ton (MT). Nilai tersebut naik USD 34,64 atau 3,44 persen dari HR CPO periode 1–30 September 2026 yang sebesar USD 1.007,51 per MT.“Terjadi kenaikan HR CPO periode Oktober 2026 dibandingkan periode September 2026. Mengacu pada Peraturan Menteri Keuangan (PMK) yang berlaku…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/hr-cpo-dan-hpe-biji-kakao-naik-hpe-getah-pinus-turun-hpe-produk-kulit-tetap-hpe-produk-kayu-bervariasi-pada-oktober-2026",
+      "published_at": "2026-10-01T14:15:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "cocoa",
+        "palm_oil",
+        "rubber"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.144,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "IDN",
+        "issuer_body": "Ministry of Trade of Indonesia",
+        "issuer_body_ko": "인도네시아 무역부",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
       "id": "9a22d2cdf0982434",
@@ -4735,7 +4708,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.139,
+      "importance": 1.135,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4767,7 +4740,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 1.121,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4805,7 +4778,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.104,
+      "importance": 1.101,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4834,7 +4807,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.076,
+      "importance": 1.069,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -4861,7 +4834,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.074,
+      "importance": 1.068,
       "reasons": [
         "country_in_text"
       ],
@@ -5602,49 +5575,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "b8820250e3d215f2",
-      "title": {
-        "original": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions",
-        "original_lang": "en",
-        "ko": "에티오피아 사태 관련 비상사태 종료; 에티오피아 관련 지정 해제; 개정 러시아 관련 일반 면허 및 관련 자주 묻는 질문(FAQ) 발행",
-        "en": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260918",
-      "published_at": "2026-09-18T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "ETH",
-        "RUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.994,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
-        "items": [],
-        "targets": [
-          "ETH",
-          "RUS"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
       "id": "62ac4be598c099c2",
       "title": {
         "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
@@ -5667,7 +5597,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.993,
+      "importance": 0.991,
       "reasons": [
         "country_in_text"
       ],
@@ -5675,28 +5605,29 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "de8f050cc8e8f84d",
+      "id": "b8820250e3d215f2",
       "title": {
-        "original": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals",
+        "original": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions",
         "original_lang": "en",
-        "ko": "이란 관련 지정; 쿠바 지정; 벨라루스 관련 지정 해제",
-        "en": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals"
+        "ko": "에티오피아 사태 관련 비상사태 종료; 에티오피아 관련 지정 해제; 개정 러시아 관련 일반 면허 및 관련 자주 묻는 질문(FAQ) 발행",
+        "en": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions"
       },
       "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260917",
-      "published_at": "2026-09-17T00:00:00+00:00",
+      "url": "https://ofac.treasury.gov/recent-actions/20260918",
+      "published_at": "2026-09-18T00:00:00+00:00",
       "agency": "U.S. Treasury, Office of Foreign Assets Control",
       "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
       "source_id": "us_ofac_recent_actions",
       "commodities": [],
       "countries": [
-        "IRN"
+        "ETH",
+        "RUS"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.979,
+      "importance": 0.989,
       "reasons": [
         "country_in_text"
       ],
@@ -5708,9 +5639,8 @@
         "measure": "sanctions",
         "items": [],
         "targets": [
-          "BLR",
-          "CUB",
-          "IRN"
+          "ETH",
+          "RUS"
         ],
         "extracted_by": "gemini"
       },
@@ -5740,10 +5670,53 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.979,
+      "importance": 0.975,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "de8f050cc8e8f84d",
+      "title": {
+        "original": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals",
+        "original_lang": "en",
+        "ko": "이란 관련 지정; 쿠바 지정; 벨라루스 관련 지정 해제",
+        "en": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260917",
+      "published_at": "2026-09-17T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "IRN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.975,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "CUB",
+          "IRN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "c4debe37366d175b",
@@ -5766,7 +5739,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.973,
+      "importance": 0.968,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5793,7 +5766,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.967,
+      "importance": 0.961,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5831,7 +5804,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.965,
+      "importance": 0.961,
       "reasons": [
         "country_in_text"
       ],
@@ -5850,32 +5823,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
-      "id": "b8100702b4d10bff",
-      "title": {
-        "original": "AI model targets faster monitoring of tin losses in smelting",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Researchers working with Yunnan Tin Group have developed an AI model that estimates tin content in slag using live furnace data, potentially giving operators much faster insight into metal losses than conventional laboratory testing. Slag tin content is an important indicator of smelting performance. If too much tin remains in the slag, valuable metal is being lost rather than recovered as crude tin. The challenge is that slag tin is not normally measured continuously. In the industrial furnace used for this study, process data were recorded every minute, while slag tin content was measured…",
-      "url": "https://www.internationaltin.org/ai-model-targets-faster-monitoring-of-tin-losses-in-smelting/?utm_source=rss&utm_medium=rss&utm_campaign=ai-model-targets-faster-monitoring-of-tin-losses-in-smelting",
-      "published_at": "2026-09-15T09:05:03+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.957,
-      "reasons": [],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7aa1d9ea8f7acd29",
@@ -5962,6 +5909,32 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "b8100702b4d10bff",
+      "title": {
+        "original": "AI model targets faster monitoring of tin losses in smelting",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Researchers working with Yunnan Tin Group have developed an AI model that estimates tin content in slag using live furnace data, potentially giving operators much faster insight into metal losses than conventional laboratory testing. Slag tin content is an important indicator of smelting performance. If too much tin remains in the slag, valuable metal is being lost rather than recovered as crude tin. The challenge is that slag tin is not normally measured continuously. In the industrial furnace used for this study, process data were recorded every minute, while slag tin content was measured…",
+      "url": "https://www.internationaltin.org/ai-model-targets-faster-monitoring-of-tin-losses-in-smelting/?utm_source=rss&utm_medium=rss&utm_campaign=ai-model-targets-faster-monitoring-of-tin-losses-in-smelting",
+      "published_at": "2026-09-15T09:05:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "87a09ee6b6bed0cf",
       "title": {
         "original": "Iran-related Designation; Issuance of Amended Venezuela-related General License and Frequently Asked Question",
@@ -5984,7 +5957,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.938,
+      "importance": 0.934,
       "reasons": [
         "country_in_text"
       ],
@@ -6027,7 +6000,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.931,
+      "importance": 0.927,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6054,7 +6027,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.915,
+      "importance": 0.91,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6094,7 +6067,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.908,
+      "importance": 0.906,
       "reasons": [
         "country_in_text"
       ],
@@ -6123,7 +6096,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.881,
+      "importance": 0.876,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6163,7 +6136,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.864,
+      "importance": 0.861,
       "reasons": [
         "country_in_text"
       ],
@@ -6192,7 +6165,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.84,
+      "importance": 0.835,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6230,7 +6203,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.738,
+      "importance": 0.736,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -6256,7 +6229,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.711,
+      "importance": 0.708,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6284,7 +6257,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.705,
+      "importance": 0.704,
       "reasons": [
         "country_in_text"
       ],
@@ -6327,7 +6300,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.668,
+      "importance": 0.667,
       "reasons": [
         "country_in_text"
       ],
@@ -6358,7 +6331,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.668,
+      "importance": 0.667,
       "reasons": [
         "country_in_text"
       ],
@@ -6470,7 +6443,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.577,
+      "importance": 0.576,
       "reasons": [
         "country_in_text"
       ],
@@ -6500,7 +6473,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.573,
+      "importance": 0.571,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -6556,7 +6529,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.518,
+      "importance": 0.517,
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
@@ -6583,7 +6556,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.514,
+      "importance": 0.513,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6659,7 +6632,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.471,
+      "importance": 0.47,
       "reasons": [],
       "agency_url": "https://silverinstitute.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
