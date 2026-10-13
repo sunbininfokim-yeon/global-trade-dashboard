@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from election_watch.polls import read as effective_read
 import copy
 import hashlib
@@ -18,10 +19,10 @@ read=lambda p:effective_read(p)
 
 class ConnecticutPrimaryTests(unittest.TestCase):
  def setUp(self):
-  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY)
+  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
   self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/CT-primary-20261009.json');self.raw=[x['provider_record'] for x in self.audit['records']]
  def observations(self):
-  obs,rejected=normalize(self.raw,self.policy,DAY);self.assertFalse(rejected);self.assertEqual(len(obs),2);return {o['pollster_group']:o for o in obs}
+  obs,rejected=normalize(self.raw,self.policy,SNAPSHOT_DAY);self.assertFalse(rejected);self.assertEqual(len(obs),2);return {o['pollster_group']:o for o in obs}
  def test_quinnipiac_lv_question_funding_and_precision(self):
   o=self.observations()['quinnipiac'];self.assertEqual([a['pct'] for a in o['answers']],[55,38]);self.assertEqual(o['population'],'lv');self.assertEqual(o['sample_n'],1288);self.assertTrue(o['aggregation_eligibility']['eligible'])
   d=o['source_quality']['disclosure_review'];self.assertTrue(d['includes_leaners']);self.assertEqual(d['non_candidate_responses']['refused'],2);self.assertIsNone(o['source_quality']['accuracy_grade']);self.assertIsNone(o['margin_of_error_pp']);self.assertEqual(o['source_quality']['reported_precision']['half_width_pp'],3.8)

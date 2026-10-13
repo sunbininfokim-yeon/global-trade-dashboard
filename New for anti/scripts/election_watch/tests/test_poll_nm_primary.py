@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from election_watch.polls import read as effective_read
 import copy,json,unittest
 from pathlib import Path
@@ -9,7 +10,7 @@ from election_watch.poll_quality import corrected_provider_sample
 ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config/usa_polls';P=ROOT.parent.parent/'public/data';DAY='2026-10-09';read=lambda p:effective_read(p)
 class NewMexicoEvidenceTests(unittest.TestCase):
  def setUp(self):
-  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'quality_reviews_2026.json')['reviews'];self.audit=read(P/'usa_election_poll_release_reviews/2026/NM-primary-20261009.json');self.rows=[x['provider_record'] for x in self.audit['records']]
+  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'quality_reviews_2026.json')['reviews'];self.audit=read(P/'usa_election_poll_release_reviews/2026/NM-primary-20261009.json');self.rows=[x['provider_record'] for x in self.audit['records']]
  def test_correct_sample_preserves_original_and_answers(self):
   original=copy.deepcopy(self.rows[1]);obs,held=normalize(self.rows,self.policy,DAY);self.assertFalse(held);self.assertEqual(self.rows[1],original);sen=next(x for x in obs if x['race_id'].endswith('senate'));self.assertEqual(sen['sample_n'],567);self.assertEqual(sen['provider_sample_correction']['original_provider_sample_n'],576);self.assertEqual([x['pct'] for x in sen['answers']],[54,36])
  def test_changed_import_needs_review(self):
