@@ -88,6 +88,8 @@ def selected_forward(model):
     the higher forward skill, so the same rule recovers it.
     """
     v = model["validation"]
+    if (model.get("two_part") or {}).get("selected"):
+        return v["two_part_forward"]
     sel = model.get("selected")
     if sel is None:
         sel = max(("all", "core"),
@@ -202,6 +204,9 @@ def main():
                 # weather_effect above then includes the condition's pull,
                 # so trend + weather_effect still equals point.
                 "condition": cond,
+                # Cotton's two-part model: share of planted acres harvested and
+                # yield per harvested acre, whose product is point.
+                "components": r.get("components"),
                 "trained_years": model["trained_years"],
                 # The standardised weather inputs the model actually saw this
                 # season. Surfacing them lets the panel show *why* the forecast

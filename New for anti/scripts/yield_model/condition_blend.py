@@ -48,6 +48,8 @@ OUT = os.path.join(HERE, "us_condition_blend.json")
 
 sys.path.insert(0, HERE)
 from us_scenarios import CUTOFFS, FORECAST_SKILL, cutoff_doy, feature_month  # noqa: E402
+from train_wheat import (COMPONENTS, RATIO_BOUNDS, component_predict,  # noqa: E402
+                         fit_component)
 
 ALPHAS = np.logspace(-2, 4, 40)   # same grid as train_us / train_wheat
 MIN_TRAIN = 15                    # condition starts 1986, weather 1992
@@ -75,6 +77,10 @@ def weather_backtest(crop):
     window = model.get("train_window_years")
     years, y, X = df.year.values, df["yield"].values, df[feats].astype(float).values
     scen = "inseason" in model
+    two_part = None
+    if (model.get("two_part") or {}).get("selected"):
+        comp = pd.read_csv(COMPONENTS)[["year", "harvest_ratio", "yield_harvested"]]
+        two_part = df[["year"]].merge(comp, on="year", how="left")
     months = np.array([feature_month(f) for f in feats]) if scen else None
     out = {}
     for i, ty in enumerate(years):
@@ -89,6 +95,13 @@ def weather_backtest(crop):
         m = RidgeCV(alphas=ALPHAS).fit(sc.transform(X[tr]), y[tr] - (k * years[tr] + b))
         rec = {"truth": float(y[i]), "trend": float(trend),
                "end": float(trend + m.predict(sc.transform(X[i:i + 1]))[0])}
+        if two_part is not None:
+            # Cotton ships as harvested share x harvested yield; compare
+            # the index with the model that is actually on screen.
+            parts = {c: fit_component(years[tr], two_part[c].values[tr], X[tr])
+                     for c in ("harvest_ratio", "yield_harvested")}
+            ratio = np.clip(component_predict(parts["harvest_ratio"], ty, X[i]), *RATIO_BOUNDS)
+            rec["end"] = float(ratio * component_predict(parts["yield_harvested"], ty, X[i]))
         if scen:
             # The scenario engine: unknown months borrowed from each past year.
             for label, known in CUTOFFS:

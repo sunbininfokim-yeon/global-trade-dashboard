@@ -42,6 +42,7 @@ from collect_us_wheat import (  # noqa: E402
     load_oni, power_weather, season_features, season_oni,
 )
 import collect_us_south as south  # noqa: E402
+from train_wheat import component_predict  # noqa: E402
 
 # Cotton lives in its own collector (different states, different stages, and a
 # planted-acre target). Route to it rather than duplicating the definitions.
@@ -236,6 +237,19 @@ def predict(crop, year):
          in zip(model["features"], model["scaler"]["mean"], model["scaler"]["scale"])]
     resid = model["ridge"]["intercept"] + float(np.dot(z, model["ridge"]["coef"]))
 
+    # Cotton: share harvested x yield per harvested acre, when the trainer
+    # found that beats modelling yield per planted acre directly.
+    components = None
+    tp = model.get("two_part") or {}
+    if tp.get("selected"):
+        raw = [blended[f] for f in model["features"]]
+        ratio = float(np.clip(component_predict(tp["harvest_ratio"], year, raw),
+                              *tp["ratio_bounds"]))
+        harvested = component_predict(tp["yield_harvested"], year, raw)
+        resid = ratio * harvested - trend
+        components = {"harvest_ratio": round(ratio, 3),
+                      "yield_harvested": round(harvested, 1)}
+
     total = sum(prov.values()) or 1
     observed_share = prov["observed"] / total
     sigma = model["uncertainty"]["sigma"] * (1 + 0.5 * (1 - observed_share))
@@ -248,8 +262,10 @@ def predict(crop, year):
         "sigma": sigma, "base_sigma": model["uncertainty"]["sigma"],
         "critical_days": prov, "observed_share": observed_share,
         "train_window_years": model.get("train_window_years"),
-        "skill": model["validation"].get("core_forward")
+        "skill": (model["validation"].get("two_part_forward") if tp.get("selected") else None)
+                 or model["validation"].get("core_forward")
                  or model["validation"].get("all_forward", {}),
+        "components": components,
         "trained_years": model["trained_years"],
     }
 
