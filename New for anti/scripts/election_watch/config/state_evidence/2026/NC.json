@@ -1,0 +1,1305 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "NC",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202surbcf9e1be"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-14",
+        "reviewed_at": "2026-10-14T05:30:38.986398+00:00",
+        "snapshot_sha256": "95a911313ccbedc281dc992e99c45b899f49e9e0ec901bd37b19eb7e187ba82b",
+        "provider_record_sha256": "46fefd40fae4d446a37bf8f5a61da370a123868fa76c59a3215d5c7fd5ce6b72",
+        "sources": [
+          "https://results.surveyusa.com/client/PollReport.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+          "https://results.surveyusa.com/client/PollReport_main.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+          "https://results.surveyusa.com/client/PollReport_left.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+          "https://results.surveyusa.com/client/methodology.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77"
+        ],
+        "primary_toplines": {
+          "Roy Cooper": 54.0,
+          "Michael Whatley": 40.0
+        },
+        "question_sample_n": 643,
+        "primary_documents": [
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+            "sha256": "10c26a69ac6a46593986c1244a9e464772e8e3a3ed6c41ac7bb86cbd3d24c85e"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_left.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+            "sha256": "8873b0d182cf6932de81e00258f56c1c544a274a0176a07e91cafd46ca325dee"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/methodology.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+            "sha256": "c31620a7f3b138319683a517afcabf348e59036aafddfe2982f1823f262ca3d8"
+          }
+        ],
+        "admission": {
+          "pollster": "SurveyUSA",
+          "provider_url": "https://results.surveyusa.com/client/PollReport.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+          "group": "surveyusa",
+          "methodology_url": "https://results.surveyusa.com/client/methodology.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 643,
+          "field_dates": [
+            "2026-10-07",
+            "2026-10-11"
+          ],
+          "sponsors": [
+            "WRAL-TV",
+            "WSOC-TV"
+          ],
+          "sampling_method": "non_probability_online_panel",
+          "sampling_frame": "Lucid Holdings online panel",
+          "weighting": "ACS gender age race education homeownership and NC party affiliation",
+          "question_wording_checked": true,
+          "question": "Q3 ordinary rotated Senate ballot",
+          "provider_pollster_label": "SurveyUSA",
+          "primary_pollster_name": "SurveyUSA"
+        },
+        "reported_precision": {
+          "kind": "credibility_interval",
+          "half_width_pp": 5,
+          "confidence_level_pct": null,
+          "scope": "question_LV643",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "WRAL-TV",
+            "WSOC-TV"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "precision_model_specification",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "발표 credibility interval을 고전적 sampling MOE나 후보 격차 유의성으로 바꾸지 않습니다."
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-14",
+    "fetched_at": "2026-10-14T05:14:02.840821+00:00",
+    "receipt": {
+      "state": "NC",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-14",
+      "captured_at": "2026-10-14T05:14:02.840821+00:00",
+      "capture_kind": "provider_transport_only",
+      "provider_records": 41,
+      "serialized_provider_response_sha256": "4d39260f304a93198b762add5d1d5ae58594f2d4113f585004abbe195eacadfa",
+      "collection_checkpoint_sha256": "00c16d477074d0b0be50f8cd58cedbe84083f380000c8617ca5a6c2a5f31c276",
+      "primary_review_checked_at": "2026-10-14T05:30:38.986398+00:00"
+    },
+    "provider_records": [
+      {
+        "id": "us-202pubdc157848",
+        "poll_type": "us-senator",
+        "sample_size": 662,
+        "population": "rv",
+        "url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2025/03/NorthCarolinaResults.pdf",
+        "created_at": "2026-02-17",
+        "start_date": "2025-03-04",
+        "end_date": "2025-03-05",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 47.0
+          },
+          {
+            "choice": "Thom Thillis",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202vicec5afb5c",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://irp.cdn-website.com/07e08705/files/uploaded/PollSummary_NC-US-Senate_07-31-2025.pdf",
+        "created_at": "2026-02-17",
+        "start_date": "2025-07-28",
+        "end_date": "2025-07-30",
+        "pollster": "Victory Insights",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 44.4
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 43.5
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202harc083001c",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/wp-content/uploads/2025/08/H23232-CJ-NC-Aug25-Toplines.pdf",
+        "created_at": "2026-02-17",
+        "start_date": "2025-08-11",
+        "end_date": "2025-08-12",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 47.3
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 39.1
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202chab6c27b91",
+        "poll_type": "us-senator",
+        "sample_size": 855,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1fTOAqF7rZ9ugyF1ZFqInJpQ1LgXEu1rnG1Js0y-1YSo/edit?nvep=&hmac=&emci=b910b780-d290-f011-b484-6045bdeb7413&emdi=ea000000-0000-0000-0000-000000000001&ceid=&gid=0#gid=0",
+        "created_at": "2026-02-17",
+        "start_date": "2025-09-02",
+        "end_date": "2025-09-08",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Forward"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202har2b123ce0",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/wp-content/uploads/2025/09/H23315-CJ-NC-Sept25-Toplines.pdf",
+        "created_at": "2026-02-17",
+        "start_date": "2025-09-14",
+        "end_date": "2025-09-15",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 46.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202har1bdb30c5",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/polls/november-2025-cooper-maintains-lead-in-senate-race",
+        "created_at": "2026-02-17",
+        "start_date": "2025-11-09",
+        "end_date": "2025-11-10",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 47.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202harc344974e",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/wp-content/uploads/2025/11/H23440-CJ-NC-Nov25-Toplines.pdf",
+        "created_at": "2026-02-17",
+        "start_date": "2025-11-09",
+        "end_date": "2025-11-10",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.1
+          },
+          {
+            "choice": "Don Brown",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202eme013c2ece",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "rv",
+        "url": "https://docs.google.com/spreadsheets/d/15z1ND9R9K0UklZgcXV7Wf1Qotwsj7kb7/edit?gid=455076038#gid=455076038",
+        "created_at": "2026-02-17",
+        "start_date": "2025-07-28",
+        "end_date": "2025-07-30",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.4
+          },
+          {
+            "choice": "Roy Cooper",
+            "pct": 46.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202cha2976f667",
+        "poll_type": "us-senator",
+        "sample_size": 1105,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1_I2lZN7nOAANajydNZPjm_jaPVK_CVWO9FDuX0kReVQ/edit",
+        "created_at": "2026-02-17",
+        "start_date": "2026-01-05",
+        "end_date": "2026-01-07",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 47.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202tipab84b110",
+        "poll_type": "us-senator",
+        "sample_size": 1512,
+        "population": "rv",
+        "url": "https://www.dailysignal.com/2026/01/19/exclusive-economy-remains-gops-biggest-vulnerability-in-north-carolina-new-poll-shows",
+        "created_at": "2026-02-17",
+        "start_date": "2026-01-12",
+        "end_date": "2026-01-15",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 24.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202cha2111afda",
+        "poll_type": "us-senator",
+        "sample_size": 1069,
+        "population": "rv",
+        "url": "https://docs.google.com/spreadsheets/d/1Onaf6YlsprPfjSMODM7ibvwEXs082o7-jNMCML7lGGo/edit?gid=0#gid=0",
+        "created_at": "2026-02-20",
+        "start_date": "2026-01-31",
+        "end_date": "2026-02-04",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202pub85665d25",
+        "poll_type": "us-senator",
+        "sample_size": 556,
+        "population": "rv",
+        "url": "https://e1.nmcdn.io/assets/ppp/wp-content/uploads/2026/03/NorthCarolinaResults31626.pdf",
+        "created_at": "2026-03-16",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-14",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 47.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202nex3971aa3a",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.healthierunited.org/media/disagree-healthier-launch-j6kn8-4rbfc",
+        "created_at": "2026-03-30",
+        "start_date": "2026-03-08",
+        "end_date": "2026-03-09",
+        "pollster": "Nexus Strategies/Strategic Partners Solutions",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Healthier United Fund"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202you2133db87",
+        "poll_type": "us-senator",
+        "sample_size": 871,
+        "population": "lv",
+        "url": "https://www.catawba.edu/news/all-news/2026/yougov-24",
+        "created_at": "2026-04-01",
+        "start_date": "2026-03-09",
+        "end_date": "2026-03-18",
+        "pollster": "YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Catawba College Center for North Carolina Politics & Public Service"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202higf04011a1",
+        "poll_type": "us-senator",
+        "sample_size": 703,
+        "population": "lv",
+        "url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
+        "created_at": "2026-04-16",
+        "start_date": "2026-03-26",
+        "end_date": "2026-04-06",
+        "pollster": "High Point University Survey Research Center/YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202hig7de64e7d",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-120-Memo-1.pdf",
+        "created_at": "2026-04-16",
+        "start_date": "2026-03-26",
+        "end_date": "2026-04-06",
+        "pollster": "High Point University Survey Research Center/YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 49.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202opi5a64ca39",
+        "poll_type": "us-senator",
+        "sample_size": 830,
+        "population": "lv",
+        "url": "https://x.com/iapolls2022/status/2049576363175096384?s=46",
+        "created_at": "2026-04-30",
+        "start_date": "2026-04-21",
+        "end_date": "2026-04-24",
+        "pollster": "Opinion Diagnostics",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.4
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202harb00382e0",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/wp-content/uploads/2026/05/H23893-CJ-NC-May26-Toplines-Revised.pdf",
+        "created_at": "2026-05-15",
+        "start_date": "2026-05-10",
+        "end_date": "2026-05-11",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 49.8
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 38.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202chab31a8a6e",
+        "poll_type": "us-senator",
+        "sample_size": 957,
+        "population": "lv",
+        "url": "https://carolinaforward.org/blog/the-may-2026-carolina-forward-poll",
+        "created_at": "2026-05-18",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-08",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 49.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Forward"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202harca09238f",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/wp-content/uploads/2026/03/H23758-CJ-NC-Mar26-Toplines.pdf",
+        "created_at": "2026-06-15",
+        "start_date": "2026-03-22",
+        "end_date": "2026-03-23",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.9
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.1
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202youca5f07f2",
+        "poll_type": "us-senator",
+        "sample_size": 905,
+        "population": "lv",
+        "url": "https://www.catawba.edu/news/all-news/2026/yougovsurvey27/",
+        "created_at": "2026-06-23",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-10",
+        "pollster": "YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Catawba College Center for North Carolina Politics & Public Service"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202thef5594fea",
+        "poll_type": "us-senator",
+        "sample_size": 601,
+        "population": "lv",
+        "url": "https://www.nytimes.com/interactive/2026/07/01/polls/times-siena-north-carolina-poll-crosstabs.html",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-15",
+        "end_date": "2026-06-27",
+        "pollster": "The New York Times/Siena University",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202pub96a42a3f",
+        "poll_type": "us-senator",
+        "sample_size": 759,
+        "population": "lv",
+        "url": "https://www.publicpolicypolling.com/polls/cooper-leads-but-whatley-has-a-path/",
+        "created_at": "2026-07-13",
+        "start_date": "2026-07-10",
+        "end_date": "2026-07-11",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202beacaddacc4",
+        "poll_type": "us-senator",
+        "sample_size": 1005,
+        "population": "rv",
+        "url": "https://www.foxnews.com/politics/fox-news-poll-democratic-enthusiasm-shapes-north-carolina-senate-race",
+        "created_at": "2026-07-30",
+        "start_date": "2026-07-23",
+        "end_date": "2026-07-27",
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 53.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Fox News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202chad53b9fb6",
+        "poll_type": "us-senator",
+        "sample_size": 967,
+        "population": "lv",
+        "url": "https://garypearcenc.substack.com/p/cooper-up-by-9-trump-still-slumps",
+        "created_at": "2026-08-07",
+        "start_date": "2026-07-29",
+        "end_date": "2026-08-01",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Talking About Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202chaf0ea6e94",
+        "poll_type": "us-senator",
+        "sample_size": 915,
+        "population": "lv",
+        "url": "https://carolinaforward.org/news/the-august-2026-carolina-forward-poll/",
+        "created_at": "2026-08-10",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-06",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Forward"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202elodaa5cffa",
+        "poll_type": "us-senator",
+        "sample_size": 717,
+        "population": "rv",
+        "url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
+        "created_at": "2026-08-12",
+        "start_date": "2026-07-21",
+        "end_date": "2026-07-23",
+        "pollster": "Elon University/YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 51.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 35.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 1.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202elo069243f3",
+        "poll_type": "us-senator",
+        "sample_size": 466,
+        "population": "lv",
+        "url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf",
+        "created_at": "2026-08-12",
+        "start_date": "2026-07-21",
+        "end_date": "2026-07-23",
+        "pollster": "Elon University/YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 53.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 2.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202har1cef6d8a",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/polls/august-2026-coopers-lead-over-whatley-grows-to-12-5-points/",
+        "created_at": "2026-08-14",
+        "start_date": "2026-08-09",
+        "end_date": "2026-08-10",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 51.5
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202hig0453aa0e",
+        "poll_type": "us-senator",
+        "sample_size": 660,
+        "population": "lv",
+        "url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-12",
+        "pollster": "High Point University Survey Research Center",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202hig8ec8c4e5",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://www.highpoint.edu/src/files/2023/08/HPU-Poll-126-Memo-08192026.pdf",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-12",
+        "pollster": "High Point University Survey Research Center",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202elo857d928d",
+        "poll_type": "us-senator",
+        "sample_size": 565,
+        "population": "lv",
+        "url": "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/09/Elon-University-Poll-NR-9-10-26.pdf",
+        "created_at": "2026-09-10",
+        "start_date": "2026-08-21",
+        "end_date": "2026-08-31",
+        "pollster": "Elon University/YouGov",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 49.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 38.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 2.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202easa9c1ac17",
+        "poll_type": "us-senator",
+        "sample_size": 675,
+        "population": "lv",
+        "url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points",
+        "created_at": "2026-09-11",
+        "start_date": "2026-08-31",
+        "end_date": "2026-09-03",
+        "pollster": "East Carolina University",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 52.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 44.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 3.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202harfc1499b8",
+        "poll_type": "us-senator",
+        "sample_size": 608,
+        "population": "lv",
+        "url": "https://www.carolinajournal.com/polls/september-2026-roy-coopers-lead-grows-to-15-points-in-nc-senate-race/",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-13",
+        "end_date": "2026-09-15",
+        "pollster": "Harper Polling",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 49.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 34.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 3.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202insf80352ad",
+        "poll_type": "us-senator",
+        "sample_size": 1200,
+        "population": "lv",
+        "url": "https://insideradvantage.com/nc-top-line-tabs",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-16",
+        "end_date": "2026-09-17",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 48.4
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.5
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 1.6
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 1.1
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202higae3d1182",
+        "poll_type": "us-senator",
+        "sample_size": 706,
+        "population": "lv",
+        "url": "https://www.highpoint.edu/src/files/2023/08/HPUPoll127MemoA-1.pdf",
+        "created_at": "2026-09-24",
+        "start_date": "2026-09-09",
+        "end_date": "2026-09-16",
+        "pollster": "High Point University Survey Research Center",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202bigf2db767c",
+        "poll_type": "us-senator",
+        "sample_size": 642,
+        "population": "lv",
+        "url": "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-27",
+        "end_date": "2026-09-29",
+        "pollster": "Big Data Poll",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 51.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 39.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 7.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 4.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Public Polling Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202nei29757f09",
+        "poll_type": "us-representative",
+        "sample_size": 303,
+        "population": "lv",
+        "url": "https://x.com/Shaftan/status/2107772933322277266",
+        "created_at": "2026-10-08",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-06",
+        "pollster": "Neighborhood Research and Media",
+        "answers": [
+          {
+            "choice": "Don Davis",
+            "pct": 51.0
+          },
+          {
+            "choice": "Laurie Buckhout",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": "NC-01",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NC-01"
+      },
+      {
+        "id": "us-202eas168b53d4",
+        "poll_type": "us-senator",
+        "sample_size": 810,
+        "population": "lv",
+        "url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-s-lead-holds-at-7-points",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-30",
+        "end_date": "2026-10-03",
+        "pollster": "East Carolina University",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 53.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 46.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 2.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 0.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202surbcf9e1be",
+        "poll_type": "us-senator",
+        "sample_size": 643,
+        "population": "lv",
+        "url": "https://results.surveyusa.com/client/PollReport.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77",
+        "created_at": "2026-10-13",
+        "start_date": "2026-10-07",
+        "end_date": "2026-10-11",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 54.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "WRAL-TV",
+          "WSOC-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 North Carolina"
+      },
+      {
+        "id": "us-202chaa0d9b00c",
+        "poll_type": "us-senator",
+        "sample_size": 829,
+        "population": "lv",
+        "url": "https://carolinaforward.org/news/the-october-2026-carolina-forward-poll/?emci=e7b29264-2cc4-f111-bf5b-000d3a4fbe83&emdi=beb3dd17-f1c6-f111-bf5b-000d3a4fbe83&ceid=27194997",
+        "created_at": "2026-10-13",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-07",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Roy Cooper",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michael Whatley",
+            "pct": 40.0
+          },
+          {
+            "choice": "Shannon Bray",
+            "pct": 2.0
+          },
+          {
+            "choice": "Michael Dublin",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Carolina Forward"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 North Carolina"
+      }
+    ],
+    "provider_records_sha256": "66b181dea402c35f4a68cc661efbf9d17b9712e022ffdbba5676212c58ad8be5",
+    "primary_records": []
+  },
+  "recent_primary_review": {
+    "checked_at": "2026-10-14T05:30:38.986398+00:00",
+    "reviewed_ids": [
+      "us-202surbcf9e1be"
+    ],
+    "held_records": [],
+    "future_releases_automatically_approved": false,
+    "sources_not_refetched_in_packet_replay": true
+  }
+}
