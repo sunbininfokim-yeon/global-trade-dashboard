@@ -28,7 +28,8 @@ HERE = Path(__file__).resolve().parent
 # quartz (the sand crucibles and wafers are made from), silicon metal,
 # polysilicon, and the licensed metals around that chain.
 COMMODITY_LABELS_KO = {
-    "quartz": "고순도 석영·규사(반도체용 모래)",
+    "quartz": "석영 광물·규사(반도체용 포함)",
+    "boron": "붕소",
     "silicon_metal": "금속규소",
     "polysilicon": "폴리실리콘",
     "indium": "인듐",
@@ -47,7 +48,7 @@ COMMODITY_LABELS_KO = {
 COMMODITY_KEYS = [
     "wheat", "corn", "barley", "soybeans", "rice", "sugar", "coffee", "cocoa",
     "palm_oil", "rubber", "rapeseed", "sunflower_oil", "sunflower_seed",
-    "fertilizer", "urea", "phosphate", "potash", "cotton", "beef", "pork", "poultry",
+    "fertilizer", "urea", "phosphate", "potash", "boron", "cotton", "beef", "pork", "poultry",
     "dairy", "bananas", "shrimp", "olive_oil", "fruit",
     "oil", "gas", "lng", "thermal_coal", "met_coal", "coal",
     "petroleum_products", "uranium",
@@ -110,7 +111,7 @@ AGRI = [
     _c("BRA", "Brazil", ["soybeans", "corn", "sugar", "coffee", "beef", "cotton"]),
     _c("ARG", "Argentina", ["soybeans", "corn", "wheat", "beef"]),
     _c("CHN", "China", ["rice", "fertilizer", "urea", "phosphate"]),
-    _c("IND", "India", ["rice", "wheat", "sugar", "cotton"]),
+    _c("IND", "India", ["rice", "wheat", "sugar", "cotton", "beef", "shrimp"]),
     _c("IDN", "Indonesia", ["palm_oil", "coffee", "cocoa", "rubber"]),
     _c("CAN", "Canada", ["wheat", "rapeseed", "pork", "potash"]),
     _c("AUS", "Australia", ["wheat", "barley", "beef", "rapeseed", "cotton"]),
@@ -140,6 +141,8 @@ AGRI = [
     _c("ISR", "Israel", ["potash"]),
     _c("JOR", "Jordan", ["potash"]),
     _c("BLR", "Belarus", ["potash"]),
+    _c("ETH", "Ethiopia", ["coffee"]),
+    _c("CMR", "Cameroon", ["cocoa"]),
 ]
 
 MINERALS = [
@@ -148,7 +151,7 @@ MINERALS = [
         "antimony", "tungsten", "molybdenum", "indium", "fluorite", "magnesium",
         "titanium", "vanadium", "quartz", "silicon_metal", "polysilicon", "superhard",
     ]),
-    _c("AUS", "Australia", ["iron_ore", "bauxite", "gold", "lithium", "copper", "titanium", "tantalum"]),
+    _c("AUS", "Australia", ["iron_ore", "bauxite", "gold", "lithium", "copper", "titanium", "tantalum", "rare_earths"]),
     _c("CHL", "Chile", ["copper", "lithium", "molybdenum"]),
     _c("PER", "Peru", ["copper", "gold", "zinc", "silver", "molybdenum"]),
     _c("RUS", "Russia", ["nickel", "gold", "palladium", "platinum", "aluminum", "titanium", "vanadium", "neon"]),
@@ -156,15 +159,15 @@ MINERALS = [
     _c("BRA", "Brazil", ["iron_ore", "bauxite", "gold", "niobium", "tantalum"]),
     _c("ZAF", "South Africa", ["platinum", "palladium", "gold", "manganese", "chromium", "iron_ore", "vanadium"]),
     _c("CAN", "Canada", ["gold", "nickel", "copper", "niobium"]),
-    _c("IDN", "Indonesia", ["nickel", "bauxite", "copper", "tin", "gold", "ferroalloys"]),
+    _c("IDN", "Indonesia", ["nickel", "bauxite", "copper", "tin", "gold", "ferroalloys", "cobalt"]),
     _c("COD", "DR Congo", ["cobalt", "copper", "tantalum"]),
     _c("ZMB", "Zambia", ["copper"]),
     _c("MEX", "Mexico", ["silver", "gold", "copper", "fluorite"]),
     _c("IND", "India", ["iron_ore", "aluminum", "zinc", "quartz"]),
-    _c("KAZ", "Kazakhstan", ["copper", "chromium"]),
+    _c("KAZ", "Kazakhstan", ["copper", "chromium", "gold"]),
     _c("PHL", "Philippines", ["nickel"]),
     _c("GIN", "Guinea", ["bauxite"]),
-    _c("GHA", "Ghana", ["gold"]),
+    _c("GHA", "Ghana", ["gold", "manganese"]),
     _c("MNG", "Mongolia", ["copper", "gold", "fluorite"]),
     _c("SWE", "Sweden", ["iron_ore"]),
     _c("PNG", "Papua New Guinea", ["gold", "copper"]),
@@ -183,6 +186,11 @@ MINERALS = [
     _c("DEU", "Germany", ["polysilicon"]),
     _c("JPN", "Japan", ["titanium", "indium"]),
     _c("VNM", "Vietnam", ["tungsten", "rare_earths", "quartz"]),
+    _c("AGO", "Angola", ["quartz", "silicon_metal", "polysilicon", "diamonds"]),
+    _c("GAB", "Gabon", ["manganese"]),
+    _c("TJK", "Tajikistan", ["antimony"]),
+    _c("TUR", "Turkey", ["boron", "chromium"]),
+    _c("UZB", "Uzbekistan", ["gold"]),
 ]
 
 ENERGY = [
@@ -190,7 +198,7 @@ ENERGY = [
     _c("RUS", "Russia", ["oil", "gas", "petroleum_products", "coal"]),
     _c("USA", "United States", ["oil", "gas", "lng", "petroleum_products", "coal"]),
     _c("CAN", "Canada", ["oil", "gas", "uranium"]),
-    _c("AUS", "Australia", ["lng", "thermal_coal", "met_coal"]),
+    _c("AUS", "Australia", ["lng", "thermal_coal", "met_coal", "uranium"]),
     _c("IRQ", "Iraq", ["oil"]),
     _c("IRN", "Iran", ["oil", "petroleum_products"]),
     _c("ARE", "United Arab Emirates", ["oil", "lng"]),
@@ -235,6 +243,8 @@ def document():
         "method_ko": (
             "처음 30개국은 2023–2024년 1차 수출이 큰 나라다. "
             "2026-10-14에 반도체 원료·인광석·염화칼륨·우라늄의 실제 수출국을 더했다. "
+            "같은 날 팩트체크 뒤에 앙골라(석영), 가봉(망간), 타지키스탄(안티모니), "
+            "튀르키예(붕소·크로뮴), 에티오피아(커피), 카메룬(코코아)을 더했다. "
             "농산물은 USDA PSD·FAO, 귀금속·광물은 USGS 광산 생산과 정련 수출, "
             "에너지는 IEA 원유·가스·석탄 수출을 봤다. 재수출 허브는 빼다. "
             "운영 Comtrade 쿼터로 매주 순위를 다시 뽑지 않는다."

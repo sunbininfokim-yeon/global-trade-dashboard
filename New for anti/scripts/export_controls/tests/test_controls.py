@@ -24,7 +24,10 @@ class UniverseTest(unittest.TestCase):
             for row in rows:
                 self.assertTrue(row["commodities"], row["iso"])
         self.assertIn("MAR", [row["iso"] for row in AGRI])
+        self.assertIn("ETH", [row["iso"] for row in AGRI])
         self.assertIn("RWA", [row["iso"] for row in MINERALS])
+        self.assertIn("GAB", [row["iso"] for row in MINERALS])
+        self.assertIn("AGO", [row["iso"] for row in MINERALS])
         self.assertIn("NER", [row["iso"] for row in ENERGY])
 
     def test_entrepots_stay_out_of_the_lists(self):
