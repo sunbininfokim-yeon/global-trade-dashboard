@@ -49,6 +49,33 @@ G1_AVALANCHE = (
     "-a-presidencia-troca-tem-voto-favoravel-de-relatora.ghtml"
 )
 TSE = "https://www.tse.jus.br/"
+TSE_R2_PAIR = (
+    "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/"
+    "flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica"
+)
+G1_APURACAO = "https://g1.globo.com/politica/eleicoes/2026/apuracao/presidente.ghtml"
+
+# G1 page at 499,248/499,248 sections. These 12 names sum to that page's valid total.
+# TSE press 2026-10-05 00:29 is 99.99% of urns and publishes only the top two.
+PRES_VOTES_G1 = {
+    "Flávio Bolsonaro": 56104503,
+    "Luiz Inácio Lula da Silva": 53879538,
+    "Augusto Cury": 3448569,
+    "Renan Santos": 2675887,
+    "Ronaldo Caiado": 2605148,
+    "Romeu Zema": 326488,
+    "Samara Martins": 122911,
+    "Hertz Dias": 43103,
+    "Clariana Barão": 40043,
+    "Edmilson Costa": 22693,
+    "Wilson Grassi": 16881,
+    "Rui Costa Pimenta": 15024,
+}
+TSE_TOP_9999 = {
+    "Flávio Bolsonaro": 56104268,
+    "Luiz Inácio Lula da Silva": 53876617,
+}
+G1_VALID = 119300788
 
 UA = "Mozilla/5.0 (compatible; global-trade-dashboard election_watch/bra-2026-r1)"
 
@@ -481,7 +508,7 @@ def president_district() -> Dict[str, Any]:
         ("PL", "Flávio Bolsonaro", "22", "Alfredo Gaspar (PL)", False, wiki, None),
         ("DC", "Clariana Barão", "27", "Fabiana Torquato (DC)", False, wiki, None),
         ("PRTB", "Leonardo Avalanche", "28", "Silvia Hellen da Silva Pereira (PRTB)", False, G1_AVALANCHE,
-         "TSE 2026-09-11 Marçal 기각 뒤 PRTB 교체(G1 2026-09-15 보고·위키 각주). G1 Quem são(2026-08-19)와 위키 확정표 일부 스냅샷은 아직 Marçal."),
+         "TSE 2026-09-11 Marçal 기각 뒤 PRTB 교체(G1 2026-09-15 보고·위키 각주). G1 Quem são(2026-08-19)와 위키 확정표 일부 스냅샷은 아직 Marçal. G1 100% 유효표 표에는 이 이름이 없다."),
         ("PCO", "Rui Costa Pimenta", "29", "Antônio Carlos (PCO)", False, wiki, None),
         ("NOVO", "Romeu Zema", "30", "Eduardo Girão (NOVO)", False, wiki, None),
         ("DEMOCRATA", "Wilson Grassi", "35", "Suêd Haidar (DEMOCRATA)", False, wiki, None),
@@ -503,21 +530,41 @@ def president_district() -> Dict[str, Any]:
         }
         if inc:
             row["incumbent"] = True
+        if name in PRES_VOTES_G1:
+            row["votes"] = PRES_VOTES_G1[name]
+            row["source"] = G1_APURACAO
+            row["note_ko"] += (
+                f" G1 1차 100%(499248/499248 섹션) 유효표 {PRES_VOTES_G1[name]}."
+            )
+            if name in TSE_TOP_9999:
+                row["note_ko"] += (
+                    f" TSE 2026-10-05 00:29 보도(99.99%)는 {TSE_TOP_9999[name]}표."
+                )
         cands.append(row)
     cands.append({
         "party_abbr": "PRTB",
         "name": "Pablo Marçal",
         "status": "withdrawn",
         "source": "https://www.cnnbrasil.com.br/politica/tse-rejeita-por-unanimidade-candidatura-de-pablo-marcal-a-presidencia/",
-        "note_ko": "기호 28로 등록됐으나 TSE 2026-09-11 만장일치 기각(CNN). 입당 기한·이전 유죄. PRTB는 Avalanche로 교체.",
+        "note_ko": (
+            "기호 28로 등록됐으나 TSE 2026-09-11 만장일치 기각(CNN). 입당 기한·이전 유죄. "
+            "PRTB는 Avalanche로 교체. G1 100% 유효표 12명 합이 유효표 전체와 같아 이 이름은 그 표에 없다."
+        ),
     })
     return {
         "id": "BR",
         "name_ko": "대통령",
         "group_ko": "전국",
         "seats": 1,
-        "status": "nominated",
+        "status": "completed",
         "candidates": cands,
+        "note_ko": (
+            "1차 개표는 끝났다. 과반이 없어 당선자는 없다. 결선은 bra-2026-general-r2. "
+            "득표가 있는 12명의 합은 G1 유효표 119300788과 같다. "
+            "Avalanche와 기각된 Marçal은 그 표에 없다. "
+            "TSE 보도의 유효표 125272513은 G1 총투표 125275835에 가깝고, G1 유효표와는 약 600만 차이. "
+            "후보 득표는 합이 맞는 G1 100% 표를 쓰고, 1·2위만 TSE 99.99% 숫자도 적었다."
+        ),
     }
 
 
@@ -638,6 +685,9 @@ def build() -> Dict[str, Any]:
     sen_d = districts_from_g1(sen_parsed, 2, is_sen_incumbent, G1_SEN)
     ch_d = chamber_districts()
     pres_d = [president_district()]
+    got = sum(c["votes"] for c in pres_d[0]["candidates"] if "votes" in c)
+    if got != G1_VALID:
+        raise SystemExit(f"presidential valid votes {got} != {G1_VALID}")
 
     n_gov = sum(len(d["candidates"]) for d in gov_d)
     n_sen = sum(len(d["candidates"]) for d in sen_d)
@@ -658,8 +708,9 @@ def build() -> Dict[str, Any]:
             },
             "contested_ko": "대통령 1인(부통령 동반). 1차 2026-10-04, 결선은 과반 미달 시 10-25.",
             "seat_note_ko": (
-                "등록 13장. PRTB는 Marçal 기각 후 Avalanche. "
-                "G1 Quem são(08-19)는 아직 Marçal. 하원·주지사와 같은 날 1차."
+                "1차는 과반 미달. TSE 2026-10-05: 플라비우 보우소나루(PL)와 룰라(PT)가 10-25 결선. "
+                "득표는 G1 100% 섹션 표. 1·2위는 TSE 99.99% 보도 숫자와 수천 표 차이. "
+                "하원·상원·주지사 당선은 이 파일에 넣지 않았다."
             ),
             "districts": pres_d,
         },
@@ -748,13 +799,15 @@ def build() -> Dict[str, Any]:
             WIKI_SENATE,
             G1_AVALANCHE,
             TSE,
+            TSE_R2_PAIR,
+            G1_APURACAO,
         ],
         "parties": parties_block(used),
         "columns": columns,
         "note_ko": (
             "TSE dadosabertos/DivulgaCand 는 이 환경에서 HTTP 403. "
             "주지사·상원은 G1(TSE 제공) Concorrendo만. 하원 수천 명은 비움(partial). "
-            "결선 이벤트 bra-2026-general-r2 는 만들지 않았다."
+            "대통령 1차 득표만 넣었다. 주지사 결선 대진은 지어내지 않았다."
         ),
     }
     return compact(doc)

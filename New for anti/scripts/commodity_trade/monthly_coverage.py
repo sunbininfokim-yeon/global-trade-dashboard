@@ -48,7 +48,8 @@ def observed_cells(panels):
                         yield {'reporter_iso3': iso, 'hs': hs, 'commodity_id': commodity,
                                'flow': 'X' if direction == 'exports' else 'M', 'period': period,
                                'source': point.get('source') or panel.get('source'),
-                               'unit': point.get('unit'), 'panel_schema': panel['schema_version']}
+                               'unit': point.get('unit'), 'panel_schema': panel['schema_version'],
+                               'publication_eligible': point.get('publication', {}).get('eligible_for_display')}
 
 
 def observed_targets(panels, reporters, hs_codes, *, end_period, month_count):
@@ -81,12 +82,22 @@ def coverage_report(panels, index):
                        'bilateral_series': [], 'bilateral_attempt_statuses': {}}
                  for iso, m in PRIORITY_REPORTERS.items()}
     groups = {}
+    eligible, unreviewed, held = {}, {}, {}
     for c in observed_cells(panels):
         key = tuple(c[k] for k in ('reporter_iso3', 'panel_schema', 'source', 'hs', 'flow', 'unit'))
         groups.setdefault(key, set()).add(c['period'])
+        if c['publication_eligible'] is True:
+            eligible.setdefault(key, set()).add(c['period'])
+        elif c['publication_eligible'] is None:
+            unreviewed.setdefault(key, set()).add(c['period'])
+        else:
+            held.setdefault(key, set()).add(c['period'])
     for (iso, schema, source, hs, flow, unit), periods in groups.items():
         countries[iso]['world_total_series'].append({'panel_schema': schema, 'source': source,
-            'hs': hs, 'flow': flow, 'unit': unit, 'months': sorted(periods), 'latest_period': max(periods)})
+            'hs': hs, 'flow': flow, 'unit': unit, 'months': sorted(periods), 'latest_period': max(periods),
+            'latest_eligible_period': max(eligible.get((iso, schema, source, hs, flow, unit), ()), default=None),
+            'publication_held_months': sorted(held.get((iso, schema, source, hs, flow, unit), ())),
+            'publication_unreviewed_months': sorted(unreviewed.get((iso, schema, source, hs, flow, unit), ()))})
     for entry in index.get('entries', []):
         iso = entry.get('reporter_iso3')
         if iso not in countries or entry.get('frequency') != 'M' or not entry.get('partners'):

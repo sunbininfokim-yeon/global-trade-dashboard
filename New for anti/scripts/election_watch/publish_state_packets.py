@@ -14,6 +14,7 @@ from election_watch.poll_priorities import apply_priorities, attach_coverage, lo
 from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
 from election_watch.poll_gaps import attach_gaps
+from election_watch.review_clock import validation_day
 from election_watch.state_poll_capture import merge_capture
 
 ROOT = Path(__file__).resolve().parent
@@ -30,9 +31,11 @@ def rebuild(previous, history, selected, public):
                 'newer state capture already published; replay held')
         policy = apply_priorities(apply_watchlist(read(config/'live_2026.json'), read(config/'watchlist_2026.json')),
             read(config/'priorities_2026.json'), public/'congressional_districts/USA', saved['as_of'])
-        policy = apply_matchups(policy, read(ROOT/'config/governor_matchups/2026.json'), saved['as_of'])
+        governor_reviews = read(ROOT/'config/governor_matchups/2026.json')
         ballots = read(config/'ballot_reviews_2026.json')
-        policy = apply_targets(policy, read(config/'targets_2026.json'), ballots, saved['as_of'])
+        checked_day = validation_day(saved['as_of'], governor_reviews, ballots)
+        policy = apply_matchups(policy, governor_reviews, checked_day)
+        policy = apply_targets(policy, read(config/'targets_2026.json'), ballots, checked_day)
         policy['quality_reviews'] = read(config/'quality_reviews_2026.json')['reviews']
         policy['races'] = {rid: r for rid, r in policy['races'].items() if r['state'] == state}
         policy['states'] = [state]

@@ -1,7 +1,8 @@
 name: Monthly commodity trade refresh
 on:
   schedule:
-    - cron: '37 3 16,24,28 * *'
+    # Full source refresh on 16/24/28; other days only continue bounded jobs.
+    - cron: '37 3 * * *'
   workflow_dispatch:
     inputs:
       batch:
@@ -9,6 +10,11 @@ on:
         type: choice
         options: ['0', '1', '2']
         default: '0'
+      mode:
+        description: 'Full source refresh or bilateral continuation only'
+        type: choice
+        options: ['full', 'resume']
+        default: 'full'
 permissions:
   contents: write
   pull-requests: write
@@ -27,8 +33,10 @@ jobs:
       KOREA_CUSTOMS_SERVICE_KEY: ${{ secrets.KOREA_CUSTOMS_SERVICE_KEY }}
       TRADE_PIPELINE_TOKEN: ${{ secrets.TRADE_PIPELINE_TOKEN }}
       TRADE_GATEWAY_URL: ${{ vars.TRADE_GATEWAY_URL }}
-      TRADE_CHECKPOINT: ${{ runner.temp }}/trade-state/checkpoint.json
     steps:
+      # job env 에서는 runner 컨텍스트를 못 쓴다 (워크플로 파싱 실패). step 에서 넘긴다.
+      - name: Set checkpoint path
+        run: echo "TRADE_CHECKPOINT=$RUNNER_TEMP/trade-state/checkpoint.json" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: main
@@ -58,6 +66,7 @@ jobs:
               core.setOutput('run_id',a.workflow_run.id); return;
             }
       - uses: actions/download-artifact@v4
+        id: restore
         if: steps.previous.outputs.run_id != ''
         with:
           name: commodity-refresh-checkpoint-v1
@@ -65,28 +74,70 @@ jobs:
           run-id: ${{ steps.previous.outputs.run_id }}
           github-token: ${{ github.token }}
       - name: Seed first normalized checkpoint
+        id: seed
         if: steps.previous.outputs.run_id == ''
         run: |
           mkdir -p "$RUNNER_TEMP/trade-state"
           cp 'New for anti/scripts/commodity_trade/deployment/seed_checkpoint.json' "$TRADE_CHECKPOINT"
       - name: Refresh sources within country request budgets
+        env:
+          REQUESTED_BATCH: ${{ inputs.batch }}
+          REQUESTED_MODE: ${{ inputs.mode }}
         run: |
-          BATCH='${{ inputs.batch }}'
-          if [ -z "$BATCH" ]; then
-            case "$(date -u +%d)" in 16) BATCH=0;; 24) BATCH=1;; *) BATCH=2;; esac
+          if [ -f "$RUNNER_TEMP/trade-state/refresh-status.json" ]; then
+            cp "$RUNNER_TEMP/trade-state/refresh-status.json" 'New for anti/public/data/commodity_trade_refresh_status_v1.json'
           fi
-          python3 'New for anti/scripts/commodity_trade/refresh_pipeline.py' --batch "$BATCH"
+          BATCH="$REQUESTED_BATCH"
+          MODE="${REQUESTED_MODE:-full}"
+          if [ -z "$BATCH" ]; then
+            case "$(date -u +%d)" in
+              16) BATCH=0;; 24) BATCH=1;; 28) BATCH=2;;
+              *) BATCH=$(( $(date -u +%s) / 86400 % 3 )); MODE=resume;;
+            esac
+          fi
+          EXTRA=()
+          if [ "$MODE" = resume ]; then EXTRA+=(--resume-only); fi
+          python3 'New for anti/scripts/commodity_trade/refresh_pipeline.py' --batch "$BATCH" "${EXTRA[@]}"
+      - name: Keep execution health with queue
+        if: always() && (steps.seed.outcome == 'success' || steps.restore.outcome == 'success')
+        run: |
+          if [ -f 'New for anti/public/data/commodity_trade_refresh_status_v1.json' ]; then
+            cp 'New for anti/public/data/commodity_trade_refresh_status_v1.json' "$RUNNER_TEMP/trade-state/refresh-status.json"
+          fi
       - name: Preserve normalized progress on interruption
-        if: always()
+        if: always() && (steps.seed.outcome == 'success' || steps.restore.outcome == 'success')
         uses: actions/upload-artifact@v4
         with:
           name: commodity-refresh-checkpoint-v1
-          path: ${{ runner.temp }}/trade-state/checkpoint.json
+          path: ${{ runner.temp }}/trade-state/*.json
           retention-days: 90
           if-no-files-found: warn
-      - name: Propose validated data update
+      - name: Validate and retain candidate release
         run: |
           python3 'New for anti/scripts/commodity_trade/validate_release.py'
+          # Coverage/source gaps are published explicitly, not grounds to erase
+          # otherwise valid observations. Release contract above remains hard.
+          if ! python3 'New for anti/scripts/commodity_trade/check_freshness.py' --status-file "$RUNNER_TEMP/trade-state/refresh-status.json"; then
+            echo '::warning::Collection health has gaps; inspect refresh-status.json. This is not complete acquisition.'
+          fi
+      - name: Retain validated release while review is pending
+        uses: actions/upload-artifact@v4
+        with:
+          name: commodity-trade-candidate-${{ github.run_id }}
+          path: |
+            New for anti/public/data/commodity_trade_*.json
+            New for anti/public/data/commodity_trade_bilateral_v1/
+          retention-days: 30
+      - name: Propose validated data update
+        env:
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # Keep collecting to artifacts/checkpoints without opening one PR/day.
+          OPEN_PR=$(gh pr list --base main --state open --search 'in:title "Monthly commodity trade update"' --json number --jq 'length')
+          if [ "$OPEN_PR" -gt 0 ]; then
+            echo 'A data PR awaits review; newest candidate is retained as an artifact.'
+            exit 0
+          fi
           git switch -c "automation/commodity-monthly-${GITHUB_RUN_ID}"
           git add -- 'New for anti/public/data/commodity_trade_'*.json 'New for anti/public/data/commodity_trade_bilateral_v1'
           if git diff --cached --quiet; then exit 0; fi

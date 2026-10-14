@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """NH question samples, reference variants and exact nominee joins."""
 from election_watch.polls import read as effective_read
 import copy
@@ -24,8 +25,8 @@ def read(path):
 class NewHampshireEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),
-            read(ROOT/'config/governor_matchups/2026.json'), DAY),
-            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), DAY)
+            read(ROOT/'config/governor_matchups/2026.json'), SNAPSHOT_DAY),
+            read(CONFIG/'targets_2026.json'), read(CONFIG/'ballot_reviews_2026.json'), SNAPSHOT_DAY)
         self.policy['quality_reviews'] = read(CONFIG/'quality_reviews_2026.json')['reviews']
         self.audit = read(PUBLIC/'usa_election_poll_release_reviews/2026/NH-primary-20261009.json')
         self.rows = [r['provider_record'] for r in self.audit['records']]
@@ -170,7 +171,7 @@ class NewHampshireEvidenceTests(unittest.TestCase):
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             read(ROOT/'config/governor_matchups/2026.json'), polls,
             load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026),
-            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), DAY,
+            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), max(DAY, polls['as_of']),
             read(CONFIG/'state_finance_identities_2026.json'), governor_access={'NH':access})
         self.assertEqual(state['live_capture_receipt']['governor_source_checked_at'], access['checked_at'])
         self.assertEqual(state['work_status'], 'live_poll_sources_reviewed_finance_blocked')

@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-11T05:53:46.206893+00:00",
+  "generated_at": "2026-10-13T23:44:48.137110+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 163,
-    "scored": 163,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 157,
+    "scored": 157,
     "selected": 40,
-    "indicators": 18
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -219,20 +219,6 @@
       "significance": 2.64
     },
     {
-      "series_id": "EU_ECB_POLICY",
-      "label_ko": "ECB 정책",
-      "country": "EUR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "ECB amends monetary policy implementation guidelines as part of regular review",
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.64
-    },
-    {
       "series_id": "US_EIA_ENERGY",
       "label_ko": "EIA 에너지",
       "country": "USA",
@@ -328,20 +314,6 @@
       "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
       "published_at": "2026-10-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "published_at": "2026-09-25T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -764,41 +736,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2af4c3204b0dd386",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
-        "original_lang": "en",
-        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "636abf84bad4f1c6",
       "published_at": "2026-09-25T06:30:00+00:00",
       "source": {
@@ -1185,6 +1122,41 @@
       "site_slot": null
     },
     {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "7911313d2f0de3b5",
       "published_at": "2026-10-08T20:30:00+00:00",
       "source": {
@@ -1465,41 +1437,6 @@
       "site_slot": null
     },
     {
-      "id": "83e8d725d279a05d",
-      "published_at": "2026-09-04T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "8e92bd1bba00af32",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
@@ -1710,64 +1647,75 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
-        "finance"
+        "finance",
+        "economy"
       ],
-      "series_id": "JP_BOJ_POLICY",
+      "series_id": null,
       "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
         "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
       },
       "summary": "",
       "scores": {
-        "significance": 2.306,
-        "final": 2.306
+        "significance": 2.112,
+        "final": 2.112
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
+        "domains:economy,finance"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "finance.policy"
+      "site_slot": null
+    },
+    {
+      "id": "f75bd04025be67dd",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Monetary Policy Committee dates for 2027",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
+      },
+      "summary": "2027 confirmed dates",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ],
   "pending_review": [
-    {
-      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
-      "country": "EUR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Monetary Policy Committee dates for 2027",
-      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
     {
       "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
       "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
@@ -1777,6 +1725,17 @@
         "economy"
       ],
       "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Money Market Committee meeting – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1903,6 +1862,16 @@
     {
       "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
       "country": "USA",
       "domains": [
         "finance"
@@ -2329,41 +2298,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2af4c3204b0dd386",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
-        "original_lang": "en",
-        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "636abf84bad4f1c6",
       "published_at": "2026-09-25T06:30:00+00:00",
       "source": {
@@ -2750,6 +2684,41 @@
       "site_slot": null
     },
     {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "7911313d2f0de3b5",
       "published_at": "2026-10-08T20:30:00+00:00",
       "source": {
@@ -3030,41 +2999,6 @@
       "site_slot": null
     },
     {
-      "id": "83e8d725d279a05d",
-      "published_at": "2026-09-04T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "8e92bd1bba00af32",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
@@ -3275,39 +3209,72 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
-        "finance"
+        "finance",
+        "economy"
       ],
-      "series_id": "JP_BOJ_POLICY",
+      "series_id": null,
       "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
         "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
       },
       "summary": "",
       "scores": {
-        "significance": 2.306,
-        "final": 2.306
+        "significance": 2.112,
+        "final": 2.112
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
+        "domains:economy,finance"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "finance.policy"
+      "site_slot": null
+    },
+    {
+      "id": "f75bd04025be67dd",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Monetary Policy Committee dates for 2027",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
+      },
+      "summary": "2027 confirmed dates",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ]
 }
