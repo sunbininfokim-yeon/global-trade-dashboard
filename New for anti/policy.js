@@ -119,6 +119,12 @@
 
   const loadOverview = () => (overviewPromise ||= api('/overview'));
 
+  // The calculator has no DB/API dependency and loads only on entry.
+  let simulatorPromise = null;
+  const loadSimulator = () => (simulatorPromise ||= import('/policy-simulator/view.mjs?v=1')
+    .then(async (module) => { await module.prepare(); return module; })
+    .catch((err) => { simulatorPromise = null; throw err; }));
+
   // Chair/ranking-member/agency-jurisdiction/official-URL for the USA
   // standing committees don't come from the /congress API at all -- they're
   // pre-joined onto the election board by the election_watch pipeline
@@ -427,10 +433,10 @@
   // being a tab. The toggle is only the branch split, and it stays meaningful
   // three levels down because it reads the trail.
   const modeTabs = () => `
-    <div class="policy-modes">
+    <div class="policy-modes" style="flex-wrap:wrap">
       <span class="policy-country">미국</span>
-      ${[['congress', '의회'], ['executive', '행정부']].map(([id, label]) => `
-        <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}">${label}</button>
+      ${[['congress', '의회'], ['executive', '행정부'], ['simulator', '관세 시뮬레이터']].map(([id, label]) => `
+        <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}" aria-pressed="${trailHas(id)}">${label}</button>
       `).join('')}
       ${searchBox()}
     </div>`;
@@ -1191,6 +1197,7 @@
   const PARENT = {
     congress: null,
     executive: null,
+    simulator: null,
     search: null,
     committee: 'congress',
     area: 'congress',
@@ -1209,6 +1216,7 @@
     switch (view) {
       case 'congress': return '의회';
       case 'executive': return '행정부';
+      case 'simulator': return '관세 시뮬레이터';
       case 'committee': {
         // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
         // code) to its canonical committee_id -- the overview list only ever
@@ -1240,6 +1248,11 @@
   // object so each view function stays a pure render step over its own data,
   // the same shape the mock-fixture version had.
   async function fetchViewData(view, id) {
+    if (view === 'simulator') return { simulator: await loadSimulator() };
+    if (!overview) {
+      [overview] = await Promise.all([loadOverview(), loadFavorites()]);
+      rebuildPolicySlugs();
+    }
     switch (view) {
       case 'committee': {
         const [detail, billPage, committeeCards] = await Promise.all([
@@ -1271,6 +1284,9 @@
   const VIEWS = {
     congress: viewCongress,
     executive: viewExecutive,
+    simulator: (_id, _overview, data) => shell(data.simulator
+      ? `<div data-tariff-simulator>${data.simulator.markup()}</div>`
+      : empty('시뮬레이터를 불러오지 못했습니다. 다시 선택해 주세요.')),
     committee: viewCommittee,
     agency: viewAgency,
     area: viewPolicyArea,
@@ -1286,11 +1302,15 @@
   let viewData = {};
   // Guards a render() call whose async work resolves after a newer one started.
   let renderToken = 0;
+  let simulatorCleanup = null;
 
   function paint() {
     if (!host) return;
+    simulatorCleanup?.();
+    simulatorCleanup = null;
     const { view, id } = current();
     host.innerHTML = (VIEWS[view] || viewCongress)(id, overview, viewData);
+    if (view === 'simulator' && viewData.simulator) simulatorCleanup = viewData.simulator.mount(host.querySelector('[data-tariff-simulator]'));
     host.scrollTop = 0;
   }
 
@@ -1342,6 +1362,13 @@
     return { slugById, idBySlug };
   }
 
+  function rebuildPolicySlugs() {
+    ({ slugById: committeeSlugById, idBySlug: committeeIdBySlug } =
+      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id', committeeSlugName));
+    ({ slugById: agencySlugById, idBySlug: agencyIdBySlug } =
+      buildSlugMaps(overview?.executive_overview?.agencies, 'agency_id'));
+  }
+
   // Congress.gov's committee.name carries no chamber ("Committee on
   // Appropriations", "Committee on Armed Services", "Committee on the
   // Budget", "Committee on the Judiciary", "Committee on Veterans' Affairs"
@@ -1377,6 +1404,7 @@
   // "executive"; everything past that is ours to shape.
   function pathForLeaf(view, id) {
     if (view === 'congress') return POLICY_BASE_PATH;
+    if (view === 'simulator') return `${POLICY_BASE_PATH}/simulator`;
     if (view === 'executive' && id === undefined) return `${POLICY_BASE_PATH}/executive`;
     const segment = view === 'committee' ? (committeeSlugById.get(id) || id)
       : view === 'agency' ? (agencySlugById.get(id) || id)
@@ -1401,6 +1429,7 @@
     const rest = trimmed === 'policy/us' ? '' : trimmed.slice('policy/us/'.length);
     if (!rest || rest === 'congress') return null; // default congress leaf, nothing to restore
     if (rest === 'executive') return { view: 'executive', id: undefined };
+    if (rest === 'simulator' || rest === 'simulator/') return { view: 'simulator', id: undefined };
     const slashIdx = rest.indexOf('/');
     const view = slashIdx < 0 ? rest : rest.slice(0, slashIdx);
     if (!VIEWS[view]) return null;
@@ -1414,7 +1443,7 @@
   }
 
   async function go(view, id, opts = {}) {
-    const token = renderToken;
+    const token = ++renderToken;
     state.stage = '';
     let extra = {};
     try {
@@ -1422,8 +1451,11 @@
     } catch (err) {
       console.error(`Failed to load policy view "${view}":`, err);
       if (token !== renderToken || !host) return;
+      if (!overview) overviewPromise = null;
       state.trail = trailTo(view, id, extra);
       viewData = {};
+      simulatorCleanup?.();
+      simulatorCleanup = null;
       host.innerHTML = shell(empty('데이터를 불러오지 못했습니다'));
       return;
     }
@@ -1537,6 +1569,8 @@
   };
 
   async function render(target, surface) {
+    simulatorCleanup?.();
+    simulatorCleanup = null;
     host = surface;
     const token = ++renderToken;
     host.classList.add('policy-surface');
@@ -1545,42 +1579,46 @@
 
     subscribeToAuth();
 
-    try {
-      // Favorites ride along rather than gating the screen: signed out it is a
-      // no-op, and a failure only leaves the stars unset.
-      [overview] = await Promise.all([loadOverview(), loadFavorites()]);
-    } catch (err) {
-      console.error('Failed to load policy overview:', err);
-      if (host.dataset.policyTarget !== target || token !== renderToken) return;
-      host.innerHTML = `<div class="policy-surface-inner">${empty('정책 데이터를 불러오지 못했습니다')}</div>`;
-      return;
-    }
-    if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
-
-    ({ slugById: committeeSlugById, idBySlug: committeeIdBySlug } =
-      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id', committeeSlugName));
-    ({ slugById: agencySlugById, idBySlug: agencyIdBySlug } =
-      buildSlugMaps(overview?.executive_overview?.agencies, 'agency_id'));
-
-    // Entering from the top menu starts a fresh trail at that level -- unless
-    // the URL already names a deeper view (a shared link, a reload, or the
-    // browser back/forward button landing back on this same path).
-    state.trail = [];
-    const leaf = parseLeafFromPath(window.location.pathname);
-    const restored = leaf && VIEWS[leaf.view] && (leaf.view === 'executive' ? true : leaf.id);
-    await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
-
+    // Keep the branch toggles usable after an overview/API failure too.
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
     host.removeEventListener('input', onSearchInput);
     host.addEventListener('input', onSearchInput);
     host.removeEventListener('keydown', onSearchKeydown);
     host.addEventListener('keydown', onSearchKeydown);
+
+    try {
+      // Favorites ride along rather than gating the screen: signed out it is a
+      // no-op, and a failure only leaves the stars unset.
+      if (parseLeafFromPath(window.location.pathname)?.view !== 'simulator') {
+        [overview] = await Promise.all([loadOverview(), loadFavorites()]);
+      }
+    } catch (err) {
+      console.error('Failed to load policy overview:', err);
+      if (host.dataset.policyTarget !== target || token !== renderToken) return;
+      overviewPromise = null; // allow a later branch entry to retry
+      state.trail = [{ view: 'congress', label: '의회' }];
+      host.innerHTML = shell(empty('정책 데이터를 불러오지 못했습니다'));
+      return;
+    }
+    if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
+
+    rebuildPolicySlugs();
+
+    // Entering from the top menu starts a fresh trail at that level -- unless
+    // the URL already names a deeper view (a shared link, a reload, or the
+    // browser back/forward button landing back on this same path).
+    state.trail = [];
+    const leaf = parseLeafFromPath(window.location.pathname);
+    const restored = leaf && VIEWS[leaf.view] && (['executive', 'simulator'].includes(leaf.view) ? true : leaf.id);
+    await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
   }
 
   function unmount(surface) {
     if (!surface) return;
     renderToken += 1; // invalidate any in-flight fetch from this render
+    simulatorCleanup?.();
+    simulatorCleanup = null;
     searchToken += 1;
     clearTimeout(searchTimer);
     surface.removeEventListener('click', onClick);
