@@ -1,0 +1,57 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const assert = require('node:assert/strict');
+const base = process.env.SIMULATOR_PREVIEW_URL || 'http://127.0.0.1:8773';
+if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback preview may be tested.');
+(async () => {
+  const browser = await chromium.launch({headless:true});
+  try {
+    const page = await browser.newPage({viewport:{width:1440,height:1080}}), errors=[], requests=[];
+    page.on('pageerror',e=>errors.push(e.message)); page.on('request',r=>requests.push(r.url()));
+    const field=name=>page.getByLabel(name,{exact:true});
+    const click=name=>page.getByRole('button',{name,exact:true}).click();
+    const stage=id=>page.locator(`[data-ad-process] [data-ad-stage="${id}"]`);
+    await page.goto(`${base}/policy/us/simulator`); await click('반덤핑');
+    assert.equal(await page.locator('[data-ad-overview]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-ad-company][aria-pressed=true]').count(),0);
+    assert.ok(!(await field('통관일').isVisible()));
+    assert.ok(await page.locator('[data-ad-history]').isVisible());
+    assert.match(await page.locator('[data-ad-origin]').innerText(),/한국.*다른 원산지.*미검토/);
+    await field('진행을 볼 재심 대상 기간').selectOption('lpt-2023-24');
+    assert.equal(await stage('selection').getAttribute('data-state'),'unknown');
+    assert.equal(await stage('final').getAttribute('data-state'),'latest');
+    assert.equal(await page.locator('[data-ad-process] .ts-basis').filter({hasText:'이후 통관의 새 예치율:'}).count(),0);
+    await click('일진전기'); assert.equal(await stage('selection').getAttribute('data-state'),'confirmed');
+    await click('품목 전체'); assert.equal(await stage('selection').getAttribute('data-state'),'unknown');
+    await field('산업 분야').selectOption('steel'); await click('강관 · 대구경 용접강관');
+    assert.equal(await page.locator('[data-ad-overview]').getAttribute('aria-pressed'),'true');
+    assert.equal(await field('진행을 볼 재심 대상 기간').locator('option[value="welded-pipe-rescinded-2024-25"]').count(),0);
+    await page.locator('[data-ad-all]>summary').click(); await field('반덤핑 전체 기업 검색').fill('AJU'); await click('AJU Besteel Co., Ltd.');
+    await field('진행을 볼 재심 대상 기간').selectOption('welded-pipe-rescinded-2024-25');
+    assert.ok(await page.locator('[data-ad-rescinded]').isVisible());
+    await click('품목 전체'); assert.equal(await page.locator('[data-ad-rescinded]').count(),0);
+    await field('산업 분야').selectOption('auto'); await click('제동 시스템');
+    assert.equal(await page.locator('[data-ad-profile][aria-pressed=true]').count(),0);
+    assert.match(await page.locator('[data-ad-history]').innerText(),/제동 시스템/);
+    assert.equal(await page.locator('[data-ad-history] [data-ad-open-company]').count(),0);
+    await click('현대모비스'); assert.equal(await page.locator('[data-ad-history] [data-ad-open-company]').count(),1);
+    await click('품목 전체');
+    await field('산업 분야').selectOption('power'); await click('변압기'); await click('효성중공업');
+    await page.locator('[data-ad-calculator]>summary').click();
+    assert.ok(await field('통관일').isVisible());
+    await field('통관일').fill(''); await field('대상 수입 신고가격 · USD').fill('2500000');
+    await click('품목 전체');
+    assert.ok(!(await field('통관일').isVisible()));
+    assert.equal(await field('대상 수입 신고가격 · USD').inputValue(),'2500000');
+    assert.ok(await stage('initiation').isVisible()); // Missing private transaction date does not block the monitor.
+    await click('효성중공업'); await page.locator('[data-ad-calculator]>summary').click();
+    await field('통관일').fill('2026-10-11'); await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check();
+    await click('AD 예치 부담 계산'); assert.match(await page.locator('[data-ad-calculated]').innerText(),/108,000.00/);
+    await click('품목 전체');
+    await page.locator('[data-ad-process]').screenshot({path:'docs/previews/antidumping-monitor-desktop.png'});
+    await page.setViewportSize({width:360,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.locator('[data-ad-process]').screenshot({path:'docs/previews/antidumping-monitor-mobile.png'});
+    assert.deepEqual(errors,[]); assert.ok(requests.every(u=>new URL(u).hostname==='127.0.0.1'));
+    console.log('PASS: company-free default; common vs firm stages/rescissions; no global deposit; Korean origin coverage; missing transactions do not block monitoring; optional calculator retains edits and computes; product-only gap; 360px; no external calls.');
+  } finally { await browser.close(); }
+})().catch(e=>{console.error(e);process.exitCode=1;});
