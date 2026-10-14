@@ -1,4 +1,5 @@
-import { renderCountryShell } from './country-shell.js?v=3';
+import { renderCountryShell } from './country-shell.js?v=4';
+import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=4';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=10';
@@ -116,6 +117,12 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
             if (iso3 === 'CHN') applyCnPartyChart(await loadCnPartyChart());
+            if (iso3 === 'ISR') {
+                host.roots.country.innerHTML = '<div class="panel-header"><h2>이스라엘</h2><p>검토한 선거 자료를 연결하는 중입니다.</p></div>';
+                const result = await loadIsraelElectionAnalysis();
+                if (isStale()) return;
+                country.israel_analysis = result;
+            }
             // Wait for the map's own layers/click handler to actually land
             // before painting the shell -- not just for the committee/EOP
             // fetch above. admin1 geometry is cached after a country's first

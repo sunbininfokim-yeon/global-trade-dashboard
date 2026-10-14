@@ -1,0 +1,144 @@
+{
+  "draft": true,
+  "cycle": "knesset-26",
+  "generated_at": "2026-10-14T05:20:00Z",
+  "note": "A date is confirmed only when an official page was opened. News reports and secondary sites stay reported or held.",
+  "events": [
+    {
+      "id": "knesset-25-dissolution",
+      "date": null,
+      "label_ko": "25대 크네세트 해산",
+      "status": "held",
+      "official_source_opened": false,
+      "conflict": "config/isr_knesset_factions.json (as_of 2026-08-09) says both that there was no early dissolution and that knesset_dissolved is 2026-07-17. Neither sentence was checked against an official act.",
+      "do_not_adopt": [
+        "2026-07-17",
+        "조기해산 없음"
+      ]
+    },
+    {
+      "id": "likud-list-primary",
+      "date": "2026-08-17",
+      "label_ko": "리쿠드 명부 프라이머리",
+      "status": "held",
+      "official_source_opened": false,
+      "prior_file": "config/calendars/isr_2026.json event isr-2026-likud-primaries status tentative, sources are Jerusalem Post and Times of Israel URLs, not reopened in this pass."
+    },
+    {
+      "id": "list-filing-deadline",
+      "date": null,
+      "label_ko": "후보 명부 제출 기한",
+      "status": "held",
+      "official_source_opened": false,
+      "candidates": [
+        {
+          "date": "2026-09-09",
+          "where": "config/calendars/isr_2026.json",
+          "basis": "Wikipedia cycle note dated 2026-08-08. Statute not opened."
+        },
+        {
+          "date": "2026-09-08T22:00",
+          "where": "https://israelvoting.com/candidates",
+          "basis": "Secondary page cites Elections Law 57(ט)(1) and a 2026 special-law amendment, and says day 49 before election day. The statute page was not opened. The same site says it is not the official name publication."
+        }
+      ],
+      "statute_opened": {
+        "url": "https://fs.knesset.gov.il/25/law/25_lsr_14147458.pdf",
+        "local_get": "geo-block HTML, not a PDF",
+        "text_retrieved_by": "search fetch of the same URL",
+        "amendment": "Elections Law section 57(ט)(1) is changed from the 47th day to the 49th day before election day. Section 57(ט)(3) changes from the 52nd day to the 55th day. The PDF text does not print a clock time or a September date."
+      },
+      "derived_if_election_day_is_2026_10_27": "The 49th day before 27 October 2026 is 8 September 2026. That derivation is not a date printed in the statute. The old calendar date 2026-09-09 does not match a 49-day count."
+    },
+    {
+      "id": "list-approval-and-ballot-letters",
+      "date": "2026-09-27",
+      "label_ko": "명부 승인·투표 기호 보도",
+      "status": "reported_by_news",
+      "official_source_opened": false,
+      "source": {
+        "publisher": "Ynet",
+        "url": "https://www.ynet.co.il/news/article/s1ibdii5fe",
+        "published": "2026-09-27T11:48",
+        "what_the_article_says": "The Central Elections Committee approved 38 lists and published their ballot letters."
+      },
+      "not_the_same_as": "The contest file note that official CEC publication is 2026-10-18. That date was not found in any page opened here."
+    },
+    {
+      "id": "conditional-list-court-review",
+      "date": "2026-10-02",
+      "label_ko": "라암·공동명부 조건부 승인의 대법원 판단",
+      "status": "reproduced_judgment_summary",
+      "official_source_opened": false,
+      "known_from_news": "Ynet says ballot letters עם and ודם were approved conditionally pending a Supreme Court decision. The decision, the change date, and any candidate disqualification were not opened. A Kan article that a search snippet described was HTTP 403.",
+      "known_from_opened_text": "bagats.org.il reproduces a summary dated 2 October 2026. Hearing 1 October. CEC disqualification decision 24 September. Joint List and Ra'am allowed unanimously. Kassif allowed 7 to 2. Abu Shahadeh withdrew 2 October and that case was dismissed. Full reasons were reserved. c14 PDF HTTP 403."
+    },
+    {
+      "id": "official-list-gazette",
+      "date": null,
+      "label_ko": "공식 명부 공고",
+      "status": "held",
+      "official_source_opened": false,
+      "do_not_adopt": "2026-10-18 from public/data/elections_contests/isr-2026-knesset.json seat_note_ko. gov.il candidates-lists-26 returned HTTP 403."
+    },
+    {
+      "id": "election-day",
+      "date": "2026-10-27",
+      "label_ko": "26대 크네세트 선거일",
+      "status": "reported_by_news_of_cec_decision",
+      "official_source_opened": false,
+      "where_seen": [
+        "Existing calendar isr_2026.json, as_of 2026-08-08, citing Wikipedia and the committee home URL.",
+        "The Petek schema.org text, opened, says the election is 27 October 2026. That site is an aggregator.",
+        "N12 articles in this window speak of the election being two weeks away, which matches this date, but the opened poll article does not print 27 October."
+      ],
+      "not_seen_in": [
+        "gov.il elections-26 (403)",
+        "gov.il polling-place app (403)",
+        "Knesset explainer (geo block)"
+      ],
+      "official_decision_opened": false,
+      "news_source": {
+        "url": "https://www.ynet.co.il/news/article/hko3a9rz3",
+        "published": "2023-04-20T12:29:09Z",
+        "what_it_says": "CEC chair Noam Sohlberg ruled that day that, if the 25th Knesset serves out its term, the next election is 27 October 2026, 16 Heshvan 5787, four years and ten days after the 1 November 2022 election. He cited Basic Law: The Knesset section 8 as the reason not to stretch the term to about five years."
+      }
+    },
+    {
+      "id": "out-of-country-voting",
+      "date": null,
+      "label_ko": "재외 투표",
+      "status": "held",
+      "do_not_adopt": "2026-10-20 in isr_2026.json notes, marked there as wiki."
+    },
+    {
+      "id": "official-results",
+      "date": null,
+      "label_ko": "공식 결과 공표",
+      "status": "held",
+      "do_not_adopt": "2026-11-04 in isr_2026.json notes, marked there as wiki."
+    },
+    {
+      "id": "surplus-agreement-deadline",
+      "date": "2026-10-16",
+      "date_status": "printed_in_news_explainer",
+      "label_ko": "잉여표 협약 제출 기한",
+      "status": "reported_by_news",
+      "official_source_opened": false,
+      "known_from_opened_text": "The Ynet explainer of 11 October 2026 says agreements may be signed until 11 days before election day, subject to Central Elections Committee approval, and that this cycle's date is 16 October because the election is 27 October. That sentence is in the opened article. It is not the statute.",
+      "source_url": "https://www.ynet.co.il/news/elections2026/article/skdhsmfsmx"
+    }
+  ],
+  "rules_not_opened": [
+    {
+      "item": "120 seats, one nationwide constituency, 3.25% threshold, Bader-Ofer, surplus agreements",
+      "status": "held",
+      "why": "Knesset lexicon and Basic Law URL returned the geo-block page. The Petek schema repeats 120, 61, and 3.25%, which is not a statute."
+    },
+    {
+      "item": "Government formation: presidential mandate, confidence, external support",
+      "status": "held",
+      "why": "No official procedure page was opened. 61 seats may be used later as an arithmetic majority only after the legal rule is opened. It is not a formed government."
+    }
+  ]
+}
