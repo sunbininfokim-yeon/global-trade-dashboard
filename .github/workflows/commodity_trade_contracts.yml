@@ -1,0 +1,50 @@
+name: Commodity trade contracts
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/commodity_trade_*.yml'
+      - 'New for anti/scripts/commodity_trade/**'
+      - 'New for anti/public/data/commodity_trade_*.json'
+      - 'New for anti/public/data/commodity_trade_bilateral_v1/**'
+      - 'tests/comtrade/**'
+      - 'tools/ops/ownership_rules.py'
+      - 'tools/ops/tests/test_ownership_rules.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/commodity_trade_*.yml'
+      - 'New for anti/scripts/commodity_trade/**'
+      - 'New for anti/public/data/commodity_trade_*.json'
+      - 'New for anti/public/data/commodity_trade_bilateral_v1/**'
+      - 'tests/comtrade/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate GitHub expression contexts (not just YAML)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/actionlint"
+          gh release download v1.7.7 --repo rhysd/actionlint --dir "$RUNNER_TEMP/actionlint" --pattern actionlint_1.7.7_linux_amd64.tar.gz --pattern actionlint_1.7.7_checksums.txt
+          (cd "$RUNNER_TEMP/actionlint" && sha256sum --check --ignore-missing actionlint_1.7.7_checksums.txt)
+          tar -xzf "$RUNNER_TEMP/actionlint/actionlint_1.7.7_linux_amd64.tar.gz" -C "$RUNNER_TEMP/actionlint" actionlint
+          "$RUNNER_TEMP/actionlint/actionlint" -shellcheck= -pyflakes= .github/workflows/commodity_trade_refresh.yml .github/workflows/commodity_trade_watchdog.yml .github/workflows/commodity_trade_contracts.yml
+      - name: Offline regression contracts (no upstream collection)
+        run: |
+          python3 -m pip install -r 'New for anti/scripts/commodity_trade/requirements.txt'
+          python3 -m unittest discover -s 'New for anti/scripts/commodity_trade/tests' -q
+          python3 'New for anti/scripts/commodity_trade/validate_release.py'
+          node --test 'New for anti/scripts/commodity_trade/gateway/'*.test.mjs
+          node --test tests/comtrade/*.test.mjs
+          python3 -m unittest discover -s tools/ops/tests -p test_ownership_rules.py -q

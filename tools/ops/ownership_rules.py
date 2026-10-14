@@ -35,9 +35,19 @@ COMMODITY_PATHS = frozenset({
     '.github/workflows/commodity_trade_watchdog.yml',
 })
 
+# 2026-10-12: user requested monthly pipeline hardening, explicitly excluding
+# Korea authentication. Only dedicated commodity workflows; no Worker/UI/deploy.
+COMMODITY_OPS_BRANCH = 'codex/commodity-monthly-ops'
+COMMODITY_OPS_PATHS = frozenset({
+    '.github/workflows/commodity_trade_refresh.yml',
+    '.github/workflows/commodity_trade_watchdog.yml',
+    '.github/workflows/commodity_trade_contracts.yml',
+})
+
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
             STATE_INTEGRATION_BRANCH: DAILY_POLLING_PATHS,
-            COMMODITY_BRANCH: COMMODITY_PATHS}.get(branch, frozenset())
+            COMMODITY_BRANCH: COMMODITY_PATHS,
+            COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS}.get(branch, frozenset())
