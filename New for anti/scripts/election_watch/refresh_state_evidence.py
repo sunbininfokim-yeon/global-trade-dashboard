@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from election_watch.polls import read
+from election_watch.review_clock import validation_day
 from election_watch.state_evidence import ordered_states, build_state, load_finance, publish_states
 
 ROOT = Path(__file__).resolve().parent
@@ -29,10 +30,14 @@ def main():
     if not selected: p.error('state must be one of the fifty states')
     catalog = read(ROOT/'config/usa_polls/targets_2026.json')
     from election_watch.federal_matchups import validate_snapshot
-    federal = read(ROOT/'config/federal_matchups/2026.json'); validate_snapshot(federal, args.as_of)
+    federal = read(ROOT/'config/federal_matchups/2026.json')
     governors = read(ROOT/'config/governor_matchups/2026.json')
+    # Current catalogs may contain another state's later review. Validate
+    # those catalogs on their review clock without aging this state's polls.
+    checked_day = validation_day(args.as_of, federal, governors)
+    validate_snapshot(federal, checked_day)
     from election_watch.governor_matchups import validate_snapshot as validate_governors
-    validate_governors(governors, 2026, args.as_of)
+    validate_governors(governors, 2026, checked_day)
     polls = read(args.polls); finance = load_finance(args.public/'usa_election_finance_index_v1.json', 2026)
     directory = read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')
     audits = {}; access = {}
