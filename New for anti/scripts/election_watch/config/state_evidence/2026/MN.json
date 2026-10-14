@@ -1,0 +1,1007 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "MN",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:MN:house:01"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "4109016fbe20c271625c50503e0ee305d0d5dcbbf52c98f7cc3026a39ff3d80e",
+      "value": {
+        "race_id": "USA:MN:house:01",
+        "state": "MN",
+        "office": "house",
+        "district": "01",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/MN",
+        "reviewed_on": "2026-10-14",
+        "candidates": [
+          {
+            "name": "Jacob \"Jake\" Johnson",
+            "party": "DEM",
+            "reported_party": "Democratic-Farmer Labor",
+            "candidate_id": null,
+            "source_url": "https://www.thegreenpapers.com/G26/MN",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6MN01190",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "poll_name_aliases": [
+              "Jake Johnson"
+            ],
+            "poll_alias_review": {
+              "reviewed_on": "2026-10-14",
+              "source_url": "https://results.surveyusa.com/client/PollReport.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+              "basis": "Same MN-01 DFL candidate named Jake Johnson in reviewed primary Q7; legal-name nickname explicitly present in existing reviewed roster"
+            }
+          },
+          {
+            "name": "Brad Finstad",
+            "party": "REP",
+            "reported_party": "Republican",
+            "candidate_id": "H2MN01223",
+            "source_url": "https://www.thegreenpapers.com/G26/MN",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H2MN01223",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "limitations_ko": "공개 선거 명부가 선거당국 확인을 보고한 후보만 표시합니다. 공식 투표용지 인증·전체 기명 후보 완결·당선 결과를 뜻하지 않습니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0,
+        "unopposed_status": "not_verified"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202sur83d49b6b"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-14",
+        "reviewed_at": "2026-10-14T09:29:06.485884+00:00",
+        "snapshot_sha256": "0946b4183f7c7ae200ef65428f9d0b6ffc550e392fe5e4a18c64e8a16f3624bc",
+        "provider_record_sha256": "9ee0c9ef92d2e89913caa040f439c787341eed3fb0dab53d32b1ff791fc2022d",
+        "sources": [
+          "https://results.surveyusa.com/client/PollReport.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+          "https://results.surveyusa.com/client/PollReport_main.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+          "https://results.surveyusa.com/client/PollReport_left.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+          "https://results.surveyusa.com/client/methodology.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8"
+        ],
+        "primary_toplines": {
+          "Brad Finstad": 44.0,
+          "Jake Johnson": 46.0
+        },
+        "question_sample_n": 565,
+        "primary_documents": [
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+            "sha256": "c79fac4bf2a4a3c362b92f5188535b363254d0501dfb1b861119264b9cd8b66d"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_left.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+            "sha256": "a14ab988764d0f6959e9c13b15a9266c1c486b3c6c0b75943b8fceb37a69320f"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/methodology.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+            "sha256": "d29c53f3a9dc83612c6fd1b26a1ded723c26431f8e2c56e0c9c808118a8e1191"
+          }
+        ],
+        "admission": {
+          "pollster": "SurveyUSA",
+          "provider_url": "https://results.surveyusa.com/client/PollReport.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+          "group": "surveyusa",
+          "methodology_url": "https://results.surveyusa.com/client/methodology.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 565,
+          "field_dates": [
+            "2026-10-04",
+            "2026-10-09"
+          ],
+          "sponsors": [
+            "KAAL-TV"
+          ],
+          "sampling_method": "mixed_probability_and_non_probability",
+          "sampling_frame": "49% Cint online panel; 24% Aristotle landline IVR; 27% Aristotle SMS-to-web",
+          "weighting": "Census gender age ethnicity homeownership",
+          "question_wording_checked": true,
+          "question": "Q7 ordinary rotated MN-01 ballot",
+          "provider_pollster_label": "SurveyUSA",
+          "primary_pollster_name": "SurveyUSA"
+        },
+        "reported_precision": {
+          "kind": "credibility_interval",
+          "half_width_pp": 4.6,
+          "confidence_level_pct": null,
+          "scope": "question_LV565",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "KAAL-TV"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "precision_model_specification",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "565명 LV/이미 투표자 Q7. 725명 성인·664명 RV와 분리하며 발표 credibility interval을 sampling MOE로 바꾸지 않습니다."
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-14",
+    "fetched_at": "2026-10-14T05:14:02.840821+00:00",
+    "receipt": {
+      "state": "MN",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-14",
+      "captured_at": "2026-10-14T05:14:02.840821+00:00",
+      "capture_kind": "provider_transport_only",
+      "provider_records": 28,
+      "serialized_provider_response_sha256": "4d39260f304a93198b762add5d1d5ae58594f2d4113f585004abbe195eacadfa",
+      "collection_checkpoint_sha256": "00c16d477074d0b0be50f8cd58cedbe84083f380000c8617ca5a6c2a5f31c276",
+      "primary_review_checked_at": "2026-10-14T09:29:06.485884+00:00"
+    },
+    "provider_records": [
+      {
+        "id": "gov202surd58350f7",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-30",
+        "end_date": "2026-01-27",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 50.0
+          },
+          {
+            "choice": "Peggy Bennett",
+            "pct": 30.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202eme14fedfa8",
+        "poll_type": "governor",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1JA1bJWjrfS2kJbvUpGC8cGy7c0UiK7Qr/edit?gid=1311961339#gid=1311961339",
+        "created_at": "2026-04-27",
+        "start_date": "2026-02-06",
+        "end_date": "2026-02-08",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 51.1
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 37.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202emefa3e1d8b",
+        "poll_type": "governor",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1JA1bJWjrfS2kJbvUpGC8cGy7c0UiK7Qr/edit?gid=1311961339#gid=1311961339",
+        "created_at": "2026-04-27",
+        "start_date": "2026-02-06",
+        "end_date": "2026-02-08",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 52.8
+          },
+          {
+            "choice": "Mike Lindell",
+            "pct": 30.9
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sur9b6fe128",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 49.0
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sur3dc916b8",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 49.0
+          },
+          {
+            "choice": "Patrick Knight",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202surf831ef70",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 49.0
+          },
+          {
+            "choice": "Brad Kohler",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sur595d73eb",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 52.0
+          },
+          {
+            "choice": "Mike Lindell",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202surbf9e3af9",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 49.0
+          },
+          {
+            "choice": "Phil Parrish",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sur4558b2cb",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 49.0
+          },
+          {
+            "choice": "Kendall Qualls",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sure73b5a8b",
+        "poll_type": "governor",
+        "sample_size": 575,
+        "population": "rv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-klobuchar-leads-all-gop-candidates-by-double-digits/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-27",
+        "end_date": "2026-01-30",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 48.0
+          },
+          {
+            "choice": "Kristin Robbins",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202emec7074b5d",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1JA1bJWjrfS2kJbvUpGC8cGy7c0UiK7Qr/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+        "created_at": "2026-05-28",
+        "start_date": "2026-02-06",
+        "end_date": "2026-02-08",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Angie Craig",
+            "pct": 46.6
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 40.2
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202eme46470152",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1JA1bJWjrfS2kJbvUpGC8cGy7c0UiK7Qr/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+        "created_at": "2026-05-28",
+        "start_date": "2026-02-06",
+        "end_date": "2026-02-08",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 47.1
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 40.6
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202pubd69c1e7f",
+        "poll_type": "us-senator",
+        "sample_size": 1015,
+        "population": "lv",
+        "url": "https://www.nytimes.com/interactive/polls/minnesota-us-senate-election-polls-2026.html",
+        "created_at": "2026-06-12",
+        "start_date": "2025-09-15",
+        "end_date": "2025-09-16",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Angie Craig",
+            "pct": 47.0
+          },
+          {
+            "choice": "Rep",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "GQR"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202pubde180c20",
+        "poll_type": "us-senator",
+        "sample_size": 1015,
+        "population": "lv",
+        "url": "https://www.scribd.com/document/930902898/Flanagan-Senate-Poll-Memo-September-2025",
+        "created_at": "2026-06-12",
+        "start_date": "2025-09-15",
+        "end_date": "2025-09-16",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 46.0
+          },
+          {
+            "choice": "Rep",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "GQR"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202mas4d51a046",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.startribune.com/minnesota-poll-klobuchar-leads-all-gop-candidates-for-governor/601850018",
+        "created_at": "2026-06-15",
+        "start_date": "2026-06-08",
+        "end_date": "2026-06-10",
+        "pollster": "Mason-Dixon Polling & Research, Inc.",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 48.0
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Star Tribune",
+          "KARE 11",
+          "Hubbard School of Journalism and Mass Communication"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202mase670f71b",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.startribune.com/minnesota-poll-klobuchar-leads-all-gop-candidates-for-governor/601850018",
+        "created_at": "2026-06-15",
+        "start_date": "2026-06-08",
+        "end_date": "2026-06-10",
+        "pollster": "Mason-Dixon Polling & Research, Inc.",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 53.0
+          },
+          {
+            "choice": "Mike Lindell",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Star Tribune",
+          "KARE 11",
+          "Hubbard School of Journalism and Mass Communication"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202masc517bd85",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.startribune.com/minnesota-poll-klobuchar-leads-all-gop-candidates-for-governor/601850018",
+        "created_at": "2026-06-15",
+        "start_date": "2026-06-08",
+        "end_date": "2026-06-10",
+        "pollster": "Mason-Dixon Polling & Research, Inc.",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 48.0
+          },
+          {
+            "choice": "Kendall Qualls",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Star Tribune",
+          "KARE 11",
+          "Hubbard School of Journalism and Mass Communication"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sura09da26d",
+        "poll_type": "governor",
+        "sample_size": 661,
+        "population": "lv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-early-frontrunners-in-governor-and-senate-races-ag-a-toss-up/",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-13",
+        "end_date": "2026-08-17",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 52.0
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 36.0
+          },
+          {
+            "choice": "Steven Young",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV (St. Paul)",
+          "KAAL-TV (Austin)",
+          "WDIO-DT (Duluth)"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202sur47670306",
+        "poll_type": "us-senator",
+        "sample_size": 661,
+        "population": "lv",
+        "url": "KSTP-TV (St. Paul, Minn.), KAAL-TV (Austin, Minn.), WDIO-DT (Duluth, Minn.)",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-13",
+        "end_date": "2026-08-17",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 46.0
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 41.0
+          },
+          {
+            "choice": "Marisa Simonetti",
+            "pct": 1.0
+          },
+          {
+            "choice": "Rebecca Whiting",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV (St. Paul)",
+          "KAAL-TV (Austin)",
+          "WDIO-DT (Duluth)"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202qua8837472c",
+        "poll_type": "us-senator",
+        "sample_size": 720,
+        "population": "lv",
+        "url": "https://quantusinsights.org/f/new-quantus-polls-moody-leads-in-florida-flanagan-in-minnesota",
+        "created_at": "2026-09-11",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-10",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 48.2
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 44.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202sur082f7091",
+        "poll_type": "governor",
+        "sample_size": 654,
+        "population": "lv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-governor-senate-races-tightening-days-before-early-voting-starts-in-minnesota/",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-09",
+        "end_date": "2026-09-14",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 47.0
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 40.0
+          },
+          {
+            "choice": "Steven Young",
+            "pct": 3.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV (St. Paul)",
+          "KAAL-TV (Austin)",
+          "WDIO-DT (Duluth)"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202sura38c6933",
+        "poll_type": "us-senator",
+        "sample_size": 654,
+        "population": "lv",
+        "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-governor-senate-races-tightening-days-before-early-voting-starts-in-minnesota/",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-09",
+        "end_date": "2026-09-14",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 42.0
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 42.0
+          },
+          {
+            "choice": "Marisa Simonetti",
+            "pct": 2.0
+          },
+          {
+            "choice": "Rebecca Whiting",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KSTP-TV (St. Paul)",
+          "KAAL-TV (Austin)",
+          "WDIO-DT (Duluth)"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202gba03b575d0",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://bsky.app/profile/the-downballot.com/post/3mwbqbuzrn22f",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-18",
+        "end_date": "2026-09-21",
+        "pollster": "GBAO Strategies",
+        "answers": [
+          {
+            "choice": "Brad Finstad",
+            "pct": 46.0
+          },
+          {
+            "choice": "Jake Johnson",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": "MN-01",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 MN-01"
+      },
+      {
+        "id": "us-202big7e4bf32f",
+        "poll_type": "us-senator",
+        "sample_size": 622,
+        "population": "lv",
+        "url": "https://www.bigdatapoll.com/blog/lone-star-state-poll-peggy-flanagan-holds-slight-lead-over-michele-tafoya-for-us-senate-in-minnesota/",
+        "created_at": "2026-10-02",
+        "start_date": "2026-09-29",
+        "end_date": "2026-09-30",
+        "pollster": "Big Data Poll",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 46.0
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 44.0
+          },
+          {
+            "choice": "Rebecca Whiting",
+            "pct": 5.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Public Polling Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202gqr63b7a4d3",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://x.com/DrewSav/status/2108502733045334207",
+        "created_at": "2026-10-09",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-04",
+        "pollster": "GQR",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 50.0
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 42.0
+          },
+          {
+            "choice": "Marisa Simonetti",
+            "pct": 4.0
+          },
+          {
+            "choice": "Rebecca Whiting",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Senate Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "gov202gqr63ed18ea",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://x.com/DrewSav/status/2108502733045334207",
+        "created_at": "2026-10-09",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-04",
+        "pollster": "GQR",
+        "answers": [
+          {
+            "choice": "Peggy Flanagan",
+            "pct": 53.0
+          },
+          {
+            "choice": "Michele Tafoya",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Senate Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Minnesota"
+      },
+      {
+        "id": "us-202sur83d49b6b",
+        "poll_type": "us-representative",
+        "sample_size": 565,
+        "population": "lv",
+        "url": "https://results.surveyusa.com/client/PollReport.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8",
+        "created_at": "2026-10-13",
+        "start_date": "2026-10-04",
+        "end_date": "2026-10-09",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Brad Finstad",
+            "pct": 44.0
+          },
+          {
+            "choice": "Jake Johnson",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": "MN-01",
+        "sponsors": [
+          "KAAL-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 MN-01"
+      },
+      {
+        "id": "gov202mas1d81609c",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.startribune.com/minnesota-poll-klobuchar-demuth-governor/601887444",
+        "created_at": "2026-10-13",
+        "start_date": "2026-10-05",
+        "end_date": "2026-10-07",
+        "pollster": "Mason-Dixon",
+        "answers": [
+          {
+            "choice": "Amy Klobuchar",
+            "pct": 50.0
+          },
+          {
+            "choice": "Lisa Demuth",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "StarTribune",
+          "KARE"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Minnesota"
+      }
+    ],
+    "provider_records_sha256": "403492fab486ff7aa94c94fd4a5f6c4184dbbd6899b7e62c9d1c12d23215ac9e",
+    "primary_records": []
+  },
+  "recent_primary_review": {
+    "checked_at": "2026-10-14T09:29:06.485884+00:00",
+    "reviewed_ids": [
+      "us-202sur83d49b6b"
+    ],
+    "held_records": [],
+    "future_releases_automatically_approved": false,
+    "sources_not_refetched_in_packet_replay": true
+  }
+}
