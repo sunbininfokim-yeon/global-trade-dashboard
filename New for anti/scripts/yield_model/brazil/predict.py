@@ -172,6 +172,13 @@ def predict_one(cfg, year, oni, predicted):
                         + np.dot(z, model["ridge"]["coef"]))
 
     trend_kg = float(np.exp(trend_log))
+    model_effect_pct = (np.exp(weather_log) - 1) * 100
+    # A model that lost to the trend out of sample does not get to move the
+    # published number: its adjustment made past forecasts worse, not
+    # better. The point falls back to the trend (sigma is already the trend's
+    # own error) and the model's would-be adjustment is kept for reference.
+    if not model["beats_trend"]:
+        weather_log = 0.0
     point_kg = float(np.exp(trend_log + weather_log))
     sigma = model["uncertainty"]["sigma_kg_ha"]
 
@@ -199,6 +206,8 @@ def predict_one(cfg, year, oni, predicted):
         "unit": "kg/ha",
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
+        "model_weather_effect_pct": model_effect_pct,
+        "point_basis": "model" if model["beats_trend"] else "trend",
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
         "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
