@@ -1,4 +1,4 @@
-"""The universe is three lists of 30, and the catalogue survives validation."""
+"""The universe is three country lists, and the catalogue survives validation."""
 
 from __future__ import annotations
 
@@ -16,15 +16,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class UniverseTest(unittest.TestCase):
-    def test_each_group_has_thirty_distinct_countries(self):
+    def test_each_group_has_distinct_countries(self):
         for name, rows in (("agri", AGRI), ("minerals", MINERALS), ("energy", ENERGY)):
             isos = [row["iso"] for row in rows]
-            self.assertEqual(len(isos), 30, name)
-            self.assertEqual(len(set(isos)), 30, name)
+            self.assertGreaterEqual(len(isos), 30, name)
+            self.assertEqual(len(set(isos)), len(isos), name)
             for row in rows:
                 self.assertTrue(row["commodities"], row["iso"])
+        self.assertIn("MAR", [row["iso"] for row in AGRI])
+        self.assertIn("RWA", [row["iso"] for row in MINERALS])
+        self.assertIn("NER", [row["iso"] for row in ENERGY])
 
-    def test_entrepots_stay_out_of_the_thirties(self):
+    def test_entrepots_stay_out_of_the_lists(self):
         watched = {row["iso"] for row in AGRI + MINERALS + ENERGY}
         for hub in EXCLUDED_ENTREPOTS:
             self.assertNotIn(hub["iso"], watched)
