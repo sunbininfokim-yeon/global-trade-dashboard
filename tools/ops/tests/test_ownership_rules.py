@@ -3,6 +3,14 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_state_research_rules_only_allow_existing_polling_workflow(self):
+        branch = 'codex/election-research-rules-20261011'
+        self.assertEqual(scoped_paths(branch), {'.github/workflows/us_election_polls_refresh.yml'})
+        self.assertFalse(scoped_paths(branch+'-extra'))
+        for path in ('.github/workflows/deploy.yml', '.github/workflows/ownership_guard.yml',
+                     '.github/workflows/commodity_trade_refresh.yml', 'New for anti/app.js'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_commodity_ops_excludes_auth_ui_and_shared_deployment(self):
         branch = 'codex/commodity-monthly-ops'
         self.assertEqual(scoped_paths(branch), {

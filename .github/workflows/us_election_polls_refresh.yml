@@ -11,6 +11,14 @@ on:
       - 'New for anti/scripts/election_watch/**'
       - '.github/workflows/us_election_polls_refresh.yml'
       - 'New for anti/js/elections/**'
+      # Source-only state research must run the same isolation check.
+      - 'New for anti/public/data/usa_election_poll_release_reviews/**'
+      - 'New for anti/public/data/usa_governor_finance_audits/**'
+      - 'New for anti/public/data/usa_governor_finance_audit_status/**'
+      - 'New for anti/public/data/usa_governor_source_access/**'
+      - 'New for anti/public/data/usa_governor_ie_report_indexes/**'
+      - 'New for anti/public/data/usa_governor_ie_report_index_status/**'
+      - 'New for anti/public/data/usa_governor_ie_report_reviews/**'
 
 permissions:
   contents: read
