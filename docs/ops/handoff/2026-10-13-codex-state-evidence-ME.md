@@ -1,5 +1,15 @@
 # 메인(ME) 검토 입력과 선거 PR 반영 순서
 
+## 10/14 재진행 — 아래 10/13 순서표보다 우선하는 현행 상태
+
+- 사용자 재진행에 따라 #541을 packet 없는 공용 날짜 기반 #554 (`fbe255ba`) 위로 다시 맞췄다. 실제 base는 `codex/election-state-clock-20261014`이며 ME/WA는 서로 독립이다. #524·#529·#540은 이미 main에 병합되어 재병합하지 않는다.
+- 과거 #541 CI `38406239368`은 projection 이전 ME 상원 입력의 `absent_parties` 누락으로 실패했다. DEM/REP 후보가 모두 있으므로 ME 상원 입력과 ballot review에 명시적으로 빈 목록을 넣고, 실제 federal projection 검사를 추가했다. 공식 명부로 재검토한 후보의 provenance도 NGA 초기 명부라는 옛 표기를 Maine SOS 검토로 바로잡았다.
+- 수집 안정성 공용 PR #557은 날짜 기반 #554와 별도다. 실제 API 체크포인트 `2026-10-14T05:14:02.840821+00:00`의 ME64행을 입력에 반영했다. 최초 10/13 수집 영수증·지문은 `capture_history`에 보존했다. 이번 요청은 실제 신규 API 수집이고 아래 임시 재생성은 추가 수집이 아니다.
+- API에 있는 ME 발표의 최신 field_end는 10/5다. 현행 본선 관측4건/보류60건이며 최근7일 적격 관측은 없다. 과거 Marist 원문 검토일10/13·FEC 수집일·주지사 공시 날짜를 오늘로 바꾸지 않았다. 7일 공백을 가상의 조사나 승패로 채우지 않는다.
+- `/private/tmp/me-validation-20261014/data`에서 `publish_state_packets.py --states ME`, `publish_packet_projections.py` 실제 CLI를 실행해 projection 오류 없음. 다른 주502개 race/누적 이력, 전국 원래 as_of/fetched_at, house_poll_focus 보존도 대조했다. 전국 생성 JSON은 ME PR에 커밋하지 않는다.
+- 새 `test_poll_me_primary.py`에는 공식 연방 입력의 필수 키 검증과 신규 API 영수증/원래 원문 날짜 분리가 포함된다. 최종 검사와 GitHub CI는 PR 본문에 갱신한다.
+- 운영 반영 권장: #554 및 #557 공용 기반 → #541 ME와 #555 WA 각각 → 승인된 main 수집/게시/배포의 실제 결과 확인. #557 수집 안정성 인수 문서는 `docs/ops/handoff/2026-10-14-codex-poll-refresh-resilience.md`이다. 이번에도 병합·production dispatch·배포하지 않았다.
+
 ## 범위와 담당
 
 사용자 요청: 다음 state 조사와 선거 PR 배포 순서 정리. NE는 사용자 중지를 유지하고 B그룹의 다음 미담당 주 ME를 진행했다. 다른 선거 세션은 NH 다음 C그룹 WA를 담당한다. 중복 수집/같은 파일 편집을 피하도록 담당과 규칙을 전달했다.

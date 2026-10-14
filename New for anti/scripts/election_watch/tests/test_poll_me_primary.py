@@ -9,11 +9,13 @@ from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize, summarize
 from publish_state_packets import rebuild
 from election_watch.superpac import build_snapshot
+from election_watch.federal_matchups import validate_snapshot,merge_ballot_reviews
+from election_watch.review_clock import validation_day
 
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'config'
 PUBLIC=ROOT.parents[1]/'public/data'
-DAY='2026-10-13'
+DAY='2026-10-14'
 
 class MaineEvidenceTests(unittest.TestCase):
     @classmethod
@@ -62,6 +64,16 @@ class MaineEvidenceTests(unittest.TestCase):
         self.assertEqual(replay['spending'],capture['spending'])
         self.assertEqual(replay['quality'],capture['quality'])
 
+    def test_official_federal_input_has_absent_party_contract_before_projection(self):
+        snapshot=read(CONFIG/'federal_matchups/2026.json')
+        day=validation_day(DAY,snapshot,self.ballots)
+        validate_snapshot(snapshot,day)
+        projected=merge_ballot_reviews(snapshot,self.ballots,day)
+        for rid,race in projected['races'].items():
+            if race['state']=='ME':
+                self.assertEqual(race['absent_parties'],[],rid)
+                self.assertEqual({c['party'] for c in race['candidates']},{'DEM','REP'})
+
     def test_replay_preserves_all_other_races_history_and_original_dates(self):
         old=read(PUBLIC/'usa_election_live_polls_v1.json')
         history=read(PUBLIC/'usa_election_poll_history_2026.json')
@@ -74,5 +86,15 @@ class MaineEvidenceTests(unittest.TestCase):
         self.assertEqual(board['fetched_at'],old['fetched_at'])
         self.assertEqual(board['house_poll_focus'],old['house_poll_focus'])
         self.assertEqual(board['state_captures']['ME']['captured_at'],self.packet['capture']['fetched_at'])
+
+    def test_actual_api_refresh_does_not_advance_primary_or_finance_review_dates(self):
+        original=self.packet['capture_history'][0]
+        self.assertEqual(original['fetched_at'],'2026-10-13T13:05:08.953432+00:00')
+        self.assertEqual(self.packet['capture']['fetched_at'],'2026-10-14T05:14:02.840821+00:00')
+        self.assertEqual(len(self.packet['capture']['provider_records']),64)
+        for row in self.observations:
+            if row['id'] in ('us-202mare89f317d','gov202mar89bef491'):
+                self.assertEqual(row['source_quality']['reviewed_on'],'2026-10-13')
+        self.assertFalse(any(r['field_end']>='2026-10-08' for r in self.observations))
 
 if __name__=='__main__':unittest.main()
