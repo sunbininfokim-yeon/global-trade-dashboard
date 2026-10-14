@@ -26,14 +26,20 @@ def with_documents(catalogue, documents):
     for rule in out.get('controls', []):
         doc = by_id.get(rule.get('id'))
         if doc:
-            rule['legacy_source_url'] = rule.get('url')
-            rule['url'] = doc['url']
-            rule['hs_prefixes'] = doc['hs_prefixes']
-            if doc.get('effective_from'):
+            rule['historical_evidence'] = doc
+            # Historical announcements enrich a catalogue; they must not
+            # overwrite a later curator's source, HS scope or effective date.
+            if not rule.get('url'):
+                rule['url'] = doc['url']
+                rule['official_document_verified'] = False
+            if not rule.get('hs_prefixes'):
+                rule['hs_prefixes'] = doc['hs_prefixes']
+                rule['scope_verified'] = False
+            if not rule.get('effective_from') and doc.get('effective_from'):
                 rule['effective_from'] = doc['effective_from']
             # A past announcement does not establish present validity.
-            rule['official_document_verified'] = False
-            rule['scope_verified'] = False
+            rule.setdefault('official_document_verified', False)
+            rule.setdefault('scope_verified', False)
     return out
 
 

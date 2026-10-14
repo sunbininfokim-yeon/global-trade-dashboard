@@ -1,8 +1,8 @@
 """Build elections_contest_v1 for bra-2026-general-r2.
 
-Runoff for president and governors only, 2026-10-25. First round is 2026-10-04
-and has not been held — candidates stay empty (scheduled). Chamber/senate have
-no runoff and are not in this file.
+Runoff on 2026-10-25. Presidential pair is the TSE 2026-10-05 announcement.
+Governor pairings are not in that bulletin, so those districts stay scheduled.
+Chamber and senate have no runoff and are not in this file.
 """
 from __future__ import annotations
 
@@ -18,7 +18,10 @@ CONTESTS_DIR = PUBLIC / "elections_contests"
 AS_OF = date.today().isoformat()
 EVENT_ID = "bra-2026-general-r2"
 
-TSE = "https://www.tse.jus.br/"
+TSE = (
+    "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/"
+    "flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica"
+)
 WIKI = "https://en.wikipedia.org/wiki/2026_Brazilian_general_election"
 WIKI_GOV = "https://en.wikipedia.org/wiki/List_of_current_state_governors_in_Brazil"
 CONST = "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
@@ -64,7 +67,7 @@ PARTY_META: Dict[str, Dict[str, str]] = {
         "name_pt": "Partido dos Trabalhadores",
         "name_ko": "노동자당",
         "name_en": "Workers' Party",
-        "note_ko": "현직 대통령. 결선 진출 여부는 1차(2026-10-04) 이후.",
+        "note_ko": "현직 대통령. TSE 2026-10-05: 1차 과반 미달로 10-25 결선.",
     },
     "PL": {
         "name_pt": "Partido Liberal",
@@ -131,7 +134,7 @@ def scheduled(code: str, name_ko: str, group_ko: str, seats: int) -> Dict[str, A
         "seats": seats,
         "status": "scheduled",
         "candidates": [],
-        "note_ko": "1차 결과에 따라 결선 여부. 1차 전이라 후보를 넣지 않았다.",
+        "note_ko": "주지사 결선 여부와 두 이름은 TSE 대통령 보도에 없다. 지어내지 않았다.",
     }
 
 
@@ -185,7 +188,31 @@ def build() -> Dict[str, Any]:
     if sum(GOV_CURRENT.values()) != 27:
         raise SystemExit(f"gov current {sum(GOV_CURRENT.values())}")
     gov_d = [scheduled(code, ko, pt, 1) for code, pt, ko in UFS]
-    pres_d = [scheduled("BR", "대통령", "전국", 1)]
+    pres_d = [{
+        "id": "BR",
+        "name_ko": "대통령",
+        "group_ko": "전국",
+        "seats": 1,
+        "status": "nominated",
+        "candidates": [
+            {
+                "party_abbr": "PL",
+                "name": "Flávio Bolsonaro",
+                "status": "nominated",
+                "source": TSE,
+                "note_ko": "기호 22. 부통령 후보 Alfredo Gaspar (PL). TSE 2026-10-05 00:29, 1차 99.99%에서 56,104,268표.",
+            },
+            {
+                "party_abbr": "PT",
+                "name": "Luiz Inácio Lula da Silva",
+                "status": "nominated",
+                "incumbent": True,
+                "source": TSE,
+                "note_ko": "기호 13. 부통령 후보 Geraldo Alckmin (PSB). TSE 2026-10-05 00:29, 1차 99.99%에서 53,876,617표.",
+            },
+        ],
+        "note_ko": "TSE가 두 사람의 결선을 확인했다. 1차 득표의 전체 표는 bra-2026-general-r1.",
+    }]
     used = ["PT"] + list(GOV_CURRENT)
     doc = {
         "schema": "elections_contest_v1",
@@ -204,9 +231,9 @@ def build() -> Dict[str, Any]:
                     "by_party": {"PT": 1},
                     "total": 1,
                     "as_of": AS_OF,
-                    "note_ko": "현직 룰라(PT). 결선 진출 두 이름은 1차 유효표 과반 미달일 때만 생긴다.",
+                    "note_ko": "현직 룰라(PT). TSE 2026-10-05: 과반 미달, 결선은 플라비우 보우소나루(PL)와 룰라.",
                 },
-                "contested_ko": "대통령 1인(부통령 동반). 1차 과반이면 이 열은 열리지 않는다.",
+                "contested_ko": "대통령 1인(부통령 동반). 1차 과반 미달로 2026-10-25 결선이 열렸다.",
                 "seat_note_ko": (
                     "헌법 77조·TSE: 1차 2026-10-04, 결선은 10월 마지막 일요일(2026-10-25). "
                     "하원·상원은 결선이 없어 이 파일에 넣지 않았다."
@@ -226,14 +253,14 @@ def build() -> Dict[str, Any]:
                         "REPUBLICANOS 2 PL 1 = 27. 주마다 결선 여부가 다르다."
                     ),
                 },
-                "contested_ko": "27개 주·연방구 수장 중 1차 과반 미달인 곳만. 지금은 전 자리를 scheduled.",
-                "seat_note_ko": "1차 전에 어느 주가 결선인지를 지어내지 않았다. 의회 총선은 1차 파일.",
+                "contested_ko": "27개 주·연방구 수장 중 1차 과반 미달인 곳만. 대진은 아직 scheduled.",
+                "seat_note_ko": "대통령 보도만 확인했다. 어느 주가 결선인지는 이 파일에 넣지 않았다. 의회 총선은 1차 파일.",
                 "districts": gov_d,
             },
         ],
         "note_ko": (
             "1차(bra-2026-general-r1, 2026-10-04)와 다른 파일. "
-            "달력 status는 tentative(1차 과반 미달 시). 후보는 1차 후 채운다."
+            "대통령 두 이름은 TSE 2026-10-05 보도. 주지사 결선 대진은 비웠다."
         ),
     }
     return compact(doc)
@@ -247,7 +274,7 @@ def main() -> None:
     upsert_index()
     print(
         f"wrote {out} ({out.stat().st_size} bytes); "
-        f"president scheduled; governor {len(doc['columns'][1]['districts'])} scheduled"
+        f"president {len(doc['columns'][0]['districts'][0]['candidates'])}; governor {len(doc['columns'][1]['districts'])} scheduled"
     )
 
 

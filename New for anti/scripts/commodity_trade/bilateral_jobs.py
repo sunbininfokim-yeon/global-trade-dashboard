@@ -58,6 +58,8 @@ def execute_plan(
     max_requests: int,
     provider: Callable[[dict[str, Any]], dict[str, Any]],
     checkpoint: Callable[[dict[str, Any]], None],
+    settled_statuses=frozenset({'ok'}),
+    max_attempts_per_cycle=None,
 ) -> dict[str, Any]:
     """One provider call per job; checkpoint after every attempt.
 
@@ -81,7 +83,11 @@ def execute_plan(
     # Failed early jobs cannot starve the end of a long plan after a restart.
     pending = [j for j in validated if not (
         result["jobs"].get(j["id"], {}).get("cycle") == cycle
-        and result["jobs"][j["id"]].get("status") == "ok"
+        and (result["jobs"][j["id"]].get("status") in settled_statuses or (
+            max_attempts_per_cycle is not None
+            and result['jobs'][j['id']].get('attempts', 0) >= max_attempts_per_cycle
+            and result['jobs'][j['id']].get('status') in {
+                'error', 'contract_error', 'provider_error', 'partial', 'world_only'}))
     )]
     pending.sort(key=lambda j: result["jobs"].get(j["id"], {}).get("attempts", 0)
                  if result["jobs"].get(j["id"], {}).get("cycle") == cycle else 0)
