@@ -19,17 +19,42 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 # Slugs the catalogue may use. The map colours a slug only after Claude adds
-# it to app.js (CONTROL_ALIASES / CONTROL_COMMODITY_KO). Unknown agri slugs
-# still show on the crop-monitor list as the raw slug.
+# it to the export-control monitor aliases and Korean labels. Unknown agri
+# slugs still show on the crop-monitor list as the raw slug.
+#
+# Finished chips, chipmaking tools, and company or person sanctions are not
+# commodities here. Semiconductor coverage is the raw materials: high-purity
+# quartz (the sand crucibles and wafers are made from), silicon metal,
+# polysilicon, and the licensed metals around that chain.
+COMMODITY_LABELS_KO = {
+    "quartz": "고순도 석영·규사(반도체용 모래)",
+    "silicon_metal": "금속규소",
+    "polysilicon": "폴리실리콘",
+    "indium": "인듐",
+    "molybdenum": "몰리브덴",
+    "fluorite": "형석",
+    "magnesium": "마그네슘",
+    "titanium": "티타늄",
+    "tantalum": "탄탈럼",
+    "niobium": "니오븀",
+    "vanadium": "바나듐",
+    "superhard": "초경질재료",
+    "neon": "네온",
+    "potash": "염화칼륨",
+}
+
 COMMODITY_KEYS = [
     "wheat", "corn", "barley", "soybeans", "rice", "sugar", "coffee", "cocoa",
     "palm_oil", "rubber", "rapeseed", "sunflower_oil", "sunflower_seed",
-    "fertilizer", "urea", "phosphate", "cotton", "beef", "pork", "poultry",
+    "fertilizer", "urea", "phosphate", "potash", "cotton", "beef", "pork", "poultry",
     "dairy", "bananas", "shrimp", "olive_oil", "fruit",
     "oil", "gas", "lng", "thermal_coal", "met_coal", "coal",
     "petroleum_products", "uranium",
     "copper", "aluminum", "bauxite", "zinc", "nickel", "cobalt", "lithium",
     "graphite", "rare_earths", "gallium", "germanium", "antimony", "tungsten",
+    "molybdenum", "indium", "fluorite", "magnesium", "titanium", "tantalum",
+    "niobium", "vanadium", "quartz", "silicon_metal", "polysilicon", "superhard",
+    "neon",
     "iron_ore", "manganese", "chromium", "tin", "lead", "gold", "silver",
     "platinum", "palladium", "diamonds", "ferroalloys",
 ]
@@ -70,6 +95,11 @@ PINNED = [
         "commodities": ["petroleum_products"],
         "why": "석유제품 혼재·재수출에 자체 제한이 걸릴 수 있다. 원유 생산국 목록에는 넣지 않는다.",
     },
+    {
+        "iso": "BLR", "name": "Belarus", "category": "agri",
+        "commodities": ["potash"],
+        "why": "염화칼륨 주요 수출국이고 수출 제한 이력이 있다. 농산물 30개국에는 없다.",
+    },
 ]
 
 
@@ -86,11 +116,11 @@ AGRI = [
     _c("CHN", "China", ["rice", "fertilizer", "urea", "phosphate"]),
     _c("IND", "India", ["rice", "wheat", "sugar", "cotton"]),
     _c("IDN", "Indonesia", ["palm_oil", "coffee", "cocoa", "rubber"]),
-    _c("CAN", "Canada", ["wheat", "rapeseed", "pork"]),
+    _c("CAN", "Canada", ["wheat", "rapeseed", "pork", "potash"]),
     _c("AUS", "Australia", ["wheat", "barley", "beef", "rapeseed", "cotton"]),
     _c("FRA", "France", ["wheat", "barley", "corn"]),
     _c("DEU", "Germany", ["wheat", "barley", "pork", "dairy"]),
-    _c("RUS", "Russia", ["wheat", "barley", "corn", "sunflower_oil", "sunflower_seed"]),
+    _c("RUS", "Russia", ["wheat", "barley", "corn", "sunflower_oil", "sunflower_seed", "potash"]),
     _c("UKR", "Ukraine", ["wheat", "corn", "sunflower_oil", "rapeseed", "soybeans"]),
     _c("THA", "Thailand", ["rice", "rubber", "sugar"]),
     _c("MYS", "Malaysia", ["palm_oil", "rubber"]),
@@ -113,25 +143,29 @@ AGRI = [
 ]
 
 MINERALS = [
-    _c("CHN", "China", ["rare_earths", "graphite", "gallium", "germanium", "aluminum", "tin", "gold"]),
-    _c("AUS", "Australia", ["iron_ore", "bauxite", "gold", "lithium", "copper"]),
-    _c("CHL", "Chile", ["copper", "lithium"]),
-    _c("PER", "Peru", ["copper", "gold", "zinc", "silver"]),
-    _c("RUS", "Russia", ["nickel", "gold", "palladium", "platinum", "aluminum"]),
-    _c("USA", "United States", ["copper", "gold"]),
-    _c("BRA", "Brazil", ["iron_ore", "bauxite", "gold"]),
-    _c("ZAF", "South Africa", ["platinum", "palladium", "gold", "manganese", "chromium", "iron_ore"]),
+    _c("CHN", "China", [
+        "rare_earths", "graphite", "gallium", "germanium", "aluminum", "tin", "gold",
+        "antimony", "tungsten", "molybdenum", "indium", "fluorite", "magnesium",
+        "titanium", "vanadium", "quartz", "silicon_metal", "polysilicon", "superhard",
+    ]),
+    _c("AUS", "Australia", ["iron_ore", "bauxite", "gold", "lithium", "copper", "titanium", "tantalum"]),
+    _c("CHL", "Chile", ["copper", "lithium", "molybdenum"]),
+    _c("PER", "Peru", ["copper", "gold", "zinc", "silver", "molybdenum"]),
+    _c("RUS", "Russia", ["nickel", "gold", "palladium", "platinum", "aluminum", "titanium", "vanadium", "neon"]),
+    _c("USA", "United States", ["copper", "gold", "quartz", "molybdenum"]),
+    _c("BRA", "Brazil", ["iron_ore", "bauxite", "gold", "niobium", "tantalum"]),
+    _c("ZAF", "South Africa", ["platinum", "palladium", "gold", "manganese", "chromium", "iron_ore", "vanadium"]),
     _c("CAN", "Canada", ["gold", "nickel", "copper"]),
     _c("IDN", "Indonesia", ["nickel", "bauxite", "copper", "tin", "gold", "ferroalloys"]),
     _c("COD", "DR Congo", ["cobalt", "copper"]),
     _c("ZMB", "Zambia", ["copper"]),
-    _c("MEX", "Mexico", ["silver", "gold", "copper"]),
-    _c("IND", "India", ["iron_ore", "aluminum", "zinc"]),
+    _c("MEX", "Mexico", ["silver", "gold", "copper", "fluorite"]),
+    _c("IND", "India", ["iron_ore", "aluminum", "zinc", "quartz"]),
     _c("KAZ", "Kazakhstan", ["copper", "chromium"]),
     _c("PHL", "Philippines", ["nickel"]),
     _c("GIN", "Guinea", ["bauxite"]),
     _c("GHA", "Ghana", ["gold"]),
-    _c("MNG", "Mongolia", ["copper", "gold"]),
+    _c("MNG", "Mongolia", ["copper", "gold", "fluorite"]),
     _c("SWE", "Sweden", ["iron_ore"]),
     _c("PNG", "Papua New Guinea", ["gold", "copper"]),
     _c("BWA", "Botswana", ["diamonds"]),
@@ -141,7 +175,7 @@ MINERALS = [
     _c("BOL", "Bolivia", ["lithium", "tin", "silver"]),
     _c("NAM", "Namibia", ["diamonds", "uranium"]),
     _c("ZWE", "Zimbabwe", ["platinum", "lithium"]),
-    _c("UKR", "Ukraine", ["iron_ore"]),
+    _c("UKR", "Ukraine", ["iron_ore", "titanium", "neon"]),
     _c("IRN", "Iran", ["iron_ore", "copper"]),
 ]
 
@@ -196,6 +230,7 @@ def document():
             "운영 Comtrade 쿼터로 매주 순위를 다시 뽑지 않는다."
         ),
         "commodity_keys": list(COMMODITY_KEYS),
+        "commodity_labels_ko": dict(COMMODITY_LABELS_KO),
         "excluded_entrepots": EXCLUDED_ENTREPOTS,
         "pinned_outside_role": PINNED,
         "categories": {
