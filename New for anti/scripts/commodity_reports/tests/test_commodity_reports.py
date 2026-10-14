@@ -972,6 +972,20 @@ class ExporterSourcesTests(unittest.TestCase):
         self.assertEqual(wheat.url, "https://content.dgft.gov.in/b/Scan%20wheat%20english.pdf")
         self.assertEqual(wheat.board, "export_controls")
 
+    def test_argentine_gazette_keeps_export_items(self):
+        html = """
+          <a href="/detalleAviso/primera/348894/20261014"><div class="linea-aviso">
+            <p class="item">DERECHOS DE EXPORTACIÓN </p><p class="item-detalle"><small>Decreto 1180/2026</small></p>
+            <p class="item-detalle"><small>DECTO-2026-1180-APN-PTE - Fíjanse alícuotas.</small></p></div></a>
+          <a href="/detalleAviso/primera/348895/20261014"><div class="linea-aviso">
+            <p class="item">NOMENCLATURA COMÚN DEL MERCOSUR </p><p class="item-detalle"><small>Decreto 1181/2026 - Derechos de importación.</small></p></div></a>
+          <a href="/detalleAviso/primera/348894/20261014?anexos=1">anexos</a>"""
+        items = parse_html_list(html, self._source("ar_boletin_oficial"))
+        self.assertEqual(len(items), 1)
+        self.assertTrue(items[0].title.startswith("DERECHOS DE EXPORTACIÓN Decreto 1180/2026"))
+        self.assertEqual(items[0].published_at[:10], "2026-10-14")
+        self.assertEqual(items[0].board, "export_controls")
+
     def test_russian_cabinet_feed_keeps_export_decisions_only(self):
         rss = """<?xml version="1.0"?><rss><channel>
           <item><title>Правительство продлило временный запрет на вывоз отдельных видов топлива производителями</title>
