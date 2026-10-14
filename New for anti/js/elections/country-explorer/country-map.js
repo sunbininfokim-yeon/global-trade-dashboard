@@ -28,10 +28,21 @@ const wrapLon = (lon) => ((lon + 540) % 360) - 180;
 // the GeoJSON alone, so it needs no second deck.gl view (this app is one
 // _GlobeView -- see CLAUDE.md). Add an entry per country as its exclaves
 // come up; codes match the `code` property in public/data/admin1/<ISO3>.json.
+//
+// AK sits in the Pacific off WA/OR with the panhandle pointing at the WA
+// coast; HI sits off northern California, below AK. anchor = where the
+// shape's bounding-box centre lands. dropWestOf removes island polygons
+// lying wholly west of that longitude -- HI's admin1 shape carries the
+// Northwestern Hawaiian atolls out to -178°, which otherwise trail across
+// the inset and pull its centre off the eight main islands. rotate (degrees,
+// counter-clockwise) turns the shape about its centre: on the globe a
+// meridian away from the view centre leans, so AK's straight 141°W border
+// read as tilted; 21.8° stands it upright at the USA view's centre (~103°W).
+// AK's top is level on screen with Washington's northern border.
 const EXCLAVES = {
     USA: [
-        { code: 'US-AK', scale: 0.32, anchorLon: -134, anchorLat: 24 },
-        { code: 'US-HI', scale: 0.85, anchorLon: -122, anchorLat: 14 },
+        { code: 'US-AK', scale: 0.342, anchorLon: -134.33, anchorLat: 43.24, rotate: 21.8 },
+        { code: 'US-HI', scale: 1, anchorLon: -128, anchorLat: 37.5, dropWestOf: -161 },
     ],
 };
 
@@ -45,17 +56,45 @@ const boundsOf = (geometry) => {
     return { west, east, south, north };
 };
 
-const relocateExclave = (feature, { scale, anchorLon, anchorLat }) => {
-    const { west, east, south, north } = boundsOf(feature.geometry);
+const withoutFarWestIslands = (geometry, dropWestOf) => {
+    if (dropWestOf == null || geometry?.type !== 'MultiPolygon') return geometry;
+    const limit = unwrapLon(dropWestOf);
+    const kept = geometry.coordinates.filter((polygon) => {
+        let east = -Infinity;
+        eachCoordinate(polygon, ([lon]) => { east = Math.max(east, unwrapLon(lon)); });
+        return east >= limit;
+    });
+    return kept.length ? { ...geometry, coordinates: kept } : geometry;
+};
+
+const DEG = Math.PI / 180;
+
+const relocateExclave = (feature, { scale, anchorLon, anchorLat, dropWestOf, rotate = 0 }) => {
+    const geometry = withoutFarWestIslands(feature.geometry, dropWestOf);
+    const { west, east, south, north } = boundsOf(geometry);
     const centerLon = (west + east) / 2;
     const centerLat = (south + north) / 2;
     const anchorU = unwrapLon(anchorLon);
-    const project = ([lon, lat, ...rest]) => [
-        wrapLon(anchorU + (unwrapLon(lon) - centerLon) * scale),
-        anchorLat + (lat - centerLat) * scale,
-        ...rest,
-    ];
-    return { ...feature, geometry: { ...feature.geometry, coordinates: mapCoordinates(feature.geometry.coordinates, project) } };
+    // A degree of longitude is cos(lat) wide on the globe, so moving a shape
+    // to another latitude stretches or squeezes it sideways. Rescale longitude
+    // by the ratio so AK (61°N → ~47°N) keeps its true proportions instead of
+    // coming out ~1.4x too wide.
+    const anchorCos = Math.cos(anchorLat * DEG);
+    const lonScale = scale * Math.cos(centerLat * DEG) / anchorCos;
+    const cos = Math.cos(rotate * DEG);
+    const sin = Math.sin(rotate * DEG);
+    // Rotate in ground units (longitude times cos(lat)) so the turn doesn't
+    // shear the shape, then convert back to degrees of longitude.
+    const project = ([lon, lat, ...rest]) => {
+        const x = (unwrapLon(lon) - centerLon) * lonScale * anchorCos;
+        const y = (lat - centerLat) * scale;
+        return [
+            wrapLon(anchorU + (x * cos - y * sin) / anchorCos),
+            anchorLat + x * sin + y * cos,
+            ...rest,
+        ];
+    };
+    return { ...feature, geometry: { ...geometry, coordinates: mapCoordinates(geometry.coordinates, project) } };
 };
 
 // Applied before viewForGeometry runs, so the auto-fit viewport is computed
