@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { KOREA_AD_REVIEW, PRODUCT_VERIFICATIONS, productVerification, verificationMarkup } from '../../New for anti/policy-simulator/product-verification.mjs';
+import { KOREA_AD_REVIEW, PRODUCT_VERIFICATIONS, productVerification, verificationMarkup, adCoverageStatus, coverageStatusMarkup } from '../../New for anti/policy-simulator/product-verification.mjs';
 import { PRODUCTS, policyOptions, initialDraft, newRow, tariffPair, modelInput } from '../../New for anti/policy-simulator/policy-catalog.mjs';
 import { simulate } from '../../New for anti/policy-simulator/country-model.mjs';
 import { companyADLink } from '../../New for anti/policy-simulator/company-profiles.mjs';
@@ -76,4 +76,26 @@ test('advanced material research preserves mismatches and historical revocation 
   assert.equal(productVerification('carbon-fiber').ad.research.findings.length,0);
   const copy=productVerification('aramid'); copy.ad.research.findings[0].country='KOR';
   assert.equal(productVerification('aramid').ad.research.findings[0].country,'NLD');
+});
+
+test('coverage separates our investigation and integration gaps from official decisions without inventing pending proceedings', () => {
+  const unreviewed=adCoverageStatus('aramid','VNM');
+  assert.equal(unreviewed.research.state,'not_recorded'); assert.equal(unreviewed.checked_on,null);
+  assert.equal(adCoverageStatus('not-in-catalog').research.state,'not_recorded');
+  const roster=adCoverageStatus('switchgear'), materials=adCoverageStatus('aramid');
+  assert.equal(roster.research.state,'roster_reviewed'); assert.equal(roster.checked_on,'2026-10-12');
+  assert.equal(materials.research.state,'product_search_reviewed'); assert.equal(materials.checked_on,'2026-10-14');
+  for (const r of [roster,materials]) {
+    assert.equal(r.procedure.state,'case_unconfirmed'); assert.equal(r.integration.state,'not_ready');
+    assert.match(r.procedure.note,/판정 대기로 확인된 상태가 아닙니다/);
+  }
+  const related=adCoverageStatus('auto-suspension');
+  assert.equal(related.procedure.state,'related_case_scope_unresolved');
+  const octg=productVerification('octg');
+  assert.equal(octg.coverage.procedure.state,'final_published');
+  assert.equal(octg.coverage.integration.state,'deposit_interpretation_pending'); assert.equal(octg.ad.rate_pct,null);
+  const html=coverageStatusMarkup('octg');
+  assert.match(html,/data-coverage-procedure="final_published"/); assert.match(html,/정부의 최종결과 대기가 아닙니다/);
+  assert.match(verificationMarkup('aramid','VNM'),/조사 기록 없음/);
+  assert.ok(!verificationMarkup('aramid','VNM').includes('자료 확인 2026-10-14'));
 });

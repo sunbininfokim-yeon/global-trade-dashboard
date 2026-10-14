@@ -84,6 +84,8 @@ test('mounted industry selection renders non-calculable notices independently an
     const material=choose('data-ad-industry',product);
     const editor=root.querySelector('[data-ad-history]').innerHTML;
     assert.match(editor,/data-material-research/); assert.match(editor,/품목별 공식 조사 근거 연결/);
+    assert.match(editor,/data-coverage-research="product_search_reviewed"/);
+    assert.match(editor,/data-coverage-procedure="case_unconfirmed"/);
     assert.ok(!editor.includes('data-ad-form')); assert.equal(industryMonitor(product).events.length,0);
     assert.equal(industryMonitor(product).calculation_enabled,false);
     assert.ok(!root.querySelector('[data-ad-process]').innerHTML.includes('data-ad-stage'));
