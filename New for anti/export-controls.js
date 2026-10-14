@@ -895,6 +895,18 @@
     // layers ended, and the current rate on the main manufacturing partners.
     // One view at a time (국가별 | 시행 | 가능 | 완료) so the long list does not stack.
     const TARIFF_VIEWS = { partners: '국가별', live: '시행 제도', possible: '가능 제도', done: '완료 제도' };
+    // Time-limited OFAC authorizations (e.g. GL 135, Russian diesel, 2026-10-09)
+    // are trade measures the US takes too. They live in us_sanctions_v1.json;
+    // shown here from that one record, not copied into the tariff file.
+    const sanctionsReliefHtml = () => {
+        const items = (sanctions?.measures || []).filter((m) => m.status === 'time_limited_authorization');
+        if (!items.length) return '';
+        return `<h4 class="ec-cat">제재 한시 허용 (OFAC 일반 면허) <span class="ec-cat-n">${items.length}건</span></h4>
+            <p class="ust-scope">관세가 아니라 제재 대상 물품의 거래를 기한을 정해 허용한 조치입니다. 제재 해제가 아닙니다.</p>
+            <ul class="uss-list">${items.map((m) => sanctionsMeasureHtml(m).replace('</li>',
+                `${(m.countries || []).map((iso) => ` <button type="button" class="ust-pname" data-ec-iso="${esc(iso)}">${esc(nameOf(iso))} 화면 →</button>`).join('')}</li>`)).join('')}</ul>`;
+    };
+
     const usTariffSectionHtml = () => {
         if (!usTariffs) return '<p class="ec-warn">미국 관세 자료를 불러오지 못했습니다.</p>';
         const live = usTariffs.measures.filter((m) => tariffPhase(m) === 'live');
@@ -911,7 +923,8 @@
             partners: () => `<h4 class="ec-cat">국가별 미국 통상 조치 · 확인한 범위</h4>
                 ${partners.map(([iso, p]) => partnerHtml(iso, p, { link: true })).join('')}`,
             live: () => `<h4 class="ec-cat">시행 중인 제도 <span class="ec-cat-n">${live.length}건</span></h4>
-                ${list(live, '이 기준일에 시행 중으로 확인한 제도가 없습니다.')}`,
+                ${list(live, '이 기준일에 시행 중으로 확인한 제도가 없습니다.')}
+                ${sanctionsReliefHtml()}`,
             possible: () => `<h4 class="ec-cat">가능 제도 — 조사·시행 예정·재확인 <span class="ec-cat-n">${pending.length}건</span></h4>
                 <p class="ust-scope">아직 시행 중이 아닌 조치입니다. 조사 중·시행 예정·재확인 필요 항목과, 법적 요건을 충족하면 검토할 수 있는 수단을 함께 보여 줍니다.
                     발동을 예고하거나 확률을 말하는 것이 아닙니다.</p>
