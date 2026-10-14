@@ -17,11 +17,50 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const floor = new Date().getUTCFullYear() - 3;
 
+test('monthly query selects total scope, preserves zero and isolates old cache keys', async () => {
+    const {call,env}=await setup();
+    const total={reporterCode:76,partnerCode:0,partner2Code:0,customsCode:'C00',motCode:0,
+        period:`${floor}06`,cmdCode:'1201',flowCode:'X',netWgt:0,primaryValue:0};
+    const detail={...total,motCode:1,netWgt:999,primaryValue:999};
+    globalThis.fetch=async () => new Response(JSON.stringify({data:[total,detail]}));
+    const response=await call(`hs=1201&reporters=76&partners=0&period=${floor}06&freq=M`);
+    assert.equal(response.status,200);
+    const body=await response.json();
+    assert.equal(body.count,1);
+    assert.equal(body.data[0].netWgt,0);
+    assert.equal(body.status,'available');
+    const [[key,value]]=env.API_CACHE.store;
+    assert.ok(key.startsWith('comtrade:Mtotal2:'));
+    assert.equal(value.ttl,86400);
+});
+
+test('monthly empty success has short TTL; provider errors never become an empty map', async () => {
+    const {call,env}=await setup();
+    globalThis.fetch=async () => new Response(JSON.stringify({data:[]}));
+    const empty=await call(`hs=1201&reporters=76&partners=0&period=${floor}07&freq=M`);
+    assert.equal((await empty.json()).status,'no_rows_for_query');
+    assert.equal([...env.API_CACHE.store.values()][0].ttl,3600);
+    globalThis.fetch=async () => new Response(JSON.stringify({data:[],error:'bad credentials'}));
+    const bad=await call(`hs=1201&reporters=76&partners=0&period=${floor}08&freq=M`);
+    assert.equal(bad.status,502);
+    assert.equal(env.API_CACHE.store.size,1);
+});
+
+test('protected pipeline route rejects unauthorized callers before upstream', async () => {
+    const worker=await loadWorker();
+    let calls=0;
+    globalThis.fetch=async () => {calls++;throw new Error('unexpected upstream');};
+    const response=await worker.fetch(new Request('https://x/api/trade-pipeline/query', {method:'POST'}),{},{});
+    assert.equal(response.status,401);
+    assert.equal(calls,0);
+});
+
 async function loadWorker() {
     // _worker.js imports a UI module the Comtrade path never touches; stub it
     // so the Worker loads under plain Node.
     const src = fs.readFileSync(path.join(repo, '_worker.js'), 'utf8')
-        .replace("import PolicyEvidence from './New for anti/policy-evidence.js';", 'const PolicyEvidence = {};');
+        .replace("import PolicyEvidence from './New for anti/policy-evidence.js';", 'const PolicyEvidence = {};')
+        .replace(/from '(\.\/[^']+)';/g, (_, p) => `from '${pathToFileURL(path.join(repo,p)).href}';`);
     const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'comtrade-')), 'worker.mjs');
     fs.writeFileSync(file, src);
     return (await import(pathToFileURL(file).href)).default;
@@ -41,7 +80,7 @@ function makeKV() {
             const e = store.get(k);
             return e ? { value: e.value, metadata: e.metadata } : { value: null, metadata: null };
         },
-        async put(k, value, opts = {}) { store.set(k, { value, metadata: opts.metadata ?? null }); },
+        async put(k, value, opts = {}) { store.set(k, { value, metadata: opts.metadata ?? null, ttl: opts.expirationTtl }); },
         async list({ prefix }) {
             const keys = [...store.entries()].filter(([k]) => k.startsWith(prefix))
                 .map(([name, e]) => ({ name, metadata: e.metadata }));

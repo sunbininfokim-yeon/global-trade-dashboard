@@ -152,12 +152,14 @@ python3 build_board.py --no-betting             # row.race_progress 부착 (KOR�
 ## 미국 슈퍼팩 공시 분석
 
 `python3 build_superpac.py --cycle 2026` · `FEC_API_KEY` 또는 `DATA_GOV_API_KEY` 사용.
-연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 지도용 후보·정당·경선·단체·선거구 조회 계약과 워싱턴 주지사 부분 수집을 제공한다. UI 연결과 배포는 Claude 인수 단계다. 주지사 전국 자동 수집은 미지원이다. 범위·원본 근거·주지사 검토 입력·실행 방법: [SUPERPAC_PIPELINE.md](SUPERPAC_PIPELINE.md).
+연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 지도용 후보·정당·경선·단체·선거구 조회 계약을 제공하고, 주지사 독립지출은 CA·NY·WA의 구현된 주 공시 양식만 부분 수집한다. 주지사 전국 지출 자동 수집은 미지원이다. 2026 후보 대진은 NGA 33개 주와 검토한 공식 본선 명부 3개 주를 합쳐 36개 선거 주를 연결한다. 후보 명부가 있다고 지출 또는 여론조사가 확보된 것은 아니다. [2026-10-07 데이터 보강 기록](../../../docs/ops/handoff/2026-10-07-codex-governor-coverage.md)과 [원본 계약·제한](SUPERPAC_PIPELINE.md)을 참고한다.
 
 ### 미국 지도 선거자금 백엔드 인수
 
 - [Claude UI/배포 인수인계](HANDOFF_CLAUDE_SUPERPAC_BACKEND.md)
 - 실행: `python3 refresh_superpac.py --plan` / `python3 refresh_superpac.py --cadence daily`
 - 지도 계약 생성·대조: `python3 build_superpac_map.py` / `python3 validate_superpac_map.py`
+- 주지사 대진 명부 갱신: `python3 refresh_governor_matchups.py` (NGA 형식·36개 선거 주 검증, 주 공식 명부 보완은 검토 스냅샷)
+- 주간 여론조사 수집 코드는 `config/governor_matchups/2026.json`을 적용한다. 이 명부 갱신 명령 자체는 정기 Actions에 새로 설치하지 않았다.
 - 워싱턴 주지사 단독 수집: `python3 build_governor_finance.py --cycle 2024`
 - 비활성 Actions 설치 템플릿: `ops/us_superpac_refresh.yml` (Claude가 설치·배포)

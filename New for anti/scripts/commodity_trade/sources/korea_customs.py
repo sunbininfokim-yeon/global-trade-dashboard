@@ -9,6 +9,10 @@ it is never written to the cache, output JSON, or source tree.
 from __future__ import annotations
 
 import os
+import json
+import time
+import math
+from hashlib import sha256
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -27,7 +31,8 @@ def _cache_path(cache_dir: Path, *, period: str, hs_code: str) -> Path:
 
 def _number(value: str | None) -> float | None:
     try:
-        return float((value or "").replace(",", "").strip())
+        number = float((value or "").replace(",", "").strip())
+        return number if math.isfinite(number) and number >= 0 else None
     except ValueError:
         return None
 
@@ -39,6 +44,8 @@ def _text(item: ET.Element, name: str) -> str | None:
 
 def parse_itemtrade_xml(document: bytes, *, period: str, hs_code: str) -> dict[str, list[dict[str, Any]]]:
     """Parse one Itemtrade response, rejecting its aggregate ``총계`` row."""
+    if b'<!DOCTYPE' in document.upper() or b'<!ENTITY' in document.upper():
+        raise ValueError("XML entities rejected")
     root = ET.fromstring(document)
     result_code = (root.findtext("./header/resultCode") or "").strip()
     result_message = (root.findtext("./header/resultMsg") or "").strip()
@@ -101,6 +108,8 @@ def fetch_monthly_hs_world(
     cache_dir.mkdir(parents=True, exist_ok=True)
     path = _cache_path(cache_dir, period=period, hs_code=hs_code)
     cache_hit = path.exists()
+    if cache_hit and allow_fetch and time.time() - path.stat().st_mtime > 86400:
+        cache_hit = False
     try:
         if cache_hit:
             document = path.read_bytes()
@@ -108,19 +117,39 @@ def fetch_monthly_hs_world(
             return {"available": False, "reason": "Korea Customs response cache miss with fetch disabled"}
         else:
             key = service_key or os.getenv("KOREA_CUSTOMS_SERVICE_KEY")
-            if not key:
-                return {"available": False, "reason": "KOREA_CUSTOMS_SERVICE_KEY is not configured"}
-            # Accept either the portal's encoded display value or its decoded value.
-            query = urlencode({"serviceKey": unquote(key), "strtYymm": period, "endYymm": period, "hsSgn": hs_code})
-            request = Request(ITEMTRADE_URL + "?" + query, headers={"Accept": "application/xml", "User-Agent": "commodity-trade-national-adapter/1.0"})
+            gateway, token = os.getenv("TRADE_GATEWAY_URL"), os.getenv("TRADE_PIPELINE_TOKEN")
+            if not key and not (gateway and token):
+                return {"available": False, "reason": "Korea Customs direct key or gateway credentials are not configured"}
+            if key:
+                query = urlencode({"serviceKey": unquote(key), "strtYymm": period, "endYymm": period, "hsSgn": hs_code})
+                request = Request(ITEMTRADE_URL + "?" + query, headers={"Accept": "application/xml", "User-Agent": "commodity-trade-national-adapter/1.0"})
+            else:
+                from urllib.parse import urlparse
+                parsed = urlparse(gateway)
+                if parsed.scheme != 'https' or parsed.path != '/api/trade-pipeline/query' or parsed.query or parsed.fragment or parsed.username:
+                    raise ValueError('invalid gateway URL')
+                query_id = sha256(f'korea-world:{period}:{hs_code}'.encode()).hexdigest()[:24]
+                body = dict(query_id=query_id, source='korea_customs', reporter='410', hs=hs_code,
+                            period=period, frequency='M', flow='X', partners=['0'], partner_iso2=None)
+                request = Request(gateway, data=json.dumps(body).encode(), headers={
+                    "Authorization": "Bearer " + token, "Content-Type": "application/json"})
             with urlopen(request, timeout=timeout) as response:
-                document = response.read()
+                document = response.read(4 * 1024 * 1024 + 1)
+            if len(document) > 4 * 1024 * 1024:
+                raise ValueError('response too large')
+            if not key:
+                envelope = json.loads(document)
+                if not isinstance(envelope, dict) or envelope.get('query_id') != query_id or envelope.get('status') != 'ok' or not isinstance(envelope.get('payload'), str):
+                    raise ValueError('gateway query failed')
+                document = envelope['payload'].encode()
             # Upstream errors may echo a query URL containing the service key.
-            if unquote(key).encode() in document or key.encode() in document:
+            if any(s.encode() in document for s in [key, unquote(key) if key else None, token] if s):
                 raise ValueError("credential echo rejected")
         series_by_flow = parse_itemtrade_xml(document, period=period, hs_code=hs_code)
         if not cache_hit:
-            path.write_bytes(document)
+            temporary = path.with_suffix('.tmp')
+            temporary.write_bytes(document)
+            temporary.replace(path)
     except (ET.ParseError, HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
         error_type = f"HTTP {exc.code}" if isinstance(exc, HTTPError) else type(exc).__name__
         return {"available": False, "reason": f"Korea Customs request/parse failed: {error_type}", "cache": {"path": str(path), "hit": cache_hit}}

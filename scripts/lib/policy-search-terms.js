@@ -37,6 +37,16 @@ const GROUPS = [
   ['미중관계', '미중', '미중 관계', 'us china relations', 'united states china relations'],
   ['중국공산당', '중국 공산당', 'chinese communist party', 'communist party of china'],
   ['대만', 'taiwan', 'taiwanese'], ['홍콩', 'hong kong'],
+  ['위구르', '위그루', '위구르족', 'uyghur', 'uyghurs', 'uighur', 'uighurs'],
+  ['신장지역', '신장 지역', '신장위구르자치구', '신장 위구르 자치구', 'xinjiang', 'xinjiang uyghur autonomous region', 'xinjiang uighur autonomous region'],
+  ['위구르강제노동방지법', '위구르 강제노동 방지법', '위구르 강제 노동 방지법', 'uflpa', 'uyghur forced labor prevention act', 'uyghur forced labour prevention act'],
+  ['강제노동', '강제 노동', 'forced labor', 'forced labour'],
+  ['인권', 'human rights'], ['공급망실사', '공급망 실사', 'supply chain due diligence'],
+  ['esg', '환경사회지배구조', '환경 사회 지배구조', 'environmental social governance', 'environmental social and governance', 'environmental, social and governance', 'environmental, social, and governance'],
+  ['지속가능성', '지속 가능성', 'sustainability'],
+  ['기업지배구조', '기업 지배구조', 'corporate governance'],
+  ['기후공시', '기후 공시', 'climate disclosure', 'climate disclosures', 'climate related disclosure', 'climate related disclosures'],
+  ['고무', 'rubber'], ['천연고무', '천연 고무', 'natural rubber'], ['합성고무', '합성 고무', 'synthetic rubber'],
   ['국가안보', '국가 안보', 'national security'], ['경제안보', '경제 안보', 'economic security'],
   ['인공지능', '인공 지능', 'artificial intelligence'],
   ['첨단반도체', '첨단 반도체', 'advanced semiconductor', 'advanced semiconductors'],
@@ -82,6 +92,9 @@ function parse(query) {
 }
 function plain(value){return normalize(String(value||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/&amp;/g,'&'));}
 function evidence(text,alias){
+  // A documented aviation homonym is not evidence for ESG investing.
+  // Mask only explicitly defined occurrences, preserving offsets and other ESG mentions.
+  if(alias==='esg')text=text.replace(/\bextended[\s-]+service[\s-]+goal\s*\(\s*esg\s*\)|\besg\s*\(\s*extended[\s-]+service[\s-]+goal\s*\)/giu,m=>' '.repeat(m.length));
   const escaped=alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/ /g,'[\\s-]+');
   const re=new RegExp(`${/^[a-z0-9]/.test(alias)?'(?<![a-z0-9])':''}${escaped}${/[a-z0-9]$/.test(alias)?'(?![a-z0-9])':''}`,'iu');
   const found=re.exec(text);if(!found)return null;

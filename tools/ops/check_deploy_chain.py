@@ -11,6 +11,7 @@ added without its deploy link.
 Usage: python3 tools/ops/check_deploy_chain.py [--list]
   --list  print the names deploy.yml should chain, one per line, and exit 0
 """
+import ast
 import pathlib
 import re
 import sys
@@ -29,11 +30,22 @@ def workflow_name(text):
     return m.group(1).strip("'\"") if m else None
 
 
-def pushes_to_main(text):
+def pushes_to_main(text, root=ROOT):
     for line in text.splitlines():
         code = line.split("#", 1)[0]
         if PUSH_TO_MAIN.search(code):
             return True
+    # A workflow may delegate its push to a checked-in publisher. Inspect
+    # directly invoked Python scripts too, so moving a push cannot hide it.
+    for script in re.findall(r"python3\s+['\"]([^'\"]+\.py)['\"]", text):
+        path = (root / script).resolve()
+        if not path.is_relative_to(root.resolve()) or not path.is_file():
+            continue
+        for node in ast.walk(ast.parse(path.read_text(encoding='utf-8'))):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'git':
+                args = [arg.value for arg in node.args if isinstance(arg, ast.Constant)]
+                if args[:3] == ['push', 'origin', 'HEAD:main']:
+                    return True
     return False
 
 

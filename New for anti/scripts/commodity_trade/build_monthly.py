@@ -626,6 +626,8 @@ def main() -> int:
     except ValueError as exc:
         ap.error(str(exc))
 
+    from refresh_preservation import preserve_monthly
+    retained = preserve_monthly(previous.get('sectors', {}), sector_payload) if not args.replace_output else []
     quality_contract = annotate_monthly_payload(sector_payload, args.calendar_month)
 
     # demo hs_match self-check in meta
@@ -655,6 +657,7 @@ def main() -> int:
         },
         "comtrade_run": comtrade_run,
         "quality_contract": quality_contract,
+        "retained_previous_reporters": retained,
         "sectors": sector_payload,
     }
 

@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from election_watch.betting import fetch_us_election_markets  # noqa: E402
+from election_watch.federal_matchups import attach_matchups  # noqa: E402
 from election_watch.extract_usa_committees import (  # noqa: E402
     public_usa_committees,
     usa_committees_missing,
@@ -41,7 +42,8 @@ USA_STATE_ABBR = {
 
 
 def load_json(path: Path) -> Dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    from election_watch.polls import read
+    return read(path)
 
 
 def load_profile(iso3: str) -> Optional[Dict[str, Any]]:
@@ -184,6 +186,11 @@ def build_usa_state_drilldown(
             }
         )
 
+    matchup_path = ROOT / 'config' / 'federal_matchups' / '2026.json'
+    if matchup_path.exists():
+        ballot_path = ROOT / 'config' / 'usa_polls' / 'ballot_reviews_2026.json'
+        state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat(),
+                                     load_json(ballot_path) if ballot_path.exists() else None)
     state_names = set(USA_STATE_ABBR)
     territory_names = sorted(
         {row.get("state") for row in members if row.get("state") and row.get("state") not in state_names}

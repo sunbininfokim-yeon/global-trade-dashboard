@@ -94,3 +94,38 @@ test('specific advanced technologies stay distinct from the broad industry categ
  assert.ok(!single('첨단산업').aliases.includes('artificial intelligence'));
  assert.ok(!single('반도체').aliases.includes('chip'));
 });
+
+test('Uyghur variants match evidence but Xinjiang and forced labor remain independent conditions',()=>{
+ const {single}=require('./policy-search-terms');
+ assert.equal(single('위그루').aliases[0],'위구르');assert.equal(parse('위구르, 위그루').length,1);
+ for(const type of ['bill','public_law','executive_order','regulation']){
+  const row=annotate({type,evidence_parts:[{field:'body',text:'Uyghurs and Uighurs subject to forced labour in Xinjiang.'}]},parse('위구르, 강제노동, 신장지역'));
+  assert.equal(row.matched_condition_count,3);
+ }
+ assert.equal(annotate({title:'Uyghur Forced Labor Prevention Act'},[single('위구르강제노동방지법')]).matched_condition_count,1);
+ assert.equal(annotate({title:'Xinjiang trade'},parse('위구르, 강제노동')).matched_condition_count,0);
+});
+test('ESG full names match without equating every climate or rights policy with ESG',()=>{
+ const {single}=require('./policy-search-terms');assert.equal(single('ESG').aliases[0],'esg');
+ for(const text of ['Environmental, social, and governance reporting','Environmental social and governance rules','ESG disclosures'])
+  assert.equal(annotate({title:text},[single('ESG')]).matched_condition_count,1);
+ assert.equal(annotate({title:'Climate-related disclosures, corporate governance and supply-chain due diligence'},parse('기후공시, 기업지배구조, 공급망실사')).matched_condition_count,3);
+ assert.equal(annotate({title:'Climate change and human rights'},[single('ESG')]).matched_condition_count,0);
+});
+test('rubber subtypes and graded conditions preserve commodity-specific evidence',()=>{
+ const terms=parse('천연고무, 강제노동');
+ const rows=rank([{id:'both',title:'Forced labor restrictions on natural rubber'},
+ {id:'one',title:'Natural rubber imports'}, {id:'synthetic',title:'Synthetic rubber production'}],terms,20);
+ assert.deepEqual(rows.map(r=>[r.id,r.matched_condition_count]),[['both',2],['one',1]]);
+ assert.equal(annotate({title:'Rubbernecking and rubberless devices'},[require('./policy-search-terms').single('고무')]).matched_condition_count,0);
+ assert.equal(annotate({title:'Synthetic rubber'},[require('./policy-search-terms').single('합성고무')]).matched_condition_count,1);
+});
+
+test('explicit aviation ESG homonym is not financial ESG evidence, without suppressing real ESG',()=>{
+ const {single,lexicalRank}=require('./policy-search-terms');const term=single('ESG');
+ const item={title:'Airworthiness Directives; Airbus SAS Airplanes',evidence_parts:[{field:'body',text:'A fatigue test in support of the extended service goal (ESG) campaign.'}]};
+ assert.equal(lexicalRank(item,term),0);assert.equal(annotate(item,[term]).matched_condition_count,0);
+ assert.equal(lexicalRank({title:'ESG Act of 2025'},term),3);
+ assert.equal(annotate({title:'Extended service goal (ESG) and environmental, social, and governance reporting'},[term]).matched_condition_count,1);
+ assert.equal(annotate({title:'ESG (extended service goal)'},[term]).matched_condition_count,0);
+});

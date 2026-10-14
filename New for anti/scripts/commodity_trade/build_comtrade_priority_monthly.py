@@ -127,6 +127,8 @@ def _ensure_reporter(payload: dict[str, Any], iso3: str) -> dict[str, Any]:
 
 
 def _merge_points(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if len({p.get("month") for p in incoming}) != len(incoming):
+        raise ValueError("duplicate incoming months; aggregate scope must be resolved first")
     by_month = {point.get("month"): point for point in existing if point.get("month")}
     by_month.update({point.get("month"): point for point in incoming if point.get("month")})
     return [by_month[month] for month in sorted(by_month)]

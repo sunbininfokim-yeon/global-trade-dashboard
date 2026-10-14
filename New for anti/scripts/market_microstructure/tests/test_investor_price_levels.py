@@ -19,12 +19,33 @@ from market_microstructure.investor_price_levels import (  # noqa: E402
     aggregate_by_range_bins,
     default_kospi_universe,
     high_vol_kospi_universe,
+    build_ticker_levels,
     trend_to_frame,
     _top_zone,
 )
 
 
 class TestInvestorPriceLevels(unittest.TestCase):
+    def test_three_actor_residual_is_preserved_and_krw_is_marked_estimated(self):
+        rows = [{"bizdate": day, "closePrice": close,
+                 "individualPureBuyQuant": "-100", "foreignerPureBuyQuant": "20",
+                 "organPureBuyQuant": "10", "accumulatedTradingVolume": "500"}
+                for day, close in [("20260921", "100"), ("20260922", "110")]]
+        prices = pd.DataFrame({"open": [100, 110], "high": [101, 111],
+                               "low": [99, 109], "close": [100, 110], "volume": [500, 500]},
+                              index=pd.to_datetime(["2026-09-21", "2026-09-22"]))
+        with patch("market_microstructure.investor_price_levels.fetch_naver_investor_trend", return_value=rows), \
+             patch("market_microstructure.investor_price_levels.fetch_ohlc_panel", return_value=prices):
+            block = build_ticker_levels("005930", n_bins=2)
+        self.assertEqual(block["net_shares_quality"], "observed")
+        self.assertEqual(block["net_krw_quality"], "estimated")
+        self.assertEqual(block["net_krw_method"], "net_shares_times_close")
+        self.assertEqual(block["actor_scope"], ["retail", "foreign", "institution"])
+        day = block["days"][0]
+        self.assertEqual(sum(day[a + "_net_shares"] for a in block["actor_scope"]), -70)
+        self.assertEqual(sum(day[a + "_net_krw"] for a in block["actor_scope"]), -7000)
+        self.assertNotIn("other_corp_net_shares", day)
+
     def test_trend_to_frame_parses_signed(self):
         rows = [
             {

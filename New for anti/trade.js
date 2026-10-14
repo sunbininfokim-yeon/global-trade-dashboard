@@ -26,13 +26,32 @@
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
 
+// Re-centers the globe so the focused country lands in the middle of
+// whatever map width is left once the side panels take theirs. #map is
+// absolutely positioned inside .map-pane (flex-grow:1 between the two fixed-
+// width panes -- see style.css), and deck.gl sizes its canvas to that
+// container's actual rendered width, so setting longitude/latitude alone is
+// enough: no manual pixel-offset math needed, as long as the panel's final
+// display has already been applied (synchronous) before this runs.
+const centerMapOnCountry = (countryName) => {
+    const coords = resolveCountry(countryName)?.coordinates;
+    if (!coords || typeof deckgl === 'undefined' || !deckgl) return;
+    currentViewState = clampGlobeView({ ...currentViewState, longitude: coords[0], latitude: coords[1] });
+    deckgl.setProps({ viewState: currentViewState });
+};
+
 // The right dashboard (rankings, rig count, gas storage, RSS reports) only
 // makes sense once a country is focused (stage 2), and even then only for
 // commodities that actually have RSS reports for that country -- see
 // renderCommodityReports, the only place this is ever flipped back on.
+// Both branches settle the map's final visible width, so re-center here --
+// once immediately (no reports yet) and once more if reports arrive and
+// widen the right panel in (tradeFocusCountry is null from clearTradeFocus,
+// so recentring never fires when there is no country to center on).
 const setRightDashboardVisible = (visible) => {
     const el = document.getElementById('right-pane');
     if (el) el.style.display = visible ? 'flex' : 'none';
+    if (tradeFocusCountry) centerMapOnCountry(tradeFocusCountry);
 };
 
 /** Clear trade country focus and redraw world flows. */
@@ -1224,6 +1243,16 @@ const renderTradeWorldPanel = (arcs) => {
     // serves as the loading placeholder instead of flashing blank.
     if (topExporterEl && exportRank.ranked.length) {
         topExporterEl.textContent = exportRank.ranked[0][0];
+    }
+    // A commodity with no hand-written world total ("—", e.g. 경질유, which
+    // has no published figure to copy) takes it from the routes on the map:
+    // weight and value summed over every exporter->importer route.
+    const staticTotal = window.TradeData?.[currentCommodity]?.totalVolume;
+    if (totalVolumeEl && staticTotal === '—' && arcs.length) {
+        const usdM = arcs.reduce((sum, a) => sum + (a.volume > 0 ? a.volume : 0), 0);
+        const mt = arcs.reduce((sum, a) => sum + (a.netWeightMt > 0 ? a.netWeightMt : 0), 0);
+        const usd = usdM >= 1000 ? `$${(usdM / 1000).toFixed(0)}B` : `$${usdM.toLocaleString()}M`;
+        totalVolumeEl.textContent = mt > 0 ? `${Math.round(mt).toLocaleString()} Mt · ${usd}` : usd;
     }
 
     if (!newsContentEl) return;

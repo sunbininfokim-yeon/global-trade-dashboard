@@ -7,7 +7,9 @@ import json
 import os
 import sys
 import tempfile
+import threading
 import unittest
+from collections import Counter
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
@@ -38,6 +40,12 @@ def fake_fdr(stock_listing):
 
 
 class TestUniverseFailure(unittest.TestCase):
+    def setUp(self):
+        # Production waits one second before each sequential retry.
+        self.sleep_patch = patch("time.sleep")
+        self.sleep = self.sleep_patch.start()
+        self.addCleanup(self.sleep_patch.stop)
+
     def test_none_or_empty_listing_does_not_select_two_stocks(self):
         for empty in (None, pd.DataFrame()):
             with self.subTest(listing_type=type(empty).__name__), patch.dict(
@@ -139,6 +147,138 @@ class TestUniverseFailure(unittest.TestCase):
                 self.assertNotIn("Wrote", stdout.getvalue())
                 fetch_ticker.assert_not_called()
                 fetch_index.assert_not_called()
+
+    def test_short_valid_history_and_zero_volume_do_not_block_or_retry(self):
+        fdr = fake_fdr(listing(4))
+        prices = fdr.DataReader.return_value
+        def read(code, start):
+            if code == "000003":
+                return prices.head(8)
+            if code == "000004":
+                return prices.assign(Volume=0)
+            return prices
+        fdr.DataReader.side_effect = read
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            result = levels.high_vol_kospi_universe(top_n=2, pool=4)
+        self.assertEqual(result["scored_n"], 2)
+        self.assertEqual(result["excluded_n"], 2)
+        self.assertEqual(result["retried_n"], 0)
+        self.assertEqual({r["reason"] for r in result["excluded"]},
+                         {"insufficient_history", "no_trading_volume"})
+        self.assertEqual(fdr.DataReader.call_count, 4)
+        self.sleep.assert_not_called()
+        fdr.StockListing.assert_called_once_with("KOSPI")
+
+    def test_failed_tickers_only_retry_once_on_main_thread_after_initial_pool(self):
+        fdr = fake_fdr(listing(4))
+        prices = fdr.DataReader.return_value
+        calls = []
+        lock = threading.Lock()
+        def read(code, start):
+            with lock:
+                calls.append((code, threading.current_thread().name))
+                attempt = sum(c == code for c, _ in calls)
+            if code in {"000002", "000003"} and attempt == 1:
+                if code == "000002":
+                    raise TimeoutError("temporary failure")
+                return pd.DataFrame()
+            if code == "000004":
+                return prices.head(5)
+            return prices
+        fdr.DataReader.side_effect = read
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            result = levels.high_vol_kospi_universe(top_n=2, pool=4)
+        self.assertEqual(Counter(c for c, _ in calls),
+                         {"000001": 1, "000002": 2, "000003": 2, "000004": 1})
+        self.assertEqual(set(c for c, _ in calls[:4]), {"000001", "000002", "000003", "000004"})
+        self.assertEqual(calls[4:], [("000002", "MainThread"), ("000003", "MainThread")])
+        self.assertEqual(result["scored_n"], 3)
+        self.assertEqual(result["excluded_n"], 1)
+        self.assertEqual(result["retried_n"], 2)
+        self.assertTrue(all(r["final_status"] == "scored" for r in result["retries"]))
+        self.assertEqual(self.sleep.call_count, 2)
+        fdr.StockListing.assert_called_once_with("KOSPI")
+
+    def test_invalid_or_missing_prices_are_not_a_normal_exclusion(self):
+        bad_frames = [None, pd.DataFrame(), pd.DataFrame({"Open": [1]}),
+                      pd.DataFrame({"Close": [100] * 20 + [float("nan")]}),
+                      pd.DataFrame({"Close": [100] * 20 + [0]}),
+                      pd.DataFrame({"Close": [100] * 20, "Volume": [float("nan")] * 20})]
+        for bad in bad_frames:
+            with self.subTest(columns=getattr(bad, "columns", None)):
+                fdr = fake_fdr(listing(2))
+                prices = fdr.DataReader.return_value
+                fdr.DataReader.side_effect = lambda code, start: bad if code == "000002" else prices
+                with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+                    with self.assertRaisesRegex(levels.KospiUniverseError, "after one sequential retry"):
+                        levels.high_vol_kospi_universe(top_n=1, pool=2)
+                self.assertEqual(Counter(c.args[0] for c in fdr.DataReader.call_args_list),
+                                 {"000001": 1, "000002": 2})
+
+    def test_retry_can_return_a_verified_short_history_exclusion(self):
+        fdr = fake_fdr(listing(2))
+        prices = fdr.DataReader.return_value
+        seen = Counter()
+        def read(code, start):
+            seen[code] += 1
+            if code == "000002":
+                return None if seen[code] == 1 else prices.head(5)
+            return prices
+        fdr.DataReader.side_effect = read
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            result = levels.high_vol_kospi_universe(top_n=1, pool=2)
+        self.assertEqual(result["excluded_n"], 1)
+        self.assertEqual(result["retries"][0]["final_status"], "excluded")
+
+    def test_not_enough_eligible_scores_still_blocks(self):
+        fdr = fake_fdr(listing(3))
+        prices = fdr.DataReader.return_value
+        fdr.DataReader.side_effect = lambda code, start: prices if code == "000001" else prices.head(5)
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            with self.assertRaisesRegex(levels.KospiUniverseError, "1 eligible scores; need 2"):
+                levels.high_vol_kospi_universe(top_n=2, pool=3)
+        self.assertEqual(fdr.DataReader.call_count, 3)
+
+    def test_flat_prices_with_trading_volume_are_eligible(self):
+        fdr = fake_fdr(listing(2))
+        fdr.DataReader.return_value = pd.DataFrame({"Close": [100] * 40, "Volume": [1] * 40})
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            result = levels.high_vol_kospi_universe(top_n=1, pool=2)
+        self.assertEqual(result["scored_n"], 2)
+        self.assertEqual(result["ranks"][0]["realized_vol_ann"], 0)
+        self.assertEqual(result["pairs"][0][0], "000001")
+
+    def test_zero_close_zero_volume_full_window_can_be_excluded_without_retry(self):
+        fdr = fake_fdr(listing(2))
+        prices = fdr.DataReader.return_value
+        fdr.DataReader.side_effect = lambda code, start: prices if code == "000001" else prices.assign(Close=0, Volume=0)
+        with patch.dict(sys.modules, {"FinanceDataReader": fdr}):
+            result = levels.high_vol_kospi_universe(top_n=1, pool=2)
+        self.assertEqual(result["excluded"][0]["reason"], "no_trading_volume")
+        self.assertEqual(fdr.DataReader.call_count, 2)
+        self.sleep.assert_not_called()
+
+    def test_cli_unresolved_screen_preserves_published_artifacts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            script_root = Path(tmp) / "scripts" / "market_microstructure"
+            script_root.mkdir(parents=True)
+            out = Path(tmp) / "public" / "data" / "investor_price_levels_v1.json"
+            out.parent.mkdir(parents=True)
+            previous = '{"as_of": "2026-09-30"}'
+            out.write_text(previous)
+            md = script_root / "INVESTOR_PRICE_LEVELS.md"
+            md.write_text("previous report")
+            fdr = fake_fdr(listing(3))
+            prices = fdr.DataReader.return_value
+            fdr.DataReader.side_effect = lambda code, start: None if code == "000003" else prices
+            with patch.object(cli, "ROOT", script_root), patch.object(
+                sys, "argv", ["build_investor_price_levels.py", "--live", "--top", "2", "--pool", "3"]
+            ), patch.dict(sys.modules, {"FinanceDataReader": fdr}), \
+                redirect_stderr(io.StringIO()), redirect_stdout(io.StringIO()):
+                self.assertEqual(cli.main(), 1)
+            self.assertEqual(out.read_text(), previous)
+            self.assertEqual(md.read_text(), "previous report")
+            self.assertEqual(fdr.DataReader.call_count, 4)
 
 
 if __name__ == "__main__":

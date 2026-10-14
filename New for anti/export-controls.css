@@ -136,3 +136,87 @@ a.ec-n-title:hover { color: #7dd3fc; }
 
 .ec-scope { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 11px; color: #cbd5e1; cursor: pointer; }
 .ec-scope span { color: #64748b; font-size: 10px; }
+
+/* 미국 관세·통상 정책 (us_tariffs_v1.json). Teal = the US's own colour on the map. */
+.ust-entry {
+    display: flex; flex-direction: column; gap: 2px; width: 100%; margin: 0 0 10px; padding: 8px 10px;
+    font: inherit; text-align: left; cursor: pointer; color: #ccfbf1;
+    background: rgba(45, 212, 191, .08); border: 1px solid rgba(45, 212, 191, .35); border-radius: 8px;
+}
+.ust-entry b { font-size: 12.5px; }
+.ust-entry span { font-size: 10.5px; color: #5eead4; }
+.ust-entry:hover { background: rgba(45, 212, 191, .14); }
+.ust-entry:focus-visible, .ust-pname:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 1px; }
+.ust-lead { font-size: 11.5px; color: #cbd5e1; line-height: 1.55; margin: 6px 0 4px; }
+.ust-list { list-style: none; margin: 0; padding: 0; }
+.ust-item {
+    padding: 8px 10px; margin-top: 6px; border-radius: 6px;
+    background: rgba(15, 23, 42, .45); border-left: 3px solid #2dd4bf;
+}
+.ust-item.ust-expired, .ust-item.ust-struck_down, .ust-item.ust-ended { border-left-color: rgba(148, 163, 184, .5); }
+.ust-top { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #e2e8f0; }
+.ust-auth {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 4px; white-space: nowrap;
+    background: rgba(45, 212, 191, .14); color: #99f6e4;
+}
+.ust-status { margin-left: auto; font-size: 10px; color: #94a3b8; white-space: nowrap; }
+.ust-item.ust-active .ust-status { color: #5eead4; }
+.ust-item.ust-struck_down .ust-status { color: #fca5a5; }
+.ust-when { font-size: 10.5px; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ust-rate { font-size: 11.5px; color: #e2e8f0; margin-top: 4px; line-height: 1.5; }
+.ust-ended { font-size: 11px; color: #fecaca; margin-top: 4px; line-height: 1.5; }
+.ust-ended b { color: #fca5a5; margin-right: 4px; }
+.ust-scope { font-size: 11px; color: #94a3b8; margin-top: 4px; line-height: 1.5; }
+.ust-gone { margin-top: 12px; }
+.ust-gone summary { cursor: pointer; font-size: 11.5px; font-weight: 700; color: #94a3b8; }
+.ust-partner { padding: 8px 0; border-top: 1px solid rgba(148, 163, 184, .14); }
+.ust-pname { font: inherit; font-size: 12.5px; font-weight: 700; color: #5eead4; background: none; border: 0; padding: 0; cursor: pointer; }
+.ust-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
+.ust-table th { text-align: left; font-weight: 600; color: #cbd5e1; padding: 3px 6px 3px 0; width: 30%; vertical-align: top; }
+.ust-table td { color: #e2e8f0; padding: 3px 0; vertical-align: top; line-height: 1.45; }
+.ust-table .ust-auth-cell { color: #64748b; width: 3.5em; text-align: right; white-space: nowrap; }
+.ust-toggle { margin-top: 8px; }
+.ust-toggle span { color: #64748b; font-size: 10px; margin-left: 2px; }
+.ust-top { flex-wrap: wrap; }
+.ust-verification { display: block; margin-top: 4px; font-size: 10px; line-height: 1.5; }
+.ust-checked { color: #99f6e4; }
+.ust-review { color: #fde68a; }
+.ust-tools { margin-top: 12px; }
+.ust-tools > summary, .ust-line-detail > summary { cursor: pointer; color: #7dd3fc; font-size: 11px; line-height: 1.5; }
+.ust-line-detail { margin-top: 5px; }
+.ust-item.ust-conditional, .ust-item.ust-investigation, .ust-item.ust-review_required { border-left-color: #fbbf24; }
+.ust-table td, .ust-scope, .ec-src { overflow-wrap: anywhere; }
+.ust-negotiation-brief { margin: 7px 0; padding-left: 8px; border-left: 2px solid #36516d; color: #cbd5e1; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.ust-negotiation-brief b { color: #94a3b8; font-weight: 500; }
+.ust-negotiations { margin-top: 10px; }
+.ust-negotiations > summary { cursor: pointer; color: #7dd3fc; font-size: 11px; line-height: 1.6; }
+.ust-negotiations h5 { margin: 12px 0 5px; color: #cbd5e1; font-size: 11px; }
+.ust-negotiation-list { list-style: none; margin: 0; padding: 0; }
+.ust-negotiation-list li { margin: 6px 0; padding: 6px 8px; border-left: 2px solid #36516d; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+
+/* Independent, compact numeric pages for each country notice list. */
+.ec-pagination { display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin:10px 0 18px; }
+.ec-pagination button { border:1px solid #334155; background:#101c2e; color:#cbd5e1; border-radius:5px; min-width:30px; min-height:30px; cursor:pointer; }
+.ec-pagination button[aria-current="page"] { background:#164e63; border-color:#22d3ee; color:#ecfeff; }
+.ec-pagination button:focus-visible { outline:2px solid #38bdf8; outline-offset:2px; }
+.ec-pagination span { color:#94a3b8; font-size:11px; margin-left:5px; }
+.ec-n-summary { color:#cbd5e1; font-size:12px; line-height:1.65; margin:6px 0; }
+
+/* Country sanctions pilot; list types remain separate from catalogue levels. */
+.uss-section { margin:20px 0; border-top:1px solid #334155; padding-top:12px; font-size:12px; line-height:1.65; }
+.uss-section h4 { font-size:15px; margin:6px 0; }.uss-section h5 { font-size:12px; margin:12px 0 6px; }
+.uss-scope { color:#cbd5e1; }.uss-meta { color:#94a3b8; font-size:11px; overflow-wrap:anywhere; }
+.uss-tabs,.uss-pages { display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin:10px 0; }
+.uss-tabs button,.uss-pages button { color:#cbd5e1; background:#101c2e; border:1px solid #334155; border-radius:5px; padding:6px 9px; cursor:pointer; }
+.uss-tabs button[aria-pressed="true"],.uss-pages button[aria-current="page"] { color:#ecfeff; border-color:#22d3ee; background:#164e63; }
+.uss-tabs button:focus-visible,.uss-pages button:focus-visible { outline:2px solid #38bdf8; outline-offset:2px; }
+.uss-list { list-style:none; margin:0; padding:0; }.uss-card { padding:10px 0; border-bottom:1px solid #233044; overflow-wrap:anywhere; }
+.uss-card p { margin:5px 0; }.uss-section a { color:#7dd3fc; }.uss-card details,.uss-coverage { margin-top:8px; }
+.uss-section summary { cursor:pointer; color:#a5d8f3; }.uss-matches { padding-left:18px; }.uss-matches li { padding:8px 0; }
+.uss-deadline { color:#fbbf24; }.uss-pages span { color:#94a3b8; }
+
+/* Toggles that can hold 3-4 labelled buttons: wrap instead of overflowing a narrow panel. */
+.ust-toggle, .ust-subtoggle { flex-wrap: wrap; max-width: 100%; }
+.ust-subtoggle { margin: 10px 0 6px; }
+.ust-subtoggle span { color: #64748b; font-size: 10px; margin-left: 2px; }
+.ust-subtoggle .ec-by.is-on span, .ust-toggle .ec-by.is-on span { color: #bae6fd; }

@@ -1,9 +1,14 @@
 import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
 import PolicyEvidence from './New for anti/policy-evidence.js';
+import { selectComtradeTotals } from './New for anti/scripts/commodity_trade/gateway/comtrade-totals.mjs';
+import { handleTradePipeline, boundedText } from './New for anti/scripts/commodity_trade/gateway/handler.mjs';
 
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
+        if (url.pathname === '/api/trade-pipeline/query') {
+            return await handleTradePipeline(request, env);
+        }
 
         // Which annual year the map is on, and how far the next one has got.
         if (url.pathname === '/api/comtrade/status') {
@@ -1078,7 +1083,7 @@ function comtradeCacheKey(hs, reporters, partners, period, freq) {
     const scope = (reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES)
         ? `default${DEFAULT_SCOPE_VERSION}`
         : shortHash(`${reporters}|${partners}`);
-    return `comtrade:${freq}:${hs}:${period}:${scope}`;
+    return `comtrade:${freq === 'M' ? 'Mtotal2' : freq}:${hs}:${period}:${scope}`;
 }
 
 // Comtrade returns 47 fields per row; the map only ever reads these five.
@@ -1123,7 +1128,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
     // freq A = annual (period "2023"), M = monthly (period "202403").
     // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
-    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/${freq}/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
+    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/${freq}/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M&partner2Code=0&customsCode=C00&motCode=0`;
 
     let res;
     for (let attempt = 0; ; attempt++) {
@@ -1144,7 +1149,12 @@ async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
         return { ok: false, status: res.status, statusText: res.statusText };
     }
     // Slim immediately so only the five needed fields per row are retained.
-    return { ok: true, rows: slimComtradeBody(await res.json()).data };
+    const body = JSON.parse(await boundedText(res, 4 * 1024 * 1024));
+    if (!Array.isArray(body?.data) || body.error || body.mayBeTruncated === true) {
+        return { ok: false, status: 502, statusText: 'Invalid or truncated Comtrade response' };
+    }
+    const rows = freq === 'M' ? selectComtradeTotals(body.data) : body.data;
+    return { ok: true, rows: slimComtradeBody({data: rows}).data };
 }
 
 async function fetchComtrade(env, hs, reporters, partners, period, freq) {
@@ -1174,8 +1184,8 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
         // Catchable failures (bad JSON, network) surface as a labelled 502
         // rather than an opaque 1101 with an empty map behind it.
         failed = chunks;
-        lastFailure = { ok: false, status: 502, statusText: err.message };
-        console.log(`[comtrade] ${hs}/${period} error after ${merged.length} rows: ${err.message}`);
+        lastFailure = { ok: false, status: 502, statusText: 'Comtrade response or acquisition failed' };
+        console.log(`[comtrade] ${hs}/${period} acquisition failed after ${merged.length} rows`);
     }
     if (merged.length === 0 && failed) return lastFailure;
 
@@ -1189,7 +1199,16 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     if (failed) {
         body.partial = true;
         body.missing_chunks = failed;
+        if (freq === 'M') {
+            body.status = 'partial';
+            body.quality_policy = 'comtrade-totals-v2';
+        }
         return { ok: true, body, ttl: COMTRADE_PARTIAL_TTL };
+    }
+    if (freq === 'M') {
+        body.status = merged.length ? 'available' : 'no_rows_for_query';
+        body.quality_policy = 'comtrade-totals-v2';
+        return { ok: true, body, ttl: merged.length ? 86400 : 3600 };
     }
     return { ok: true, body };
 }
@@ -1312,7 +1331,7 @@ async function handleComtrade(request, env, ctx) {
 
     if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
 
-    const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
+    const cacheTtl = freq === 'M' ? 86400 : COMTRADE_TTL[hs] || 604800;
 
     const defaultScope = reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES;
     if (next && defaultScope) {

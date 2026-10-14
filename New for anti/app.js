@@ -4117,7 +4117,7 @@ const showClimateTooltip = async (info, name, cfg) => {
                    ${s.meanPct >= 0 ? '+' : ''}${s.meanPct.toFixed(1)}%</span>`}</div>
         <div class="tooltip-stat"><span>대상 작물 / 산지</span>
             <span>${s.cropCount}개 · ${s.regionCount}개</span></div>`
-        : '<div class="tooltip-stat"><span>예측 로딩…</span></div>');
+        : '<div class="tooltip-stat"><span>예측 로딩…<span class="inline-spinner" aria-hidden="true"></span></span></div>');
     tooltipEl.innerHTML = `
         <div class="tooltip-title">${cfg.label}${cfg.modelName ? ` · ${cfg.modelName}` : ''}</div>
         ${tAnom != null ? `<div class="tooltip-stat"><span>기온 편차 seed</span>
@@ -5627,7 +5627,7 @@ const setView = (target) => {
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
-            currentViewDesc.textContent = "📡 UN Comtrade 최신 무역 통계 로딩 중...";
+            currentViewDesc.innerHTML = '📡 UN Comtrade 최신 무역 통계 로딩 중<span class="inline-spinner" aria-hidden="true"></span>';
             setMapSourceNote('');
 
             stopRotation();
@@ -5954,6 +5954,22 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
             }
         });
     }
+});
+
+// Nav dropdowns are position:fixed (see style.css) so they survive .top-nav's
+// overflow-x:auto clipping under 820px -- fixed is viewport-relative, so each
+// hover computes the trigger's actual on-screen spot (post horizontal-scroll)
+// and clamps the right edge so wide panels (원자재's 4-column dropdown) don't
+// run off narrow viewports instead.
+document.querySelectorAll('.menu-item').forEach((item) => {
+    const dropdown = item.querySelector(':scope > .dropdown');
+    if (!dropdown) return;
+    item.addEventListener('mouseenter', () => {
+        const rect = item.getBoundingClientRect();
+        const left = Math.max(8, Math.min(rect.left, window.innerWidth - dropdown.offsetWidth - 8));
+        dropdown.style.left = `${Math.round(left)}px`;
+        dropdown.style.top = `${Math.round(rect.bottom)}px`;
+    });
 });
 
 // Home Logo click event

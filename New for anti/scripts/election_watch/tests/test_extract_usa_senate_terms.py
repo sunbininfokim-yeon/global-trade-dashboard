@@ -44,7 +44,15 @@ class SenateTermsTests(unittest.TestCase):
         terms = json.loads((ROOT / "config" / "extracted" / "usa_senate_terms.json").read_text(encoding="utf-8"))
         members = terms["members"]
         self.assertEqual(len(members), 100)
-        self.assertEqual(sum(1 for row in members if row.get("up_in_2026")), 33)
+        self.assertEqual(sum(1 for row in members if row.get("up_in_2026")), 35)
+        specials = [row for row in members if row.get("election_kind_2026") == "special"]
+        self.assertEqual({row["state"] for row in specials}, {"FL", "OH"})
+        self.assertTrue(all(row["senate_class"] == 3 and row["next_election_year"] == 2026 for row in specials))
+        congress = {"members": [{"bioguideId": row["bioguide_id"], "chamber": "senate"} for row in members]}
+        apply_senate_terms(congress, terms)
+        self.assertEqual(congress["summary"]["senate_up_in_2026"], 35)
+        self.assertEqual(congress["summary"]["senate_regular_up_in_2026"], 33)
+        self.assertEqual(congress["summary"]["senate_special_up_in_2026"], 2)
         graham = next(row for row in members if row["bioguide_id"] == "G000608")
         self.assertEqual(graham["name"], "Darline Graham")
         self.assertEqual(graham["senate_class"], 2)

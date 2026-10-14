@@ -1,0 +1,3074 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "cycle": 2026,
+  "state": "AL",
+  "source_ref": "origin/codex/nh-evidence-20261009",
+  "source_commit": "9bf44183e43ea189b041708a2bedb154765fa5ae",
+  "config_operations": [
+    {
+      "file": "usa_state_campaign_finance_sources_v1.json",
+      "path": [
+        "states",
+        "AL"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "agency": "Alabama Secretary of State FCPA",
+        "access": "public_download_manifest_and_annual_expenditure_ZIP",
+        "url": "https://fcpa.alabamavotes.gov/page.request.do?page=page.acfPublicDownloadData",
+        "authentication": "public_read_no_key_verified",
+        "independent_expenditure_mapping": "bulk_filing_owner_not_target_direction_mapping_required",
+        "public_source_review": {
+          "cycle": 2026,
+          "reviewed_on": "2026-10-09",
+          "endpoints": [
+            {
+              "url": "https://fcpa.alabamavotes.gov/page.request.do?page=page.acfPublicDownloadData",
+              "role": "current_public_portal"
+            }
+          ],
+          "source_scope": "2026_reporting_year_general_expenditure_export_only",
+          "filing_login_required_for_public_read": false,
+          "note_ko": "공개 GET만. 일반지출의 CANDIDATE NAME은 지출한 캠프 소유자이지 독립지출 대상 후보가 아님. 지원/반대 방향 없는 일반비용을 주지사 IE로 변환하지 않습니다."
+        }
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:01"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "69a6f4c19ccdd71055733b17920b3a8b985bc4419dd194bbb857022799cb9b5e",
+      "value": {
+        "race_id": "USA:AL:house:01",
+        "state": "AL",
+        "office": "house",
+        "district": "01",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Clyde Jones",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL01094",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL01094",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Clyde Jones",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Clyde W. Jones, Jr."
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Clyde Jones",
+              "prior_reviewed_name": "Clyde W. Jones, Jr.",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Jerry Carl",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H0AL01055",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H0AL01055",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Jerry Carl",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Jerry Lee Carl, Jr."
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Jerry Carl",
+              "prior_reviewed_name": "Jerry Lee Carl, Jr.",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:02"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "7e71c9257a78181ef703184782d4f2f8922e6d3ef68c43cdcc5b63db48d8742d",
+      "value": {
+        "race_id": "USA:AL:house:02",
+        "state": "AL",
+        "office": "house",
+        "district": "02",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Shomari C. Figures",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H4AL02170",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H4AL02170",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Shomari C. Figures",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Shomari Figures"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Shomari C. Figures",
+              "prior_reviewed_name": "Shomari C. Figures",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Rhett Marques",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL01086",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL01086",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Rhett Marques",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Rhett Marques",
+              "prior_reviewed_name": "Rhett Marques",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:03"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "2c27d080167fc6c8e3ad88fd9e9e692ca441f8708d4a0d02b40b67d3aca48752",
+      "value": {
+        "race_id": "USA:AL:house:03",
+        "state": "AL",
+        "office": "house",
+        "district": "03",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Lee McInnis",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL03199",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL03199",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Lee McInnis",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Victor Lee \"Lee\" McInnis"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Lee McInnis",
+              "prior_reviewed_name": "Victor Lee \"Lee\" McInnis",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Mike Rogers",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H2AL03032",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H2AL03032",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Mike Rogers",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Michael Dennis \"Mike\" Rogers"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Mike Rogers",
+              "prior_reviewed_name": "Michael Dennis \"Mike\" Rogers",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:04"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "d34e3f14bf47c398d433e18e7db46b49107fae55ad130c10e3bd6925b567fd61",
+      "value": {
+        "race_id": "USA:AL:house:04",
+        "state": "AL",
+        "office": "house",
+        "district": "04",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Amanda N. Pusczek",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL05228",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL05228",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Amanda N. Pusczek",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Amanda Noelle Pusczek"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Amanda N. Pusczek",
+              "prior_reviewed_name": "Amanda Noelle Pusczek",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Robert B. Aderholt",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL04098",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL04098",
+            "source_status": "state_certified_general_nominee",
+            "reported_name": "Robert B. Aderholt",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Robert Brown Aderholt"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Robert B. Aderholt",
+              "prior_reviewed_name": "Robert Brown Aderholt",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          }
+        ],
+        "unconfirmed_candidates": [
+          {
+            "name": "Lee Jeh Cobb",
+            "party": "WRI",
+            "reported_party": "Write-in",
+            "candidate_id": null,
+            "source_url": "https://www.thegreenpapers.com/G26/AL",
+            "ballot_access": "write_in",
+            "reported_fec_id": "H6AL04171",
+            "source_status": "authority_confirmation_not_reported"
+          }
+        ],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 1
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:05"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "3e450b833eb468f6f58d71cb4c71fcc8cad5e9c9bcf6212687cc4c2bbe8595ee",
+      "value": {
+        "race_id": "USA:AL:house:05",
+        "state": "AL",
+        "office": "house",
+        "district": "05",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Andrew Sneed",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL05244",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL05244",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Andrew Sneed",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Andrew Rankin Guyton Sneed"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Andrew Sneed",
+              "prior_reviewed_name": "Andrew Rankin Guyton Sneed",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Dale W. Strong",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H2AL05102",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H2AL05102",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Dale W. Strong",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Dale Whitney Strong"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Dale W. Strong",
+              "prior_reviewed_name": "Dale Whitney Strong",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:06"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "4849917f465291c82899c3422ec341fdf5f1d3aef9c2df35def08f322d6e82ad",
+      "value": {
+        "race_id": "USA:AL:house:06",
+        "state": "AL",
+        "office": "house",
+        "district": "06",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Maurice Mercer",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL06184",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL06184",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Maurice Mercer",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Maurice Mercer",
+              "prior_reviewed_name": "Maurice Mercer",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Gary Palmer",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H4AL06098",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H4AL06098",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Gary Palmer",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Gary Palmer",
+              "prior_reviewed_name": "Gary Palmer",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:07"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "6f201066d8fa5180762afe14c82aeeabd0750fade106020736a9bd3766109bcb",
+      "value": {
+        "race_id": "USA:AL:house:07",
+        "state": "AL",
+        "office": "house",
+        "district": "07",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Terri Sewell",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H0AL07086",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H0AL07086",
+            "source_status": "state_certified_general_nominee",
+            "reported_name": "Terri Sewell",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Terrycina Andrea \"Terri\" Sewell"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Terri Sewell",
+              "prior_reviewed_name": "Terrycina Andrea \"Terri\" Sewell",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          },
+          {
+            "name": "Ammie Akin",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL07208",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL07208",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Ammie Akin",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Ammie Akin",
+              "prior_reviewed_name": "Ammie Akin",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:AL:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "b4993bddb6072b15021ddab14e96585ee8b7815375d13e03ebf617092e7658df",
+      "value": {
+        "race_id": "USA:AL:senate",
+        "state": "AL",
+        "office": "senate",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Everett Wess",
+            "party": "DEM",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "candidate_id": "S6AL00518",
+            "reported_name": "Everett Wess",
+            "reported_party": "DEM",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Everett Wess",
+              "prior_reviewed_name": "Everett Wess",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          },
+          {
+            "name": "Barry Moore",
+            "party": "REP",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "candidate_id": "S6AL00476",
+            "reported_name": "Barry Moore",
+            "reported_party": "REP",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Barry Moore",
+              "prior_reviewed_name": "Barry Moore",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "source_snapshots"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "role": "state_certifications_and_latest_amendment_review",
+        "candidate_count": 16,
+        "documents": [
+          {
+            "url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "status": 200,
+            "bytes": 397013,
+            "sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "pages": 13,
+            "relevant_pages": [
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofRepublicanCandidates.pdf",
+            "status": 200,
+            "bytes": 641392,
+            "sha256": "a3a109642073bd075596e0d2a0d3fa5c5a692b1178f12e13532a73987c2c89c6",
+            "pages": 14,
+            "relevant_pages": [
+              1,
+              2,
+              14
+            ]
+          },
+          {
+            "url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElection-StateCertificationofIndependentCandidate.pdf",
+            "status": 200,
+            "bytes": 50648,
+            "sha256": "707afb050c7bc052ce8eca51ced59b56641acedfb7c28e7ae5a1e164da2f71ae",
+            "pages": 1,
+            "relevant_pages": [
+              1
+            ]
+          },
+          {
+            "url": "https://www.sos.alabama.gov/sites/default/files/election-2026/Amended_2026_Republican_Certification.pdf",
+            "status": 200,
+            "bytes": 374929,
+            "sha256": "890c0d2492d070025abdc16cbb3f0b52ba2abe06d0261a307a3ec6c14494b48b",
+            "pages": 13,
+            "relevant_pages": [
+              1,
+              2
+            ]
+          },
+          {
+            "url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "status": 200,
+            "bytes": 34808604,
+            "sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "pages": 28,
+            "relevant_pages": [
+              1,
+              2,
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "governor_matchups/2026.json",
+      "path": [
+        "additional_sources"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "source_role": "state_election_agency"
+      }
+    },
+    {
+      "file": "governor_matchups/2026.json",
+      "path": [
+        "contests",
+        "AL"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "7ea013bd84b11c4e29400e2bd339e7f3c0d7d7b8d47f7248888fef5629f06c19",
+      "value": {
+        "state": "AL",
+        "state_name": "Alabama",
+        "primary_date": "2026-05-19",
+        "election_date": "2026-11-03",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "status": "reported_general_matchup",
+        "hold_reason": null,
+        "candidates": [
+          {
+            "candidate_id": "AL:reported-general:2026:ec11fb799e369457",
+            "name": "Doug Jones",
+            "reported_name_aliases": [
+              "Doug Jones"
+            ],
+            "party": "DEM",
+            "office": "G",
+            "state": "AL",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "official_general_candidate_listing",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "candidate_identity_basis": "state_election_agency_general_nominee_certification",
+            "reported_name": "Doug Jones",
+            "reported_party": "DEM",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Doug Jones",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "candidate_id": "AL:reported-general:2026:dab7ef8365d560b6",
+            "name": "Tommy Tuberville",
+            "reported_name_aliases": [
+              "Tommy Tuberville"
+            ],
+            "party": "REP",
+            "office": "G",
+            "state": "AL",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "official_general_candidate_listing",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "candidate_identity_basis": "state_election_agency_general_nominee_certification",
+            "reported_name": "Tommy Tuberville",
+            "reported_party": "REP",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Tommy Tuberville",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "source_role": "state_election_agency",
+        "coverage": "complete_active_agency_listing",
+        "ballot_reviewed_on": "2026-10-09",
+        "candidate_identity_basis": "state_election_agency_general_ballot_listing",
+        "evidence_note_ko": "8/26 주 인증 DEM/REP 및9/2수정·무소속 인증 대조. 주지사2명. 기명후보 전수·당선 인증 아님."
+      }
+    },
+    {
+      "file": "governor_matchups/2026_ballot_reviews.json",
+      "path": [
+        "contests",
+        "AL"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "state": "AL",
+        "election_date": "2026-11-03",
+        "reviewed_on": "2026-10-09",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "coverage": "complete_active_agency_listing",
+        "replace_reported_general_matchup": true,
+        "candidates": [
+          {
+            "candidate_id": "AL:reported-general:2026:ec11fb799e369457",
+            "name": "Doug Jones",
+            "reported_name_aliases": [
+              "Doug Jones"
+            ],
+            "party": "DEM",
+            "office": "G",
+            "state": "AL",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "official_general_candidate_listing",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "candidate_identity_basis": "state_election_agency_general_nominee_certification",
+            "reported_name": "Doug Jones",
+            "reported_party": "DEM",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Doug Jones",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "candidate_id": "AL:reported-general:2026:dab7ef8365d560b6",
+            "name": "Tommy Tuberville",
+            "reported_name_aliases": [
+              "Tommy Tuberville"
+            ],
+            "party": "REP",
+            "office": "G",
+            "state": "AL",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "official_general_candidate_listing",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "candidate_identity_basis": "state_election_agency_general_nominee_certification",
+            "reported_name": "Tommy Tuberville",
+            "reported_party": "REP",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Tommy Tuberville",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "evidence_note_ko": "8/26 주 인증 DEM/REP 및9/2수정·무소속 인증 대조. 주지사2명. 기명후보 전수·당선 인증 아님."
+      }
+    },
+    {
+      "file": "usa_polls/state_finance_identities_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:04"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": [
+        {
+          "candidate_name": "Robert B. Aderholt",
+          "party": "REP",
+          "candidate_id": "H6AL04098",
+          "reported_fec_id": "H6AL04098",
+          "office": "house",
+          "agency_reported_name": "Robert B. Aderholt",
+          "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+          "official_source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+          "source_url": "https://www.thegreenpapers.com/G26/AL",
+          "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+          "finance_reported_names": [
+            "ADERHOLT, ROBERT B. REP."
+          ],
+          "reviewed_on": "2026-10-09",
+          "basis": "explicit_official_ballot_name_alias_source_cited_id_and_same_race_party_review"
+        }
+      ]
+    },
+    {
+      "file": "usa_polls/state_finance_identities_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:07"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": [
+        {
+          "candidate_name": "Terri Sewell",
+          "party": "DEM",
+          "candidate_id": "H0AL07086",
+          "reported_fec_id": "H0AL07086",
+          "office": "house",
+          "agency_reported_name": "Terri Sewell",
+          "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+          "official_source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+          "source_url": "https://www.thegreenpapers.com/G26/AL",
+          "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+          "finance_reported_names": [
+            "SEWELL, TERRI A."
+          ],
+          "reviewed_on": "2026-10-09",
+          "basis": "explicit_official_ballot_name_alias_source_cited_id_and_same_race_party_review"
+        }
+      ]
+    },
+    {
+      "file": "usa_polls/state_finance_identities_2026.json",
+      "path": [
+        "races",
+        "USA:AL:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "d61f07d3ba63633f67cf2f50774392753dd18c9af8a9718429069d80ab95c03d",
+      "value": [
+        {
+          "candidate_name": "Everett Wess",
+          "party": "DEM",
+          "candidate_id": "S6AL00518",
+          "roster_reported_name": "Everett W. Wess",
+          "source_url": "https://www.thegreenpapers.com/G26/AL",
+          "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+          "finance_reported_names": [
+            "WESS, EVERETT W"
+          ],
+          "reviewed_on": "2026-10-08",
+          "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party",
+          "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+          "official_source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+          "official_name_reviewed_on": "2026-10-09"
+        },
+        {
+          "candidate_name": "Barry Moore",
+          "party": "REP",
+          "candidate_id": "S6AL00476",
+          "roster_reported_name": "Felix Barry \"Barry\" Moore",
+          "source_url": "https://www.thegreenpapers.com/G26/AL",
+          "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+          "finance_reported_names": [
+            "MOORE, FELIX BARRY"
+          ],
+          "reviewed_on": "2026-10-08",
+          "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party",
+          "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+          "official_source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+          "official_name_reviewed_on": "2026-10-09"
+        }
+      ]
+    },
+    {
+      "file": "usa_polls/state_finance_identities_2026.json",
+      "path": [
+        "source_snapshots"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "office": "house",
+        "source_url": "https://www.thegreenpapers.com/G26/AL",
+        "sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+        "role": "reviewed_secondary_identity_corroboration",
+        "reviewed_on": "2026-10-09",
+        "verified_candidates": [
+          {
+            "race_id": "USA:AL:house:04",
+            "candidate_name": "Robert B. Aderholt",
+            "party": "REP",
+            "candidate_id": "H6AL04098",
+            "reported_fec_id": "H6AL04098",
+            "office": "house",
+            "agency_reported_name": "Robert B. Aderholt",
+            "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "official_source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_url": "https://www.thegreenpapers.com/G26/AL",
+            "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+            "finance_reported_names": [
+              "ADERHOLT, ROBERT B. REP."
+            ],
+            "reviewed_on": "2026-10-09",
+            "basis": "explicit_official_ballot_name_alias_source_cited_id_and_same_race_party_review"
+          },
+          {
+            "race_id": "USA:AL:house:07",
+            "candidate_name": "Terri Sewell",
+            "party": "DEM",
+            "candidate_id": "H0AL07086",
+            "reported_fec_id": "H0AL07086",
+            "office": "house",
+            "agency_reported_name": "Terri Sewell",
+            "official_source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "official_source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_url": "https://www.thegreenpapers.com/G26/AL",
+            "source_sha256": "f423e878f5e2e7eab871204b307822464e8e44bca86c7f2949572a4db003c5e0",
+            "finance_reported_names": [
+              "SEWELL, TERRI A."
+            ],
+            "reviewed_on": "2026-10-09",
+            "basis": "explicit_official_ballot_name_alias_source_cited_id_and_same_race_party_review"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "e980f03a72c629a13fe8cd90105702ab68534d10c9d759ed55be9937b6efe416",
+        "record": {
+          "id": "primary-al-gov202yes83eff434",
+          "poll_type": "governor",
+          "sample_size": 601,
+          "population": "lv",
+          "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "created_at": "2026-08-04",
+          "start_date": "2026-07-08",
+          "end_date": "2026-07-11",
+          "pollster": "yes. every kid.",
+          "answers": [
+            {
+              "choice": "Tommy Tuberville",
+              "pct": 49.0
+            },
+            {
+              "choice": "Doug Jones",
+              "pct": 41.0
+            }
+          ],
+          "seat_name": null,
+          "sponsors": [],
+          "internal": false,
+          "partisan": null,
+          "subject": "2026 Alabama"
+        },
+        "documents": [
+          {
+            "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+            "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6",
+            "relevant_pages": [
+              1,
+              2,
+              3,
+              4,
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "722b00958b1f3b0274d6b4a0a82b52f284e6e83dd9a7b3fb6cc1fee26d70398c",
+        "record": {
+          "id": "primary-al-us-202yes4308b337",
+          "poll_type": "us-senator",
+          "sample_size": 601,
+          "population": "lv",
+          "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "created_at": "2026-08-04",
+          "start_date": "2026-07-08",
+          "end_date": "2026-07-11",
+          "pollster": "yes. every kid.",
+          "answers": [
+            {
+              "choice": "Barry Moore",
+              "pct": 47.0
+            },
+            {
+              "choice": "Everett Wess",
+              "pct": 32.0
+            }
+          ],
+          "seat_name": null,
+          "sponsors": [],
+          "internal": false,
+          "partisan": null,
+          "subject": "2026 Alabama"
+        },
+        "documents": [
+          {
+            "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+            "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6",
+            "relevant_pages": [
+              1,
+              2,
+              3,
+              4,
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "2b4e7f585e4ce7fbdc5eabacd2c4991866728f744aa3de377bbf957dc3fcef92",
+        "record": {
+          "id": "primary-al-gov202rmg75bbe7fe",
+          "poll_type": "governor",
+          "sample_size": 800,
+          "population": "rv",
+          "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "created_at": "2026-10-01",
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-25",
+          "pollster": "RMG Research",
+          "answers": [
+            {
+              "choice": "Tommy Tuberville",
+              "pct": 50.0
+            },
+            {
+              "choice": "Doug Jones",
+              "pct": 37.0
+            }
+          ],
+          "seat_name": null,
+          "sponsors": [
+            "Alabama Policy Action"
+          ],
+          "internal": false,
+          "partisan": "REP",
+          "subject": "2026 Alabama"
+        },
+        "documents": [
+          {
+            "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+            "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547",
+            "relevant_pages": [
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "89a300bfd61d70d64236c22828bb385f81cd8850ef00421b7294386c4ea6f896",
+        "record": {
+          "id": "primary-al-us-202rmg809825be",
+          "poll_type": "us-senator",
+          "sample_size": 800,
+          "population": "rv",
+          "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "created_at": "2026-10-01",
+          "start_date": "2026-09-21",
+          "end_date": "2026-09-25",
+          "pollster": "RMG Research",
+          "answers": [
+            {
+              "choice": "Barry Moore",
+              "pct": 54.0
+            },
+            {
+              "choice": "Everett Wess",
+              "pct": 33.0
+            }
+          ],
+          "seat_name": null,
+          "sponsors": [
+            "Alabama Policy Action"
+          ],
+          "internal": false,
+          "partisan": "REP",
+          "subject": "2026 Alabama"
+        },
+        "documents": [
+          {
+            "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+            "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547",
+            "relevant_pages": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AL",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "44be970f5cda2dfe2a74dfe62cd2146727e3a52a8ef221449bc838c934001fda",
+        "record": {
+          "id": "primary-dccc-al-house-02-20260730",
+          "subject": "2026 AL-02",
+          "poll_type": "us-representative",
+          "seat_name": "AL-02",
+          "pollster": "DCCC Analytics Department",
+          "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+          "start_date": "2026-07-29",
+          "end_date": "2026-07-30",
+          "created_at": "2026-08-14",
+          "population": "lv",
+          "sample_size": 421,
+          "sponsors": [
+            "DCCC"
+          ],
+          "partisan": "DEM",
+          "internal": true,
+          "answers": [
+            {
+              "choice": "Shomari Figures",
+              "pct": 46
+            },
+            {
+              "choice": "Rhett Marques",
+              "pct": 46
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+            "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c",
+            "relevant_pages": [
+              1,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/live_2026.json",
+      "path": [
+        "excluded_records",
+        "gov202cyg809fe67c"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": "pre_primary_2025_hypothetical_poll_original_methods_not_rechecked"
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-al-gov202rmg75bbe7fe"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T05:06:09.414691+00:00",
+        "provider_record_sha256": "2b4e7f585e4ce7fbdc5eabacd2c4991866728f744aa3de377bbf957dc3fcef92",
+        "primary_supplement_record_sha256": "2b4e7f585e4ce7fbdc5eabacd2c4991866728f744aa3de377bbf957dc3fcef92",
+        "sources": [
+          "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+            "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547",
+            "relevant_pages": [
+              1
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Tommy Tuberville": 50.0,
+          "Doug Jones": 37.0
+        },
+        "question_sample_n": 800,
+        "disclosure_review": {
+          "population": "RV",
+          "sample_n": 800,
+          "field_dates": [
+            "2026-09-21",
+            "2026-09-25"
+          ],
+          "question_wording_checked": true,
+          "geographic_scope": "Alabama_statewide_only",
+          "mode": "not_disclosed_in_reviewed_primary_document",
+          "sampling_frame": "not_disclosed_in_reviewed_primary_document",
+          "weighting": "not_disclosed_in_reviewed_primary_document",
+          "question_order": "full_questionnaire_not_disclosed",
+          "includes_leaners": null,
+          "screening": "not_disclosed",
+          "source_pollster_attribution": "publisher Napolitan News Service; provider RMG Research",
+          "non_candidate_responses": {
+            "other": 2,
+            "would_not_vote": 2,
+            "not_sure": 8
+          }
+        },
+        "ballot_format": "named_two_candidate_with_other_would_not_vote_unsure",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "Alabama Policy Action"
+          ],
+          "primary_internal": false,
+          "provider_partisan": "REP"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_not_independently_validated",
+          "half_width_pp": 3.5,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "sampling_recruitment_frame",
+          "weighting_details",
+          "statistical_significance"
+        ],
+        "limitations_ko": "개별 원문 수치·표본·기간·공개 방법을 검토한 참고 자료. 방법론 미공개·정당 의뢰·경선 전 가상대진 등 제외 사유를 유지. 최신7일/14일 우세·정확도 등급·당선확률 아님.",
+        "admission": {
+          "pollster": "RMG Research",
+          "provider_url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "group": "rmg_research",
+          "methodology_url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "source_role": "commissioner_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "partisan_commissioned_reference",
+            "sampling_frame_mode_weighting_not_fully_disclosed"
+          ],
+          "allow_historical_reference": false,
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "REP",
+          "reviewed_sponsors": [
+            "Alabama Policy Action"
+          ]
+        },
+        "snapshot_sha256": "7113ed3275e553c90cd283ebc118a181af196de6fa61f3e13fbd2a0ef61bbc1f"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-al-gov202yes83eff434"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T05:06:09.414691+00:00",
+        "provider_record_sha256": "e980f03a72c629a13fe8cd90105702ab68534d10c9d759ed55be9937b6efe416",
+        "primary_supplement_record_sha256": "e980f03a72c629a13fe8cd90105702ab68534d10c9d759ed55be9937b6efe416",
+        "sources": [
+          "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+            "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6",
+            "relevant_pages": [
+              1,
+              2,
+              3,
+              4,
+              6
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Tommy Tuberville": 49.0,
+          "Doug Jones": 41.0
+        },
+        "question_sample_n": 601,
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 601,
+          "field_dates": [
+            "2026-07-08",
+            "2026-07-11"
+          ],
+          "question_wording_checked": true,
+          "geographic_scope": "Alabama_statewide_only",
+          "mode": {
+            "text_to_web_pct": 57,
+            "online_pct": 43
+          },
+          "sampling_frame": "stratified by known Alabama voter population demographics; recruitment frame and probability status not disclosed",
+          "weighting": "not_disclosed_in_reviewed_primary_document",
+          "question_order": "Q15 Senate then Q16 governor; after candidate favorability but before education policy prompts",
+          "includes_leaners": true,
+          "screening": "registered voters; likelihood question includes 8% fifty-fifty",
+          "source_pollster_attribution": "yes. every kid. foundation. in-house research",
+          "non_candidate_responses": {
+            "other": "less_than_0.5_pct_not_zero",
+            "undecided_or_dont_know": 11
+          }
+        },
+        "ballot_format": "named_candidates_with_definite_probable_totals",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "yes. every kid. foundation."
+          ],
+          "primary_internal": false,
+          "provider_partisan": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_not_independently_validated",
+          "half_width_pp": 4.0,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "sampling_recruitment_frame",
+          "weighting_details",
+          "statistical_significance"
+        ],
+        "limitations_ko": "개별 원문 수치·표본·기간·공개 방법을 검토한 참고 자료. 방법론 미공개·정당 의뢰·경선 전 가상대진 등 제외 사유를 유지. 최신7일/14일 우세·정확도 등급·당선확률 아님.",
+        "admission": {
+          "pollster": "yes. every kid.",
+          "provider_url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "group": "yes_every_kid",
+          "methodology_url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "sampling_recruitment_probability_and_weighting_not_fully_disclosed"
+          ],
+          "allow_historical_reference": false
+        },
+        "snapshot_sha256": "e812d0545c853ccad9d0b547e685954bc11b06d616c7b3211238be708ba34637"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-al-us-202rmg809825be"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T05:06:09.414691+00:00",
+        "provider_record_sha256": "89a300bfd61d70d64236c22828bb385f81cd8850ef00421b7294386c4ea6f896",
+        "primary_supplement_record_sha256": "89a300bfd61d70d64236c22828bb385f81cd8850ef00421b7294386c4ea6f896",
+        "sources": [
+          "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+            "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547",
+            "relevant_pages": [
+              3
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Barry Moore": 54.0,
+          "Everett Wess": 33.0
+        },
+        "question_sample_n": 800,
+        "disclosure_review": {
+          "population": "RV",
+          "sample_n": 800,
+          "field_dates": [
+            "2026-09-21",
+            "2026-09-25"
+          ],
+          "question_wording_checked": true,
+          "geographic_scope": "Alabama_statewide_only",
+          "mode": "not_disclosed_in_reviewed_primary_document",
+          "sampling_frame": "not_disclosed_in_reviewed_primary_document",
+          "weighting": "not_disclosed_in_reviewed_primary_document",
+          "question_order": "full_questionnaire_not_disclosed",
+          "includes_leaners": null,
+          "screening": "not_disclosed",
+          "source_pollster_attribution": "publisher Napolitan News Service; provider RMG Research",
+          "non_candidate_responses": {
+            "other": 2,
+            "would_not_vote": 2,
+            "not_sure": 9
+          }
+        },
+        "ballot_format": "named_two_candidate_with_other_would_not_vote_unsure",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "Alabama Policy Action"
+          ],
+          "primary_internal": false,
+          "provider_partisan": "REP"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_not_independently_validated",
+          "half_width_pp": 3.5,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "sampling_recruitment_frame",
+          "weighting_details",
+          "statistical_significance"
+        ],
+        "limitations_ko": "개별 원문 수치·표본·기간·공개 방법을 검토한 참고 자료. 방법론 미공개·정당 의뢰·경선 전 가상대진 등 제외 사유를 유지. 최신7일/14일 우세·정확도 등급·당선확률 아님.",
+        "admission": {
+          "pollster": "RMG Research",
+          "provider_url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "group": "rmg_research",
+          "methodology_url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+          "source_role": "commissioner_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "partisan_commissioned_reference",
+            "sampling_frame_mode_weighting_not_fully_disclosed"
+          ],
+          "allow_historical_reference": false,
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "REP",
+          "reviewed_sponsors": [
+            "Alabama Policy Action"
+          ]
+        },
+        "snapshot_sha256": "87a2357908201f9b0d364f6a608951d1f18dda507f5ec9af73e26cb76f60ade9"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-al-us-202yes4308b337"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T05:06:09.414691+00:00",
+        "provider_record_sha256": "722b00958b1f3b0274d6b4a0a82b52f284e6e83dd9a7b3fb6cc1fee26d70398c",
+        "primary_supplement_record_sha256": "722b00958b1f3b0274d6b4a0a82b52f284e6e83dd9a7b3fb6cc1fee26d70398c",
+        "sources": [
+          "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+            "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6",
+            "relevant_pages": [
+              1,
+              2,
+              3,
+              4,
+              6
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Barry Moore": 47.0,
+          "Everett Wess": 32.0
+        },
+        "question_sample_n": 601,
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 601,
+          "field_dates": [
+            "2026-07-08",
+            "2026-07-11"
+          ],
+          "question_wording_checked": true,
+          "geographic_scope": "Alabama_statewide_only",
+          "mode": {
+            "text_to_web_pct": 57,
+            "online_pct": 43
+          },
+          "sampling_frame": "stratified by known Alabama voter population demographics; recruitment frame and probability status not disclosed",
+          "weighting": "not_disclosed_in_reviewed_primary_document",
+          "question_order": "Q15 Senate then Q16 governor; after candidate favorability but before education policy prompts",
+          "includes_leaners": true,
+          "screening": "registered voters; likelihood question includes 8% fifty-fifty",
+          "source_pollster_attribution": "yes. every kid. foundation. in-house research",
+          "non_candidate_responses": {
+            "other": 1,
+            "undecided_or_dont_know": 20
+          }
+        },
+        "ballot_format": "named_candidates_with_definite_probable_totals",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "yes. every kid. foundation."
+          ],
+          "primary_internal": false,
+          "provider_partisan": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_not_independently_validated",
+          "half_width_pp": 4.0,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "sampling_recruitment_frame",
+          "weighting_details",
+          "statistical_significance"
+        ],
+        "limitations_ko": "개별 원문 수치·표본·기간·공개 방법을 검토한 참고 자료. 방법론 미공개·정당 의뢰·경선 전 가상대진 등 제외 사유를 유지. 최신7일/14일 우세·정확도 등급·당선확률 아님.",
+        "admission": {
+          "pollster": "yes. every kid.",
+          "provider_url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "group": "yes_every_kid",
+          "methodology_url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "sampling_recruitment_probability_and_weighting_not_fully_disclosed"
+          ],
+          "allow_historical_reference": false
+        },
+        "snapshot_sha256": "5b8a684c2f1959ff003e95d257a4fc3655f44a778bd533ded5f1e465bce85283"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-dccc-al-house-02-20260730"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T05:06:09.414691+00:00",
+        "provider_record_sha256": "44be970f5cda2dfe2a74dfe62cd2146727e3a52a8ef221449bc838c934001fda",
+        "primary_supplement_record_sha256": "44be970f5cda2dfe2a74dfe62cd2146727e3a52a8ef221449bc838c934001fda",
+        "sources": [
+          "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+            "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c",
+            "relevant_pages": [
+              1,
+              2
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Shomari Figures": 46,
+          "Rhett Marques": 46
+        },
+        "question_sample_n": 421,
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 421,
+          "field_dates": [
+            "2026-07-29",
+            "2026-07-30"
+          ],
+          "question_wording_checked": false,
+          "geographic_scope": "AL-02_new_district_lines_only_not_statewide",
+          "mode": "phone and text-to-web",
+          "sampling_frame": "not_fully_disclosed",
+          "weighting": "not_fully_disclosed",
+          "question_order": "initial_vote_label_checked_full_instrument_unavailable",
+          "non_candidate_responses": {
+            "undecided": 8
+          },
+          "excluded_subdistrict_governor_poll": {
+            "Doug Jones": 48,
+            "Tommy Tuberville": 45,
+            "not_statewide": true
+          },
+          "original_memo_date": "2026-08-12",
+          "public_release_date": "2026-08-14"
+        },
+        "ballot_format": "initial_named_head_to_head",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "DCCC"
+          ],
+          "primary_internal": true,
+          "provider_partisan": "DEM"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_not_independently_validated",
+          "half_width_pp": 4.8,
+          "confidence_level_pct": 95,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "sampling_recruitment_frame",
+          "weighting_details",
+          "statistical_significance"
+        ],
+        "limitations_ko": "개별 원문 수치·표본·기간·공개 방법을 검토한 참고 자료. 방법론 미공개·정당 의뢰·경선 전 가상대진 등 제외 사유를 유지. 최신7일/14일 우세·정확도 등급·당선확률 아님.",
+        "admission": {
+          "pollster": "DCCC Analytics Department",
+          "provider_url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+          "group": "dccc_analytics",
+          "methodology_url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "party_internal_reference",
+            "before_special_primary_historical_matchup",
+            "full_questionnaire_frame_and_weighting_unavailable"
+          ],
+          "allow_historical_reference": true,
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "DEM",
+          "reviewed_sponsors": [
+            "DCCC"
+          ]
+        },
+        "snapshot_sha256": "9d7cefbf8163f03fc28b86d07a717de0dc0a847b1f88f6eb5c1ad9fbd43e7eac"
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:governor"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "race_id": "USA:AL:governor",
+        "state": "AL",
+        "office": "governor",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Doug Jones",
+            "party": "DEM",
+            "reported_name": "Doug Jones",
+            "reported_party": "DEM",
+            "candidate_id": null,
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Doug Jones",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Tommy Tuberville",
+            "party": "REP",
+            "reported_name": "Tommy Tuberville",
+            "reported_party": "REP",
+            "candidate_id": null,
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Tommy Tuberville",
+              "prior_reviewed_name": null,
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:01"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "69a6f4c19ccdd71055733b17920b3a8b985bc4419dd194bbb857022799cb9b5e",
+      "value": {
+        "race_id": "USA:AL:house:01",
+        "state": "AL",
+        "office": "house",
+        "district": "01",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Clyde Jones",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL01094",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL01094",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Clyde Jones",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Clyde W. Jones, Jr."
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Clyde Jones",
+              "prior_reviewed_name": "Clyde W. Jones, Jr.",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Jerry Carl",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H0AL01055",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H0AL01055",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Jerry Carl",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Jerry Lee Carl, Jr."
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Jerry Carl",
+              "prior_reviewed_name": "Jerry Lee Carl, Jr.",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:02"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "7e71c9257a78181ef703184782d4f2f8922e6d3ef68c43cdcc5b63db48d8742d",
+      "value": {
+        "race_id": "USA:AL:house:02",
+        "state": "AL",
+        "office": "house",
+        "district": "02",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Shomari C. Figures",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H4AL02170",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H4AL02170",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Shomari C. Figures",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Shomari Figures"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Shomari C. Figures",
+              "prior_reviewed_name": "Shomari C. Figures",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Rhett Marques",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL01086",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL01086",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Rhett Marques",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Rhett Marques",
+              "prior_reviewed_name": "Rhett Marques",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:03"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "2c27d080167fc6c8e3ad88fd9e9e692ca441f8708d4a0d02b40b67d3aca48752",
+      "value": {
+        "race_id": "USA:AL:house:03",
+        "state": "AL",
+        "office": "house",
+        "district": "03",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Lee McInnis",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL03199",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL03199",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Lee McInnis",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Victor Lee \"Lee\" McInnis"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Lee McInnis",
+              "prior_reviewed_name": "Victor Lee \"Lee\" McInnis",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Mike Rogers",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H2AL03032",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H2AL03032",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Mike Rogers",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Michael Dennis \"Mike\" Rogers"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Mike Rogers",
+              "prior_reviewed_name": "Michael Dennis \"Mike\" Rogers",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:04"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "d34e3f14bf47c398d433e18e7db46b49107fae55ad130c10e3bd6925b567fd61",
+      "value": {
+        "race_id": "USA:AL:house:04",
+        "state": "AL",
+        "office": "house",
+        "district": "04",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Amanda N. Pusczek",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL05228",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL05228",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Amanda N. Pusczek",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Amanda Noelle Pusczek"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Amanda N. Pusczek",
+              "prior_reviewed_name": "Amanda Noelle Pusczek",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Robert B. Aderholt",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL04098",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL04098",
+            "source_status": "state_certified_general_nominee",
+            "reported_name": "Robert B. Aderholt",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Robert Brown Aderholt"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Robert B. Aderholt",
+              "prior_reviewed_name": "Robert Brown Aderholt",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          }
+        ],
+        "unconfirmed_candidates": [
+          {
+            "name": "Lee Jeh Cobb",
+            "party": "WRI",
+            "reported_party": "Write-in",
+            "candidate_id": null,
+            "source_url": "https://www.thegreenpapers.com/G26/AL",
+            "ballot_access": "write_in",
+            "reported_fec_id": "H6AL04171",
+            "source_status": "authority_confirmation_not_reported"
+          }
+        ],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 1
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:05"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "3e450b833eb468f6f58d71cb4c71fcc8cad5e9c9bcf6212687cc4c2bbe8595ee",
+      "value": {
+        "race_id": "USA:AL:house:05",
+        "state": "AL",
+        "office": "house",
+        "district": "05",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Andrew Sneed",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL05244",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL05244",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Andrew Sneed",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Andrew Rankin Guyton Sneed"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Andrew Sneed",
+              "prior_reviewed_name": "Andrew Rankin Guyton Sneed",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Dale W. Strong",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H2AL05102",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H2AL05102",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Dale W. Strong",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Dale Whitney Strong"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Dale W. Strong",
+              "prior_reviewed_name": "Dale Whitney Strong",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:06"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "4849917f465291c82899c3422ec341fdf5f1d3aef9c2df35def08f322d6e82ad",
+      "value": {
+        "race_id": "USA:AL:house:06",
+        "state": "AL",
+        "office": "house",
+        "district": "06",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Maurice Mercer",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H6AL06184",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL06184",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Maurice Mercer",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Maurice Mercer",
+              "prior_reviewed_name": "Maurice Mercer",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            }
+          },
+          {
+            "name": "Gary Palmer",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H4AL06098",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H4AL06098",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Gary Palmer",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Gary Palmer",
+              "prior_reviewed_name": "Gary Palmer",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:house:07"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "6f201066d8fa5180762afe14c82aeeabd0750fade106020736a9bd3766109bcb",
+      "value": {
+        "race_id": "USA:AL:house:07",
+        "state": "AL",
+        "office": "house",
+        "district": "07",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-08-12",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Terri Sewell",
+            "party": "DEM",
+            "reported_party": "DEM",
+            "candidate_id": "H0AL07086",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H0AL07086",
+            "source_status": "state_certified_general_nominee",
+            "reported_name": "Terri Sewell",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "poll_name_aliases": [
+              "Terrycina Andrea \"Terri\" Sewell"
+            ],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Terri Sewell",
+              "prior_reviewed_name": "Terrycina Andrea \"Terri\" Sewell",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          },
+          {
+            "name": "Ammie Akin",
+            "party": "REP",
+            "reported_party": "REP",
+            "candidate_id": "H6AL07208",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "ballot_access": "official_general_candidate_listing",
+            "reported_fec_id": "H6AL07208",
+            "source_status": "state_certified_general_nominee",
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review",
+            "reported_name": "Ammie Akin",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Ammie Akin",
+              "prior_reviewed_name": "Ammie Akin",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            }
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:AL:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "9ac3c143f64f5314ddef2e19ceeba0614b8416ca87ca80e4bee163eecf774aa2",
+      "value": {
+        "race_id": "USA:AL:senate",
+        "state": "AL",
+        "office": "senate",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "source_role": "state_election_agency",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "reviewed_general_from": "2026-06-17",
+        "period_source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "candidates": [
+          {
+            "name": "Everett Wess",
+            "party": "DEM",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+            "candidate_id": "S6AL00518",
+            "reported_name": "Everett Wess",
+            "reported_party": "DEM",
+            "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Everett Wess",
+              "prior_reviewed_name": "Everett Wess",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/2026GeneralElectionStateCertificationofDemocraticCandidates.pdf",
+              "source_sha256": "dbb8540ace50584ad92c20fec3fc9fef0f5f24a3d317b13d2ed4eb7d578a00a0"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          },
+          {
+            "name": "Barry Moore",
+            "party": "REP",
+            "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+            "candidate_id": "S6AL00476",
+            "reported_name": "Barry Moore",
+            "reported_party": "REP",
+            "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c",
+            "source_page": 3,
+            "ballot_access": "official_general_candidate_listing",
+            "source_status": "state_certified_general_nominee",
+            "poll_name_aliases": [],
+            "official_name_alias_review": {
+              "reviewed_on": "2026-10-09",
+              "official_name": "Barry Moore",
+              "prior_reviewed_name": "Barry Moore",
+              "basis": "explicit_same_state_office_district_party_name_variant_review",
+              "source_url": "https://www.sos.alabama.gov/sites/default/files/election-2026/ALGOPAmendedCertification-SD25.pdf",
+              "source_sha256": "54edd1d66f85da74a2e5304880d1af34043c4e1f83a35f0e0bfd876fb7bf611c"
+            },
+            "candidate_id_basis": "explicit_official_name_alias_source_cited_id_and_existing_same_race_party_review"
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "unopposed_status": "not_verified",
+        "limitations_ko": "주 선거당국의 민주·공화·무소속 인증서 및9/2수정 대조. 주의회 후보를 연방 후보로 가져오지 않습니다. 기명 후보 전체·당선 인증과 다릅니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "source_snapshots",
+        "AL-official-20261009"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "state": "AL",
+        "source_url": "https://www.sos.alabama.gov/alabama-votes/voter/election-information/2026",
+        "reviewed_on": "2026-10-09",
+        "role": "state_certified_general_nominee_listing",
+        "candidate_count": 18,
+        "independent_certification_contains_only_state_legislature": true
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-09",
+    "fetched_at": "2026-10-09T09:45:25.605418+00:00",
+    "receipt": {
+      "state": "AL",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
+      "captured_at": "2026-10-09T09:45:25.605418+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 5,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-al-gov202yes83eff434",
+          "state": "AL",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:32.808477+00:00",
+          "documents": [
+            {
+              "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+              "status": "unchanged",
+              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "gov202yes83eff434"
+          ],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-al-us-202yes4308b337",
+          "state": "AL",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:33.158600+00:00",
+          "documents": [
+            {
+              "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+              "status": "unchanged",
+              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "us-202yes4308b337"
+          ],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-al-gov202rmg75bbe7fe",
+          "state": "AL",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:35.349030+00:00",
+          "documents": [
+            {
+              "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+              "status": "unchanged",
+              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "gov202rmg75bbe7fe"
+          ],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-al-us-202rmg809825be",
+          "state": "AL",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:37.274576+00:00",
+          "documents": [
+            {
+              "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+              "status": "unchanged",
+              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "us-202rmg809825be"
+          ],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-dccc-al-house-02-20260730",
+          "state": "AL",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:37.982193+00:00",
+          "documents": [
+            {
+              "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+              "status": "unchanged",
+              "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      ],
+      "primary_rechecked_ids": [
+        "primary-al-gov202yes83eff434",
+        "primary-al-us-202yes4308b337",
+        "primary-al-gov202rmg75bbe7fe",
+        "primary-al-us-202rmg809825be",
+        "primary-dccc-al-house-02-20260730"
+      ],
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/AL-primary-20261009.json",
+      "official_ballot_reviewed_on": "2026-10-09",
+      "primary_review_method": "downloaded_full_primary_PDFs_toplines_methods_and_rendered_pages_checked",
+      "governor_audit_captured_at": "2026-10-09T09:45:23.231087+00:00"
+    },
+    "provider_records": [
+      {
+        "id": "gov202cyg809fe67c",
+        "poll_type": "governor",
+        "sample_size": 605,
+        "population": "lv",
+        "url": "https://www.cygn.al/wp-content/uploads/2025/11/AL-Gov-Gen-Elect-Poll-Memo.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2025-11-12",
+        "end_date": "2025-11-13",
+        "pollster": "Cygnal",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 53.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "gov202yes83eff434",
+        "poll_type": "governor",
+        "sample_size": 601,
+        "population": "lv",
+        "url": "https://yeseverykidfoundation.org/alabama-likely-voters-support-fully-funding-the-choose-act/",
+        "created_at": "2026-08-04",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-11",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 49.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "us-202yes4308b337",
+        "poll_type": "us-senator",
+        "sample_size": 601,
+        "population": "lv",
+        "url": "https://yeseverykidfoundation.org/alabama-likely-voters-support-fully-funding-the-choose-act/",
+        "created_at": "2026-08-04",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-11",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 47.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "gov202rmg75bbe7fe",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-25",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 50.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Alabama Policy Action"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "us-202rmg809825be",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-25",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 54.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Alabama Policy Action"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alabama"
+      }
+    ],
+    "provider_records_sha256": "8e391ce2ef0b2889d75f953eda6bafbf6173964c932d8f8e82c69d143be129df",
+    "primary_records": [
+      {
+        "id": "primary-al-gov202yes83eff434",
+        "poll_type": "governor",
+        "sample_size": 601,
+        "population": "lv",
+        "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+        "created_at": "2026-08-04",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-11",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 49.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama",
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:32.808477+00:00",
+          "documents": [
+            {
+              "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+              "status": "unchanged",
+              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "gov202yes83eff434"
+          ],
+          "reviewed_replaced_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-al-us-202yes4308b337",
+        "poll_type": "us-senator",
+        "sample_size": 601,
+        "population": "lv",
+        "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+        "created_at": "2026-08-04",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-11",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 47.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama",
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:33.158600+00:00",
+          "documents": [
+            {
+              "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
+              "status": "unchanged",
+              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "us-202yes4308b337"
+          ],
+          "reviewed_replaced_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-al-gov202rmg75bbe7fe",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-25",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 50.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Alabama Policy Action"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alabama",
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:35.349030+00:00",
+          "documents": [
+            {
+              "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+              "status": "unchanged",
+              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "gov202rmg75bbe7fe"
+          ],
+          "reviewed_replaced_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-al-us-202rmg809825be",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-25",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 54.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Alabama Policy Action"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alabama",
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:37.274576+00:00",
+          "documents": [
+            {
+              "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
+              "status": "unchanged",
+              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "us-202rmg809825be"
+          ],
+          "reviewed_replaced_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-dccc-al-house-02-20260730",
+        "subject": "2026 AL-02",
+        "poll_type": "us-representative",
+        "seat_name": "AL-02",
+        "pollster": "DCCC Analytics Department",
+        "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+        "start_date": "2026-07-29",
+        "end_date": "2026-07-30",
+        "created_at": "2026-08-14",
+        "population": "lv",
+        "sample_size": 421,
+        "sponsors": [
+          "DCCC"
+        ],
+        "partisan": "DEM",
+        "internal": true,
+        "answers": [
+          {
+            "choice": "Shomari Figures",
+            "pct": 46
+          },
+          {
+            "choice": "Rhett Marques",
+            "pct": 46
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T09:45:37.982193+00:00",
+          "documents": [
+            {
+              "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
+              "status": "unchanged",
+              "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      }
+    ]
+  }
+}

@@ -66,7 +66,7 @@ def target_id(name, cycle):
     return f'CA:reported-name:{cycle}:' + hashlib.sha256(name_key(name).encode()).hexdigest()[:16]
 
 
-def normalize(cycle, covers, lines, roster=None):
+def normalize(cycle, covers, lines, roster=None, ballot_dates=None):
     latest, excluded, seen, records = {}, Counter(), set(), []
     input_records = 0
     for cover in covers:
@@ -106,16 +106,25 @@ def normalize(cycle, covers, lines, roster=None):
         candidate = registry.get(name_key(name))
         party = candidate['party'] if candidate else 'UNKNOWN'
         filing_date = iso_date(cover['RPT_DATE']) if cover.get('RPT_DATE') else None
+        try:
+            ballot_date = iso_date(cover['ELECT_DATE']) if cover.get('ELECT_DATE') else None
+        except (ValueError, AttributeError):
+            ballot_date = None
+        election_type = (ballot_dates or {}).get(ballot_date, 'UNKNOWN')
+        if election_type not in ('UNKNOWN', f'P{cycle}', f'G{cycle}'):
+            raise SourceError('California reviewed election-date mapping changed')
         records.append({'candidate_id': candidate['candidate_id'] if candidate else target_id(name,cycle),
             'candidate_name': candidate['name'] if candidate else name,
             'reported_candidate_name': name,
-            'candidate_identity_status': 'exact_name_office_cycle_match_to_certified_roster' if candidate else 'reported_name_only_unverified',
+            'candidate_identity_status': 'exact_name_office_cycle_match_to_reviewed_roster' if candidate else 'reported_name_only_unverified',
             'candidate_identity_source_url': candidate['source_url'] if candidate else DOCS,
-            'party': party, 'party_basis': 'certified_primary_ballot' if candidate else 'unavailable',
+            'party': party, 'party_basis': candidate.get('registration_status', 'certified_primary_ballot') if candidate else 'unavailable',
             'committee_id': 'CA:filer:' + cover['FILER_ID'], 'committee_name': cover['FILER_NAML'],
             'category': 'state_independent_spender_unclassified', 'reported_entity_code': cover['ENTITY_CD'],
             'office': 'governor','state': 'CA','district': None,'cycle': cycle,
-            'election_type': 'UNKNOWN', 'source_id': 'CA:F496:' + identity,
+            'election_type': election_type, 'reported_election_date': ballot_date,
+            'election_type_basis': 'CVR_ELECT_DATE_exact_match_to_reviewed_ballot_calendar' if election_type != 'UNKNOWN' else 'unavailable',
+            'source_id': 'CA:F496:' + identity,
             'report_id': row['FILING_ID'], 'amendment_id': int(row['AMEND_ID']),
             'source_url': URL,
             'classification_source_url': DOCS,
@@ -129,18 +138,18 @@ def normalize(cycle, covers, lines, roster=None):
         'spending':records,'candidates':roster or [],
         'quality': {'input_records':input_records, 'current_governor_records':len(seen),'included_records':len(records),'excluded_records':dict(excluded)},
         'limitations_ko':['CA Form 496 최신 정정본의 주지사 독립지출 항목만 포함. Form 460·465 및 다른 형태의 외부지출은 제외합니다.',
-            '지출일이 회계 사이클에 속하는 기록입니다. 경선·본선 용도는 확정하지 않습니다.',
+            'CVR Elect_Date가 검토한 주지사 선거일과 정확히 같은 공시만 경선·본선으로 분리합니다. 지출일·신고일만으로 추정하지 않으며 빈값·1900년 기본값·다른 선거일은 미확인으로 유지합니다.',
             '주 지출자 유형은 미분류이며 연방 슈퍼팩으로 간주하지 않습니다.',
-            '후보 ID가 없는 신고는 같은 회기·직위의 공식 경선 명부와 전체 이름이 정확히 일치할 때만 연결합니다. 별명·중간이름 차이는 미확인 대상으로 유지합니다.',
-            '공식 경선 명부의 정당은 지출 당시 신고 정당 또는 본선 진출을 뜻하지 않습니다.']}
+            '후보 ID가 없는 신고는 같은 회기·직위의 검토 명부와 전체 이름이 정확히 일치할 때만 연결합니다. 별명·중간이름 차이는 미확인 대상으로 유지합니다.',
+            '정당의 출처는 후보별 party_basis에 보존합니다. 공식 경선 명부의 정당은 지출 당시 신고 정당 또는 본선 진출을 뜻하지 않습니다.']}
 
 
-def collect(cycle, roster=None, local_tables=None):
+def collect(cycle, roster=None, local_tables=None, ballot_dates=None):
     try:
         if local_tables:
             covers = table((local_tables / COVER).read_bytes())
             lines = table((local_tables / LINES).read_bytes())
-            payload = normalize(cycle,covers,lines,roster)
+            payload = normalize(cycle,covers,lines,roster,ballot_dates)
             payload['source_table_sha256'] = {name: hashlib.sha256((local_tables / name).read_bytes()).hexdigest() for name in (COVER, LINES)}
             payload['dataset_revision'] = 'sha256:' + hashlib.sha256(str(sorted(payload['source_table_sha256'].items())).encode()).hexdigest()
             return payload
@@ -148,7 +157,7 @@ def collect(cycle, roster=None, local_tables=None):
         with zipfile.ZipFile(remote) as archive:
             covers = table(archive.read('CalAccess/DATA/'+COVER+'.TSV'))
             lines = table(archive.read('CalAccess/DATA/'+LINES+'.TSV'))
-        payload = normalize(cycle,covers,lines,roster)
+        payload = normalize(cycle,covers,lines,roster,ballot_dates)
         payload.update(dataset_revision=remote.etag, source_last_modified=remote.modified)
         return payload
     except (OSError, ValueError, KeyError, UnicodeError, csv.Error, zipfile.BadZipFile):

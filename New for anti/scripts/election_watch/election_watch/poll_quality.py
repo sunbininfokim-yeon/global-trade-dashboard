@@ -1,12 +1,109 @@
 """Source-review facts and coverage, without inventing an accuracy grade."""
 from copy import deepcopy
 from datetime import date
+import math
+from urllib.parse import urlparse
 from .polls import digest, require
 
 
 def review_fingerprint(row):
     return digest({k: row[k] for k in ('id', 'race_id', 'pollster_group', 'field_start',
                                      'field_end', 'population', 'sample_n', 'answers')})
+
+
+def answer_correction_fingerprint(raw):
+    return digest({k: raw.get(k) for k in ('id', 'subject', 'poll_type', 'pollster', 'url',
+        'start_date', 'end_date', 'created_at', 'population', 'sample_size', 'answers',
+        'seat_name', 'sponsors', 'internal', 'partisan')})
+
+
+def corrected_provider_answers(raw, review, as_of):
+    """Correct only exact, unchanged records whose every candidate value was reviewed."""
+    correction = review.get('provider_answer_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_answer_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    require(admission.get('provider_url') == raw.get('url') and admission.get('pollster') == raw['pollster']
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('sources') and review.get('disclosure_review'), 'unverified_answer_correction')
+    values = review['primary_toplines']
+    names = [a['choice'] for a in raw['answers']]
+    require(len(names) == len(set(names)) and set(names) == set(values), 'incomplete_answer_correction_review')
+    overrides = correction['overrides']
+    require(overrides and set(overrides) <= set(names), 'unsupported_answer_correction')
+    require(all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 100 for v in values.values())
+            and sum(values.values()) <= 102, 'invalid_primary_answer_values')
+    corrected = deepcopy(raw)
+    for answer in corrected['answers']:
+        name = answer['choice']
+        if name in overrides:
+            require(overrides[name] == values[name], 'answer_correction_primary_mismatch')
+            answer['pct'] = overrides[name]
+        require(abs(answer['pct'] - values[name]) <= .51, 'uncorrected_primary_answer_mismatch')
+    return corrected, {'status': 'reviewed_primary_answer_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'provider_values': {a['choice']: a['pct'] for a in raw['answers'] if a['choice'] in overrides},
+        'primary_values_used': deepcopy(overrides), 'sources': review['sources'], 'basis_ko': correction['basis_ko']}
+
+
+def corrected_provider_source(raw, review, as_of):
+    """Restore an absent URL only for an exact, primary-reviewed API snapshot."""
+    correction = review.get('provider_source_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(not review.get('provider_answer_correction'), 'combined_provider_corrections_require_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_source_correction_snapshot_changed')
+    require(raw.get('url') in (None, '', '[null]') and
+            correction.get('original_provider_url') == raw.get('url'), 'provider_source_not_missing')
+    admission = review.get('admission', {})
+    primary = correction['primary_url']
+    parsed = urlparse(primary)
+    require(parsed.scheme == 'https' and parsed.hostname and not parsed.username and not parsed.password
+            and primary in review.get('sources', []) and admission.get('provider_url') == primary
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and admission.get('pollster') == raw['pollster'] and review.get('disclosure_review')
+            and len(review.get('primary_toplines', {})) >= 2, 'unverified_source_correction')
+    corrected = deepcopy(raw)
+    corrected['url'] = primary
+    return corrected, {'status': 'reviewed_missing_primary_link', 'reviewed_on': review['reviewed_on'],
+        'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'original_provider_url': raw.get('url'), 'primary_url': primary,
+        'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
+
+
+def corrected_provider_sample(raw, review, as_of):
+    """Use a primary question's n only for an unchanged, explicitly reviewed import."""
+    correction = review.get('provider_sample_correction')
+    if not correction:
+        return raw, None
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    require(not review.get('provider_answer_correction') and not review.get('provider_source_correction'),
+            'combined_provider_corrections_require_review')
+    require(correction['provider_snapshot_sha256'] == answer_correction_fingerprint(raw),
+            'provider_sample_correction_snapshot_changed')
+    admission = review.get('admission', {})
+    n = correction['question_sample_n']
+    require(type(n) is int and n > 0 and n != raw.get('sample_size')
+            and n == review.get('question_sample_n')
+            and raw.get('sample_size') == correction.get('original_provider_sample_n')
+            and admission.get('provider_url') == raw.get('url')
+            and admission.get('pollster') == raw['pollster']
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('sources') and review.get('disclosure_review'), 'unverified_sample_correction')
+    values = review.get('primary_toplines', {})
+    require(len(values) >= 2 and set(values) == {a['choice'] for a in raw['answers']}
+            and all(abs(a['pct'] - values[a['choice']]) <= .51 for a in raw['answers']),
+            'sample_correction_primary_topline_mismatch')
+    corrected = deepcopy(raw); corrected['sample_size'] = n
+    return corrected, {'status': 'reviewed_primary_question_sample_correction',
+        'reviewed_on': review['reviewed_on'], 'provider_snapshot_sha256': correction['provider_snapshot_sha256'],
+        'original_provider_sample_n': raw['sample_size'], 'question_sample_n': n,
+        'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
 
 
 def source_quality(row, reviews, as_of):
@@ -48,3 +145,35 @@ def evidence_context(pollster_count, agreement_fraction, conflicting=()):
             'conflicting_pollsters': list(conflicting),
             'basis_ko': '기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.',
             'limitations_ko': '기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다.'}
+
+
+def ranked_choice_question(raw, review, race, as_of):
+    """Reference-only questions tied to an exact reviewed RCV release.
+
+    Missing candidates are allowed only in a reviewed final simulation or forced
+    pair. No question kind becomes a winner or votes in ordinary lead counts.
+    """
+    if race.get('ballot_system') != 'ranked_choice':
+        require(not review.get('ranked_choice_question'), 'RCV review outside ranked ballot')
+        return None
+    q = review.get('ranked_choice_question')
+    require(q and review.get('provider_record_sha256') == answer_correction_fingerprint(raw),
+            'ranked_choice_question_not_reviewed')
+    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future_quality_review')
+    admission = review.get('admission', {})
+    require(admission.get('signal_eligible') is False
+            and 'ranked_choice_separate_question_reference' in admission.get('signal_exclusion_reasons', [])
+            and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+            and review.get('disclosure_review') and review.get('sources'), 'RCV requires exact reference review')
+    require(q.get('kind') in ('first_preference', 'simulated_final_round', 'forced_two_candidate')
+            and q.get('question') and q.get('label_ko'), 'invalid ranked choice question')
+    names = [a['choice'] for a in raw['answers']]
+    require(len(names) == len(set(names)) and set(names) == set(review['primary_toplines'])
+            and set(names) == set(q['compared_candidates'])
+            and all(n in race['candidates'] for n in names), 'unreviewed ranked choice comparison')
+    canonical = lambda n: race['candidates'][n].get('canonical_name', n)
+    full = {canonical(n) for n in race['required_candidates']}
+    compared = {canonical(n) for n in names}
+    require(compared <= full and (compared == full if q['kind'] == 'first_preference'
+                                 else len(compared) == 2), 'ranked choice field mismatch')
+    return {**deepcopy(q), 'election_result': False, 'aggregation_eligible': False}

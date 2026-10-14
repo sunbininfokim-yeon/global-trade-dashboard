@@ -1,0 +1,45 @@
+{
+  "schema": "usa_governor_source_access_v1",
+  "state": "IA",
+  "cycle": 2026,
+  "checked_at": "2026-10-08T15:14:26.676538+00:00",
+  "status": "public_endpoint_reachable_mapping_required",
+  "last_current_endpoint_accessible_at": "2026-10-08T15:14:26.676538+00:00",
+  "financial_data_collected": false,
+  "candidate_amounts_available": false,
+  "current_portal_url": "https://webapp.iecdb.iowa.gov/publicReports/independent-expenditure-reports",
+  "source_review": {
+    "cycle": 2026,
+    "reviewed_on": "2026-10-08",
+    "official_discovery_url": "https://ethics.iowa.gov/",
+    "endpoints": [
+      {
+        "role": "current_public_portal",
+        "url": "https://webapp.iecdb.iowa.gov/publicReports/independent-expenditure-reports"
+      }
+    ],
+    "public_report_api": "https://webapp.iecdb.iowa.gov/api/publicreports/ie",
+    "public_report_api_method": "POST_readonly_table_query",
+    "report_index_file": "usa_governor_ie_report_indexes/2026/IA.json",
+    "note_ko": "공식공개IE 목록 API실응답확인. 후보·금액·지지/반대는PDF거래에있어자동금액귀속미구현. 최대100건목록수집으로전수공시확보를주장하지않음."
+  },
+  "endpoints": [
+    {
+      "url": "https://webapp.iecdb.iowa.gov/publicReports/independent-expenditure-reports",
+      "status": "public_endpoint_reachable",
+      "http_status": 200,
+      "same_host": true,
+      "body_prefix_sha256": "424cbc291c2c5f4967674c75cbf97dc1c6324a37f18b3a1bac36cf3741b94ba4",
+      "role": "current_public_portal"
+    }
+  ],
+  "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다.",
+  "report_discovery": {
+    "data_file": "usa_governor_ie_report_indexes/2026/IA.json",
+    "checked_at": "2026-10-08T23:16:07.007799+00:00",
+    "status": "report_discovery_partial_mapping_required",
+    "cycle_reports_observed": 100,
+    "cycle_discovery_complete": false,
+    "candidate_amounts_available": false
+  }
+}

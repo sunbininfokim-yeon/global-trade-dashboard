@@ -1,4 +1,4 @@
-import { usaMidtermsBrief } from './usa-midterms.js';
+import { usaMidtermsBrief } from './usa-midterms.js?v=2';
 import { applyForecast, forecastFooter } from './forecast-panel.js';
 import { watchUsaMidtermsForecast } from '../data/forecast-service.js';
 import { contestSkeleton, applyContest } from './generic-contest.js';

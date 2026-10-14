@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { normalizeParty, pollSignal } from '../../data/usa-election-context.js?v=2';
+import { normalizeParty, pollSignal, pollSourceReady, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 
 const money = (cents) => {
     if (cents == null) return '관측 없음';
@@ -77,6 +77,26 @@ const observationHtml = (row) => {
         <span>${escapeHtml(answers)}</span>${sourceLink(row.source_url)} ${row.methodology_url ? sourceLink(row.methodology_url).replace('원문 ↗', '방법론 ↗') : ''}</li>`;
 };
 
+export const latestAdmittedPoll = (race, now = Date.now()) => {
+    if (race?.phase !== 'pre_election' || raceClosedByDate(race,now) || race.schedule_status !== 'reported_general_matchup') return null;
+    const rows = (race.observations || []).filter((row) => row.aggregation_eligibility?.eligible === true
+        && ['primary_toplines_checked','partial'].includes(row.source_quality?.verification_level)
+        && row.display_group === 'general' && row.contest_id === race.contest_id
+        && /^\d{4}-\d{2}-\d{2}$/.test(row.field_end || '') && row.field_end <= new Date(now).toISOString().slice(0,10)
+        && (race.required_candidates || []).every((n) => row.answers?.some((a) => a.name === n))
+        && row.answers?.length >= 2 && row.answers.every((a) => Number.isFinite(a.pct) && a.pct >= 0 && a.pct <= 100));
+    return rows.filter((r) => !rows.some((other) => other.pollster_group === r.pollster_group && other.field_end === r.field_end
+        && JSON.stringify([...other.answers].sort((a,b)=>a.name.localeCompare(b.name))) !== JSON.stringify([...r.answers].sort((a,b)=>a.name.localeCompare(b.name)))))
+        .sort((a,b) => b.field_end.localeCompare(a.field_end) || (b.source_quality.verification_level === 'primary_toplines_checked') - (a.source_quality.verification_level === 'primary_toplines_checked') || String(a.id).localeCompare(String(b.id)))[0] || null;
+};
+export const latestPollHtml = (race, board, health, now = Date.now()) => {
+    if (race?.phase === 'certified_result' || race?.phase === 'awaiting_certified_result' || raceClosedByDate(race,now)) return '';
+    const row = latestAdmittedPoll(race,now);
+    const stale = !pollSourceReady(board,health,now);
+    return `<div class="elections-latest-poll"><strong>최신 집계 채택 조사${stale ? ' · 갱신 대기' : ''}</strong>
+        ${row ? observationHtml(row).replace(/^<li/, '<div').replace(/<\/li>$/, '</div>') + '<small>최신 보유 조사이며 오늘 발표된 조사라는 뜻은 아닙니다. 기관 정확도·당선 확률은 별도 평가하지 않았습니다.</small>' : '<span>검증·집계 조건을 충족한 본선 조사 미연결</span>'}</div>`;
+};
+
 const statusLabel = {
     poll_lead: '복수 기관 조사상 우세', single_poll_lead: '단일 기관 수치상 앞섬 · 참고', no_recent_poll: '최근 조사 없음',
     insufficient_pollsters: '독립 조사기관 부족', tie: '조사 우세 동률',
@@ -98,7 +118,7 @@ export const pollEvidenceHtml = (race, board, health, days = 7) => {
     const leads = Object.entries(signal.window?.lead_counts || {});
     const leadCountText = leads.length ? `조사별 우세 횟수: ${leads.map(([candidate, count]) => `${candidate} ${count}회`).join(' · ')}${signal.window?.tie_count ? ` · 동률 ${signal.window.tie_count}회` : ''}` : '';
     const coverage = board?.monitoring?.race_coverage?.[race?.race_id];
-    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '본선 후보 대진 검토 대기 · 새 조사 자동 채택 보류'
+    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '여론조사 후보 대진 대조 대기 · 새 조사 자동 채택 보류'
         : coverage.status === 'no_provider_record' ? '현재 수집 API 미발견 · 조사 자체의 부재를 뜻하지 않음'
         : coverage.status === 'review_required' ? '발견한 조사 출처·문항 검토 대기' : '';
     const note = race?.schedule_status === 'watch_slot_unverified' && !hasPoll
