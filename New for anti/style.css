@@ -478,6 +478,10 @@ body {
     background: rgba(15, 23, 42, 0.7);
     color: #cbd5e1;
 }
+/* 종류 칩 뒤의 국가 바로가기 -- 필터가 아니라 화면 이동이라 세로줄로 떼어 둔다 */
+.elections-kind-divider { width: 1px; align-self: stretch; min-height: 20px; background: rgba(148, 163, 184, 0.35); }
+.elections-kind-filter .elections-country-jump { border-color: rgba(251, 191, 36, 0.45); color: #fde68a; }
+.elections-kind-filter .elections-country-jump::after { content: '→'; font-size: 10px; opacity: 0.7; }
 .elections-month-block + .elections-month-block { margin-top: 14px; }
 /* 목록이 길어 달 머리를 붙여 둔다. 스크롤 컨테이너는 좌측 패널이다. */
 .elections-month-head {

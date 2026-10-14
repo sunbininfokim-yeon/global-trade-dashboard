@@ -13,7 +13,13 @@ let activeKind = 'all';
 
 const filterRows = (rows) => (activeKind === 'all' ? rows : rows.filter((event) => kindOf(event) === activeKind));
 
-const chips = (upcoming) => {
+// 종류 칩 옆의 국가 바로가기. 필터가 아니라 그 나라의 선거 화면으로 넘어간다
+// (미국 = 선거·슈퍼팩, 이스라엘 = 선거 분석 탭).
+const shortcutChips = (shortcuts) => (shortcuts.length ? `<span class="elections-kind-divider" aria-hidden="true"></span>
+        ${shortcuts.map(({ key, ko, title }) => `<button class="elections-tab elections-country-jump" type="button"
+        data-election-jump="${key}" title="${title}">${ko}</button>`).join('')}` : '');
+
+const chips = (upcoming, shortcuts) => {
     const counts = new Map();
     upcoming.forEach((event) => {
         const key = kindOf(event);
@@ -25,6 +31,7 @@ const chips = (upcoming) => {
         ${chip('all', '전체', upcoming.length)}
         ${EVENT_KINDS.map((kind) => chip(kind.key, kind.ko, counts.get(kind.key) || 0)).join('')}
         ${counts.get('other') ? chip('other', '기타', counts.get('other')) : ''}
+        ${shortcutChips(shortcuts)}
     </div>`;
 };
 
@@ -34,7 +41,7 @@ const monthBlocks = (rows, countries, briefFor, today) => groupByMonth(rows).map
         ${renderDateGroups(monthRows, countries, briefFor, { today })}
     </section>`).join('');
 
-export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpen, today = new Date().toISOString().slice(0, 10) }) => {
+export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpen, shortcuts = [], onShortcut, today = new Date().toISOString().slice(0, 10) }) => {
     const { upcoming, past } = splitByToday(allDatedEvents(calendar), today);
     root.className = 'panel-section elections-timeline';
 
@@ -43,9 +50,8 @@ export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpe
         root.innerHTML = `
             <div class="panel-header">
                 <h2>세계 선거 일정</h2>
-                <p>오늘 이후 ${upcoming.length}건 — 대통령·의회·지방·재보궐·당권</p>
             </div>
-            ${chips(upcoming)}
+            ${chips(upcoming, shortcuts)}
             <div class="elections-date-list">
                 ${rows.length ? monthBlocks(rows, countries, briefFor, today)
                 : '<p class="elections-muted">이 종류로 다가오는 확정 일정이 없습니다. 수집되지 않았다는 뜻일 수도 있습니다.</p>'}
@@ -64,6 +70,9 @@ export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpe
         root.querySelectorAll('[data-election-kind]').forEach((button) => button.addEventListener('click', () => {
             activeKind = button.dataset.electionKind;
             paint();
+        }));
+        root.querySelectorAll('[data-election-jump]').forEach((button) => button.addEventListener('click', () => {
+            onShortcut?.(button.dataset.electionJump);
         }));
         // 브리핑은 일정 행 자체를 읽는다(날짜·개선 규모 등). 키만 넘기면 창이 그 맥락을
         // 잃으므로 눌린 행의 일정도 같이 넘긴다.
