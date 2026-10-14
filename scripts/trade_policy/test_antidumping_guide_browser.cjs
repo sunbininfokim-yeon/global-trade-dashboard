@@ -1,0 +1,67 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const base = process.env.SIMULATOR_PREVIEW_URL || 'http://127.0.0.1:8773';
+if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only the loopback preview may be tested.');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1080 } });
+    const errors = [], requests = [];
+    page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
+    const field = name => page.getByLabel(name, { exact: true });
+    const button = name => page.getByRole('button', { name, exact: true }).click();
+    const stage = id => page.locator(`[data-ad-process] [data-ad-stage="${id}"]`);
+    const confirm = async () => { await field('AD 제품 범위 확인').check(); await field('AD 법인 적용 조건 확인').check(); };
+    const json = async () => { const promise = page.waitForEvent('download'); await button('반덤핑 JSON 저장'); return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8')); };
+    await page.goto(`${base}/policy/us/simulator`); await button('반덤핑');
+    await page.locator('[data-ad-company="hyosung"]').click();
+    await page.locator('[data-ad-calculator]>summary').click();
+    for (const [label, value] of [['대상 수입 신고가격 · USD', '1000000'], ['가정 AD 예치율 %', '9.32'], ['연 금융비용률 %', '5'], ['예치 기간 · 일', '365'], ['통관일', '2026-10-11']]) assert.equal(await field(label).inputValue(), value);
+    assert.equal(await stage('initiation').getAttribute('data-state'), 'latest');
+    assert.equal(await stage('final').getAttribute('data-state'), 'unknown');
+    assert.equal(await stage('liquidation').getAttribute('data-state'), 'unknown');
+    await field('진행을 볼 재심 대상 기간').selectOption('lpt-2023-24');
+    assert.equal(await stage('initiation').getAttribute('data-state'), 'confirmed');
+    assert.equal(await stage('final').getAttribute('data-state'), 'latest');
+    assert.equal(await stage('liquidation').getAttribute('data-state'), 'unknown');
+    assert.equal(await field('가정 AD 예치율 %').inputValue(), '9.32'); // Progress POR does not pick an entry rate.
+    assert.equal(await stage('selection').getAttribute('data-state'), 'unknown'); // Hyosung was not individually selected.
+    await page.locator('.ts-ad-route').first().locator('summary').first().click();
+    assert.equal(await stage('cit_filed').getAttribute('data-state'), 'unknown');
+    assert.equal(await stage('remand').getAttribute('data-state'), 'unknown');
+    assert.equal(await stage('appeal').getAttribute('data-state'), 'unknown');
+    await stage('cit_filed').locator('summary').click(); assert.match(await stage('cit_filed').innerText(), /30일/);
+    await confirm(); await button('AD 예치 부담 계산'); let r = await json();
+    assert.equal(r.reference_deposit_usd, '43200.00'); assert.equal(r.scenario_deposit_usd, '93200.00');
+    assert.ok(r.input_guidance.every(x => x.origin === 'editable_example'));
+    await field('진행을 볼 재심 대상 기간').selectOption('lpt-2025-26');
+    assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장' }).isEnabled());
+    await button('90일'); assert.equal(await field('예치 기간 · 일').inputValue(), '90');
+    assert.ok(await page.getByRole('button', { name: '반덤핑 JSON 저장' }).isDisabled());
+    await button('AD 예치 부담 계산'); r = await json(); assert.equal(r.input_guidance.find(x => x.key === 'holding_days').origin, 'user_input');
+    await field('대상 수입 신고가격 · USD').fill('2500000'); await field('가정 AD 예치율 %').fill('12');
+    await field('반덤핑 사건').selectOption('A-580-908');
+    assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '2500000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '12');
+    assert.ok(!(await field('AD 법인 적용 조건 확인').isChecked()));
+    assert.equal(await stage('initiation').getAttribute('data-state'), 'latest');
+    assert.equal(await stage('final').getAttribute('data-state'), 'unknown');
+    await field('진행을 볼 재심 대상 기간').selectOption('tires-2023-24');
+    assert.equal(await stage('final').getAttribute('data-state'), 'latest');
+    await button('품목 예시 적용'); assert.equal(await field('대상 수입 신고가격 · USD').inputValue(), '100000'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '18.03');
+    await field('반덤핑 기업').selectOption('nexen'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '13.02');
+    await field('반덤핑 기업').selectOption('unknown'); assert.equal(await field('가정 AD 예치율 %').inputValue(), '');
+    assert.equal(await field('진행을 볼 재심 대상 기간').count(), 0); assert.match(await page.locator('[data-ad-process]').innerText(), /실제 진행 기록이 연결되지 않았습니다/);
+    await field('예치율 근거').selectOption('manual'); await button('품목 예시 적용');
+    assert.equal(await field('직접 확인한 AD 예치율 %').inputValue(), ''); assert.equal(await field('가정 AD 예치율 %').inputValue(), '');
+    await button('AD 예치 부담 계산'); assert.ok(await field('AD 사건번호').evaluate(el => document.activeElement === el));
+    await button('반덤핑 입력 초기화'); await confirm(); await button('AD 예치 부담 계산');
+    await page.screenshot({ path: '/tmp/antidumping-guide-desktop.png', fullPage: true });
+    await field('진행을 볼 재심 대상 기간').selectOption('lpt-2023-24');
+    await page.locator('.ts-ad-route').first().locator('summary').first().click();
+    await page.setViewportSize({ width: 360, height: 844 }); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    await page.screenshot({ path: '/tmp/antidumping-guide-mobile.png', fullPage: true });
+    assert.deepEqual(errors, []); assert.ok(requests.every(u => new URL(u).hostname === '127.0.0.1'));
+    console.log('PASS: product presets, actual rates vs +5pp scenarios, preserved edits, provenance JSON, period sensitivity and stale results; POR-isolated sourced lights; optional litigation/remand and unknown docket; no assumed liquidation; manual missing data focus; mobile 360px; no external calls.');
+  } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exitCode = 1; });

@@ -58,6 +58,7 @@ CABINET_OFFICIAL_URLS: Dict[str, str] = {
     "Brooke Rollins": "https://www.usda.gov/our-agency/about-usda/our-secretary",
     "Marco Rubio": "https://www.state.gov/biographies/marco-rubio/",
     "Keith E. Sonderling": CABINET_URL,
+    "Keith Sonderling": CABINET_URL,
     "Scott Turner": CABINET_URL,
     "Russ Vought": "https://www.whitehouse.gov/omb/",
     "Chris Wright": "https://www.energy.gov/person/chris-wright",

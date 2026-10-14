@@ -1,0 +1,76 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const base = process.env.SIMULATOR_PREVIEW_URL || 'http://127.0.0.1:8773';
+if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback preview may be tested.');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1080 } });
+    const errors = [], requests = [];
+    page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
+    const field = name => page.getByLabel(name, { exact: true });
+    const click = name => page.getByRole('button', { name, exact: true }).click();
+    const exportJSON = async name => {
+      const promise = page.waitForEvent('download'); await click(name);
+      return JSON.parse(await fs.readFile(await (await promise).path(), 'utf8'));
+    };
+    await page.goto(`${base}/policy/us/simulator`);
+    for (const [product, code] of [['auto-brake','8708.30.50'],['auto-steering','8708.94.50.00'],['auto-suspension','8708.80.16']]) {
+      await field('분석 품목').selectOption(product);
+      assert.equal(await field('한국 현행 관세 조합').inputValue(), 'standard');
+      const details = page.locator('[data-product-verification]'); await details.locator('summary').click();
+      assert.match(await details.innerText(), new RegExp(code.replaceAll('.', '\\.')));
+      assert.match(await details.innerText(), /6페이지\/51개 사건/);
+      await field('한국 비교할 관세').selectOption('manual'); await field('한국 가정 관세').fill('30');
+      assert.ok(!(await field('관세 적용 조건 확인').isChecked()));
+      await field('관세 적용 조건 확인').check(); await click('시나리오 계산');
+      const json = await exportJSON('결과 JSON 저장');
+      assert.equal(json.inputs.calibration.supplier_source, null);
+      assert.equal(json.inputs.rows.find(r=>r.country==='KOR').tariff_before,15);
+      assert.equal(json.inputs.rows.find(r=>r.country==='KOR').tariff_after,30);
+      const review = json.inputs.calibration.product_verification.find(r=>r.ad.country==='KOR');
+      assert.equal(review.classification.hts,code); assert.equal(review.ad.rate_pct,null);
+    }
+    await click('기업'); await field('실제 기업 선택').selectOption('hyundai-mobis');
+    await field('기업 분석 품목').selectOption('auto-brake');
+    let details = page.locator('[data-product-verification]'); await details.locator('summary').click();
+    assert.match(await details.innerText(),/미선택 원산지/);
+    await field('기업 제품 원산지').selectOption('KOR');
+    for (const [label,value] of [['기업 분석 기간','브라우저 검증 · 가정'],['기업 기준 통관 단가','100'],['기업 기준 판매량','10000'],['기업 단위 변동원가','70'],['기업 기간 고정비','100000']]) await field(label).fill(value);
+    await field('기업 비교할 관세').selectOption('manual'); await field('기업 가정 총 관세').fill('30');
+    await field('기업 관세 적용 조건 확인').check(); await page.getByRole('button',{name:'기업 시나리오 계산'}).click();
+    const company = await exportJSON('기업 JSON 저장');
+    assert.equal(company.inputs.calibration.product_verification.ad.country,'KOR');
+    assert.equal(company.inputs.calibration.product_verification.ad.rate_pct,null);
+    assert.equal(company.inputs.tariff_before,15); assert.equal(company.inputs.tariff_after,30);
+    await field('기업 제품 원산지').selectOption('CHN');
+    assert.equal(await field('기업 현행 관세 조합').inputValue(),'unresolved');
+    details = page.locator('[data-product-verification]'); await details.locator('summary').click();
+    assert.match(await details.innerText(),/이 원산지의 AD\/CVD 검토 자료 미수록/);
+    assert.ok(!(await details.innerText()).includes('6페이지/51개'));
+    await click('반덤핑'); await field('산업 분야').selectOption('steel');
+    await page.locator('[data-ad-industry="octg"]').click();
+    assert.match(await page.locator('[data-verification-status]').innerText(),/OCTG 공식 사건/);
+    details = page.locator('[data-ad-gap] [data-product-verification]'); await details.locator('summary').click();
+    assert.match(await details.innerText(),/9\.80%/); assert.match(await details.innerText(),/현재 예치율 아님/);
+    assert.equal(await page.locator('[data-ad-reference], [data-ad-stage]').count(),0);
+    await field('산업 분야').selectOption('auto'); await page.locator('[data-ad-industry="auto-suspension"]').click();
+    assert.match(await page.locator('[data-verification-status]').innerText(),/유압실린더 조사/);
+    await page.locator('[data-ad-industry="auto-electric-drive"]').click();
+    details=page.locator('[data-ad-gap] [data-product-verification]'); await details.locator('summary').click();
+    assert.match(await details.innerText(),/8504\.40/); assert.match(await details.innerText(),/구체 사양 필요/);
+    await page.locator('[data-ad-industry="auto-brake"]').click();
+    await page.locator('[data-ad-profile="hyundai-mobis"]').click();
+    details=page.locator('[data-ad-gap] [data-product-verification]'); await details.locator('summary').click();
+    assert.match(await details.innerText(),/직접 대응 사건 미발견/); assert.match(await details.innerText(),/면제나 0% 판정이 아닙니다/);
+    assert.ok(await details.locator('a').evaluateAll(links=>links.every(a=>a.target==='_blank'&&a.rel.includes('noopener'))));
+    await page.locator('[data-ad-gap]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:'docs/previews/automotive-verification-desktop.png'});
+    await page.setViewportSize({width:360,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.locator('[data-ad-gap]').screenshot({path:'docs/previews/automotive-verification-mobile.png'});
+    assert.deepEqual(errors,[]); assert.ok(requests.every(u=>new URL(u).hostname==='127.0.0.1'));
+    console.log('PASS: representative parts 15→30, required confirmation and exported evidence; missing supplier null; company origin isolation; OCTG margin/deposit separation; cylinder scope; motor/inverter ambiguity; official links; 360px; no external calls.');
+  } finally { await browser.close(); }
+})().catch(e=>{console.error(e);process.exitCode=1;});

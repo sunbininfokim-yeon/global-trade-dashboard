@@ -273,7 +273,7 @@ function main() {
     schema_version: 1,
     congress_number: CONGRESS,
     source_name: 'cursor-verified-official-roster',
-    source_updated_at: '2026-09-11T00:00:00Z',
+    source_updated_at: '2026-10-12T00:00:00Z',
     coverage: {
       complete: false,
       roles,

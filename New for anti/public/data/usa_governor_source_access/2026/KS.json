@@ -1,0 +1,45 @@
+{
+  "schema": "usa_governor_source_access_v1",
+  "state": "KS",
+  "cycle": 2026,
+  "checked_at": "2026-10-09T10:02:32.100035+00:00",
+  "status": "public_endpoint_reachable_mapping_required",
+  "last_current_endpoint_accessible_at": "2026-10-09T10:02:32.100035+00:00",
+  "financial_data_collected": false,
+  "candidate_amounts_available": false,
+  "current_portal_url": "https://kpdc.kansas.gov/campaign-finance/view-submitted-forms-and-reports/",
+  "source_review": {
+    "cycle": 2026,
+    "reviewed_on": "2026-10-09",
+    "endpoints": [
+      {
+        "url": "https://kpdc.kansas.gov/campaign-finance/view-submitted-forms-and-reports/",
+        "role": "current_public_portal"
+      },
+      {
+        "url": "https://www.kansas.gov/ethics/CFAScanned/Others/2026ElecCycle/IndependentExpendLink.htm",
+        "role": "current_public_export"
+      }
+    ],
+    "note_ko": "기관 공식 IE/PAC 보고서 목록. 주의회·주민투표·주지사 및 경선/본선·정정 관계 분리 필요. PAC의 S/O는 조직신고서입니다."
+  },
+  "endpoints": [
+    {
+      "url": "https://kpdc.kansas.gov/campaign-finance/view-submitted-forms-and-reports/",
+      "status": "public_endpoint_reachable",
+      "http_status": 200,
+      "same_host": true,
+      "body_prefix_sha256": "3f40b1d06523bf151f92ace652a92024be9300f338b793b4d9c100f8e27f7053",
+      "role": "current_public_portal"
+    },
+    {
+      "url": "https://www.kansas.gov/ethics/CFAScanned/Others/2026ElecCycle/IndependentExpendLink.htm",
+      "status": "public_endpoint_reachable",
+      "http_status": 200,
+      "same_host": true,
+      "body_prefix_sha256": "73b82619b1c070229ef50dd6797b29ba42d2430b45cc2e3acf927eb5f1dadf90",
+      "role": "current_public_export"
+    }
+  ],
+  "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다."
+}

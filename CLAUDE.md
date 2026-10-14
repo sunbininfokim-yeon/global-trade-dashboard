@@ -17,6 +17,16 @@ cd "/Users/yeoninair/Documents/New for anti"   # 또는 clone 경로
 
 읽고 따를 것: `docs/ops/README.md`, `OWNERS.md`, `TASKS.md`, `docs/ops/handoff/`.
 
+### 미국 선거 조사·통합
+
+선거 작업은 `AGENTS.md`의 미국 선거 절과 `docs/ops/US_ELECTION_STATE_INPUTS.md`를 먼저 읽는다.
+주별 조사는 한 주·한 worktree·한 독립 PR로 분리하고, 최신 main 또는 packet 없는 공용 기반 PR에서 시작한다.
+오래된 주별 스택을 다시 이어 붙이거나 전국 생성 JSON을 텍스트 병합하지 않는다.
+주별 PR은 입력 packet·해당 주 원문/감사 자료·주별 테스트/인수 문서만 담고,
+공용 코드·테스트·workflow·UI·전국 산출물은 별도 담당 PR에서 처리한다.
+통합 시 원래 수집일·영수증·타주 자료·`house_poll_focus`를 검증하고, 병합·배포는 사용자 확정에 따른다.
+다른 세션에는 `docs/ops/START_PROMPTS.md`의 미국 선거 공통 프롬프트를 전달한다.
+
 ## 소유
 
 - **단독 소유:** `New for anti/{app.js,style.css,index.html,data.js,shipping.js}`,

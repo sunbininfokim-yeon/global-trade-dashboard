@@ -14,7 +14,7 @@ from election_watch.poll_run_capture import make_capture, validate_capture, rest
 from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.poll_refresh_provenance import retain_state_provenance
 from freeze_state_inputs import make_operations
-from check_state_packet_changes import violations, PACKETS, INTEGRATION
+from check_state_packet_changes import violations, PACKETS
 from publish_state_packets import rebuild
 import publish_polling_run as publisher
 
@@ -77,8 +77,8 @@ class StateInputTests(unittest.TestCase):
                        'New for anti/public/data/usa_election_state_evidence/2026/CT-new.json'):
             self.assertEqual(violations([packet, shared], 'codex/ct-evidence-next'), [shared])
         self.assertFalse(violations([packet], 'codex/ct-evidence-next'))
-        self.assertFalse(violations([packet, shared], INTEGRATION))
-        self.assertTrue(violations([packet, shared], INTEGRATION+'-extra'))
+        # The one-time #518 integration is merged; its branch is no bypass now.
+        self.assertEqual(violations([packet, shared], 'codex/election-state-integration-20261010'), [shared])
         self.assertFalse(violations([packet, 'New for anti/scripts/election_watch/election_watch/governor_ct.py'], 'codex/ct-evidence-next'))
         self.assertTrue(violations([packet, PACKETS+'AL.json'], 'codex/ct-evidence-next'))
 

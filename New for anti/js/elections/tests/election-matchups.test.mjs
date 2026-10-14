@@ -71,7 +71,11 @@ test('a poll for the wrong nominee cannot resolve a Lean/Toss-up seat in the out
 });
 
 test('35-seat list has one-line state/office/rating and bold incumbent tenure plus real opponent',()=>{
- const html=electionOverviewHtml(country,ratings,{now});
+ // The public AK roster was reviewed after the older October 7 fixture clock.
+ // Exercise its display on the review date; the future-roster rejection above
+ // still verifies that a genuinely future review cannot be displayed early.
+ const rosterNow=Date.parse(state('AK').election_matchups['USA:AK:senate'].reviewed_on+'T12:00:00Z');
+ const html=electionOverviewHtml(country,ratings,{now:rosterNow});
  const list=html.split('class="elections-disclosure elections-senate-contests"')[1].split('</details>')[0];
  assert.equal((list.match(/data-overview-state=/g)||[]).length,35);
  const ak=list.split('data-overview-state="AK"')[1].split('</button>')[0];

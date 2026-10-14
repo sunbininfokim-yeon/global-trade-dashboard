@@ -1,7 +1,7 @@
 name: Monthly commodity trade freshness
 on:
   schedule:
-    - cron: '19 5 * * 1'
+    - cron: '19 5 * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,4 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python3 'New for anti/scripts/commodity_trade/check_freshness.py'
+      - name: Check actual deployed health (not merely the latest Actions run)
+        shell: bash
+        run: python3 'New for anti/scripts/commodity_trade/check_freshness.py' | tee "$RUNNER_TEMP/freshness.json"
+      - name: Retain failure and product-level coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commodity-trade-freshness-${{ github.run_id }}
+          path: ${{ runner.temp }}/freshness.json
+          retention-days: 30
