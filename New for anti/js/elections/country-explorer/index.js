@@ -1,7 +1,7 @@
 import { renderCountryShell } from './country-shell.js?v=4';
 import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
-import { renderCountryMap } from './country-map.js?v=7';
+import { renderCountryMap } from './country-map.js?v=8';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=10';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=6';
 import { createModal } from '../modal.js';
