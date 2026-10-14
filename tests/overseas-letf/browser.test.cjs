@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../../New for anti');
+const board = JSON.parse(fs.readFileSync(path.join(root, 'public/data/overseas_letf_board_v1.json')));
 (async () => {
     const browser = await chromium.launch({ headless: true });
     try {
@@ -33,13 +34,22 @@ const root = path.resolve(__dirname, '../../New for anti');
         assert(counts.n > 500 && counts.ids === 15, 'gzip reader must preserve different products on the same date');
         await page.selectOption('[data-ms-overseas-group]', 'samsung');
         await page.selectOption('[data-ms-overseas-product]', 'XS3388190301');
-        assert.match(await page.locator('[data-ms-overseas]').innerText(), /선물/);
+        // Check the selected product's own detail, not another row in the panel.
+        // This ETP is physical shares financed by borrowing, not futures.
+        const samsungProduct = board.products.find(p => p.product_id === 'XS3388190301');
+        assert.equal(samsungProduct.structure, 'physical_margin');
+        assert.equal(await page.locator('[data-ms-overseas-product]').inputValue(), samsungProduct.product_id);
+        assert.equal(await page.locator('[data-ms-overseas] > h3').first().innerText(), samsungProduct.name);
+        assert.match(await page.locator('[data-ms-overseas] > h3 + p').first().innerText(), /구조 현물·차입/);
         await page.selectOption('[data-ms-overseas-group]', 'adr');
         await page.selectOption('[data-ms-overseas-product]', 'SKHQ');
         assert.match(await page.locator('[data-ms-overseas]').innerText(), /축적 중/);
         await page.selectOption('[data-ms-overseas-group]', 'global');
         await page.selectOption('[data-ms-overseas-product]', 'TQQQ');
-        assert.match(await page.locator('[data-ms-overseas]').innerText(), /파생·담보/);
+        const tqqq = board.products.find(p => p.product_id === 'TQQQ');
+        assert.equal(tqqq.structure, 'derivatives_and_collateral');
+        assert.equal(await page.locator('[data-ms-overseas] > h3').first().innerText(), tqqq.name);
+        assert.match(await page.locator('[data-ms-overseas] > h3 + p').first().innerText(), /구조 파생·담보/);
         assert.doesNotMatch(await page.locator('[data-ms-overseas]').innerText(), /derivatives_and_collateral/);
         assert(await page.locator('.mm-chart path.mm-line').count() >= 3);
         for (const width of [736, 360]) {
