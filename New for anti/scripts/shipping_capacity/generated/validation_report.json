@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-13T23:06:47.376046+00:00",
+  "generated_at": "2026-10-14T21:56:52.545076+00:00",
   "snapshot_model_version": "1.10.0",
-  "snapshot_generated_at": "2026-10-13T23:05:23.604523+00:00",
+  "snapshot_generated_at": "2026-10-14T21:55:09.443078+00:00",
   "simulator_validation": {
     "status": "passed",
     "scope": "temporary validation values only; never published as observed data or scenario presets",
@@ -182,21 +182,21 @@
       {
         "chokepoint_id": "suez",
         "metric": "all",
-        "latest_date": "2026-10-04",
-        "selected_model": "linear",
+        "latest_date": "2026-10-11",
+        "selected_model": "ridge",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
         "holdout_beats_best_simple_baseline_by_5pct": true,
         "walk_forward_beats_best_simple_baseline_by_5pct": false,
         "walk_forward_positive_r2": false,
         "walk_forward_selected_model_metrics": {
-          "model": "linear",
+          "model": "ridge",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.083757,
-          "test_rmse_symmetric_gap": 0.10153,
-          "test_r2": -0.022333,
+          "test_mae_symmetric_gap": 0.085888,
+          "test_rmse_symmetric_gap": 0.105135,
+          "test_r2": -0.032293,
           "stress_direction_accuracy": 0.834821,
-          "mean_fold_mae_symmetric_gap": 0.083757,
+          "mean_fold_mae_symmetric_gap": 0.085888,
           "fold_wins_vs_best_simple_baseline": 3
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -204,7 +204,7 @@
       {
         "chokepoint_id": "panama",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "gradient_boosting",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -214,19 +214,19 @@
         "walk_forward_selected_model_metrics": {
           "model": "gradient_boosting",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.083013,
-          "test_rmse_symmetric_gap": 0.101321,
-          "test_r2": 0.147876,
-          "stress_direction_accuracy": 0.75,
-          "mean_fold_mae_symmetric_gap": 0.083013,
-          "fold_wins_vs_best_simple_baseline": 0
+          "test_mae_symmetric_gap": 0.083548,
+          "test_rmse_symmetric_gap": 0.102436,
+          "test_r2": 0.113959,
+          "stress_direction_accuracy": 0.736607,
+          "mean_fold_mae_symmetric_gap": 0.083548,
+          "fold_wins_vs_best_simple_baseline": 1
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
       },
       {
         "chokepoint_id": "bosporus",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "gradient_boosting",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -236,11 +236,11 @@
         "walk_forward_selected_model_metrics": {
           "model": "gradient_boosting",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.13234,
-          "test_rmse_symmetric_gap": 0.175133,
-          "test_r2": 0.050463,
+          "test_mae_symmetric_gap": 0.134912,
+          "test_rmse_symmetric_gap": 0.177836,
+          "test_r2": 0.016969,
           "stress_direction_accuracy": 0.6875,
-          "mean_fold_mae_symmetric_gap": 0.13234,
+          "mean_fold_mae_symmetric_gap": 0.134912,
           "fold_wins_vs_best_simple_baseline": 1
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -248,7 +248,7 @@
       {
         "chokepoint_id": "bab_el_mandeb",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "linear",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -258,11 +258,11 @@
         "walk_forward_selected_model_metrics": {
           "model": "linear",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.117809,
-          "test_rmse_symmetric_gap": 0.167982,
-          "test_r2": 0.116473,
-          "stress_direction_accuracy": 0.808036,
-          "mean_fold_mae_symmetric_gap": 0.117809,
+          "test_mae_symmetric_gap": 0.113208,
+          "test_rmse_symmetric_gap": 0.16486,
+          "test_r2": 0.092812,
+          "stress_direction_accuracy": 0.8125,
+          "mean_fold_mae_symmetric_gap": 0.113208,
           "fold_wins_vs_best_simple_baseline": 0
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -270,21 +270,21 @@
       {
         "chokepoint_id": "hormuz",
         "metric": "tanker",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "gradient_boosting",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
         "holdout_beats_best_simple_baseline_by_5pct": false,
         "walk_forward_beats_best_simple_baseline_by_5pct": false,
-        "walk_forward_positive_r2": true,
+        "walk_forward_positive_r2": false,
         "walk_forward_selected_model_metrics": {
           "model": "gradient_boosting",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.957089,
-          "test_rmse_symmetric_gap": 1.153637,
-          "test_r2": 0.027803,
-          "stress_direction_accuracy": 0.575893,
-          "mean_fold_mae_symmetric_gap": 0.957089,
+          "test_mae_symmetric_gap": 0.966867,
+          "test_rmse_symmetric_gap": 1.176689,
+          "test_r2": -0.010212,
+          "stress_direction_accuracy": 0.620536,
+          "mean_fold_mae_symmetric_gap": 0.966867,
           "fold_wins_vs_best_simple_baseline": 0
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -292,7 +292,7 @@
       {
         "chokepoint_id": "malacca",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "ridge",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -302,11 +302,11 @@
         "walk_forward_selected_model_metrics": {
           "model": "ridge",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.069313,
-          "test_rmse_symmetric_gap": 0.094497,
-          "test_r2": 0.156247,
+          "test_mae_symmetric_gap": 0.069208,
+          "test_rmse_symmetric_gap": 0.093724,
+          "test_r2": 0.187082,
           "stress_direction_accuracy": 0.803571,
-          "mean_fold_mae_symmetric_gap": 0.069313,
+          "mean_fold_mae_symmetric_gap": 0.069208,
           "fold_wins_vs_best_simple_baseline": 1
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -314,29 +314,29 @@
       {
         "chokepoint_id": "cape_good_hope",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "ridge",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
         "holdout_beats_best_simple_baseline_by_5pct": false,
-        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_beats_best_simple_baseline_by_5pct": true,
         "walk_forward_positive_r2": true,
         "walk_forward_selected_model_metrics": {
           "model": "ridge",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.064749,
-          "test_rmse_symmetric_gap": 0.086085,
-          "test_r2": 0.065768,
+          "test_mae_symmetric_gap": 0.063108,
+          "test_rmse_symmetric_gap": 0.085146,
+          "test_r2": 0.074398,
           "stress_direction_accuracy": 0.901786,
-          "mean_fold_mae_symmetric_gap": 0.064749,
-          "fold_wins_vs_best_simple_baseline": 3
+          "mean_fold_mae_symmetric_gap": 0.063108,
+          "fold_wins_vs_best_simple_baseline": 2
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
       },
       {
         "chokepoint_id": "gibraltar",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "ridge",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -346,11 +346,11 @@
         "walk_forward_selected_model_metrics": {
           "model": "ridge",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.057804,
-          "test_rmse_symmetric_gap": 0.07135,
-          "test_r2": 0.051926,
+          "test_mae_symmetric_gap": 0.05718,
+          "test_rmse_symmetric_gap": 0.070171,
+          "test_r2": 0.012813,
           "stress_direction_accuracy": 0.9375,
-          "mean_fold_mae_symmetric_gap": 0.057804,
+          "mean_fold_mae_symmetric_gap": 0.05718,
           "fold_wins_vs_best_simple_baseline": 1
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
@@ -358,7 +358,7 @@
       {
         "chokepoint_id": "oresund",
         "metric": "all",
-        "latest_date": "2026-10-04",
+        "latest_date": "2026-10-11",
         "selected_model": "ridge",
         "forecast_use": "descriptive_only",
         "published_next_7d_shortfall_fraction": null,
@@ -368,11 +368,11 @@
         "walk_forward_selected_model_metrics": {
           "model": "ridge",
           "cv_mae_symmetric_gap": null,
-          "test_mae_symmetric_gap": 0.139803,
-          "test_rmse_symmetric_gap": 0.179596,
-          "test_r2": -0.052459,
+          "test_mae_symmetric_gap": 0.14222,
+          "test_rmse_symmetric_gap": 0.182146,
+          "test_r2": -0.021873,
           "stress_direction_accuracy": 0.683036,
-          "mean_fold_mae_symmetric_gap": 0.139803,
+          "mean_fold_mae_symmetric_gap": 0.14222,
           "fold_wins_vs_best_simple_baseline": 2
         },
         "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
