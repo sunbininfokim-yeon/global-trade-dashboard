@@ -147,7 +147,11 @@ class WashingtonEvidenceTests(unittest.TestCase):
         self.assertEqual(smith['finance']['all_reported_election_types']['support_cents'], 1000)
         self.assertFalse(self.audit['finance_review']['FEC_recollected'])
         self.assertEqual(state['source_dates']['federal_last_success_at'],
-                         self.audit['finance_review']['existing_last_success_at'])
+                         finance['source_status']['federal']['last_success_at'])
+        # A later main collection may supersede the reviewed capture. Linking
+        # an identity must retain that actual source date, never roll it back.
+        self.assertGreaterEqual(state['source_dates']['federal_last_success_at'],
+                                self.audit['finance_review']['existing_last_success_at'])
 
 
 if __name__ == '__main__': unittest.main()
