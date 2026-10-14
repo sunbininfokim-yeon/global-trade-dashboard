@@ -213,6 +213,42 @@ def run_cv(df, features, mode, degree, window, min_train):
     return (np.array(truth), np.array(preds), np.array(bases), used)
 
 
+NESTED_MIN_PRIOR = 3
+
+
+def nested_selection(paths, baseline_form):
+    """Out-of-sample forecasts with the combination re-chosen every season.
+
+    paths: forward key -> {year: (truth, pred, trend)}. For each season, the
+    combination with the lowest RMSE over the seasons before it (at least
+    NESTED_MIN_PRIOR) makes the forecast. Returns the honest
+    (truth, pred, baseline) arrays plus which combination was picked when,
+    or None when too few seasons remain to score.
+    """
+    years = sorted(set.intersection(*(set(p) for p in paths.values())))
+    base_key = next((k for k in paths if f"_{baseline_form}_" in k), None)
+    if base_key is None:
+        return None
+    truth, pred, base, used, picks = [], [], [], [], {}
+    for j, y in enumerate(years):
+        prior = years[:j]
+        if len(prior) < NESTED_MIN_PRIOR:
+            continue
+        pick = min(paths, key=lambda k: np.mean(
+            [(paths[k][p][0] - paths[k][p][1]) ** 2 for p in prior]))
+        t, pr, _ = paths[pick][y]
+        truth.append(t)
+        pred.append(pr)
+        base.append(paths[base_key][y][2])
+        used.append(int(y))
+        name = pick.rsplit("_", 1)[0]
+        picks[name] = picks.get(name, 0) + 1
+    if len(truth) < NESTED_MIN_PRIOR:
+        return None
+    return {"arrays": (np.array(truth), np.array(pred), np.array(base)),
+            "years": used, "picks": picks}
+
+
 def train_one(cfg):
     path = os.path.join(TRAINING, f"{cfg.key}.csv")
     if not os.path.exists(path):
@@ -269,6 +305,7 @@ def train_one(cfg):
         log(f"  core features unusable (missing or constant): {', '.join(dropped)}")
 
     results = {}
+    paths = {}   # forward key -> {year: (truth, pred, trend)}
     sets = [("all", candidates)]
     if core:
         sets.append(("core", core))
@@ -281,6 +318,9 @@ def train_one(cfg):
                     continue
                 truth, pred, base, yrs = out
                 key = f"{label}_{tlabel}_{mode}"
+                if mode == "forward":
+                    paths[key] = {y: (t, pr, b) for y, t, pr, b
+                                  in zip(yrs, truth, pred, base)}
                 results[key] = evaluate(truth, pred, base)
                 results[key]["n"] = len(truth)
                 results[key]["years"] = [yrs[0], yrs[-1]]
@@ -326,10 +366,35 @@ def train_one(cfg):
 
     trend = fit_trend(df.year.values, df.yield_kg_ha.values, degree, window)
 
-    recent_skill = (1 - best["recent_rmse"] / best_baseline_recent
-                    if best_baseline_recent > 0 else float("nan"))
-    full_skill = (1 - best["rmse"] / best_baseline
-                  if best_baseline > 0 else float("nan"))
+    # The skill above is optimistic: the combination was picked because it
+    # scored best on the very years it is scored on. With eight combinations
+    # to choose from, a model with no real skill still wins by chance (Mato
+    # Grosso soy showed +3% and beats_trend, but scores -5% honestly). So the
+    # published skill, verdict and band come from nested selection instead:
+    # each season is forecast by whichever combination had the lowest RMSE on
+    # the seasons before it, the way the live forecast is actually chosen.
+    # The bar stays the best trend-only form in hindsight, which is the
+    # harder bar.
+    in_sample = {
+        "full_skill": float(1 - best["rmse"] / best_baseline
+                            if best_baseline > 0 else float("nan")),
+        "recent_skill": float(1 - best["recent_rmse"] / best_baseline_recent
+                              if best_baseline_recent > 0 else float("nan")),
+    }
+    nested = nested_selection(paths, baseline_form)
+    if nested is not None:
+        honest = evaluate(*nested["arrays"])
+        full_skill = 1 - honest["rmse"] / honest["baseline_rmse"]
+        recent_skill = 1 - honest["recent_rmse"] / honest["recent_baseline_rmse"]
+        best_baseline_recent = honest["recent_baseline_rmse"]
+        model_recent_rmse = honest["recent_rmse"]
+        log(f"  nested selection over {len(nested['years'])} "
+            f"seasons: {full_skill:+.1%} all, {recent_skill:+.1%} recent "
+            f"(in-sample pick: {in_sample['full_skill']:+.1%}, "
+            f"{in_sample['recent_skill']:+.1%})")
+    else:
+        full_skill, recent_skill = in_sample["full_skill"], in_sample["recent_skill"]
+        model_recent_rmse = best["recent_rmse"]
     beats_trend = full_skill > 0 and recent_skill > 0
 
     # Isolate the weather contribution. Where the model also carries lags, a
@@ -345,7 +410,7 @@ def train_one(cfg):
             nw_eval = evaluate(nw[0], nw[1], nw[2])
             nw_rmse = nw_eval["recent_rmse"]
             nw_rmse = min(nw_rmse, best_baseline_recent)
-            weather_skill = (1 - best["recent_rmse"] / nw_rmse
+            weather_skill = (1 - model_recent_rmse / nw_rmse
                              if nw_rmse > 0 else float("nan"))
             log(f"  vs trend+lags baseline (weather's own contribution): "
                 f"{weather_skill:+.1%}")
@@ -377,7 +442,7 @@ def train_one(cfg):
 
     # Uncertainty from out-of-sample error, never in-sample. Where the model
     # loses to the trend, the honest band is the trend's own error.
-    sigma = best["recent_rmse"] if beats_trend else best_baseline_recent
+    sigma = model_recent_rmse if beats_trend else best_baseline_recent
 
     # Coefficients are log-space effects of a one-standard-deviation move in
     # the feature; exp() - 1 turns them into the percentage yield change,
@@ -428,6 +493,16 @@ def train_one(cfg):
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),
+        # How the skill above was measured. "nested" = combination chosen
+        # from earlier seasons only; in_sample keeps the old optimistic
+        # number for comparison.
+        "skill_basis": "nested" if nested is not None else "in_sample",
+        "nested": (None if nested is None else {
+            "n": len(nested["years"]),
+            "years": [nested["years"][0], nested["years"][-1]],
+            "picks": nested["picks"],
+        }),
+        "skill_in_sample": in_sample,
         # Skill attributable to the weather features alone. Equal to
         # recent_skill_vs_trend when the model has no non-weather features.
         "weather_skill": float(weather_skill),
