@@ -1,0 +1,1860 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "FL",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202chaea67d341"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-14",
+        "reviewed_at": "2026-10-14T09:48:51.867233+00:00",
+        "snapshot_sha256": "7a23fb4fbf3c0903ad4be225ab0aed599974f998c8004108c4eaf5b99cf91a7d",
+        "provider_record_sha256": "d1154f384846721fcb843767590df3a4e474f82e042d700dc9fa7385fe9c80f4",
+        "sources": [
+          "https://changeresearch.com/research/2026/2026-10-12-florida-aapor-methodology-statement"
+        ],
+        "primary_toplines": {
+          "Byron Donalds": 47.0,
+          "David Jolly": 47.0
+        },
+        "question_sample_n": 920,
+        "primary_documents": [],
+        "admission": {
+          "pollster": "Change Research",
+          "provider_url": "https://changeresearch.com/research/2026/2026-10-12-florida-aapor-methodology-statement",
+          "group": "change_research",
+          "methodology_url": "https://changeresearch.com/research/2026/2026-10-12-florida-aapor-methodology-statement",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "forced_choice_after_undecided_probe",
+            "party_commissioned_reference"
+          ],
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "DEM",
+          "reviewed_sponsors": [
+            "Freedom Project USA"
+          ]
+        },
+        "ballot_format": "forced_two_candidate_after_undecided_probe",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 920,
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-10"
+          ],
+          "sponsors": [
+            "Freedom Project USA"
+          ],
+          "sampling_method": "non_probability_online",
+          "sampling_frame": "Facebook/Instagram ads and voter-file text-to-web; SurveyMonkey, English",
+          "weighting": "age gender race education 2024 vote media market",
+          "question_wording_checked": true,
+          "question": "Named governor ticket, initial preference plus undecided forced-choice follow-up",
+          "provider_pollster_label": "Change Research",
+          "primary_pollster_name": "Change Research"
+        },
+        "reported_precision": {
+          "kind": "modeled_error",
+          "half_width_pp": 3.1,
+          "confidence_level_pct": null,
+          "scope": "whole_survey_RV1106",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "Freedom Project USA"
+          ],
+          "provider_partisan_flag": "DEM",
+          "affiliation_independently_verified": false,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "precision_model_specification",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "LV920 결과는 미정 응답자 재질문을 포함하는 강제 양자/partisan 참고 전용입니다. 전체 RV1106의 modeled error3.1pp를 LV sampling MOE로 바꾸지 않습니다. sponsor 정당 소속은 독립 확인하지 않았고 API DEM flag를 보존합니다.",
+        "source_capture_status": "primary_page_manually_reviewed_direct_http_403"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-14",
+    "fetched_at": "2026-10-14T05:14:02.840821+00:00",
+    "receipt": {
+      "state": "FL",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-14",
+      "captured_at": "2026-10-14T05:14:02.840821+00:00",
+      "capture_kind": "provider_transport_only",
+      "provider_records": 64,
+      "serialized_provider_response_sha256": "4d39260f304a93198b762add5d1d5ae58594f2d4113f585004abbe195eacadfa",
+      "collection_checkpoint_sha256": "00c16d477074d0b0be50f8cd58cedbe84083f380000c8617ca5a6c2a5f31c276",
+      "primary_review_checked_at": "2026-10-14T09:48:51.867233+00:00"
+    },
+    "provider_records": [
+      {
+        "id": "us-202eme1adbecdc",
+        "poll_type": "us-senator",
+        "sample_size": 1125,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1b8oV9f1Zzl_Uew5WPkIIeFLjVMJuHNf7/edit?usp=sharing&ouid=111479937799022047482&rtpof=true&sd=true",
+        "created_at": "2026-04-10",
+        "start_date": "2026-03-29",
+        "end_date": "2026-03-31",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 45.9
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202uni187076c4",
+        "poll_type": "us-senator",
+        "sample_size": 786,
+        "population": "lv",
+        "url": "https://thecapitolist.com/unf-poll-donalds-leads-jolly-in-governor-race-moody-ahead-of-vindman-for-senate/",
+        "created_at": "2026-04-10",
+        "start_date": "2026-02-21",
+        "end_date": "2026-03-02",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 45.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202mdw67caa80b",
+        "poll_type": "us-senator",
+        "sample_size": 1834,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/790357-poll-democrats-gaining-ground-key-races-tighten-in-florida-as-donald-trump-drags-gop",
+        "created_at": "2026-04-13",
+        "start_date": "2026-03-27",
+        "end_date": "2026-04-03",
+        "pollster": "MDW Communications",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 43.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "EDGE Communications"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tarc7c48a03",
+        "poll_type": "governor",
+        "sample_size": 1200,
+        "population": "rv",
+        "url": "https://jamesmadison.org/wp-content/uploads/James-Madison-Institute-Crosstabs-Party-and-Region.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2026-02-13",
+        "end_date": "2026-02-16",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 34.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202mdw939afafd",
+        "poll_type": "governor",
+        "sample_size": 1834,
+        "population": "lv",
+        "url": "https://files.constantcontact.com/633ccf07901/581e6534-4e18-43a0-bffb-7cc7221a349a.pdf?rdr=true",
+        "created_at": "2026-04-14",
+        "start_date": "2026-03-27",
+        "end_date": "2026-04-03",
+        "pollster": "MDW Communications",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 40.5
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 41.2
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Edge Communications"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202eme613bf1d0",
+        "poll_type": "governor",
+        "sample_size": 1125,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1b8oV9f1Zzl_Uew5WPkIIeFLjVMJuHNf7/edit?gid=1842029095#gid=1842029095",
+        "created_at": "2026-04-14",
+        "start_date": "2026-03-29",
+        "end_date": "2026-03-31",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 39.4
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 44.2
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202uni0b1c00a2",
+        "poll_type": "governor",
+        "sample_size": 786,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69a83673b961e1161d90f552/1772631667881/PORL+2026+Spring+Statewide+LV+-+EMBARGO+3.4.26.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2026-02-21",
+        "end_date": "2026-03-02",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 36.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202uni09501325",
+        "poll_type": "governor",
+        "sample_size": null,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69a83673b961e1161d90f552/1772631667881/PORL+2026+Spring+Statewide+LV+-+EMBARGO+3.4.26.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2026-02-21",
+        "end_date": "2026-03-02",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Jerry Demings",
+            "pct": 36.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202pub03e4dd85",
+        "poll_type": "governor",
+        "sample_size": 200,
+        "population": "rv",
+        "url": "https://substack.com/home/post/p-188748831",
+        "created_at": "2026-04-14",
+        "start_date": "2026-02-20",
+        "end_date": "2026-02-20",
+        "pollster": "Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 42.3
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 35.8
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202uni654422a8",
+        "poll_type": "governor",
+        "sample_size": 728,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69962e376fb07f4b5e4c663a/1771449911414/UNF+PORL+Fall+Statewide+2025+LV+-+Press+Release+-+REVISED.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2025-10-15",
+        "end_date": "2025-10-25",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 34.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Watch"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202unia46ab3c4",
+        "poll_type": "governor",
+        "sample_size": 728,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69962e376fb07f4b5e4c663a/1771449911414/UNF+PORL+Fall+Statewide+2025+LV+-+Press+Release+-+REVISED.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2025-10-15",
+        "end_date": "2025-10-25",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Jerry Demings",
+            "pct": 33.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Watch"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tar5e0434cf",
+        "poll_type": "governor",
+        "sample_size": 1118,
+        "population": "rv",
+        "url": "https://jamesmadison.org/wp-content/uploads/Marginals.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2025-09-16",
+        "end_date": "2025-09-18",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 32.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202vic1e972e08",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://irp.cdn-website.com/07e08705/files/uploaded/PollSummary_FL-Gov_06-11-2025.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2025-06-07",
+        "end_date": "2025-06-10",
+        "pollster": "Victory Insights",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 31.4
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 36.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202mcl65ffdfff",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/755696-new-poll-shows-byron-donalds-with-8-point-edge-on-david-jolly/",
+        "created_at": "2026-04-14",
+        "start_date": "2025-08-25",
+        "end_date": "2025-08-27",
+        "pollster": "McLaughlin & Associates",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 41.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 49.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Associated Industries of Florida"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202ech2b342f18",
+        "poll_type": "us-senator",
+        "sample_size": 406,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 50.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202ech95adf978",
+        "poll_type": "governor",
+        "sample_size": 406,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 49.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202echb01edfb9",
+        "poll_type": "governor",
+        "sample_size": 406,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 48.0
+          },
+          {
+            "choice": "Jerry Demings",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202kap5c7b111b",
+        "poll_type": "us-representative",
+        "sample_size": 804,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/750168-poll-daniella-levine-cava-poses-strong-threat-to-maria-elvira-salazar-in-cd-27/",
+        "created_at": "2026-04-27",
+        "start_date": "2025-07-01",
+        "end_date": "2025-07-01",
+        "pollster": "Kaplan Strategies",
+        "answers": [
+          {
+            "choice": "María Elvira Salazar",
+            "pct": 45.0
+          },
+          {
+            "choice": "Alex Fornino",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": "FL-27",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-27"
+      },
+      {
+        "id": "us-202blu35c04618",
+        "poll_type": "us-representative",
+        "sample_size": 451,
+        "population": "rv",
+        "url": "https://floridapolitics.com/archives/784817-__trashed-35/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-06",
+        "end_date": "2026-03-08",
+        "pollster": "Blueprint Polling",
+        "answers": [
+          {
+            "choice": "María Elvira Salazar",
+            "pct": 47.0
+          },
+          {
+            "choice": "Robin Peguero",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": "FL-27",
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-27"
+      },
+      {
+        "id": "us-202blud3c43130",
+        "poll_type": "us-representative",
+        "sample_size": 451,
+        "population": "rv",
+        "url": "https://floridapolitics.com/archives/784817-__trashed-35/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-06",
+        "end_date": "2026-03-08",
+        "pollster": "Blueprint Polling",
+        "answers": [
+          {
+            "choice": "María Elvira Salazar",
+            "pct": 46.0
+          },
+          {
+            "choice": "Eliott Rodriguez",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": "FL-27",
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-27"
+      },
+      {
+        "id": "gov202ste3f4447eb",
+        "poll_type": "governor",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://t.co/dtCsadTWtf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-25",
+        "end_date": "2026-04-13",
+        "pollster": "Stetson University",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 46.0
+          },
+          {
+            "choice": "Jerry Demings",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202ste008437cf",
+        "poll_type": "us-senator",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://t.co/dtCsadTWtf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-25",
+        "end_date": "2026-04-13",
+        "pollster": "Stetson University",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 49.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202ste198f7a4a",
+        "poll_type": "us-senator",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://t.co/dtCsadTWtf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-25",
+        "end_date": "2026-04-13",
+        "pollster": "Stetson University",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 51.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202the5f298aba",
+        "poll_type": "governor",
+        "sample_size": 687,
+        "population": "lv",
+        "url": "https://docs.google.com/document/d/1qaGOwbWKWk-5XYy9sSVIl06Njp4eAK3L9kYx1iKYPuI/edit?tab=t.0",
+        "created_at": "2026-05-05",
+        "start_date": "2026-04-27",
+        "end_date": "2026-04-27",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 40.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202the1d65e356",
+        "poll_type": "governor",
+        "sample_size": 687,
+        "population": "lv",
+        "url": "https://docs.google.com/document/d/1qaGOwbWKWk-5XYy9sSVIl06Njp4eAK3L9kYx1iKYPuI/edit?tab=t.0",
+        "created_at": "2026-05-05",
+        "start_date": "2026-04-27",
+        "end_date": "2026-04-27",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "James Fishback",
+            "pct": 43.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202checa283b6c",
+        "poll_type": "us-senator",
+        "sample_size": 604,
+        "population": "lv",
+        "url": "https://www.flchamber.com/new-florida-chamber-statewide-poll-shows-ashley-moody-byron-donalds-leading-potential-democratic-opponents-in-november-ballot-test",
+        "created_at": "2026-05-18",
+        "start_date": "2026-05-01",
+        "end_date": "2026-05-09",
+        "pollster": "Cherry Communications",
+        "answers": [
+          {
+            "choice": "Alexander Vindman",
+            "pct": 40.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Chamber of Commerce"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202che6a537ee6",
+        "poll_type": "governor",
+        "sample_size": 604,
+        "population": "lv",
+        "url": "https://www.flchamber.com/new-florida-chamber-statewide-poll-shows-ashley-moody-byron-donalds-leading-potential-democratic-opponents-in-november-ballot-test",
+        "created_at": "2026-05-18",
+        "start_date": "2026-05-01",
+        "end_date": "2026-05-09",
+        "pollster": "Cherry Communications",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 39.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Chamber of Commerce"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202chae3c0b874",
+        "poll_type": "us-senator",
+        "sample_size": 2070,
+        "population": "lv",
+        "url": "https://changeresearch.com/florida-governors-race-may-2026/",
+        "created_at": "2026-05-18",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-16",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Alexander Vindman",
+            "pct": 47.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202mdwdd432a7f",
+        "poll_type": "us-representative",
+        "sample_size": 514,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/788279-poll-shows-carlos-gimenezs-lead-narrowing-in-cd-28-amid-economic-policy-headwinds/",
+        "created_at": "2026-06-11",
+        "start_date": "2026-03-03",
+        "end_date": "2026-03-07",
+        "pollster": "MDW Communications",
+        "answers": [
+          {
+            "choice": "Carlos Giménez",
+            "pct": 46.0
+          },
+          {
+            "choice": "Hector Mujica",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": "FL-28",
+        "sponsors": [
+          "EDGE Communications"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-28"
+      },
+      {
+        "id": "us-202mdw7112002f",
+        "poll_type": "us-representative",
+        "sample_size": 514,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/788279-poll-shows-carlos-gimenezs-lead-narrowing-in-cd-28-amid-economic-policy-headwinds/",
+        "created_at": "2026-06-11",
+        "start_date": "2026-03-03",
+        "end_date": "2026-03-07",
+        "pollster": "MDW Communications",
+        "answers": [
+          {
+            "choice": "Rep",
+            "pct": 45.0
+          },
+          {
+            "choice": "Dem",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": "FL-28",
+        "sponsors": [
+          "EDGE Communications"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-28"
+      },
+      {
+        "id": "gov202cha3feaa4b2",
+        "poll_type": "governor",
+        "sample_size": 1593,
+        "population": "lv",
+        "url": "https://changeresearch.com/wp-content/uploads/2026/05/Deep-Dive-into-Florida-1.pdf",
+        "created_at": "2026-06-17",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-16",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 46.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202cha0c7666ff",
+        "poll_type": "us-senator",
+        "sample_size": 1593,
+        "population": "lv",
+        "url": "https://changeresearch.com/wp-content/uploads/2026/05/Deep-Dive-into-Florida-1.pdf",
+        "created_at": "2026-06-17",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-16",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Alexander Vindman",
+            "pct": 47.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202cha4c08cfde",
+        "poll_type": "us-senator",
+        "sample_size": 1273,
+        "population": "rv",
+        "url": "https://floridapolitics.com/archives/802382-poll-finds-david-jolly-in-good-position-against-byron-donalds-even-as-democrats-struggle-elsewhere/",
+        "created_at": "2026-06-18",
+        "start_date": "2026-06-11",
+        "end_date": "2026-06-14",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Alexander Vindman",
+            "pct": 43.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202cha6cfd344c",
+        "poll_type": "us-senator",
+        "sample_size": 1015,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/802382-poll-finds-david-jolly-in-good-position-against-byron-donalds-even-as-democrats-struggle-elsewhere/",
+        "created_at": "2026-06-18",
+        "start_date": "2026-06-11",
+        "end_date": "2026-06-14",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Alexander Vindman",
+            "pct": 46.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202mclfb3c3e69",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/802818-ashley-moody-opens-a-healthy-and-hardened-lead-over-alex-vindman-in-new-aif-senate-poll/",
+        "created_at": "2026-06-22",
+        "start_date": "2026-06-03",
+        "end_date": "2026-06-07",
+        "pollster": "McLaughlin & Associates",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 47.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Associated Industries of Florida"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202uni1ae0881e",
+        "poll_type": "us-senator",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://www.unfporl.org/presser-page",
+        "created_at": "2026-07-20",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-17",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 50.0
+          },
+          {
+            "choice": "Alexander Vindman",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202uni4c4d3f80",
+        "poll_type": "governor",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://www.unfporl.org/presser-page",
+        "created_at": "2026-07-20",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-17",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 46.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tar97975ec6",
+        "poll_type": "governor",
+        "sample_size": 1026,
+        "population": "rv",
+        "url": "https://jmipoll.com/",
+        "created_at": "2026-08-06",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-26",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 45.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tarebf93c64",
+        "poll_type": "governor",
+        "sample_size": 1027,
+        "population": "lv",
+        "url": "https://jmipoll.com/",
+        "created_at": "2026-08-06",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-26",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Jay Collins",
+            "pct": 44.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202fab5f214a8b",
+        "poll_type": "us-representative",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/814114-anna-paulina-luna-leads-leela-gray-in-likely-general-election-matchup-clouding-dems-hope-for-a-flip/",
+        "created_at": "2026-08-15",
+        "start_date": "2026-07-21",
+        "end_date": "2026-07-22",
+        "pollster": "Fabrizio, Lee & Associates",
+        "answers": [
+          {
+            "choice": "Anna Paulina Luna",
+            "pct": 49.0
+          },
+          {
+            "choice": "Leela Gray",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": "FL-13",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-13"
+      },
+      {
+        "id": "us-202uni979cabda",
+        "poll_type": "us-senator",
+        "sample_size": 768,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/783199-desantis-more-popular-trump-poll/",
+        "created_at": "2026-08-19",
+        "start_date": "2026-02-21",
+        "end_date": "2026-03-02",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Angie Nixon",
+            "pct": 38.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202emed67d42c8",
+        "poll_type": "us-senator",
+        "sample_size": 1125,
+        "population": "lv",
+        "url": "https://emersoncollegepolling.com/florida-2026-poll-donalds-leads-gop-primary-for-governor-republicans-outpace-democrats-in-florida-elections/",
+        "created_at": "2026-08-19",
+        "start_date": "2026-03-29",
+        "end_date": "2026-03-31",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Angie Nixon",
+            "pct": 36.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202unic788577e",
+        "poll_type": "us-senator",
+        "sample_size": 848,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/808426-unf-poll-jolly-donalds/",
+        "created_at": "2026-08-19",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-17",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Angie Nixon",
+            "pct": 42.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 50.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202tav1ccea6ab",
+        "poll_type": "us-representative",
+        "sample_size": 551,
+        "population": "lv",
+        "url": "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/FL-22%20General%20Toplines%20%E2%80%94%20Aug%2019_NEW.pdf",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-12",
+        "pollster": "Tavern Research",
+        "answers": [
+          {
+            "choice": "Casey Askar",
+            "pct": 50.0
+          },
+          {
+            "choice": "Pia Dandiya",
+            "pct": 50.0
+          }
+        ],
+        "seat_name": "FL-22",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-22"
+      },
+      {
+        "id": "us-202har548dbd3f",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.thehousemajoritypac.com/news/hmp-poll-leela-gray-leads-anna-paulina-luna-in-fl-13",
+        "created_at": "2026-09-01",
+        "start_date": "2026-08-25",
+        "end_date": "2026-08-27",
+        "pollster": "Hart Research Associates",
+        "answers": [
+          {
+            "choice": "Anna Paulina Luna",
+            "pct": 43.0
+          },
+          {
+            "choice": "Leela Gray",
+            "pct": 44.0
+          },
+          {
+            "choice": "Tony D'Arrigo",
+            "pct": 7.0
+          }
+        ],
+        "seat_name": "FL-13",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-13"
+      },
+      {
+        "id": "us-202cha69e5536b",
+        "poll_type": "us-senator",
+        "sample_size": 1107,
+        "population": "lv",
+        "url": "https://changeresearch.com/research/2026/2026-09-10-an-emerging-florida-blue-wave",
+        "created_at": "2026-09-11",
+        "start_date": "2026-09-07",
+        "end_date": "2026-09-09",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 47.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202cha6fdf31d1",
+        "poll_type": "governor",
+        "sample_size": 1107,
+        "population": "lv",
+        "url": "[null]",
+        "created_at": "2026-09-11",
+        "start_date": "2026-09-07",
+        "end_date": "2026-09-09",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 47.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202qua2b8ed3cb",
+        "poll_type": "us-senator",
+        "sample_size": 733,
+        "population": "lv",
+        "url": "https://quantusinsights.org/f/new-quantus-polls-moody-leads-in-florida-flanagan-in-minnesota",
+        "created_at": "2026-09-11",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-10",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 50.1
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 42.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202tulc2e2b734",
+        "poll_type": "us-representative",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://x.com/cjwarnke/status/2100648029678170342",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-13",
+        "pollster": "Tulchin Research",
+        "answers": [
+          {
+            "choice": "Maria Elvira Salazar",
+            "pct": 47.0
+          },
+          {
+            "choice": "Eliott Rodriguez",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": "FL-27",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-27"
+      },
+      {
+        "id": "gov202st.6ddeb57c",
+        "poll_type": "governor",
+        "sample_size": 913,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/820638-poll-byron-donalds-44-david-jolly-43-in-dead-heat-race-for-florida-governor/",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-17",
+        "pollster": "St. Pete Polls",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 43.5
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 43.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202st.73c64f89",
+        "poll_type": "us-senator",
+        "sample_size": 913,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/820638-poll-byron-donalds-44-david-jolly-43-in-dead-heat-race-for-florida-governor/",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-17",
+        "pollster": "St. Pete Polls",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 45.2
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 44.8
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202insad41796a",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://insideradvantage.com/insideradvantage-florida-u-s-senate-survey-moody-leads-nixon-by-7/?utm_source=rss&utm_medium=rss&utm_campaign=insideradvantage-florida-u-s-senate-survey-moody-leads-nixon-by-7",
+        "created_at": "2026-09-22",
+        "start_date": "2026-09-20",
+        "end_date": "2026-09-21",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 49.3
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 41.8
+          },
+          {
+            "choice": "Neil Gillespie",
+            "pct": 2.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202steb5a21bdb",
+        "poll_type": "governor",
+        "sample_size": 830,
+        "population": "lv",
+        "url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-21",
+        "pollster": "Stetson University Center for Public Opinion Research",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 51.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202ste67ef4e2d",
+        "poll_type": "us-senator",
+        "sample_size": 830,
+        "population": "lv",
+        "url": "https://www.stetson.edu/artsci/cpor/media/cpor-sept.-2026-poll-final.pdf",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-21",
+        "pollster": "Stetson University Center for Public Opinion Research",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 51.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202cha9102cf63",
+        "poll_type": "governor",
+        "sample_size": 1063,
+        "population": "lv",
+        "url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+        "created_at": "2026-09-29",
+        "start_date": "2026-09-25",
+        "end_date": "2026-09-27",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 46.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202chad8109bd5",
+        "poll_type": "us-senator",
+        "sample_size": 1063,
+        "population": "lv",
+        "url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+        "created_at": "2026-09-29",
+        "start_date": "2026-09-25",
+        "end_date": "2026-09-27",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 48.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202pub0bd895c4",
+        "poll_type": "us-representative",
+        "sample_size": 530,
+        "population": "rv",
+        "url": "https://drive.google.com/file/d/1SdUgc3IAuqOAkDggjzfiHIkhI5TNRSuF/view",
+        "created_at": "2026-10-06",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-02",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Kelly Kirschner",
+            "pct": 39.0
+          },
+          {
+            "choice": "Sydney Gruters",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": "FL-16",
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-16"
+      },
+      {
+        "id": "gov202st.5da962b0",
+        "poll_type": "governor",
+        "sample_size": 836,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/823921-new-st-pete-polls-survey-has-ashley-moody-at-47-angie-nixon-at-45-and-the-senate-race-still-inside-the-margin-of-error/",
+        "created_at": "2026-10-09",
+        "start_date": "2026-10-05",
+        "end_date": "2026-10-07",
+        "pollster": "St. Pete Polls",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 45.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202st.fc2e22ed",
+        "poll_type": "us-senator",
+        "sample_size": 836,
+        "population": "lv",
+        "url": "https://floridapolitics.com/archives/823921-new-st-pete-polls-survey-has-ashley-moody-at-47-angie-nixon-at-45-and-the-senate-race-still-inside-the-margin-of-error/",
+        "created_at": "2026-10-09",
+        "start_date": "2026-10-05",
+        "end_date": "2026-10-07",
+        "pollster": "St. Pete Polls",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 47.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Florida Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tar4f4b4cfb",
+        "poll_type": "governor",
+        "sample_size": 857,
+        "population": "lv",
+        "url": "https://jmipoll.com",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-04",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 42.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 52.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202tar3cfcf892",
+        "poll_type": "governor",
+        "sample_size": 1200,
+        "population": "rv",
+        "url": "https://jmipoll.com",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-04",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "David Jolly",
+            "pct": 39.0
+          },
+          {
+            "choice": "Byron Donalds",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202tar0bbd9d56",
+        "poll_type": "us-senator",
+        "sample_size": 857,
+        "population": "lv",
+        "url": "https://jmipoll.com",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-04",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Angie Nixon",
+            "pct": 42.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 52.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202tarc49d2a14",
+        "poll_type": "us-senator",
+        "sample_size": 1200,
+        "population": "rv",
+        "url": "https://jmipoll.com/",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-04",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Angie Nixon",
+            "pct": 38.0
+          },
+          {
+            "choice": "Ashley Moody",
+            "pct": 50.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The James Madison Institute"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202chaea67d341",
+        "poll_type": "governor",
+        "sample_size": 920,
+        "population": "lv",
+        "url": "https://changeresearch.com/research/2026/2026-10-12-florida-aapor-methodology-statement",
+        "created_at": "2026-10-13",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-10",
+        "pollster": "Change Research",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 47.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Freedom Project USA"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Florida"
+      }
+    ],
+    "provider_records_sha256": "5d8f8239d27c14030c5af469f13b9709ce550ff192c59b903a376f27f59baf23",
+    "primary_records": []
+  },
+  "recent_primary_review": {
+    "checked_at": "2026-10-14T09:48:51.867233+00:00",
+    "reviewed_ids": [
+      "gov202chaea67d341"
+    ],
+    "held_records": [],
+    "future_releases_automatically_approved": false,
+    "sources_not_refetched_in_packet_replay": true
+  }
+}
