@@ -161,10 +161,11 @@
         cobalt: '코발트', lithium: '리튬', ferroalloys: '합금철', tin: '주석', manganese: '망간',
         chromium: '크롬', iron_ore: '철광석',
         // Semiconductor feedstock watched since 2026-10-14 (universe.json commodity_labels_ko).
-        quartz: '고순도 석영·규사', silicon_metal: '금속규소', polysilicon: '폴리실리콘', indium: '인듐',
+        quartz: '석영 광물·규사', silicon_metal: '금속규소', polysilicon: '폴리실리콘', indium: '인듐',
         molybdenum: '몰리브덴', fluorite: '형석', magnesium: '마그네슘', titanium: '티타늄',
         tantalum: '탄탈럼', niobium: '니오븀', vanadium: '바나듐', superhard: '초경질재료',
         neon: '네온', potash: '염화칼륨', antimony: '안티모니', tungsten: '텅스텐',
+        boron: '붕소',
     };
     const commoditiesKo = (c) => (c.commodities || []).map((x) => COMMODITY_KO[x] || x)
         .filter((v, i, a) => a.indexOf(v) === i).join('·');
@@ -468,6 +469,8 @@
     const periodText = (c) => {
         if (c.level === 'lifted') return `${c.since || ''} ~ ${c.lifted_at || ''} 해제`;
         if (statusOf(c) === 'expired') return `${c.since || ''} ~ ${c.until} · 기한 지남`;
+        // Announced but not yet in force (Gabon's manganese ore ban from 2029).
+        if (c.effective_from && c.effective_from > TODAY) return `${c.since || ''} 발표 · ${c.effective_from} 시행 예정`;
         return `${c.since || ''} ~${c.until ? ` ${c.until}` : ' 현재'}`;
     };
 
