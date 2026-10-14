@@ -5956,6 +5956,22 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
     }
 });
 
+// Nav dropdowns are position:fixed (see style.css) so they survive .top-nav's
+// overflow-x:auto clipping under 820px -- fixed is viewport-relative, so each
+// hover computes the trigger's actual on-screen spot (post horizontal-scroll)
+// and clamps the right edge so wide panels (원자재's 4-column dropdown) don't
+// run off narrow viewports instead.
+document.querySelectorAll('.menu-item').forEach((item) => {
+    const dropdown = item.querySelector(':scope > .dropdown');
+    if (!dropdown) return;
+    item.addEventListener('mouseenter', () => {
+        const rect = item.getBoundingClientRect();
+        const left = Math.max(8, Math.min(rect.left, window.innerWidth - dropdown.offsetWidth - 8));
+        dropdown.style.left = `${Math.round(left)}px`;
+        dropdown.style.top = `${Math.round(rect.bottom)}px`;
+    });
+});
+
 // Home Logo click event
 document.getElementById('home-logo').addEventListener('click', () => {
     navigateTo('home');

@@ -1,10 +1,96 @@
 {
-  "generated_at": "2026-10-02T20:07:39.099920+00:00",
+  "generated_at": "2026-10-09T20:19:23.575272+00:00",
   "season": 2027,
   "country": "Brazil",
   "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
   "methodology_note": "One model per region-crop, each implementing the derived variables of its own guide in Regions/브라질. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds.",
   "regions": {
+    "parana_trigo": {
+      "label": "Paraná + Rio Grande do Sul wheat",
+      "crop": "trigo",
+      "states": [
+        "PR",
+        "RS"
+      ],
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2516.1,
+      "range_68": [
+        2128.3,
+        2903.9
+      ],
+      "range_95": [
+        1756.1,
+        3276.2
+      ],
+      "trend": 2872.9,
+      "weather_effect_pct": -12.42,
+      "last_actual": {
+        "year": 2024,
+        "yield": 2455.6000000000004,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "strong El Nino",
+        "oni_growing_season": 1.98
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.007,
+        "weather_skill": 0.007,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "oni_season",
+            "effect_pct": -5.15,
+            "is_weather": true
+          },
+          {
+            "feature": "fhb_warm_days",
+            "effect_pct": -2.84,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_anthesis",
+            "effect_pct": -2.61,
+            "is_weather": true
+          },
+          {
+            "feature": "frost_days",
+            "effect_pct": 2.36,
+            "is_weather": true
+          },
+          {
+            "feature": "fhb_rain_events",
+            "effect_pct": 2.15,
+            "is_weather": true
+          },
+          {
+            "feature": "harvest_rain_penalty",
+            "effect_pct": -0.53,
+            "is_weather": true
+          },
+          {
+            "feature": "fhb_rh_days",
+            "effect_pct": -0.3,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": true,
+        "sigma_kg_ha": 387.8
+      },
+      "provenance": {
+        "guide": "Regions/브라질/남부지방_파라나/밀/밀_상세분석_및_수식.md",
+        "caveat": "Del Ponte's logistic coefficients are not given in the guide, so the FHB weather features are fed to the yield model directly instead of through a calibrated P(Epidemic). Anthesis is fixed at September rather than tracked per season.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-10-04",
+        "critical_window_observed": 0.533,
+        "season_complete": false,
+        "notes": []
+      }
+    },
     "sp_cafe": {
       "label": "Minas Gerais + São Paulo coffee (Arabica)",
       "crop": "cafe",
@@ -14,17 +100,17 @@
       ],
       "season": 2027,
       "unit": "kg/ha",
-      "point": 1949.2,
+      "point": 1949.7,
       "range_68": [
-        1736.7,
-        2161.7
+        1737.2,
+        2162.1
       ],
       "range_95": [
-        1532.8,
-        2365.7
+        1533.2,
+        2366.1
       ],
       "trend": 1605.1,
-      "weather_effect_pct": 21.44,
+      "weather_effect_pct": 21.46,
       "last_actual": {
         "year": 2024,
         "yield": 1591.0,
@@ -73,8 +159,8 @@
         "guide": "Regions/브라질/상파울루/커피/커피_상세분석_및_수식.md",
         "caveat": "The guide's stratified high-/low-yield split is replaced by the autoregressive form from the same guide (§3A). With ~43 seasons, training two stratified models on ~21 rows each would fit noise.",
         "non_weather_drivers": "Biennial bearing is physiological, not meteorological: a heavy crop exhausts the tree and the next year is light regardless of weather. lag1 and lag2 carry that cycle, and they are the model's strongest features -- so much of this model's skill is biological memory, not climate. Replanting rates and the arabica/robusta area mix are also outside any weather feed. Isolating the weather features alone (holding out lag1/lag2) leaves only +1.6% skill, against +8.6% with the lags included: a real climate mechanism exists here (frost, flowering-stage water deficit -- both in the guide and both physically well documented) but at annual, state-level resolution the biennial cycle dominates the variance that mechanism produces. Adding multi-year memory to a model does not by itself guarantee weather wins that competition -- coffee is the clearest example of that in this set.",
-        "weather_through": "2026-09-27",
-        "critical_window_observed": 0.225,
+        "weather_through": "2026-10-04",
+        "critical_window_observed": 0.283,
         "season_complete": false,
         "notes": [
           "lag for 2026 uses this model's own forecast",
@@ -88,10 +174,9 @@
     "mato_grosso_milho": "features unavailable: silking_stress, vpd_peak_dry, precip_silking, oni_season",
     "parana_soja": "features unavailable: precip_dec_feb, tmax_jan, waterlogging, oni_season, spi3_dec_feb",
     "parana_milho": "features unavailable: vpd_peak, precip_nov_jan, hotdays_silking, oni_season, silking_cwd, spi3_jan",
-    "parana_trigo": "features unavailable: harvest_rain_penalty",
     "matopiba_soja": "features unavailable: heat_vpd_stress, heat_days_35, heat_excess, effective_water",
-    "matopiba_algodao": "no trained model",
-    "sp_cana": "no trained model",
+    "matopiba_algodao": "season 2027 has no observed weather in the model window yet",
+    "sp_cana": "season 2027 has no observed weather in the model window yet",
     "sp_laranja": "features unavailable: def_sizing, heat_days, oni_season"
   },
   "sidra_latest_published_year": 2024

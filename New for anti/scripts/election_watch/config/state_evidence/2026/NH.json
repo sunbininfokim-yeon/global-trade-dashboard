@@ -1,0 +1,2172 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "cycle": 2026,
+  "state": "NH",
+  "source_ref": "origin/codex/nh-evidence-20261009",
+  "source_commit": "9bf44183e43ea189b041708a2bedb154765fa5ae",
+  "config_operations": [
+    {
+      "file": "usa_state_campaign_finance_sources_v1.json",
+      "path": [
+        "states",
+        "NH"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "agency": "New Hampshire Secretary of State",
+        "access": "public_campaign_finance_search_access_blocked",
+        "url": "https://cfs.sos.nh.gov/Public/ViewFiledReports",
+        "authentication": "public_read_route_no_new_key_required_access_403",
+        "independent_expenditure_mapping": "not_implemented_source_access_blocked",
+        "public_source_review": {
+          "cycle": 2026,
+          "reviewed_on": "2026-10-09",
+          "endpoints": [
+            {
+              "url": "https://cfs.sos.nh.gov/",
+              "role": "current_public_portal"
+            }
+          ],
+          "source_scope": "public_portal_reachability_only_not_transactions",
+          "filing_login_required_for_public_read": false,
+          "note_ko": "공개 경로403. 로그인/신고/재설정 사용안함. 캠프수입/일반비용/PAO후보직접기부는후보별IE와구분. 금액null.",
+          "public_search_url": "https://cfs.sos.nh.gov/Public/ViewFiledReports"
+        }
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:NH:house:01"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "0bbbabe11c8757fa820b5ea02a6e2f4e4151f0c39eb119707a87376129e4582a",
+      "value": {
+        "race_id": "USA:NH:house:01",
+        "state": "NH",
+        "office": "house",
+        "district": "01",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "reviewed_on": "2026-10-09",
+        "candidates": [
+          {
+            "name": "Stefany Amber Shaheen",
+            "party": "DEM",
+            "reported_party": "Democratic",
+            "candidate_id": "H6NH01321",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH01321",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "poll_name_aliases": [
+              "Stefany Shaheen"
+            ],
+            "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Anthony DiLorenzo",
+            "party": "REP",
+            "reported_party": "Republican",
+            "candidate_id": "H6NH01420",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH01420",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "limitations_ko": "공개 선거 명부가 선거당국 확인을 보고한 후보만 표시합니다. 공식 투표용지 인증·전체 기명 후보 완결·당선 결과를 뜻하지 않습니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0,
+        "unopposed_status": "not_verified",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:NH:house:02"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "62a4986236490817f3656cb42a61561a739c1a86879fe7885d349c65a1155664",
+      "value": {
+        "race_id": "USA:NH:house:02",
+        "state": "NH",
+        "office": "house",
+        "district": "02",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "reviewed_on": "2026-10-09",
+        "candidates": [
+          {
+            "name": "Maggie Goodlander",
+            "party": "DEM",
+            "reported_party": "Democratic",
+            "candidate_id": "H4NH02399",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H4NH02399",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Lily Tang Williams",
+            "party": "REP",
+            "reported_party": "Republican",
+            "candidate_id": "H2NH02260",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H2NH02260",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Robbie S. Mahrou",
+            "party": "IND",
+            "reported_party": "Independent",
+            "candidate_id": "H6NH02303",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH02303",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+            "poll_name_aliases": [
+              "Robbie Mahrou"
+            ]
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "limitations_ko": "공개 선거 명부가 선거당국 확인을 보고한 후보만 표시합니다. 공식 투표용지 인증·전체 기명 후보 완결·당선 결과를 뜻하지 않습니다.",
+        "source_candidate_count": 3,
+        "unconfirmed_candidate_count": 0,
+        "unopposed_status": "not_verified",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "races",
+        "USA:NH:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "93098e7c4e9b6b50ecb1c29af6111a3f284797db4ffb60f3f76cbc4a7a948be6",
+      "value": {
+        "race_id": "USA:NH:senate",
+        "state": "NH",
+        "office": "senate",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "reviewed_on": "2026-10-09",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "candidates": [
+          {
+            "name": "Chris Pappas",
+            "party": "DEM",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_id": "S6NH00141",
+            "reported_fec_id": "S6NH00141",
+            "reported_name": "Christopher C. \"Chris\" Pappas"
+          },
+          {
+            "name": "John E. Sununu",
+            "party": "REP",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_id": "S6NH00208",
+            "poll_name_aliases": [
+              "John Sununu"
+            ],
+            "finance_name_aliases": [
+              "John Sununu"
+            ],
+            "reported_fec_id": "S6NH00208",
+            "reported_name": "John E. Sununu"
+          },
+          {
+            "name": "Edmond J. \"Ed\" Laplante, Jr.",
+            "party": "CST",
+            "reported_party": "Constitution",
+            "candidate_id": "S2NH00223",
+            "reported_fec_id": "S2NH00223",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "poll_name_aliases": [
+              "Edmond Laplante"
+            ],
+            "reported_name": "Edmond J. \"Ed\" Laplante, Jr."
+          }
+        ],
+        "absent_parties": [],
+        "incumbent_ballot_status": "not_running",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_candidate_count": 3,
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "unopposed_status": "not_verified",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    },
+    {
+      "file": "federal_matchups/2026.json",
+      "path": [
+        "source_snapshots"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "NH",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "reviewed_on": "2026-10-09",
+        "role": "reviewed_secondary_nominee_and_identity_corroboration",
+        "official_portal_status": "403_access_blocked"
+      }
+    },
+    {
+      "file": "governor_matchups/2026.json",
+      "path": [
+        "contests",
+        "NH"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "25618184bac8aea040dd0f0b14274f7c31a68ada8a9247d2bef634c72556a729",
+      "value": {
+        "state": "NH",
+        "state_name": "New Hampshire",
+        "primary_date": "2026-09-08",
+        "election_date": "2026-11-03",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "status": "reported_general_matchup",
+        "hold_reason": null,
+        "candidates": [
+          {
+            "candidate_id": "NH:reported-general:2026:4c212595f52c7324",
+            "name": "Kelly Ayotte",
+            "reported_name_aliases": [
+              "Kelly Ayotte"
+            ],
+            "party": "REP",
+            "office": "G",
+            "state": "NH",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "reported_general_ballot_not_state_certification",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.nga.org/governors/elections/",
+            "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          },
+          {
+            "candidate_id": "NH:reported-general:2026:92ea9053dcb79978",
+            "name": "Cinde Warmington",
+            "reported_name_aliases": [
+              "Cinde Warmington"
+            ],
+            "party": "DEM",
+            "office": "G",
+            "state": "NH",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "reported_general_ballot_not_state_certification",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.nga.org/governors/elections/",
+            "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle"
+          },
+          {
+            "candidate_id": "NH:reported-general:2026:f8fb2f8c526b1d3a",
+            "name": "Stephen Villee",
+            "reported_name_aliases": [
+              "Stephen Villee"
+            ],
+            "party": "LIB",
+            "office": "G",
+            "state": "NH",
+            "district": null,
+            "election_year": 2026,
+            "registration_status": "reported_general_ballot_not_state_certification",
+            "ballot_election_date": "2026-11-03",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_identity_basis": "reviewed_secondary_general_nominee_listing"
+          }
+        ],
+        "ballot_reviewed_on": "2026-10-09",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "coverage": "reported_active_candidate_listing",
+        "poll_required_candidates": [
+          "Kelly Ayotte",
+          "Cinde Warmington"
+        ],
+        "candidate_identity_basis": "reviewed_secondary_general_nominee_listing",
+        "evidence_note_ko": "공식2026명부403. NGA주요2명 및 GP보조명부의LIB Stephen Villee를검토. 공식인증/무투표당선아님.",
+        "secondary_roster_review": {
+          "source_url": "https://www.thegreenpapers.com/G26/NH",
+          "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+          "reviewed_on": "2026-10-09",
+          "official_candidate_portal_status": "403_access_blocked"
+        }
+      }
+    },
+    {
+      "file": "usa_polls/state_finance_identities_2026.json",
+      "path": [
+        "races",
+        "USA:NH:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "280632376bad85fcecf3759a08feb97a035308e98a84ce06ed03b038b69d98bc",
+      "value": [
+        {
+          "candidate_name": "Chris Pappas",
+          "party": "DEM",
+          "candidate_id": "S6NH00141",
+          "roster_reported_name": "Christopher C. \"Chris\" Pappas",
+          "source_url": "https://www.thegreenpapers.com/G26/NH",
+          "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+          "finance_reported_names": [
+            "PAPPAS, CHRIS"
+          ],
+          "reviewed_on": "2026-10-09",
+          "basis": "reviewed_secondary_nominee_and_explicit_cited_id_same_race",
+          "reported_party_mapping": {
+            "ballot_party": "DEM",
+            "public_party": "DEM",
+            "fec_parties": [
+              "DEM"
+            ]
+          }
+        },
+        {
+          "candidate_name": "John E. Sununu",
+          "party": "REP",
+          "candidate_id": "S6NH00208",
+          "roster_reported_name": "John E. Sununu",
+          "source_url": "https://www.thegreenpapers.com/G26/NH",
+          "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+          "finance_reported_names": [
+            "SUNUNU, JOHN E"
+          ],
+          "reviewed_on": "2026-10-09",
+          "basis": "reviewed_secondary_nominee_and_explicit_cited_id_same_race",
+          "reported_party_mapping": {
+            "ballot_party": "REP",
+            "public_party": "REP",
+            "fec_parties": [
+              "REP"
+            ]
+          }
+        },
+        {
+          "candidate_name": "Edmond J. \"Ed\" Laplante, Jr.",
+          "party": "CST",
+          "candidate_id": "S2NH00223",
+          "roster_reported_name": "Edmond J. \"Ed\" Laplante, Jr.",
+          "source_url": "https://www.thegreenpapers.com/G26/NH",
+          "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+          "finance_reported_names": [
+            "LAPLANTE, EDMOND"
+          ],
+          "reviewed_on": "2026-10-09",
+          "basis": "reviewed_secondary_nominee_and_explicit_cited_id_same_race",
+          "reported_party_mapping": {
+            "ballot_party": "Constitution",
+            "public_party": "CST",
+            "fec_parties": [
+              "RNC"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "NH",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "286eb96e8e056d7996fd0f892581a372a54af65fdf251977b1954217311fe5bd",
+        "record": {
+          "id": "primary-yougov-nh-senate-20261005",
+          "subject": "2026 New Hampshire",
+          "poll_type": "us-senator",
+          "seat_name": null,
+          "pollster": "YouGov",
+          "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "start_date": "2026-09-28",
+          "end_date": "2026-10-05",
+          "created_at": "2026-10-07",
+          "population": "lv",
+          "sample_size": 1519,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "answers": [
+            {
+              "choice": "Chris Pappas",
+              "pct": 51
+            },
+            {
+              "choice": "John E. Sununu",
+              "pct": 43
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+            "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80",
+            "bytes": 166832,
+            "status": "ok",
+            "relevant_pages": [
+              1,
+              2,
+              8,
+              11,
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "NH",
+        "reviewed_on": "2026-10-09",
+        "record_sha256": "3b1eeb343be008db5e217d5edafc23513bbc05150315e48540e6aabaa1c44a36",
+        "record": {
+          "id": "primary-yougov-nh-governor-20261005",
+          "subject": "2026 New Hampshire",
+          "poll_type": "governor",
+          "seat_name": null,
+          "pollster": "YouGov",
+          "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "start_date": "2026-09-28",
+          "end_date": "2026-10-05",
+          "created_at": "2026-10-07",
+          "population": "lv",
+          "sample_size": 1520,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "answers": [
+            {
+              "choice": "Cinde Warmington",
+              "pct": 40
+            },
+            {
+              "choice": "Kelly Ayotte",
+              "pct": 49
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+            "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80",
+            "bytes": 166832,
+            "status": "ok",
+            "relevant_pages": [
+              1,
+              2,
+              8,
+              11,
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/live_2026.json",
+      "path": [
+        "excluded_records",
+        "us-202unic08cf0d0"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": "NH01_provider_Stephany_name_typo_full_primary_PDF_access_blocked_exact_record_review_required"
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-yougov-nh-governor-20261005"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T10:26:37.382007+00:00",
+        "provider_record_sha256": "3b1eeb343be008db5e217d5edafc23513bbc05150315e48540e6aabaa1c44a36",
+        "primary_supplement_record_sha256": "3b1eeb343be008db5e217d5edafc23513bbc05150315e48540e6aabaa1c44a36",
+        "snapshot_sha256": "d081ad54f401db7fffd5932d28cb0da3f2fdccd0d7496bd6c104317d19baef5c",
+        "sources": [
+          "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+            "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80",
+            "bytes": 166832,
+            "status": "ok",
+            "relevant_pages": [
+              1,
+              2,
+              8,
+              11,
+              12
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Cinde Warmington": 40,
+          "Kelly Ayotte": 49
+        },
+        "question_sample_n": 1520,
+        "disclosure_review": {
+          "geographic_scope": "statewide_New_Hampshire_not_district_or_50plus_subset",
+          "population": "LV",
+          "total_lv_sample_n": 1520,
+          "question_sample_n": 1520,
+          "question_number_toplines": 9,
+          "question_number_crosstabs": 8,
+          "field_dates": [
+            "2026-09-28",
+            "2026-10-05"
+          ],
+          "sampling_frame": "stratified random sample from NH registered voter list; text invitation; web interview until stratum target complete",
+          "mode": "SMS invitation to YouGov online survey",
+          "weighting_method": "raking",
+          "weighting_variables": [
+            "gender",
+            "age",
+            "in-state geography",
+            "party registration",
+            "imputed education",
+            "2024 presidential vote",
+            "past Senate vote"
+          ],
+          "LV_definition": "model using past vote,demographics,self-reported vote likelihood",
+          "LV_weight_range": "less than0.1 to9.9",
+          "LV_weight_coefficient_of_variation": 1.2,
+          "unreported_question_count": 5,
+          "initial_ballot_before_candidate_information": null,
+          "includes_undecided_preference_allocation": null,
+          "question_order": "after ideology,party favorability,Trump approval,registration; Senate before mind-made-up prompts; governor after Senate/mind-made-up prompts",
+          "minor_candidates_not_named": true,
+          "other_option_available": true,
+          "non_candidate_responses": {
+            "someone_else": 0,
+            "undecided": 11,
+            "will_not_vote": 1
+          },
+          "published_ballot_information_prompt_disclosed": false,
+          "unreported_question_order_unknown": true,
+          "preference_allocation_disclosure": "not_disclosed"
+        },
+        "ballot_format": "named_two_candidate_with_other_option_no_allocation_disclosed",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "YouGov self-published"
+          ],
+          "primary_internal": false,
+          "partisan_status": "no_party_sponsor_disclosed_in_primary_release",
+          "external_commissioner": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_for_full_1520_LV_sample_not_independently_validated",
+          "half_width_pp": 3.9,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "response_rate",
+          "full_wording_of_five_unreported_questions",
+          "statistical_significance"
+        ],
+        "limitations_ko": "기관원문 문항·모집단·문항별표본·수치·방법 검토. 상원은선호 재질문 배분, 주지사는배분 명시없음. 이름미제시소수정당후보를0으로채우지않음. 미공개5문항/정확도/유의성미평가.",
+        "admission": {
+          "pollster": "YouGov",
+          "provider_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "group": "yougov",
+          "methodology_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": true,
+          "signal_exclusion_reasons": []
+        }
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-yougov-nh-senate-20261005"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-09",
+        "reviewed_at": "2026-10-09T10:26:37.382007+00:00",
+        "provider_record_sha256": "286eb96e8e056d7996fd0f892581a372a54af65fdf251977b1954217311fe5bd",
+        "primary_supplement_record_sha256": "286eb96e8e056d7996fd0f892581a372a54af65fdf251977b1954217311fe5bd",
+        "snapshot_sha256": "f7280cab7084c91e454bf08070392356d91432b015bc14f5b3c775edbacbb24e",
+        "sources": [
+          "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+            "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80",
+            "bytes": 166832,
+            "status": "ok",
+            "relevant_pages": [
+              1,
+              2,
+              8,
+              11,
+              12
+            ]
+          }
+        ],
+        "primary_toplines": {
+          "Chris Pappas": 51,
+          "John E. Sununu": 43
+        },
+        "question_sample_n": 1519,
+        "disclosure_review": {
+          "geographic_scope": "statewide_New_Hampshire_not_district_or_50plus_subset",
+          "population": "LV",
+          "total_lv_sample_n": 1520,
+          "question_sample_n": 1519,
+          "question_number_toplines": 6,
+          "question_number_crosstabs": 5,
+          "field_dates": [
+            "2026-09-28",
+            "2026-10-05"
+          ],
+          "sampling_frame": "stratified random sample from NH registered voter list; text invitation; web interview until stratum target complete",
+          "mode": "SMS invitation to YouGov online survey",
+          "weighting_method": "raking",
+          "weighting_variables": [
+            "gender",
+            "age",
+            "in-state geography",
+            "party registration",
+            "imputed education",
+            "2024 presidential vote",
+            "past Senate vote"
+          ],
+          "LV_definition": "model using past vote,demographics,self-reported vote likelihood",
+          "LV_weight_range": "less than0.1 to9.9",
+          "LV_weight_coefficient_of_variation": 1.2,
+          "unreported_question_count": 5,
+          "initial_ballot_before_candidate_information": null,
+          "includes_undecided_preference_allocation": true,
+          "question_order": "after ideology,party favorability,Trump approval,registration; Senate before mind-made-up prompts; governor after Senate/mind-made-up prompts",
+          "minor_candidates_not_named": true,
+          "other_option_available": true,
+          "non_candidate_responses": {
+            "someone_else": 1,
+            "undecided": 4,
+            "will_not_vote": 0
+          },
+          "published_ballot_information_prompt_disclosed": false,
+          "unreported_question_order_unknown": true
+        },
+        "ballot_format": "named_two_candidate_with_other_option_and_undecided_preference_allocation",
+        "sponsor_review": {
+          "primary_commissioners": [
+            "YouGov self-published"
+          ],
+          "primary_internal": false,
+          "partisan_status": "no_party_sponsor_disclosed_in_primary_release",
+          "external_commissioner": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_for_full_1520_LV_sample_not_independently_validated",
+          "half_width_pp": 3.9,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "response_rate",
+          "full_wording_of_five_unreported_questions",
+          "statistical_significance"
+        ],
+        "limitations_ko": "기관원문 문항·모집단·문항별표본·수치·방법 검토. 상원은선호 재질문 배분, 주지사는배분 명시없음. 이름미제시소수정당후보를0으로채우지않음. 미공개5문항/정확도/유의성미평가. 미정층 선호 재질문 배분값은 일반 투표의향 우세 집계와 섞지 않고 참고 전용으로 분리합니다.",
+        "admission": {
+          "pollster": "YouGov",
+          "provider_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "group": "yougov",
+          "methodology_url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "undecided_preference_allocation_reference"
+          ]
+        }
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:NH:governor"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "race_id": "USA:NH:governor",
+        "state": "NH",
+        "office": "governor",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "reviewed_on": "2026-10-09",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "candidates": [
+          {
+            "name": "Kelly Ayotte",
+            "party": "REP",
+            "source_url": "https://www.nga.org/governors/elections/",
+            "candidate_id": "NH:reported-general:2026:4c212595f52c7324"
+          },
+          {
+            "name": "Cinde Warmington",
+            "party": "DEM",
+            "source_url": "https://www.nga.org/governors/elections/",
+            "candidate_id": "NH:reported-general:2026:92ea9053dcb79978"
+          },
+          {
+            "name": "Stephen Villee",
+            "party": "LIB",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_id": "NH:reported-general:2026:f8fb2f8c526b1d3a"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:NH:house:01"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "35a49181a9f9ffa6c1509ee5e915d065383d2245ef5d10131d844471d8777e2d",
+      "value": {
+        "race_id": "USA:NH:house:01",
+        "state": "NH",
+        "office": "house",
+        "district": "01",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "reviewed_on": "2026-10-09",
+        "candidates": [
+          {
+            "name": "Stefany Amber Shaheen",
+            "party": "DEM",
+            "reported_party": "Democratic",
+            "candidate_id": "H6NH01321",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH01321",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "poll_name_aliases": [
+              "Stefany Shaheen"
+            ],
+            "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Anthony DiLorenzo",
+            "party": "REP",
+            "reported_party": "Republican",
+            "candidate_id": "H6NH01420",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH01420",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "limitations_ko": "공개 선거 명부가 선거당국 확인을 보고한 후보만 표시합니다. 공식 투표용지 인증·전체 기명 후보 완결·당선 결과를 뜻하지 않습니다.",
+        "source_candidate_count": 2,
+        "unconfirmed_candidate_count": 0,
+        "unopposed_status": "not_verified",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:NH:house:02"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "d74c782d14567e093e2a7dd019d2d4197458778c975dc5a98b795a057d6bf13c",
+      "value": {
+        "race_id": "USA:NH:house:02",
+        "state": "NH",
+        "office": "house",
+        "district": "02",
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "reviewed_on": "2026-10-09",
+        "candidates": [
+          {
+            "name": "Maggie Goodlander",
+            "party": "DEM",
+            "reported_party": "Democratic",
+            "candidate_id": "H4NH02399",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H4NH02399",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Lily Tang Williams",
+            "party": "REP",
+            "reported_party": "Republican",
+            "candidate_id": "H2NH02260",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H2NH02260",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Robbie S. Mahrou",
+            "party": "IND",
+            "reported_party": "Independent",
+            "candidate_id": "H6NH02303",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "ballot_access": "reported_ballot_candidate",
+            "reported_fec_id": "H6NH02303",
+            "source_status": "authority_confirmation_reported_by_secondary_source",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+            "poll_name_aliases": [
+              "Robbie Mahrou"
+            ]
+          }
+        ],
+        "unconfirmed_candidates": [],
+        "excluded_candidates": [],
+        "absent_parties": [],
+        "limitations_ko": "공개 선거 명부가 선거당국 확인을 보고한 후보만 표시합니다. 공식 투표용지 인증·전체 기명 후보 완결·당선 결과를 뜻하지 않습니다.",
+        "source_candidate_count": 3,
+        "unconfirmed_candidate_count": 0,
+        "unopposed_status": "not_verified",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    },
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:NH:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "1f13e6391be1c66aa5753fdb01b116f6e3b8c95b17dcaf71af7312725eab6611",
+      "value": {
+        "race_id": "USA:NH:senate",
+        "state": "NH",
+        "office": "senate",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "reported_active_candidate_listing",
+        "reviewed_on": "2026-10-09",
+        "source_url": "https://www.thegreenpapers.com/G26/NH",
+        "candidates": [
+          {
+            "name": "Chris Pappas",
+            "party": "DEM",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_id": "S6NH00141",
+            "reported_fec_id": "S6NH00141",
+            "reported_name": "Christopher C. \"Chris\" Pappas"
+          },
+          {
+            "name": "John E. Sununu",
+            "party": "REP",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "candidate_id": "S6NH00208",
+            "poll_name_aliases": [
+              "John Sununu"
+            ],
+            "finance_name_aliases": [
+              "John Sununu"
+            ],
+            "reported_fec_id": "S6NH00208",
+            "reported_name": "John E. Sununu"
+          },
+          {
+            "name": "Edmond J. \"Ed\" Laplante, Jr.",
+            "party": "CST",
+            "reported_party": "Constitution",
+            "candidate_id": "S2NH00223",
+            "reported_fec_id": "S2NH00223",
+            "source_url": "https://www.thegreenpapers.com/G26/NH",
+            "poll_name_aliases": [
+              "Edmond Laplante"
+            ],
+            "reported_name": "Edmond J. \"Ed\" Laplante, Jr."
+          }
+        ],
+        "absent_parties": [],
+        "incumbent_ballot_status": "not_running",
+        "source_sha256": "16891ddeae2d3167953ae6a04e0daa0e0433f071c5ad2466b0a5687c613b9880",
+        "source_role": "reviewed_secondary_nominee_listing",
+        "source_candidate_count": 3,
+        "reviewed_general_from": "2026-09-09",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "unopposed_status": "not_verified",
+        "official_candidate_portal_status": "403_access_blocked",
+        "official_candidate_portal_url": "https://www.sos.nh.gov/2026-election-details"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-09",
+    "fetched_at": "2026-10-09T14:55:01.799764+00:00",
+    "receipt": {
+      "state": "NH",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
+      "captured_at": "2026-10-09T14:55:01.799764+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+      "provider_records": 39,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-yougov-nh-senate-20261005",
+          "state": "NH",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T14:55:08.873777+00:00",
+          "documents": [
+            {
+              "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+              "status": "unchanged",
+              "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        },
+        {
+          "id": "primary-yougov-nh-governor-20261005",
+          "state": "NH",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T14:55:10.026771+00:00",
+          "documents": [
+            {
+              "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+              "status": "unchanged",
+              "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      ],
+      "governor_source_checked_at": "2026-10-09T14:52:59.793570+00:00",
+      "primary_rechecked_ids": [
+        "primary-yougov-nh-senate-20261005",
+        "primary-yougov-nh-governor-20261005"
+      ],
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/NH-primary-20261009.json",
+      "roster_reviewed_on": "2026-10-09",
+      "official_ballot_review_status": "portal_403_secondary_review_only",
+      "primary_review_method": "full_primary_YouGov_PDF_question_sample_dates_and_methods_checked_Senate_allocated_reference"
+    },
+    "provider_records": [
+      {
+        "id": "us-202eme9a6a68f5",
+        "poll_type": "us-senator",
+        "sample_size": 1100,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1-Q3fMv-ldmBe4xdMzd0q49PpV7xncHZL/edit?gid=744018967#gid=744018967",
+        "created_at": "2026-04-14",
+        "start_date": "2026-03-21",
+        "end_date": "2026-03-23",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 45.3
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 43.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saica770502",
+        "poll_type": "us-senator",
+        "sample_size": 1491,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-poll-saint-anselm-college-survey-shows-democrats-gaining-ground-republicans-face-political-headwinds",
+        "created_at": "2026-04-14",
+        "start_date": "2026-03-16",
+        "end_date": "2026-03-18",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 46.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202yese8051e85",
+        "poll_type": "us-senator",
+        "sample_size": 563,
+        "population": "lv",
+        "url": "https://yeseverykid.com/new-hampshire-voters-support-expanded-public-school-access/",
+        "created_at": "2026-04-14",
+        "start_date": "2026-01-28",
+        "end_date": "2026-01-29",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 45.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni1250e038",
+        "poll_type": "us-senator",
+        "sample_size": 2038,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/922/",
+        "created_at": "2026-04-14",
+        "start_date": "2026-01-15",
+        "end_date": "2026-01-19",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 50.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202prad23da08c",
+        "poll_type": "us-senator",
+        "sample_size": 603,
+        "population": "rv",
+        "url": "https://acrobat.adobe.com/id/urn:aaid:sc:US:bd0b0e63-78b9-426d-b30f-1696edd951f6",
+        "created_at": "2026-04-14",
+        "start_date": "2025-12-26",
+        "end_date": "2025-12-28",
+        "pollster": "Praecones Analytica",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 42.3
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 35.6
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "New Hampshire Journal"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saia99778cd",
+        "poll_type": "us-senator",
+        "sample_size": 2112,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-poll-saint-anselm-college-survey-shows-declining-optimism-democracy-dominant-issue-and-early-partisan-divides-ahead-2026",
+        "created_at": "2026-04-14",
+        "start_date": "2025-11-18",
+        "end_date": "2025-11-19",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 44.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202co/0b672f7f",
+        "poll_type": "us-senator",
+        "sample_size": 1034,
+        "population": "lv",
+        "url": "https://coefficient.org/our-work/new-hampshire-us-senate-oct-2025/",
+        "created_at": "2026-04-14",
+        "start_date": "2025-10-09",
+        "end_date": "2025-10-13",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 45.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni0401d0f4",
+        "poll_type": "us-senator",
+        "sample_size": 1225,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/888/",
+        "created_at": "2026-04-14",
+        "start_date": "2025-09-17",
+        "end_date": "2025-09-23",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 49.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202co/465a61ff",
+        "poll_type": "us-senator",
+        "sample_size": 904,
+        "population": "lv",
+        "url": "https://coefficient.org/wp-content/uploads/2025/09/NH-U.S.-Senate-General-Election-2026.pdf",
+        "created_at": "2026-04-14",
+        "start_date": "2025-09-10",
+        "end_date": "2025-09-12",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 46.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202189327ac2c7",
+        "poll_type": "us-senator",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://punchbowl.news/nhsen_poll2memo_d2b_090625/",
+        "created_at": "2026-04-14",
+        "start_date": "2025-09-02",
+        "end_date": "2025-09-04",
+        "pollster": "1892 Polling",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 45.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "One Nation"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202qua5256989f",
+        "poll_type": "us-senator",
+        "sample_size": 650,
+        "population": "rv",
+        "url": "https://drive.google.com/file/d/1pTEGFZakFzekwP2SUbeB7W1cU0InW8EI/view?usp=sharing",
+        "created_at": "2026-04-14",
+        "start_date": "2025-03-17",
+        "end_date": "2025-03-19",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 44.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 53.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "TrendingPolitics"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202saiff4d0471",
+        "poll_type": "governor",
+        "sample_size": 1491,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-poll-saint-anselm-college-survey-shows-democrats-gaining-ground-republicans-face-political-headwinds",
+        "created_at": "2026-04-18",
+        "start_date": "2026-03-16",
+        "end_date": "2026-03-18",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 45.0
+          },
+          {
+            "choice": "Jon Kiper",
+            "pct": 31.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202sai6d6bd709",
+        "poll_type": "governor",
+        "sample_size": 1491,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-poll-saint-anselm-college-survey-shows-democrats-gaining-ground-republicans-face-political-headwinds",
+        "created_at": "2026-04-18",
+        "start_date": "2026-03-16",
+        "end_date": "2026-03-18",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 46.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202yesccfccd44",
+        "poll_type": "governor",
+        "sample_size": 563,
+        "population": "lv",
+        "url": "https://yeseverykid.com/new-hampshire-voters-support-expanded-public-school-access/",
+        "created_at": "2026-04-18",
+        "start_date": "2026-01-28",
+        "end_date": "2026-01-29",
+        "pollster": "yes. every kid.",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 47.0
+          },
+          {
+            "choice": "Jon Kiper",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202unif87e151d",
+        "poll_type": "governor",
+        "sample_size": 2031,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/922/",
+        "created_at": "2026-04-18",
+        "start_date": "2026-01-15",
+        "end_date": "2026-01-19",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 50.0
+          },
+          {
+            "choice": "Jon Kiper",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202unida29a6f2",
+        "poll_type": "governor",
+        "sample_size": 1117,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/944/",
+        "created_at": "2026-05-28",
+        "start_date": "2026-04-17",
+        "end_date": "2026-04-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 47.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni64743a1f",
+        "poll_type": "us-senator",
+        "sample_size": 1295,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/944/",
+        "created_at": "2026-06-12",
+        "start_date": "2026-04-17",
+        "end_date": "2026-04-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 49.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202unib186ef52",
+        "poll_type": "us-senator",
+        "sample_size": 2232,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/974/",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-18",
+        "end_date": "2026-06-23",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 47.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni983e65a4",
+        "poll_type": "us-senator",
+        "sample_size": 2232,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/974/",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-18",
+        "end_date": "2026-06-23",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 52.0
+          },
+          {
+            "choice": "Scott Brown",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202sai3a119d63",
+        "poll_type": "us-senator",
+        "sample_size": 1614,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/saint-anselm-college-survey-center-june-poll-finds-democrats-expand-generic-ballot-lead",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-24",
+        "end_date": "2026-06-25",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 47.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saif530b9d2",
+        "poll_type": "us-senator",
+        "sample_size": 1614,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/saint-anselm-college-survey-center-june-poll-finds-democrats-expand-generic-ballot-lead",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-24",
+        "end_date": "2026-06-25",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 48.0
+          },
+          {
+            "choice": "Scott Brown",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202sai22d68e5a",
+        "poll_type": "governor",
+        "sample_size": 1614,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/saint-anselm-college-survey-center-june-poll-finds-democrats-expand-generic-ballot-lead",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-24",
+        "end_date": "2026-06-25",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 45.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saia8db86bb",
+        "poll_type": "us-representative",
+        "sample_size": 1614,
+        "population": "rv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/saint-anselm-college-survey-center-june-poll-finds-democrats-expand-generic-ballot-lead",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-24",
+        "end_date": "2026-06-25",
+        "pollster": "Saint Anselm",
+        "answers": [
+          {
+            "choice": "Maggie Goodlander",
+            "pct": 50.0
+          },
+          {
+            "choice": "Lily Tang Williams",
+            "pct": 31.0
+          }
+        ],
+        "seat_name": "NH-02",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NH-02"
+      },
+      {
+        "id": "gov202uni1b296fe7",
+        "poll_type": "governor",
+        "sample_size": null,
+        "population": null,
+        "url": "https://scholars.unh.edu/survey_center_polls/974/",
+        "created_at": "2026-07-01",
+        "start_date": "2026-06-18",
+        "end_date": "2026-06-23",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 44.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202saib7044af6",
+        "poll_type": "governor",
+        "sample_size": 1411,
+        "population": "lv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-republicans-facing-midterm-headwinds-democratic-lead-widens",
+        "created_at": "2026-08-25",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-18",
+        "pollster": "Saint Anselm College Survey Center",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 49.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202sai47715591",
+        "poll_type": "us-senator",
+        "sample_size": 1411,
+        "population": "lv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-republicans-facing-midterm-headwinds-democratic-lead-widens",
+        "created_at": "2026-08-25",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-18",
+        "pollster": "Saint Anselm College Survey Center",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 48.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saif937cd00",
+        "poll_type": "us-senator",
+        "sample_size": 1411,
+        "population": "lv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-republicans-facing-midterm-headwinds-democratic-lead-widens",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-18",
+        "pollster": "Saint Anselm College Survey Center",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 49.0
+          },
+          {
+            "choice": "Scott Brown",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202saibb1156ba",
+        "poll_type": "us-representative",
+        "sample_size": 701,
+        "population": "lv",
+        "url": "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-republicans-facing-midterm-headwinds-democratic-lead-widens",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-18",
+        "pollster": "Saint Anselm College Survey Center",
+        "answers": [
+          {
+            "choice": "Maggie Goodlander",
+            "pct": 50.0
+          },
+          {
+            "choice": "Lily Tang Williams",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": "NH-02",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NH-02"
+      },
+      {
+        "id": "us-202unie006e257",
+        "poll_type": "us-senator",
+        "sample_size": 1878,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/988/",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-20",
+        "end_date": "2026-08-24",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 43.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni38178073",
+        "poll_type": "us-senator",
+        "sample_size": 1878,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/988/",
+        "created_at": "2026-08-27",
+        "start_date": "2026-08-20",
+        "end_date": "2026-08-24",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 45.0
+          },
+          {
+            "choice": "Scott Brown",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202uni9b4ef0cd",
+        "poll_type": "governor",
+        "sample_size": 1878,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/991/",
+        "created_at": "2026-08-29",
+        "start_date": "2026-08-20",
+        "end_date": "2026-08-24",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 49.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202co/fb4b800b",
+        "poll_type": "governor",
+        "sample_size": 958,
+        "population": "lv",
+        "url": "https://battlegrounds.coefficient.org/nh/",
+        "created_at": "2026-09-15",
+        "start_date": "2026-09-09",
+        "end_date": "2026-09-11",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 55.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202insfe93ffed",
+        "poll_type": "us-senator",
+        "sample_size": 1200,
+        "population": "lv",
+        "url": "https://insideradvantage.com/insideradvantage-national-u-s-senate-surveys-n-c-cooper-48-whatley-43-mi-elsayed-47-rogers-45-nh-pappas-48-sununu-40/",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-16",
+        "end_date": "2026-09-17",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 48.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202the55816505",
+        "poll_type": "us-senator",
+        "sample_size": 613,
+        "population": "lv",
+        "url": "https://www.nytimes.com/2026/09/24/us/politics/democrats-show-strength-in-michigan-senate-race-but-trail-in-maine-polls-find.html",
+        "created_at": "2026-09-24",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-22",
+        "pollster": "The New York Times/Siena University",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 50.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202uni02a0a46f",
+        "poll_type": "us-senator",
+        "sample_size": 1418,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/1005/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-17",
+        "end_date": "2026-09-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 50.0
+          },
+          {
+            "choice": "John Sununu",
+            "pct": 42.0
+          },
+          {
+            "choice": "Edmond Laplante",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "us-202unic08cf0d0",
+        "poll_type": "us-representative",
+        "sample_size": 711,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/1005/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-17",
+        "end_date": "2026-09-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Stephany Shaheen",
+            "pct": 46.0
+          },
+          {
+            "choice": "Anthony DiLorenzo",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": "NH-01",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NH-01"
+      },
+      {
+        "id": "us-202unie2f0d260",
+        "poll_type": "us-representative",
+        "sample_size": 702,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/1005/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-17",
+        "end_date": "2026-09-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Maggie Goodlander",
+            "pct": 56.0
+          },
+          {
+            "choice": "Lily Tang Williams",
+            "pct": 35.0
+          },
+          {
+            "choice": "Robbie Mahrou",
+            "pct": 3.0
+          }
+        ],
+        "seat_name": "NH-02",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NH-02"
+      },
+      {
+        "id": "gov202uni4f540392",
+        "poll_type": "governor",
+        "sample_size": 1418,
+        "population": "lv",
+        "url": "https://scholars.unh.edu/survey_center_polls/1005/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-17",
+        "end_date": "2026-09-21",
+        "pollster": "University of New Hampshire",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 47.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 43.0
+          },
+          {
+            "choice": "Stephen Villee",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      },
+      {
+        "id": "gov202the5a3a4173",
+        "poll_type": "governor",
+        "sample_size": 613,
+        "population": "lv",
+        "url": "https://www.nytimes.com/interactive/2026/09/25/polls/times-siena-poll-nh-crosstabs.html",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-22",
+        "pollster": "The New York Times/Siena University",
+        "answers": [
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 52.0
+          },
+          {
+            "choice": "Cinde Warmington",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New Hampshire"
+      }
+    ],
+    "provider_records_sha256": "dbebecb1644bdc2da159e4b75e903c82a401c0ca5b6537a134ad957b71406a5c",
+    "primary_records": [
+      {
+        "id": "primary-yougov-nh-senate-20261005",
+        "subject": "2026 New Hampshire",
+        "poll_type": "us-senator",
+        "seat_name": null,
+        "pollster": "YouGov",
+        "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-05",
+        "created_at": "2026-10-07",
+        "population": "lv",
+        "sample_size": 1519,
+        "sponsors": [],
+        "partisan": null,
+        "internal": false,
+        "answers": [
+          {
+            "choice": "Chris Pappas",
+            "pct": 51
+          },
+          {
+            "choice": "John E. Sununu",
+            "pct": 43
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T14:55:08.873777+00:00",
+          "documents": [
+            {
+              "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+              "status": "unchanged",
+              "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-yougov-nh-governor-20261005",
+        "subject": "2026 New Hampshire",
+        "poll_type": "governor",
+        "seat_name": null,
+        "pollster": "YouGov",
+        "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-05",
+        "created_at": "2026-10-07",
+        "population": "lv",
+        "sample_size": 1520,
+        "sponsors": [],
+        "partisan": null,
+        "internal": false,
+        "answers": [
+          {
+            "choice": "Cinde Warmington",
+            "pct": 40
+          },
+          {
+            "choice": "Kelly Ayotte",
+            "pct": 49
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-09",
+          "checked_at": "2026-10-09T14:55:10.026771+00:00",
+          "documents": [
+            {
+              "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_nh_20260921_lv.pdf",
+              "status": "unchanged",
+              "sha256": "3538cc5fff28b7a1cd1042274327c9377ccfac9909c1a16e3f2df6b22fcf9e80"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      }
+    ]
+  }
+}

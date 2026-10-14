@@ -3,6 +3,11 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_state_integration_scope_only_allows_polling_workflow(self):
+        self.assertEqual(scoped_paths('codex/election-state-integration-20261010'), {
+            '.github/workflows/us_election_polls_refresh.yml'})
+        self.assertFalse(scoped_paths('codex/election-state-integration-20261010-extra'))
+
     def test_only_three_exact_workflow_files_are_allowed(self):
         self.assertEqual(scoped_paths('codex/us-polls-deploy'), {
             '.github/workflows/us_election_polls_refresh.yml',
@@ -28,6 +33,16 @@ class PollingScopeTests(unittest.TestCase):
         self.assertNotIn('New for anti/app.js', scoped_paths('codex/usa-election-ui'))
         self.assertFalse(scoped_paths('codex/usa-election-ui-extra'))
         self.assertNotIn('.github/workflows/deploy.yml', scoped_paths('codex/usa-election-ui'))
+
+    def test_daily_polling_request_only_allows_collector(self):
+        branch = 'codex/us-house-poll-priority-20261008'
+        self.assertEqual(scoped_paths(branch), {
+            '.github/workflows/us_election_polls_refresh.yml'})
+        self.assertFalse(scoped_paths(branch + '-extra'))
+        for path in ('New for anti/app.js', '_worker.js', 'wrangler.jsonc',
+                     '.github/workflows/ownership_guard.yml', '.github/workflows/deploy.yml',
+                     '.github/workflows/overseas_letf_daily.yml'):
+            self.assertNotIn(path, scoped_paths(branch))
 
     def test_monthly_acquisition_scope_does_not_allow_ui_or_deployment(self):
         self.assertEqual(scoped_paths('codex/commodity-monthly-automation'), {

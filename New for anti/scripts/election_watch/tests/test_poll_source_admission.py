@@ -46,6 +46,14 @@ class SourceAdmissionTests(unittest.TestCase):
         self.assertEqual(rejected[0]['source_url'], raw['url'])
         self.assertEqual(rejected[0]['verification'], 'not_accepted_not_verified')
 
+    def test_publisher_identity_hold_cannot_be_bypassed_by_values_or_registered_pollster(self):
+        raw,policy=self.release()
+        policy['excluded_records']={raw['id']:'publisher_identity_unverified'}
+        policy['pollsters'][raw['pollster']]={'group':'local_fixture','hosts':['example.org'],
+                                             'methodology_url':raw['url']}
+        rows,rejected=normalize([raw],policy,DAY)
+        self.assertFalse(rows);self.assertEqual(rejected[0]['reason'],'publisher_identity_unverified')
+
     def test_review_is_bound_to_pollster_url_and_values(self):
         for changes, reason in [({'pollster': 'Different institute'}, 'source_review_changed'),
                                 ({'url': 'https://example.org/different.pdf'}, 'source_review_changed'),

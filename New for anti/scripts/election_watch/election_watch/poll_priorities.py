@@ -186,7 +186,9 @@ def load_finance_links(index_path, cycle):
             payload = asset(race['data_file'])
             require(payload['schema'] == 'usa_election_finance_race_v1' and payload['cycle'] == cycle
                     and payload['race_id'] == rid and payload['status'] == race['status'], 'finance race mismatch')
-            races[rid] = {'data_file': race['data_file'], 'status': race['status']}
+            races[rid] = {'data_file': race['data_file'], 'status': race['status'],
+                          'totals_by_category': payload.get('totals_by_category', {}),
+                          'totals_by_election_type': payload.get('totals_by_election_type', {})}
     return {'races': races, 'status': 'loaded', 'generated_at': index['generated_at'], 'national_file': national_file}
 
 
@@ -211,6 +213,8 @@ def attach_coverage(board, raw_rows, policy, finance_board):
         missing = sorted(rejected[rid], key=lambda x: (x.get('field_end') or '', x.get('id') or ''), reverse=True)
         race_coverage[rid] = {'priority': race.get('collection_priority', {'order': 4, 'reasons': ['existing_target']}),
             'status': status, 'provider_record_count': count, 'accepted_count': len(race['observations']),
+            **({'reviewed_primary_supplement_count': sum('primary_source_capture' in p for p in race['observations'])}
+               if any('primary_source_capture' in p for p in race['observations']) else {}),
             'aggregation_eligible_count': len(eligible), 'reference_only_count': len(race['observations'])-len(eligible),
             'matchup_reviewed': len(race['required_candidates']) >= 2,
             'latest_accepted_field_end': max((p['field_end'] for p in race['observations']), default=None),

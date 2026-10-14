@@ -1,0 +1,81 @@
+{
+  "schema": "usa_governor_finance_audit_v1",
+  "state": "AL",
+  "cycle": 2026,
+  "captured_at": "2026-10-09T09:45:23.231087+00:00",
+  "status": "collected_normalization_held",
+  "source_url": "https://fcpa.alabamavotes.gov/page.request.do?page=page.acfPublicDownloadData",
+  "sources": [
+    {
+      "report_year": 2026,
+      "manifest_url": "https://fcpa.alabamavotes.gov/page.request.do?page=com.acf.common.page.transactiondatadownloadsresults&pageSize=100&pageNumber=1&sortDirection=ASC&sortBy=year",
+      "manifest_sha256": "a179619ee92bce509b82f97e720584bd8bb6740a4522b802283fbf8d731a2707",
+      "export_url": "https://fcpa.alabamavotes.gov/page.request.do?page=getTransactionData&id=55",
+      "file_key_url": "https://fcpa.alabamavotes.gov/page.request.do?page=getResource&resource=expendituresExportLayout",
+      "file_key_sha256": "de5dc3c1ece1c14d0bbda8bc9144d3613a322c8e2da031c7dfa99bc8d55f70df",
+      "source_as_of": "2026-10-09",
+      "source_as_of_text": "Oct 9, 2026, 2:34:00 AM",
+      "source_timezone": "not_disclosed",
+      "zip_sha256": "118eb955526c4c5bff6b48afe3e568b6ce17a78b5d632359520ed9a990f610f5",
+      "csv_sha256": "59770107e111783c8030e490a3c24fff880c5df91ee1f278ea4b62006342859e",
+      "csv_encoding": "utf-8-sig",
+      "rows": 42186,
+      "valid_structure_and_dates_rows": 41191
+    }
+  ],
+  "input_records": 42186,
+  "valid_structure_and_dates_records": 41191,
+  "source_parse_status": "partial_rejected_source_records",
+  "rejected_source_records": {
+    "ragged_source_csv_record": 948,
+    "invalid_or_missing_date_amount": 44,
+    "invalid_identity_date_amount_or_status": 3
+  },
+  "candidate_amounts_available": false,
+  "current_governor_target_records": null,
+  "reported_committee_types": {
+    "Principal Campaign Committee": 32858,
+    "Political Action Committee": 8333
+  },
+  "last_valid_general_bulk_filing_date": "2026-10-08",
+  "duplicate_valid_record_ids": 0,
+  "amendment_diagnostics": {
+    "amended_valid_rows": 1325,
+    "lineage_verified": false,
+    "monetary_deduplication_performed": false
+  },
+  "candidate_audits": [
+    {
+      "candidate_id": "AL:reported-general:2026:ec11fb799e369457",
+      "name": "Doug Jones",
+      "party": "DEM",
+      "reported_target": null,
+      "reported_rows": null,
+      "support_cents": null,
+      "oppose_cents": null,
+      "amount_status": "target_and_direction_unavailable"
+    },
+    {
+      "candidate_id": "AL:reported-general:2026:dab7ef8365d560b6",
+      "name": "Tommy Tuberville",
+      "party": "REP",
+      "reported_target": null,
+      "reported_rows": null,
+      "support_cents": null,
+      "oppose_cents": null,
+      "amount_status": "target_and_direction_unavailable"
+    }
+  ],
+  "hold_reasons": [
+    "bulk_candidate_name_is_filing_owner_not_ie_target",
+    "target_support_oppose_columns_missing",
+    "amendment_lineage_not_verified",
+    "only_2026_reporting_year_collected"
+  ],
+  "limitations_ko": [
+    "공식 일반지출ZIP 수집 감사이며 주지사 독립지출 금액 수집 완료가 아닙니다.",
+    "CSV 파손·필수값 미확보 행은 제외 진단에 보존. 행 수를 완전한 고유 공시 건수로 표시하지 않습니다.",
+    "CandidateName은 지출한 캠프 소유자입니다. PAC 비용·후보 캠프 비용을 독립지출 수혜후보에게 배분하지 않습니다.",
+    "지지/반대·선거 단계·정정 계보 미확보로 모든 후보 금액은null. 일반지출 최신일은 주지사 IE 최신일이 아닙니다."
+  ]
+}

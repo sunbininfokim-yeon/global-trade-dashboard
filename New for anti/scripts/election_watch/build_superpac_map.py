@@ -16,7 +16,8 @@ OFFICES = {'H': 'house', 'S': 'senate', 'P': 'president', 'G': 'governor'}
 
 
 def read(path):
-    return json.loads(path.read_text())
+    from election_watch.polls import read as reviewed_read
+    return reviewed_read(path)
 
 
 def immutable(public, prefix, payload):

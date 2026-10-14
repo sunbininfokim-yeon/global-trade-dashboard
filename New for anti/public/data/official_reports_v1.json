@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-07T21:20:40.670671+00:00",
+  "generated_at": "2026-10-13T23:44:48.137110+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 162,
-    "scored": 162,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 157,
+    "scored": 157,
     "selected": 40,
-    "indicators": 18
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -219,20 +219,6 @@
       "significance": 2.64
     },
     {
-      "series_id": "EU_ECB_POLICY",
-      "label_ko": "ECB 정책",
-      "country": "EUR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "ECB amends monetary policy implementation guidelines as part of regular review",
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.64
-    },
-    {
       "series_id": "US_EIA_ENERGY",
       "label_ko": "EIA 에너지",
       "country": "USA",
@@ -330,20 +316,6 @@
       "published_at": "2026-10-02T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
-      "published_at": "2026-09-25T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -409,40 +381,6 @@
       "scores": {
         "significance": 4.094,
         "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-09-25T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
       },
       "rank_reasons": [
         "domains:economy,finance"
@@ -555,6 +493,42 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "7592e2306cab9509",
+      "published_at": "2026-10-08T15:05:06+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: Trump Administration Announces the Most Ambitious Set of Science Initiatives This Century",
+        "original_lang": "en",
+        "ko": "[USA·외교] Fact Sheet: Trump Administration Announces the Most Ambitious Set of Science Initiatives This Century"
+      },
+      "summary": "WASHINGTON, DC — Today, at the Science: A New Golden Age Summit, the Trump Administration launched the most ambitious set of science initiatives in decades, representing over $6 billion in investments across the Federal Government, industry, academia, and philanthropy to usher in",
+      "scores": {
+        "significance": 3.013,
+        "final": 3.013
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "98bf837ee1b53a46",
@@ -762,41 +736,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2af4c3204b0dd386",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
-        "original_lang": "en",
-        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "636abf84bad4f1c6",
       "published_at": "2026-09-25T06:30:00+00:00",
       "source": {
@@ -902,35 +841,105 @@
       "site_slot": null
     },
     {
-      "id": "a5c20705f701aa97",
-      "published_at": "2026-07-30T11:00:00+00:00",
+      "id": "27abc22d24d1b071",
+      "published_at": "2026-10-10T20:46:32+00:00",
       "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
         "slant": null
       },
-      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+      "url": "https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "diplomacy",
+        "security"
       ],
       "series_id": null,
       "title": {
-        "original": "Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes",
+        "original": "The State of American Manufacturing",
         "original_lang": "en",
-        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
+        "ko": "[USA·경제] The State of American Manufacturing"
       },
-      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "summary": "The Council of Economic Advisers (CEA) evaluated President Trump’s impact on the manufacturing sector— reviewing his second term to date. Reviewing a wide range of evidence, the data demonstrates that the manufacturing sector is seeing robust growth with the Trump Administration’",
       "scores": {
-        "significance": 2.599,
-        "final": 2.599
+        "significance": 2.438,
+        "final": 2.438
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ed482280b2999588",
+      "published_at": "2026-10-09T18:46:08+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/remarks/2026/10/remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit",
+        "original_lang": "en",
+        "ko": "[USA·외교] Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit"
+      },
+      "summary": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit Remarks as prepared for delivery Oct. 8, 2026 Good morning, and thank you all for being here. It has been so encouraging to see “Science: A New Golden Age” receive such a warm reception, and thrilling to",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "6430e9cf8916e1b3",
+      "published_at": "2026-10-08T18:32:51+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-presents-national-medals-of-science-and-national-medals-of-technology-and-innovation/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump Presents National Medals of Science and National Medals of Technology and Innovation",
+        "original_lang": "en",
+        "ko": "[USA·외교] President Trump Presents National Medals of Science and National Medals of Technology and Innovation"
+      },
+      "summary": "FOR IMMEDIATE RELEASE Today at the Science: A New Golden Age Summit, President Donald J. Trump presented National Medals of Science and National Medals of Technology and Innovation, our nation’s highest honors for exemplary achievement and leadership in science and technology, to",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1045,78 +1054,6 @@
       "site_slot": null
     },
     {
-      "id": "2759417b865677c7",
-      "published_at": "2026-09-30T17:10:17+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/09/icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa",
-        "original_lang": "en",
-        "ko": "[USA·경제] ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa"
-      },
-      "summary": "President Donald J. Trump announced a $15 billion Mesabi Metallics steel complex is coming to Iowa — the largest steel plant ever built in the United States as more industrial capacity comes home. The project will create 1,750 new, permanent jobs, support up to 6,000 construction",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "dd7f4e6066a90f93",
-      "published_at": "2026-09-29T19:07:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-announces-2026-fall-garden-tours/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Announces 2026 Fall Garden Tours",
-        "original_lang": "en",
-        "ko": "[USA·경제] First Lady Melania Trump Announces 2026 Fall Garden Tours"
-      },
-      "summary": "The White House will welcome visitors this fall for the 2026 Fall Garden Tours, offering an opportunity for visitors to experience the historic gardens and grounds of the People’s House. The grounds will be open Saturday, October 17 from 10:00 AM – 4:30 PM, and Sunday, October 18",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "eeaa46bc5d3129fb",
       "published_at": "2026-10-05T05:00:00+00:00",
       "source": {
@@ -1179,6 +1116,76 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "7911313d2f0de3b5",
+      "published_at": "2026-10-08T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1430,76 +1437,6 @@
       "site_slot": null
     },
     {
-      "id": "83e8d725d279a05d",
-      "published_at": "2026-09-04T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "dadf2385223f9662",
-      "published_at": "2026-08-25T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on July 20 and July 29, 2026"
-      },
-      "summary": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "8e92bd1bba00af32",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
@@ -1710,64 +1647,75 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
-        "finance"
+        "finance",
+        "economy"
       ],
-      "series_id": "JP_BOJ_POLICY",
+      "series_id": null,
       "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
         "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
       },
       "summary": "",
       "scores": {
-        "significance": 2.306,
-        "final": 2.306
+        "significance": 2.112,
+        "final": 2.112
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
+        "domains:economy,finance"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "finance.policy"
+      "site_slot": null
+    },
+    {
+      "id": "f75bd04025be67dd",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Monetary Policy Committee dates for 2027",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
+      },
+      "summary": "2027 confirmed dates",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ],
   "pending_review": [
-    {
-      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
-      "country": "EUR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Monetary Policy Committee dates for 2027",
-      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
     {
       "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
       "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
@@ -1777,6 +1725,28 @@
         "economy"
       ],
       "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Money Market Committee meeting – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1888,6 +1858,26 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
@@ -1953,40 +1943,6 @@
       "scores": {
         "significance": 4.094,
         "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-09-25T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
       },
       "rank_reasons": [
         "domains:economy,finance"
@@ -2099,6 +2055,42 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "7592e2306cab9509",
+      "published_at": "2026-10-08T15:05:06+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: Trump Administration Announces the Most Ambitious Set of Science Initiatives This Century",
+        "original_lang": "en",
+        "ko": "[USA·외교] Fact Sheet: Trump Administration Announces the Most Ambitious Set of Science Initiatives This Century"
+      },
+      "summary": "WASHINGTON, DC — Today, at the Science: A New Golden Age Summit, the Trump Administration launched the most ambitious set of science initiatives in decades, representing over $6 billion in investments across the Federal Government, industry, academia, and philanthropy to usher in",
+      "scores": {
+        "significance": 3.013,
+        "final": 3.013
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "98bf837ee1b53a46",
@@ -2306,41 +2298,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2af4c3204b0dd386",
-      "published_at": "2026-09-29T08:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB amends monetary policy implementation guidelines as part of regular review",
-        "original_lang": "en",
-        "ko": "[EUR·금융] ECB amends monetary policy implementation guidelines as part of regular review"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "636abf84bad4f1c6",
       "published_at": "2026-09-25T06:30:00+00:00",
       "source": {
@@ -2446,35 +2403,105 @@
       "site_slot": null
     },
     {
-      "id": "a5c20705f701aa97",
-      "published_at": "2026-07-30T11:00:00+00:00",
+      "id": "27abc22d24d1b071",
+      "published_at": "2026-10-10T20:46:32+00:00",
       "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
         "slant": null
       },
-      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+      "url": "https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "diplomacy",
+        "security"
       ],
       "series_id": null,
       "title": {
-        "original": "Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes",
+        "original": "The State of American Manufacturing",
         "original_lang": "en",
-        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
+        "ko": "[USA·경제] The State of American Manufacturing"
       },
-      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "summary": "The Council of Economic Advisers (CEA) evaluated President Trump’s impact on the manufacturing sector— reviewing his second term to date. Reviewing a wide range of evidence, the data demonstrates that the manufacturing sector is seeing robust growth with the Trump Administration’",
       "scores": {
-        "significance": 2.599,
-        "final": 2.599
+        "significance": 2.438,
+        "final": 2.438
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ed482280b2999588",
+      "published_at": "2026-10-09T18:46:08+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/remarks/2026/10/remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit",
+        "original_lang": "en",
+        "ko": "[USA·외교] Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit"
+      },
+      "summary": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit Remarks as prepared for delivery Oct. 8, 2026 Good morning, and thank you all for being here. It has been so encouraging to see “Science: A New Golden Age” receive such a warm reception, and thrilling to",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "6430e9cf8916e1b3",
+      "published_at": "2026-10-08T18:32:51+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-presents-national-medals-of-science-and-national-medals-of-technology-and-innovation/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump Presents National Medals of Science and National Medals of Technology and Innovation",
+        "original_lang": "en",
+        "ko": "[USA·외교] President Trump Presents National Medals of Science and National Medals of Technology and Innovation"
+      },
+      "summary": "FOR IMMEDIATE RELEASE Today at the Science: A New Golden Age Summit, President Donald J. Trump presented National Medals of Science and National Medals of Technology and Innovation, our nation’s highest honors for exemplary achievement and leadership in science and technology, to",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2589,78 +2616,6 @@
       "site_slot": null
     },
     {
-      "id": "2759417b865677c7",
-      "published_at": "2026-09-30T17:10:17+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/09/icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa",
-        "original_lang": "en",
-        "ko": "[USA·경제] ICYMI: President Trump Announces Largest-Ever Steel Plant Coming to Iowa"
-      },
-      "summary": "President Donald J. Trump announced a $15 billion Mesabi Metallics steel complex is coming to Iowa — the largest steel plant ever built in the United States as more industrial capacity comes home. The project will create 1,750 new, permanent jobs, support up to 6,000 construction",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "dd7f4e6066a90f93",
-      "published_at": "2026-09-29T19:07:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/09/first-lady-melania-trump-announces-2026-fall-garden-tours/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Announces 2026 Fall Garden Tours",
-        "original_lang": "en",
-        "ko": "[USA·경제] First Lady Melania Trump Announces 2026 Fall Garden Tours"
-      },
-      "summary": "The White House will welcome visitors this fall for the 2026 Fall Garden Tours, offering an opportunity for visitors to experience the historic gardens and grounds of the People’s House. The grounds will be open Saturday, October 17 from 10:00 AM – 4:30 PM, and Sunday, October 18",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "eeaa46bc5d3129fb",
       "published_at": "2026-10-05T05:00:00+00:00",
       "source": {
@@ -2723,6 +2678,76 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "7911313d2f0de3b5",
+      "published_at": "2026-10-08T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2974,76 +2999,6 @@
       "site_slot": null
     },
     {
-      "id": "83e8d725d279a05d",
-      "published_at": "2026-09-04T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "dadf2385223f9662",
-      "published_at": "2026-08-25T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on July 20 and July 29, 2026"
-      },
-      "summary": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "8e92bd1bba00af32",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
@@ -3254,39 +3209,72 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "aad1b905a15fde00",
-      "published_at": "2026-09-25T08:00:00+00:00",
+      "id": "307fb9bd1fa20ccf",
+      "published_at": "2026-09-30T15:45:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260918.xlsx",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "economy",
-        "finance"
+        "finance",
+        "economy"
       ],
-      "series_id": "JP_BOJ_POLICY",
+      "series_id": null,
       "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
         "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+        "ko": "[EUR·금융] Isabel Schnabel: Monetary policy in a world of overlapping shocks"
       },
       "summary": "",
       "scores": {
-        "significance": 2.306,
-        "final": 2.306
+        "significance": 2.112,
+        "final": 2.112
       },
       "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
+        "domains:economy,finance"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": "finance.policy"
+      "site_slot": null
+    },
+    {
+      "id": "f75bd04025be67dd",
+      "published_at": "2026-09-17T13:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Monetary Policy Committee dates for 2027",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
+      },
+      "summary": "2027 confirmed dates",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ]
 }

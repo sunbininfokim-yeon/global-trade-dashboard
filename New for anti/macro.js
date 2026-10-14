@@ -972,6 +972,88 @@ const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
 
 // Grouped bars for a handful of labelled values -- QRA compare, energy mix,
 // FedWatch outcomes and maturity buckets all reduce to this shape.
+// Contributions to real GDP growth by expenditure component (gdp_contrib.py):
+// one stacked bar per quarter -- positive parts stacked up from zero,
+// negative parts down -- with the published growth rate as a dot, and the
+// latest quarter as a table whose sum is checked against the headline.
+const MM_CONTRIB_COLORS = {
+    pce: '#38bdf8', investment: '#a78bfa', construction: '#818cf8', ipp: '#c4b5fd', inventories: '#f472b6',
+    government: '#34d399', net_exports: '#fbbf24',
+    goods: '#fb923c', services: '#38bdf8', manufacturing: '#fb923c', other: '#94a3b8', taxes: '#64748b',
+};
+const mmContribView = (c, side = '') => {
+    if (!c || !(c.parts || []).length) return '<p class="fin-note">기여도 자료가 없습니다.</p>';
+    const n = c.periods.length;
+    const W = 640, H = 240, padL = 34, padR = 8, padT = 10, padB = 24;
+    let hi = 0, lo = 0;
+    for (let i = 0; i < n; i++) {
+        let up = 0, dn = 0;
+        c.parts.forEach((p) => { const v = p.values[i] || 0; if (v >= 0) up += v; else dn += v; });
+        hi = Math.max(hi, up, c.total[i]); lo = Math.min(lo, dn, c.total[i]);
+    }
+    const span = (hi - lo) || 1; hi += span * 0.05; lo -= span * 0.05;
+    const y = (v) => padT + (hi - v) / (hi - lo) * (H - padT - padB);
+    const bw = (W - padL - padR) / n;
+    const color = (id) => MM_CONTRIB_COLORS[id] || '#94a3b8';
+    let bars = '';
+    for (let i = 0; i < n; i++) {
+        let up = 0, dn = 0;
+        const x = padL + i * bw + bw * 0.15, w = bw * 0.7;
+        c.parts.forEach((p) => {
+            const v = p.values[i] || 0;
+            if (!v) return;
+            const a = v >= 0 ? up : dn, b = a + v;
+            if (v >= 0) up = b; else dn = b;
+            bars += `<rect x="${x.toFixed(1)}" y="${Math.min(y(a), y(b)).toFixed(1)}" width="${w.toFixed(1)}"
+                height="${Math.max(0.5, Math.abs(y(a) - y(b))).toFixed(1)}" fill="${color(p.id)}" opacity="0.88">
+                <title>${finEsc(c.periods[i])} · ${finEsc(p.label_ko)} ${v > 0 ? '+' : ''}${v.toFixed(2)}%p</title></rect>`;
+        });
+        const t = c.total[i];
+        bars += `<circle cx="${(x + w / 2).toFixed(1)}" cy="${y(t).toFixed(1)}" r="3.2" fill="#f8fafc" stroke="#0f172a" stroke-width="1.2">
+            <title>${finEsc(c.periods[i])} · GDP ${t > 0 ? '+' : ''}${t.toFixed(2)}%</title></circle>`;
+        if (i % 4 === n % 4 || i === n - 1) {
+            bars += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#64748b">${finEsc(c.periods[i])}</text>`;
+        }
+    }
+    const ticks = [lo, 0, hi].map((v) => `<text x="${padL - 4}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#64748b">${v.toFixed(1)}</text>`).join('');
+    const zero = `<line x1="${padL}" x2="${W - padR}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#334155" stroke-width="1"/>`;
+    const legend = c.parts.map((p) => `<span class="mm-contrib-key"><i style="background:${color(p.id)}"></i>${finEsc(p.label_ko)}</span>`).join('')
+        + `<span class="mm-contrib-key"><i class="mm-contrib-dot"></i>${finEsc(c.total_label_ko || 'GDP 성장률')}</span>`;
+    const lt = c.latest || {};
+    const sign = (v) => `${v > 0 ? '+' : ''}${Number(v).toFixed(2)}`;
+    const rows = c.parts.map((p) => {
+        const v = p.values[p.values.length - 1];
+        return `<tr><td><i class="mm-contrib-sw" style="background:${color(p.id)}"></i>${finEsc(p.label_ko)}</td><td class="${v < 0 ? 'neg' : 'pos'}">${sign(v)}</td></tr>`;
+    }).join('');
+    const links = (c.source_urls || []).map((u, k) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">원자료${k ? ' ' + (k + 1) : ''} ↗</a>`).join(' ');
+    return `
+        <div class="mm-contrib">
+            <p class="mm-view-title">실질GDP 성장 기여도${side ? ' · ' + finEsc(side) : ''} · ${finEsc(c.basis_ko || '')}${c.computed ? ' · <span class="mm-contrib-computed">계산값</span>' : ''}</p>
+            <div class="mm-contrib-legend">${legend}</div>
+            <svg viewBox="0 0 ${W} ${H}" class="mm-contrib-chart" role="img" aria-label="GDP 성장 기여도">${zero}${ticks}${bars}</svg>
+            <table class="mm-contrib-table">
+                <thead><tr><th>${finEsc(lt.period || '')}</th><th>%p</th></tr></thead>
+                <tbody>${rows}</tbody>
+                <tfoot>
+                    <tr><td>항목 합계</td><td>${sign(lt.sum_parts)}</td></tr>
+                    <tr><td>${finEsc(c.total_label_ko || '발표 GDP 성장률')}</td><td>${sign(lt.total)}</td></tr>
+                    ${Math.abs(lt.residual || 0) >= 0.01 ? `<tr class="mm-contrib-res"><td>잔차(반올림·연쇄가중·재고·불일치 등)</td><td>${sign(lt.residual)}</td></tr>` : ''}
+                </tfoot>
+            </table>
+            ${(c.detail || []).length ? `
+            <p class="mm-view-title mm-contrib-detail-title">${finEsc(lt.period || '')} 업종별 (%p, 큰 순)</p>
+            <div class="mm-contrib-detail">${(c.detail.some((d) => String(d.label_ko).startsWith('  '))
+                    ? c.detail                                     // nested (Korea): keep the parent/child order
+                    : [...c.detail].sort((a, b) => b.value - a.value))   // flat (BEA): largest first, as BEA charts it
+                .map((d) => `<div class="mm-contrib-drow${String(d.label_ko).startsWith('  ') ? ' sub' : ''}">
+                    <i class="mm-contrib-sw" style="background:${color(d.group)}"></i>
+                    <span>${finEsc(String(d.label_ko).trim())}</span>
+                    <span class="mm-contrib-dbar"><b class="${d.value < 0 ? 'neg' : 'pos'}" style="width:${Math.min(100, Math.abs(d.value) / Math.max(...c.detail.map((x) => Math.abs(x.value)), 0.01) * 100).toFixed(0)}%"></b></span>
+                    <span class="${d.value < 0 ? 'neg' : 'pos'}">${sign(d.value)}</span></div>`).join('')}</div>` : ''}
+            <p class="fin-note">${finEsc(c.note_ko || '')}${c.note_ko ? ' ' : ''}출처: ${finEsc(c.source || '')}. 막대 위 마우스를 올리면 분기별 값이 나옵니다. ${links}</p>
+        </div>`;
+};
+
 const mmBars = (rows, opts = {}) => {
     const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
     if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
@@ -1415,6 +1497,8 @@ const mmViewsFor = (ind) => {
                && ind.chart_type === 'line+components') {
         views.push({ id: 'components', label: '구성' });
     }
+    if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: ind.contrib_industry ? '지출 기여도' : '기여도' });
+    if (ind.contrib_industry && has(ind.contrib_industry.parts)) views.push({ id: 'contrib_ind', label: '산업 기여도' });
     return views.length ? views : [{ id: 'history', label: '추이' }];
 };
 
@@ -1550,6 +1634,8 @@ const mmChartDrawer = () => {
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
+    else if (view === 'contrib') body = mmContribView(ind.contrib);
+    else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;
@@ -1938,6 +2024,18 @@ const mmFomcMinutesHtml = (policy) => {
 
     let body = '';
     const statements = latest && Array.isArray(latest.statements) ? latest.statements : [];
+    // 핵심 발췌: the decision paragraph and the statements the minutes attribute to
+    // all / most / many participants -- quoted as written, picked only by the
+    // Fed's own quantifier, not by topic or tone.
+    const decisionPara = latest && (latest.policy_actions_text || [])[0];
+    const broad = statements.filter((row) => ['all', 'most', 'many'].includes(row.group));
+    const highlights = (decisionPara || broad.length) ? `
+        <div class="mm-minutes-highlights">
+            <p class="mm-view-title">핵심 발췌 (원문)</p>
+            ${decisionPara ? `<blockquote class="mm-minutes-quote"><span class="mm-minutes-tag">결정</span>${finEsc(decisionPara)}</blockquote>` : ''}
+            ${broad.map((row) => `<blockquote class="mm-minutes-quote"><span class="mm-minutes-tag">${finEsc(({ all: '전원', most: '대부분·과반', many: '다수' })[row.group] || row.group)}</span>${finEsc(row.text)}</blockquote>`).join('')}
+            <p class="mm-quality-muted">결정 문단과, 의사록이 '전원·대부분·과반·다수(All/Most/A majority/Many)'로 표현한 문장만 원문 그대로 옮겼습니다. 번역·해석·주제 선별 없음.</p>
+        </div>` : '';
     if (statements.length) {
         const sections = groups.map(([key, label]) => {
             const rows = statements.filter((row) => row.group === key);
@@ -1962,6 +2060,7 @@ const mmFomcMinutesHtml = (policy) => {
         <span class="mm-quality-label">FOMC 의사록</span>
         ${head}
         ${next}
+        ${highlights}
         ${body}
     </div>`;
 };
@@ -2420,6 +2519,63 @@ const mmCbPolicyPanel = (cb) => {
     </section>`;
 };
 
+// The next FOMC meeting at a glance (schedule.preview, build_fomc_preview.py):
+// dates, SEP or not, the communications blackout, the decision time in Korea,
+// the last decision and dot-plot median, and official releases around it.
+// Dates only -- no rate expectations (FedWatch is licensed).
+const mmEtToKst = (isoDate, hhmm) => {
+    // New York's UTC offset on that day, then +9h for Korea (both handle DST)
+    const noonUtc = new Date(`${isoDate}T12:00:00Z`);
+    const ny = new Date(noonUtc.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const offsetH = Math.round((ny - new Date(noonUtc.toLocaleString('en-US', { timeZone: 'UTC' }))) / 3600000);
+    const [h, m] = hhmm.split(':').map(Number);
+    const utc = new Date(Date.UTC(...isoDate.split('-').map((x, i) => (i === 1 ? Number(x) - 1 : Number(x))), h - offsetH, m));
+    const kst = new Date(utc.getTime() + 9 * 3600000);
+    return `${kst.getUTCMonth() + 1}/${kst.getUTCDate()} ${String(kst.getUTCHours()).padStart(2, '0')}:${String(kst.getUTCMinutes()).padStart(2, '0')}`;
+};
+const mmFomcPreviewHtml = (policy) => {
+    const sch = policy.schedule || {};
+    const pv = sch.preview;
+    if (!pv || !pv.next_meeting) return '';
+    const nm = pv.next_meeting;
+    const today = new Date().toISOString().slice(0, 10);
+    const dday = Math.round((new Date(nm.end) - new Date(today)) / 86400000);
+    const md = (iso) => { const [, m, d] = String(iso).split('-'); return `${Number(m)}/${Number(d)}`; };
+    const bo = pv.blackout || {};
+    const inBlackout = bo.start && today >= bo.start && today <= bo.end;
+    const dec = policy.decision || {};
+    const votes = (policy.current_votes || []);
+    const vFor = votes.filter((v) => v.vote === 'for').length, vAgainst = votes.filter((v) => v.vote === 'against').length;
+    const ff = ((policy.sep || {}).variables || []).find((v) => v.id === 'fed_funds_rate');
+    const sepYear = ff ? Object.keys(ff.median || {})[0] : null;
+    const actionKo = ({ raise: '인상', lower: '인하', maintain: '동결' })[dec.action] || dec.action;
+    const recap = dec.meeting_date ? `${md(dec.meeting_date)} 결정: ${finEsc(actionKo)}${dec.change_bp ? ` ${dec.change_bp > 0 ? '+' : ''}${dec.change_bp}bp` : ''} → ${dec.range_low}~${dec.range_high}%`
+        + (votes.length ? ` · 표결 찬성 ${vFor} / 반대 ${vAgainst}` : '')
+        + (ff && sepYear ? ` · 점도표 ${finEsc(sepYear)}년 말 중앙값 ${ff.median[sepYear]}%${(policy.sep || {}).meeting_date ? ` (${md(policy.sep.meeting_date)} 점도표)` : ''}` : '') : '';
+    const rows = [];
+    if (sch.next_beige_book_estimate && sch.next_beige_book_estimate >= today) {
+        rows.push({ date: sch.next_beige_book_estimate, title: '베이지북 (추정일)', rel: 'before', src: 'Fed' });
+    }
+    (pv.releases || []).forEach((r) => rows.push({ date: r.date, title: r.title, rel: r.relative, src: r.source, time: r.time }));
+    rows.sort((a, b) => a.date.localeCompare(b.date));
+    const relKo = { before: '결정 전', same_day: '결정 당일', after: '결정 후' };
+    return `
+    <div class="mm-quality-card mm-quality-wide mm-fomc-preview">
+        <span class="mm-quality-label">다음 FOMC</span>
+        <strong>${md(nm.start)}~${md(nm.end)} 회의 ${dday >= 0 ? `· D-${dday}` : ''}
+            <span class="mm-fomc-badge">${nm.sep ? '점도표(SEP) 발표' : '점도표 없음'}</span></strong>
+        <p>결정 발표 ${md(nm.end)} ${finEsc(nm.statement_time_et || '2:00 p.m.')} ET = 한국 ${mmEtToKst(nm.end, '14:00')}
+            ${bo.start ? ` · 블랙아웃 ${md(bo.start)}~${md(bo.end)}${inBlackout ? ' <b class="mm-fomc-live">진행 중</b>' : ''}` : ''}</p>
+        ${recap ? `<p class="mm-quality-muted">${recap}</p>` : ''}
+        ${rows.length ? `<ul class="mm-fomc-cal">${rows.map((r) => `
+            <li><span class="mm-fomc-cal-date">${md(r.date)}${r.time ? ` ${finEsc(r.time)}` : ''}</span>
+                <span class="mm-fomc-cal-rel ${r.rel}">${relKo[r.rel] || ''}</span>
+                <span>${finEsc(r.title)}</span><span class="mm-quality-muted">${finEsc(r.src || '')}</span></li>`).join('')}</ul>` : ''}
+        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 금리 전망·확률은 표시하지 않습니다(FedWatch는 라이선스 데이터).
+            <a class="mm-quality-link" href="${finEsc(nm.source_url || 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm')}" target="_blank" rel="noopener noreferrer">연준 캘린더 ↗</a></p>
+    </div>`;
+};
+
 const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
@@ -2499,6 +2655,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
             <span class="mm-quality-status">예측·성향 점수 아님</span>
         </div>
         <div class="mm-quality-grid">
+            ${mmFomcPreviewHtml(policy)}
             ${fomcFold}
             <div class="mm-quality-card mm-quality-beige">
                 <span class="mm-quality-label">Beige Book ${finEsc(sourceDate)}</span>
@@ -2677,6 +2834,14 @@ const mmWireCharts = (host) => {
 const mmPaint = () => {
     const host = document.getElementById('macro-layer');
     if (!host) return;
+    // mmOverlay() rebuilds .mm-overlay (the actual scrollable panel) from
+    // scratch on every repaint, including a click on a card's own view/
+    // window/mode toggle (자산/부채, 5y/10y, ...) -- a fresh element always
+    // starts at scrollTop 0, so without this the whole panel visibly jumped
+    // back to the top on every one of those clicks ("토글 누르면 위로
+    // 올라가는" 2026-10-08). Carry the old scroll position over so an
+    // in-place toggle stays in place.
+    const prevScrollTop = host.querySelector('.mm-overlay')?.scrollTop || 0;
     host.innerHTML = MM_COUNTRY ? mmOverlay() : `
         <div class="mm-hint">
             <span class="mm-hint-dot"></span>
@@ -2684,6 +2849,8 @@ const mmPaint = () => {
             <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
         </div>`;
     host.classList.toggle('mm-open', !!MM_COUNTRY);
+    const nextOverlay = host.querySelector('.mm-overlay');
+    if (nextOverlay) nextOverlay.scrollTop = prevScrollTop;
     mmWireCharts(host);
 };
 

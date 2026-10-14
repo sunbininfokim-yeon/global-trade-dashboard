@@ -42,7 +42,8 @@ USA_STATE_ABBR = {
 
 
 def load_json(path: Path) -> Dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    from election_watch.polls import read
+    return read(path)
 
 
 def load_profile(iso3: str) -> Optional[Dict[str, Any]]:
@@ -187,7 +188,9 @@ def build_usa_state_drilldown(
 
     matchup_path = ROOT / 'config' / 'federal_matchups' / '2026.json'
     if matchup_path.exists():
-        state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat())
+        ballot_path = ROOT / 'config' / 'usa_polls' / 'ballot_reviews_2026.json'
+        state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat(),
+                                     load_json(ballot_path) if ballot_path.exists() else None)
     state_names = set(USA_STATE_ABBR)
     territory_names = sorted(
         {row.get("state") for row in members if row.get("state") and row.get("state") not in state_names}

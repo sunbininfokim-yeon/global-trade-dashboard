@@ -76,10 +76,10 @@ test('mixed snapshot health is not accepted', () => {
 
 test('browser window calculation agrees with all published backend race windows', () => {
     const b=JSON.parse(fs.readFileSync(new URL('../../../public/data/usa_election_live_polls_v1.json',import.meta.url)));
-    const at=Date.parse(`${b.as_of}T12:00:00Z`);
     for (const r of Object.values(b.races)) for (const days of [7,14]) {
         if(r.phase!=='pre_election')continue;
-        const computed=currentPollWindow(r,days,at),published=r.windows[String(days)];
+        const raceAt=Date.parse(`${r.as_of || b.as_of}T12:00:00Z`);
+        const computed=currentPollWindow(r,days,raceAt),published=r.windows[String(days)];
         for(const key of ['from','through','population','status','party','leader','pollster_count','lead_counts','tie_count','included_ids','conflicting_pollsters','reference_ids','reference_poll_count','latest_field_end']) {
             assert.deepEqual(computed[key],published[key],`${r.race_id}/${days}/${key}`);
         }

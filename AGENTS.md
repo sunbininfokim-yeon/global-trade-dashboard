@@ -66,3 +66,13 @@ python3 build_registry.py --check          # 검증
 `validated` 는 실측 skill 이 뒷받침해야 CI 를 통과한다.
 
 전체 규격: `New for anti/scripts/yield_model/MODEL_MANIFEST.md`
+
+## 미국 선거 주별 데이터 작업 (2026-10-10)
+
+주별 PR을 시작하기 전에 `docs/ops/US_ELECTION_STATE_INPUTS.md`를 읽는다.
+주별 검토 입력은 `scripts/election_watch/config/state_evidence/2026/<STATE>.json`에 둔다.
+전국 생성 JSON·공용 검토 목록·공용 수집기·`TASKS.md`를 주별 PR에 함께 넣지 않는다.
+공용 코드 보강은 별도 기반 PR로 먼저 처리하고, 주별 진행 기록은 주별 인수 문서에 남긴다.
+생성 파일 충돌은 Git 텍스트 병합으로 해결하지 않는다. 최신 main과 원래 수집 입력으로 재생성한다.
+입력의 다른 주 혼입·기준 자료 충돌은 보류하고, 종전 기준일·영수증과 `house_poll_focus`를 유지한다.
+병합·배포는 사용자가 확정한다.

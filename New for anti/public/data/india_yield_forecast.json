@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T20:51:47.558547+00:00",
+  "generated_at": "2026-10-09T21:05:16.088408+00:00",
   "season": 2026,
   "country": "India",
   "source_note": "Yields: ICRISAT District Level Database, district level, aggregated to region by actual production / actual area. Weather: NASA POWER daily, area-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST Dipole Mode Index.",
@@ -40,20 +40,71 @@
         "weather_driven": true,
         "non_weather_features": [],
         "beats_trend": true,
+        "low_confidence": true,
+        "label_through": 2019,
+        "stale_label": true,
         "sigma_kg_ha": 273.7
       },
       "provenance": {
         "guide": "Regions/인도/북서부_펀자브/밀/밀_상세분석_및_수식.md",
         "caveat": "The guide's Hybrid LASSO-Random Forest is replaced by the same ridge-on-log-yield used across this repo. With ~40 seasons, LASSO variable selection over daily weather would select on noise; the weekly-resolution heat tensor it is meant to search is collapsed to the guide's own named windows instead. MODIS LST and NDVI from §3 are omitted -- MODIS starts in 2000 and would halve the record.",
         "non_weather_drivers": "Punjab and Haryana wheat yields are shaped by the procurement system as much as by weather: assured MSP purchase, subsidised power for tubewells and canal rotation schedules set both the input intensity and the sowing window, and none of it is visible in a weather feed. Groundwater depletion is a slow constraint moving underneath the whole series, and it enters the technology trend rather than any seasonal feature.",
-        "weather_through": "2026-09-27",
+        "weather_through": "2026-10-04",
         "critical_window_observed": 1.0,
         "season_complete": true
+      }
+    },
+    "vidarbha_cotton": {
+      "label": "Vidarbha + Marathwada + Gujarat cotton",
+      "crop": "cotton",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 418.8,
+      "range_68": [
+        336.9,
+        500.8
+      ],
+      "range_95": [
+        258.2,
+        579.5
+      ],
+      "trend": 483.5,
+      "weather_effect_pct": -13.38,
+      "last_actual": {
+        "year": 2019,
+        "yield": 527.4506551666943
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "iod": {
+        "state": "unknown",
+        "dmi_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.472,
+        "weather_skill": 0.472,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "low_confidence": true,
+        "label_through": 2019,
+        "stale_label": true,
+        "sigma_kg_ha": 82.0
+      },
+      "provenance": {
+        "guide": "Regions/인도/서부_마하라슈트라/면화/면화_상세분석_및_수식.md",
+        "caveat": "The guide requires XGBoost/LightGBM and bans linear regression because cotton's yield-rainfall response is an inverted U. The shape is preserved in the features -- a signed moisture deficit and a pest counter that fires only inside a temperature-humidity box give the model both arms of the curve -- but the estimator is the same ridge used elsewhere, because a gradient-boosted ensemble on ~20 post-Bt seasons would fit noise. The guide's irrigation-percentage categorical is not implemented: it would need a district irrigation series joined per year.",
+        "non_weather_drivers": "Cotton is the crop in this set least explainable by weather. The post-2002 Bt transition, seed pricing and availability, the spread of pink bollworm resistance from about 2015, and the minimum support price relative to soybean and pigeonpea all move planted area and input intensity from year to year. ICRISAT also reports cotton in lint terms, so a change in ginning ratio moves the series without any change in the field.",
+        "weather_through": "2026-10-04",
+        "critical_window_observed": 0.707,
+        "season_complete": false
       }
     }
   },
   "skipped": {
-    "mp_soybean": "features unavailable: dmi_season",
-    "vidarbha_cotton": "features unavailable: harvest_rain"
+    "mp_soybean": "features unavailable: dmi_season"
   }
 }

@@ -3,13 +3,19 @@
 import argparse
 from datetime import datetime, timezone
 from pathlib import Path
-from election_watch.polls import read, atomic
+from election_watch.polls import read, atomic, digest
 from election_watch.live_polls import (apply_watchlist, build_live, close_finished_races,
                                       fetch_polls, poll_history, validated_results)
 from election_watch.poll_priorities import apply_priorities, attach_coverage, load_finance_links
 from election_watch.seat_scenarios import build_scenarios, held_scenarios
 from election_watch.governor_matchups import apply_matchups
+from election_watch.poll_targets import apply_targets
+from election_watch.poll_ballots import fetch_florida
+from election_watch.poll_gaps import attach_gaps, refresh_gap_lifecycle
+from election_watch.poll_house_focus import apply_house_focus, attach_house_focus, refresh_house_focus_lifecycle
 from election_watch.superpac import SourceError
+from election_watch.poll_primary_supplements import merge_primary_supplements
+from election_watch.poll_refresh_provenance import retain_state_provenance
 
 ROOT = Path(__file__).resolve().parent
 
@@ -42,29 +48,113 @@ def main():
     p.add_argument('--scenario-policy', type=Path, default=ROOT/'config/usa_polls/seat_scenarios_2026.json')
     p.add_argument('--election-board', type=Path, default=ROOT.parent.parent/'public/data/elections_board_v1.json')
     p.add_argument('--input', type=Path, help='Replay saved provider response for testing; marked as replay')
+    p.add_argument('--capture-output', type=Path, help='Save actual collection for safe publication retry')
+    p.add_argument('--retry-capture', type=Path, help='Revalidate captured inputs on latest main; never refetch or advance dates')
+    p.add_argument('--target-catalog', type=Path, help='Reviewed nationwide scheduled election universe')
+    p.add_argument('--ballot-reviews', type=Path, help='Reviewed general ballot identities for poll admission')
+    p.add_argument("--house-focus", type=Path, help="House Lean/Toss-Up review priority policy")
+    p.add_argument("--ratings", type=Path, default=ROOT.parent.parent/"public/data/usa_election_ratings_review_v1.json")
     args = p.parse_args()
+    from election_watch.poll_run_capture import validate_capture, make_capture, restore_ballots
+    retry = validate_capture(read(args.retry_capture)) if args.retry_capture else None
+    if retry:
+        if args.input: raise ValueError('ambiguous polling replay')
+        args.as_of = retry['as_of']
+    production_policy = args.policy.resolve() == (ROOT/'config/usa_polls/live_2026.json').resolve()
+    target_catalog = args.target_catalog or (ROOT/'config/usa_polls/targets_2026.json' if production_policy else None)
+    ballot_reviews = args.ballot_reviews or (ROOT/'config/usa_polls/ballot_reviews_2026.json' if production_policy else None)
+    house_focus = args.house_focus or (ROOT/'config/usa_polls/house_focus_2026.json' if production_policy else None)
     governor_matchups = args.governor_matchups
-    if governor_matchups is None and args.policy.resolve() == (ROOT/'config/usa_polls/live_2026.json').resolve():
+    if governor_matchups is None and production_policy:
         governor_matchups = ROOT/'config/governor_matchups/2026.json'
-    checked = datetime.now(timezone.utc).isoformat()
+    checked = retry['captured_at'] if retry else datetime.now(timezone.utc).isoformat()
+    if retry and args.output.exists():
+        previous_time = read(args.output).get('fetched_at')
+        if previous_time and datetime.fromisoformat(previous_time.replace('Z', '+00:00')) > datetime.fromisoformat(checked.replace('Z', '+00:00')):
+            raise ValueError('Newer national collection already published; older retry held')
     health = args.output.with_name('usa_election_live_polls_status_v1.json')
-    try:
+    ballot_health = {'status': 'not_configured'}
+    ballot_capture = {}
+    ballots = None
+    def refresh_ballots():
+        nonlocal ballot_health, ballot_capture, ballots
+        if not ballots:
+            return
+        ballot_health = {'status': 'reviewed_snapshot', 'reviewed_on': ballots['reviewed_on']}
+        if retry:
+            ballot_capture = retry['ballot_capture']
+            ballots = restore_ballots(ballots, ballot_capture)
+            ballot_health = retry['ballot_health']
+            return
+        if not args.input and not retry:
+            try:
+                florida = fetch_florida(args.as_of)
+                for rid, review in florida['races'].items():
+                    # Only preserve explicit aliases for exactly the same agency
+                    # candidate; never infer a nickname after a withdrawal.
+                    previous = {c['name']: c for c in ballots['races'].get(rid, {}).get('candidates', [])}
+                    for candidate in review['candidates']:
+                        aliases = previous.get(candidate['name'], {}).get('poll_name_aliases')
+                        if aliases:
+                            candidate['poll_name_aliases'] = aliases
+                    ballot_capture[rid] = {'before_sha256':digest(ballots['races'].get(rid)), 'value':review}
+                ballots['races'].update(florida['races'])
+                ballot_health = {'status': 'ok', 'source_url': florida['source_url'],
+                    'source_sha256': florida['source_sha256'], 'checked_on': florida['checked_on'], 'races': 30}
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                ballot_health = {'status': 'carried_forward', 'error_type': type(exc).__name__,
+                    'original_reviewed_on': ballots['reviewed_on'], 'carried_at': checked}
+    def selected_policy():
         policy = apply_priorities(apply_watchlist(read(args.policy), read(args.watchlist)),
                                   read(args.priorities), args.districts, args.as_of)
         if governor_matchups and governor_matchups.exists():
             policy = apply_matchups(policy, read(governor_matchups), args.as_of)
+        if target_catalog:
+            if ballots is None:
+                raise ValueError('target catalog requires ballot review contract')
+            policy = apply_targets(policy, read(target_catalog), ballots, args.as_of)
+        if house_focus:
+            try:
+                policy = apply_house_focus(policy, read(args.ratings), read(args.election_board), read(house_focus), args.as_of)
+                policy['house_poll_focus_health'] = {'status': 'ok', 'checked_as_of': args.as_of}
+            except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+                # Review priority failures must not discard good polling data.
+                policy['house_poll_focus_health'] = {'status': 'hold', 'checked_as_of': args.as_of, 'error_type': type(exc).__name__}
+        return policy
+    try:
+        ballots = read(ballot_reviews) if ballot_reviews else None
+        policy = selected_policy()
         quality = read(args.quality_reviews)
         if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
             raise ValueError('quality review schema/cycle')
+        rows, url = ((retry['rows'], retry['source_url']) if retry else
+                     (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of))
+        provider_rows = retry['provider_rows'] if retry else rows
+        primary_receipts = retry['primary_receipts'] if retry else []
+        if production_policy and not args.input and not retry:
+            rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
+        refresh_ballots()
+        policy = selected_policy()
+        if args.capture_output and not args.input:
+            atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts,
+                                                    ballot_capture, ballot_health))
         policy['quality_reviews'] = quality['reviews']
-        rows, url = (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
+        if primary_receipts:
+            board['primary_supplement_receipts'] = primary_receipts
         try:
             finance = load_finance_links(args.finance_index, policy['cycle'])
         except (OSError, ValueError, KeyError, TypeError) as exc:
             finance = {'status': 'hold', 'error_type': type(exc).__name__, 'races': {}}
-        attach_coverage(board, rows, policy, finance)
+        attach_coverage(board, provider_rows, policy, finance)
+        attach_house_focus(board, policy)
+        if target_catalog:
+            attach_gaps(board, finance)
+            board['ballot_source_health'] = ballot_health
         history = poll_history(rows, policy, args.as_of)
+        previous = read(args.output) if args.output.exists() else None
+        from election_watch.state_inputs import packets
+        retain_state_provenance(board, history, previous, packets() if production_policy else ())
         if args.input:
             board['source_status'] = 'replay'
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')
@@ -72,7 +162,7 @@ def main():
         atomic(args.output, board)
         forecast_status = publish_scenarios(board, args, checked)
         atomic(health, {'checked_at': checked, 'status': board['source_status'], 'as_of': args.as_of,
-                        'seat_scenario': forecast_status})
+                        'seat_scenario': forecast_status, 'ballot_source': ballot_health})
         print(board['coverage'])
         print({d: {s: sum(r['windows'][d]['status'] == s for r in board['races'].values())
                    for s in ('poll_lead','single_poll_lead','no_recent_poll','tie','unknown_leader_party')} for d in ('7','14')})
@@ -84,16 +174,15 @@ def main():
         # fails, still accept a newly reviewed result without refreshing polls.
         try:
             existing = read(args.output)
-            policy = apply_priorities(apply_watchlist(read(args.policy), read(args.watchlist)),
-                                  read(args.priorities), args.districts, args.as_of)
-            if governor_matchups and governor_matchups.exists():
-                policy = apply_matchups(policy, read(governor_matchups), args.as_of)
+            policy = selected_policy()
             confirmed = validated_results(read(args.results), policy, args.as_of)
             changed = close_finished_races(existing, policy, confirmed, args.as_of)
             if changed:
                 existing['coverage']['displayed_observations'] = sum(
                     len(r.get('observations', [])) for r in existing.get('races', {}).values())
                 existing['source_status'] = 'error_stale'
+                refresh_gap_lifecycle(existing)
+                refresh_house_focus_lifecycle(existing)
                 atomic(args.output, existing)
             # Recompute conditional counts without stale polling signals.
             publish_scenarios(existing, args, checked, {'status': 'error'})
