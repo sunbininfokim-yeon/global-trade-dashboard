@@ -41,5 +41,13 @@ export const senateTenureLabel = (member) => {
 
 export const displayPersonName = (name) => {
     const parts = String(name || '').split(',').map((p) => p.trim());
-    return parts.length === 2 ? `${parts[1]} ${parts[0]}` : String(name || '현직 명부 확인 필요');
+    return parts.length >= 2 ? `${parts[1]} ${parts[0]}${parts.length > 2 ? ', ' + parts.slice(2).join(', ') : ''}` : String(name || '현직 명부 확인 필요');
+};
+
+export const candidatePartyOrder = (candidates, incumbents = []) => {
+    const extra = [...new Set((candidates || []).map((c) => normalizeParty(c.party)).filter((p) => p && !['DEM','REP'].includes(p)))];
+    const incumbentExtra = [...new Set(incumbents.map((m) => normalizeParty(m.abbr || m.party))
+        .filter((p) => p && !['DEM','REP'].includes(p)))];
+    return [...incumbentExtra.filter((p) => extra.includes(p)), 'DEM', 'REP', ...extra.filter((p) => !incumbentExtra.includes(p)),
+        ...((candidates || []).some((c) => !c.party) ? [null] : [])];
 };

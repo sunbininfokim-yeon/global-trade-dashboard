@@ -1,7 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES } from '../../data/election-overview.js?v=3';
-import { pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
-import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup } from '../../data/election-matchups.js';
+import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
+import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -16,15 +16,14 @@ const contestList = (races, country, board, health, days, now) => races.map((rac
     const poll = board?.races?.[race.race_id];
     const matchup = electionMatchup(state,race.race_id,poll,now);
     const nominees = matchup?.candidates || [];
-    const incumbentParty = ballotPartyLabel(incumbent?.abbr);
-    const opponent = nominees.filter((c) => ballotPartyLabel(c.party) !== incumbentParty);
+    const senators = state?.federal_delegation?.senators || [];
+    const currentMembers = office === 'senate' ? [...senators].sort((a,b) => (['DEM','GOP','REP'].includes(a.abbr) ? 1 : 0) - (['DEM','GOP','REP'].includes(b.abbr) ? 1 : 0)) : incumbent ? [incumbent] : [];
     const personBox = (party, name, extra = '') => `<span class="elections-contest-person ${ballotPartyClass(party)}"><strong>${escapeHtml(ballotPartyLabel(party))} ${escapeHtml(displayPersonName(name))}${extra ? ` <span class="elections-tenure">(${escapeHtml(extra)})</span>` : ''}</strong></span>`;
-    const field = nominees.length ? nominees.map((c) => personBox(c.party,c.name)).join('') : '<span class="elections-muted">본선 명부 확인 필요 · 경선 미완료와 별개</span>';
+    const field = nominees.length ? candidatePartyOrder(nominees, office === 'senate' ? senators : currentMembers).map((p) => `<span class="elections-ballot-party"><small>${escapeHtml(ballotPartyLabel(p))}</small>${nominees.filter((c) => (normalizeParty(c.party) || null) === p).map((c) => personBox(c.party,c.name)).join('')}</span>`).join('') : '<span class="elections-muted">본선 명부 확인 필요 · 경선 미완료와 별개</span>';
     return `<button type="button" class="elections-contest-row" data-overview-state="${escapeHtml(race.state)}" data-overview-office="${office}" data-overview-district="${office === 'house' ? escapeHtml(race.district) : ''}">
         <span class="elections-contest-heading"><strong>${escapeHtml(label)}${race.senate_class === 3 ? ' · 특별선거' : ''}</strong><span class="elections-contest-rating">${escapeHtml(ratingLabel(race.effective_rating))}${race.additional ? ' · 추가 경합' : ''}</span></span>
-        <small>현재 의원${matchup?.incumbent_ballot_status === 'not_running' ? ' · 이번 본선 불출마' : ''}</small>
-        <span class="elections-contest-pair">${incumbent ? personBox(incumbent.abbr,incumbent.name,office === 'senate' ? senateTenureLabel(incumbent) : '') : '<span>공석·현직 명부 확인 필요</span>'}
-            ${office === 'senate' && matchup?.incumbent_ballot_status === 'running' && opponent.length ? personBox(opponent[0].party,opponent[0].name) : ''}</span>
+        <small>현재 의원${office === 'senate' ? ' · 2석' : matchup?.incumbent_ballot_status === 'not_running' ? ' · 이번 본선 불출마' : ''}</small>
+        <span class="elections-contest-pair">${currentMembers.length ? currentMembers.map((m) => personBox(m.abbr,m.name,office === 'senate' ? senateTenureLabel(m) : '') + (office === 'senate' ? `<small>${m.up_in_2026 === true ? '이번 선거' : m.up_in_2026 === false ? '비선거' : '일정 확인 필요'}</small>` : '')).join('') : '<span>공석·현직 명부 확인 필요</span>'}</span>
         <small>이번 선거 구도${matchup?.status === 'certified_ballot' ? ' · 공식 본선 명부' : matchup ? ' · 공개 주요 후보 명부' : ''}</small><span class="elections-contest-pair">${field}</span>
         <small>${poll ? poll.required_candidates?.length && !pollMatchesMatchup(poll,matchup) ? '조사 후보와 본선 명부 대조 대기' : escapeHtml(compactPollLabel(poll, board, health, days)) : '여론조사 감시 미연결'}</small></button>`;
 }).join('') || '<p class="elections-muted">해당 분류의 선거가 없습니다.</p>';

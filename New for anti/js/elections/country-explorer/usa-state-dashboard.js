@@ -1,25 +1,21 @@
+import { pollOfficePanelsHtml } from './special/usa-poll-panels.js';
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 // ?v=7: 이전 슈퍼팩 모듈이 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=9';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=4';
-import { pollEvidenceHtml, latestPollHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=4';
-import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=2';
-import { ELECTION_OFFICES } from '../data/election-overview.js?v=3';
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=10';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=5';
+import { pollEvidenceHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=5';
+import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=3';
 import { electionMatchup } from '../data/election-matchups.js';
 
-export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null) => {
+export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null, options = {}) => {
     const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
-    return ELECTION_OFFICES.map(([office, label]) => {
-        const selected = races.filter((r) => r.office === office).sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
-        if (!selected.length) return '';
-        return `<section class="elections-state-polls"><h3>${label}</h3>${selected.map((race) => {
-            const district = office === 'house' ? String(race.district) : null;
-            return `<article class="elections-race-card${district && district === String(selectedDistrict) ? ' is-selected' : ''}" data-poll-race="${escapeHtml(race.race_id)}">
-                ${district ? `<button class="elections-race-open" type="button" data-poll-district="${escapeHtml(district)}"><strong>하원 ${Number(district)}구</strong><span>지도에서 보기 →</span></button>` : ''}
-                ${latestPollHtml(race, board, health)}${pollEvidenceHtml(race, board, health, days)}</article>`;
-        }).join('')}</section>`;
-    }).join('') || '<p class="elections-muted">이 주의 여론조사 감시 자료가 아직 연결되지 않았습니다. 조사 자체가 없다는 뜻은 아닙니다.</p>';
+    return pollOfficePanelsHtml(races, board, health, days, (race) => {
+        const district = race.office === 'house' ? String(race.district) : null;
+        return `<article class="elections-race-card${district && district === String(selectedDistrict) ? ' is-selected' : ''}" data-poll-race="${escapeHtml(race.race_id)}">
+            ${district ? `<button class="elections-race-open" type="button" data-poll-district="${escapeHtml(district)}"><strong>하원 ${district === '00' ? '전역구' : Number(district) + '구'}</strong><span>지도에서 보기 →</span></button>` : ''}
+            ${pollEvidenceHtml(race, board, health, days)}</article>`;
+    }, options);
 };
 
 export const districtFocusHtml = (state, district, financeRaces, contract, board, health, days = 7) => {
@@ -201,7 +197,7 @@ export const renderUsaStateDashboard = (root, {
                 <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${days === 7}">7일</button>
                 <button type="button" data-window="14" aria-pressed="${days === 14}">14일</button></div>
                 <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
-                ${statePollEvidenceHtml(state.id, board, health, days, open)}`;
+                ${statePollEvidenceHtml(state.id, board, health, days, open, {open:evidenceOpen})}`;
             // 실패 안내는 접이식 섹션 **밖**에 둔다 -- 닫힌 <details> 안에 있으면 아무도 못 본다.
             return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days })
                 + failureNote(latest.financeFailed)

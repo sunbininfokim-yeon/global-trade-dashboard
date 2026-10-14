@@ -1,7 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { normalizeParty, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
-import { latestPollHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=4';
-import { ballotPartyLabel, pollMatchesMatchup } from '../../data/election-matchups.js';
+import { latestPollHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=5';
+import { ballotPartyLabel, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 
 const partyLabel = (p) => normalizeParty(p) === 'DEM' ? 'DEM' : normalizeParty(p) === 'REP' ? 'GOP' : p || '정당 미확인';
 const nameKey = (value) => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).sort().join(' ');
@@ -47,7 +47,7 @@ const safeLink = (url, label) => {
 };
 const amountBoxes = ({support, oppose}) => `<div class="elections-candidate-money"><div><span>지지 지출</span><strong>${escapeHtml(money(support))}</strong></div><div><span>반대 지출</span><strong>${escapeHtml(money(oppose))}</strong></div></div>`;
 
-export const candidateMatchupHtml = (pollRace, financeRace, contract, board, health, days = 7, { showPolls = true, now = Date.now(), matchup = null, openPrimary = false } = {}) => {
+export const candidateMatchupHtml = (pollRace, financeRace, contract, board, health, days = 7, { showPolls = true, now = Date.now(), matchup = null, openPrimary = false, incumbents = [] } = {}) => {
     const fallback = pollRace?.schedule_status === 'reported_general_matchup' ? pollRace.required_candidates || [] : [];
     const nominees = matchup?.candidates || fallback.map((name) => ({name, ...pollRace.candidates?.[name]}));
     const names = nominees.map((c) => c.name);
@@ -57,21 +57,21 @@ export const candidateMatchupHtml = (pollRace, financeRace, contract, board, hea
     const result = pollRace?.result?.status === 'certified' ? `<p>공식 확정 승자: ${escapeHtml(pollRace.result.winner)} ${safeLink(pollRace.result.source_url,'공식 결과')}</p>` : '';
     return `<div class="elections-candidate-matchup">
         <p class="elections-matchup-title"><strong>${closed ? '선거 결과' : '이번 선거 구도'}</strong>${result || (openPrimary ? '<span>11월 3일 공개 경선 · 필요 시 12월 결선</span>' : !names.length ? '<span>본선 명부 연결 대기</span>' : '')}</p>
-        ${names.length ? `<p class="elections-matchup-versus">${names.map(escapeHtml).join(' <span>vs</span> ')}</p>` : ''}<div class="elections-matchup-candidates">${['DEM','REP',...new Set(nominees.map((c) => normalizeParty(c.party)).filter((p) => !['DEM','REP'].includes(p)))].map((party) => {
-            const group = nominees.filter((c) => normalizeParty(c.party) === party);
+        ${names.length ? `<p class="elections-matchup-versus">${names.map(escapeHtml).join(' <span>vs</span> ')}</p>` : ''}<div class="elections-matchup-candidates">${candidatePartyOrder(nominees, incumbents).map((party) => {
+            const group = nominees.filter((c) => (normalizeParty(c.party) || null) === party);
             if (!group.length) return missingParty(party);
-            return group.map((info) => {
+            return `<section class="elections-nominee-party"><h4>${escapeHtml(partyLabel(party))}</h4>` + group.map((info) => {
             const name = info.name;
             const candidate = matchFinanceCandidate(name,info,financeRace);
             const amounts = candidateGeneralMoney(candidate,financeRace,contract);
             return `<article class="elections-matchup-candidate ${normalizeParty(info?.party) === 'DEM' ? 'is-dem' : normalizeParty(info?.party) === 'REP' ? 'is-gop' : ''}"><header><span>${escapeHtml(partyLabel(info?.party))}</span><strong>${escapeHtml(name)}</strong></header>
                 ${amountBoxes(amounts)}<small>${safeLink(info?.source_url,'후보 대진 근거')}${!candidate ? ' · 공시 후보 연결 미확인' : ''}</small></article>`;
-            }).join('');
+            }).join('') + '</section>';
         }).join('')}</div>
         ${matchup ? `<p class="elections-panel-note">${matchup.status === 'certified_ballot' ? '공식 인증 본선 명부' : '공개 보도·검토한 주요 본선 후보'} · ${escapeHtml(matchup.reviewed_on || '기존 검토')} ${safeLink(matchup.source_url,'명부 출처')}${matchup.coverage !== 'complete_ballot' ? ' · 제3당·기명투표 후보 전체 명부는 별도 확인 필요' : ''}</p>` : ''}
         <p class="elections-panel-note">2026 본선으로 구분된 외부 독립지출만 후보 옆에 표시합니다. 미수집·미확인은 0달러가 아닙니다.</p>
         ${showPolls ? !pollRace ? '<p class="elections-panel-note">여론조사 감시 미연결 · 후보 명부와 별도로 연결해야 합니다.</p>'
-            : pollMatchesMatchup(pollRace,matchup) ? latestPollHtml(pollRace,board,health,now) + pollEvidenceHtml(pollRace,board,health,days)
+            : pollMatchesMatchup(pollRace,matchup) ? latestPollHtml(pollRace,board,health,now) + pollEvidenceHtml(pollRace,board,health,days,{now,showLatest:false})
             : '<p class="elections-panel-note">여론조사 후보와 본선 명부 대조 필요 · 조사 우세 표시 보류</p>' : ''}
     </div>`;
 };

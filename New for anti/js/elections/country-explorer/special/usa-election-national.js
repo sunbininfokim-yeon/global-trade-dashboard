@@ -1,7 +1,8 @@
 import { escapeHtml } from '../../ui.js';
-import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal, pollSourceReady } from '../../data/usa-election-context.js?v=2';
-import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=4';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=4';
+import { pollOfficePanelsHtml } from './usa-poll-panels.js';
+import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal } from '../../data/usa-election-context.js?v=2';
+import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=5';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=5';
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
 
@@ -51,12 +52,9 @@ export const renderUsaElectionNational = (root, {
     country, board, health, indexes = {}, contract, ratings = null, days = 7, evidenceOpen = {}, onBack, onToggle, onWindowChange, onStateOpen, onStatePrefetch,
 }) => {
     const races = selectNationalRaces(board, days, health);
-    const summary = summarizeNationalRaces(board, health, days);
-    const ready = pollSourceReady(board, health);
-    const allMonitored = monitoredNationalRaces(board).sort((a, b) => (a.collection_priority?.order || 4)
+    const allMonitored = Object.values(board?.races || {}).filter((r) => ['house','senate','governor'].includes(r.office)).sort((a, b) => (a.collection_priority?.order || 4)
         - (b.collection_priority?.order || 4) || a.race_id.localeCompare(b.race_id));
-    const unresolved = allMonitored.filter((race) => (race.required_candidates || []).length < 2);
-    const cadence = board?.refresh_cadence?.interval_days === 7 ? '매주 월요일 06:10 KST 수집' : '정기 수집';
+    const unresolved = allMonitored.filter((race) => race.schedule_status !== 'single_candidate_ballot_listing' && (race.required_candidates || []).length < 2);
     const financeById = new Map(Object.entries(indexes).flatMap(([, index]) =>
         (index?.races || []).map((race) => [race.race_id, race])));
     const raceButton = (race) => `<button class="elections-race-open" type="button" data-open-state="${escapeHtml(race.state)}" data-open-district="${escapeHtml(race.office === 'house' ? race.district || '' : '')}">
@@ -66,10 +64,8 @@ export const renderUsaElectionNational = (root, {
             <span>최근 조사</span><button type="button" data-window="7" aria-pressed="${days === 7}">7일</button>
             <button type="button" data-window="14" aria-pressed="${days === 14}">14일</button>
         </div>
-        <p class="elections-panel-note">${ready ? `수집 ${escapeHtml((board.fetched_at || '').slice(0, 10))}` : '여론조사 갱신 대기'} · ${cadence}. 기간은 현재 날짜로 다시 계산합니다.</p>
-        <div class="elections-poll-summary"><span class="is-dem">민주 우세 ${summary.total.dem}</span><span class="is-gop">공화 우세 ${summary.total.rep}</span><span>보류 ${summary.total.pending}</span></div>
-        <p class="elections-panel-note">복수 기관 기준 · 단일 기관 참고는 민주 ${summary.total.singleDem}, 공화 ${summary.total.singleRep}곳으로 별도 표시합니다.</p>
-        <div class="elections-national-races">${races.map((race) => `<article class="elections-race-card">${raceButton(race)}${pollEvidenceHtml(race, board, health, days)}</article>`).join('') || '<p class="elections-muted">확인된 본선 자료가 없습니다.</p>'}</div>
+        ${pollOfficePanelsHtml(allMonitored, board, health, days,
+            (race) => `<article class="elections-race-card">${raceButton(race)}${pollEvidenceHtml(race, board, health, days)}</article>`, { open: evidenceOpen })}
         <details class="elections-disclosure elections-monitoring-list">
             <summary>전체 감시 목록 ${allMonitored.length}곳 · 후보 검토 대기 ${unresolved.length}곳</summary>
             <p class="elections-panel-note">감시 대상이 실제 선거·확정 후보를 뜻하지는 않습니다. API 미발견은 여론조사 자체의 부재가 아닙니다.</p>
