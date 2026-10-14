@@ -1,7 +1,7 @@
 {
   "schema_version": "krx-15007-k200-investor-manifest-v1",
   "dataset": "krx_15007_k200_investor",
-  "generated_at_kst": "2026-10-12T21:33:56.744959+09:00",
+  "generated_at_kst": "2026-10-14T12:12:22.163006+09:00",
   "public_repo": "sunbininfokim-yeon/global-trade-dashboard",
   "raw_csv_in_public_repo": false,
   "rule": "A date is complete only when all four files exist: options_call_buy.csv, options_call_sell.csv, options_put_buy.csv, options_put_sell.csv. Futures files are not required. Incomplete dates and placeholder rows are excluded.",
@@ -24,45 +24,31 @@
     "last": "2026-10-01",
     "date_sets_equal": true,
     "duplicate_dates": 0,
-    "longer_than_preserved_1895": true,
-    "note": "Rebuilt from every complete 4-file date. The preserved board ended 2026-09-18 (1895 days). Later complete dates 2026-09-21, 2026-09-22, 2026-09-23, 2026-09-28, 2026-09-29, 2026-09-30, and 2026-10-01 are included. The 3-day futures series already on main (2026-09-03, 2026-09-18, 2026-09-30) stays inside detailed_15007 and was not rebuilt.",
+    "non_observed_rows": 0,
+    "foreign_net_identity": true,
+    "market_total_net_identity": true,
+    "note": "Rebuilt by backfill_detailed_15007_history.py on the latest origin/main board. Only kr.investor_nets.detailed_15007 changed. Call and put are 1902 observed rows from 2019-01-02 through 2026-10-01, with equal date sets and no duplicate dates. foreign.net_krw and market_total.net_krw equal buy_krw - sell_krw on every row. The futures series already on main (2026-09-03, 2026-09-18, 2026-09-30) was left unchanged.",
     "payload_sha256": "c7f0643dc025a50aaca7b7936b4024d2638fe17ad01e2bc12824b26a8f85aa70",
-    "board_file_sha256": "e527615359819efb6604bf290f9e9704d358573fa42accecb0eb9ef5339a84bb"
+    "payload_sha256_method": "sha256 of UTF-8 json.dumps(detailed_15007, ensure_ascii=False, sort_keys=True, separators=(\",\", \":\"))",
+    "board_file_sha256": "d39a6b0cacd363cdd36c62c4acbac1aafc1815649817e328d0807e2c5a1baf17"
   },
   "history_files": {
+    "status": "left_as_origin_main",
+    "reason": "backfill_detailed_15007_history.py rewrites only kr.investor_nets.detailed_15007. It does not generate the history JSONL files or investor_price_levels_v1.json. Those files stay on origin/main automatic updates. The previous PR snapshot was not copied over them.",
     "New for anti/public/data/derivatives_activity_history_v1.jsonl": {
-      "sha256": "96220ab8d209ea1078a2a59ecacfbd1812964981afbfa95e9542cde5f4d41008",
-      "rows": 910,
-      "first": "2023-01-02",
-      "last": "2026-09-23"
+      "sha256": "4c99fa706eff97eb6446a7f8cc904f772f6a6d8cbf1d61ff676b6db37c757472",
+      "lines": 143
     },
     "New for anti/public/data/leverage_direction_history_v1.jsonl": {
-      "sha256": "8d627c06ab85f803b939e42909a0f031ce88af102fb9a888fec4fbe6c2917044",
-      "rows": 910,
-      "first": "2023-01-02",
-      "last": "2026-09-23"
+      "sha256": "51e3bc265cd9e2d14af3a64f1988e9699ad244b9da82e3914df7c68e4fba58c3",
+      "lines": 150
     },
     "New for anti/public/data/stock_letf_history_v1.jsonl": {
-      "sha256": "b270835a75372f0c8a03652f71e278b09fe78abd19a71fa07c86bad72dc6408b",
-      "rows": 1820,
-      "unique_dates": 910,
-      "tickers": [
-        "000660",
-        "005930"
-      ],
-      "rows_per_ticker": 910,
-      "first": "2023-01-02",
-      "last": "2026-09-23",
-      "slice_2026-05-27_to_2026-09-23_rows": 166,
-      "note": "Full file is 1820 rows / 910 unique dates. 166 is only the 2026-05-27..2026-09-23 slice."
+      "sha256": "1b4657b246d4e8f5c9f9dc67497d1dc3e1963b18978a84ab2e9af04c30a4bf57",
+      "lines": 172
     },
     "New for anti/public/data/investor_price_levels_v1.json": {
-      "sha256": "b42c4bf78ee6156d1e16a222bc6fee8887e7b97ee256e04c65171b65add87ce4",
-      "tickers": 17,
-      "days_each": 180,
-      "series_first": "2025-12-29",
-      "series_last": "2026-09-22",
-      "as_of": "2026-09-23"
+      "sha256": "f7383335ac4b953f3d80bf90dcfcb352217e1b461d1fde9dfd98ac6a5bcd3739"
     }
   },
   "sha256_manifests": {
@@ -72,8 +58,12 @@
   "raw_locations": {
     "drive_dated_folders": "KRX_Radar/raw/krx_15007/<YYYY-MM-DD>/",
     "drive_unreadable_folders": "KRX_Radar/raw/krx_15007/_preserve_beside_20261012/<YYYY-MM-DD>/",
+    "drive_complete_dates": 1819,
+    "drive_preserve_complete_dates": 83,
     "private_repo": "sunbininfokim-yeon/krx-month-paste",
-    "private_commit": "d70bcf8a3b14d9980aeef0c5799da93d5508d265"
+    "private_commit": "d70bcf8a3b14d9980aeef0c5799da93d5508d265",
+    "private_path": "data/raw/krx_15007/<YYYY-MM-DD>/",
+    "backfill_source": "private repo data/raw/krx_15007 at d70bcf8a, 1902 complete 4-file dates, 0 incomplete. Drive preserve reads timed out, so the backfill did not read those folders."
   },
   "validation": {
     "validate_ui_contracts.py": "passed",
