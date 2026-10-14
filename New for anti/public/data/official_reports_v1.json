@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-13T23:44:48.137110+00:00",
+  "generated_at": "2026-10-14T04:59:30.096271+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 157,
-    "scored": 157,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 163,
+    "scored": 163,
     "selected": 40,
     "indicators": 16
   },
@@ -88,28 +88,14 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
   "dashboard_fields": {},
   "indicators": [
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
-      "published_at": "2026-09-27T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 4.271
-    },
     {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
@@ -241,6 +227,20 @@
         "economy",
         "finance"
       ],
+      "title": "Bank of Japan Accounts (October 10)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "published_at": "2026-10-14T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
       "title": "Bank of Japan Accounts (September 30)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
       "published_at": "2026-10-07T01:00:00+00:00",
@@ -319,42 +319,6 @@
     }
   ],
   "ticker_items": [
-    {
-      "id": "33438a5a46428120",
-      "published_at": "2026-09-27T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on July 30 and 31, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "01cfdfb380c8b2b3",
       "published_at": "2026-09-17T11:00:00+00:00",
@@ -946,41 +910,6 @@
       "site_slot": null
     },
     {
-      "id": "8282cdb739994bb2",
-      "published_at": "2026-10-02T18:28:12+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on National Cybersecurity Awareness Month",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
-      },
-      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -1435,6 +1364,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "c3cb82874b9fd8f1",
+      "published_at": "2026-10-14T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "8e92bd1bba00af32",
@@ -1713,20 +1677,43 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    }
-  ],
-  "pending_review": [
+    },
     {
-      "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
+      "id": "b49793652fcea6ed",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
       "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
-      "country": "GBR",
+      "category": "official_report",
+      "commodities": [],
       "domains": [
         "finance",
         "economy"
       ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
+      "series_id": null,
+      "title": {
+        "original": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026"
+      },
+      "summary": "This Market Notice outlines the Bank Executive’s approach to implementing the Monetary Policy Committee’s (MPC) decision to unwind the gilts held for monetary policy purposes in the Asset Purchase Facility (APF). As part of this, Bank APF auctions will be paused while the Bank re",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    }
+  ],
+  "pending_review": [
     {
       "title": "Minutes of the Money Market Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
@@ -1878,45 +1865,19 @@
       ],
       "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
-    {
-      "id": "33438a5a46428120",
-      "published_at": "2026-09-27T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on July 30 and 31, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on July 30 and 31, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "01cfdfb380c8b2b3",
       "published_at": "2026-09-17T11:00:00+00:00",
@@ -2508,41 +2469,6 @@
       "site_slot": null
     },
     {
-      "id": "8282cdb739994bb2",
-      "published_at": "2026-10-02T18:28:12+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-national-cybersecurity-awareness-month/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on National Cybersecurity Awareness Month",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on National Cybersecurity Awareness Month"
-      },
-      "summary": "In an age of rapid digital advancement, cyberspace has emerged as the new frontier of American innovation, prosperity, and strength. As new technologies open doors to discovery and opportunity that were once unimaginable, a secure cyberspace is essential to ensuring that America ",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -2999,6 +2925,41 @@
       "site_slot": null
     },
     {
+      "id": "c3cb82874b9fd8f1",
+      "published_at": "2026-10-14T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "8e92bd1bba00af32",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
@@ -3265,6 +3226,40 @@
         "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
       },
       "summary": "2027 confirmed dates",
+      "scores": {
+        "significance": 2.024,
+        "final": 2.024
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "b49793652fcea6ed",
+      "published_at": "2026-09-17T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026"
+      },
+      "summary": "This Market Notice outlines the Bank Executive’s approach to implementing the Monetary Policy Committee’s (MPC) decision to unwind the gilts held for monetary policy purposes in the Asset Purchase Facility (APF). As part of this, Bank APF auctions will be paused while the Bank re",
       "scores": {
         "significance": 2.024,
         "final": 2.024
