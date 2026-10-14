@@ -1,0 +1,54 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const assert = require('node:assert/strict');
+const base = process.env.SIMULATOR_PREVIEW_URL || 'http://127.0.0.1:8773';
+if (new URL(base).hostname !== '127.0.0.1') throw new Error('Only loopback preview');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1080 } });
+    const errors = [], requests = []; page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
+    await page.goto(`${base}/policy/us/simulator`); await page.getByRole('button', { name: '반덤핑', exact: true }).click();
+    const notices = page.locator('[data-ad-notices]');
+    assert.match(await notices.locator('summary').first().innerText(), /A-580-867/);
+    await notices.locator('summary').first().click();
+    assert.match(await notices.innerText(), /2026-10-12/); assert.match(await notices.innerText(), /검증하기 전에는/);
+    assert.equal(await page.locator('[data-ad-reference]>strong').textContent(), '4.32%');
+    await page.getByLabel('산업 분야', { exact: true }).selectOption('steel');
+    await page.getByRole('button', { name: '강관 · 대구경 용접강관', exact: true }).click();
+    assert.match(await notices.locator('summary').first().innerText(), /A-580-897/);
+    await notices.locator('summary').first().click();
+    assert.match(await notices.innerText(), /2026-13892/);
+    assert.match(await notices.locator('summary').first().innerText(), /검토 반영 2건 · 검토 대기 0건/);
+    assert.match(await notices.innerText(), /진행·이력 반영/);
+    assert.equal(await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).inputValue(), 'welded-pipe-2025-26'); // Newly discovered initiation; never auto-promoted to a rate.
+    const before = await page.locator('[data-ad-reference]>strong').textContent();
+    assert.match(before, /0%|0.8%/);
+    const bounds = await notices.evaluate(el => el.getBoundingClientRect()); assert.ok(bounds.width > 0);
+    await notices.screenshot({ path: '/tmp/antidumping-notice-review-desktop.png' });
+    await page.setViewportSize({ width: 360, height: 800 });
+    await notices.scrollIntoViewIfNeeded();
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    await notices.screenshot({ path: '/tmp/antidumping-notice-review-mobile.png' });
+    await page.getByLabel('산업 분야', { exact: true }).selectOption('tires');
+    await page.getByRole('button', { name: '타이어', exact: true }).click();
+    assert.match(await notices.locator('summary').first().innerText(), /검토 반영 6건 · 검토 대기 1건/);
+    await notices.locator('summary').first().click();
+    assert.match(await notices.innerText(), /국가 표기 불일치/);
+    await page.locator('[data-ad-calculator]>summary').click();
+    await page.getByLabel('반덤핑 기업', { exact: true }).selectOption('kumho');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2023-24');
+    assert.equal(await page.locator('[data-ad-stage=selection]').getAttribute('data-state'), 'unknown');
+    await page.getByLabel('반덤핑 기업', { exact: true }).selectOption('hankook');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2023-24');
+    assert.equal(await page.locator('[data-ad-stage=selection]').getAttribute('data-state'), 'confirmed');
+    await page.getByLabel('진행을 볼 재심 대상 기간', { exact: true }).selectOption('tires-2024-25-rescinded');
+    assert.ok(await page.locator('[data-ad-rescinded]').isVisible());
+    assert.equal(await page.locator('[data-ad-reference]>strong').textContent(), '13.03%');
+    await page.getByLabel('산업 분야', { exact: true }).selectOption('cables');
+    await page.getByRole('button', { name: '전력 케이블', exact: true }).click();
+    assert.equal(await page.locator('[data-ad-notices]').count(), 0);
+    assert.match(await page.locator('[data-industry-monitor]').innerText(), /개별 시행·조사 공고 목록 미수록/);
+    assert.deepEqual(errors, []); assert.ok(requests.every(url => new URL(url).hostname === '127.0.0.1'));
+    console.log('PASS reviewed notices UI: current POR initiation, 14 reviewed/1 held, company-specific selection, historical withdrawal with unchanged cash reference, case isolation, 360px and no external calls');
+  } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exit(1); });
