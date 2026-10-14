@@ -1,10 +1,10 @@
-# 수출통제 주간 점검 2026-W41 (2026-10-05)
+# 수출통제 주간 점검 2026-W42 (2026-10-12)
 
 | 항목 | 건수 |
 |---|---|
 | 기한 지남·임박 | 1 |
-| 링크 깨짐 / 자동 확인 불가 | 1 / 11 (확인 22) |
-| 이번 주 공고 → 기존 행 갱신 후보 | 1 |
+| 링크 깨짐 / 자동 확인 불가 | 0 / 11 (확인 22) |
+| 이번 주 공고 → 기존 행 갱신 후보 | 0 |
 | 이번 주 공고 → 신규 행 후보 | 0 |
 | 카탈로그 행 / 재확인 필요 | 22 / 11 |
 | 감시 쌍: 현행 / 해제 / 미확인 | 29 / 1 / 197 |
@@ -13,7 +13,7 @@
 
 | 행 | 국가 | 구분 | 날짜 | 상태 |
 |---|---|---|---|---|
-| `chn-fuel-products` | 중국 | 재검토 기한 | 2026-10-18 | **임박** (13일 남음) |
+| `chn-fuel-products` | 중국 | 재검토 기한 | 2026-10-18 | **임박** (6일 남음) |
 
 ## 2. 원문 링크
 
@@ -22,8 +22,7 @@
 | `ind-wheat` | 자동 확인 불가 | 403 | https://www.bloomberg.com/news/articles/2026-08-24/india-lifts-wheat-export-ban-in-boost-to-war-hit-global-supply |
 | `ind-sugar` | 자동 확인 불가 | 응답 없음 | https://www.caalley.com/dgft26/noti16.pdf |
 | `rus-wheat` | 자동 확인 불가 | 403 | https://www.bloomberg.com/news/articles/2026-09-02/russia-pauses-grain-export-duty-through-the-end-of-2026 |
-| `idn-cocoa` | 깨짐 | 404 | https://www.huandacocoa.com/indonesia-cocoa-reference-price-august-2026.html |
-| `ukr-soybeans` | 자동 확인 불가 | 403 | https://www.fas.usda.gov/data/gain-report/2026/04/Oilseeds%20and%20Products%20Annual_Kyiv_Ukraine_UP2026-0011.pdf |
+| `ukr-soybeans` | 자동 확인 불가 | 응답 없음 | https://www.fas.usda.gov/data/gain-report/2026/04/Oilseeds%20and%20Products%20Annual_Kyiv_Ukraine_UP2026-0011.pdf |
 | `idn-coal-single-gate` | 자동 확인 불가 | 403 | https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60 |
 | `chn-fuel-products` | 자동 확인 불가 | 403 | https://www.marketscreener.com/news/chinese-refiners-suspend-oct-fuel-exports-petrochina-cancels-cargoes-sources-say-ce785ad3dd8bf226 |
 | `idn-nickel-ore` | 자동 확인 불가 | 403 | https://www.iea.org/policies/16084-prohibition-of-the-export-of-nickel-ore |
@@ -36,13 +35,7 @@
 
 ## 3. 최근 8일 공고 → 카탈로그 후보
 
-| 날짜 | 발표국 | 조치 | 공고 | 품목 | 판단 |
-|---|---|---|---|---|---|
-| 2026-09-30 | RUS | 수출금지 | [정부가 생산업체의 특정 유형 연료 수출에 대한 임시 금지 조치를 연장했습니다.](http://government.ru/docs/60024/) | petroleum_products | 갱신 후보: `rus-fuel-products` |
-
-조치 종류·품목은 공고 제목 한 줄을 Gemini 가 읽은 값이다. 금지인지 제한인지는 원문으로 정한다.
-
-원자재를 명시하지 않은 수출통제 공고 8건(반도체·무기·항공 등 기술 통제)은 후보에서 뺐다. 수출통제 모니터 「최근 공고」 탭에서 볼 수 있다.
+원자재를 명시한 수출 금지·제한·해제 공고 없음 (보드 전체 50건 중).
 
 ## 4. 열린 질문
 
