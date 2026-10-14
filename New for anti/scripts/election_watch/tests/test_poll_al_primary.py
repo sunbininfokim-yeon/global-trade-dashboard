@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from election_watch.polls import read as effective_read
 import copy,csv,io,json,zipfile,hashlib
 from pathlib import Path
@@ -13,7 +14,7 @@ read=lambda p:effective_read(p)
 
 class AlabamaPollTests(unittest.TestCase):
  def setUp(self):
-  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),DAY)
+  self.policy=apply_targets(apply_matchups(read(CONFIG/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'targets_2026.json'),read(CONFIG/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
   self.policy['quality_reviews']=read(CONFIG/'quality_reviews_2026.json')['reviews'];self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/AL-primary-20261009.json');self.raw=[r['provider_record'] for r in self.audit['records']]
  def test_original_dates_population_and_reference_only(self):
   obs,rejected=normalize(self.raw,self.policy,DAY);self.assertFalse(rejected);self.assertEqual(len(obs),5);self.assertTrue(all(not o['aggregation_eligibility']['eligible'] for o in obs));self.assertTrue(all(o['source_quality']['accuracy_grade'] is None for o in obs))

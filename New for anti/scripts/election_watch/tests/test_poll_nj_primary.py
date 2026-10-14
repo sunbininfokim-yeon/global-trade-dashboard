@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from election_watch.polls import read as effective_read
 import copy,hashlib,json,unittest
 from pathlib import Path
@@ -11,7 +12,7 @@ r=lambda p:effective_read(p)
 
 class NewJerseyEvidenceTests(unittest.TestCase):
  def setUp(self):
-  self.ballots=r(C/'ballot_reviews_2026.json');self.policy=apply_targets(apply_matchups(r(C/'live_2026.json'),r(ROOT/'config/governor_matchups/2026.json'),DAY),r(C/'targets_2026.json'),self.ballots,DAY);self.policy['quality_reviews']=r(C/'quality_reviews_2026.json')['reviews'];self.audit=r(P/'usa_election_poll_release_reviews/2026/NJ-primary-20261009.json');self.raw=self.audit['records'][0]['provider_record']
+  self.ballots=r(C/'ballot_reviews_2026.json');self.policy=apply_targets(apply_matchups(r(C/'live_2026.json'),r(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),r(C/'targets_2026.json'),self.ballots,SNAPSHOT_DAY);self.policy['quality_reviews']=r(C/'quality_reviews_2026.json')['reviews'];self.audit=r(P/'usa_election_poll_release_reviews/2026/NJ-primary-20261009.json');self.raw=self.audit['records'][0]['provider_record']
  def test_exact_three_candidate_initial_question_and_leaners(self):
   obs,held=normalize([self.raw],self.policy,DAY);self.assertFalse(held);self.assertEqual(len(obs),1);o=obs[0];self.assertEqual([a['pct'] for a in o['answers']],[47,42,1]);self.assertEqual(o['race_id'],'USA:NJ:house:07');self.assertEqual((o['sample_n'],o['population'],o['field_end']),(498,'lv','2026-09-12'));self.assertTrue(o['source_quality']['disclosure_review']['includes_leaners']);self.assertIsNone(o['source_quality']['accuracy_grade'])
  def test_weight_target_conflict_remains_reference_and_no_recent_winner(self):

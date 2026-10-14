@@ -109,7 +109,8 @@ class CaliforniaPrimaryTests(unittest.TestCase):
         reviews=read(ROOT/'config/governor_matchups/2026_ballot_reviews.json')
         result=apply_ballot_reviews(self.gov,reviews,SNAPSHOT_DAY)
         self.assertEqual(result,apply_ballot_reviews(result,reviews,SNAPSHOT_DAY))
-        changed=copy.deepcopy(reviews);changed['contests']['CA']['reviewed_on']='2026-10-10'
+        from datetime import date,timedelta
+        changed=copy.deepcopy(reviews);changed['contests']['CA']['reviewed_on']=(date.fromisoformat(SNAPSHOT_DAY)+timedelta(days=1)).isoformat()
         with self.assertRaises(SourceError):apply_ballot_reviews(self.gov,changed,SNAPSHOT_DAY)
 
     def html(self, value='48', related='Other publication'):
