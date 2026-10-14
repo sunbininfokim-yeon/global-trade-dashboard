@@ -41,13 +41,24 @@ jobs:
           python condition_backtest.py
           python condition_blend.py
 
+      - name: Collect planting dates and cotton area components
+        # Separate step: a gap here must not cost the week's condition data.
+        continue-on-error: true
+        working-directory: "New for anti/scripts/yield_model"
+        env:
+          USDA_NASS_API_KEY: ${{ secrets.USDA_NASS_API_KEY }}
+        run: python crop_progress.py
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/scripts/yield_model/us_crop_condition.csv" \
-                  "New for anti/scripts/yield_model/us_condition_backtest.json" \
-                  "New for anti/scripts/yield_model/us_condition_blend.json"
+          cd "New for anti/scripts/yield_model"
+          for f in us_crop_condition.csv us_condition_backtest.json us_condition_blend.json \
+                   us_planting_dates.csv us_cotton_components.csv; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          cd "$GITHUB_WORKSPACE"
           git commit -m "chore: weekly US crop condition refresh" || exit 0
           for i in 1 2 3; do
             git push && exit 0
