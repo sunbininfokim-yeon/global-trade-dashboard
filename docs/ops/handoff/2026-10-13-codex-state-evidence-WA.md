@@ -2,7 +2,7 @@
 
 사용자 NH 다음 주 요청에 따라 C그룹 WA 한 주를 처리한다. 다른 원본 선거 세션은 ME 담당이며 NE 중지는 유지한다. 담당 채팅 `01a11ee3-df39-77d2-a1d0-5201c358636e`, checkout `/Users/yeoninair/Documents/해운 데이터/us-wa-evidence-input-20261013`, branch `codex/wa-evidence-input-20261013`.
 
-최신 main `fbca2775b6417348acab9877370a8e2ecec6d3ea`와 열린 PR/다른 세션/수집 상태를 확인했다. 공용 fixture·수집 경로에 필요한 #524의 `32fa4760ded80b83ed93c80d8d627c3231a9e92d`에서 독립 분기했으며 다른 주 PR 위에 쌓지 않았다. #529의 강화된 검사·세션 시작 규칙도 적용한다. 이 작업에서 드러난 공용 날짜 검사는 담당 세션의 별도 clock 기반에서 보강 중이다. 10/14 재개 시 #524·#529·#540과 AK/KS 독립 입력이 main에 병합된 것을 재확인했다. 재개 main은 `74be3734205aee112cfe3a5c4dd912cf3a198a15`다. #540 이후에도 남은 하위 evidence CLI/AK·KS fixture 날짜 문제는 별도 공용 기반 `codex/election-state-clock-20261014` (`fbe255ba`)로 분리했다. WA의 실제 PR base는 이 packet 없는 공용 기반이며 ME나 다른 주 위에 쌓지 않는다. 기반 병합 후 base를 main으로 맞춘다.
+최신 main `fbca2775b6417348acab9877370a8e2ecec6d3ea`와 열린 PR/다른 세션/수집 상태를 확인했다. 공용 fixture·수집 경로에 필요한 #524의 `32fa4760ded80b83ed93c80d8d627c3231a9e92d`에서 독립 분기했으며 다른 주 PR 위에 쌓지 않았다. #529의 강화된 검사·세션 시작 규칙도 적용한다. 이 작업에서 드러난 공용 날짜 검사는 담당 세션의 별도 clock 기반에서 보강 중이다. 10/14 재개 시 #524·#529·#540과 AK/KS 독립 입력이 main에 병합된 것을 재확인했다. 재개 main은 `74be3734205aee112cfe3a5c4dd912cf3a198a15`다. #540 이후에도 남은 하위 evidence CLI/AK·KS fixture 날짜 문제는 별도 공용 기반 [#554](https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/554) `codex/election-state-clock-20261014` (`fbe255ba`)로 분리했다. WA의 실제 PR base는 이 packet 없는 공용 기반이며 ME나 다른 주 위에 쌓지 않는다. 기반 병합 후 base를 main으로 맞춘다.
 
 ## 공식 명부와 선거 범위
 
