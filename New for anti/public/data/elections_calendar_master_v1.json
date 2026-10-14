@@ -1,7 +1,7 @@
 {
   "schema": "elections_calendar_master_v1",
-  "as_of": "2026-10-12",
-  "generated_at": "2026-10-12T10:28:44.915042+00:00",
+  "as_of": "2026-10-14",
+  "generated_at": "2026-10-14T06:36:19.174671+00:00",
   "sources": [
     "config/calendars/*_2026.json (board tracked countries)",
     "https://en.wikipedia.org/wiki/2026_national_electoral_calendar",
@@ -304,7 +304,8 @@
           "status": "incumbent_running"
         }
       ],
-      "notes": "당수·전국평의회 갱신. 전자투표 9/21–10/22 뒤 결과 10/24 발표 예정.",
+      "system_id": "불명",
+      "notes": "당수·전국평의회 갱신. 전자투표 9/21–10/22 뒤 결과 10/24 발표 예정. 국가 선거 제도가 아니라 제도 행을 만들지 않음.",
       "sources": [
         "https://rassemblementnational.fr/congres2026",
         "https://fr.wikipedia.org/wiki/XIXe_congr%C3%A8s_du_Rassemblement_national"
@@ -2168,7 +2169,8 @@
           "status": "incumbent_running"
         }
       ],
-      "notes": "당수·전국평의회 갱신. 전자투표 9/21–10/22 뒤 결과 10/24 발표 예정.",
+      "system_id": "불명",
+      "notes": "당수·전국평의회 갱신. 전자투표 9/21–10/22 뒤 결과 10/24 발표 예정. 국가 선거 제도가 아니라 제도 행을 만들지 않음.",
       "sources": [
         "https://rassemblementnational.fr/congres2026",
         "https://fr.wikipedia.org/wiki/XIXe_congr%C3%A8s_du_Rassemblement_national"
@@ -2181,7 +2183,8 @@
       "label_ko": "국정 재보궐(10월 통일창)",
       "date": "2026-10-25",
       "status": "tentative",
-      "notes": "10월 제4일요일 창. 대상 좌석·실시 여부는 제2기간(3/16–9/15) 결원 확정 전까지 불명. 결원 없으면 없음.",
+      "system_id": "불명",
+      "notes": "10월 제4일요일 창. 대상 원(중의원·참의원)이 확정되지 않아 기존 제도에 붙이지 않음. 총무성 보궐 결과 목록의 최근 항목은 2024년이고, 2026-10-25 실시 공고는 확인하지 못함.",
       "sources": [
         "kouhou_33_2",
         "mic_hoketsu",
@@ -2228,7 +2231,8 @@
       "type": "by_election",
       "label_ko": "후쿠시마현의회 보궐(3선거구)",
       "date": "2026-10-25",
-      "notes": "후쿠시마시·고리야마시·이와키시 각 결원1. 고시 2026-10-16.",
+      "system_id": "불명",
+      "notes": "후쿠시마시·고리야마시·이와키시 각 결원1. 고시 2026-10-16. 현의회는 현마다 정수가 달라 전국 제도 행을 만들지 않음. 보도가 전한 58→57 개정은 2027년 선거부터라 이 보궐의 정수로 쓰지 않음.",
       "sources": [
         "fukushima_gov_2026"
       ],
@@ -2242,10 +2246,13 @@
       "label_ko": "크네세트(제26대)",
       "date": "2026-10-27",
       "status": "scheduled",
-      "notes": "재외 투표 2026-10-20; 결과 확정 2026-11-04 (wiki)",
+      "system_id": "isr-knesset",
+      "contested_ko": "전체 120석",
+      "notes": "재외 투표 2026-10-20; 결과 확정 2026-11-04 (wiki). 제도는 기본법·중앙선관위. 직전 25대 의석 배분은 이 행에 없음.",
       "sources": [
         "wiki_knesset_2026",
-        "cec_il"
+        "cec_il",
+        "https://www.gov.il/apps/elections/elections-knesset-19/eng/law/BasicLawKnesset_eng.html"
       ],
       "iso3": "ISR",
       "date_end": null
@@ -2372,10 +2379,13 @@
       "label_ko": "지방정부선거 (LGE)",
       "date": "2026-11-04",
       "status": "scheduled",
-      "notes": "IEC homepage: Election Day Wednesday, 4 November 2026.",
+      "system_id": "zaf-local",
+      "contested_ko": "IEC 공고 경합 의석 10,526. 워드 4,488",
+      "notes": "IEC 홈페이지: Election Day Wednesday, 4 November 2026. 기초 의회 수 205(후보 공고)와 206(출마 안내)이 어긋나 맞추지 않음.",
       "sources": [
         "https://www.elections.org.za/pw/",
-        "extracted/zaf_iec_lge_2026_snapshot.json"
+        "extracted/zaf_iec_lge_2026_snapshot.json",
+        "https://www.elections.org.za/pw/News-And-Media/News-List/News/News-Article/Electoral-Commission-Certifies-136-790-Candidates-to-Contest-the-2026-Local-Government-Elections"
       ],
       "iso3": "ZAF",
       "date_end": null

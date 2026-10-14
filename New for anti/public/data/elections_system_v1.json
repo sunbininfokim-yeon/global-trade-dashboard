@@ -1,6 +1,6 @@
 {
   "schema": "elections_system_v1",
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-14",
   "null_policy": {
     "없음": "해당 없음",
     "불명": "미확정"
@@ -740,6 +740,68 @@
       "head_selection_ko": "없음. 대통령은 별도 직선.",
       "sources": [
         "https://www.tse.jus.br/eleicoes/tabela-com-a-representatividade-dos-partidos-politicos-e-das-federacoes-na-camara-dos-deputados-e-no-senado-federal"
+      ]
+    },
+    {
+      "id": "isr-knesset",
+      "iso3": "ISR",
+      "type": "general",
+      "chamber": "없음",
+      "name_ko": "이스라엘 크네세트",
+      "name_en": "Knesset",
+      "term_years": 4,
+      "term_note_ko": "기본법상 임기는 선출일부터 4년. 크네세트가 해산하거나 예산안이 기한 내 통과되지 않으면 그 전에 선거가 열린다.",
+      "seats_total": 120,
+      "method_ko": "전국 폐쇄명부 비례대표",
+      "method_detail_ko": "유권자는 후보 개인이 아니라 정당 명부 하나에 1표를 던진다. 전국이 한 선거구이고, 유효표 3.25%를 넘긴 명부만 120석을 비례 배분한다. 결선은 없다.",
+      "districts": {
+        "count": 1,
+        "kind_ko": "전국 단일구",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "유효표 3.25%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "총리를 직선하지 않는다. 대통령이 원내교섭단체와 협의한 뒤 크네세트 의원에게 내각 구성을 맡기고, 크네세트 신임으로 정부가 성립한다.",
+      "sources": [
+        "https://www.gov.il/apps/elections/elections-knesset-19/eng/law/BasicLawKnesset_eng.html",
+        "https://www.gov.il/en/Departments/Guides/election-about-info?OfficeId=26857f24-4eaa-4032-a39d-5dc66d374ee3",
+        "https://main.knesset.gov.il/en/about/lexicon/pages/electoralsystem.aspx",
+        "https://main.knesset.gov.il/EN/activity/documents/BasicLawsPDF/BasicLawTheGovernment.pdf"
+      ]
+    },
+    {
+      "id": "zaf-local",
+      "iso3": "ZAF",
+      "type": "local",
+      "chamber": "없음",
+      "name_ko": "남아프리카 지방정부 의회",
+      "name_en": "South African municipal councils",
+      "term_years": 5,
+      "term_note_ko": "지방의회 임기 5년. 임기 만료 후 90일 안에 선거를 치른다.",
+      "seats_total": 10526,
+      "seats_note_ko": "IEC가 2026년 선거에서 경합한다고 공고한 의석 10,526 (메트로 8, 지구 44, 기초 205). 같은 IEC 안내 페이지는 기초를 206으로 적기도 해 그 차이는 맞추지 않음. 워드 수는 구획위원회 기준 4,488이며 의석 총수와 별개다.",
+      "method_ko": "워드 최다득표 + 비례명부",
+      "method_detail_ko": "메트로와 기초는 의석의 절반을 워드에서 최다득표로 뽑고, 나머지 절반은 정당 비례명부로 채운다. 홀수면 워드가 비례보다 1석 많다. 기초 유권자는 워드·기초 비례·지구 비례 3표를 던진다. 메트로는 워드와 메트로 비례 2표다. 지구의회 의석의 40%는 비례로 뽑고, 60%는 선거 뒤 기초의회가 보낸다.",
+      "districts": {
+        "count": 4488,
+        "kind_ko": "워드",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "전국 단일 봉쇄조항 없음. 의석은 자치체별 쿼터로 배분",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "voting_age": 18,
+      "compulsory": false,
+      "head_selection_ko": "불명",
+      "sources": [
+        "https://www.elections.org.za/pw/News-And-Media/News-List/News/News-Article/Electoral-Commission-Certifies-136-790-Candidates-to-Contest-the-2026-Local-Government-Elections",
+        "https://www.elections.org.za/content/Documents/Publications/2026-Local-Government-Elections/2026-Municipal-Elections-Observer-Handbook-(PDF)/",
+        "https://www.elections.org.za/content/documents/laws-and-regulations/municipal-elections/local-government--municipal-structures-act/",
+        "https://www.elections.org.za/Pw/Parties-And-Candidates/How-To-Contest-Municipal-Elections",
+        "https://www.elections.org.za/content/About-Us/News/The-Municipal-Demarcation-Board-(MDB)-hands-over-Final-Wards-to-the-Electoral-Commission-in-Preparation-for-the-2026-27-Local-Government-Elections/"
       ]
     }
   ]
