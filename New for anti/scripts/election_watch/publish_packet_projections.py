@@ -18,7 +18,10 @@ def main():
     board = read(args.public/'usa_election_live_polls_v1.json')
     for packet in packets():
         state = packet['state']
-        day = next(r.get('as_of', board['as_of']) for r in board['races'].values() if r['state'] == state)
+        # An original state receipt may predate the national snapshot. Build
+        # against both clocks; the collector keeps the original receipt date.
+        day = max(board['as_of'], *(r.get('as_of', board['as_of'])
+                                  for r in board['races'].values() if r['state'] == state))
         publish(ROOT/'config/federal_matchups/2026.json', args.public/'elections_board_v1.json', day,
                 ROOT/'config/usa_polls/ballot_reviews_2026.json', state)
         subprocess.run([sys.executable, str(ROOT/'refresh_state_evidence.py'), '--state', state,

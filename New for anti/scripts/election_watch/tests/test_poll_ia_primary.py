@@ -91,11 +91,12 @@ class IowaPrimaryTests(unittest.TestCase):
 
     def test_reachable_report_index_does_not_claim_financial_coverage(self):
         access = read(PUBLIC/'usa_governor_source_access/2026/IA.json')
+        polls = read(PUBLIC/'usa_election_live_polls_v1.json')
         result = build_state('IA', 'B', read(CONFIG/'state_evidence_plan_2026.json'),
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
-            self.gov, read(PUBLIC/'usa_election_live_polls_v1.json'),
+            self.gov, polls,
             load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026),
-            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), DAY,
+            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), max(DAY, polls['as_of']),
             read(CONFIG/'state_finance_identities_2026.json'), governor_access={'IA': access})
         self.assertEqual(result['work_status'], 'live_poll_sources_reviewed_finance_mapping_required')
         self.assertFalse(result['governor_source_route']['access_check']['candidate_amounts_available'])
