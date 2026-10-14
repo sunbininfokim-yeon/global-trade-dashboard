@@ -422,6 +422,35 @@ spring_frost_anom               r=-0.220
 
 ---
 
+## 9-2. 작황상태지수 결합 (NASS Crop Progress)
+
+날씨는 "이 시즌이 작물에 무엇을 했어야 하는가"를, 매주 NASS 작황상태(매우나쁨~매우좋음)는
+"밭에서 실제로 보이는 것"(병해·우박·입모·관리)을 말한다. 둘을 시점별로 섞는다.
+
+- 상태지수: K-State CCI(매우좋음 1.0 · 좋음 0.75 · 보통 0.5 · 나쁨 0.25 · 매우나쁨 0), 주별 생산량 가중.
+  `crop_condition.py` 수집 → `condition_backtest.py` 단독 검증.
+- 결합: `condition_blend.py`. 같은 연도에서 두 모델을 전진검증하고, 각 모델의 평균제곱오차 역수로
+  가중(Bates & Granger 1969). 점수를 매길 때 가중치는 그 해 이전 연도로만 정한다. 오차 상관까지
+  추정하는 "최적" 가중은 표본이 적어 크게 흔들려 쓰지 않았다.
+- 문턱: 상태지수 단독 skill이 0.20 미만인 주(6월 초, 이듬해 겨울밀의 가을 평가)와 채점 연도가 10년
+  미만인 늦은 주는 섞지 않는다. 수확이 길어지면 마지막으로 쓸 수 있는 주의 평가를 시즌 최종값으로 쓴다.
+- 구간: 결합 오차/날씨 오차 비율로 P10~P90·68/95% 구간을 축소·확대(0.6~1.2로 제한).
+- 출력: `yield_forecast.json`의 `condition` 블록(사용 주, 가중치, 날씨만의 값, 결합 skill).
+  `weather_effect`는 결합 후 점추정 − 추세라 화면의 "기상 효과"에 상태지수 몫이 섞인다.
+
+검증 (2012–2025, n=14, 같은 연도) skill vs 추세:
+
+| 작물 | 날씨 단독 | 결합 |
+|---|---|---|
+| 옥수수 7/15 · 8/26 · 9/23 | +0.09 · +0.51 · +0.67 | +0.40 · +0.63 · +0.70 |
+| 대두 7/22 · 9/2 | +0.20 · +0.39 | +0.26 · +0.51 |
+| 겨울밀 5/13 · 6/10 | +0.31 · +0.31 | +0.35 · +0.44 |
+| 봄밀 7/8 · 8/5 | +0.12 · +0.12 | +0.34 · +0.44 |
+| 면화 7/8 · 9/30 | +0.21 · +0.21 | +0.22 · +0.29 |
+
+밀·면화의 날씨 값은 시즌 전체 기상을 다 안다고 둔 값이라 날씨에 유리하다(시즌 중 실제 날씨 모델은
+이보다 약하다). 그래서 결합에서 상태지수는 오히려 덜 반영된 쪽이다.
+
 ## 10. 파일 구성
 
 ```
@@ -449,4 +478,6 @@ scripts/yield_model/
 - Schlenker, W. & Roberts, M.J. (2009) — *Nonlinear temperature effects indicate severe damages to U.S. crop yields under climate change*
 - Lobell, D.B. et al. (2011, 2013, 2014) — 기온 상승과 미국 옥수수 수확량
 - Urban, D. et al. (2015), Roberts, M.J. et al. (2012) — VPD와 수확량
+- Bates, J.M. & Granger, C.W.J. (1969) — *The combination of forecasts*, Operational Research Quarterly
+- Irwin, S. & Good, D. (farmdoc daily) — 작황상태지수 기반 옥수수·대두 단수 예측
 - Schwalbert, R. et al. (2020) — *Mid-season county-level corn yield forecast for US Corn Belt integrating satellite imagery and weather variables*, Crop Science

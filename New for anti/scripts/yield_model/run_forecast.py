@@ -22,6 +22,8 @@ OUT = os.path.abspath(os.path.join(HERE, "..", "..", "public", "data", "yield_fo
 from collect_us_cornbelt import load_oni, growing_season_oni  # noqa: E402
 from predict_us import predict  # noqa: E402
 from predict_wheat import predict as predict_wheat  # noqa: E402
+from condition_blend import apply as blend_condition  # noqa: E402
+from us_scenarios import FORECAST_SKILL  # noqa: E402
 
 # Regions the dashboard shows, and which crops belong to each. Wheat is a
 # separate region from the Corn Belt because it is a different geography with
@@ -130,13 +132,24 @@ def main():
                 log(f"{crop}: no forecast produced")
                 continue
 
+            # Fold in the season's NASS crop condition ratings where the
+            # backtest says they help (condition_blend.py).
+            r = blend_condition(crop, year, r)
+            cond = r.get("condition")
+
             with open(os.path.join(HERE, f"us_{crop}_model.json"), encoding="utf-8") as f:
                 model = json.load(f)
             fwd = selected_forward(model)
             ins = r.get("inseason")
             # Corn and soy carry a skill for today's point in the season;
-            # wheat and cotton only their end-of-season number.
+            # wheat and cotton only their end-of-season number. With the
+            # condition blended in, the blend's own backtest is what applies.
             skill_now = ins["skill_now"] if ins else fwd.get("skill_vs_trend", float("nan"))
+            if cond:
+                skill_now = cond["skill_blend"]
+                if ins:
+                    ins = {**ins, "skill_now": skill_now,
+                           "mode": "forecast" if skill_now >= FORECAST_SKILL else "reference"}
 
             # Corn/soy count provenance over July-August; wheat over its own
             # grain-fill window. Normalise the key so the frontend has one
@@ -173,7 +186,7 @@ def main():
                     # numbers show as a reference until the backtest says the
                     # weather to date carries real information.
                     "low_confidence": (ins["mode"] == "reference") if ins
-                                      else fwd.get("skill_vs_trend", 0) < 0.20,
+                                      else skill_now < FORECAST_SKILL,
                 },
                 "inseason": ins and {
                     **ins,
@@ -183,6 +196,12 @@ def main():
                     "skill_by_date": {k: round(v["skill_vs_trend"], 3)
                                       for k, v in model["inseason"]["cutoffs"].items()},
                 },
+                # What the crop condition ratings contributed: the week used,
+                # its weight, and the weather-only number it moved. Absent
+                # when no ratings were blended in (early season, no data).
+                # weather_effect above then includes the condition's pull,
+                # so trend + weather_effect still equals point.
+                "condition": cond,
                 "trained_years": model["trained_years"],
                 # The standardised weather inputs the model actually saw this
                 # season. Surfacing them lets the panel show *why* the forecast
