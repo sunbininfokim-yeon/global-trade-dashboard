@@ -1,7 +1,7 @@
 """Build elections_contest_v1 for isr-2026-knesset.
 
 Current seats: Knesset OData KNS_PersonToPosition (PositionID 54, Knesset 25, IsCurrent).
-Running lists: Wikipedia party-lists page (38 submitted heads). Do not invent districts.
+Running lists: Wikipedia party-lists page, every numbered name (Likud capped at the 35-name submitted slate). Do not invent districts.
 isr-2026-candidate-lists is a calendar deadline, not a contest file.
 """
 from __future__ import annotations
@@ -419,9 +419,29 @@ def odata_rows(filt: str) -> List[Dict[str, Any]]:
     return rows
 
 
+def carried_current_seats() -> Tuple[Dict[str, int], str]:
+    path = CONTESTS_DIR / f"{EVENT_ID}.json"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    current = doc["columns"][0]["current"]
+    by_party = {k: int(v) for k, v in current["by_party"].items()}
+    if sum(by_party.values()) != 120 or current.get("total") != 120:
+        raise SystemExit("stored Knesset current seats do not sum to 120")
+    note = current.get("note_ko") or ""
+    extra = (
+        f" {AS_OF} 크네세트 OData가 JSON 대신 HTML 차단면을 돌려줘 "
+        "이 120석은 파일에 있던 2026-09-20 원문 표를 그대로 둔다."
+    )
+    if extra.strip() not in note:
+        note = note.rstrip() + extra
+    return by_party, note
+
+
 def current_seats() -> Tuple[Dict[str, int], str]:
     filt = "KnessetNum%20eq%2025%20and%20PositionID%20eq%2054%20and%20IsCurrent%20eq%20true"
-    rows = odata_rows(filt)
+    try:
+        rows = odata_rows(filt)
+    except json.JSONDecodeError:
+        return carried_current_seats()
     people: Dict[int, str] = {}
     for row in rows:
         pid = row.get("PersonID")
@@ -464,10 +484,19 @@ def meta_for_heading(heading: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-def parse_wiki_lists(html: str) -> List[Dict[str, str]]:
-    # Parsoid / desktop both: h2/h3 then first numbered item.
+def clean_person(raw: str) -> str:
+    raw = re.sub(r"<small\b[^>]*>.*?</small>", "", raw, flags=re.I | re.S)
+    name = strip_tags(raw)
+    name = re.sub(r"\[[a-z]{2}\]", "", name, flags=re.I)
+    name = re.sub(r"\s+[A-Z]{1,4}\s*$", "", name).strip()
+    name = re.sub(r"\s+", " ", name).strip(" ,;")
+    return name
+
+
+def parse_wiki_lists(html: str) -> List[Dict[str, Any]]:
+    # Every numbered name under a mapped heading, not only list position 1.
     chunks = re.split(r"<h[23]\b", html, flags=re.I)
-    found: List[Dict[str, str]] = []
+    found: List[Dict[str, Any]] = []
     used_abbr = set()
     for chunk in chunks:
         hm = re.search(r">([^<]+)</h[23]>", chunk[:800], flags=re.I)
@@ -487,32 +516,37 @@ def parse_wiki_lists(html: str) -> List[Dict[str, str]]:
             continue
         if meta["abbr"] in used_abbr:
             continue
-        # first list item after heading
-        name = ""
+        people: List[Dict[str, Any]] = []
         ol = re.search(r"<ol\b[^>]*>(.*?)</ol>", chunk, flags=re.I | re.S)
         if ol:
-            li = re.search(r"<li\b[^>]*>(.*?)</li>", ol.group(1), flags=re.I | re.S)
-            if li:
-                name = strip_tags(li.group(1))
-        if not name:
+            for order, li in enumerate(
+                re.findall(r"<li\b[^>]*>(.*?)</li>", ol.group(1), flags=re.I | re.S),
+                start=1,
+            ):
+                person = clean_person(li)
+                if person:
+                    people.append({"order": order, "name": person})
+        if not people:
             m = re.search(
                 r"(?:is headed by|is led by|list is headed by|list, headed by)\s+([^\[<\.,]+)",
                 strip_tags(chunk[:1500]),
                 flags=re.I,
             )
             if m:
-                name = m.group(1).strip()
-        # drop party-letter suffix like "H" after Hadash
-        name = re.sub(r"\s+[HTBRNZDAye]+\s*$", "", name).strip()
-        name = re.sub(r"\s+\[[a-z]\]\s*$", "", name, flags=re.I).strip()
-        if not name:
-            raise SystemExit(f"no list head for {heading}")
+                people.append({"order": 1, "name": clean_person(m.group(1))})
+        people = [p for p in people if p["name"]]
+        if not people:
+            raise SystemExit(f"no list names for {heading}")
+        # JNS and N12 both stop the submitted Likud slate at 35 (Avihai Boaron).
+        if meta["abbr"] == "Likud":
+            people = [p for p in people if int(p["order"]) <= 35]
         used_abbr.add(meta["abbr"])
         found.append(
             {
                 "abbr": meta["abbr"],
                 "heading": heading,
-                "name": name,
+                "name": people[0]["name"],
+                "people": people,
             }
         )
     if len(found) != 38:
@@ -593,16 +627,21 @@ def build() -> Dict[str, Any]:
     if "38 parties submitted" not in elect and "38 parties" not in elect:
         raise SystemExit("2026 election page missing 38-list confirmation")
     candidates = []
-    for i, row in enumerate(running, start=1):
-        candidates.append(
-            {
-                "party_abbr": row["abbr"],
-                "name": row["name"],
-                "status": "nominated",
-                "source": WIKI_LISTS,
-                "note_ko": f"전국 명부 {i}번째 제목 «{row['heading']}»의 1번. CEC 최종 승인 2026-09-27 예정.",
-            }
-        )
+    for row in running:
+        people = row.get("people") or [{"order": 1, "name": row["name"]}]
+        for person in people:
+            note = f"«{row['heading']}» 명부 {person['order']}번. CEC 공식 공고는 2026-10-18 예정."
+            if row["abbr"] == "Likud" and person["order"] == 35:
+                note += " JNS·N12 제출 명부는 여기까지 35명. 위키 번호는 40번까지 더 있다."
+            candidates.append(
+                {
+                    "party_abbr": row["abbr"],
+                    "name": person["name"],
+                    "status": "nominated",
+                    "source": WIKI_LISTS,
+                    "note_ko": note,
+                }
+            )
     doc = {
         "schema": "elections_contest_v1",
         "event_id": EVENT_ID,
@@ -625,9 +664,9 @@ def build() -> Dict[str, Any]:
                 },
                 "contested_ko": "120석 전원 개선. 전국 1구 폐쇄명부 비례, 봉쇄선 3.25%.",
                 "seat_note_ko": (
-                    "선거구를 짓지 않았다. 후보는 제출된 38개 명부의 1번만. "
-                    "전체 명단은 위키 Party lists / CEC 공식 공고(예정 2026-10-18). "
-                    "isr-2026-candidate-lists는 제출 기한이지 대진 파일이 아니다."
+                    "선거구를 짓지 않았다. 전국 폐쇄명부. 위키 Party lists의 번호 있는 이름을 전부 넣었다. "
+                    "리쿠드는 JNS·N12가 제출본을 35명으로 적어 35번에서 끊었다. "
+                    "CEC 공식 공고는 2026-10-18. isr-2026-candidate-lists는 제출 기한이지 대진 파일이 아니다."
                 ),
                 "districts": [
                     {

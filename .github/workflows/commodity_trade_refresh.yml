@@ -27,8 +27,10 @@ jobs:
       KOREA_CUSTOMS_SERVICE_KEY: ${{ secrets.KOREA_CUSTOMS_SERVICE_KEY }}
       TRADE_PIPELINE_TOKEN: ${{ secrets.TRADE_PIPELINE_TOKEN }}
       TRADE_GATEWAY_URL: ${{ vars.TRADE_GATEWAY_URL }}
-      TRADE_CHECKPOINT: ${{ runner.temp }}/trade-state/checkpoint.json
     steps:
+      # job env 에서는 runner 컨텍스트를 못 쓴다 (워크플로 파싱 실패). step 에서 넘긴다.
+      - name: Set checkpoint path
+        run: echo "TRADE_CHECKPOINT=$RUNNER_TEMP/trade-state/checkpoint.json" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: main

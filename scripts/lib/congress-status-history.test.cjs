@@ -1,9 +1,10 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {prepareEmbedding}=require('../sync-congress.js');
 const source=fs.readFileSync(require.resolve('../sync-congress.js'),'utf8');
 function setup(failOnce=false){
  const events=[];
- const ctx={Date,Number,firstNonEmpty:(...x)=>x.find(v=>v!==undefined&&v!==null&&v!==''),asArray:x=>x||[],
+ const ctx={Date,Number,prepareEmbedding,firstNonEmpty:(...x)=>x.find(v=>v!==undefined&&v!==null&&v!==''),asArray:x=>x||[],
   parseDateOnly:x=>x?.slice(0,10),parseTimestamp:x=>x||null,actionChamber:()=> 'house',stage:()=> 'introduced',withoutKey:x=>x,officialUrl:()=> 'https://www.congress.gov/test',
   latestActionOf:(a,f)=>a.at(-1)||f,actionId:(id,a)=>id+':'+a.text,saveVote:async()=>{},queue:async()=>{},
   supabaseGet:async()=>[{current_status:'Introduced',embedding:[1]}],
@@ -12,7 +13,7 @@ function setup(failOnce=false){
  vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('async function saveBundle('),source.indexOf('async function saveVote(')),ctx);
  return {ctx,events};
 }
-const data=()=>({billId:'119-hr-1',ref:{type:'hr',congress:119},detailLevel:'index',row:{current_status:'Introduced',current_stage:'introduced',status_updated_at:'2026-10-01T00:00:00Z',latest_action_date:'2026-10-01',latest_action_text:'Introduced'},summaries:[],subjects:[],committees:[],actions:[],textVersions:[],relatedBills:[],law:{}});
+const data=()=>({billId:'119-hr-1',ref:{type:'hr',congress:119},detailLevel:'index',row:{title:'Status history fixture',summary:'',raw_source:{},current_status:'Introduced',current_stage:'introduced',status_updated_at:'2026-10-01T00:00:00Z',latest_action_date:'2026-10-01',latest_action_text:'Introduced'},summaries:[],subjects:[],committees:[],actions:[],textVersions:[],relatedBills:[],law:{}});
 test('index-level monitoring stores latest official action and idempotent history even after bill upsert already succeeded',async()=>{
  const {ctx,events}=setup();await ctx.saveBundle(data());
  assert.ok(events.some(e=>e.t==='bill_actions'));
