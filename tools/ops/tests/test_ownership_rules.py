@@ -3,6 +3,13 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_poll_resilience_only_allows_existing_collector_workflow(self):
+        branch='codex/poll-refresh-resilience-20261014'
+        self.assertEqual(scoped_paths(branch), {'.github/workflows/us_election_polls_refresh.yml'})
+        self.assertFalse(scoped_paths(branch+'-extra'))
+        for path in ('.github/workflows/deploy.yml', '_worker.js', 'New for anti/app.js'):
+            self.assertNotIn(path,scoped_paths(branch))
+
     def test_polling_card_ui_exception_excludes_deploy_worker_and_app(self):
         branch = 'codex/election-poll-ui-20261014'
         self.assertEqual(scoped_paths(branch), {'New for anti/style.css', 'New for anti/index.html'})

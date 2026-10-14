@@ -10,6 +10,8 @@ import math
 import re
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
+from time import sleep
 from .polls import atomic, digest, require
 from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question
 
@@ -75,10 +77,23 @@ def fetch_polls(cycle, as_of):
     # Re-fetch the whole cycle to pick up corrections and withdrawals, not an
     # append-only date cursor that would silently keep retracted observations.
     url = API + '?' + urlencode({'subject': str(cycle), 'from_date': f'{cycle-1}-01-01', 'to_date': as_of})
-    with urlopen(Request(url, headers={'User-Agent': 'ElectionPollPipeline/2.0'}), timeout=45) as response:
-        require(response.url.startswith('https://api.votehub.com/'), 'unexpected API redirect')
-        raw = response.read(24 * 1024 * 1024 + 1)
-        require(len(raw) <= 24 * 1024 * 1024, 'oversized response')
+    for attempt in range(3):
+        try:
+            with urlopen(Request(url, headers={'User-Agent': 'ElectionPollPipeline/2.0'}), timeout=45) as response:
+                require(response.url.startswith('https://api.votehub.com/'), 'unexpected API redirect')
+                raw = response.read(24 * 1024 * 1024 + 1)
+                require(len(raw) <= 24 * 1024 * 1024, 'oversized response')
+            break
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
+                raise
+            retry_after = (exc.headers or {}).get('Retry-After', '')
+            delay = min(30, max(1, int(retry_after))) if retry_after.isdigit() else (2, 5)[attempt]
+            sleep(delay)
+        except (URLError, TimeoutError, ConnectionError):
+            if attempt == 2:
+                raise
+            sleep((2, 5)[attempt])
     import json
     data = json.loads(raw)
     if isinstance(data, dict):

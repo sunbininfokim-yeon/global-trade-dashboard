@@ -49,12 +49,15 @@ def main():
     p.add_argument('--election-board', type=Path, default=ROOT.parent.parent/'public/data/elections_board_v1.json')
     p.add_argument('--input', type=Path, help='Replay saved provider response for testing; marked as replay')
     p.add_argument('--capture-output', type=Path, help='Save actual collection for safe publication retry')
+    p.add_argument('--capture-only', action='store_true', help='Collect an unpublished checkpoint; never alter public data')
     p.add_argument('--retry-capture', type=Path, help='Revalidate captured inputs on latest main; never refetch or advance dates')
     p.add_argument('--target-catalog', type=Path, help='Reviewed nationwide scheduled election universe')
     p.add_argument('--ballot-reviews', type=Path, help='Reviewed general ballot identities for poll admission')
     p.add_argument("--house-focus", type=Path, help="House Lean/Toss-Up review priority policy")
     p.add_argument("--ratings", type=Path, default=ROOT.parent.parent/"public/data/usa_election_ratings_review_v1.json")
     args = p.parse_args()
+    if args.capture_only and (not args.capture_output or args.input or args.retry_capture):
+        p.error('--capture-only requires --capture-output and cannot replay an input')
     from election_watch.poll_run_capture import validate_capture, make_capture, restore_ballots
     retry = validate_capture(read(args.retry_capture)) if args.retry_capture else None
     if retry:
@@ -138,6 +141,12 @@ def main():
         if args.capture_output and not args.input:
             atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts,
                                                     ballot_capture, ballot_health))
+        if args.capture_only:
+            atomic(args.capture_output.with_suffix('.status.json'), {
+                'status': 'captured_unpublished', 'captured_at': checked, 'as_of': args.as_of,
+                'provider_records': len(provider_rows), 'records_with_supplements': len(rows)})
+            print('Polling source captured; publication still requires validation')
+            return 0
         policy['quality_reviews'] = quality['reviews']
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
         if primary_receipts:
@@ -168,8 +177,16 @@ def main():
                    for s in ('poll_lead','single_poll_lead','no_recent_poll','tie','unknown_leader_party')} for d in ('7','14')})
         if forecast_status['status'] != 'ok':
             print('Seat scenario held:', forecast_status['error_type'])
-            return 1
+            # A missing seat-forecast dependency is explicit in health/forecast.
+            # It must not mark valid polling collection/publication as failed.
+            print('::warning::Seat forecast is held; validated polling data remains available')
     except Exception as exc:
+        if args.capture_only:
+            atomic(args.capture_output.with_suffix('.status.json'), {
+                'status': 'capture_failed', 'attempted_at': checked, 'as_of': args.as_of,
+                'error_type': type(exc).__name__, 'public_data_modified': False})
+            print('Polling capture failed:', type(exc).__name__)
+            return 1
         # Official outcomes are independent of the poll transport. If the API
         # fails, still accept a newly reviewed result without refreshing polls.
         try:
