@@ -73,20 +73,58 @@ for (const [product, research] of Object.entries(materialSearches)) {
 }
 export const PRODUCT_VERIFICATIONS = rows;
 
+// Our investigation coverage and the government's proceeding are independent.
+// Missing data must never be relabelled as an official pending determination.
+export function adCoverageStatus(product, country = 'KOR') {
+  const row = rows[product], status = country === 'KOR' ? row?.ad.status : 'origin_not_reviewed';
+  const basic = {
+    research: { state: 'not_recorded', label: '조사 기록 없음', note: '이 품목·원산지의 조사 기록이 없습니다.' },
+    procedure: { state: 'unconfirmed', label: '공식 절차 미확인', note: '사건 존재·판정 대기 여부를 확인하지 못했습니다.' },
+    integration: { state: 'not_ready', label: '계산 미연결', note: '적용 사건·기업별 예치율 근거가 필요합니다.' },
+    checked_on: null, next_step: '공식 사건·제품 범위 조사 필요',
+  };
+  if (!row || status === 'origin_not_reviewed') return basic;
+  basic.checked_on = row.checked_on || KOREA_AD_REVIEW.checked_on;
+  if (status === 'reviewed_no_direct_match') {
+    basic.research = { state: 'roster_reviewed', label: '사건 목록 조사 완료 · 제한 범위', note: '한국 활성 사건의 제품명 대조만 완료했습니다. 개별 제품·법인 적용 검토는 미완료입니다.' };
+    basic.procedure = { state: 'case_unconfirmed', label: '대응 사건 미확인', note: '검토한 목록에서 직접 대응 사건을 찾지 못했습니다. 정부 판정 대기로 확인된 상태가 아닙니다.' };
+    basic.next_step = '제품 사양·최신 공고·개별 적용 범위 추가 확인 필요';
+  } else if (status === 'bounded_search_no_confirmed_case') {
+    basic.research = { state: 'product_search_reviewed', label: '품목별 조사 완료 · 제한 범위', note: '공식 검색·공개 원문 대조 완료. 사건 전수조사는 아닙니다.' };
+    basic.procedure = { state: 'case_unconfirmed', label: '대응 사건 미확인', note: '한국산 적용 사건과 기업별 예치율 미확인. 정부 판정 대기로 확인된 상태가 아닙니다.' };
+    basic.next_step = row.ad.research.remaining;
+  } else if (status === 'related_scope_review_required') {
+    basic.research = { state: 'related_notice_reviewed', label: '관련 공고 조사 완료', note: '관련 제품의 조사 개시·정정 공고를 확인했습니다.' };
+    basic.procedure = { state: 'related_case_scope_unresolved', label: '관련 조사 개시 · 적용 대상 미확인', note: '선택 제품·기업이 해당 조사 대상인지 미확정입니다. 이 선택의 판정 대기로 단정하지 않습니다.' };
+    basic.next_step = '실제 제품 사양·제조/수출 법인과 명령 범위 대조 필요';
+  } else if (status === 'official_case_confirmed_deposit_unresolved') {
+    basic.research = { state: 'final_notice_reviewed', label: '최종결과 공고 조사 완료', note: '해당 POR의 공식 사건과 기업별 최종 마진을 확인했습니다.' };
+    basic.procedure = { state: 'final_published', label: '해당 POR 최종결과 공표', note: '정부 판정은 공표됐습니다. 현행 예치 지침·후속 변경은 별도 확인 대상입니다.' };
+    basic.integration = { state: 'deposit_interpretation_pending', label: '예치율 적용 검토 · 계산 보류', note: '자료 해석·연결 보류이며 정부의 최종결과 대기가 아닙니다.' };
+    basic.next_step = '기업별 현행 예치 지침 확인·계산 연결 필요';
+  }
+  return basic;
+}
+
 export function productVerification(product, country = 'KOR') {
   const row = rows[product];
   if (!row) return null;
   const result = structuredClone({ product, checked_on: KOREA_AD_REVIEW.checked_on, ...row });
   result.ad = country === 'KOR' ? { ...result.ad, country: 'KOR', review: structuredClone(KOREA_AD_REVIEW) }
     : { status: 'origin_not_reviewed', country: country || null, rate_pct: null, case_ids: [], label: '이 원산지의 AD/CVD 검토 자료 미수록', note: '한국산 검토 결과를 다른 원산지 또는 미선택 원산지에 적용하지 않습니다.' };
+  result.coverage = adCoverageStatus(product, country);
   return result;
 }
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const link = s => `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)} ↗</a>`;
+export function coverageStatusMarkup(product, country = 'KOR') {
+  const c = adCoverageStatus(product, country);
+  return `<section class="ts-basis" data-ad-coverage><h3>자료·공식 절차·계산 연결</h3>${[['research','자료 조사'],['procedure','공식 절차'],['integration','계산 연결']].map(([key,label]) => `<p data-coverage-${key}="${esc(c[key].state)}"><b>${label}: ${esc(c[key].label)}</b><br><small>${esc(c[key].note)}</small></p>`).join('')}<p class="ts-help">${c.checked_on ? `자료 확인 ${esc(c.checked_on)} · ` : ''}다음 확인: ${esc(c.next_step)}</p><small>자료 미확인과 정부 판정 대기는 다릅니다. ‘확인 필요’는 예약된 조사 일정이 아니며, 사건 미확인은 AD 면제·0% 판정이 아닙니다.</small></section>`;
+}
 export function verificationMarkup(product, country = 'KOR') {
   const r = productVerification(product, country);
   if (!r) return '';
-  return `<details class="ts-basis" data-product-verification><summary>공식 자료 확인 결과 · ${esc(r.checked_on)}</summary>
+  return `${coverageStatusMarkup(product, country)}<details class="ts-basis" data-product-verification><summary>공식 자료 확인 결과 · ${esc(r.coverage.checked_on || '조사 기록 없음')}</summary>
     ${r.classification ? `<p><b>품목 분류:</b> ${esc(r.classification.hts ? `대표 HTS ${r.classification.hts} · 기본관세 ${r.classification.mfn_pct}%` : r.classification.label)}<br><small>${esc(r.classification.scope || r.classification.note)}</small></p><p>${r.classification.sources.map(link).join(' · ')}</p>` : ''}
     ${r.tariff ? `<p><b>관세 조건:</b> 한국·일본 승용차·경트럭용 지정 부품의 조건부 합산 ${r.tariff.total_pct}% 경로 확인<br><small>${esc(r.tariff.note)}</small></p><p>${r.tariff.sources.map(link).join(' · ')}</p>` : ''}
     <p><b>AD/CVD:</b> ${esc(r.ad.label)}${r.ad.case_ids.length ? ` · ${esc(r.ad.case_ids.join(' / '))}` : ''}<br><small>${esc(r.ad.note)}</small></p>

@@ -3,7 +3,7 @@ import { AD_DISCOVERY } from './antidumping-discovery-snapshot.mjs';
 import { industryMonitorMarkup } from './industry-monitor.mjs';
 import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
 import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES, companyCalibration } from './company-profiles.mjs';
-import { productVerification, verificationMarkup } from './product-verification.mjs';
+import { productVerification, verificationMarkup, adCoverageStatus, coverageStatusMarkup } from './product-verification.mjs';
 import { lookupAD, depositPer100k, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, caseReviewRecords, reviewProgress } from './antidumping-guide.mjs';
@@ -104,8 +104,8 @@ function companySearchResults() {
   return `<p class="ts-help" role="status">${query ? `검색 결과 ${matches.length}개` : `추가 법인 ${matches.length}개`} · 회사 규모·시장점유율 순위가 아닙니다.</p><div class="ts-ad-companies">${matches.map(companyButton).join('')}</div>`;
 }
 function verificationLabel(product) {
-  const v = productVerification(product);
-  return v?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건·마진 확인 · 예치율 검토' : v?.ad.status === 'related_scope_review_required' ? '관련 조사 확인 · 제품 범위 검토' : v?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 조사 근거 연결 · 대응 사건 미확인' : v ? '한국 사건 목록 검토 · 예치율 미확정' : 'AD 공고·세율 미확인';
+  const c = adCoverageStatus(product);
+  return `${c.research.label} · ${c.procedure.label}`;
 }
 function processSelection() {
   const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
@@ -137,7 +137,7 @@ function coverageGap() {
   const productSource = p ? companyCalibration(profileId, industry.product).selected_product_source?.url : null;
   const verification = productVerification(industry.product);
   const gap = verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : verification?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 공식 조사 근거 연결 · 한국산 대응 사건·기업별 예치율 미확인. 아래에서 다른 제품·원산지 사건의 구분 근거를 볼 수 있습니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
-  return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? `<p class="ts-help" data-verification-status>${esc(verification.ad.label)}</p>` : ''}${verificationMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
+  return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? verificationMarkup(industry.product) : coverageStatusMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
   if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">확인한 공식 공고·관세 근거는 아래에 표시합니다. AD 예치율이나 기업별 적용이 미확정이어도 공고를 볼 수 있으며, 다른 제도의 공고로 AD 단계 불을 켜지 않습니다.</p></section>`;
