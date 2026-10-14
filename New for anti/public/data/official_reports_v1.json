@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-14T04:59:30.096271+00:00",
+  "generated_at": "2026-10-14T13:46:22.645810+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 163,
-    "scored": 163,
+    "raw_items": 164,
+    "scored": 164,
     "selected": 40,
-    "indicators": 16
+    "indicators": 17
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 15,
+      "count": 16,
       "error": null,
       "mode": "live"
     },
@@ -218,6 +218,20 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "published_at": "2026-10-14T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -1017,40 +1031,6 @@
       "site_slot": null
     },
     {
-      "id": "0e9e2aac6e07abd2",
-      "published_at": "2026-09-30T07:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/paym/bond/ryudo.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Liquidity Indicators in the JGB Markets (August)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Liquidity Indicators in the JGB Markets (August)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "84cc3b6aaffb1d3e",
       "published_at": "2026-10-13T18:00:00+00:00",
       "source": {
@@ -1364,6 +1344,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "6f49a6abf07d895d",
+      "published_at": "2026-10-14T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "c3cb82874b9fd8f1",
@@ -2576,40 +2591,6 @@
       "site_slot": null
     },
     {
-      "id": "0e9e2aac6e07abd2",
-      "published_at": "2026-09-30T07:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/paym/bond/ryudo.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Liquidity Indicators in the JGB Markets (August)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Liquidity Indicators in the JGB Markets (August)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "84cc3b6aaffb1d3e",
       "published_at": "2026-10-13T18:00:00+00:00",
       "source": {
@@ -2923,6 +2904,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "6f49a6abf07d895d",
+      "published_at": "2026-10-14T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "c3cb82874b9fd8f1",
