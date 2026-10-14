@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 import copy,hashlib,io,json,unittest
 from pathlib import Path
 from election_watch.live_polls import normalize,summarize
@@ -10,7 +11,7 @@ from election_watch.polls import read
 class AlaskaPrimaryTests(unittest.TestCase):
  def setUp(self):
   self.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/AK-primary-20261009.json')
-  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),DAY)
+  self.policy=apply_targets(apply_matchups(read(C/'live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'targets_2026.json'),read(C/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
   self.policy['quality_reviews']=read(C/'quality_reviews_2026.json')['reviews'];self.rows=[r['provider_record'] for r in self.audit['records']]
  def current(self):
   obs,held=normalize(self.rows,self.policy,DAY);self.assertFalse(held);self.assertEqual(len(obs),6);return obs
