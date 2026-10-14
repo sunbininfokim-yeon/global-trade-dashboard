@@ -1,7 +1,8 @@
+import { senateCurrentHtml } from './usa-senate-current.js';
 import { escapeHtml } from '../../ui.js';
-import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=4';
+import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=5';
 
-import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js?v=2';
+import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js?v=3';
 import { electionMatchup } from '../../data/election-matchups.js';
 
 // Every figure here is independent expenditure: money outside groups spent of
@@ -155,11 +156,13 @@ const raceBody = (race, view) => `
 // badge cannot be read as an election result.
 const badgeCaption = '<span class="elections-spac-caption">누적 지지지출 우세</span>';
 
-const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true, contestKnown = null, matchup = null) => {
+const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, days, showPolls = true, contestKnown = null, matchup = null, state = null) => {
+    const current = label === '연방 상원의원' ? senateCurrentHtml(state) : '';
+    const incumbents = state?.federal_delegation?.senators || [];
     if (!race) return `
         <section class="elections-spac-block" data-spac-office="${label === '주지사' ? 'governor' : 'senate'}">
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">${contestKnown === false ? '2026 선거 없음' : contestKnown === true ? '자금 자료 연결 대기' : '선거·자료 확인 대기'}</span></div>
-            ${contestKnown === false ? '' : candidateMatchupHtml(pollRace,null,contract,pollBoard,pollHealth,days,{showPolls,matchup})}
+            ${current}${contestKnown === false ? '' : candidateMatchupHtml(pollRace,null,contract,pollBoard,pollHealth,days,{showPolls,matchup,incumbents})}
         </section>`;
     const notRegular = contestKnown === false || (pollBoard?.excluded_watch_slots || []).some((slot) => slot.race_id === race.race_id);
     const polling = notRegular ? '<p class="elections-panel-note">2026 정기선거 없음 · 특별선거는 별도 확인. 아래 금액은 공시 기록입니다.</p>'
@@ -173,7 +176,7 @@ const statewideBlock = (label, race, contract, pollRace, pollBoard, pollHealth, 
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}${unverified ? ' · 2026 선거 미확인' : ''}</span>
                 ${missing ? '<span class="elections-spac-badge is-none">자금 자료 연결 대기</span>' : unsupported ? '<span class="elections-spac-badge is-none">주 공시 미수집</span>' : `${badgeCaption}${winnerBadge(race, view.categories)}`}</div>
             ${unverified ? '<p class="elections-panel-note">이 주의 해당 직위에 2026 선거가 있는지 검증 전입니다. 공시 금액은 선거자금 기록으로만 읽어주세요.</p>' : ''}
-            ${notRegular ? polling : candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls,matchup })}
+            ${current}${notRegular ? polling : candidateMatchupHtml(pollRace, race, contract, pollBoard, pollHealth, days, { showPolls,matchup,incumbents })}
             ${missing ? financeEvidenceHtml(null, contract) : unsupported ? '<p class="elections-panel-note">독립지출 금액은 수집 미지원이며, 0달러나 지출 없음으로 해석할 수 없습니다.</p>' : raceBody(race, view)}
         </section>`;
 };
@@ -273,7 +276,7 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
             후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
             ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:governor`) : null)}
-            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:senate`) : null, electionMatchup(state,`USA:${state.id}:senate`,pollFor(senate)))}
+            ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:senate`) : null, electionMatchup(state,`USA:${state.id}:senate`,pollFor(senate)), state)}
         </section>
         <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days, { showPolls })}
         </section>

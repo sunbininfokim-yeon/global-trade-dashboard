@@ -1,3 +1,4 @@
+import { basisMarkup, marketCalibration } from './default-basis.mjs';
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput, elasticityCalibration } from './policy-catalog.mjs';
 import { companyMarkup, mountCompany, selectCompanyProfile } from './company-view.mjs';
@@ -18,7 +19,7 @@ let stylePromise;
 export function prepare() {
   if (!stylePromise) stylePromise = new Promise((resolve, reject) => {
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=6', import.meta.url).href;
+    link.rel = 'stylesheet'; link.href = new URL('./style.css?v=7', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('시뮬레이터 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -79,6 +80,9 @@ function editor() {
     </div>
     <p class="ts-product-scope"><b>대표 HTS ${esc(profile.hts || '직접 정의')}</b><br>${esc(profile.scope)}</p>${profile.classification_checked_on ? `<p class="ts-help" data-classification-basis>품목 분류·기본 관세 확인 ${profile.classification_checked_on} · <a href="https://hts.usitc.gov/search?query=${encodeURIComponent(profile.hts)}" target="_blank" rel="noopener noreferrer">USITC HTS 원문 ↗</a>. 이 날짜는 다른 품목의 관세·통계 갱신일이 아닙니다.</p>` : ''}
     ${verificationMarkup(draft.product, draft.focus)}
+    ${basisMarkup([{label:'관세 경로',kind:'official_reference',note:'검토 시점의 조건부 공식 근거입니다. 현재 모든 추가세·예외 적용을 확정하지 않습니다.'},
+      {label:'시장 구매액·공급탄력성',kind:'user_assumption',note:'50/25/25는 계산 예시. 수정 후에도 실측 시장 비중으로 자동 인증되지 않습니다. 공급탄력성 미국1.5/해외3은 산업 평균이 아닙니다.'}])}
+    <p class="ts-unverified" data-market-calibration>실제 시장 보정 미완료 · ${marketCalibration(draft.product,SUPPLIER_SNAPSHOT).blockers.join(' / ')}. 공식 수입 통계를 이 구매액에 자동 대입하지 않습니다.</p>
     <div class="ts-section-label"><h3>시장·공급국</h3><span>구매액 단위: 백만 달러</span></div>
     <p class="ts-help" data-purchase-help>기준 구매액은 관세 변경 전 기준 기간에 미국 구매자가 각 공급국의 해당 품목에 쓴 관세 포함 금액입니다. 한국 행의 25는 2,500만 달러입니다. 미국 행에는 미국산 제품 구매액을 넣습니다.</p>
     <div class="ts-scroll"><table class="ts-input-table"><caption class="ts-sr">같은 품목·기간·관세 포함 구매액을 입력하세요.</caption>
@@ -87,8 +91,8 @@ function editor() {
         const countries = Object.fromEntries(Object.entries(COUNTRIES).filter(([key]) => key === row.country || !draft.rows.some(r => r.country === key)));
         return `<tr${row.country === draft.focus ? ' class="ts-focus-row"' : ''}>
           <td><select data-row="${i}" data-field="country" aria-label="공급국 ${i + 1}">${options(countries, row.country)}</select></td>
-          <td>${numberInput(row.expenditure, `data-row="${i}" data-field="expenditure" min="0.000001" max="1000000000" aria-label="${name(row.country)} 기준 구매액"`)}</td>
-          <td>${numberInput(row.supply_elasticity, `data-row="${i}" data-field="supply_elasticity" min="0" max="100" aria-label="${name(row.country)} 공급탄력성"`)}</td>
+          <td>${numberInput(row.expenditure, `data-row="${i}" data-field="expenditure" min="0.000001" max="1000000000" aria-label="${name(row.country)} 기준 구매액"`)}<small data-row-purchase-basis="${i}">${row.purchase_origin === 'editable_example' ? '계산 예시' : '사용자 가정 · 실측 미검증'}</small></td>
+          <td>${numberInput(row.supply_elasticity, `data-row="${i}" data-field="supply_elasticity" min="0" max="100" aria-label="${name(row.country)} 공급탄력성"`)}<small>사용자 가정 · 산업값 미검증</small></td>
           <td><button type="button" class="ts-remove" data-remove="${i}" aria-label="${name(row.country)} 제거"${draft.rows.length <= 2 ? ' disabled' : ''}>×</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>
@@ -125,6 +129,9 @@ function results() {
     <p>${esc(PRODUCTS[r.inputs.product]?.label || r.inputs.product)} · ${esc(r.inputs.period)} · 관세 ${fmt(input.tariff_before, 1)}% → ${fmt(input.tariff_after, 1)}%</p></div>
     <button type="button" class="ts-export" data-export${dirty ? ' disabled' : ''}>결과 JSON 저장</button></div>
     <p class="ts-stale" data-stale role="status"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 아래는 이전 계산 결과입니다. 다시 계산하세요.</p>
+    ${basisMarkup([{label:'시장 비중',kind:'user_assumption',note:'실제 시장 보정 미완료. 가상 초기값이나 사용자가 수정한 구매액에 따른 결과입니다.'},
+      {label:'대체탄력성',kind:r.inputs.calibration?.elasticity?.sigma.kind,note:r.inputs.calibration?.elasticity?.sigma.scope || '검증된 산업 문헌값 미확보'},
+      {label:'수요탄력성',kind:r.inputs.calibration?.elasticity?.eta.kind,note:r.inputs.calibration?.elasticity?.eta.scope || '검증된 산업 문헌값 미확보'}])}
     <div class="ts-calculated${dirty ? ' is-stale' : ''}" data-calculated>
       <div class="ts-kpis">
         <div><span>${esc(country)} 판매량</span><strong class="${focus.volume_change_pct < 0 ? 'ts-down' : 'ts-up'}">${signed(focus.volume_change_pct)}<small>%</small></strong><small>미국 시장 내 물량 변화</small></div>
@@ -151,6 +158,7 @@ function results() {
           ${s.status === 'calculated' ? `<strong>${signed(s.volume_change_pct)}%</strong><small>${esc(country)} 판매량</small>` : '<strong>계산 불가</strong>'}</div>`).join('')}</div>
         <p class="ts-help">가능한 가정을 비교한 값입니다. 발생 확률이나 통계적 신뢰구간이 아닙니다.</p>
       </section>
+      ${r.scenario_range ? `<section class="ts-result-block" data-scenario-range><h3>가정 조합별 결과 범위</h3><p>${r.scenario_range.volume_change_pct ? `${esc(country)} 판매량 변화 ${signed(r.scenario_range.volume_change_pct.min)}% ~ ${signed(r.scenario_range.volume_change_pct.max)}%` : '유효한 비교 결과 미확보'}</p><p class="ts-help">${r.scenario_range.note} 대체·수요탄력성은 각 값의 문헌 범위가 있으면 해당 범위를, 없으면 입력값의 0.5/1/1.5배 민감도 가정을 사용합니다. 공급탄력성 0.5/1/1.5배는 사용자 가정입니다. 계산 ${r.scenario_range.calculated}건 / 불가 ${r.scenario_range.unavailable}건.</p><details><summary>조합별 입력·결과</summary><div class="ts-scroll"><table class="ts-output-table"><thead><tr><th>σ</th><th>η</th><th>공급탄력성 배수</th><th>판매량 변화</th></tr></thead><tbody>${r.scenario_range.trials.map(t=>`<tr><td>${fmt(t.sigma)}</td><td>${fmt(t.eta)}</td><td>${fmt(t.supply_multiplier)}</td><td>${t.status==='calculated'?`${signed(t.volume_change_pct)}%`:'계산 불가'}</td></tr>`).join('')}</tbody></table></div></details></section>` : ''}
       <details class="ts-explainer ts-market-totals"><summary>미국 품목시장·관세수입</summary>
         <dl><div><dt>CES 집계 수량지수 변화</dt><dd>${signed(r.market_quantity_change_pct)}%</dd></div>
           <div><dt>관세 포함 전체 구매액</dt><dd>${fmt(r.spending_before)} → ${fmt(r.spending_after)} 백만 달러</dd></div>
@@ -221,6 +229,7 @@ function mountCountry(root) {
     if (el.dataset.row !== undefined) {
       const row = draft.rows[Number(el.dataset.row)], field = el.dataset.field, old = row.country;
       row[field] = el.value;
+      if (field === 'expenditure') { row.purchase_origin = 'user_assumption'; root.querySelector(`[data-row-purchase-basis="${el.dataset.row}"]`).textContent = '사용자 가정 · 실측 미검증'; }
       if (['country', 'baseline_policy', 'scenario_policy', 'manual_before', 'manual_after', 'extra_duty', 'tariff_note'].includes(field)) unconfirm();
       if (field === 'country') {
         draft.rows[Number(el.dataset.row)] = newRow(draft.product, el.value, row.expenditure);

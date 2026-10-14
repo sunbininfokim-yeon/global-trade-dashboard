@@ -14,6 +14,10 @@ POLLING_PATHS = frozenset({
 ELECTION_UI_BRANCH = 'codex/usa-election-ui'
 ELECTION_UI_PATHS = frozenset({'New for anti/index.html', 'New for anti/style.css'})
 
+# User explicitly requested polling and Senate UI on October 14; only these
+# two existing shared UI files. No app.js, Worker or workflow permission.
+POLL_UI_BRANCH = 'codex/election-poll-ui-20261014'
+
 # User explicitly requested daily polling Actions on 2026-10-08.
 # Only the polling collector is in scope; this grants no permission to change
 # deploy.yml, merge, dispatch production collection or deploy.
@@ -52,6 +56,7 @@ COMMODITY_OPS_PATHS = frozenset({
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
+            POLL_UI_BRANCH: ELECTION_UI_PATHS,
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
             STATE_INTEGRATION_BRANCH: DAILY_POLLING_PATHS,
             STATE_RESEARCH_RULES_BRANCH: DAILY_POLLING_PATHS,

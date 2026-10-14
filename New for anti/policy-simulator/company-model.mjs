@@ -36,7 +36,7 @@ export function validateCompany(input) {
   if (config.capacity != null && config.capacity < config.quantity) throw new Error('최대 공급 가능 물량은 기준 판매량 이상이어야 합니다.');
   if (config.response_mode === 'country') {
     if (!input.country_inputs || input.country_inputs.product !== config.product) throw new Error('같은 품목으로 계산한 국가 결과를 먼저 연결하세요.');
-    const market = simulateCountry(input.country_inputs), row = market.rows.find(r => r.country === config.origin);
+    const market = simulateCountry(input.country_inputs, false), row = market.rows.find(r => r.country === config.origin);
     const sourceRow = market.inputs.rows.find(r => r.country === config.origin);
     if (!row || Math.abs(sourceRow.tariff_before - config.tariff_before) > 1e-9 || Math.abs(sourceRow.tariff_after - config.tariff_after) > 1e-9) throw new Error('국가 결과의 원산지·관세가 기업 입력과 다릅니다. 국가에서 다시 계산해 연결하세요.');
     config.country_proxy = { inputs: market.inputs, model_version: market.model_version, row: structuredClone(row), market_price_change_pct: market.market_price_change_pct, max_log_residual: market.checks.max_log_residual };
@@ -86,7 +86,9 @@ export function simulateCompany(input) {
   const c = validateCompany(input), out = solve(c);
   const sensitivity = c.response_mode === 'manual' ? [...new Set([0, 25, 50, 75, 100, c.absorption_pct])].sort((a, b) => a - b).map(absorption => ({ absorption_pct: absorption, ...solve(c, absorption) })) : [];
   const { country_proxy, ...inputs } = c;
-  return { model_version: COMPANY_MODEL_VERSION, unit: 'USD; quantity in user-defined homogeneous product units', inputs,
+  const response_scenarios = sensitivity.filter(s => [0,50,100].includes(s.absorption_pct)).map(s=>({...s,label:s.absorption_pct===0?'흡수 없음':s.absorption_pct===50?'일부 흡수 가정':'전액 흡수 가정'}));
+  return { model_version: COMPANY_MODEL_VERSION, capacity_status: c.capacity == null ? 'unbounded_assumption' : 'user_supplied_cap',
+    input_basis: { transactions:'user_input_not_independently_verified', response: c.response_mode==='country'?'country_average_proxy':'user_assumption' }, response_scenarios, unit: 'USD; quantity in user-defined homogeneous product units', inputs,
     ...(country_proxy ? { country_proxy } : {}), ...out, sensitivity,
     checks: { profit_identity_error: out.profit_after - ((out.price_after - out.unit_cost_after) * out.quantity_after - c.fixed_cost),
       buyer_price_identity_error: out.buyer_price_after - out.price_after * (1 + c.tariff_after / 100) },

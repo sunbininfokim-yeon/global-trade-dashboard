@@ -21,6 +21,7 @@
     "fertilizer",
     "urea",
     "phosphate",
+    "potash",
     "cotton",
     "beef",
     "pork",
@@ -51,6 +52,19 @@
     "germanium",
     "antimony",
     "tungsten",
+    "molybdenum",
+    "indium",
+    "fluorite",
+    "magnesium",
+    "titanium",
+    "tantalum",
+    "niobium",
+    "vanadium",
+    "quartz",
+    "silicon_metal",
+    "polysilicon",
+    "superhard",
+    "neon",
     "iron_ore",
     "manganese",
     "chromium",
@@ -63,6 +77,22 @@
     "diamonds",
     "ferroalloys"
   ],
+  "commodity_labels_ko": {
+    "quartz": "고순도 석영·규사(반도체용 모래)",
+    "silicon_metal": "금속규소",
+    "polysilicon": "폴리실리콘",
+    "indium": "인듐",
+    "molybdenum": "몰리브덴",
+    "fluorite": "형석",
+    "magnesium": "마그네슘",
+    "titanium": "티타늄",
+    "tantalum": "탄탈럼",
+    "niobium": "니오븀",
+    "vanadium": "바나듐",
+    "superhard": "초경질재료",
+    "neon": "네온",
+    "potash": "염화칼륨"
+  },
   "excluded_entrepots": [
     {
       "iso": "NLD",
@@ -136,6 +166,15 @@
         "petroleum_products"
       ],
       "why": "석유제품 혼재·재수출에 자체 제한이 걸릴 수 있다. 원유 생산국 목록에는 넣지 않는다."
+    },
+    {
+      "iso": "BLR",
+      "name": "Belarus",
+      "category": "agri",
+      "commodities": [
+        "potash"
+      ],
+      "why": "염화칼륨 주요 수출국이고 수출 제한 이력이 있다. 농산물 30개국에는 없다."
     }
   ],
   "categories": {
@@ -211,7 +250,8 @@
           "commodities": [
             "wheat",
             "rapeseed",
-            "pork"
+            "pork",
+            "potash"
           ]
         },
         {
@@ -252,7 +292,8 @@
             "barley",
             "corn",
             "sunflower_oil",
-            "sunflower_seed"
+            "sunflower_seed",
+            "potash"
           ]
         },
         {
@@ -426,7 +467,19 @@
             "germanium",
             "aluminum",
             "tin",
-            "gold"
+            "gold",
+            "antimony",
+            "tungsten",
+            "molybdenum",
+            "indium",
+            "fluorite",
+            "magnesium",
+            "titanium",
+            "vanadium",
+            "quartz",
+            "silicon_metal",
+            "polysilicon",
+            "superhard"
           ]
         },
         {
@@ -437,7 +490,9 @@
             "bauxite",
             "gold",
             "lithium",
-            "copper"
+            "copper",
+            "titanium",
+            "tantalum"
           ]
         },
         {
@@ -445,7 +500,8 @@
           "name": "Chile",
           "commodities": [
             "copper",
-            "lithium"
+            "lithium",
+            "molybdenum"
           ]
         },
         {
@@ -455,7 +511,8 @@
             "copper",
             "gold",
             "zinc",
-            "silver"
+            "silver",
+            "molybdenum"
           ]
         },
         {
@@ -466,7 +523,10 @@
             "gold",
             "palladium",
             "platinum",
-            "aluminum"
+            "aluminum",
+            "titanium",
+            "vanadium",
+            "neon"
           ]
         },
         {
@@ -474,7 +534,9 @@
           "name": "United States",
           "commodities": [
             "copper",
-            "gold"
+            "gold",
+            "quartz",
+            "molybdenum"
           ]
         },
         {
@@ -483,7 +545,9 @@
           "commodities": [
             "iron_ore",
             "bauxite",
-            "gold"
+            "gold",
+            "niobium",
+            "tantalum"
           ]
         },
         {
@@ -495,7 +559,8 @@
             "gold",
             "manganese",
             "chromium",
-            "iron_ore"
+            "iron_ore",
+            "vanadium"
           ]
         },
         {
@@ -540,7 +605,8 @@
           "commodities": [
             "silver",
             "gold",
-            "copper"
+            "copper",
+            "fluorite"
           ]
         },
         {
@@ -549,7 +615,8 @@
           "commodities": [
             "iron_ore",
             "aluminum",
-            "zinc"
+            "zinc",
+            "quartz"
           ]
         },
         {
@@ -586,7 +653,8 @@
           "name": "Mongolia",
           "commodities": [
             "copper",
-            "gold"
+            "gold",
+            "fluorite"
           ]
         },
         {
@@ -662,7 +730,9 @@
           "iso": "UKR",
           "name": "Ukraine",
           "commodities": [
-            "iron_ore"
+            "iron_ore",
+            "titanium",
+            "neon"
           ]
         },
         {

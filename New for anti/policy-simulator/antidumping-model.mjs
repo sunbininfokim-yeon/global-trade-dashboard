@@ -35,6 +35,9 @@ export function lookupAD(input, catalog = AD_CATALOG) {
   return { ...base, ...evidence, status: 'published_reference', rate_pct: rate.deposit_rate_pct ?? (Number(rate.margin_pct) < 0.5 ? '0' : rate.margin_pct),
     effective: segment.cash_deposit_effective, reason: segment.reason };
 }
+export function depositPer100k(rate) {
+  return money(100000n * SCALE * decimal(rate, 'AD 예치 참고율', 0, 10000), SCALE * SCALE * 100n);
+}
 export function simulateDeposit(input) {
   if (input.scope_confirmed !== true) throw new Error('제품 범위와 실제 원산지의 포함 조건을 확인해 주세요.');
   if (input.identity_confirmed !== true) throw new Error('생산자·수출자의 법인명과 공고의 예치율 적용 조건을 확인해 주세요.');
@@ -61,6 +64,8 @@ export function simulateDeposit(input) {
   const denominator = SCALE * SCALE * 100n;
   const financingDenominator = denominator * SCALE * SCALE * 100n * 365n;
   return { model_version: AD_MODEL_VERSION, status: 'calculated', unit: 'USD', reference,
+    normalized_reference: { entered_value_usd:'100000', reference_deposit_usd:depositPer100k(reference.rate_pct), scenario_deposit_usd:depositPer100k(input.scenario_rate_pct), kind:'unit_comparison_not_actual_transaction' },
+    input_basis: { rate: mode==='published'?'conditional_published_reference':'user_verified_reference', finance_and_period:'user_assumption', comparison_rate:'user_scenario' },
     inputs: { reference_mode: mode, entry_date: entry, entered_value_usd: String(input.entered_value_usd), scenario_rate_pct: String(input.scenario_rate_pct), annual_finance_pct: String(input.annual_finance_pct), holding_days: String(input.holding_days), scope_confirmed: true, identity_confirmed: true },
     reference_deposit_usd: money(value * before, denominator), scenario_deposit_usd: money(value * after, denominator), deposit_change_usd: money(value * (after - before), denominator),
     reference_financing_cost_usd: money(value * before * finance * days, financingDenominator), scenario_financing_cost_usd: money(value * after * finance * days, financingDenominator), financing_change_usd: money(value * (after - before) * finance * days, financingDenominator),

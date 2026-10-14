@@ -176,3 +176,13 @@ git push -u origin codex/country-tariff-simulator-20261011
 - 계산 사건 여부와 모니터 자료를 분리. 새 industry-monitor.mjs로 AD미등록17품목 연결. 자동차7/한국232 2025-21940(발행12/4·PartA통관11/1), OCTG2026-19529 최종결과, 현가 관련 유압실린더2026-18706/19374. 8품목은 선별공고·9품목은 기존 정책/분류/기업 근거만 연결. 전수 최신 수집·예치율 확정 아님.
 - 원산지/제품 격리·공고순서·분류 출처·회사 근거, calculation_enabled:false. 기존 AD5/법인33/세율·단계 변경 없음. Node95·소유권7·preview asset map 통과. 실제 mount 이벤트 메모리 하네스 전환 검증, 새 브라우저 스모크/화면은 미완료(기존 오류탭 정책거부로 우회 안함).
 - localhost:8773 preview 새 모듈 등록 후 재시작. docs/industry-monitor-connections.md, 같은 PR#528 후속. 운영배포/DB/수집/메일/유료AI 없음.
+
+
+### 2026-10-14 예약 기본값 보강
+- #528 병합(merge16c82ccd/headc24801d9) 확인. 예약 보강은 codex/simulator-default-basis-20261014로 분리. 최신main9d7e79d1과 관련모듈/preview/핵심테스트 동일 확인, 추가 AGENTS 선거규칙 읽음(이번 작업 비해당). 기존 사용자 .DS_Store 보존.
+- default-basis.mjs: 공식근거/문헌/대용/예시/사용자가정 표시, 구매액 예시·편집 가정 분리, market_calibration 미보정/국내공급null. DataWeb2025HS6 통관가액/USITC60MVA/ASM 산업출하 기준 불일치로 임의 시장 비중 보정 안함.
+- 기존 기준 결과/σ단독 유지, σ/η/공급탄력성 최대27조건부조합·성공범위/실패건수. 문헌범위 없는 값과 공급탄력성 배수는 명시적 가정. 기업 기존민감도에서0/50/100 대응·공급제약 미반영, 원산지평균proxy 보존.
+- AD선택법인/통관일 기준10만USD당 단위예치액·정확한고정소수점·미확인/미래일null 유지. 5%/365/+5%p 업계평균아님.
+- Node101·소유권7·preview assetmap·구문/공백 통과. 실제브라우저 스모크/스크린샷 미완료, 기존 오류탭 정책거부 우회 안함. docs/simulator-default-basis-20261014.md. 기존 수집/DB/메일/유료AI/main병합/배포 없음.
+
+- 후속 PR#547 초안 생성(e766d0d5). 최신main d5d710e6 합류(9659af67), TASKS 단일충돌은 main 다른행+자기T51만 보존해 해결. 사용자3개 .DS_Store 해시불변 확인. PRdiff13개 자체파일만 유지, Node101 재통과.

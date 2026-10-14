@@ -156,6 +156,29 @@ export function simulate(input, includeSensitivity = true) {
         return { sigma, status: 'calculated', volume_change_pct: focus.volume_change_pct, revenue_change_pct: focus.revenue_change_pct };
       } catch (err) { return { sigma, status: 'unavailable', reason: err.message }; }
     });
+  if (includeSensitivity) {
+    const axis = (value, parameter, low, high) => {
+      const range = parameter?.kind !== 'user_assumption' && Array.isArray(parameter?.range) && parameter.range.length === 2
+        && parameter.range.every(x => Number.isFinite(x) && x >= low && x <= high) ? parameter.range : null;
+      return { values: [...new Set(range ? [...range, value] : [Math.min(high, Math.max(low, value * .5)), value, Math.min(high, Math.max(low, value * 1.5))])].sort((a,b)=>a-b),
+        kind: range ? parameter.kind : 'user_assumption', source: range ? parameter.source || null : null };
+    };
+    const sigma = axis(config.sigma, config.calibration?.elasticity?.sigma, .1, 20);
+    const eta = axis(config.eta, config.calibration?.elasticity?.eta, -10, -.05);
+    const trials = [];
+    for (const s of sigma.values) for (const e of eta.values) for (const multiplier of [.5, 1, 1.5]) {
+      try {
+        const trial = solve({ ...config, sigma: s, eta: e, rows: config.rows.map(r=>({...r,supply_elasticity: Math.min(100, r.supply_elasticity * multiplier)})) });
+        const focus = trial.rows.find(r=>r.country===config.focus);
+        trials.push({ sigma:s, eta:e, supply_multiplier:multiplier, status:'calculated', volume_change_pct:focus.volume_change_pct, revenue_change_pct:focus.revenue_change_pct });
+      } catch(err) { trials.push({ sigma:s, eta:e, supply_multiplier:multiplier, status:'unavailable', reason:err.message }); }
+    }
+    const valid = trials.filter(t=>t.status==='calculated');
+    const extent = key => valid.length ? { min:Math.min(...valid.map(t=>t[key])), max:Math.max(...valid.map(t=>t[key])) } : null;
+    result.scenario_range = { kind:'conditional_scenario_envelope', axes:{sigma,eta,supply_multiplier:{values:[.5,1,1.5],kind:'user_assumption'}},
+      trials, calculated:valid.length, unavailable:trials.length-valid.length, volume_change_pct:extent('volume_change_pct'), revenue_change_pct:extent('revenue_change_pct'),
+      note:'문헌 범위 또는 명시적 민감도 가정의 조합입니다. 통계적 신뢰구간·발생 확률·산업 표준 범위가 아닙니다. 계산 불가 조합은 표시 범위에서 제외합니다.' };
+  }
   return result;
 }
 

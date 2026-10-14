@@ -4,7 +4,7 @@ import { industryMonitorMarkup } from './industry-monitor.mjs';
 import { noticeReviewMarkup } from './antidumping-notice-view.mjs';
 import { COMPANY_INDUSTRIES, COMPANY_PROFILES, INDUSTRY_FAMILIES, companyCalibration } from './company-profiles.mjs';
 import { productVerification, verificationMarkup } from './product-verification.mjs';
-import { lookupAD, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
+import { lookupAD, depositPer100k, simulateDeposit, nonSelectedScenario, AD_MODEL_VERSION } from './antidumping-model.mjs';
 import { firstFormIssue, clearFormErrors, showFormError } from './form-validation.mjs';
 import { createADExample, describeADInputs, AD_GUIDE_FIELDS, AD_PROCESS_SOURCES, AD_PROCESS_STEPS, reviewRecords, caseReviewRecords, reviewProgress } from './antidumping-guide.mjs';
 
@@ -44,6 +44,11 @@ export function selectAntidumping({ case_id, company_id }) {
 function input(key, label, { type = 'number', min = '0', max = '10000', value = draft[key], help = '', step = '0.000001', required = true } = {}) {
   return `<label>${label}<input data-ad-key="${key}" aria-label="${label}" type="${type}" value="${esc(value)}"${type === 'number' ? ` min="${min}" max="${max}" step="${step}"` : ''}${type === 'text' ? ' maxlength="500"' : ''}${required ? ' required' : ''}>${help ? `<small>${help}</small>` : ''}</label>`;
 }
+function unitReferencePanel() {
+  if (overview || draft.reference_mode !== 'published' || !hasADCase()) return '';
+  let r; try { r = lookupAD(draft); } catch { return ''; }
+  return `<p class="ts-basis" data-ad-unit-reference><b>신고가격 10만 USD당 예치 참고액: ${r.rate_pct == null ? '미확인' : `$${money(depositPer100k(r.rate_pct))}`}</b><br><small>선택 법인·통관 가정일의 조건부 공표 참고율 기준. 실제 거래액·최종 관세 아님. 제품·법인 조건 추가 확인 필요.</small></p>`;
+}
 function referencePanel() {
   if (draft.reference_mode === 'manual') return `<div class="ts-fields">
     ${input('manual_case_id', 'AD 사건번호', { type: 'text', help: 'A-000-000 · 공고에서 확인한 사건' })}${input('company_name', '생산자·수출자 법인명', { type: 'text' })}
@@ -67,7 +72,7 @@ function history() {
 }
 function editor() {
   if (!hasADCase()) return '<p class="ts-help">기업별 예치율 미확정 · 위 공식 자료 확인 결과를 참고하세요.</p>';
-  return `<form data-ad-form novalidate><div class="ts-ad-example"><b>거래 예시</b><p>선택한 품목에 계산용 거래 총액을 넣었습니다. 금리·기간·비교율은 산업 평균이나 해당 회사의 실제 값이 아닙니다. 직접 입력으로 바꿀 수 있습니다.</p><button type="button" data-ad-example>품목 예시 적용</button><div data-ad-input-guide>${inputGuide()}</div></div><label>예치율 근거<select data-ad-key="reference_mode" aria-label="예치율 근거"><option value="published"${draft.reference_mode === 'published' ? ' selected' : ''}>등록된 공식 공고</option><option value="manual"${draft.reference_mode === 'manual' ? ' selected' : ''}>다른 사건·기업 · 직접 확인한 예치율</option></select></label>
+  return `<form data-ad-form novalidate><div class="ts-ad-example"><b>계산 예시 · 업계 평균 아님</b><p>선택한 품목에 계산용 거래 총액을 넣었습니다. 금리·기간·비교율은 산업 평균이나 해당 회사의 실제 값이 아닙니다. 직접 입력으로 바꿀 수 있습니다.</p><button type="button" data-ad-example>품목 예시 적용</button><div data-ad-input-guide>${inputGuide()}</div></div><label>예치율 근거<select data-ad-key="reference_mode" aria-label="예치율 근거"><option value="published"${draft.reference_mode === 'published' ? ' selected' : ''}>등록된 공식 공고</option><option value="manual"${draft.reference_mode === 'manual' ? ' selected' : ''}>다른 사건·기업 · 직접 확인한 예치율</option></select></label>
     ${input('entry_date', '통관일', { type: 'date', help: `공식 공고 자료 확인일 ${catalog.checked_on}. POR와 통관 발효일은 다릅니다.` })}${referencePanel()}
     <h3>거래 금액·비교 예치율</h3><div class="ts-fields">${input('entered_value_usd', '대상 수입 신고가격 · USD', { min: '0.01', max: '1000000000000', help: '해당 거래 전체 금액. 1개 제품 가격·회사 매출과 다릅니다.' })}${input('scenario_rate_pct', '가정 AD 예치율 %', { help: '초기값: 공표 참고율 +5%p. 미래 판정 예측값이 아닙니다.' })}${input('annual_finance_pct', '연 금융비용률 %', { max: '100', help: '예시 5%. 실제 자금조달 금리로 수정. 0이면 미반영.' })}${input('holding_days', '예치 기간 · 일', { max: '36500', step: '1', help: '예시 365일. 재심 종료일·환급일을 뜻하지 않습니다.' })}</div>
     <div class="ts-ad-periods" aria-label="예치 기간 비교"><span>기간 가정 바꾸기</span>${[90, 365, 730].map(days => `<button type="button" data-ad-days="${days}">${days}일</button>`).join('')}</div>
@@ -100,7 +105,7 @@ function companySearchResults() {
 }
 function verificationLabel(product) {
   const v = productVerification(product);
-  return v?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건·마진 확인 · 예치율 검토' : v?.ad.status === 'related_scope_review_required' ? '관련 조사 확인 · 제품 범위 검토' : v ? '한국 사건 목록 검토 · 예치율 미확정' : 'AD 공고·세율 미확인';
+  return v?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건·마진 확인 · 예치율 검토' : v?.ad.status === 'related_scope_review_required' ? '관련 조사 확인 · 제품 범위 검토' : v?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 조사 근거 연결 · 대응 사건 미확인' : v ? '한국 사건 목록 검토 · 예치율 미확정' : 'AD 공고·세율 미확인';
 }
 function processSelection() {
   const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
@@ -131,7 +136,7 @@ function coverageGap() {
   const industry = selectedIndustry(), p = overview ? null : COMPANY_PROFILES[profileId];
   const productSource = p ? companyCalibration(profileId, industry.product).selected_product_source?.url : null;
   const verification = productVerification(industry.product);
-  const gap = verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
+  const gap = verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : verification?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 공식 조사 근거 연결 · 한국산 대응 사건·기업별 예치율 미확인. 아래에서 다른 제품·원산지 사건의 구분 근거를 볼 수 있습니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
   return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? `<p class="ts-help" data-verification-status>${esc(verification.ad.label)}</p>` : ''}${verificationMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
@@ -141,7 +146,7 @@ function processMarkup() {
   processRecordId = record?.id || '';
   const progress = record ? reviewProgress(draft.case_id, record.id, overview ? null : draft.company_id) : null, manual = !overview && draft.reference_mode === 'manual';
   return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>조사·재심·소송 진행</h2><span>진행 근거 확인 ${progress?.checked_on || catalog.checked_on}</span></div>
-    ${processSelection()}
+    ${processSelection()}${unitReferencePanel()}
     <div class="ts-ad-roles"><p><b>상무부</b><span>덤핑 여부·마진과 재심 결과</span></p><p><b>USITC</b><span>신규 조사 등의 미국 산업피해</span></p><p><b>CBP · 세관</b><span>예치금 수납·수입 건별 관세 정산</span></p><p><b>CIT · 항소법원</b><span>행정판단의 적법성 심사</span></p></div>
     <p class="ts-help">예치금은 최종 세금이 아닙니다. 재심·적용되는 법원 판단과 세관 정산에 따라 추가 납부 또는 환급이 생길 수 있습니다. 소송에서 졌다고 예치금 전액이 그대로 최종 관세가 되는 구조는 아닙니다.</p>
     ${!manual && progress ? `<label class="ts-ad-process-picker">진행을 볼 재심 대상 기간<select data-ad-process-record aria-label="진행을 볼 재심 대상 기간">${records.map(r => `<option value="${r.id}"${r.id === record.id ? ' selected' : ''}>${r.por_start} ~ ${r.por_end}${r.id === records[0].id ? ' · 수록 최신 기간' : ''}</option>`).join('')}</select></label><p class="ts-help">${esc(c.case_id)} · ${esc(c.product)} · 이 기간의 사건 진행 표시입니다. 위 통관일의 예치 참고율과 별개이며, 기간을 바꿔도 계산 세율은 바뀌지 않습니다. 기업별 재심 취소·후속 정정 등 미수록 변경은 추가 확인이 필요합니다.</p><div class="ts-ad-legend"><span>● 확인됨</span><span>● 수록 최신 근거</span><span>○ 미확인</span></div>${!overview && progress.status_event ? `<p class="ts-ad-rescinded" data-ad-rescinded><b>${progress.status_event.date} · 이 기업의 해당 POR 재심 철회</b><br>${esc(progress.status_event.note)} · ${link(catalog.documents[progress.status_event.source])}</p>` : ''}${processStepsMarkup(progress.stages)}
@@ -156,6 +161,7 @@ function output() {
   const r = result;
   return `<div data-ad-calculated class="${dirty ? 'is-stale' : ''}"><div class="ts-section-label"><h2>AD 현금예치 부담 비교</h2><button type="button" class="ts-export" data-ad-export${dirty ? ' disabled' : ''}>반덤핑 JSON 저장</button></div><p data-ad-stale class="ts-stale"${dirty ? '' : ' hidden'}>입력이 바뀌었습니다. 다시 계산하세요.</p>
     ${r.status === 'unresolved' ? `<p class="ts-unverified">${esc(r.reference.reason)}</p><p>예치액을 산출하지 않았습니다. 공식 자료를 추가 확인하거나 출처를 남기고 직접 입력하세요.</p>` : `<p>${esc(r.reference.company.name)} · ${esc(r.reference.case_id)} · ${esc(r.reference.entry_date)} 통관 가정</p><p class="ts-help">${r.reference.status === 'published_reference' ? `선별 공표 참고율 ${fmt(r.reference.rate_pct)}% · ${link(r.reference.document)}` : `사용자 확인 참고율 ${fmt(r.reference.rate_pct)}% · ${link({ url: r.reference.source.url, label: '입력 출처' })}`}</p>
+    <p class="ts-basis" data-ad-normalized><b>신고가격 10만 USD당 비교: 기준 $${money(r.normalized_reference.reference_deposit_usd)} / 가정 $${money(r.normalized_reference.scenario_deposit_usd)}</b><br><small>단위 금액에 대한 비교이며 실제 거래금액이 아닙니다. 금리5%·365일·+5%p는 계산 예시이며 업계 평균·예상 판정이 아닙니다.</small></p>
     <p class="ts-help">거래금액·금리·기간·비교율은 ${r.input_guidance.some(x => x.origin === 'editable_example') ? '예시 또는 사용자 입력' : '사용자 입력'}입니다. 최종 관세나 회사의 실제 수입 실적을 확정하지 않습니다.</p><div class="ts-kpis"><div><span>기준 AD 예치액</span><strong>$${money(r.reference_deposit_usd)}</strong></div><div><span>가정 AD 예치액</span><strong>$${money(r.scenario_deposit_usd)}</strong></div><div><span>추가로 묶이는 현금</span><strong>$${money(r.deposit_change_usd)}</strong></div></div>
     <section class="ts-result-block"><h3>자금 부담</h3><div class="ts-scroll"><table class="ts-output-table"><thead><tr><th>USD</th><th>공표·확인 참고율</th><th>가정 예치율</th><th>차이</th></tr></thead><tbody><tr><th>현금예치</th><td>${money(r.reference_deposit_usd)}</td><td>${money(r.scenario_deposit_usd)}</td><td>${money(r.deposit_change_usd)}</td></tr><tr><th>가정 기간 금융비용</th><td>${money(r.reference_financing_cost_usd)}</td><td>${money(r.scenario_financing_cost_usd)}</td><td>${money(r.financing_change_usd)}</td></tr></tbody></table></div><p class="ts-help">${esc(r.limitations.join(' '))}</p></section>`}</div>`;
 }
@@ -190,7 +196,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
   const controller = new AbortController(), signal = controller.signal;
   const paint = () => { root.querySelector('[data-ad-calculator]').open = calculatorOpen; root.querySelector('[data-ad-history]').innerHTML = hasADCase() ? history() : coverageGap(); root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = monitorNotices(); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
-  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('.ts-ad-selection').outerHTML = processSelection(); };
+  const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };
   const syncExample = () => {
     example = createADExample(draft);

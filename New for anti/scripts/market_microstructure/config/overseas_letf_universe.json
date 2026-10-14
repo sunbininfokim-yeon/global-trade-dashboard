@@ -212,8 +212,8 @@
       "scope": "kr_single_stock",
       "leverage": 3,
       "leverage_mode": "fixed_daily",
-      "structure": "futures",
-      "structure_evidence": "official_product_api.Underlying_holding",
+      "structure": "physical_margin",
+      "structure_evidence": "official_product_page.overview_and_key_facts; official_product_api.Underlying_holding (2026-09-29 snapshot)",
       "holdings_weights": null,
       "source_urls": [
         "https://leverageshares.com/en/etps/leverage-shares-3x-long-samsung-electronics-etp/",
@@ -259,8 +259,9 @@
       "listing_source": "https://leverageshares.com/documents/pdfs/en/Leverage-Shares-Products.pdf",
       "inception": "2026-06-12",
       "issuer_api_url": "https://leverageshares.com/Lab_Forty_Scripts/php/etp_data.php",
-      "structure_as_of": "2026-09-04",
-      "structure_note_ko": "운용사 API 기준: KRX futures. 일반 현물 담보 마케팅 문구와 구분; 선물 만기·델타 비중 미공개."
+      "structure_as_of": "2026-09-29",
+      "structure_note_ko": "2026-10-14 공식 상품 페이지: Physical / KRX shares, 현물 보유·차입 방식. 보존된 2026-09-29 API도 KRX shares. 구조 전환일은 미확인; 9/29 이전에 소급하지 않음. API 재조회는 403으로 미확인.",
+      "structure_verified_on": "2026-10-14"
     },
     {
       "product_id": "SKHX",
