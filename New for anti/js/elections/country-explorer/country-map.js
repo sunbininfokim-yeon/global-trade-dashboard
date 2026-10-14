@@ -37,10 +37,11 @@ const wrapLon = (lon) => ((lon + 540) % 360) - 180;
 // the inset and pull its centre off the eight main islands. rotate (degrees,
 // counter-clockwise) turns the shape about its centre: on the globe a
 // meridian away from the view centre leans, so AK's straight 141°W border
-// read as tilted; 22° stands it upright at the USA view's centre (~103°W).
+// read as tilted; 20.6° stands it upright at the USA view's centre (~102°W).
+// AK's top is level on screen with Washington's northern border.
 const EXCLAVES = {
     USA: [
-        { code: 'US-AK', scale: 0.38, anchorLon: -133.9, anchorLat: 46.5, rotate: 22 },
+        { code: 'US-AK', scale: 0.342, anchorLon: -131.52, anchorLat: 43.8, rotate: 20.6 },
         { code: 'US-HI', scale: 1, anchorLon: -128, anchorLat: 37.5, dropWestOf: -161 },
     ],
 };
