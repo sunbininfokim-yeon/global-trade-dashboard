@@ -34,10 +34,13 @@ const wrapLon = (lon) => ((lon + 540) % 360) - 180;
 // shape's bounding-box centre lands. dropWestOf removes island polygons
 // lying wholly west of that longitude -- HI's admin1 shape carries the
 // Northwestern Hawaiian atolls out to -178°, which otherwise trail across
-// the inset and pull its centre off the eight main islands.
+// the inset and pull its centre off the eight main islands. rotate (degrees,
+// counter-clockwise) turns the shape about its centre: on the globe a
+// meridian away from the view centre leans, so AK's straight 141°W border
+// read as tilted; 22° stands it upright at the USA view's centre (~103°W).
 const EXCLAVES = {
     USA: [
-        { code: 'US-AK', scale: 0.38, anchorLon: -133.4, anchorLat: 46.5 },
+        { code: 'US-AK', scale: 0.38, anchorLon: -133.9, anchorLat: 46.5, rotate: 22 },
         { code: 'US-HI', scale: 1, anchorLon: -128, anchorLat: 37.5, dropWestOf: -161 },
     ],
 };
@@ -65,7 +68,7 @@ const withoutFarWestIslands = (geometry, dropWestOf) => {
 
 const DEG = Math.PI / 180;
 
-const relocateExclave = (feature, { scale, anchorLon, anchorLat, dropWestOf }) => {
+const relocateExclave = (feature, { scale, anchorLon, anchorLat, dropWestOf, rotate = 0 }) => {
     const geometry = withoutFarWestIslands(feature.geometry, dropWestOf);
     const { west, east, south, north } = boundsOf(geometry);
     const centerLon = (west + east) / 2;
@@ -75,12 +78,21 @@ const relocateExclave = (feature, { scale, anchorLon, anchorLat, dropWestOf }) =
     // to another latitude stretches or squeezes it sideways. Rescale longitude
     // by the ratio so AK (61°N → ~47°N) keeps its true proportions instead of
     // coming out ~1.4x too wide.
-    const lonScale = scale * Math.cos(centerLat * DEG) / Math.cos(anchorLat * DEG);
-    const project = ([lon, lat, ...rest]) => [
-        wrapLon(anchorU + (unwrapLon(lon) - centerLon) * lonScale),
-        anchorLat + (lat - centerLat) * scale,
-        ...rest,
-    ];
+    const anchorCos = Math.cos(anchorLat * DEG);
+    const lonScale = scale * Math.cos(centerLat * DEG) / anchorCos;
+    const cos = Math.cos(rotate * DEG);
+    const sin = Math.sin(rotate * DEG);
+    // Rotate in ground units (longitude times cos(lat)) so the turn doesn't
+    // shear the shape, then convert back to degrees of longitude.
+    const project = ([lon, lat, ...rest]) => {
+        const x = (unwrapLon(lon) - centerLon) * lonScale * anchorCos;
+        const y = (lat - centerLat) * scale;
+        return [
+            wrapLon(anchorU + (x * cos - y * sin) / anchorCos),
+            anchorLat + x * sin + y * cos,
+            ...rest,
+        ];
+    };
     return { ...feature, geometry: { ...geometry, coordinates: mapCoordinates(geometry.coordinates, project) } };
 };
 
