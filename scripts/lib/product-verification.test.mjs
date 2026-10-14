@@ -53,3 +53,27 @@ test('OCTG final margins remain separate from ambiguous cash instructions, other
   assert.equal(r.ad.rate_pct,null); assert.equal(companyADLink('ad-seah','octg'),null);
   assert.equal(productVerification('welded-pipe'),null); assert.ok(!verificationMarkup('octg','CHN').includes('9.80'));
 });
+
+test('advanced material research preserves mismatches and historical revocation without creating applicable cases', () => {
+  for (const product of ['fiber','carbon-fiber','aramid']) {
+    const r=productVerification(product), html=verificationMarkup(product);
+    assert.equal(r.checked_on,'2026-10-14'); assert.equal(r.ad.review.checked_on,'2026-10-12');
+    assert.equal(r.ad.status,'bounded_search_no_confirmed_case'); assert.equal(r.ad.rate_pct,null);
+    assert.deepEqual(r.ad.case_ids,[]); assert.ok(r.ad.research.terms.length>=2);
+    assert.match(html,/품목별 조사 근거/); assert.match(html,/면제나 0% 판정이 아닙니다/);
+    assert.match(html,/전수 재조회는 미실행/); assert.equal(companyADLink('hs-materials',product),null);
+    for (const origin of ['NLD','CHN','VNM','',null]) {
+      const other=productVerification(product,origin);
+      assert.equal(other.ad.status,'origin_not_reviewed'); assert.equal(other.ad.research,undefined);
+      assert.ok(!verificationMarkup(product,origin).includes('data-material-research'));
+    }
+  }
+  const aramid=productVerification('aramid').ad.research.findings[0];
+  assert.equal(aramid.country,'NLD'); assert.equal(aramid.case_id,'A-421-805');
+  assert.equal(aramid.disposition,'historical_other_origin_revoked');
+  assert.equal(aramid.published,'2001-03-13'); assert.equal(aramid.revoked_effective_date,'2000-01-01');
+  assert.equal(productVerification('fiber').ad.research.findings[0].disposition,'different_product');
+  assert.equal(productVerification('carbon-fiber').ad.research.findings.length,0);
+  const copy=productVerification('aramid'); copy.ad.research.findings[0].country='KOR';
+  assert.equal(productVerification('aramid').ad.research.findings[0].country,'NLD');
+});

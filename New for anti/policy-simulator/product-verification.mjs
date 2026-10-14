@@ -29,6 +29,48 @@ rows.octg = { ad: { status: 'official_case_confirmed_deposit_unresolved', label:
   margins: [{ official_name: 'SeAH Steel Corporation', margin_pct: '9.80' }, { official_name: 'NEXTEEL Co., Ltd.', margin_pct: '29.94' }],
   note: '2026-19529의 기업별 최종 마진 표를 확인했습니다. Cash Deposit Requirements의 simple-average 문구와 개별 마진 표의 대응은 추가 지침 확인이 필요해 예치율 자동 계산에 사용하지 않습니다. 대구경 강관의 0.80%를 OCTG에 사용하지 않습니다. CVD 사건 존재는 ACCESS에서 확인했지만 이 화면에 CVD 세율을 확정하지 않았습니다.',
   sources: [{ title: 'OCTG 최종 결과 · 2026-19529', url: 'https://www.govinfo.gov/content/pkg/FR-2026-09-24/pdf/2026-19529.pdf' }] } };
+// A bounded search is evidence of what was checked, never a legal clearance.
+// Historical / mismatched cases stay here, outside AD_CATALOG and stage events.
+const materialSearches = {
+  fiber: {
+    terms: ['polyester tire cord Korea antidumping', 'tire cord fabric Korea 5902 antidumping'],
+    scope: '한국산 폴리에스터 고강력사 타이어코드 직물 대표 사양. 단섬유·원사·스틸코드·완성 타이어와 구분합니다.',
+    findings: [
+      { title: '폴리에스터 단섬유 사건 · 제품 불일치', case_id: 'A-580-839', country: 'KOR', disposition: 'different_product', document_id: '2017-02790', published: '2017-02-10',
+        note: '공고의 대상은 절단된 폴리에스터 단섬유입니다. 타이어코드 직물에 이 사건의 마진·예치율을 이식하지 않습니다. 현재 직물의 적용 제외 판정이나 scope ruling은 아닙니다.',
+        source: { title: 'Commerce · 폴리에스터 단섬유 명령 범위 · 2017-02790', url: 'https://www.govinfo.gov/content/pkg/FR-2017-02-10/pdf/2017-02790.pdf' } },
+    ],
+    sources: [hts('5902.20.00'), { title: 'USITC · 한국·대만 폴리에스터 단섬유 일몰재심 · 2022-07-26', url: 'https://www.usitc.gov/press_room/news_release/2022/er0726ll1965.htm' }],
+    remaining: '직물/원사·수지 처리·실제 생산국과 제조/수출 법인 확인 및 최신 사건·scope ruling 대조 필요.',
+  },
+  'carbon-fiber': {
+    terms: ['carbon fiber Korea antidumping duty', 'carbon fibers antidumping Japan'],
+    scope: '한국산 탄소섬유. 탄소섬유 자체·직물·프리프레그·활성탄·탄소강을 구분합니다.',
+    findings: [],
+    sources: [hts('6815.11'), hts('6815.12'), hts('6815.13')],
+    remaining: '직접 대응 AD/CVD 사건은 이번 검색에서 확인하지 못했습니다. PAN 원료·수지 함침·복합재 등 실제 형태와 최신 사건·scope ruling 확인 필요. 탄소강 AD 공고나 FTZ 생산 허가를 탄소섬유 AD 판정으로 연결하지 않습니다.',
+  },
+  aramid: {
+    terms: ['aramid Korea antidumping duty', 'aramid fiber Netherlands revocation antidumping'],
+    scope: '한국산 아라미드. 파라/메타·원사·단섬유·펄프·직물과 생산국을 구분합니다.',
+    findings: [
+      { title: '네덜란드산 아라미드 과거 사건 · 철회', case_id: 'A-421-805', country: 'NLD', disposition: 'historical_other_origin_revoked', document_id: '01-6226', published: '2001-03-13', revoked_effective_date: '2000-01-01',
+        note: '2001년 공고는 네덜란드산 PPD-T 아라미드 명령 철회를 알리며 효력일은 2000-01-01입니다. 한국산 ALKEX·HS효성의 현재 사건·예치율이 아닙니다. 당시 명령 범위는 타이어코드를 제외했습니다.',
+        source: { title: 'Commerce · 네덜란드산 아라미드 명령 철회 · 01-6226', url: 'https://www.govinfo.gov/content/pkg/FR-2001-03-13/pdf/01-6226.pdf' } },
+    ],
+    sources: [hts('5402.11'), hts('5503.11')],
+    remaining: '한국산 직접 대응 사건 미확인. 실제 섬유 형태·법인·생산국 및 최신 사건·scope ruling 대조 필요. 네덜란드 과거 세율을 한국산에 적용하지 않습니다.',
+  },
+};
+for (const [product, research] of Object.entries(materialSearches)) {
+  rows[product] = { checked_on: '2026-10-14', ad: {
+    status: 'bounded_search_no_confirmed_case', label: '공식 자료 조사 · 한국산 대응 AD/CVD 사건 미확인',
+    rate_pct: null, case_ids: [],
+    note: '품목별 공식 검색과 공개 원문을 대조한 결과입니다. 사건 전수조회·적용 제외 확인이 아니며 면제나 0% 판정이 아닙니다.',
+    research: { checked_on: '2026-10-14', method: '공식 도메인 웹 검색·공개 원문 범위 대조. ACCESS 활성 목록 전수 재조회는 미실행.', ...research },
+    sources: [...research.sources, ...research.findings.map(f => f.source)],
+  } };
+}
 export const PRODUCT_VERIFICATIONS = rows;
 
 export function productVerification(product, country = 'KOR') {
@@ -49,7 +91,8 @@ export function verificationMarkup(product, country = 'KOR') {
     ${r.tariff ? `<p><b>관세 조건:</b> 한국·일본 승용차·경트럭용 지정 부품의 조건부 합산 ${r.tariff.total_pct}% 경로 확인<br><small>${esc(r.tariff.note)}</small></p><p>${r.tariff.sources.map(link).join(' · ')}</p>` : ''}
     <p><b>AD/CVD:</b> ${esc(r.ad.label)}${r.ad.case_ids.length ? ` · ${esc(r.ad.case_ids.join(' / '))}` : ''}<br><small>${esc(r.ad.note)}</small></p>
     ${r.ad.margins ? `<p>POR ${r.ad.por_start}~${r.ad.por_end} · 공표 ${r.ad.published}<br>${r.ad.margins.map(m=>`${esc(m.official_name)}: 최종 마진 ${esc(m.margin_pct)}%`).join('<br>')}<br><small>과거 재심 마진 · 현재 예치율 아님</small></p>` : ''}
-    ${r.ad.review ? `<p class="ts-help">${link(KOREA_AD_REVIEW.source)} · 검색어 Korea · 6페이지/51개 사건 · 제품명 수동 대조</p>` : ''}
+    ${r.ad.research ? `<section data-material-research><h3>품목별 조사 근거</h3><p>${esc(r.ad.research.scope)}</p><p class="ts-help">확인 ${esc(r.ad.research.checked_on)} · ${esc(r.ad.research.method)}<br>검색어: ${r.ad.research.terms.map(esc).join(' / ')}</p>${r.ad.research.findings.map(f => `<p><b>${esc(f.title)}</b> · ${esc(f.case_id)} · 원산지 ${esc(f.country)}<br><small>공표 ${esc(f.published)}${f.revoked_effective_date ? ` · 철회 효력 ${esc(f.revoked_effective_date)}` : ''}<br>${esc(f.note)}</small><br>${link(f.source)}</p>`).join('')}<p><small>남은 확인: ${esc(r.ad.research.remaining)}</small></p></section>` : ''}
+    ${r.ad.review ? `<p class="ts-help">${link(KOREA_AD_REVIEW.source)} · 목록 검토 ${esc(KOREA_AD_REVIEW.checked_on)} · 검색어 Korea · 6페이지/51개 사건 · 제품명 수동 대조</p>` : ''}
     ${(r.ad.sources || []).map(link).join(' · ')}
   </details>`;
 }

@@ -79,6 +79,17 @@ test('mounted industry selection renders non-calculable notices independently an
   choose('data-ad-family','cables');
   const cable=choose('data-ad-industry','submarine-cable');
   assert.match(cable,/개별 시행·조사 공고 목록 미수록/); assert.ok(!cable.includes('2026-19529'));
+  choose('data-ad-family','materials');
+  for(const product of ['fiber','carbon-fiber','aramid']) {
+    const material=choose('data-ad-industry',product);
+    const editor=root.querySelector('[data-ad-history]').innerHTML;
+    assert.match(editor,/data-material-research/); assert.match(editor,/품목별 공식 조사 근거 연결/);
+    assert.ok(!editor.includes('data-ad-form')); assert.equal(industryMonitor(product).events.length,0);
+    assert.equal(industryMonitor(product).calculation_enabled,false);
+    assert.ok(!root.querySelector('[data-ad-process]').innerHTML.includes('data-ad-stage'));
+    assert.ok(!material.includes('2026-19529'));
+    assert.ok(industryMonitor(product).sources.some(s=>s.kind==='AD/CVD 관련 원문'));
+  }
   choose('data-ad-family','power');
   assert.match(root.querySelector('[data-ad-notice-review]').innerHTML,/A-580-867/);
   assert.match(root.querySelector('[data-ad-editor]').innerHTML,/data-ad-form/);
