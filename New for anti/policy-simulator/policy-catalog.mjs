@@ -1,3 +1,4 @@
+import { marketCalibration } from './default-basis.mjs';
 import { SUPPLIER_SNAPSHOT } from './suppliers-2025.mjs';
 import { ELASTICITIES, elasticityCalibration } from './elasticities.mjs';
 import { productVerification } from './product-verification.mjs';
@@ -146,7 +147,7 @@ export function initialDraft(product = 'transformer') {
   return { product, period: '가상 연간 구매액 · 실제 통계로 보정 전', sigma: p.elasticity?.sigma ?? 4, eta: p.elasticity?.eta ?? -1,
     elasticity_basis: p.elasticity ? 'literature' : 'manual', elasticity_overrides: {}, focus: 'KOR', policy_confirmed: false,
     source_note: '구매액·공급탄력성은 학습용 가정. 별도 추가세 0%는 미적용 가정이며 확인이 필요합니다.',
-    rows: [newRow(product, 'USA', 50), newRow(product, 'KOR', 25), newRow(product, 'JPN', 25)] };
+    rows: [newRow(product, 'USA', 50), newRow(product, 'KOR', 25), newRow(product, 'JPN', 25)].map(r => ({ ...r, purchase_origin: 'editable_example' })) };
 }
 export function modelInput(draft) {
   if (!draft.policy_confirmed) throw new Error('선택한 관세 조합의 적용 조건과 별도 추가세를 확인해 주세요.');
@@ -155,6 +156,8 @@ export function modelInput(draft) {
     calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: p.classification_checked_on || null, hts: p.hts, product_scope: p.scope, purchase_basis: 'user_assumption',
       policy_confirmation: 'user_confirmed_conditions', supplier_statistics_year: suppliers ? SUPPLIER_SNAPSHOT.year : null,
       supplier_source: suppliers ? { url: SUPPLIER_SNAPSHOT.url, fetched_at: SUPPLIER_SNAPSHOT.fetched_at, hts6: suppliers.hts6, flow: SUPPLIER_SNAPSHOT.flow, measure: SUPPLIER_SNAPSHOT.measure } : null,
+      market_calibration: marketCalibration(draft.product, SUPPLIER_SNAPSHOT),
+      input_basis: { purchases: draft.rows.map(r => ({ country: r.country, kind: r.purchase_origin || 'user_assumption' })), supply_elasticities: 'user_assumption', tariffs: 'conditional_official_reference' },
       product_verification: draft.rows.map(row => productVerification(draft.product, row.country)).filter(Boolean), elasticity },
     ...(elasticity.sigma.range ? { sensitivity_sigmas: [elasticity.sigma.range[0], Number(draft.sigma), elasticity.sigma.range[1]] } : {}) };
 }
