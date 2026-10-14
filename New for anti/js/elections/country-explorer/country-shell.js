@@ -12,6 +12,7 @@ import { jpnFactions } from './special/jpn-factions.js';
 import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js';
+import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js';
 
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
 const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'executive'], ['의회', 'legislature'], ['정당', 'factions'], ['일정', 'calendar'], RACE_PROGRESS_TAB];
@@ -19,6 +20,7 @@ const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'e
 // custom tab sets predate this screen, so it's appended here rather than
 // duplicated into their own files.
 const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
+    : iso3 === 'ISR' ? [['선거 분석', 'election_analysis'], ...genericSections]
     : iso3 === 'JPN' ? jpnSections
     : iso3 === 'CHN' ? [...chinaSections, RACE_PROGRESS_TAB]
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
@@ -119,6 +121,7 @@ const sourceObject = (country, section) => {
 // military, USA's congress) have no generic equivalent, so they render from the
 // country's own module rather than through the shared flattener.
 const specialContent = (country, section) => {
+    if (country.iso3 === 'ISR' && section === 'election_analysis') return israelAnalysisPlaceholder();
     if (section === 'race_progress') return raceProgressContent(country);
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
@@ -177,6 +180,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
     const screenFor = (key) => manifest?.countries?.[country.iso3]?.screens?.[key];
 
     const openSection = (key) => {
+        host?.roots?.modal?.classList.remove('israel-analysis-host');
         const label = tabs.find(([, tabKey]) => tabKey === key)?.[0] || '';
         const status = effectiveStatus(manifest, country, key);
         const missing = screenFor(key)?.missing || [];
@@ -189,7 +193,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             status: stateLabel(status),
             body: sectionContent(country, key, status),
             footnote: missing.length ? `미확보: ${missing.join(', ')}` : '',
-            onClose: () => { active = null; markActive(); onRoute?.({ screen: null }); },
+            onClose: () => { host?.roots?.modal?.classList.remove('israel-analysis-host'); active = null; markActive(); onRoute?.({ screen: null }); },
             // The 상임위 chips leave the election module entirely, so the jump
             // goes back out through the host adapter rather than this module
             // reaching into the legacy router itself.
@@ -198,6 +202,9 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
                 if (action === 'policy-committees') host?.openPolicyCommittee?.();
             },
         });
+        if (country.iso3 === 'ISR' && key === 'election_analysis') {
+            mountIsraelAnalysis(host?.roots?.modal?.querySelector('[data-israel-analysis]'), country.israel_analysis);
+        }
     };
 
     const markActive = () => {

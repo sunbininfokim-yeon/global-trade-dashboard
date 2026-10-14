@@ -1,0 +1,50 @@
+.israel-analysis { color:#dbe4f0; font-size:13px; line-height:1.6; }
+.israel-analysis p { margin:6px 0; overflow-wrap:anywhere; }
+.israel-analysis a { color:#7dd3fc; }
+.israel-heading h4 { font-size:24px; margin:0 0 6px; color:#f8fafc; }
+.israel-eyebrow { color:#67e8f9; font-size:11px; letter-spacing:.08em; }
+.israel-heading > p:last-child { color:#94a3b8; }
+.israel-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:16px 0; }
+.israel-stats > div { border:1px solid #334155; background:#152138; border-radius:9px; padding:12px; }
+.israel-stats strong { display:block; font-size:25px; color:#f8fafc; }
+.israel-stats span { font-size:11px; color:#a7b5c9; }
+.israel-notice { padding:10px 12px; border-left:3px solid #fbbf24; background:#1d273b; color:#cbd5e1; border-radius:4px; }
+.israel-controls { display:grid; grid-template-columns:1fr 2fr; gap:10px; margin:18px 0; }
+.israel-controls label { display:flex; flex-direction:column; gap:5px; color:#94a3b8; font-size:11px; min-width:0; }
+.israel-controls select { width:100%; color:#e2e8f0; background:#17233a; border:1px solid #475569; border-radius:6px; padding:9px; font:inherit; font-size:12px; }
+.israel-poll-meta { border-bottom:1px solid #334155; padding-bottom:12px; color:#a7b5c9; font-size:12px; }
+.israel-poll-meta > strong { color:#f1f5f9; font-size:14px; }
+.israel-seat-bar { display:flex; gap:2px; height:12px; border-radius:4px; overflow:hidden; margin:18px 0 12px; }
+.israel-seat-bar span { min-width:0; }
+.israel-seat-list { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.israel-seat-row { display:flex; align-items:center; gap:8px; border:1px solid #334155; border-radius:7px; background:#111e32; padding:9px; cursor:pointer; min-width:0; }
+.israel-seat-row:has(input:checked) { border-color:#38bdf8; background:#133047; }
+.israel-seat-row input { accent-color:#38bdf8; flex-shrink:0; }
+.israel-party-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.israel-party-name { flex:1; min-width:0; overflow-wrap:anywhere; }
+.israel-party-name small { display:block; color:#94a3b8; font-size:10px; }
+.israel-seat-row > strong { font-size:21px; color:#f8fafc; white-space:nowrap; }
+.israel-seat-row > strong small { margin-left:2px; font-size:10px; color:#94a3b8; }
+.israel-coalition { margin:16px 0; padding:13px; border:1px solid #0e7490; background:#0d2535; border-radius:9px; }
+.israel-coalition h5 { font-size:14px; margin:0 0 5px; }
+.israel-coalition p { font-size:11px; color:#94a3b8; }
+.israel-coalition [data-israel-total] { font-size:18px; color:#a5f3fc; }
+.israel-details { border-top:1px solid #334155; padding:13px 0; }
+.israel-details summary { cursor:pointer; color:#e2e8f0; font-weight:600; }
+.israel-details p, .israel-details small { font-size:11px; color:#a7b5c9; }
+.israel-details article { padding:8px 0; border-bottom:1px solid #263349; }
+.israel-small-row { display:flex; justify-content:space-between; gap:14px; padding:3px 0; }
+.israel-roster-row { display:flex; flex-direction:column; gap:3px; padding:9px 0; border-bottom:1px solid #263349; }
+.israel-roster-row span { font-size:11px; }
+.israel-analysis :is(button,input,select,summary,a):focus-visible { outline:2px solid #67e8f9; outline-offset:3px; }
+@media (max-width:520px) {
+ .israel-controls { grid-template-columns:1fr; }
+ .israel-seat-list { grid-template-columns:1fr; }
+ .israel-stats > div { padding:9px; }
+ .israel-stats span { font-size:10px; }
+}
+/* The existing mobile shell collapses the map column. Only this screen uses
+   the viewport as its modal host so its analysis remains readable there. */
+@media (max-width:720px) {
+ .elections-modal-host.israel-analysis-host { position:fixed; inset:60px 0 0; width:100vw; height:calc(100dvh - 60px); padding:12px; box-sizing:border-box; z-index:45; }
+}
