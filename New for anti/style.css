@@ -7041,7 +7041,7 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-poll-scoreboard { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin: 7px 0; }
 .elections-poll-score { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; min-width: 0; padding: 10px 5px; border-radius: 7px; text-align: center; overflow-wrap: anywhere; background: #293548; }
 .elections-poll-score strong { font-size: 13px; font-weight: 800; }
-.elections-poll-score b { font-size: 24px; line-height: 1.1; font-weight: 800; }
+.elections-poll-score b { font-size: clamp(18px, 5vw, 24px); white-space: nowrap; line-height: 1.1; font-weight: 800; }
 .elections-poll-score small { font-size: 10px; color: inherit; }
 .elections-poll-score.is-other { color: #d1fae5; }
 .elections-evidence-poll .elections-poll-score.is-dem strong { color: #bfdbfe; }
