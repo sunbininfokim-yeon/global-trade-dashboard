@@ -61,7 +61,7 @@ adapter; country routing, loader, modal and analysis module are real.
 ## Korean identities and coalition context (2026-10-15)
 
 `2026/coalition_context.json` is a separately dated, source-linked editorial
-context packet. Four colors describe reported blocs, the Arab-party category,
+context packet. The cooperation view groups reported blocs, an Arab-party electoral agreement,
 and unconfirmed/independent alignment. Color does not establish coalition
 compatibility. Personal refusals, conditional participation, electoral surplus
 agreements and external support remain separate relationship types. Ra’am does
@@ -91,3 +91,27 @@ included in generated files. Original research receipts and numeric JSONL stay
 unchanged. Coalition context `reviewed_on` is separate from polling
 `evidence_as_of`; adding biography sources does not promote official election,
 legal or current-seat fields from held.
+
+
+## Independent grouping axes (2026-10-15)
+
+The party map switches between **연합·협력** and **정치 성향**. Selection,
+source poll and coalition constraints persist when the grouping changes.
+Cooperation cards distinguish published common principles, reported blocs,
+conditional participation and five announced surplus-vote pairs. No current
+cabinet membership is inferred from any of these.
+
+`ideology_groups` and each profile's `ideology_group`, `ideology_note` and
+`ideology_source_ids` provide a separately sourced editorial taxonomy. The
+notes are translated through the same Gemini cache. The IDI party profiles
+support the summaries; sources retain review dates and historical limits.
+Broad families combine several policy dimensions rather than ranking parties
+on an invented numerical scale. Together remains a mixed list; the Joint List
+and Ra’am remain distinct. Ra’am's civic transition is an announced aim, not
+verified organizational completion. Haredi community identity does not imply
+identical conscription policy. Unverified classifications remain unclassified.
+
+Both views partition published observations without altering numbers. Missing
+profiled lists appear under an explicitly labeled unpublished-seat disclosure;
+no zero is inserted. Source links and per-party explanations are available in
+ideology cards. The polling evidence date remains 2026-10-14.

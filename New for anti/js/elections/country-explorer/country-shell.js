@@ -12,7 +12,7 @@ import { jpnFactions } from './special/jpn-factions.js';
 import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js';
-import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=2';
+import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=3';
 
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
 const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'executive'], ['의회', 'legislature'], ['정당', 'factions'], ['일정', 'calendar'], RACE_PROGRESS_TAB];

@@ -25,7 +25,7 @@ class IsraelPresentationTests(unittest.TestCase):
         with patch('election_watch.israel_translation.urlopen') as api:
             validate_translations(self.doc, self.items)
         api.assert_not_called()
-        self.assertEqual(len(self.items), 210)
+        self.assertEqual(len(self.items), 227)
         self.assertEqual(self.doc['provider'], 'Google Gemini API')
         self.assertTrue(all(row['model'] and row['translated_at'] for row in self.doc['translations']))
 
@@ -54,6 +54,25 @@ class IsraelPresentationTests(unittest.TestCase):
                     self.build()
         self.setUp(); self.context['groups'][0]['color'] = 'red; background:url(x)'
         with self.assertRaisesRegex(ValueError, 'color'):
+            self.build()
+
+    def test_ideology_cannot_invent_a_family_or_omit_sources(self):
+        for key, value, error in [('ideology_group', 'invented', 'ideology'),
+                                  ('ideology_source_ids', [], 'source')]:
+            with self.subTest(key=key):
+                self.setUp(); self.context['parties'][0][key] = value
+                with self.assertRaisesRegex(ValueError, error):
+                    self.build()
+        self.setUp(); self.context['ideology_groups'][0]['color'] = 'url(x)'
+        with self.assertRaisesRegex(ValueError, 'color'):
+            self.build()
+
+    def test_cooperation_pair_rejects_unknown_or_cross_group_parties(self):
+        self.context['cooperation_pairs'][0]['parties'] = ['k26:מחל', 'k26:ל']
+        with self.assertRaisesRegex(ValueError, 'cooperation pair'):
+            self.build()
+        self.setUp(); self.context['cooperation_pairs'][0]['source_ids'] = ['missing']
+        with self.assertRaisesRegex(ValueError, 'cooperation source'):
             self.build()
 
     def test_refusal_preserves_target_person_and_does_not_become_party_ban(self):
@@ -86,7 +105,7 @@ class IsraelPresentationTests(unittest.TestCase):
             doc = translate(self.items, 'test-only-key', previous=self.doc)
         api.assert_not_called()
         self.assertEqual(doc['input_sha256'], input_digest(self.items))
-        self.assertEqual(len(doc['translations']), 210)
+        self.assertEqual(len(doc['translations']), len(self.items))
 
 
 if __name__ == '__main__':

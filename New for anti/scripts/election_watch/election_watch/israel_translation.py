@@ -86,7 +86,7 @@ def collect_input_texts(inputs, context):
                     'conditions_as_paraphrased_by_n12'):
             add(row.get(key))
     for row in context.get('parties', []):
-        add(row.get('leader')); add(row.get('description')); add(row.get('coalition_note'))
+        add(row.get('leader')); add(row.get('description')); add(row.get('coalition_note')); add(row.get('ideology_note'))
     for row in context.get('relationships', []):
         add(row.get('summary')); add(row.get('condition'))
     return [{'id': text_id(text), 'text': text} for text in sorted(texts)]

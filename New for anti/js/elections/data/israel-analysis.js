@@ -41,6 +41,7 @@ export const validateIsraelBoard = (board, status, today = koreaToday()) => {
     const context = board.coalition_context;
     const translations = board.localization;
     if (context?.schema !== 'israel_coalition_context_v1' || !Array.isArray(context.groups)
+        || !Array.isArray(context.ideology_groups) || !context.ideology_groups.length
         || !Array.isArray(context.parties) || !Array.isArray(context.relationships)
         || translations?.schema !== 'israel_ko_translations_v1' || translations.provider !== 'Google Gemini API'
         || !Array.isArray(translations.translations) || !translations.translations.length

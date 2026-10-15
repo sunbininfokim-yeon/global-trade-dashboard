@@ -1,6 +1,6 @@
 import { escapeHtml } from '../../ui.js';
 import { canCalculate, dayAge, koreaToday, seatPolls, selectedSeatSum, sourceHref } from '../../data/israel-analysis.js';
-import { koreanText, partyProfile, personProfile, groupSeatSummary, presetSeatSum, selectionRelationships } from '../../data/israel-context.js';
+import { koreanText, partyProfile, personProfile, groupingGroups, groupSeatSummary, presetSeatSum, selectionRelationships } from '../../data/israel-context.js?v=2';
 
 const e = escapeHtml;
 const reviewLabel = (state) => ({ accepted: '원문 채택', partial: '부분 자료', held: '보류' }[state] || '미확인');
@@ -30,13 +30,32 @@ const sourceLinks = (board, ids) => (ids || []).map((id) => {
 }).join(' · ');
 const sectionHeading = (eyebrow, title, note = '') => `<header class="israel-section-heading"><span>${eyebrow}</span><h5>${title}</h5>${note ? `<p>${note}</p>` : ''}</header>`;
 
+const groupCards = (board, poll, grouping, selected, canSelect) => groupingGroups(board, grouping).map((g) => {
+    const s = groupSeatSummary(board, poll, g.id, grouping);
+    const ideology = grouping === 'ideology';
+    const rowHtml = (v) => {
+        const p = partyProfile(board, v.list_id);
+        return `<label class="israel-seat-row" title="${e(ideology ? p.ideologyNote : p.note)}"><input type="checkbox" data-israel-list="${e(v.list_id)}" aria-label="${e(p.name)} 선택" ${selected.includes(v.list_id) ? 'checked' : ''} ${canSelect ? '' : 'disabled'}><span><b>${e(p.name)}</b><small>${e(p.leader)}</small><em class="israel-axis-tag" style="--tag-color:${ideology ? p.color : p.ideologyColor}">${ideology ? '협력' : '성향'} · ${e(ideology ? p.groupLabel : p.ideologyLabel)}</em></span><strong>${v.seats}<small>석</small></strong></label>`;
+    };
+    const pairs = ideology ? [] : (board.coalition_context.cooperation_pairs || []).filter((p) => p.group === g.id);
+    const ids = [...new Set((board.coalition_context.parties || []).filter((p) => p.ideology_group === g.id).flatMap((p) => p.ideology_source_ids || []))];
+    return `<section class="israel-group" data-israel-group="${e(g.id)}" style="--group-color:${g.color}"><div class="israel-group-badge">${ideology ? '정치 성향' : e(g.badge_ko)}</div><header><h6><span class="israel-party-dot"></span>${e(g.label_ko)}</h6><strong>${s.total === null ? '미확인' : s.total}<small>${s.total === null ? '' : '석'}</small></strong></header><p>${e(g.description_ko)}</p>
+        <div class="israel-seat-list">${s.values.slice().sort((a,b) => b.seats-a.seats).map(rowHtml).join('') || '<p class="israel-empty">발표 의석 미확인</p>'}</div>
+        ${s.missing.length ? `<details class="israel-unpublished"><summary>의석 미발표 명부 ${s.missing.length}개</summary>${s.missing.map((id) => {const p=partyProfile(board,id);return `<p><b>${e(p.name)}</b> · ${e(p.leader)} <span>의석 미확인</span></p>`;}).join('')}</details>` : ''}
+        ${pairs.length ? `<div class="israel-pair-list">${pairs.map((pair) => `<div><span class="israel-pair-caption">${e(pair.label_ko)} · ${e(pair.event_date.slice(5))}</span><p>${pair.parties.map((id) => `<b>${e(partyProfile(board,id).name)}</b>`).join('<span aria-hidden="true"> ↔ </span>')}</p>${sourceLinks(board,pair.source_ids)}</div>`).join('')}</div>` : ''}
+        ${ideology && ids.length ? `<details class="israel-ideology-sources"><summary>성향 설명·근거</summary>${(board.coalition_context.parties || []).filter((p) => p.ideology_group === g.id).map((p) => {const profile=partyProfile(board,p.list_id); return `<p><b>${e(profile.name)}</b> ${e(profile.ideologyNote)}</p>`;}).join('')}<footer>${sourceLinks(board,ids)}</footer></details>` : ''}
+        <small class="israel-group-foot">발표 의석만 합산${s.missing.length ? ' · 미발표는 합계에서 제외' : ''}</small></section>`;
+}).join('');
+
 export const israelAnalysisPlaceholder = () => '<div data-israel-analysis></div>';
-export const israelAnalysisHtml = (board, { pollId = null, days = null, selected = [], presetId = null, relationFilter = 'all', today = koreaToday() } = {}) => {
+export const israelAnalysisHtml = (board, { pollId = null, days = null, selected = [], presetId = null, grouping = 'cooperation', relationFilter = 'all', today = koreaToday() } = {}) => {
     if (!board) return '<p class="elections-muted" role="status">이스라엘 검토 자료를 불러오지 못했습니다. 조사 없음이나 0석으로 대체하지 않습니다.</p>';
     const ko = (source, fallback) => koreanText(board, source, fallback);
     const polls = seatPolls(board, { days, today });
     const poll = polls.find((row) => row.poll_id === pollId) || polls.find((row) => row.review_status === 'accepted') || polls[0] || null;
     const context = board.coalition_context || { groups: [], relationships: [], presets: [] };
+    grouping = grouping === 'ideology' ? 'ideology' : 'cooperation';
+    const groups = groupingGroups(board, grouping);
     const total = selectedSeatSum(poll, selected, board);
     const age = dayAge(board.evidence_as_of, today);
     const canSelect = canCalculate(poll, board);
@@ -57,7 +76,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
     };
     return `<section class="israel-analysis">
         <header class="israel-heading"><p class="israel-eyebrow">이스라엘 · 26대 크네세트</p><h4>누가 누구와 함께할 수 있나</h4>
-            <p>정당·대표 인물·협력 조건을 한눈에. 같은 색은 보도상 분류이며 연정 확정을 뜻하지 않습니다.</p>
+            <p>누가 같은 편이고, 정치색은 얼마나 비슷할까요? 협력 관계와 정치 성향을 나눠 살펴보세요.</p>
             <div class="israel-status-line"><span>의석 자료 ${e(board.evidence_as_of)}${age > 0 ? ` · ${age}일 경과` : ''}</span><span>관계 검토 ${e(context.reviewed_on || '미확인')}</span><span>자동 갱신 미설치</span></div>
         </header>
         <nav class="israel-section-nav" aria-label="분석 바로가기"><a href="#israel-seats">정당·의석</a><a href="#israel-relations">연정 관계</a><a href="#israel-threshold">봉쇄선 지지율</a><a href="#israel-people">총리 적합도</a></nav>
@@ -65,13 +84,14 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
             <label>발표 조사<select data-israel-poll ${polls.length ? '' : 'disabled'}>${polls.length ? polls.map((row) => `<option value="${e(row.poll_id)}" ${row.poll_id === poll?.poll_id ? 'selected' : ''}>${e(pollLabel(board, row))}</option>`).join('') : '<option>기간 내 검토 조사 없음</option>'}</select></label></div>
         <p class="israel-data-note">원문 채택 ${board.coverage.accepted_seat_polls}건 · 부분 ${board.coverage.partial_seat_polls}건 · 최근 30일 전수 미완료 · 현직 의석·공식 후보 순위 보류</p>
         ${poll ? `<section id="israel-seats" class="israel-section">
-            ${sectionHeading('01 / 정당 지도', '같은 조사, 네 가지 정치적 묶음', '색이 같아도 참여 조건은 다릅니다. 정당을 선택하면 같은 조사 안에서만 의석을 더합니다.')}
+            ${sectionHeading('01 / 정당 지도', '정당을 묶어 보는 두 가지 기준', '정당명 아래 대표 인물과 다른 기준의 분류를 함께 표시합니다.')}
+            <div class="israel-grouping-control" role="group" aria-label="정당 묶음 기준">${[['cooperation','연합·협력','지금 누구와 손잡았나'],['ideology','정치 성향','어떤 정치색이 비슷한가']].map(([id,label,note]) => `<button type="button" data-israel-grouping="${id}" aria-pressed="${grouping === id}"><b>${label}</b><small>${note}</small></button>`).join('')}</div>
+            <div class="israel-grouping-note" role="status">${grouping === 'ideology' ? `<b>정치 성향으로 다시 묶었습니다</b><p>${e(context.ideology_basis_ko)}</p><small>예: 리쿠드와 베이테누는 우파 계열이지만 협력 진영은 다릅니다.</small>` : `<b>검토한 연합·협력 현황 · ${e(context.reviewed_on)}</b><p>공동 원칙 발표와 선거 협약을 표시합니다. 리쿠드 중심은 보도상 블록이며 통합토라유다의 참여 조건이 남아 있습니다.</p><small>잉여표 협약은 정부 구성 합의와 별개입니다. 위원회 접수 원문은 보류 중입니다.</small>`}</div>
             <details class="israel-method"><summary>${e(pollLabel(board, poll))} · ${poll.n_respondents == null ? '표본 미확인' : `응답 ${e(poll.n_respondents)}명`} · 조사방법·원문</summary><p>조사기관 ${e(ko(poll.pollster))}</p><p>현장 ${e(poll.field_start || '미확인')} ~ ${e(poll.field_end || '미확인')} · 발표 ${e(poll.published_at || '미확인')}</p>
                 <p>표본오차 ${e(poll.sampling_error_as_printed || (poll.sampling_error_pp == null ? '미확인' : `±${poll.sampling_error_pp}%p`))} · 의석 오차범위로 사용하지 않습니다. ${safeLink(poll.source_url)}</p>${poll.hold_reason ? `<p>${e(ko(poll.hold_reason))}</p>` : ''}</details>
-            <div class="israel-seat-bar" role="img" aria-label="선택한 조사의 발표 의석 합계 120석">${context.groups.map((g) => { const s = groupSeatSummary(board, poll, g.id); return s.total == null ? '' : `<span style="flex:${s.total};background:${g.color}" title="${e(g.label_ko)} 발표 의석 ${s.total}석"></span>`; }).join('')}</div>
-            <div class="israel-presets" aria-label="의석 조합 예시">${context.presets.map((p) => { const sum = presetSeatSum(board, poll, p.id); return `<button type="button" data-israel-preset="${e(p.id)}" aria-pressed="${presetId === p.id}" ${canSelect && sum.total !== null ? '' : 'disabled'}>${e(p.label_ko)}<b>${sum.total === null ? '합산 보류' : `${sum.total}석`}</b></button>`; }).join('')}</div>
-            <div class="israel-group-grid">${context.groups.map((g) => { const s = groupSeatSummary(board, poll, g.id); return `<section class="israel-group" style="--group-color:${g.color}"><header><h6><span class="israel-party-dot"></span>${e(g.label_ko)}</h6><strong>${s.total === null ? '미확인' : s.total}<small>${s.total === null ? '' : '석'}</small></strong></header><p>${e(g.description_ko)}</p>
-                <div class="israel-seat-list">${s.values.sort((a,b) => b.seats-a.seats).map((v) => { const p = partyProfile(board, v.list_id); return `<label class="israel-seat-row" title="${e(p.description)}"><input type="checkbox" data-israel-list="${e(v.list_id)}" aria-label="${e(p.name)} 선택" ${selected.includes(v.list_id) ? 'checked' : ''} ${canSelect ? '' : 'disabled'}><span><b>${e(p.name)}</b><small>${e(p.leader)}</small></span><strong>${v.seats}<small>석</small></strong></label>`; }).join('') || '<p class="israel-empty">이 조사에서 발표 의석을 확인한 명부 없음</p>'}</div><small class="israel-group-foot">의석을 발표한 명부만 합산 · 미발표는 미확인</small></section>`; }).join('')}</div>
+            <div class="israel-seat-bar" role="img" aria-label="${grouping === 'ideology' ? '정치 성향' : '연합·협력'}별 발표 의석 분포, ${poll.seat_sum}석">${groups.map((g) => { const s = groupSeatSummary(board, poll, g.id, grouping); return s.total == null ? '' : `<span style="flex:${s.total};background:${g.color}" title="${e(g.label_ko)} 발표 의석 ${s.total}석"></span>`; }).join('')}</div>
+            <div class="israel-group-grid" data-israel-grouping-view="${grouping}">${groupCards(board,poll,grouping,selected,canSelect)}</div>
+            <p class="israel-preset-caption">의석 조합 살펴보기 <span>같은 조사 안의 산술 합계</span></p><div class="israel-presets" aria-label="의석 조합 예시">${context.presets.map((p) => { const sum = presetSeatSum(board, poll, p.id); return `<button type="button" data-israel-preset="${e(p.id)}" aria-pressed="${presetId === p.id}" ${canSelect && sum.total !== null ? '' : 'disabled'}>${e(p.label_ko)}<b>${sum.total === null ? '합산 보류' : `${sum.total}석`}</b></button>`; }).join('')}</div>
             <section class="israel-coalition" aria-label="선택 명부 의석 계산"><div class="israel-selection-header"><h5>선택한 정당의 의석</h5><button type="button" data-israel-clear ${canSelect ? '' : 'disabled'}>선택 해제</button></div>
                 <div class="israel-selected-chips">${selected.map((id) => partyChip(board, id)).join('') || '<span>위의 정당 또는 조합 예시를 선택하세요.</span>'}</div>
                 <div data-israel-total aria-live="polite">${total.total === null ? '부분 자료는 의석 조합 계산을 보류합니다.' : `<strong>${total.total}<small>석</small></strong><span>${total.reachesMajority ? '산술 과반 도달' : `61석까지 ${total.gap}석`}</span>`}</div>
@@ -107,7 +127,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
 export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {}) => {
     if (!root) return;
     root.closest('.elections-modal-host')?.classList.add('israel-analysis-host');
-    const state = { days: null, pollId: null, selected: [], presetId: null, relationFilter: 'all', today };
+    const state = { days: null, pollId: null, selected: [], presetId: null, grouping: 'cooperation', relationFilter: 'all', today };
     const css = document.createElement('link');
     css.rel='stylesheet'; css.href=new URL('./israel-analysis.css',import.meta.url).href;
     if (!document.querySelector('link[data-israel-style]')) {css.dataset.israelStyle='1';document.head.append(css);}
@@ -124,6 +144,7 @@ export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {})
         root.querySelector('[data-israel-poll]')?.addEventListener('change',(ev) => {state.pollId=ev.target.value;reset();render('[data-israel-poll]');});
         root.querySelectorAll('[data-israel-list]').forEach((cb) => cb.addEventListener('change',() => {state.selected=[...root.querySelectorAll('[data-israel-list]:checked')].map((el)=>el.dataset.israelList);state.presetId=null;render(`[data-israel-list="${cb.dataset.israelList}"]`);}));
         root.querySelectorAll('[data-israel-preset]').forEach((button) => button.addEventListener('click',() => {const p=result.board.coalition_context.presets.find((row)=>row.id===button.dataset.israelPreset);state.selected=[...p.list_ids];state.presetId=p.id;render(`[data-israel-preset="${p.id}"]`);}));
+        root.querySelectorAll('[data-israel-grouping]').forEach((button) => button.addEventListener('click',() => {state.grouping=button.dataset.israelGrouping;render(`[data-israel-grouping="${state.grouping}"]`);}));
         root.querySelectorAll('[data-israel-relation-filter]').forEach((button) => button.addEventListener('click',() => {state.relationFilter=button.dataset.israelRelationFilter;render(`[data-israel-relation-filter="${state.relationFilter}"]`);}));
         root.querySelectorAll('.israel-section-nav a').forEach((link) => link.addEventListener('click',(ev)=>{ev.preventDefault();root.querySelector(link.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'});}));
         root.querySelector('[data-israel-clear]')?.addEventListener('click',()=>{reset();render('[data-israel-clear]');});

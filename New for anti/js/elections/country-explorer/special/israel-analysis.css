@@ -169,3 +169,36 @@
 .israel-connector-refusal { color:#ffb0c1; font-size:22px; }
 
 .israel-share-card footer { font-size:9px; margin-top:9px; color:#9eb3cc; }
+
+/* The active grouping owns card colors; the secondary badge always names its axis. */
+.israel-grouping-control { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:15px 0 10px; }
+.israel-grouping-control button { display:flex; flex-direction:column; gap:3px; text-align:left; padding:13px 15px; border:1px solid #344861; border-radius:9px; background:#142137; color:#a9bcd4; }
+.israel-grouping-control button[aria-pressed=true] { background:#203c50; border-color:#89d4e8; box-shadow:inset 0 2px #89d4e8; color:#e5f7ff; }
+.israel-grouping-control b { font-size:14px; }
+.israel-grouping-control small { font-size:10px; font-weight:400; }
+.israel-grouping-note { padding:12px 14px; border-radius:8px; border:1px solid #30435b; background:#142238; }
+.israel-grouping-note > b { font-size:12px; color:#d1e7f3; }
+.israel-grouping-note p { color:#afc2d7; font-size:11px; }
+.israel-grouping-note > small { font-size:10px; color:#96aec8; }
+.israel-group-grid { align-items:start; }
+.israel-group-badge { display:inline-block; font-size:9px; color:#b2c4d9; margin-bottom:7px; border:1px solid #3a4a60; padding:1px 6px; border-radius:4px; }
+.israel-axis-tag { display:inline-block; margin-top:5px; padding:1px 5px; border:1px solid color-mix(in srgb,var(--tag-color) 40%,transparent); border-radius:4px; font-size:9px; color:var(--tag-color); font-style:normal; line-height:1.5; }
+.israel-pair-list { border-top:1px solid #34445c; padding-top:5px; margin-top:12px; }
+.israel-pair-list > div { padding-top:6px; }
+.israel-pair-caption { font-size:9px; color:#99aec6; }
+.israel-pair-list p { font-size:10px; margin:2px 0; color:#c4d6ea; }
+.israel-pair-list a { font-size:9px; }
+.israel-unpublished,.israel-ideology-sources { margin-top:10px; font-size:10px; color:#9aafc8; }
+.israel-unpublished summary,.israel-ideology-sources summary { cursor:pointer; color:#b2c7de; }
+.israel-unpublished p,.israel-ideology-sources p { font-size:10px; border-top:1px solid #2b3b51; padding-top:6px; }
+.israel-unpublished p span { display:block; color:#93a5bd; font-size:9px; }
+.israel-ideology-sources footer { margin-top:8px; font-size:9px; }
+.israel-preset-caption { padding-top:16px; font-size:12px; color:#cadcee; }
+.israel-preset-caption span { font-size:10px; color:#91a9c3; margin-left:6px; }
+@media(max-width:520px) {
+ .israel-grouping-control { gap:6px; }
+ .israel-grouping-control button { padding:10px; }
+ .israel-grouping-control b { font-size:13px; }
+ .israel-grouping-control small { font-size:9px; }
+ .israel-axis-tag { font-size:10px; }
+}

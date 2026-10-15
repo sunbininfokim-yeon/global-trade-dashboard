@@ -113,6 +113,12 @@ def validate_context(context, known):
         raise ValueError('duplicate or missing coalition group')
     if any(not re.fullmatch(r'#[0-9a-fA-F]{6}', row.get('color', '')) for row in groups):
         raise ValueError('invalid coalition color')
+    families = context.get('ideology_groups', [])
+    family_ids = {row['id'] for row in families}
+    if not families or len(family_ids) != len(families):
+        raise ValueError('duplicate or missing ideology group')
+    if any(not re.fullmatch(r'#[0-9a-fA-F]{6}', row.get('color', '')) for row in families):
+        raise ValueError('invalid ideology color')
     sources = context.get('sources', {})
     for source in sources.values():
         safe_url(source['url'])
@@ -124,6 +130,22 @@ def validate_context(context, known):
             raise ValueError('unknown party or coalition group')
         if not row.get('source_ids') or not set(row['source_ids']) <= sources.keys():
             raise ValueError('party context source missing')
+        if row.get('ideology_group') not in family_ids or not row.get('ideology_note'):
+            raise ValueError('unknown or missing ideology group')
+        if not row.get('ideology_source_ids') or not set(row['ideology_source_ids']) <= sources.keys():
+            raise ValueError('ideology source missing')
+    pairs = context.get('cooperation_pairs', [])
+    if len({row['id'] for row in pairs}) != len(pairs):
+        raise ValueError('duplicate cooperation pair')
+    profile_groups = {row['list_id']: row['group'] for row in profiles}
+    for pair in pairs:
+        if (len(set(pair.get('parties', []))) != 2 or not set(pair['parties']) <= known
+                or any(profile_groups.get(id) != pair.get('group') for id in pair['parties'])):
+            raise ValueError('invalid cooperation pair')
+        if not pair.get('source_ids') or not set(pair['source_ids']) <= sources.keys():
+            raise ValueError('cooperation source missing')
+        date.fromisoformat(pair['event_date'])
+
     kinds = {'electoral_cooperation', 'reported_bloc', 'conditional', 'joint_platform',
              'refusal', 'external_support', 'unknown', 'electoral_refusal'}
     relations = context.get('relationships', [])
