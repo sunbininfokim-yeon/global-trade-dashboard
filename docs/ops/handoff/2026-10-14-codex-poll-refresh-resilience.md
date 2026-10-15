@@ -1,53 +1,46 @@
-# 일일 여론조사 수집 안정성과 ME 재진행 인수
+# 일일 여론조사 수집 복구 — 2026-10-15 갱신
 
-사용자 2026-10-14 요청: 정기 수집 문제를 먼저 고치고 최근 보류 발표를 원문 검토한 뒤 ME를 진행한다. 자동수집이 중단되지 않도록 코드를 보강하고 운영 반영은 Claude가 검토할 수 있게 준비한다. 기존 병합·배포 보류는 유지한다.
+사용자 요청: 자동수집을 지속하도록 보강하고 ME·최근 보류 발표를 검토한다. 10/15에는 제공한 취합 사이트로 수집 경로를 확대하며 베팅 지표는 이후로 미룬다. 병합·운영 workflow dispatch·배포는 사용자가 확정한다.
 
 - checkout: `/Users/yeoninair/Documents/해운 데이터/us-poll-refresh-resilience-20261014`
-- branch: `codex/poll-refresh-resilience-20261014`
-- 시작 main: `80497277`; 주별 packet 없는 공용 기반 PR이다.
-- 소유권 예외는 이 정확한 브랜치의 `.github/workflows/us_election_polls_refresh.yml` 한 파일만이다. `deploy.yml`, Worker, UI 및 금융 workflow는 변경하지 않는다.
+- branch: `codex/poll-refresh-resilience-20261014`, PR #557. 주별 packet 없는 공용 기반이다.
+- 이번 재검증 main: `57941ec0722940966abfe6c077d4c34db76efd7c`.
+- workflow 예외는 `.github/workflows/us_election_polls_refresh.yml` 한 파일뿐이다. deploy.yml·Worker·UI·금융 workflow·주별 입력은 변경하지 않는다.
 
-## 확인된 운영 장애와 변경
+## 아직 운영 복구 완료가 아니다
 
-10/12–14 일일 polling 실행은 `validate`의 날짜/fixture 오류로 실패했고 `refresh`가 생략됐다. 10/14 실패 run은 `38489117223`이다. 공개 live/health JSON의 마지막 실제 수집은 `2026-10-11T00:16:19.749666+00:00`, as_of는 10/11이다. old health의 ok만으로 현재 수집 성공이라 판정하지 않는다.
+10/15 확인한 일일 실행 [38656771365](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/38656771365)는 `test_poll_nc_primary`의 `future state polling snapshot` 오류로 실패했고 refresh가 생략됐다. NC 자체의 새 state as_of보다 과거 national as_of를 테스트에 사용했다. 이 테스트의 검증 시각만 NC 관측일 이상으로 맞춘다. 데이터 수집일·원문 검토일·실제 미래 날짜 거부는 그대로다.
 
-기존 검증을 우회하지 않고 별도 read-only `capture` job을 먼저 실행한다. 회귀 검사가 실패해도 실제 API·검토 원문 입력은 `us-polls-source-capture` artifact에 14일 보관된다. `refresh`는 **capture와 validate 모두 성공한 경우만** 실행하고 이 체크포인트를 재검증한다. 두 번째 API 요청이나 새 수집일을 만들지 않는다. 일일 06:10 KST cron, workflow 이름, 기존 게시 충돌 재생성/3회 재시도, 배포 연결은 유지한다.
+[배포 live](https://chokemonitor.com/public/data/usa_election_live_polls_v1.json)와 [health](https://chokemonitor.com/public/data/usa_election_live_polls_status_v1.json)를 실제 GET한 결과 as_of=10/11, fetched/checked=`2026-10-11T00:16:19.749666+00:00`이다. health의 옛 ok는 현재 수집 성공의 증거가 아니다. #557의 코드와 PR 검증만으로 운영 반영을 주장하지 않는다.
 
-API의 429·500·502·503·504 및 일시 네트워크 오류는 총 3회로 제한해 재시도한다. Retry-After의 수치 지연은 최대 30초다. 403·다른 도메인 redirect·빈 응답·스키마 오류는 성공으로 바꾸지 않는다. 수집 전용 실패는 attempt 파일만 쓰며 공개 health/마지막 정상 JSON은 건드리지 않는다.
+## 최종 동작
 
-의석 전망의 의존 파일 부족은 forecast/health의 명시적 held 상태로 남긴다. 유효 여론조사 생성까지 실패 exit로 바꾸지 않으므로 검증된 여론조사는 계속 게시할 수 있다. 원자료 캡처 성공을 검증·게시·배포 성공과 혼동하지 않는다. 실제 API 장애나 검증 실패 때 게시를 보장하는 기능은 아니다.
+1. 별도 read-only capture job은 회귀 검사와 독립 실행한다. 실제 API 응답을 먼저 `.provider.json`에 기록하고, 보완 원문·명부 검토를 통과한 전체 재실행 체크포인트와 attempt 상태를 따로 기록한다. 뒤의 보완 출처 검토가 실패해도 이미 받은 API 감사 자료는 남는다. provider-only 감사 파일은 게시용 checkpoint로 재생할 수 없다.
+2. 실제 270toWin 공개 목록 탐색을 별도 step으로 실행한다. primary capture 실패 때도 시도하며, 그 장애가 유효 VoteHub 게시를 막지 않는다. 탐색 JSON은 우세 집계 입력이 아니다. 자세한 검토는 `2026-10-15-codex-poll-source-expansion.md`.
+3. 두 단계의 자료는 `us-polls-source-capture` artifact에 14일 보관한다. 게시에는 capture와 validate의 성공이 모두 필요하다. refresh는 보관된 체크포인트를 재검증하며 다시 API를 요청하거나 새 수집 시각을 만들지 않는다.
+4. VoteHub 429·500·502·503·504와 일시 네트워크 오류는 총3회까지 재시도하고 숫자 Retry-After는30초로 제한한다. 403·잘못된 redirect·빈/변경 스키마는 성공으로 바꾸지 않는다.
+5. 유효 여론조사와 의석 전망 실패를 구분한다. 의석 전망 의존 파일이 부족하면 forecast/health는 hold이지만 검증된 여론조사는 게시할 수 있다. API/검증 실패 시 게시를 보장하거나 검증을 우회하는 기능은 아니다.
+6. 기존 일일06:10KST cron·workflow 이름·게시 충돌 시 최신 main 재생성/3회 재시도·배포 연결은 유지한다. 생성 JSON을 텍스트 병합하지 않는다.
 
-## 실제 수집 검증
+## 실제 신규 수집과 로컬 재생
 
-`--capture-only --capture-output /private/tmp/poll-evidence-20261014/full-run-capture.json`을 한 번 실제 실행했다. API 1,484행과 보완 포함 1,509행을 `2026-10-14T05:14:02.840821+00:00`에 캡처했다. 공개 데이터 diff는 없다. 모든 raw 행이 본선 집계 적격이라는 뜻은 아니다. 로컬 경로는 임시 검증 자료이며 GitHub에서 수집됐거나 배포된 artifact가 아니다.
+10/15 실제 capture: `2026-10-15T06:36:49.172887+00:00`, VoteHub1,484행·보완 포함1,509행. `/private/tmp/us-poll-expansion-20261015/us-polls-capture*.json`은 로컬 임시 검증 자료이며 GitHub artifact나 배포 데이터가 아니다. 원자료는 전날과 같은 행 수이며, 현재 API가 다른 모든 취합 사이트의 새 발표까지 포함한다는 뜻이 아니다.
 
-## 최근 7건 원문 검토
+최신 main의 검토 목록으로 이 실제 checkpoint를 `/private/tmp/us-poll-expansion-20261015/local-replay/`에서 재검증했다. 관측151개(집계 적격105·참고46), 보류752개이며 506개 선거의 관측 범위와 분리한다. 최근7일 우세 신호는 NC상원·TX상원의 단일 기관2곳이다. TX ReconMR의10/8 종료 조사는10/15 기준7일(10/9–15) 밖이지만14일에는 남는다. FL은 강제 양자 재질문·정파 의뢰 참고 전용이다. MN-01 신규 SurveyUSA 입력은 #564가 아직 미병합이라 이 main 재생에는 편입되지 않았다. 결측을 승패로 채우지 않는다.
 
-정확한 발표·API 지문을 묶는 주별 검토 입력으로 편입해야 하며 기관의 모든 후속 발표를 자동 승인하지 않는다. 기관 수·AAPOR 참여에 정확도 등급을 붙이지 않는다. 아래 검토는 10/14 기준이다.
+## 최근 발표 및 운영 반영 순서
 
-| 주/직위 | API ID | 원문 대조 | 처리 근거 |
-|---|---|---|---|
-| TX 상원 | us-202recc152b3f7 | ReconMR 10/5–8 LV617, Talarico48 / Paxton44 | 일반 named-ballot. 원문에는 ReconMR만 확인되므로 API의 Siena 공동표기는 미확인으로 별도 기록하고 기관 그룹은 reconmr로 분리 |
-| TX 주지사 | gov202rec101a5410 | 같은 파동, Abbott48 / Hinojosa47 | 상원 문항과 별도 직위. 4.4pp 발표 sampling error·confidence level 미공개. 격차를 확정 승리로 바꾸지 않음 |
-| NC 상원 | us-202surbcf9e1be | SurveyUSA 10/7–11 LV643, Cooper54 / Whatley40 | WRAL-TV·WSOC-TV 의뢰. Q3 일반 ballot, 발표 credibility interval5pp를 일반 sampling MOE로 바꾸지 않음 |
-| MN 하원01 | us-202sur83d49b6b | SurveyUSA 10/4–9 LV565, Jake Johnson46 / Finstad44 | KAAL-TV 의뢰. Q7 일반 ballot, credibility interval4.6pp. 명부 Jacob "Jake" Johnson과의 정확한 별칭 검토 필요 |
-| FL 주지사 | gov202chaea67d341 | Change Research 10/8–10 LV920, Jolly47 / Donalds47 | RV1106과 LV920 구분. 미정 후 양자 재질문·API partisan flag는 참고 전용. 전체 조사 modeled error3.1pp를 LV sampling MOE로 쓰지 않음 |
-| AZ 주지사 | gov202equ8231431c | Equis 원문은 9/1–9, RV1214 | API 10/1–9와 불일치. 원문 LV 문항의 정확한 표본도 미확인. 최근7일 조사로 편입하지 않음 |
-| TX 상원 | us-202quaee83ce98 | Quantus 원문 URL 접근은 되나 본문/방법 표가 나타나지 않음 | API 수치만으로 원문 검토 완료라 할 수 없어 보류 |
+이미 main에 포함된 #524·#529·#540·#554·ME #541·WA #555·NC #562·TX #566·FL #568은 재병합하지 않는다. ME는 명부·원문 자료를 보강했어도 마지막 API 조사 종료일이10/5라 최신7일 자료가 없을 수 있다. 연방 IE 감사 부록과 전국 finance 게시 금액도 별도다.
 
-원문: [ReconMR 발표](https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf), [NC SurveyUSA 결과](https://results.surveyusa.com/client/PollReport.aspx?g=0a876c84-9a95-4995-9218-82b1015f5d77), [MN SurveyUSA 결과](https://results.surveyusa.com/client/PollReport.aspx?g=3605b38b-d541-4db4-9d70-f6d4875faeb8), [FL 방법론·결과](https://changeresearch.com/research/2026/2026-10-12-florida-aapor-methodology-statement), [AZ Equis 원문](https://www.weareequis.us/research/memo-arizona-voter-research---sept-2026), [TX Quantus 원문](https://quantusinsights.org/polling/f/texas-senate-paxton-and-talarico-in-a-near-tie).
+TX Quantus의 초기 보류는 해소됐다. 연결된 실제 PDF와 대조해 전체854명과 Q1유효839명을 분리했고47.2/46.7/2.2를 검토했다(#566). 새 기관의 미래 발표가 모두 승인된 것은 아니다. AZ Equis는 API10월과 원문9월이 충돌해 최신 조사로 편입하지 않았다.
 
-ReconMR PDF SHA256 `7ba2aafe683effd2082c32abce5009f8e6895c97e7fe6000a0d828b01f0e2d7f`. SurveyUSA 최초 URL은 630바이트 frameset이므로 이것만 hash/검토하지 않고 실제 main/left/methodology 문서를 대조했다. 지문 영수증은 `/private/tmp/poll-evidence-20261014/surveyusa-documents.json`이다. FL 직접 HTTP 수집은 403이며 브라우저/웹 원문 검토와 자동 원문 다운로드 가능 여부를 구분한다. 공개 polling API는 새 키 없이 조회된다.
+권장 남은 순서: **#557 공용 수집 복구 → MN #564 독립 입력**. 새 주별 PR은 최신 main 또는 명시한 packet-free 기반에서 분기한다. 사용자가 통합한 뒤 기존 일일 실행의 capture·validate·refresh·게시 commit·deploy run·배포 JSON의 실제 새 시각을 차례로 확인해야 복구 완료다. 운영 실행은 이 작업에서 하지 않았다.
 
 ## 검사
 
-- polling 전체 458개, finance 68개, 선거 JS63개, 소유권/ops14개 통과.
-- `check_deploy_chain.py`: main 게시 workflow39개 모두 연결. deploy.yml diff 없음.
-- 새 검사에는 수집 성공/실패 때 공개 데이터 보존, replay 오용 금지, source denial/schema fail-closed, 제한 retry, 의석 전망 실패와 여론조사 게시 분리가 있다.
-- production workflow dispatch·main 병합·배포 없음. 실제 GitHub PR 검사 상태는 PR에 별도 기록한다.
-
-## 운영 담당 반영 순서
-
-#524 → #529 → #540은 10/14 main에 이미 병합됐다. 재병합하지 않는다. #554는 하위 state CLI의 catalog validation clock을 고치는 별도 공용 PR이며 ME/WA 입력 활성화 전에 필요하다. 이 수집 안정성 PR과 #554는 같은 파일을 수정하지 않아 독립 검토할 수 있다. 그 뒤 ME #541, WA #555와 새 발표 주별 입력을 각각 최신 main 기준으로 검증한다. 주별 PR끼리 다시 stack하지 않는다.
-
-사용자가 운영 반영을 확정하면 공용 기반을 먼저 반영하고 기존 polling workflow의 실제 실행을 확인한다. capture·validate·refresh·게시 main commit·deploy run·배포 live/health JSON의 새 시각을 각각 확인한다. 검사가 실패하면 보관된 source artifact를 현재 코드·검토 목록으로 재검증하고 게시하며 생성 JSON을 손으로 합치지 않는다. API 키·유료 접근이 새로 필요한 경로만 멈추고 사용자에게 요청한다. 재설정은 사용자가 직접 클릭한다.
+- native pending state 재생성 및 projection 성공. 원래 입력으로 재생성했으며 새 수집을 가장하지 않았다. 생성 결과는 커밋하지 않는다.
+- polling500개, finance68개, 선거 JS74개, ops/소유권14개 통과. JS의 sparse checkout 제외 이스라엘 fixture는 HEAD에서 읽기 복원해 확인했다.
+- 이후 provider 비교 파일 손상에도 보완 탐색이 보존되는 검사를 추가해 관련20개 재검사 통과.
+- deploy-chain39개 연결 통과. deploy.yml diff 없음.
+- 새 검사는 API 성공 뒤 후속 검토 실패 시 raw 보존·오용한 replay 거부·제한 retry·NC 날짜·출처 탐색의 후보 누락/광고/다중 문항/날짜·출처 장애를 검증한다.
+- 로컬 검증과 GitHub PR 검사, 병합·배포는 각각 별도로 확인한다. API 키나 유료 권한이 새로 필요한 수집만 중단하고 요청하며, reset은 사용자만 클릭한다.

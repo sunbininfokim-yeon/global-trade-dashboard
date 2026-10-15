@@ -46,6 +46,15 @@ jobs:
         continue-on-error: true
         working-directory: New for anti/scripts/election_watch
         run: python3 refresh_live_polls.py --capture-only --capture-output "$RUNNER_TEMP/us-polls-capture.json"
+      - name: Discover supplemental individual poll links
+        if: always()
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        # Discovery cannot alter or block the primary polling publication.
+        run: >-
+          python3 discover_poll_sources.py
+          --output "$RUNNER_TEMP/us-polls-capture.discovery.json"
+          --provider-capture "$RUNNER_TEMP/us-polls-capture.provider.json"
       - name: Preserve source checkpoint and attempt status
         if: always()
         uses: actions/upload-artifact@v4
