@@ -14,8 +14,10 @@ Source: ORNL DAAC MODIS/VIIRS Subset REST API (modis.ornl.gov/rst), MOD13Q1,
 16-day composites at 250 m, February 2000 onward.
 
 Each point is a BOX_KM box around the station. Per composite the box is
-reduced to the median and the 75th percentile of pixels flagged good or
-marginal by the pixel-reliability band. There is no land-cover mask: in the
+reduced to the median and the 75th percentile of its valid pixels. The
+pixel-reliability band is not requested: it doubles the calls, and MOD13Q1
+is already a 16-day maximum-value composite, which keeps the greenest
+cloud-free look at each pixel. There is no land-cover mask: in the
 Pampas the box is overwhelmingly cropland and the median ignores the town at
 its centre, while the 75th percentile leans further toward the greenest
 fields. In the Chaco and NOA boxes forest and scrub share the footprint, so
@@ -29,6 +31,7 @@ import argparse
 import json
 import os
 import time
+from datetime import datetime
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -43,12 +46,19 @@ OUT = os.path.join(HERE, "condition", "ndvi_points.csv")
 RST = "https://modis.ornl.gov/rst/api/v1"
 PRODUCT = "MOD13Q1"
 BAND_NDVI = "250m_16_days_NDVI"
-BAND_REL = "250m_16_days_pixel_reliability"
-BOX_KM = 3            # half-width: a ~6x6 km footprint, ~27x27 pixels
+BOX_KM = 2            # half-width: a ~4x4 km footprint, ~17x17 pixels
 MAX_DATES = 10        # API limit per request
 SCALE = 1e-4
-GOOD = (0, 1)         # reliability: 0 good, 1 marginal; 2 snow, 3 cloud, -1 fill
-WORKERS = 4
+VALID_MIN = -2000     # MOD13Q1 fill is -3000; valid NDVI is -2000..10000
+# Composites from May through July serve no crop window (wheat starts in
+# August, the summer crops end in April), so they are not requested.
+SKIP_MONTHS = (5, 6, 7)
+WORKERS = 6
+# Stop requesting after this many minutes and write what has arrived, so a slow
+# API day costs one run's tail instead of the whole run (the job is killed at
+# its timeout before the commit step). The next run picks up where this left.
+BUDGET_MIN = float(os.environ.get("NDVI_BUDGET_MIN", "200"))
+_T0 = time.monotonic()
 
 
 def log(msg):
@@ -66,7 +76,7 @@ def get_json(url, attempts=4, timeout=180):
             if i == attempts - 1:
                 raise
             log(f"retry {i + 1} after {e}")
-            time.sleep(5 * (i + 1))
+            time.sleep(30 * 2 ** i)    # ORNL answers 502 when busy
 
 
 def points():
@@ -92,8 +102,8 @@ def subset(lat, lon, band, start, end):
             for s in js["subset"]}
 
 
-def reduce(ndvi, rel):
-    ok = np.isin(rel, GOOD) & (ndvi > -2000)
+def reduce(ndvi):
+    ok = ndvi > VALID_MIN
     n = int(ok.sum())
     if n == 0:
         return None, None, 0, len(ndvi)
@@ -102,16 +112,27 @@ def reduce(ndvi, rel):
 
 
 def collect_point(name, lat, lon, have):
-    todo = [d for d in dates(lat, lon) if d not in have]
+    # The API takes a start and end date, not a list, so chunks are cut from
+    # the full composite calendar (at most MAX_DATES per range) and then
+    # trimmed to the wanted dates inside each.
+    every = dates(lat, lon)
+    want = {d for d in every if d not in have
+            and datetime.strptime(d[1:], "%Y%j").month not in SKIP_MONTHS}
+    chunks = []
+    for i in range(0, len(every), MAX_DATES):
+        c = [d for d in every[i:i + MAX_DATES] if d in want]
+        if c:
+            chunks.append(c)
     rows = []
-    for i in range(0, len(todo), MAX_DATES):
-        chunk = todo[i:i + MAX_DATES]
+    for i, chunk in enumerate(chunks):
+        if time.monotonic() - _T0 > BUDGET_MIN * 60:
+            log(f"{name}: time budget reached, {len(chunks) - i} requests left")
+            break
         nd = subset(lat, lon, BAND_NDVI, chunk[0], chunk[-1])
-        rl = subset(lat, lon, BAND_REL, chunk[0], chunk[-1])
         for md, (cal, v) in nd.items():
-            if md in have or md not in rl:
+            if md not in want:
                 continue
-            med, p75, n, tot = reduce(v, rl[md][1])
+            med, p75, n, tot = reduce(v)
             rows.append({"point": name, "modis_date": md, "date": cal,
                          "ndvi_median": med, "ndvi_p75": p75,
                          "n_good": n, "n_pixels": tot})
