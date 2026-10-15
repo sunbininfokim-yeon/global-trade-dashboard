@@ -1,10 +1,348 @@
 {
-  "generated_at": "2026-10-09T20:19:23.575272+00:00",
+  "generated_at": "2026-10-15T06:58:59.426576+00:00",
   "season": 2027,
   "country": "Brazil",
   "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
   "methodology_note": "One model per region-crop, each implementing the derived variables of its own guide in Regions/브라질. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds.",
   "regions": {
+    "mato_grosso_soja": {
+      "label": "Mato Grosso soybeans",
+      "crop": "soja",
+      "states": [
+        "MT"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 3558.2,
+      "range_68": [
+        3324.0,
+        3792.4
+      ],
+      "range_95": [
+        3099.2,
+        4017.2
+      ],
+      "trend": 3558.2,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": 1.8,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3109.0,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.098,
+        "weather_skill": -0.098,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "oni_season",
+            "effect_pct": -2.2,
+            "is_weather": true
+          },
+          {
+            "feature": "days_late",
+            "effect_pct": -1.29,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_veg",
+            "effect_pct": 0.5,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_rep",
+            "effect_pct": 0.21,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 234.2
+      },
+      "provenance": {
+        "guide": "Regions/브라질/마투그로수/대두/대두_상세분석_및_수식.md",
+        "caveat": "NDVI_Peak_Value from §3B is omitted: MODIS starts in 2000 and would cut the record from 43 seasons to 25.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "3 of 4 features not yet observed, filled from 41 past seasons: precip_veg, precip_rep, oni_season"
+        ]
+      }
+    },
+    "mato_grosso_milho": {
+      "label": "Mato Grosso corn (safrinha)",
+      "crop": "milho",
+      "states": [
+        "MT"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 7770.4,
+      "range_68": [
+        7074.9,
+        8466.0
+      ],
+      "range_95": [
+        6407.2,
+        9133.7
+      ],
+      "trend": 7770.4,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": -9.65,
+      "last_actual": {
+        "year": 2024,
+        "yield": 6698.0,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.174,
+        "weather_skill": -0.174,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "precip_silking",
+            "effect_pct": 2.47,
+            "is_weather": true
+          },
+          {
+            "feature": "silking_stress",
+            "effect_pct": 1.67,
+            "is_weather": true
+          },
+          {
+            "feature": "time_window",
+            "effect_pct": 1.22,
+            "is_weather": true
+          },
+          {
+            "feature": "planting_doy",
+            "effect_pct": -1.12,
+            "is_weather": true
+          },
+          {
+            "feature": "vpd_peak_dry",
+            "effect_pct": -0.65,
+            "is_weather": true
+          },
+          {
+            "feature": "ers_doy",
+            "effect_pct": 0.38,
+            "is_weather": true
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": -0.2,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 695.5
+      },
+      "provenance": {
+        "guide": "Regions/브라질/마투그로수/옥수수/옥수수_상세분석_및_수식.md",
+        "caveat": "Planting date is derived from the modelled soy onset plus a fixed 125-day soy cycle, not observed. SIDRA reports one combined corn figure, but in Mato Grosso safrinha is the great majority of it.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "4 of 7 features not yet observed, filled from 42 past seasons: silking_stress, vpd_peak_dry, precip_silking, oni_season"
+        ]
+      }
+    },
+    "parana_soja": {
+      "label": "Paraná + Rio Grande do Sul soybeans",
+      "crop": "soja",
+      "states": [
+        "PR",
+        "RS"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 3399.2,
+      "range_68": [
+        2926.9,
+        3871.4
+      ],
+      "range_95": [
+        2473.5,
+        4324.8
+      ],
+      "trend": 3351.5,
+      "weather_effect_pct": 1.42,
+      "point_basis": "model",
+      "model_weather_effect_pct": 1.42,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3023.0,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.477,
+        "weather_skill": 0.477,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "spi3_dec_feb",
+            "effect_pct": 17.96,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_dec_feb",
+            "effect_pct": -6.51,
+            "is_weather": true
+          },
+          {
+            "feature": "tmax_jan",
+            "effect_pct": -5.12,
+            "is_weather": true
+          },
+          {
+            "feature": "planting_delay",
+            "effect_pct": -1.7,
+            "is_weather": true
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": -0.92,
+            "is_weather": true
+          },
+          {
+            "feature": "waterlogging",
+            "effect_pct": -0.85,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": true,
+        "sigma_kg_ha": 472.3
+      },
+      "provenance": {
+        "guide": "Regions/브라질/남부지방_파라나/대두/대두_상세분석_및_수식.md",
+        "caveat": "",
+        "non_weather_drivers": "",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "5 of 6 features not yet observed, filled from 42 past seasons: precip_dec_feb, tmax_jan, waterlogging, oni_season, spi3_dec_feb"
+        ]
+      }
+    },
+    "parana_milho": {
+      "label": "Paraná + Rio Grande do Sul corn",
+      "crop": "milho",
+      "states": [
+        "PR",
+        "RS"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 4822.3,
+      "range_68": [
+        3878.2,
+        5766.5
+      ],
+      "range_95": [
+        2971.9,
+        6672.8
+      ],
+      "trend": 4822.3,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": -0.0,
+      "last_actual": {
+        "year": 2024,
+        "yield": 5536.7,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.245,
+        "weather_skill": -0.245,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "hotdays_silking",
+            "effect_pct": -0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": 0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "vpd_peak",
+            "effect_pct": -0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_nov_jan",
+            "effect_pct": -0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "silking_cwd",
+            "effect_pct": 0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "spi3_jan",
+            "effect_pct": -0.0,
+            "is_weather": true
+          },
+          {
+            "feature": "frost_days",
+            "effect_pct": 0.0,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 944.1
+      },
+      "provenance": {
+        "guide": "Regions/브라질/남부지방_파라나/옥수수/옥수수_상세분석_및_수식.md",
+        "caveat": "The SIDRA target mixes first-season and safrinha corn, which in Paraná are both large. The guide's methodology addresses the summer crop only, so the signal is diluted by construction.",
+        "non_weather_drivers": "SIDRA publishes one combined corn figure per state. In Paraná the first-season and safrinha crops are both large and their area split shifts with soybean and corn prices, so part of the year-to-year movement in this target is an acreage-mix decision rather than anything the weather did. This is not 'weather does not move corn' -- the direction is the same as soy. Detrended log yields for Paraná corn and soy correlate at +0.70 across the shared record, and corn's own weather features move it the agronomically expected way (VPD_peak -0.52, SPI3_Jan +0.42 against corn's own yield). But those same weather features correlate even more strongly with soy's yield (-0.61, +0.59) than with corn's own recorded yield -- evidence that the corn target carries real weather signal plus extra non-weather noise on top, not that weather fails to reach this crop.",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "6 of 7 features not yet observed, filled from 41 past seasons: vpd_peak, precip_nov_jan, hotdays_silking, oni_season, silking_cwd, spi3_jan"
+        ]
+      }
+    },
     "parana_trigo": {
       "label": "Paraná + Rio Grande do Sul wheat",
       "crop": "trigo",
@@ -14,17 +352,19 @@
       ],
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2516.1,
+      "point": 2872.9,
       "range_68": [
-        2128.3,
-        2903.9
+        2482.3,
+        3263.5
       ],
       "range_95": [
-        1756.1,
-        3276.2
+        2107.4,
+        3638.5
       ],
       "trend": 2872.9,
-      "weather_effect_pct": -12.42,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": -12.46,
       "last_actual": {
         "year": 2024,
         "yield": 2455.6000000000004,
@@ -37,9 +377,9 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
-        "skill_vs_trend_only": 0.007,
-        "weather_skill": 0.007,
-        "weather_driven": true,
+        "skill_vs_trend_only": -0.02,
+        "weather_skill": -0.02,
+        "weather_driven": false,
         "non_weather_features": [],
         "top_effects": [
           {
@@ -78,17 +418,293 @@
             "is_weather": true
           }
         ],
-        "beats_trend": true,
-        "sigma_kg_ha": 387.8
+        "beats_trend": false,
+        "sigma_kg_ha": 390.6
       },
       "provenance": {
         "guide": "Regions/브라질/남부지방_파라나/밀/밀_상세분석_및_수식.md",
         "caveat": "Del Ponte's logistic coefficients are not given in the guide, so the FHB weather features are fed to the yield model directly instead of through a calibrated P(Epidemic). Anthesis is fixed at September rather than tracked per season.",
         "non_weather_drivers": "",
-        "weather_through": "2026-10-04",
-        "critical_window_observed": 0.533,
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.574,
         "season_complete": false,
         "notes": []
+      }
+    },
+    "matopiba_soja": {
+      "label": "MATOPIBA soybeans",
+      "crop": "soja",
+      "states": [
+        "BA",
+        "MA",
+        "PI",
+        "TO"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 3616.8,
+      "range_68": [
+        3154.8,
+        4078.8
+      ],
+      "range_95": [
+        2711.3,
+        4522.2
+      ],
+      "trend": 3616.8,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": -0.12,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3484.75,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.219,
+        "weather_skill": -0.219,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "oni_season",
+            "effect_pct": -2.1,
+            "is_weather": true
+          },
+          {
+            "feature": "gwetroot_rep_mean",
+            "effect_pct": -0.4,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 462.0
+      },
+      "provenance": {
+        "guide": "Regions/브라질/MATOPIBA/대두/대두_상세분석_및_수식.md",
+        "caveat": "CWSI is replaced by a Tmax/VPD stress proxy -- satellite canopy temperature needs a thermal-infrared feed. GWETROOT (MERRA-2 reanalysis root-zone wetness, restored from the earlier brazil_soy_model.py) replaces the fixed sand-fraction constant as of 2026-08-03; it is simulated, not a satellite measurement, which is what a later SMAP step would improve on.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "2 of 2 features not yet observed, filled from 43 past seasons: gwetroot_rep_mean, oni_season"
+        ]
+      }
+    },
+    "matopiba_algodao": {
+      "label": "MATOPIBA cotton",
+      "crop": "algodao",
+      "states": [
+        "BA",
+        "MA",
+        "PI",
+        "TO"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 4764.1,
+      "range_68": [
+        4396.6,
+        5131.7
+      ],
+      "range_95": [
+        4043.7,
+        5484.6
+      ],
+      "trend": 4764.1,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": 0.41,
+      "last_actual": {
+        "year": 2024,
+        "yield": 4320.44,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.474,
+        "weather_skill": -0.474,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "top_effects": [
+          {
+            "feature": "heat_days_32",
+            "effect_pct": -2.29,
+            "is_weather": true
+          },
+          {
+            "feature": "flowering_precip",
+            "effect_pct": 2.18,
+            "is_weather": true
+          },
+          {
+            "feature": "flowering_heat_penalty",
+            "effect_pct": -1.56,
+            "is_weather": true
+          },
+          {
+            "feature": "flowering_doy",
+            "effect_pct": -1.41,
+            "is_weather": true
+          },
+          {
+            "feature": "harvest_rainfall",
+            "effect_pct": 1.09,
+            "is_weather": true
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": -0.91,
+            "is_weather": true
+          },
+          {
+            "feature": "boll_heat_penalty",
+            "effect_pct": 0.73,
+            "is_weather": true
+          },
+          {
+            "feature": "gwetroot_flowering_mean",
+            "effect_pct": 0.36,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 367.6
+      },
+      "provenance": {
+        "guide": "Regions/브라질/MATOPIBA/면화/면화_상세분석_및_수식.md",
+        "caveat": "Yield only. The guide's second target -- fibre quality/Micronaire -- has no open data series, so the two-output structure collapses to one. The NDVI classifier that would date flowering is replaced by the degree-day threshold from the same guide. Training starts in 2000: the pre-2000 smallholder crop is a different system. GWETROOT (MERRA-2 reanalysis root-zone wetness) was added over the ADD-based flowering window as of 2026-08-03, restoring what the earlier brazil_soy_model.py had and this package originally lacked entirely for cotton. It is simulated, not a satellite measurement -- SMAP or GRACE would be the next step if this does not resolve the gap.",
+        "non_weather_drivers": "The 1999-2000 jump is a change of production system -- relocation to the Cerrado, new cultivars, scale and management -- not a good weather year. Note it is not irrigation: about 92% of Brazil's cotton area is rainfed, and Brazil leads the world in rainfed lint yield. The largest single non-weather driver inside the modern era is the boll weevil, which can take up to 70% of a crop and whose pressure depends on planting-date coordination and control programmes rather than on climate. Published work also finds MODIS NDVI adds little to upland cotton yield models over a trend baseline (Johnson, ORNL), so satellite greenness is unlikely to recover what is missing here.",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.0,
+        "season_complete": false,
+        "notes": [
+          "8 of 8 features not yet observed, filled from 43 past seasons: flowering_heat_penalty, boll_heat_penalty, harvest_rainfall, heat_days_32, flowering_doy, flowering_precip, gwetroot_flowering_mean, oni_season"
+        ]
+      }
+    },
+    "sp_cana": {
+      "label": "São Paulo sugarcane",
+      "crop": "cana",
+      "states": [
+        "SP"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 77256.9,
+      "range_68": [
+        73431.8,
+        81082.1
+      ],
+      "range_95": [
+        69759.6,
+        84754.2
+      ],
+      "trend": 77256.9,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "model_weather_effect_pct": 0.97,
+      "last_actual": {
+        "year": 2024,
+        "yield": 77532.0,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.158,
+        "weather_skill": -0.158,
+        "weather_driven": false,
+        "non_weather_features": [
+          "lag1"
+        ],
+        "top_effects": [
+          {
+            "feature": "cycle_deficit_18mo",
+            "effect_pct": -0.22,
+            "is_weather": true
+          },
+          {
+            "feature": "cycle_deficit",
+            "effect_pct": -0.19,
+            "is_weather": true
+          },
+          {
+            "feature": "water_stress_fraction",
+            "effect_pct": -0.18,
+            "is_weather": true
+          },
+          {
+            "feature": "spi12",
+            "effect_pct": 0.17,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_12mo",
+            "effect_pct": 0.15,
+            "is_weather": true
+          },
+          {
+            "feature": "spi6",
+            "effect_pct": 0.14,
+            "is_weather": true
+          },
+          {
+            "feature": "heat_days",
+            "effect_pct": -0.13,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_6mo",
+            "effect_pct": 0.12,
+            "is_weather": true
+          },
+          {
+            "feature": "lag1",
+            "effect_pct": 0.1,
+            "is_weather": false
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": 0.04,
+            "is_weather": true
+          },
+          {
+            "feature": "frost_days",
+            "effect_pct": 0.0,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": false,
+        "sigma_kg_ha": 3825.2
+      },
+      "provenance": {
+        "guide": "Regions/브라질/상파울루/사탕수수/사탕수수_상세분석_및_수식.md",
+        "caveat": "Stage 1 of the guide is DSSAT-CANEGRO, which is not runnable without the simulator and its calibrated genetic coefficients. Y_sim is therefore absent and the technology trend carries the baseline instead; WS_photo is a bucket-balance surrogate. The guide's NDVI_Max is also absent (MODIS starts in 2000). This is the largest departure from any guide in the set.",
+        "non_weather_drivers": "Sugarcane is a ratoon crop, replanted only every five to seven years, so much of any season's yield is the age profile of the standing crop -- how much of São Paulo's area is first-cut versus fifth-cut. That is set by replanting investment, variety turnover and mill economics, none of which appears in any weather feed. Detrended yield moves only about 3% a year across the whole record (2.7% in 1985-99, 3.1% in 2013-24). This is the published finding, not a shortcoming of this model: Dias & Sentelhas (Field Crops Research, 2017) ran all three standard simulators -- FAO-AZM, DSSAT/CANEGRO and APSIM-Sugarcane, including the CANEGRO this guide asks for -- against commercial Brazilian fields and got MAE above 29 t/ha with R2 below 0.54, attributing the failure to 'the lack of coefficients accounting for crop management'. Adding a ratoon-decline management factor (kdec) moved them to MAE 13-15 t/ha and R2 0.58-0.72. Climate alone does not forecast this crop for anyone. lag1 is carried here to represent stand persistence, but it is a proxy for management, not a climate signal. This is a different kind of perennial problem from oil palm or coffee, not the same one. Palm oil's multi-year sensitivity is a fixed physiological lag -- drought forces sex differentiation in flowers up to 24 months before the fruit they become is harvested, so a properly lagged weather index (12-24mo cumulative deficit) can recover the signal, and this is standard practice. Cane's dominant variance driver, ratoon age, has no such weather-lag mechanism at all -- it is a replanting-investment decision. This model already tried the multi-year-weather approach the guide itself asks for (12-18mo cumulative deficit, SPI-12) and weather-only skill stayed negative (-13.6%): more lag months did not help, because the missing driver was never weather-shaped to begin with. (lag1's own standardised effect is only +0.1%, the weakest of eleven features here -- even the management proxy barely moves this model; that is how little of cane's variance any of these terms reach.)",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.049,
+        "season_complete": false,
+        "notes": [
+          "lag for 2026 uses this model's own forecast",
+          "10 of 11 features not yet observed, filled from 41 past seasons: cycle_deficit, cycle_deficit_18mo, water_stress_fraction, precip_6mo, precip_12mo, frost_days, heat_days, oni_season, spi6, spi12"
+        ]
       }
     },
     "sp_cafe": {
@@ -100,17 +716,19 @@
       ],
       "season": 2027,
       "unit": "kg/ha",
-      "point": 1949.7,
+      "point": 1934.5,
       "range_68": [
-        1737.2,
-        2162.1
+        1722.0,
+        2147.0
       ],
       "range_95": [
-        1533.2,
-        2366.1
+        1518.0,
+        2351.0
       ],
       "trend": 1605.1,
-      "weather_effect_pct": 21.46,
+      "weather_effect_pct": 20.52,
+      "point_basis": "model",
+      "model_weather_effect_pct": 20.52,
       "last_actual": {
         "year": 2024,
         "yield": 1591.0,
@@ -159,25 +777,108 @@
         "guide": "Regions/브라질/상파울루/커피/커피_상세분석_및_수식.md",
         "caveat": "The guide's stratified high-/low-yield split is replaced by the autoregressive form from the same guide (§3A). With ~43 seasons, training two stratified models on ~21 rows each would fit noise.",
         "non_weather_drivers": "Biennial bearing is physiological, not meteorological: a heavy crop exhausts the tree and the next year is light regardless of weather. lag1 and lag2 carry that cycle, and they are the model's strongest features -- so much of this model's skill is biological memory, not climate. Replanting rates and the arabica/robusta area mix are also outside any weather feed. Isolating the weather features alone (holding out lag1/lag2) leaves only +1.6% skill, against +8.6% with the lags included: a real climate mechanism exists here (frost, flowering-stage water deficit -- both in the guide and both physically well documented) but at annual, state-level resolution the biennial cycle dominates the variance that mechanism produces. Adding multi-year memory to a model does not by itself guarantee weather wins that competition -- coffee is the clearest example of that in this set.",
-        "weather_through": "2026-10-04",
-        "critical_window_observed": 0.283,
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.325,
         "season_complete": false,
         "notes": [
           "lag for 2026 uses this model's own forecast",
           "lag for 2025 uses this model's own forecast"
         ]
       }
+    },
+    "sp_laranja": {
+      "label": "São Paulo oranges",
+      "crop": "laranja",
+      "states": [
+        "SP"
+      ],
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 10857.4,
+      "range_68": [
+        8793.1,
+        12921.7
+      ],
+      "range_95": [
+        6811.3,
+        14903.5
+      ],
+      "trend": 38542.8,
+      "weather_effect_pct": -71.83,
+      "point_basis": "model",
+      "model_weather_effect_pct": -71.83,
+      "last_actual": {
+        "year": 2024,
+        "yield": 33851.0,
+        "sidra_current": false,
+        "note": "IBGE has not yet published 2025-2026; 2024 is the latest season SIDRA has released as of this run."
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.274,
+        "weather_skill": 0.153,
+        "weather_driven": true,
+        "non_weather_features": [
+          "lag1"
+        ],
+        "top_effects": [
+          {
+            "feature": "heat_days",
+            "effect_pct": -2.87,
+            "is_weather": true
+          },
+          {
+            "feature": "precip_flowering",
+            "effect_pct": 2.89,
+            "is_weather": true
+          },
+          {
+            "feature": "lag1",
+            "effect_pct": 2.78,
+            "is_weather": false
+          },
+          {
+            "feature": "def_flowering",
+            "effect_pct": 1.92,
+            "is_weather": true
+          },
+          {
+            "feature": "def_sizing",
+            "effect_pct": -1.39,
+            "is_weather": true
+          },
+          {
+            "feature": "hotdays_flowering",
+            "effect_pct": -0.63,
+            "is_weather": true
+          },
+          {
+            "feature": "oni_season",
+            "effect_pct": 0.16,
+            "is_weather": true
+          }
+        ],
+        "beats_trend": true,
+        "sigma_kg_ha": 2064.3
+      },
+      "provenance": {
+        "guide": "Regions/브라질/상파울루/오렌지_설탕/오렌지_설탕_상세분석.md",
+        "caveat": "Yield per hectare only. The guide's actual subject -- HLB incidence and its spatial spread -- needs orchard imagery that no open feed provides, so none of its modelling is implemented here. Trained from 2001 because of the IBGE unit change.",
+        "non_weather_drivers": "The guide opens by saying this market is being destroyed 'not by climate' but by citrus greening (Huanglongbing), and prescribes drone CNN detection and a spatio-temporal contagion model -- neither of which is a weather model. The data agree, and in a way that matters for how this number is read: HLB kills trees, not yield per hectare. São Paulo's orange area has fallen 55% from its 1991 peak (789,329 to 354,562 ha) while yield on the surviving area ROSE 35% since 2005, because growers eradicate infected trees and what remains is younger and better managed. A kg/ha forecast for oranges therefore shows a healthy rising crop while the industry contracts. Read it alongside planted area, never alone.",
+        "weather_through": "2026-10-09",
+        "critical_window_observed": 0.215,
+        "season_complete": false,
+        "notes": [
+          "lag for 2026 uses this model's own forecast",
+          "3 of 7 features not yet observed, filled from 43 past seasons: def_sizing, heat_days, oni_season"
+        ]
+      }
     }
   },
-  "skipped": {
-    "mato_grosso_soja": "features unavailable: precip_veg, precip_rep, oni_season",
-    "mato_grosso_milho": "features unavailable: silking_stress, vpd_peak_dry, precip_silking, oni_season",
-    "parana_soja": "features unavailable: precip_dec_feb, tmax_jan, waterlogging, oni_season, spi3_dec_feb",
-    "parana_milho": "features unavailable: vpd_peak, precip_nov_jan, hotdays_silking, oni_season, silking_cwd, spi3_jan",
-    "matopiba_soja": "features unavailable: heat_vpd_stress, heat_days_35, heat_excess, effective_water",
-    "matopiba_algodao": "season 2027 has no observed weather in the model window yet",
-    "sp_cana": "season 2027 has no observed weather in the model window yet",
-    "sp_laranja": "features unavailable: def_sizing, heat_days, oni_season"
-  },
+  "skipped": {},
   "sidra_latest_published_year": 2024
 }

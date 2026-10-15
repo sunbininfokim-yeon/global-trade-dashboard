@@ -62,8 +62,8 @@ class ConnecticutPrimaryTests(unittest.TestCase):
   snap=read(CONFIG/'primary_supplements_2026.json');entry=copy.deepcopy(next(x for x in snap['records'] if x['state']=='CT' and 'greatblue' in x['record']['id']));entry['documents'][0]['url']='https://www.sacredheart.edu/new-poll.pdf';snap['records']=[entry]
   with self.assertRaises(ValueError):merge_primary_supplements([],snap,DAY,['CT'])
  def test_governor_listing_scope_not_complete_writein_ballot(self):
-  snap=read(ROOT/'config/governor_matchups/2026.json');reviews=read(ROOT/'config/governor_matchups/2026_ballot_reviews.json');out=apply_ballot_reviews(snap,reviews,DAY);self.assertEqual(out['contests']['CT']['coverage'],'complete_active_agency_listing');self.assertEqual(out,apply_ballot_reviews(out,reviews,DAY));reviews['contests']['CT']['coverage']='official_winner'
-  with self.assertRaises(SourceError):apply_ballot_reviews(snap,reviews,DAY)
+  snap=read(ROOT/'config/governor_matchups/2026.json');reviews=read(ROOT/'config/governor_matchups/2026_ballot_reviews.json');out=apply_ballot_reviews(snap,reviews,SNAPSHOT_DAY);self.assertEqual(out['contests']['CT']['coverage'],'complete_active_agency_listing');self.assertEqual(out,apply_ballot_reviews(out,reviews,SNAPSHOT_DAY));reviews['contests']['CT']['coverage']='official_winner'
+  with self.assertRaises(SourceError):apply_ballot_reviews(snap,reviews,SNAPSHOT_DAY)
 
 class ConnecticutGuideTests(unittest.TestCase):
  def setUp(self):self.sections=read(ROOT/'tests/fixtures/ct_guide_sections_2026.json')

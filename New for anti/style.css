@@ -7066,3 +7066,34 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-nominee-party > h4 { margin: 6px 0 0; font-size: 12px; color: #cbd5e1; }
 .elections-evidence-section .elections-poll-office > summary .elections-expand-icon { transform: none; }
 .elections-evidence-section .elections-poll-office[open] > summary .elections-expand-icon { transform: rotate(45deg); }
+
+/* Region crop-stage timeline */
+.stage-crop { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+.stage-crop:first-of-type { border-top: none; padding-top: 0; }
+.stage-head { font-size: 13px; color: #e2e8f0; margin-bottom: 2px; }
+.stage-head span { font-size: 11px; color: #64748b; margin-left: 6px; }
+.stage-nowline { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+.stage-nowline strong { color: #f8fafc; }
+.stage-row { margin-top: 7px; }
+.stage-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.stage-name { font-size: 12px; color: #cbd5e1; }
+.stage-dates { font-size: 11px; color: #64748b; white-space: nowrap; }
+.stage-what { font-size: 11px; color: #64748b; line-height: 1.45; margin-top: 2px; }
+.stage-row.is-now .stage-name { color: #f8fafc; font-weight: 650; }
+.stage-row.is-now .stage-what { color: #cbd5e1; }
+.stage-row.is-now .stage-dates { color: #cbd5e1; }
+.stage-track { position: relative; height: 10px; border-radius: 3px; background: rgba(255,255,255,0.05); overflow: hidden; }
+.stage-bar { position: absolute; top: 2px; bottom: 2px; border-radius: 2px; }
+.stage-bar.sow { background: rgba(56, 189, 248, 0.7); }
+.stage-bar.veg { background: rgba(74, 222, 128, 0.5); }
+.stage-bar.dormant { background: rgba(148, 163, 184, 0.45); }
+.stage-bar.repro { background: rgba(248, 113, 113, 0.75); }
+.stage-bar.fill { background: rgba(251, 146, 60, 0.65); }
+.stage-bar.mature { background: rgba(234, 179, 8, 0.45); }
+.stage-bar.harvest { background: rgba(250, 204, 21, 0.8); }
+.stage-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #f8fafc; }
+.stage-axis { display: grid; grid-template-columns: repeat(12, 1fr); font-size: 10px; color: #64748b; margin-top: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px; }
+.stage-axis span { text-align: left; padding-left: 1px; }
+.stage-critical { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+.stage-critical strong { color: #fca5a5; }
+.stage-source { font-size: 10px; color: #475569; margin-top: 2px; }

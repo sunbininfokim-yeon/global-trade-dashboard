@@ -11,6 +11,7 @@ from election_watch.polls import read
 from election_watch.poll_targets import apply_targets
 from election_watch.state_evidence import build_state, load_finance
 from publish_state_packets import rebuild
+from tests.poll_config_fixture import SNAPSHOT_DAY
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT/'config/usa_polls'
@@ -27,8 +28,8 @@ class WashingtonEvidenceTests(unittest.TestCase):
         cls.federal = read(ROOT/'config/federal_matchups/2026.json')
         cls.governors = read(ROOT/'config/governor_matchups/2026.json')
         cls.catalog = read(CONFIG/'targets_2026.json')
-        cls.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), cls.governors, DAY),
-            cls.catalog, cls.ballots, DAY)
+        cls.policy = apply_targets(apply_matchups(read(CONFIG/'live_2026.json'), cls.governors, SNAPSHOT_DAY),
+            cls.catalog, cls.ballots, SNAPSHOT_DAY)
         cls.policy['quality_reviews'] = read(CONFIG/'quality_reviews_2026.json')['reviews']
 
     def fixture(self):
