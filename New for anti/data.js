@@ -51,6 +51,11 @@
             name_ko: "아연",
             aliases: ["zinc", "아연", "7901"]
         },
+        "bauxite": {
+            id: "bauxite",
+            name_ko: "보크사이트",
+            aliases: ["bauxite", "보크사이트", "보크사이드", "알루미늄광", "알루미늄 정광", "aluminium ores", "aluminum ores", "2606", "260600"]
+        },
         "aluminum": {
             id: "aluminum",
             name_ko: "알루미늄",
@@ -436,7 +441,8 @@
         // world #2), Mozambique/Madagascar (graphite), Zambia/Finland
         // (cobalt), Bolivia (refined tin), Rwanda (tin concentrate).
         266: "Gabon", 508: "Mozambique", 450: "Madagascar", 894: "Zambia",
-        246: "Finland", 68: "Bolivia", 646: "Rwanda"
+        246: "Finland", 68: "Bolivia", 646: "Rwanda",
+        324: "Guinea", 388: "Jamaica"
     };
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
@@ -487,6 +493,15 @@
         aluminum: {
             hsCode: "7601",
             colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
+        },
+        // Ore/concentrate only: not alumina (281820) or metal (7601).
+        // Explicit scope includes Guinea/Jamaica without changing the shared
+        // Worker's cached country universe for unrelated commodities.
+        bauxite: {
+            hsCode: "2606",
+            reporters: ALL_M49_CODES,
+            partners: ALL_M49_CODES,
+            colorScheme: { source: [180, 83, 9], target: [217, 119, 6] }
         },
         wheat: {
             hsCode: "1001",
@@ -598,10 +613,12 @@
         console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode}, ${freq})...`);
 
         try {
-            // Reporter/partner list intentionally omitted: the Worker supplies
-            // its own canonical list, so this request lands on exactly the
-            // cache key the scheduled warm-up wrote. Same for the year.
+            // Usually omit reporter/partner lists to reuse the Worker's warm
+            // cache. Product-specific scope (bauxite) can include countries
+            // absent from that shared universe. The year still comes from it.
             const params = new URLSearchParams({ hs: config.hsCode });
+            if (config.reporters) params.set('reporters', config.reporters);
+            if (config.partners) params.set('partners', config.partners);
             if (freq === 'M') params.set('freq', 'M');
             if (opts.period) params.set('period', opts.period);
             const res = await fetch(`/api/comtrade?${params}`);
@@ -1023,6 +1040,15 @@
             topExporter: "중국 (가공품)",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 7601)
             news: defaultNews("Aluminum")
+        },
+        bauxite: {
+            title: "광물: 보크사이트 (Bauxite)",
+            desc: "알루미늄광·정광 수출입 · 국가 클릭 후 연간·월별 확인",
+            hsNote: "HS2606 알루미늄광·정광(보크사이트) · 알루미나(HS281820)·알루미늄 금속(HS7601) 제외 · 신고·미러 자료 조회 범위",
+            totalVolume: "—",
+            topExporter: "—",
+            arcs: [],
+            news: {} // No invented price, production, news or global total.
         },
         nickel: {
             title: "전략광물: 니켈",

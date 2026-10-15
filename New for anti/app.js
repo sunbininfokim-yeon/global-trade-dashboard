@@ -886,6 +886,7 @@ const ISO3_FALLBACK = {
     'north korea': 'PRK',
     'russia': 'RUS', 'russian federation': 'RUS',
     'china': 'CHN',
+    'guinea': 'GIN',
     'south africa': 'ZAF',
     'saudi arabia': 'SAU',
     'ivory coast': 'CIV', 'cote d ivoire': 'CIV',
@@ -5473,6 +5474,9 @@ const updatePageMeta = (target) => {
 
 const setView = (target) => {
     updatePageMeta(target);
+    // The legacy header date picker simulates data; bauxite uses observed
+    // annual/monthly periods only, selected on the country card instead.
+    document.getElementById('historical-date')?.toggleAttribute('disabled', target === 'bauxite');
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
     const isPolicyView = target === 'us-policy-hub' || target === 'us-congress-overview' || target === 'us-executive';
@@ -6083,6 +6087,7 @@ document.getElementById('home-logo').addEventListener('click', () => {
 
 // Date Picker Event (Historical Data Simulation)
 document.getElementById('historical-date').addEventListener('change', (e) => {
+    if (currentCommodity === 'bauxite') return;
     const selectedDate = e.target.value;
     console.log(`Loading historical data for: ${selectedDate}`);
     
@@ -6091,6 +6096,8 @@ document.getElementById('historical-date').addEventListener('change', (e) => {
     currentViewTitle.textContent = "과거 데이터 불러오는 중...";
     
     setTimeout(() => {
+        // A delayed simulation from another screen must not mutate bauxite.
+        if (currentCommodity === 'bauxite') return;
         // Simulate data swapping by modifying the mock data slightly
         // In a real app, this would fetch data from Cloudflare D1/KV via an API endpoint.
         const randomFactor = 0.5 + Math.random(); // 0.5 to 1.5

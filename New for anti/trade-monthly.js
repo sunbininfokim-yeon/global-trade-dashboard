@@ -32,6 +32,7 @@
         thermal_coal: 'coal',
         copper: 'copper',
         aluminum: 'aluminum',
+        bauxite: 'bauxite',
         nickel: 'nickel',
         cobalt: 'cobalt',
         graphite: 'graphite',
@@ -611,6 +612,7 @@
             ${cards}
             ${view.series.length > 6 ? `<p class="tm-note">최근 갱신 순 6개만 표시 · 나머지 ${view.series.length - 6}개 계열 생략</p>` : ''}
             ${view.dormant ? `<p class="tm-note">2년 넘게 갱신되지 않은 계열 ${view.dormant}개는 표시하지 않았습니다.</p>` : ''}
+            ${view.cid === 'bauxite' && !view.bilateral ? '<p class="tm-note">월별 상대국별 자료 미확보 · 총량을 상대국별로 배분하거나 비중·순위를 추정하지 않습니다.</p>' : ''}
             <div class="tm-bilateral"></div>`;
     };
 
@@ -660,7 +662,8 @@
             <button type="button" data-mode="monthly">월별${view?.latest ? ` · ${esc(monthLabel(view.latest))}` : ''}</button>
         </div>`;
         const staticHtml = (v) => (v ? monthlyHtml(v)
-            : '<p class="trade-focus-sub">월별 · UN Comtrade 보고국 신고 기준 · 지도의 노선은 연간 데이터입니다</p>');
+            : '<p class="trade-focus-sub">월별 · UN Comtrade 보고국 신고 기준 · 지도의 노선은 연간 데이터입니다</p>'
+              + (commodity === 'bauxite' ? '<p class="tm-note">월별 상대국별 자료 미확보 · 총량을 상대국별로 배분하거나 비중·순위를 추정하지 않습니다.</p>' : ''));
         monthly.innerHTML = `${m49 ? '<div class="tm-live"></div>' : ''}<div class="tm-static">${staticHtml(view)}</div>`;
         if (typeof wireSparkCharts === 'function') wireSparkCharts(monthly);
 
@@ -729,6 +732,6 @@
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { aggregateComtradeMonthly, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel },
+        _internal: { aggregateComtradeMonthly, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel, monthlyHtml },
     };
 })();

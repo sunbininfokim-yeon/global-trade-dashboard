@@ -57,6 +57,20 @@ COMMODITY_OPS_PATHS = frozenset({
     '.github/workflows/commodity_trade_contracts.yml',
 })
 
+# 2026-10-15: user explicitly approved a separate bauxite menu and annual /
+# monthly UI. app.js is limited to Guinea ISO fallback and blocking the legacy
+# simulated date picker on bauxite (including an already-pending callback).
+# Style changes are limited to bauxite phone layout. No Worker, workflow,
+# credential or deployment grant.
+BAUXITE_UI_BRANCH = 'codex/commodity-bauxite-ui'
+BAUXITE_UI_PATHS = frozenset({
+    'New for anti/index.html',
+    'New for anti/data.js',
+    'New for anti/trade-monthly.js',
+    'New for anti/app.js',
+    'New for anti/style.css',
+})
+
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
@@ -66,4 +80,5 @@ def scoped_paths(branch):
             STATE_RESEARCH_RULES_BRANCH: DAILY_POLLING_PATHS,
             POLL_RESILIENCE_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS,
-            COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS}.get(branch, frozenset())
+            COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS,
+            BAUXITE_UI_BRANCH: BAUXITE_UI_PATHS}.get(branch, frozenset())
