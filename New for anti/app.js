@@ -886,6 +886,7 @@ const ISO3_FALLBACK = {
     'north korea': 'PRK',
     'russia': 'RUS', 'russian federation': 'RUS',
     'china': 'CHN',
+    'guinea': 'GIN',
     'south africa': 'ZAF',
     'saudi arabia': 'SAU',
     'ivory coast': 'CIV', 'cote d ivoire': 'CIV',

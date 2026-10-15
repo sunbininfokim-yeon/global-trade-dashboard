@@ -1985,6 +1985,35 @@ body.trade-map-mode .right-pane {
     width: min(340px, 32vw);
     max-width: 340px;
 }
+/* The new bauxite screen must not squeeze the period toggle into 32vw on
+   phones. Keep this change isolated from all existing commodity layouts. */
+@media (max-width: 720px) {
+    body:has([data-target="bauxite"].active) .split-layout {
+        flex-direction: column;
+    }
+    body:has([data-target="bauxite"].active) .left-pane {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        min-height: 260px;
+        flex: 0 1 58%;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    body:has([data-target="bauxite"].active) .map-pane {
+        width: 100%;
+        height: auto;
+        min-height: 220px;
+        flex: 1 0 38%;
+    }
+    body:has([data-target="bauxite"].active) .trade-overlay {
+        top: 12px;
+        bottom: auto;
+    }
+    body:has([data-target="bauxite"].active) .map-source-note {
+        max-width: calc(100% - 32px);
+    }
+}
 .trade-focus-card { padding: 4px 0 12px; }
 .trade-focus-head {
     display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
