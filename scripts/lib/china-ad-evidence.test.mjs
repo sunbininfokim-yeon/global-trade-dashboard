@@ -35,7 +35,7 @@ test('China material search gaps stay unknown and cannot inherit other-origin ev
   assert.equal(productVerification('fiber','CHN').ad.research.findings[0].disposition,'different_product');
   assert.equal(adCoverageStatus('switchgear','CHN').research.state,'not_recorded');
   assert.equal(industryMonitor('switchgear','CHN').status,'origin_not_reviewed');
-  assert.equal(adCoverageStatus('aramid','JPN').research.state,'not_recorded');
+  assert.equal(adCoverageStatus('aramid','DEU').research.state,'not_recorded');
   const copy=productVerification('tire','CHN');copy.ad.case_ids.pop();
   assert.equal(productVerification('tire','CHN').ad.case_ids.length,2);
 });

@@ -62,7 +62,7 @@ test('advanced material research preserves mismatches and historical revocation 
     assert.deepEqual(r.ad.case_ids,[]); assert.ok(r.ad.research.terms.length>=2);
     assert.match(html,/품목별 조사 근거/); assert.match(html,/면제나 0% 판정이 아닙니다/);
     assert.match(html,/전수 재조회는 미실행/); assert.equal(companyADLink('hs-materials',product),null);
-    for (const origin of ['NLD','DEU','JPN','',null]) {
+    for (const origin of ['NLD','DEU','CAN','',null]) {
       const other=productVerification(product,origin);
       assert.equal(other.ad.status,'origin_not_reviewed'); assert.equal(other.ad.research,undefined);
       assert.ok(!verificationMarkup(product,origin).includes('data-material-research'));
