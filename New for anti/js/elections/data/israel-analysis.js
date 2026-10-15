@@ -38,6 +38,16 @@ export const validateIsraelBoard = (board, status, today = koreaToday()) => {
         throw new Error('이스라엘 검토 자료의 기준일을 확인하세요.');
     }
     if (new Set(board.lists.map((list) => list.id)).size !== board.lists.length) throw new Error('명부 식별자가 중복됩니다.');
+    const context = board.coalition_context;
+    const translations = board.localization;
+    if (context?.schema !== 'israel_coalition_context_v1' || !Array.isArray(context.groups)
+        || !Array.isArray(context.parties) || !Array.isArray(context.relationships)
+        || translations?.schema !== 'israel_ko_translations_v1' || translations.provider !== 'Google Gemini API'
+        || !Array.isArray(translations.translations) || !translations.translations.length
+        || translations.translations.some((row) => typeof row.ko !== 'string'
+            || !/[가-힣]/u.test(row.ko) || /[\u0590-\u05ff]/u.test(row.ko))) {
+        throw new Error('이스라엘 한국어 설명과 관계 자료를 확인하지 못했습니다.');
+    }
     const polls = board.observations.filter((row) => row.question_id === 'reported_seats');
     if (polls.some((row) => row.review_status !== 'held' && !validSeatPoll(row, board))) {
         throw new Error('의석 조사 자료를 검증하지 못했습니다.');

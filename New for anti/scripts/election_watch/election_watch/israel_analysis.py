@@ -7,9 +7,12 @@ from collections import Counter
 from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import urlparse
+import re
+from .israel_translation import collect_input_texts, validate_translations
 
-FILES = ('sources.json', 'election_calendar.json', 'lists.json',
+CORE_FILES = ('sources.json', 'election_calendar.json', 'lists.json',
          'poll_observations.jsonl', 'coalition_positions.jsonl', 'review_receipts.json')
+FILES = CORE_FILES + ('coalition_context.json', 'ko_translations.json')
 STATUSES = {'accepted', 'partial', 'held'}
 SEATS = 120
 
@@ -26,7 +29,7 @@ def read_inputs(root):
         result[name] = ([json.loads(line) for line in text.splitlines() if line.strip()]
                         if name.endswith('.jsonl') else json.loads(text))
     recorded = result['review_receipts.json']['input_sha256']
-    for name in FILES[:-1]:
+    for name in CORE_FILES[:-1]:
         if recorded.get(name) != hashlib.sha256((root / name).read_bytes()).hexdigest():
             raise ValueError('review receipt does not match input: ' + name)
     return result
@@ -99,6 +102,50 @@ def validate_observations(rows, known, as_of):
                     raise ValueError('unknown list in percentage row')
 
 
+
+def validate_context(context, known):
+    if context.get('schema') != 'israel_coalition_context_v1':
+        raise ValueError('coalition context schema mismatch')
+    date.fromisoformat(context['reviewed_on'])
+    groups = context.get('groups', [])
+    group_ids = {row['id'] for row in groups}
+    if len(group_ids) != len(groups) or not groups:
+        raise ValueError('duplicate or missing coalition group')
+    if any(not re.fullmatch(r'#[0-9a-fA-F]{6}', row.get('color', '')) for row in groups):
+        raise ValueError('invalid coalition color')
+    sources = context.get('sources', {})
+    for source in sources.values():
+        safe_url(source['url'])
+    profiles = context.get('parties', [])
+    if len({row['list_id'] for row in profiles}) != len(profiles):
+        raise ValueError('duplicate party context')
+    for row in profiles:
+        if row['list_id'] not in known or row['group'] not in group_ids:
+            raise ValueError('unknown party or coalition group')
+        if not row.get('source_ids') or not set(row['source_ids']) <= sources.keys():
+            raise ValueError('party context source missing')
+    kinds = {'electoral_cooperation', 'reported_bloc', 'conditional', 'joint_platform',
+             'refusal', 'external_support', 'unknown', 'electoral_refusal'}
+    relations = context.get('relationships', [])
+    if len({row['id'] for row in relations}) != len(relations):
+        raise ValueError('duplicate coalition relationship')
+    for row in relations:
+        if row.get('kind') not in kinds or not row.get('parties') or not set(row['parties']) <= known:
+            raise ValueError('invalid coalition relationship')
+        if not row.get('source_ids') or not set(row['source_ids']) <= sources.keys():
+            raise ValueError('relationship source missing')
+        if row.get('target_group') and row['target_group'] not in group_ids:
+            raise ValueError('unknown relationship target group')
+        if row['kind'] == 'refusal' and (row.get('anchor') not in known or
+                not row.get('targets') or not set(row['targets']) <= known or not row.get('target_person')):
+            raise ValueError('refusal needs a person, anchor and targets')
+        date.fromisoformat(row['event_date'])
+    for preset in context.get('presets', []):
+        if not preset.get('list_ids') or not set(preset['list_ids']) <= known:
+            raise ValueError('unknown coalition preset party')
+    return context
+
+
 def build(inputs, as_of, built_at):
     date.fromisoformat(as_of)
     clock = datetime.fromisoformat(built_at.replace('Z', '+00:00'))
@@ -115,6 +162,8 @@ def build(inputs, as_of, built_at):
         raise ValueError('duplicate list identities')
     rows = inputs['poll_observations.jsonl']
     validate_observations(rows, set(ids), as_of)
+    context = validate_context(inputs['coalition_context.json'], set(ids))
+    translations = validate_translations(inputs['ko_translations.json'], collect_input_texts(inputs, context))
     observations = [row for row in rows if row.get('record_type') == 'observation']
     seat_rows = [row for row in observations if row['question_id'] == 'reported_seats']
     counts = Counter(row['review_status'] for row in seat_rows)
@@ -142,6 +191,7 @@ def build(inputs, as_of, built_at):
         'research_notes': [row for row in rows if row.get('record_type') not in ('meta', 'observation')],
         'coalition_positions': [row for row in inputs['coalition_positions.jsonl'] if row.get('record_type') != 'meta'],
         'sources': sources,
+        'coalition_context': context, 'localization': translations,
         'coverage': {'accepted_seat_polls': counts['accepted'], 'partial_seat_polls': counts['partial'],
                      'held_seat_polls': counts['held'], 'reported_lists': len(ids), 'sources': len(sources)},
         'input_digests': {name: digest(inputs[name]) for name in FILES},

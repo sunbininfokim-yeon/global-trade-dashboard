@@ -1,50 +1,171 @@
-.israel-analysis { color:#dbe4f0; font-size:13px; line-height:1.6; }
-.israel-analysis p { margin:6px 0; overflow-wrap:anywhere; }
-.israel-analysis a { color:#7dd3fc; }
-.israel-heading h4 { font-size:24px; margin:0 0 6px; color:#f8fafc; }
-.israel-eyebrow { color:#67e8f9; font-size:11px; letter-spacing:.08em; }
-.israel-heading > p:last-child { color:#94a3b8; }
-.israel-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:16px 0; }
-.israel-stats > div { border:1px solid #334155; background:#152138; border-radius:9px; padding:12px; }
-.israel-stats strong { display:block; font-size:25px; color:#f8fafc; }
-.israel-stats span { font-size:11px; color:#a7b5c9; }
-.israel-notice { padding:10px 12px; border-left:3px solid #fbbf24; background:#1d273b; color:#cbd5e1; border-radius:4px; }
-.israel-controls { display:grid; grid-template-columns:1fr 2fr; gap:10px; margin:18px 0; }
-.israel-controls label { display:flex; flex-direction:column; gap:5px; color:#94a3b8; font-size:11px; min-width:0; }
-.israel-controls select { width:100%; color:#e2e8f0; background:#17233a; border:1px solid #475569; border-radius:6px; padding:9px; font:inherit; font-size:12px; }
-.israel-poll-meta { border-bottom:1px solid #334155; padding-bottom:12px; color:#a7b5c9; font-size:12px; }
-.israel-poll-meta > strong { color:#f1f5f9; font-size:14px; }
-.israel-seat-bar { display:flex; gap:2px; height:12px; border-radius:4px; overflow:hidden; margin:18px 0 12px; }
+.israel-analysis { --isr-border:#2d3d54; --isr-muted:#a9b8cc; color:#e2e9f3; font-size:13px; line-height:1.65; }
+.israel-analysis * { box-sizing:border-box; }
+.israel-analysis p { margin:7px 0; overflow-wrap:anywhere; }
+.israel-analysis :is(h4,h5,h6) { color:#f5f8fd; margin:0; line-height:1.4; }
+.israel-analysis a { color:#8dd7f4; text-decoration:none; }
+.israel-analysis a:hover { text-decoration:underline; }
+.israel-analysis button { font:inherit; cursor:pointer; }
+.israel-analysis button:disabled { opacity:.45; cursor:not-allowed; }
+.israel-heading { padding:4px 0 14px; }
+.israel-heading h4 { font-size:clamp(22px,3.5vw,30px); font-weight:750; letter-spacing:-.04em; }
+.israel-heading > p:not(.israel-eyebrow) { color:#b7c5d8; font-size:12px; }
+.israel-eyebrow { color:#82d6ec; font-size:11px; letter-spacing:.12em; }
+.israel-status-line { display:flex; flex-wrap:wrap; gap:6px 14px; color:#91a2ba; font-size:10px; margin-top:12px; }
+.israel-section-nav { display:flex; flex-wrap:wrap; gap:6px; border-block:1px solid var(--isr-border); padding:10px 0; }
+.israel-section-nav a { color:#bdcde2; background:#17263b; border:1px solid #2b3e58; padding:5px 10px; border-radius:6px; font-size:11px; }
+.israel-controls { display:grid; grid-template-columns:1fr 2fr; gap:10px; margin:17px 0 8px; }
+.israel-controls label { display:flex; flex-direction:column; gap:5px; color:#a6b8cf; font-size:11px; min-width:0; }
+.israel-controls select { width:100%; color:#e2e8f0; background:#16243a; border:1px solid #405675; border-radius:8px; padding:10px; font:inherit; font-size:12px; }
+.israel-data-note { color:var(--isr-muted); font-size:10px; }
+.israel-section { border-top:1px solid var(--isr-border); padding-top:22px; margin-top:22px; scroll-margin-top:12px; }
+.israel-section-heading { margin-bottom:14px; }
+.israel-section-heading > span { font-size:10px; color:#7da2c5; letter-spacing:.1em; }
+.israel-section-heading h5 { font-size:19px; margin:4px 0 6px; letter-spacing:-.025em; }
+.israel-section-heading p { color:var(--isr-muted); font-size:12px; }
+.israel-method { background:#142034; border:1px solid var(--isr-border); padding:10px 12px; border-radius:8px; font-size:11px; color:var(--isr-muted); }
+.israel-method summary { cursor:pointer; color:#bfcfe2; }
+.israel-seat-bar { display:flex; gap:3px; height:10px; border-radius:4px; overflow:hidden; margin:16px 0; }
 .israel-seat-bar span { min-width:0; }
-.israel-seat-list { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
-.israel-seat-row { display:flex; align-items:center; gap:8px; border:1px solid #334155; border-radius:7px; background:#111e32; padding:9px; cursor:pointer; min-width:0; }
-.israel-seat-row:has(input:checked) { border-color:#38bdf8; background:#133047; }
-.israel-seat-row input { accent-color:#38bdf8; flex-shrink:0; }
-.israel-party-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.israel-party-name { flex:1; min-width:0; overflow-wrap:anywhere; }
-.israel-party-name small { display:block; color:#94a3b8; font-size:10px; }
-.israel-seat-row > strong { font-size:21px; color:#f8fafc; white-space:nowrap; }
-.israel-seat-row > strong small { margin-left:2px; font-size:10px; color:#94a3b8; }
-.israel-coalition { margin:16px 0; padding:13px; border:1px solid #0e7490; background:#0d2535; border-radius:9px; }
-.israel-coalition h5 { font-size:14px; margin:0 0 5px; }
-.israel-coalition p { font-size:11px; color:#94a3b8; }
-.israel-coalition [data-israel-total] { font-size:18px; color:#a5f3fc; }
-.israel-details { border-top:1px solid #334155; padding:13px 0; }
-.israel-details summary { cursor:pointer; color:#e2e8f0; font-weight:600; }
-.israel-details p, .israel-details small { font-size:11px; color:#a7b5c9; }
-.israel-details article { padding:8px 0; border-bottom:1px solid #263349; }
-.israel-small-row { display:flex; justify-content:space-between; gap:14px; padding:3px 0; }
-.israel-roster-row { display:flex; flex-direction:column; gap:3px; padding:9px 0; border-bottom:1px solid #263349; }
-.israel-roster-row span { font-size:11px; }
-.israel-analysis :is(button,input,select,summary,a):focus-visible { outline:2px solid #67e8f9; outline-offset:3px; }
-@media (max-width:520px) {
+.israel-presets { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-bottom:14px; }
+.israel-presets button { text-align:left; display:flex; flex-direction:column; justify-content:space-between; gap:5px; background:#14273b; border:1px solid #35516d; padding:9px 10px; border-radius:9px; color:#bfcee2; font-size:10px; }
+.israel-presets b { font-size:20px; color:#e7f3ff; font-weight:650; }
+.israel-presets button[aria-pressed=true] { border-color:#89d4ec; background:#19374a; }
+.israel-group-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.israel-group { min-width:0; border:1px solid var(--isr-border); border-top:3px solid var(--group-color); border-radius:10px; padding:12px; background:linear-gradient(145deg,#18263c,#111c2f); }
+.israel-group > header { display:flex; align-items:center; justify-content:space-between; gap:7px; }
+.israel-group h6 { display:flex; gap:7px; align-items:center; font-size:13px; color:var(--group-color); }
+.israel-group header > strong { color:var(--group-color); font-size:23px; line-height:1; }
+.israel-group header > strong small { font-size:10px; margin-left:2px; font-weight:400; }
+.israel-group > p { font-size:10px; color:#a5b6ce; min-height:33px; line-height:1.5; margin:9px 0; }
+.israel-party-dot { display:inline-block; width:7px; height:7px; border-radius:50%; flex-shrink:0; background:var(--group-color); }
+.israel-seat-list { display:flex; flex-direction:column; gap:6px; }
+.israel-seat-row { display:flex; align-items:center; gap:7px; border:1px solid #2b3a50; border-radius:7px; padding:8px; background:#101b2e; cursor:pointer; min-width:0; }
+.israel-seat-row:has(input:checked) { border-color:var(--group-color); background:#203047; }
+.israel-seat-row input { accent-color:var(--group-color); flex-shrink:0; margin:0; }
+.israel-seat-row > span { flex:1; min-width:0; }
+.israel-seat-row b { font-size:11px; font-weight:600; overflow-wrap:anywhere; }
+.israel-seat-row small { display:block; font-size:10px; color:#a6b5cb; margin-top:1px; }
+.israel-seat-row > strong { white-space:nowrap; font-size:20px; color:#e7eef9; line-height:1.2; }
+.israel-seat-row > strong small { display:inline; font-size:9px; margin-left:2px; font-weight:400; }
+.israel-group-foot { display:block; font-size:9px; color:#8d9eb6; margin-top:10px; }
+.israel-coalition { border:1px solid #41627f; background:linear-gradient(125deg,#172d42,#122234); border-radius:12px; padding:16px; margin-top:14px; }
+.israel-selection-header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.israel-selection-header h5 { font-size:13px; }
+.israel-selection-header button { background:transparent; border:0; color:#b4cadf; font-size:10px; padding:3px; }
+.israel-selected-chips { display:flex; flex-wrap:wrap; gap:5px; margin:12px 0; font-size:11px; color:#a7b9d1; }
+.israel-selected-chips .israel-party-chip small { display:none; }
+.israel-coalition [data-israel-total] { display:flex; align-items:baseline; gap:12px; color:#cce9f5; font-size:12px; }
+.israel-coalition [data-israel-total] > strong { font-size:34px; color:#c9eefc; font-weight:650; line-height:1.2; }
+.israel-coalition [data-israel-total] small { font-size:13px; margin-left:3px; }
+.israel-majority-track { height:6px; background:#2b3b51; border-radius:4px; position:relative; margin:12px 0; }
+.israel-majority-track i { display:block; height:100%; background:#81d6e9; border-radius:4px; }
+.israel-majority-track > span { position:absolute; top:-4px; height:14px; width:2px; background:#f1f7fc; }
+.israel-coalition > p { font-size:10px; color:#b5c7d9; }
+.israel-condition { padding:9px 10px; background:#283245; border-left:3px solid #edbe68; font-size:11px; border-radius:3px; }
+.israel-condition-refusal { border-color:#fda4af; background:#362a3d; }
+.israel-condition b { display:block; color:#f1d6a7; margin-bottom:3px; }
+.israel-condition-refusal b { color:#ffbac6; }
+.israel-condition a { display:block; margin-top:4px; font-size:10px; }
+.israel-relation-filters { display:flex; gap:6px; margin:0 0 13px; }
+.israel-relation-filters button { border:1px solid #3a4d68; border-radius:20px; padding:6px 12px; font-size:11px; color:#bbcbe0; background:#152238; }
+.israel-relation-filters button[aria-pressed=true] { background:#24405a; border-color:#77afda; color:#e8f4ff; }
+.israel-relation-grid,.israel-card-grid,.israel-question-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+.israel-relation-card { padding:13px; border:1px solid #33465e; background:#142137; border-radius:10px; min-width:0; }
+.israel-relation-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; align-items:center; margin-bottom:12px; }
+.israel-relation-top time { color:#8e9eb5; font-size:9px; }
+.israel-relation-badge { background:#294059; color:#c2e0f5; padding:3px 7px; border-radius:4px; font-size:10px; }
+.israel-relation-refusal .israel-relation-badge,.israel-relation-electoral_refusal .israel-relation-badge { background:#4c2e40; color:#ffc0d0; }
+.israel-relation-conditional .israel-relation-badge { background:#4b4029; color:#f4d69c; }
+.israel-relation-external_support .israel-relation-badge { background:#1d443e; color:#a1edcf; }
+.israel-relation-parties { display:flex; flex-wrap:wrap; align-items:center; gap:5px; margin-bottom:11px; }
+.israel-party-chip { display:inline-flex; flex-direction:column; min-width:0; max-width:100%; border:1px solid #3b4a60; border-left:3px solid var(--group-color); background:#101c2d; border-radius:5px; padding:4px 7px; line-height:1.5; }
+.israel-party-chip b { font-size:10px; color:var(--group-color); font-weight:600; overflow-wrap:anywhere; }
+.israel-party-chip small { font-size:9px; color:#b2c2d5; overflow-wrap:anywhere; }
+.israel-connector { color:#7c91ad; font-size:11px; }
+.israel-target { color:#83bdf1; font-size:11px; }
+.israel-relation-card > p { font-size:11px; color:#d0ddec; }
+.israel-relation-card .israel-relation-condition { font-size:10px; color:#a9b8cd; border-top:1px dashed #35465d; padding-top:8px; margin-top:9px; }
+.israel-relation-card footer { margin-top:10px; font-size:9px; }
+.israel-notice { padding:10px 12px; border-left:3px solid #d3ad67; background:#242c3d; color:#cbd5e1; border-radius:4px; font-size:11px; margin-bottom:13px !important; }
+.israel-share-card { background:#152238; border:1px solid #34455d; border-top:2px solid var(--group-color); padding:13px; border-radius:9px; }
+.israel-share-card > div:first-child { display:flex; gap:7px; align-items:center; }
+.israel-share-card > div > strong { font-size:12px; }
+.israel-share-value { margin-left:auto; color:#f1f6ff; font-size:23px; font-weight:650; }
+.israel-share-card .israel-person { color:#d7e4f5; font-size:13px; font-weight:600; margin-top:9px; }
+.israel-share-card p:not(.israel-person) { color:var(--isr-muted); font-size:11px; }
+.israel-share-card > small { font-size:9px; color:#a2b3ca; }
+.israel-share-track { height:5px; background:#2e3b50; border-radius:4px; margin:12px 0 6px; overflow:hidden; }
+.israel-share-track i { display:block; height:100%; background:var(--group-color); border-radius:4px; }
+.israel-source-line { color:var(--isr-muted); font-size:10px; }
+.israel-question-card { border:1px solid #34455d; background:#142137; border-radius:10px; padding:13px; }
+.israel-question-card header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:9px; }
+.israel-question-card h6 { font-size:12px; }
+.israel-question-card header > span { font-size:9px; color:#a5bad1; white-space:nowrap; }
+.israel-answer { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #2a3a51; }
+.israel-answer > div { min-width:0; }
+.israel-answer b { font-size:12px; font-weight:600; }
+.israel-answer small { display:block; font-size:9px; line-height:1.5; color:#9eb2cd; margin-top:3px; }
+.israel-answer > strong { font-size:21px; font-weight:600; color:#e8f0fc; }
+.israel-question-card footer { font-size:10px; margin-top:10px; }
+.israel-details { border-top:1px solid var(--isr-border); margin-top:14px; padding:14px 0; }
+.israel-details summary { cursor:pointer; font-size:12px; color:#cbd9ec; font-weight:600; }
+.israel-details p { font-size:11px; color:#aabbd2; }
+.israel-details article { padding:12px 0; border-bottom:1px solid #2a3950; }
+.israel-record-heading { display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin-top:5px; }
+.israel-record-heading strong { font-size:13px; color:#d8e7f8; }
+.israel-record-heading span { font-size:10px; color:#8fbfdf; }
+.israel-agreement-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+.israel-agreement-grid article { display:flex; gap:7px; align-items:center; border:1px solid #35435a; padding:10px; border-radius:8px; }
+.israel-roster-row { padding:12px 0; border-bottom:1px solid #29384f; }
+.israel-roster-row > span { display:block; color:#9dafc8; font-size:11px; margin:3px 0; }
+.israel-roster-row details { margin-top:6px; color:#8e9fba; font-size:10px; }
+.israel-roster-row summary { font-size:10px; color:#8fabc8; font-weight:400; }
+.israel-empty { color:#99adc7; font-size:12px; padding:10px 0; }
+.israel-analysis :is(button,input,select,summary,a):focus-visible { outline:2px solid #8ed9ed; outline-offset:3px; }
+@media(max-width:600px) {
  .israel-controls { grid-template-columns:1fr; }
- .israel-seat-list { grid-template-columns:1fr; }
- .israel-stats > div { padding:9px; }
- .israel-stats span { font-size:10px; }
+ .israel-relation-grid,.israel-question-grid { grid-template-columns:1fr; }
+ .israel-group { padding:10px; }
+ .israel-group-grid { gap:8px; }
+ .israel-group h6 { font-size:11px; }
+ .israel-group header > strong { font-size:21px; }
+ .israel-seat-row { padding:7px 5px; gap:5px; }
+ .israel-seat-row b { font-size:10px; }
+ .israel-seat-row small { font-size:9px; }
+ .israel-seat-row > strong { font-size:18px; }
+ .israel-presets button { padding:8px; font-size:9px; }
+ .israel-presets b { font-size:18px; }
+ .israel-share-card { padding:10px; }
+ .israel-share-card > div > strong { font-size:11px; }
+ .israel-share-value { font-size:20px; }
+ .israel-share-card .israel-person { font-size:12px; }
+ .israel-agreement-grid { grid-template-columns:1fr; }
 }
-/* The existing mobile shell collapses the map column. Only this screen uses
-   the viewport as its modal host so its analysis remains readable there. */
-@media (max-width:720px) {
+@media(max-width:380px) {
+ .israel-group-grid,.israel-card-grid { grid-template-columns:1fr; }
+ .israel-group > p { min-height:0; }
+}
+@media(max-width:720px) {
  .elections-modal-host.israel-analysis-host { position:fixed; inset:60px 0 0; width:100vw; height:calc(100dvh - 60px); padding:12px; box-sizing:border-box; z-index:45; }
 }
+
+.elections-modal-host.israel-analysis-host .elections-modal { width:min(920px,100%); }
+@media(max-width:520px) {
+ .israel-group-grid { grid-template-columns:1fr; }
+ .israel-group h6 { font-size:14px; }
+ .israel-group > p { min-height:0; font-size:11px; }
+ .israel-seat-row { padding:9px; gap:8px; }
+ .israel-seat-row b { font-size:12px; }
+ .israel-seat-row small { font-size:11px; }
+ .israel-seat-row > strong { font-size:22px; }
+ .israel-presets { grid-template-columns:1fr; }
+ .israel-presets button { flex-direction:row; align-items:center; font-size:11px; }
+}
+@media(max-width:420px) {
+ .israel-card-grid { grid-template-columns:1fr; }
+}
+
+.israel-relation-targets { display:inline-flex; flex-wrap:wrap; gap:5px; flex:1; min-width:0; }
+.israel-connector-refusal { color:#ffb0c1; font-size:22px; }
+
+.israel-share-card footer { font-size:9px; margin-top:9px; color:#9eb3cc; }

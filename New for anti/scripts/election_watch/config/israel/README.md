@@ -56,3 +56,38 @@ python3 tools/preview_israel_analysis.py --port 8767 --app # existing full app s
 Both bind localhost only. The full app preview has no production API; unrelated
 macro/shipping widgets can log 404 errors. The test host replaces only the map
 adapter; country routing, loader, modal and analysis module are real.
+
+
+## Korean identities and coalition context (2026-10-15)
+
+`2026/coalition_context.json` is a separately dated, source-linked editorial
+context packet. Four colors describe reported blocs, the Arab-party category,
+and unconfirmed/independent alignment. Color does not establish coalition
+compatibility. Personal refusals, conditional participation, electoral surplus
+agreements and external support remain separate relationship types. Ra’am does
+not inherit the Joint List external-support statement; the Netanyahu refusal
+is personal rather than a permanent ban on every possible Likud leader.
+
+`2026/ko_translations.json` contains saved translations obtained through the
+Google Gemini API. Public labels, leader names, reviewed descriptions and
+conditions are translated. Poll numbers and coalition classification are never
+supplied by the model. Every entry retains source text, ID, model, timestamp
+and review status. Spelling/copy review retains the original `machine_ko`.
+
+```sh
+# Only when public source text is added or changed; key stays in the private env file.
+python3 translate_israel_ko.py --env-file /path/to/private.env
+# Offline validation and publication; no translation API call.
+python3 translate_israel_ko.py --check
+python3 build_israel_analysis.py
+python3 build_israel_analysis.py --check
+python3 -m unittest discover -s tests -p 'test_israel*.py' -v
+```
+
+Matching translations are reused. Incomplete batches are saved to a temporary
+pending cache; failed or uncovered translations cannot replace the public board.
+The browser reads pretranslated text and makes no Gemini calls. No API key is
+included in generated files. Original research receipts and numeric JSONL stay
+unchanged. Coalition context `reviewed_on` is separate from polling
+`evidence_as_of`; adding biography sources does not promote official election,
+legal or current-seat fields from held.
