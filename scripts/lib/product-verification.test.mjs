@@ -10,7 +10,7 @@ test('bounded Korean roster review is auditable, never a no-duty determination o
   assert.ok(KOREA_AD_REVIEW.case_ids.includes('A-580-870')); assert.ok(KOREA_AD_REVIEW.case_ids.includes('C-580-913'));
   for (const [product, row] of Object.entries(PRODUCT_VERIFICATIONS)) {
     assert.equal(productVerification(product).ad.rate_pct,null);
-    assert.equal(productVerification(product,'CHN').ad.status,'origin_not_reviewed');
+    assert.equal(productVerification(product,'DEU').ad.status,'origin_not_reviewed');
     assert.equal(productVerification(product,'JPN').ad.rate_pct,null);
     assert.equal(productVerification(product,'').ad.status,'origin_not_reviewed');
     assert.equal(productVerification(product,'USA').ad.case_ids.length,0);
@@ -62,7 +62,7 @@ test('advanced material research preserves mismatches and historical revocation 
     assert.deepEqual(r.ad.case_ids,[]); assert.ok(r.ad.research.terms.length>=2);
     assert.match(html,/품목별 조사 근거/); assert.match(html,/면제나 0% 판정이 아닙니다/);
     assert.match(html,/전수 재조회는 미실행/); assert.equal(companyADLink('hs-materials',product),null);
-    for (const origin of ['NLD','CHN','VNM','',null]) {
+    for (const origin of ['NLD','DEU','CAN','',null]) {
       const other=productVerification(product,origin);
       assert.equal(other.ad.status,'origin_not_reviewed'); assert.equal(other.ad.research,undefined);
       assert.ok(!verificationMarkup(product,origin).includes('data-material-research'));
@@ -79,7 +79,7 @@ test('advanced material research preserves mismatches and historical revocation 
 });
 
 test('coverage separates our investigation and integration gaps from official decisions without inventing pending proceedings', () => {
-  const unreviewed=adCoverageStatus('aramid','VNM');
+  const unreviewed=adCoverageStatus('aramid','DEU');
   assert.equal(unreviewed.research.state,'not_recorded'); assert.equal(unreviewed.checked_on,null);
   assert.equal(adCoverageStatus('not-in-catalog').research.state,'not_recorded');
   const roster=adCoverageStatus('switchgear'), materials=adCoverageStatus('aramid');
@@ -96,6 +96,23 @@ test('coverage separates our investigation and integration gaps from official de
   assert.equal(octg.coverage.integration.state,'deposit_interpretation_pending'); assert.equal(octg.ad.rate_pct,null);
   const html=coverageStatusMarkup('octg');
   assert.match(html,/data-coverage-procedure="final_published"/); assert.match(html,/정부의 최종결과 대기가 아닙니다/);
-  assert.match(verificationMarkup('aramid','VNM'),/조사 기록 없음/);
-  assert.ok(!verificationMarkup('aramid','VNM').includes('자료 확인 2026-10-14'));
+  assert.match(verificationMarkup('aramid','DEU'),/조사 기록 없음/);
+  assert.ok(!verificationMarkup('aramid','DEU').includes('자료 확인 2026-10-14'));
+});
+
+test('Vietnam review separates CVD sunset, historical AD termination and annual review schedule without rates', () => {
+  const r=productVerification('tire','VNM');
+  assert.equal(r.ad.country,'VNM');assert.equal(r.ad.review,undefined);assert.equal(r.ad.rate_pct,null);
+  assert.deepEqual(r.ad.case_ids,['C-552-829']);assert.equal(r.coverage.procedure.state,'official_schedule_recorded');
+  assert.equal(r.ad.official_schedule.por_start,'2024-01-01');assert.equal(r.ad.official_schedule.announced_for,'2026-10-22');
+  assert.equal(r.ad.research.findings.find(f=>f.disposition==='cvd_sunset').published,'2026-10-05');
+  assert.equal(r.ad.research.findings.find(f=>f.disposition==='historical_ad_terminated').published,'2021-06-23');
+  assert.equal(productVerification('fiber','VNM').ad.research.findings[0].case_id,'A-552-832');
+  assert.equal(productVerification('fiber','VNM').ad.research.findings[0].disposition,'different_product');
+  for(const product of ['fiber','carbon-fiber','aramid']) {
+    const v=productVerification(product,'VNM');assert.equal(v.coverage.procedure.state,'case_unconfirmed');
+    assert.equal(v.checked_on,'2026-10-15');assert.deepEqual(v.ad.case_ids,[]);assert.equal(v.ad.rate_pct,null);
+    assert.ok(!verificationMarkup(product,'VNM').includes('A-421-805'));
+  }
+  assert.equal(adCoverageStatus('truck-tire','VNM').research.state,'not_recorded');
 });

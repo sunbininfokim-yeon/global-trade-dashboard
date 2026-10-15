@@ -11,8 +11,8 @@ missing data, how much of the season is observed, measured skill) that a
 number on screen can be judged rather than just believed.
 
 Region-crops whose weather features do not beat a trend-only baseline are
-still published, flagged `beats_trend: false` and given the trend's own error
-as their band. Hiding them would misrepresent which of the nine methodologies
+still published, flagged `beats_trend: false`, with the trend as their point
+(`point_basis: "trend"`) and the trend's own error as their band. Hiding them would misrepresent which of the nine methodologies
 actually carries at this resolution.
 
 Where a crop is moved substantially by things that are not weather -- the
@@ -130,6 +130,10 @@ def main():
             "range_95": [round(r["range_95"][0], 1), round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            # "trend" when the model failed validation: point is the trend and
+            # model_weather_effect_pct is the adjustment it would have made.
+            "point_basis": r["point_basis"],
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
             "enso": {"state": label, "oni_growing_season": value},
             "skill": {

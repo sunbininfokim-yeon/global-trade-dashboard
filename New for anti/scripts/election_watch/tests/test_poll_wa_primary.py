@@ -12,6 +12,7 @@ from election_watch.polls import read
 from election_watch.poll_targets import apply_targets
 from election_watch.state_evidence import build_state, load_finance
 from publish_state_packets import rebuild
+from tests.poll_config_fixture import SNAPSHOT_DAY
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT/'config/usa_polls'

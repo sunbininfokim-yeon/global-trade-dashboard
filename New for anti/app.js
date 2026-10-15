@@ -4588,6 +4588,108 @@ const renderVintageRows = (cfg, fc) => {
  * Req 7: region click → left panel becomes model / data / paper provenance
  * (not a duplicate of the yield numbers that stay on the right).
  */
+// --- Region crop-stage timeline ------------------------------------------
+// Clicking a production region puts its growing season on the left: when the
+// crop is sown, what it does month by month, when it is harvested, and which
+// stage decides the yield. Per-region normals live in crop_stages_v1.json
+// (built by tools/ops/build_crop_stages.py), keyed by the registry's
+// crops_region_keys. The axis starts at sowing rather than January, so a
+// winter wheat season reads left to right from September to July instead of
+// being cut in two at New Year. Regions without an entry fall back to the
+// country seed calendar above.
+const CROP_STAGES_URL = '/public/data/crop_stages_v1.json';
+let cropStagesPromise = null;
+const loadCropStages = () => {
+    if (!cropStagesPromise) {
+        cropStagesPromise = fetch(CROP_STAGES_URL)
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null);
+    }
+    return cropStagesPromise;
+};
+
+const STAGE_MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const stageDoy = (mmdd) => {
+    const [m, d] = String(mmdd).split('-').map(Number);
+    let doy = d - 1;
+    for (let i = 0; i < m - 1; i++) doy += STAGE_MONTH_DAYS[i];
+    return doy;
+};
+const stageDateKo = (mmdd) => {
+    const [m, d] = String(mmdd).split('-').map(Number);
+    return `${m}월 ${d}일`;
+};
+
+const renderCropStagesCrop = (c) => {
+    const stages = c.stages || [];
+    if (!stages.length) return '';
+    const origin = stageDoy(stages[0].start);
+    const off = (doy) => (doy - origin + 365) % 365;
+    const now = new Date();
+    const todayKey = `${now.getMonth() + 1}-${now.getDate()}`;
+    const today = off(stageDoy(todayKey));
+    const pct = (d) => (d / 365) * 100;
+    const startMonth = Number(stages[0].start.split('-')[0]);
+    const axis = Array.from({ length: 12 }, (_, i) => ((startMonth - 1 + i) % 12) + 1);
+    const current = [];
+    const rows = stages.map((st) => {
+        const a = off(stageDoy(st.start));
+        const len = ((stageDoy(st.end) - stageDoy(st.start) + 365) % 365) + 1;
+        const width = Math.min(len, 365 - a);
+        const isNow = today >= a && today < a + len;
+        if (isNow) current.push(st.name_ko);
+        return `<div class="stage-row${isNow ? ' is-now' : ''}">
+            <div class="stage-line">
+                <span class="stage-name">${isNow ? '▶ ' : ''}${st.name_ko}</span>
+                <span class="stage-dates">${stageDateKo(st.start)} ~ ${stageDateKo(st.end)}</span>
+            </div>
+            <div class="stage-track">
+                <span class="stage-bar ${st.kind}" style="left:${pct(a)}%;width:${pct(width)}%"></span>
+                <span class="stage-today" style="left:${pct(today)}%"></span>
+            </div>
+            <div class="stage-what">${st.what_ko || ''}</div>
+        </div>`;
+    }).join('');
+    return `<div class="stage-crop">
+        <div class="stage-head"><strong>${c.label_ko}</strong>
+            <span>${c.area_ko || ''}</span></div>
+        <div class="stage-nowline">지금(${now.getMonth() + 1}월 ${now.getDate()}일):
+            <strong>${current.length ? current.join(' · ') : '비작기(수확 후 다음 파종 전)'}</strong></div>
+        <div class="stage-axis">${axis.map((m) => `<span>${m}</span>`).join('')}</div>
+        ${rows}
+        ${c.critical_ko ? `<div class="stage-critical">단수를 가장 좌우하는 시기: <strong>${c.critical_ko}</strong></div>` : ''}
+        ${c.source_ko ? `<div class="stage-source">평년 일정 · ${c.source_ko}</div>` : ''}
+    </div>`;
+};
+
+const renderCropStagesCard = async (countryName, keys) => {
+    const data = await loadCropStages();
+    const seen = new Set();
+    const crops = [];
+    for (const k of keys || []) {
+        for (const c of data?.regions?.[k] || []) {
+            const id = `${c.crop}|${c.label_ko}`;
+            if (seen.has(id)) continue;
+            seen.add(id);
+            crops.push(c);
+        }
+    }
+    if (crops.length) {
+        return `<div class="climate-card">
+            <h3>생육 일정 · 파종부터 수확까지</h3>
+            ${crops.map(renderCropStagesCrop).join('')}
+            <div class="climate-sub" style="margin-top:6px;">평년 기준이며 해마다 날씨에 따라 1~3주 앞뒤로 움직입니다. 흰 세로선이 오늘입니다.</div>
+        </div>`;
+    }
+    const ids = [...new Set((keys || []).map((k) => cropIdentityFromText(k)))]
+        .filter((id) => id !== 'other');
+    return `<div class="climate-card">
+        <h3>생육 일정 (국가 단위 캘린더)</h3>
+        <div class="climate-sub" style="margin-bottom:4px;">이 산지의 세부 일정은 아직 없어 국가 단위 캘린더를 보여 줍니다.</div>
+        ${renderCropCalendarHtml(countryName, ids)}
+    </div>`;
+};
+
 const renderClimateModelOnLeft = async (cfg, regionCfg, fc = null) => {
     fc = fc || await loadClimateForecast(cfg);
     const keys = regionCfg.regionKeys
@@ -4618,11 +4720,13 @@ const renderClimateModelOnLeft = async (cfg, regionCfg, fc = null) => {
         || fc?.references
         || '논문·방법론은 해당국 yield_model 문서 / DATA_LAYOUT 참고';
     const headline = usMethod?.headline || '추세수확량 + 기상편차 회귀';
+    const stagesHtml = await renderCropStagesCard(climateCountry, keys);
 
     forecastCountryTitle.textContent = `${regionCfg.label} · 모델·데이터`;
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             ${climateNavBackHtml(cfg.label)}
+            ${stagesHtml}
             <div class="climate-card">
                 <h3>사용 모델</h3>
                 <div class="forecast-good" style="margin:0;">
