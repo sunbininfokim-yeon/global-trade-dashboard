@@ -97,3 +97,35 @@ test('mounted industry selection renders non-calculable notices independently an
   assert.match(root.querySelector('[data-ad-editor]').innerHTML,/data-ad-form/);
   dispose();
 });
+
+test('Vietnam origin switches quarantine Korean case, firm, rate and stage UI and restore Korea', () => {
+  const nodes=new Map(),handlers=new Map();
+  const root={contains:()=>true,querySelector:selector=>{
+    if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',open:false,focus(){}});
+    return nodes.get(selector);
+  },addEventListener:(name,fn)=>handlers.set(name,fn)};
+  const dispose=mountAntidumping(root);
+  const input=(attribute,value)=>handlers.get('input')({target:{value,hasAttribute:k=>k===attribute}});
+  const choose=value=>handlers.get('click')({target:{closest(){return this},dataset:{adIndustry:value},hasAttribute:k=>k==='data-ad-industry'}});
+  input('data-ad-origin-country','VNM');
+  assert.ok(!nodes.get('[data-ad-editor]').innerHTML.includes('data-ad-form'));
+  input('data-ad-family','tires');
+  assert.match(nodes.get('[data-ad-history]').innerHTML,/C-552-829/);
+  assert.match(nodes.get('[data-ad-history]').innerHTML,/2026-10-22/);
+  assert.ok(!nodes.get('[data-ad-history]').innerHTML.includes('A-580-908'));
+  assert.ok(!nodes.get('[data-ad-process]').innerHTML.includes('data-ad-company'));
+  assert.ok(!nodes.get('[data-ad-process]').innerHTML.includes('data-ad-profile'));
+  assert.ok(!nodes.get('[data-ad-process]').innerHTML.includes('data-ad-stage'));
+  assert.ok(!nodes.get('[data-ad-editor]').innerHTML.includes('data-ad-form'));
+  choose('truck-tire');
+  assert.ok(!nodes.get('[data-ad-history]').innerHTML.includes('C-552-829'));
+  input('data-ad-family','materials');
+  assert.match(nodes.get('[data-ad-history]').innerHTML,/A-552-832/);
+  assert.ok(!nodes.get('[data-ad-history]').innerHTML.includes('A-580-839'));
+  input('data-ad-origin-country','KOR');
+  assert.match(nodes.get('[data-ad-history]').innerHTML,/A-580-839/);
+  input('data-ad-family','power');
+  assert.match(nodes.get('[data-ad-editor]').innerHTML,/data-ad-form/);
+  assert.match(nodes.get('[data-ad-notice-review]').innerHTML,/A-580-867/);
+  dispose();
+});
