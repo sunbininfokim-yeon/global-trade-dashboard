@@ -52,6 +52,12 @@ WINDOWS = {
 MIN_TRAIN = 22          # same as argentina.train
 MIN_PRIOR = 6           # earlier seasons needed before NDVI may correct one
 RIDGE = 1.0             # shrinkage on the standardised NDVI slope
+# A window is switched on for live forecasts only when the correction beats
+# the forecast by at least this much with BOTH pixel summaries (75th
+# percentile and median). Thirteen scored seasons are few; requiring the two
+# summaries to agree guards against crowning whichever one got lucky.
+MIN_SKILL = 0.05
+COL = "ndvi_p75"        # the summary the live correction uses
 
 
 def log(msg):
@@ -98,6 +104,20 @@ def base_forecasts(cfg):
     return {y: (t, p) for y, t, p in zip(years, truth, use)}, art.get("beats_trend")
 
 
+def fit(base, ndvi, years):
+    """Shrunk slope of the forecast's log error on standardised NDVI.
+
+    No intercept: the forecast's own bias is the model's business, and a mean
+    error learnt from a handful of seasons is mostly whichever drought fell
+    inside them (2009 for every summer crop here).
+    """
+    x = np.array([ndvi[p] for p in years])
+    r = np.array([np.log(base[p][0] / base[p][1]) for p in years])
+    mu, sd = float(x.mean()), float(x.std() or 1.0)
+    z = (x - mu) / sd
+    return float((z * r).sum() / ((z ** 2).sum() + RIDGE)), mu, sd
+
+
 def correct(base, ndvi):
     years = sorted(y for y in base if y in ndvi)
     rows = []
@@ -105,12 +125,8 @@ def correct(base, ndvi):
         prior = years[:j]
         if len(prior) < MIN_PRIOR:
             continue
-        x = np.array([ndvi[p] for p in prior])
-        r = np.array([np.log(base[p][0] / base[p][1]) for p in prior])
-        mu, sd = x.mean(), x.std() or 1.0
-        z = (x - mu) / sd
-        slope = (z * (r - r.mean())).sum() / ((z ** 2).sum() + RIDGE)
-        adj = r.mean() + slope * (ndvi[y] - mu) / sd
+        slope, mu, sd = fit(base, ndvi, prior)
+        adj = slope * (ndvi[y] - mu) / sd
         t, p = base[y]
         rows.append((y, t, p, p * np.exp(adj)))
     return rows
@@ -151,6 +167,27 @@ def main():
             log(f"{key:14} {report[key]['base']:5} {label:12} n={len(ys):2d} "
                 f"{int(ys[0])}-{int(ys[-1])}  base={r0:6.0f}  +ndvi={r1:6.0f}  "
                 f"skill={1 - r1 / r0:+6.1%}  corr={corr:+.2f}")
+        # Live decision per window, plus the correction fitted on every
+        # season available, for run_forecast to apply.
+        report[key]["live"] = {}
+        for win, half in (("full", False), ("half", True)):
+            a, b = report[key].get(win), report[key].get(f"{win}_median")
+            on = bool(a and b and a["skill_vs_base"] >= MIN_SKILL
+                      and b["skill_vs_base"] >= MIN_SKILL)
+            entry = {"enabled": on}
+            if on:
+                ndvi = season_ndvi(nd, cfg, half, COL)
+                years = sorted(y for y in base if y in ndvi)
+                slope, mu, sd = fit(base, ndvi, years)
+                entry.update({"slope": slope, "mean": mu, "sd": sd,
+                              "fit_years": [years[0], years[-1]],
+                              "skill_vs_base": a["skill_vs_base"],
+                              "rmse_ratio": a["rmse_ndvi"] / a["rmse_base"]})
+            report[key]["live"][win] = entry
+        live = [w for w, e in report[key]["live"].items() if e["enabled"]]
+        log(f"{key:14} live windows: {', '.join(live) or 'none'}")
+    report["_rule"] = (f"window live when the forward correction beats the "
+                       f"forecast by >= {MIN_SKILL:.0%} with both p75 and median")
     with open(os.path.join(COND, "ndvi_backtest.json"), "w") as f:
         json.dump(report, f, indent=2)
 

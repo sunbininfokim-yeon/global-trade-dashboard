@@ -9,10 +9,6 @@ on:
     # forecast run always sees the latest composite. MOD13Q1 lands every 16
     # days with a ~2 week lag; a weekly check never misses one.
     - cron: '20 15 * * 4'
-  # TEMP backfill trigger for the feature branch; removed before merge.
-  push:
-    branches: ['claude/argentina-condition']
-    paths: ['.github/workflows/argentina_ndvi.yml', 'New for anti/scripts/yield_model/argentina/ndvi.py']
   workflow_dispatch:
     inputs:
       full:
@@ -38,13 +34,19 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy scipy
+          pip install pandas numpy scipy scikit-learn
 
       - name: Collect NDVI
         # Incremental: only composites missing from condition/ndvi_points.csv
         # are requested. The first run backfills 2000 onward (~2,400 calls).
         working-directory: "New for anti/scripts/yield_model"
         run: python -m argentina.ndvi ${{ inputs.full && '--full' || '' }}
+
+      - name: Re-score the NDVI correction
+        # Decides per region which windows the live forecast may correct with
+        # NDVI, against whatever models are on main this week.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m argentina.ndvi_backtest
 
       - name: Commit and Push Changes
         run: |
