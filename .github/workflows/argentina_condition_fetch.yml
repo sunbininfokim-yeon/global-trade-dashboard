@@ -1,0 +1,43 @@
+name: Argentina crop condition (BCBA history fetch)
+
+# The Bolsa de Cereales de Buenos Aires publishes its weekly crop-condition
+# history (ECC) as downloadable files. Its site is not reachable from the
+# cloud dev containers, so this fetches the files here and commits them for
+# the model work under scripts/yield_model/argentina/condition/.
+on:
+  push:
+    branches: ['claude/argentina-condition']
+    paths: ['.github/workflows/argentina_condition_fetch.yml']
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download BCBA history files
+        run: |
+          set -u
+          dir="New for anti/scripts/yield_model/argentina/condition/raw"
+          mkdir -p "$dir"
+          for pair in 121:historico_pas 122:historico_maiz_ecc 123:historico_soja_ecc 124:historico_girasol_ecc 125:historico_trigo_ecc; do
+            id="${pair%%:*}"; name="${pair##*:}"
+            url="https://www.bolsadecereales.com/download/informes/documento2/${id}"
+            hdr=$(mktemp)
+            curl -sSL -A "Mozilla/5.0" -D "$hdr" -o "$dir/$name.bin" "$url" || echo "::warning::$name failed"
+            ct=$(grep -i '^content-type' "$hdr" | tail -1 | tr -d '\r')
+            cd_=$(grep -i '^content-disposition' "$hdr" | tail -1 | tr -d '\r')
+            echo "::notice::$name $(stat -c %s "$dir/$name.bin") bytes | $ct | $cd_"
+            ext=$(echo "$cd_" | grep -oiE '\.(xlsx|xls|csv|zip|pdf)' | tail -1)
+            [ -n "$ext" ] && mv "$dir/$name.bin" "$dir/$name$ext"
+          done
+          ls -la "$dir"
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/argentina/condition/raw"
+          git diff --cached --quiet || git commit -m "argentina: BCBA crop-condition history (raw)"
+          git push origin HEAD:${GITHUB_REF_NAME}
