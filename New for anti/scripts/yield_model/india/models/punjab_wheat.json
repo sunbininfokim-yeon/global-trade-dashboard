@@ -64,20 +64,36 @@
     ],
     "intercept": -4.751104964537949e-16
   },
-  "beats_trend": true,
-  "raw_beats_trend": true,
+  "beats_trend": false,
+  "raw_beats_trend": false,
   "thin_evidence": [],
-  "recent_skill_vs_trend": 0.008684590266769043,
-  "skill_vs_best_trend": 0.00811885278304747,
+  "recent_skill_vs_trend": -0.017715290767093217,
+  "skill_vs_best_trend": -0.003958967733567187,
   "best_trend_baseline_rmse": 297.3246063014359,
-  "weather_skill": 0.008684590266769043,
+  "skill_basis": "nested",
+  "nested": {
+    "n": 9,
+    "years": [
+      2011,
+      2019
+    ],
+    "picks": {
+      "core_deg1": 8,
+      "core_recent20": 1
+    }
+  },
+  "skill_in_sample": {
+    "full_skill": 0.00811885278304747,
+    "recent_skill": 0.008684590266769043
+  },
+  "weather_skill": -0.017715290767093217,
   "non_weather_features": [],
   "trend_plus_lags_rmse": null,
   "recent_trend_bias_kg_ha": 39.94556301189459,
   "recent_folds": 8,
   "uncertainty": {
-    "sigma_kg_ha": 273.70600773323815,
-    "basis": "out-of-sample RMSE over the last 8 forward-chaining folds"
+    "sigma_kg_ha": 276.10385659887413,
+    "basis": "trend-only baseline RMSE over the last 8 folds (model showed no skill)"
   },
   "validation": {
     "all_deg1_loo": {

@@ -103,20 +103,35 @@
     "intercept": -4.0100741354016794e-15
   },
   "beats_trend": false,
-  "raw_beats_trend": true,
+  "raw_beats_trend": false,
   "thin_evidence": [
     "15 features > 25 seasons / 5"
   ],
-  "recent_skill_vs_trend": 0.11437060590725034,
-  "skill_vs_best_trend": 0.11437060590725034,
+  "recent_skill_vs_trend": -0.1051247028206963,
+  "skill_vs_best_trend": -0.1051247028206963,
   "best_trend_baseline_rmse": 221.42834725289748,
-  "weather_skill": 0.11437060590725034,
+  "skill_basis": "nested",
+  "nested": {
+    "n": 6,
+    "years": [
+      2019,
+      2024
+    ],
+    "picks": {
+      "all_recent10": 6
+    }
+  },
+  "skill_in_sample": {
+    "full_skill": 0.11437060590725034,
+    "recent_skill": 0.11437060590725034
+  },
+  "weather_skill": -0.1051247028206963,
   "recent_trend_bias": -33.605787145305236,
   "recent_folds": 10,
   "uncertainty": {
-    "sigma": 221.42834725289748,
+    "sigma": 163.45081171382466,
     "unit": "kg/ha",
-    "basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=+11.4%, trend-only sigma used"
+    "basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-10.5%, trend-only sigma used"
   },
   "validation": {
     "all_deg1_loo": {
