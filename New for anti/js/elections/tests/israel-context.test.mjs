@@ -112,3 +112,12 @@ test('cooperation pairs are five reported surplus agreements, not coalition memb
     const html=israelAnalysisHtml(board,{today:'2026-10-15'});
     assert.match(html,/위원회 접수 원문은 보류/);
 });
+
+
+test('repeated explanation captions retain distinct disclosure identities when selection rerenders',()=>{
+    const html=israelAnalysisHtml(board,{today:'2026-10-15',grouping:'ideology'});
+    const keys=[...html.matchAll(/data-israel-details="([^"]+)"/g)].map(m=>m[1]);
+    assert.equal(keys.length,new Set(keys).size);
+    assert(keys.includes('ideology-right'));
+    assert(keys.includes('ideology-haredi'));
+});

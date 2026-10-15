@@ -41,9 +41,9 @@ const groupCards = (board, poll, grouping, selected, canSelect) => groupingGroup
     const ids = [...new Set((board.coalition_context.parties || []).filter((p) => p.ideology_group === g.id).flatMap((p) => p.ideology_source_ids || []))];
     return `<section class="israel-group" data-israel-group="${e(g.id)}" style="--group-color:${g.color}"><div class="israel-group-badge">${ideology ? '정치 성향' : e(g.badge_ko)}</div><header><h6><span class="israel-party-dot"></span>${e(g.label_ko)}</h6><strong>${s.total === null ? '미확인' : s.total}<small>${s.total === null ? '' : '석'}</small></strong></header><p>${e(g.description_ko)}</p>
         <div class="israel-seat-list">${s.values.slice().sort((a,b) => b.seats-a.seats).map(rowHtml).join('') || '<p class="israel-empty">발표 의석 미확인</p>'}</div>
-        ${s.missing.length ? `<details class="israel-unpublished"><summary>의석 미발표 명부 ${s.missing.length}개</summary>${s.missing.map((id) => {const p=partyProfile(board,id);return `<p><b>${e(p.name)}</b> · ${e(p.leader)} <span>의석 미확인</span></p>`;}).join('')}</details>` : ''}
+        ${s.missing.length ? `<details class="israel-unpublished" data-israel-details="unpublished-${grouping}-${e(g.id)}"><summary>의석 미발표 명부 ${s.missing.length}개</summary>${s.missing.map((id) => {const p=partyProfile(board,id);return `<p><b>${e(p.name)}</b> · ${e(p.leader)} <span>의석 미확인</span></p>`;}).join('')}</details>` : ''}
         ${pairs.length ? `<div class="israel-pair-list">${pairs.map((pair) => `<div><span class="israel-pair-caption">${e(pair.label_ko)} · ${e(pair.event_date.slice(5))}</span><p>${pair.parties.map((id) => `<b>${e(partyProfile(board,id).name)}</b>`).join('<span aria-hidden="true"> ↔ </span>')}</p>${sourceLinks(board,pair.source_ids)}</div>`).join('')}</div>` : ''}
-        ${ideology && ids.length ? `<details class="israel-ideology-sources"><summary>성향 설명·근거</summary>${(board.coalition_context.parties || []).filter((p) => p.ideology_group === g.id).map((p) => {const profile=partyProfile(board,p.list_id); return `<p><b>${e(profile.name)}</b> ${e(profile.ideologyNote)}</p>`;}).join('')}<footer>${sourceLinks(board,ids)}</footer></details>` : ''}
+        ${ideology && ids.length ? `<details class="israel-ideology-sources" data-israel-details="ideology-${e(g.id)}"><summary>성향 설명·근거</summary>${(board.coalition_context.parties || []).filter((p) => p.ideology_group === g.id).map((p) => {const profile=partyProfile(board,p.list_id); return `<p><b>${e(profile.name)}</b> ${e(profile.ideologyNote)}</p>`;}).join('')}<footer>${sourceLinks(board,ids)}</footer></details>` : ''}
         <small class="israel-group-foot">발표 의석만 합산${s.missing.length ? ' · 미발표는 합계에서 제외' : ''}</small></section>`;
 }).join('');
 
@@ -132,12 +132,13 @@ export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {})
     css.rel='stylesheet'; css.href=new URL('./israel-analysis.css',import.meta.url).href;
     if (!document.querySelector('link[data-israel-style]')) {css.dataset.israelStyle='1';document.head.append(css);}
     const render = (focusSelector = null) => {
-        const details = [...root.querySelectorAll('details[open]')].map((el) => el.querySelector('summary')?.textContent);
+        const detailKey = (el) => el.dataset.israelDetails || el.querySelector('summary')?.textContent;
+        const details = new Set([...root.querySelectorAll('details[open]')].map(detailKey));
         const container = root.closest('.elections-modal-body');
         const scroll = container?.scrollTop;
         root.innerHTML=israelAnalysisHtml(result?.board,state);
         if (!result?.board) return;
-        root.querySelectorAll('details').forEach((el) => {if(details.includes(el.querySelector('summary')?.textContent)) el.open=true;});
+        root.querySelectorAll('details').forEach((el) => {if(details.has(detailKey(el))) el.open=true;});
         state.pollId=root.querySelector('[data-israel-poll]')?.value || null;
         const reset = () => {state.selected=[];state.presetId=null;};
         root.querySelector('[data-israel-window]')?.addEventListener('change',(ev) => {state.days=ev.target.value?Number(ev.target.value):null;state.pollId=null;reset();render('[data-israel-window]');});
