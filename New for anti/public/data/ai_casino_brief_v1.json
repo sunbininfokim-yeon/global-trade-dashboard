@@ -1,6 +1,6 @@
 {
   "schema_version": "ai-casino-brief-v1",
-  "as_of": "2026-10-14",
+  "as_of": "2026-10-15",
   "style": "Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice",
   "disclaimer_ko": "공개 상품 AUM·거래대금 기반 추정. 증권사 고객 레버리지 공시가 아님. 투자 권유 아님.",
   "audience": {
@@ -13,7 +13,7 @@
         "하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)",
         "삼전: 현물 100원 대비 레버 ETF 약 4원",
         "레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.",
-        "시총 쏠림: 삼성+하닉만 코스피의 약 48.2721%"
+        "시총 쏠림: 삼성+하닉만 코스피의 약 46.9224%"
       ],
       "analogy_ko": "비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버)."
     },
@@ -21,9 +21,9 @@
       "title_ko": "전문가 — 상세",
       "fields": {
         "trading_share": {
-          "as_of": "2026-10-14",
-          "kospi_cash_tv_jo": 21.02,
-          "kosdaq_cash_tv_jo": 5.95,
+          "as_of": "2026-10-15",
+          "kospi_cash_tv_jo": 28.64,
+          "kosdaq_cash_tv_jo": 7.03,
           "all_etf_tv_jo": 0.0,
           "levered_inverse_etf_tv_jo": 0.0,
           "single_stock_letf_tv_jo": 0.0,
@@ -35,12 +35,12 @@
             {
               "ticker": "000660",
               "name": "SK하이닉스",
-              "letf_over_spot_adv_pct": 6.59
+              "letf_over_spot_adv_pct": 8.08
             },
             {
               "ticker": "005930",
               "name": "삼성전자",
-              "letf_over_spot_adv_pct": 3.35
+              "letf_over_spot_adv_pct": 2.73
             }
           ],
           "note_ko": "ETF Amount(FDR)=백만원 단위. 레버+인버스 이름 매칭."
@@ -56,84 +56,84 @@
           "expert_ko": "Price target ≈ L×R (daily reset). Exposure stock = AUM×|L|. End-of-day hedge/rebalance notional TR = AUM×(L²−L)×R; IR = |TR|/ADV_spot. Long and inverse TR computed separately then summed."
         },
         "concentration": {
-          "conc_top2_samsung_hynix_pct": 48.2721,
-          "conc_top5_pct": 55.4199,
-          "conc_top10_pct": 61.9361,
+          "conc_top2_samsung_hynix_pct": 46.9224,
+          "conc_top5_pct": 53.9679,
+          "conc_top10_pct": 60.6451,
           "top5_tickers": [
             "005930",
             "000660",
             "005935",
             "402340",
-            "009150"
+            "373220"
           ],
           "top10_tickers": [
             "005930",
             "000660",
             "005935",
             "402340",
-            "009150",
             "373220",
+            "009150",
             "005380",
-            "105560",
             "207940",
+            "105560",
             "032830"
           ],
           "top5_mcap_krw": [
-            1356336637056000.0,
-            1036568665935000.0,
-            139291640840800.0,
-            112399246296000.0,
-            102629138304000.0
+            1227718507680000.0,
+            921881364630000.0,
+            127657258397300.0,
+            100921858470000.0,
+            94185000000000.0
           ],
           "top10_mcap_krw": [
-            1356336637056000.0,
-            1036568665935000.0,
-            139291640840800.0,
-            112399246296000.0,
-            102629138304000.0,
-            98748000000000.0,
-            63786745242000.0,
-            56466287252800.0,
-            54715904082000.0,
-            49300000000000.0
+            1227718507680000.0,
+            921881364630000.0,
+            127657258397300.0,
+            100921858470000.0,
+            94185000000000.0,
+            86868768448000.0,
+            60124348386000.0,
+            57724815897000.0,
+            55579567917800.0,
+            45600000000000.0
           ],
-          "universe_mcap_krw": 4957113877260586.0,
+          "universe_mcap_krw": 4581178619230376.0,
           "n_constituents_in_input": 30,
           "note_ko": "Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30 보관이어도 분모는 전종목 합; Top10은 시총 정렬로 확정.",
           "quality": "observed",
-          "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20261014"
+          "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20261015"
         },
         "hynix_youtube_impact": {
           "ticker": "000660",
           "name": "SK하이닉스",
-          "as_of": "2026-10-14",
+          "as_of": "2026-10-15",
           "spot": {
-            "close": 1419000.0,
-            "day_return": -0.0166,
-            "market_cap_krw": 1036568665935000.0,
-            "market_cap_usd_bn": 740.41,
-            "free_float_mcap_krw": 746329439473200.0,
-            "adv_spot_krw": 5420960555678.0,
-            "adv_spot_usd_bn": 3.87,
-            "adv_spot_jo": 5.421
+            "close": 1262000.0,
+            "day_return": -0.1106,
+            "market_cap_krw": 921881364630000.0,
+            "market_cap_usd_bn": 658.49,
+            "free_float_mcap_krw": 663754582533600.0,
+            "adv_spot_krw": 7499484389500.0,
+            "adv_spot_usd_bn": 5.36,
+            "adv_spot_jo": 7.499
           },
           "kr_letf": {
-            "aum_krw": 2524382496263.0,
-            "aum_usd_bn": 1.8,
-            "aum_jo": 2.524,
-            "notional_aum_x_L_krw": 5048764992526.0,
-            "notional_usd_bn": 3.61,
-            "day_trading_value_krw": 357164458120.0,
-            "day_trading_value_jo": 0.357,
-            "day_trading_value_usd_bn": 0.26,
+            "aum_krw": 2071615424043.0,
+            "aum_usd_bn": 1.48,
+            "aum_jo": 2.072,
+            "notional_aum_x_L_krw": 4143230848086.0,
+            "notional_usd_bn": 2.96,
+            "day_trading_value_krw": 605615000078.0,
+            "day_trading_value_jo": 0.606,
+            "day_trading_value_usd_bn": 0.43,
             "top3_by_aum": [
               {
                 "ticker": "0193T0",
                 "name": "KODEX SK하이닉스단일종목레버리지",
                 "L": 2.0,
-                "aum_krw": 1383663528236.0,
-                "aum_usd": 988331091.6,
-                "trading_value_krw": 172752057667.0,
+                "aum_krw": 1118249540036.0,
+                "aum_usd": 798749671.45,
+                "trading_value_krw": 275020084958.0,
                 "structure": "cash",
                 "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
               },
@@ -141,9 +141,9 @@
                 "ticker": "0195S0",
                 "name": "TIGER SK하이닉스단일종목레버리지",
                 "L": 2.0,
-                "aum_krw": 910618070061.0,
-                "aum_usd": 650441478.62,
-                "trading_value_krw": 73686440980.0,
+                "aum_krw": 729458625107.0,
+                "aum_usd": 521041875.08,
+                "trading_value_krw": 104424459468.0,
                 "structure": "cash",
                 "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
               },
@@ -151,9 +151,9 @@
                 "ticker": "0197X0",
                 "name": "SOL SK하이닉스선물단일종목인버스2X",
                 "L": -2.0,
-                "aum_krw": 130638483452.0,
-                "aum_usd": 93313202.47,
-                "trading_value_krw": 107858149281.0,
+                "aum_krw": 143240425084.0,
+                "aum_usd": 102314589.35,
+                "trading_value_krw": 218120517857.0,
                 "structure": "futures",
                 "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
               }
@@ -162,34 +162,34 @@
           "youtube_impact_ko": {
             "metric_1_wag_the_dog": {
               "name": "LETF 일거래대금 / 현물 당일 거래대금",
-              "value_pct": 6.59,
+              "value_pct": 8.08,
               "band": "mid",
               "formula": "Σ LETF trading_value / underlying daily trading value",
               "read_ko": "유튜브 '개가 꼬리를 흔든다' — 레버 ETF 거래가 현물 대비 얼마나 큰지. low<5% · watch~10% · high≥10%."
             },
             "metric_2_size_vs_mcap": {
               "name": "LETF AUM / 하이닉스 시총",
-              "value_pct": 0.2435,
+              "value_pct": 0.2247,
               "formula": "Σ AUM / market_cap"
             },
             "metric_3_size_vs_ff": {
               "name": "LETF AUM×|L| / 유동시총",
-              "value_pct": 0.6765,
+              "value_pct": 0.6242,
               "formula": "Σ AUM×|L| / free_float"
             },
             "metric_4_short_gamma_ir": {
               "name": "실현 IR (순합 리밸런싱 추정)",
-              "value_pct": 1.706,
-              "tr_krw": -92483894177.14441,
-              "day_R": -0.0166,
+              "value_pct": 6.9553,
+              "tr_krw": -521610895855.47314,
+              "day_R": -0.1106,
               "formula": "TR=Σ[AUM×(L²−L)×R] (signed net) · IR=|TR|/현물 당일 거래대금×100",
               "read_ko": "상품별 signed TR을 먼저 합산한 모델 추정치. 실제 체결·딜러 감마·가격 영향 관측값이 아니다.",
-              "scenario_minus_5pct_ir": 5.1387
+              "scenario_minus_5pct_ir": 3.1443
             },
             "metric_5_inverse_tv_share": {
               "name": "인버스 ETF 거래대금 비중",
-              "value_pct": 30.2,
-              "inverse_aum_share_pct": 5.18,
+              "value_pct": 36.02,
+              "inverse_aum_share_pct": 6.91,
               "read_ko": "AUM 대비 인버스 거래비중이 크면 하락일에 헤지/리밸런싱 비대칭."
             }
           },
@@ -197,8 +197,8 @@
             "hk_notional_usd_bn": null,
             "hk_over_spot_adv": null,
             "hk_notional_missing_reason_ko": "운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)",
-            "hk_tv_over_kr_cash_tv": 0.11246835187697667,
-            "hk_tv_as_of": "2026-10-12",
+            "hk_tv_over_kr_cash_tv": 0.17192820679375367,
+            "hk_tv_as_of": "2026-10-13",
             "crypto_oi_usd_bn": 0.0,
             "crypto_oi_over_spot_adv": 0.0,
             "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
@@ -215,9 +215,9 @@
             "L": 2.0,
             "structure": "cash",
             "direction": "long",
-            "aum_usd": 988331091.6,
-            "notional_exposure_usd": 1976662183.19,
-            "trading_value_usd": 123394326.91,
+            "aum_usd": 798749671.45,
+            "notional_exposure_usd": 1597499342.91,
+            "trading_value_usd": 196442917.83,
             "kr_spot_impact": "direct_cash_or_futures",
             "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
             "rank": 1
@@ -232,9 +232,9 @@
             "L": 2.0,
             "structure": "cash",
             "direction": "long",
-            "aum_usd": 789269249.43,
-            "notional_exposure_usd": 1578538498.86,
-            "trading_value_usd": 63474331.35,
+            "aum_usd": 650322717.53,
+            "notional_exposure_usd": 1300645435.06,
+            "trading_value_usd": 92079018.81,
             "kr_spot_impact": "direct_cash_or_futures",
             "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
             "rank": 2
@@ -249,9 +249,9 @@
             "L": 2.0,
             "structure": "cash",
             "direction": "long",
-            "aum_usd": 650441478.62,
-            "notional_exposure_usd": 1300882957.23,
-            "trading_value_usd": 52633172.13,
+            "aum_usd": 521041875.08,
+            "notional_exposure_usd": 1042083750.15,
+            "trading_value_usd": 74588899.62,
             "kr_spot_impact": "direct_cash_or_futures",
             "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
             "rank": 3
@@ -260,9 +260,9 @@
         "global_stack": {
           "note_ko": "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력).",
           "hedge_channel_ko": "홍콩/미국 레버 펀드·옵션 레짐 변화 → 스왑 상대(한국·글로벌 기관) 헷지 요청 → 국내 현물·선물·국내 LETF에 압력이 붙을 수 있음 (유튜브 wag-the-dog reverse 계열).",
-          "kr_single_stock_letf_notional_usd": 6280241190.11,
-          "kr_single_stock_long_notional_usd": 6065347104.49,
-          "kr_single_stock_inverse_notional_usd": 214894085.62,
+          "kr_single_stock_letf_notional_usd": 5156582031.33,
+          "kr_single_stock_long_notional_usd": 4918060801.7,
+          "kr_single_stock_inverse_notional_usd": 238521229.63,
           "hk_swap_letf_notional_usd": null,
           "hk_direction_split": {
             "long_notional_usd": 0.0,
@@ -270,16 +270,16 @@
           },
           "hk_tv_over_kr_cash_tv_by_underlying": {
             "000660": {
-              "as_of": "2026-10-12",
-              "ratio": 0.11246835187697667,
+              "as_of": "2026-10-13",
+              "ratio": 0.17192820679375367,
               "tickers": [
                 "7709.HK"
               ],
               "excluded_other_date": []
             },
             "005930": {
-              "as_of": "2026-10-12",
-              "ratio": 0.022722634949576118,
+              "as_of": "2026-10-13",
+              "ratio": 0.02566774684177715,
               "tickers": [
                 "7747.HK",
                 "7347.HK"
@@ -294,7 +294,7 @@
           },
           "crypto_perp_oi_notional_usd": null,
           "crypto_perp_quote_volume_24h_usd": 0.0,
-          "global_stack_usd": 227682110262.11,
+          "global_stack_usd": 226558451103.33,
           "global_stack_unobserved_venues": [
             "hk",
             "crypto"
@@ -314,12 +314,12 @@
               "aum_usd": null,
               "aum_as_of": null,
               "notional_exposure_usd": null,
-              "trading_value_usd": 424083628.2231655,
+              "trading_value_usd": 1033371226.4301593,
               "trading_value_coverage_complete": true,
               "valued_listing_count": 1,
               "expected_listing_count": 1,
-              "tv_over_kr_cash_tv": 0.11246835187697667,
-              "observed_on": "2026-10-12",
+              "tv_over_kr_cash_tv": 0.17192820679375367,
+              "observed_on": "2026-10-13",
               "stale": false,
               "data_age_calendar_days": 1,
               "kr_spot_impact": "indirect_swap",
@@ -340,12 +340,12 @@
               "aum_usd": null,
               "aum_as_of": null,
               "notional_exposure_usd": null,
-              "trading_value_usd": 81213749.84616423,
+              "trading_value_usd": 113673205.9723942,
               "trading_value_coverage_complete": true,
               "valued_listing_count": 1,
               "expected_listing_count": 1,
-              "tv_over_kr_cash_tv": 0.021699827932680934,
-              "observed_on": "2026-10-12",
+              "tv_over_kr_cash_tv": 0.024292124370516862,
+              "observed_on": "2026-10-13",
               "stale": false,
               "data_age_calendar_days": 1,
               "kr_spot_impact": "indirect_swap",
@@ -366,12 +366,12 @@
               "aum_usd": null,
               "aum_as_of": null,
               "notional_exposure_usd": null,
-              "trading_value_usd": 3827956.3077053623,
+              "trading_value_usd": 6437123.988448332,
               "trading_value_coverage_complete": true,
               "valued_listing_count": 2,
               "expected_listing_count": 2,
-              "tv_over_kr_cash_tv": 0.0010228070168951848,
-              "observed_on": "2026-10-12",
+              "tv_over_kr_cash_tv": 0.0013756224712602862,
+              "observed_on": "2026-10-13",
               "stale": false,
               "data_age_calendar_days": 1,
               "kr_spot_impact": "indirect_swap",
@@ -429,14 +429,14 @@
                 "name": "Direxion Daily Semiconductor Bu",
                 "aum": 23968989184.0,
                 "currency": "USD",
-                "nav": 127.65,
-                "previous_close": 127.57,
-                "volume": 102344094,
-                "average_volume": 64617367,
+                "nav": 110.346,
+                "previous_close": 110.54,
+                "volume": 136485535,
+                "average_volume": 65183681,
                 "last_bar": {
-                  "close": 110.54000091552734,
-                  "volume": 102344094.0,
-                  "as_of": "2026-10-14"
+                  "close": 107.3499984741211,
+                  "volume": 136485535.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -461,14 +461,14 @@
                 "name": "Direxion Daily Semiconductor Be",
                 "aum": 1817185152.0,
                 "currency": "USD",
-                "nav": 37.441,
-                "previous_close": 37.42,
-                "volume": 88764629,
-                "average_volume": 63253646,
+                "nav": 42.521,
+                "previous_close": 42.52,
+                "volume": 108399247,
+                "average_volume": 63831845,
                 "last_bar": {
-                  "close": 42.52000045776367,
-                  "volume": 88764629.0,
-                  "as_of": "2026-10-14"
+                  "close": 43.63999938964844,
+                  "volume": 108399247.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -493,14 +493,14 @@
                 "name": "Direxion Daily South Korea Bull",
                 "aum": 1328676864.0,
                 "currency": "USD",
-                "nav": 14.697,
-                "previous_close": 14.72,
-                "volume": 36016444,
-                "average_volume": 27195854,
+                "nav": 12.903,
+                "previous_close": 12.93,
+                "volume": 73820918,
+                "average_volume": 27304215,
                 "last_bar": {
-                  "close": 12.930000305175781,
-                  "volume": 36016444.0,
-                  "as_of": "2026-10-14"
+                  "close": 12.010000228881836,
+                  "volume": 73820918.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -525,14 +525,14 @@
                 "name": "Direxion Daily Technology Bull ",
                 "aum": 6587876352.0,
                 "currency": "USD",
-                "nav": 232.562,
-                "previous_close": 232.72,
-                "volume": 815087,
-                "average_volume": 563550,
+                "nav": 211.612,
+                "previous_close": 211.68,
+                "volume": 1019248,
+                "average_volume": 560134,
                 "last_bar": {
-                  "close": 211.67999267578125,
-                  "volume": 815087.0,
-                  "as_of": "2026-10-14"
+                  "close": 207.80999755859375,
+                  "volume": 1019248.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -557,14 +557,14 @@
                 "name": "Direxion Technology Bear 3X ETF",
                 "aum": 68772400.0,
                 "currency": "USD",
-                "nav": 51.55,
-                "previous_close": 51.58,
-                "volume": 700955,
-                "average_volume": 377873,
+                "nav": 56.204,
+                "previous_close": 56.2,
+                "volume": 789947,
+                "average_volume": 383743,
                 "last_bar": {
-                  "close": 56.20000076293945,
-                  "volume": 700955.0,
-                  "as_of": "2026-10-14"
+                  "close": 57.209999084472656,
+                  "volume": 789947.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -589,14 +589,14 @@
                 "name": "ProShares UltraPro QQQ",
                 "aum": 37923700736.0,
                 "currency": "USD",
-                "nav": 78.8001,
-                "previous_close": 78.81,
-                "volume": 68241254,
-                "average_volume": 53438578,
+                "nav": 73.9967,
+                "previous_close": 74.12,
+                "volume": 73685201,
+                "average_volume": 53432817,
                 "last_bar": {
-                  "close": 74.12000274658203,
-                  "volume": 68241254.0,
-                  "as_of": "2026-10-14"
+                  "close": 73.81999969482422,
+                  "volume": 73685201.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -621,14 +621,14 @@
                 "name": "ProShares UltraPro Short QQQ",
                 "aum": 2105422336.0,
                 "currency": "USD",
-                "nav": 33.9855,
-                "previous_close": 33.985,
-                "volume": 57212015,
-                "average_volume": 47749198,
+                "nav": 36.0569,
+                "previous_close": 36.0,
+                "volume": 57376842,
+                "average_volume": 47790135,
                 "last_bar": {
-                  "close": 36.0,
-                  "volume": 57212015.0,
-                  "as_of": "2026-10-14"
+                  "close": 36.13999938964844,
+                  "volume": 57376842.0,
+                  "as_of": "2026-10-15"
                 },
                 "source": "Yahoo Finance (yfinance)",
                 "quality": "observed"
@@ -646,23 +646,23 @@
           {
             "field": "levered_etf_aum_usd",
             "paper_anchor": 26000000000.0,
-            "model_value": 14820017211.19,
-            "delta_pct": -42.9999338030989,
+            "model_value": 13150490111.36,
+            "delta_pct": -49.4211918794011,
             "note": "KR levered ETF AUM only (paper Korea chart); FX for USD",
             "quality": "observed"
           },
           {
             "field": "leverage_exposure_pct_aum_over_ff",
             "paper_anchor": 2.1,
-            "model_value": 0.5581,
-            "delta_pct": -73.42536613370562,
+            "model_value": 0.5358,
+            "delta_pct": -74.48402362143419,
             "note": "paper-style: KR total levered ETF AUM / KOSPI free float (no |L|)",
             "quality": "estimated"
           },
           {
             "field": "leverage_exposure_pct_notional",
             "paper_anchor": null,
-            "model_value": 0.5185,
+            "model_value": 0.474,
             "delta_pct": null,
             "note": "brief §4.3: Σ AUM×|L|×β / free_float of covered underlyings (KR only)",
             "quality": "estimated"
@@ -676,7 +676,7 @@
               "name": "KODEX SK하이닉스단일종목레버리지",
               "underlying": "000660",
               "L": 2.0,
-              "aum_usd_bn": 0.99,
+              "aum_usd_bn": 0.8,
               "structure": "cash"
             },
             {
@@ -684,7 +684,7 @@
               "name": "KODEX 삼성전자단일종목레버리지",
               "underlying": "005930",
               "L": 2.0,
-              "aum_usd_bn": 0.79,
+              "aum_usd_bn": 0.65,
               "structure": "cash"
             },
             {
@@ -692,7 +692,7 @@
               "name": "TIGER SK하이닉스단일종목레버리지",
               "underlying": "000660",
               "L": 2.0,
-              "aum_usd_bn": 0.65,
+              "aum_usd_bn": 0.52,
               "structure": "cash"
             },
             {
@@ -700,7 +700,7 @@
               "name": "TIGER 삼성전자단일종목레버리지",
               "underlying": "005930",
               "L": 2.0,
-              "aum_usd_bn": 0.48,
+              "aum_usd_bn": 0.38,
               "structure": "cash"
             },
             {
@@ -708,7 +708,7 @@
               "name": "SOL SK하이닉스선물단일종목인버스2X",
               "underlying": "000660",
               "L": -2.0,
-              "aum_usd_bn": 0.09,
+              "aum_usd_bn": 0.1,
               "structure": "futures"
             },
             {
@@ -718,6 +718,14 @@
               "L": 2.0,
               "aum_usd_bn": 0.02,
               "structure": "cash"
+            },
+            {
+              "ticker": "0193L0",
+              "name": "PLUS 삼성전자선물단일종목인버스2X",
+              "underlying": "005930",
+              "L": -2.0,
+              "aum_usd_bn": 0.02,
+              "structure": "futures"
             },
             {
               "ticker": "0194T0",
@@ -740,7 +748,7 @@
               "name": "RISE SK하이닉스단일종목레버리지",
               "underlying": "000660",
               "L": 2.0,
-              "aum_usd_bn": 0.02,
+              "aum_usd_bn": 0.01,
               "structure": "cash"
             },
             {
@@ -748,16 +756,8 @@
               "name": "RISE 삼성전자단일종목레버리지",
               "underlying": "005930",
               "L": 2.0,
-              "aum_usd_bn": 0.02,
-              "structure": "cash"
-            },
-            {
-              "ticker": "0193L0",
-              "name": "PLUS 삼성전자선물단일종목인버스2X",
-              "underlying": "005930",
-              "L": -2.0,
               "aum_usd_bn": 0.01,
-              "structure": "futures"
+              "structure": "cash"
             },
             {
               "ticker": "0198D0",
@@ -788,7 +788,7 @@
               "name": "KIWOOM SK하이닉스선물단일종목레버리지",
               "underlying": "000660",
               "L": 2.0,
-              "aum_usd_bn": 0.01,
+              "aum_usd_bn": 0.0,
               "structure": "futures"
             },
             {
@@ -828,9 +828,9 @@
     "expert_ko": "Price target ≈ L×R (daily reset). Exposure stock = AUM×|L|. End-of-day hedge/rebalance notional TR = AUM×(L²−L)×R; IR = |TR|/ADV_spot. Long and inverse TR computed separately then summed."
   },
   "trading_share": {
-    "as_of": "2026-10-14",
-    "kospi_cash_tv_jo": 21.02,
-    "kosdaq_cash_tv_jo": 5.95,
+    "as_of": "2026-10-15",
+    "kospi_cash_tv_jo": 28.64,
+    "kosdaq_cash_tv_jo": 7.03,
     "all_etf_tv_jo": 0.0,
     "levered_inverse_etf_tv_jo": 0.0,
     "single_stock_letf_tv_jo": 0.0,
@@ -842,12 +842,12 @@
       {
         "ticker": "000660",
         "name": "SK하이닉스",
-        "letf_over_spot_adv_pct": 6.59
+        "letf_over_spot_adv_pct": 8.08
       },
       {
         "ticker": "005930",
         "name": "삼성전자",
-        "letf_over_spot_adv_pct": 3.35
+        "letf_over_spot_adv_pct": 2.73
       }
     ],
     "note_ko": "ETF Amount(FDR)=백만원 단위. 레버+인버스 이름 매칭."
@@ -860,7 +860,7 @@
         "name": "KODEX SK하이닉스단일종목레버리지",
         "underlying": "000660",
         "L": 2.0,
-        "aum_usd_bn": 0.99,
+        "aum_usd_bn": 0.8,
         "structure": "cash"
       },
       {
@@ -868,7 +868,7 @@
         "name": "KODEX 삼성전자단일종목레버리지",
         "underlying": "005930",
         "L": 2.0,
-        "aum_usd_bn": 0.79,
+        "aum_usd_bn": 0.65,
         "structure": "cash"
       },
       {
@@ -876,7 +876,7 @@
         "name": "TIGER SK하이닉스단일종목레버리지",
         "underlying": "000660",
         "L": 2.0,
-        "aum_usd_bn": 0.65,
+        "aum_usd_bn": 0.52,
         "structure": "cash"
       },
       {
@@ -884,7 +884,7 @@
         "name": "TIGER 삼성전자단일종목레버리지",
         "underlying": "005930",
         "L": 2.0,
-        "aum_usd_bn": 0.48,
+        "aum_usd_bn": 0.38,
         "structure": "cash"
       },
       {
@@ -892,7 +892,7 @@
         "name": "SOL SK하이닉스선물단일종목인버스2X",
         "underlying": "000660",
         "L": -2.0,
-        "aum_usd_bn": 0.09,
+        "aum_usd_bn": 0.1,
         "structure": "futures"
       },
       {
@@ -902,6 +902,14 @@
         "L": 2.0,
         "aum_usd_bn": 0.02,
         "structure": "cash"
+      },
+      {
+        "ticker": "0193L0",
+        "name": "PLUS 삼성전자선물단일종목인버스2X",
+        "underlying": "005930",
+        "L": -2.0,
+        "aum_usd_bn": 0.02,
+        "structure": "futures"
       },
       {
         "ticker": "0194T0",
@@ -924,7 +932,7 @@
         "name": "RISE SK하이닉스단일종목레버리지",
         "underlying": "000660",
         "L": 2.0,
-        "aum_usd_bn": 0.02,
+        "aum_usd_bn": 0.01,
         "structure": "cash"
       },
       {
@@ -932,16 +940,8 @@
         "name": "RISE 삼성전자단일종목레버리지",
         "underlying": "005930",
         "L": 2.0,
-        "aum_usd_bn": 0.02,
-        "structure": "cash"
-      },
-      {
-        "ticker": "0193L0",
-        "name": "PLUS 삼성전자선물단일종목인버스2X",
-        "underlying": "005930",
-        "L": -2.0,
         "aum_usd_bn": 0.01,
-        "structure": "futures"
+        "structure": "cash"
       },
       {
         "ticker": "0198D0",
@@ -972,7 +972,7 @@
         "name": "KIWOOM SK하이닉스선물단일종목레버리지",
         "underlying": "000660",
         "L": 2.0,
-        "aum_usd_bn": 0.01,
+        "aum_usd_bn": 0.0,
         "structure": "futures"
       },
       {
@@ -996,31 +996,31 @@
       "id": "concentration",
       "title_en": "Concentration matters",
       "title_ko": "집중도",
-      "stat": "Conc_top2 48.3%",
-      "detail_ko": "삼성+하닉 48.3% · Top5 55.4% · Top10 61.9% · tickers Top5=['005930', '000660', '005935', '402340', '009150'] (분모=KOSPI 전체시총)",
+      "stat": "Conc_top2 46.9%",
+      "detail_ko": "삼성+하닉 46.9% · Top5 54.0% · Top10 60.6% · tickers Top5=['005930', '000660', '005935', '402340', '373220'] (분모=KOSPI 전체시총)",
       "paper_note": "elevated concentration amplifies idiosyncratic + leverage feedback"
     },
     {
       "id": "leverage_reset",
       "title_en": "Leverage reset",
       "title_ko": "레버리지 AUM",
-      "stat": "$14.82bn KR levered ETF",
-      "detail_ko": "KR 레버/인버스 ETF AUM $14.82bn (paper anchor $26.0bn). 단일종목 LETF $3.14bn.",
+      "stat": "$13.15bn KR levered ETF",
+      "detail_ko": "KR 레버/인버스 ETF AUM $13.15bn (paper anchor $26.0bn). 단일종목 LETF $2.58bn.",
       "paper_note": "paper peak ~$53bn → recent ~$26bn; model is live KR listing sum"
     },
     {
       "id": "free_float_share",
       "title_en": "Leverage vs free float",
       "title_ko": "유동시총 대비 레버 비중",
-      "stat": "0.5581% of KOSPI free float (AUM)",
-      "detail_ko": "paper-style AUM/FF = 0.5581% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.1182%. 노셔널 ΣAUM×|L|/커버종목 FF = 0.5185%. HK·crypto는 분모에 넣지 않음.",
+      "stat": "0.5358% of KOSPI free float (AUM)",
+      "detail_ko": "paper-style AUM/FF = 0.5358% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.1051%. 노셔널 ΣAUM×|L|/커버종목 FF = 0.474%. HK·crypto는 분모에 넣지 않음.",
       "paper_note": "Soc Gen chart ≈ levered ETF AUM / free float (not always ×|L|)"
     },
     {
       "id": "foreign_vs_retail",
       "title_en": "Foreign vs retail",
       "title_ko": "외인 vs 개인",
-      "stat": "foreign -0.88조 · retail -0.0조",
+      "stat": "foreign -2.7조 · retail 1.49조",
       "detail_ko": "scope=covered_underlyings_spot · quality=estimated",
       "paper_note": "who absorbs the other side of leverage flows"
     },
@@ -1028,88 +1028,88 @@
       "id": "largest_product",
       "title_en": "Largest leverage product",
       "title_ko": "최대 레버 상품",
-      "stat": "0193T0 · $0.99bn AUM",
-      "detail_ko": "KR KODEX SK하이닉스단일종목레버리지 · underlying 000660 · L=2.0 · notional $1.98bn · KRX LETF — TR/IR · wag-the-dog 대상. (참고: 하이닉스 HK 메인은 7709.HK. 7708은 현재 유니버스/Yahoo에 없음.)",
+      "stat": "0193T0 · $0.8bn AUM",
+      "detail_ko": "KR KODEX SK하이닉스단일종목레버리지 · underlying 000660 · L=2.0 · notional $1.6bn · KRX LETF — TR/IR · wag-the-dog 대상. (참고: 하이닉스 HK 메인은 7709.HK. 7708은 현재 유니버스/Yahoo에 없음.)",
       "paper_note": "drill-down: ranked product table"
     },
     {
       "id": "hynix_wag",
       "title_en": "Hynix wag-the-dog",
       "title_ko": "하이닉스 ETF 영향도",
-      "stat": "LETF/ADV 6.59% · IR 1.706%",
-      "detail_ko": "현물 ADV 5.421조 · LETF TV 0.357조 · AUM 2.524조",
+      "stat": "LETF/ADV 8.08% · IR 6.9553%",
+      "detail_ko": "현물 ADV 7.499조 · LETF TV 0.606조 · AUM 2.072조",
       "paper_note": "YouTube reverse: turnover ratio + short-gamma IR"
     }
   ],
   "free_float_leverage": {
-    "kospi_total_mcap_krw": 4957113877260586.0,
-    "kospi_free_float_mcap_krw": 3717835407945439.5,
-    "kospi_free_float_mcap_usd_bn": 2655.6,
-    "kr_all_levered_etf_aum_over_kospi_ff_pct": 0.5581,
-    "kr_single_stock_letf_aum_over_kospi_ff_pct": 0.1182,
-    "kr_single_stock_notional_over_covered_ff_pct": 0.5185,
+    "kospi_total_mcap_krw": 4581178619230376.0,
+    "kospi_free_float_mcap_krw": 3435883964422782.0,
+    "kospi_free_float_mcap_usd_bn": 2454.2,
+    "kr_all_levered_etf_aum_over_kospi_ff_pct": 0.5358,
+    "kr_single_stock_letf_aum_over_kospi_ff_pct": 0.1051,
+    "kr_single_stock_notional_over_covered_ff_pct": 0.474,
     "paper_anchor_pct": 2.1,
     "definition_ko": "유동시총 대비 레버 = (정의1) KR 레버ETF AUM / KOSPI 유동시총 — paper 2.1% 대응. (정의2) Σ AUM×|L|×β / 커버 종목 유동시총. HK·crypto는 KR 유동시총 분모에 합산하지 않음."
   },
   "concentration": {
-    "conc_top2_samsung_hynix_pct": 48.2721,
-    "conc_top5_pct": 55.4199,
-    "conc_top10_pct": 61.9361,
+    "conc_top2_samsung_hynix_pct": 46.9224,
+    "conc_top5_pct": 53.9679,
+    "conc_top10_pct": 60.6451,
     "top5_tickers": [
       "005930",
       "000660",
       "005935",
       "402340",
-      "009150"
+      "373220"
     ],
     "top10_tickers": [
       "005930",
       "000660",
       "005935",
       "402340",
-      "009150",
       "373220",
+      "009150",
       "005380",
-      "105560",
       "207940",
+      "105560",
       "032830"
     ],
     "top5_mcap_krw": [
-      1356336637056000.0,
-      1036568665935000.0,
-      139291640840800.0,
-      112399246296000.0,
-      102629138304000.0
+      1227718507680000.0,
+      921881364630000.0,
+      127657258397300.0,
+      100921858470000.0,
+      94185000000000.0
     ],
     "top10_mcap_krw": [
-      1356336637056000.0,
-      1036568665935000.0,
-      139291640840800.0,
-      112399246296000.0,
-      102629138304000.0,
-      98748000000000.0,
-      63786745242000.0,
-      56466287252800.0,
-      54715904082000.0,
-      49300000000000.0
+      1227718507680000.0,
+      921881364630000.0,
+      127657258397300.0,
+      100921858470000.0,
+      94185000000000.0,
+      86868768448000.0,
+      60124348386000.0,
+      57724815897000.0,
+      55579567917800.0,
+      45600000000000.0
     ],
-    "universe_mcap_krw": 4957113877260586.0,
+    "universe_mcap_krw": 4581178619230376.0,
     "n_constituents_in_input": 30,
     "note_ko": "Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30 보관이어도 분모는 전종목 합; Top10은 시총 정렬로 확정.",
     "quality": "observed",
-    "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20261014"
+    "source": "KRX OpenAPI sto/stk_bydd_trd basDd=20261015"
   },
   "market_levered_etf": {
-    "aum_krw": 20748024095672.0,
-    "aum_usd": 14820017211.19,
-    "single_stock_kr_aum_krw": 4396168833078.0,
+    "aum_krw": 18410686155898.0,
+    "aum_usd": 13150490111.36,
+    "single_stock_kr_aum_krw": 3609607421934.0,
     "quality": "observed",
-    "source": "KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20261014"
+    "source": "KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20261015"
   },
   "foreign_vs_retail": {
-    "foreign_net_krw": -884496234000,
-    "retail_net_krw": -3802986000,
-    "institution_net_krw": 247650627000,
+    "foreign_net_krw": -2702001460000,
+    "retail_net_krw": 1491910786000,
+    "institution_net_krw": 578664660000,
     "scope": "covered_underlyings_spot",
     "quality": "estimated",
     "source": "Naver dealTrendInfos (share nets × close)"
@@ -1123,97 +1123,97 @@
     "quality": "carried_forward",
     "date_raw": "26.09.16",
     "as_of": "2026-09-16",
-    "carried_at": "2026-10-14"
+    "carried_at": "2026-10-15"
   },
   "deposit_credit": {
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "unit_native": "억원",
-    "investor_deposit_eok": 1000982.75,
-    "investor_deposit_jo": 100.098,
-    "investor_deposit_krw": 100098275000000.0,
-    "credit_balance_eok": 342528.68,
-    "credit_balance_krw": 34252868000000.0,
-    "credit_loan_eok": 342528.68,
-    "credit_loan_jo": 34.253,
-    "credit_loan_kospi_eok": 267274.67,
-    "credit_loan_kosdaq_eok": 75254.01,
-    "collateral_loan_eok": 267429.71,
-    "short_loan_eok": 388.9,
-    "credit_funds_eok": 609958.39,
-    "uncollected_eok": 12415.25,
-    "forced_sale_eok": 593.5,
-    "forced_sale_over_uncollected_pct": 5.6,
-    "credit_over_deposit_pct": 34.219,
-    "uncollected_over_deposit_pct": 1.24,
-    "credit_funds_over_deposit_pct": 60.936,
+    "investor_deposit_eok": 974280.12,
+    "investor_deposit_jo": 97.428,
+    "investor_deposit_krw": 97428012000000.0,
+    "credit_balance_eok": 337057.42,
+    "credit_balance_krw": 33705742000000.0,
+    "credit_loan_eok": 337057.42,
+    "credit_loan_jo": 33.706,
+    "credit_loan_kospi_eok": 262685.74,
+    "credit_loan_kosdaq_eok": 74371.67,
+    "collateral_loan_eok": 270547.69,
+    "short_loan_eok": 314.85,
+    "credit_funds_eok": 607605.11,
+    "uncollected_eok": 13574.73,
+    "forced_sale_eok": 893.36,
+    "forced_sale_over_uncollected_pct": 7.2,
+    "credit_over_deposit_pct": 34.596,
+    "uncollected_over_deposit_pct": 1.393,
+    "credit_funds_over_deposit_pct": 62.365,
     "components": [
       {
         "key": "investor_deposit",
         "label_ko": "투자자예탁금",
         "group": "cash_leverage",
-        "value_eok": 1000982.75,
-        "value_jo": 100.098,
+        "value_eok": 974280.12,
+        "value_jo": 97.428,
         "preferred_unit": "조원"
       },
       {
         "key": "credit_loan",
         "label_ko": "신용거래융자",
         "group": "cash_leverage",
-        "value_eok": 342528.68,
-        "value_jo": 34.253,
+        "value_eok": 337057.42,
+        "value_jo": 33.706,
         "preferred_unit": "조원"
       },
       {
         "key": "credit_loan_kospi",
         "label_ko": "신용거래융자(유가증권)",
         "group": "cash_leverage",
-        "value_eok": 267274.67,
-        "value_jo": 26.727,
+        "value_eok": 262685.74,
+        "value_jo": 26.269,
         "preferred_unit": "조원"
       },
       {
         "key": "credit_loan_kosdaq",
         "label_ko": "신용거래융자(코스닥)",
         "group": "cash_leverage",
-        "value_eok": 75254.01,
-        "value_jo": 7.525,
+        "value_eok": 74371.67,
+        "value_jo": 7.437,
         "preferred_unit": "조원"
       },
       {
         "key": "uncollected",
         "label_ko": "위탁매매미수금",
         "group": "stress",
-        "value_eok": 12415.25,
-        "value_jo": 1.242,
+        "value_eok": 13574.73,
+        "value_jo": 1.357,
         "preferred_unit": "억원"
       },
       {
         "key": "forced_sale",
         "label_ko": "반대매매금액(미수 대비)",
         "group": "stress",
-        "value_eok": 593.5,
-        "value_jo": 0.059,
+        "value_eok": 893.36,
+        "value_jo": 0.089,
         "preferred_unit": "억원"
       },
       {
         "key": "forced_sale_pct",
         "label_ko": "미수 대비 반대매매비중(%)",
         "group": "stress",
-        "value_pct": 5.6,
+        "value_pct": 7.2,
         "preferred_unit": "pct"
       },
       {
         "key": "credit_over_deposit_pct",
         "label_ko": "신용/예탁금(%)",
         "group": "cash_leverage",
-        "value_pct": 34.219,
+        "value_pct": 34.596,
         "preferred_unit": "pct"
       },
       {
         "key": "uncollected_over_deposit_pct",
         "label_ko": "미수/예탁금(%)",
         "group": "stress",
-        "value_pct": 1.24,
+        "value_pct": 1.393,
         "preferred_unit": "pct"
       }
     ],
@@ -1260,22 +1260,6 @@
       "scale_note_ko": "규모 차이 큼: 예탁~104조 · 신용~29조 · 미수~1조 · 반대매매~100억. 표는 절대액(조/억)+비율 병행. 차트 Y오른쪽은 신용/예탁% 권장 (절대 예탁·미수를 한 축에 올리면 미수가 보이지 않음). 미수·반대매매는 별도 소형 스트립."
     },
     "history": [
-      {
-        "date": "2026-01-07",
-        "investor_deposit_eok": 897650.35,
-        "derivatives_margin_eok": 197929.11,
-        "customer_rp_eok": 1027036.2,
-        "uncollected_eok": 9902.21,
-        "forced_sale_eok": 72.1,
-        "forced_sale_over_uncollected_pct": 0.8,
-        "credit_loan_eok": 278707.59,
-        "credit_loan_kospi_eok": 175932.21,
-        "credit_loan_kosdaq_eok": 102775.38,
-        "short_loan_eok": 507.46,
-        "subscription_loan_eok": 0.0,
-        "collateral_loan_eok": 252463.73,
-        "credit_funds_eok": 531171.32
-      },
       {
         "date": "2026-01-08",
         "investor_deposit_eok": 928537.39,
@@ -4235,6 +4219,22 @@
         "subscription_loan_eok": 0.0,
         "collateral_loan_eok": 267429.71,
         "credit_funds_eok": 609958.39
+      },
+      {
+        "date": "2026-10-14",
+        "investor_deposit_eok": 974280.12,
+        "derivatives_margin_eok": 367374.35,
+        "customer_rp_eok": 1076421.31,
+        "uncollected_eok": 13574.73,
+        "forced_sale_eok": 893.36,
+        "forced_sale_over_uncollected_pct": 7.2,
+        "credit_loan_eok": 337057.42,
+        "credit_loan_kospi_eok": 262685.74,
+        "credit_loan_kosdaq_eok": 74371.67,
+        "short_loan_eok": 314.85,
+        "subscription_loan_eok": 0.0,
+        "collateral_loan_eok": 270547.69,
+        "credit_funds_eok": 607605.11
       }
     ],
     "history_n": 186,
@@ -4501,7 +4501,7 @@
     "source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
     "note_ko": "이름에 레버리지·인버스·곱버스가 든 상장 ETF의 당일 거래대금이다. 방향은 상품명 분류이며 투자자의 실제 순포지션이 아니다.",
     "as_of": "2026-10-08",
-    "carried_at": "2026-10-14"
+    "carried_at": "2026-10-15"
   },
   "short_interest": {
     "by_ticker": {},
@@ -4510,33 +4510,33 @@
     "note_ko": "공매도 잔고는 이 일일 공개 수집기에서 확인하지 못했다. 값을 추정하지 않는다."
   },
   "global_leverage_stack_usd_bn": {
-    "kr_single_stock_letf_notional": 6.28,
+    "kr_single_stock_letf_notional": 5.16,
     "hk_swap_letf_notional": null,
     "crypto_perp_oi": null,
-    "stack_sum_reference": 227.68,
+    "stack_sum_reference": 226.56,
     "note_ko": "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력)."
   },
   "stocks": [
     {
       "ticker": "000660",
       "name": "SK하이닉스",
-      "day_return": -0.0166,
-      "letf_turnover_ratio": 0.0659,
-      "leverage_exposure_pct_of_stock_ff": 0.6765,
+      "day_return": -0.1106,
+      "letf_turnover_ratio": 0.0808,
+      "leverage_exposure_pct_of_stock_ff": 0.6242,
       "wag_the_dog_band": "mid",
-      "realized_ir_pct": 1.706,
-      "long_aum_share": 0.9482,
-      "inverse_aum_share": 0.0518,
-      "inverse_tv_share": 0.302,
-      "retail_net_krw": -121077594000,
-      "foreign_net_krw": -691992378000,
+      "realized_ir_pct": 6.9553,
+      "long_aum_share": 0.9309,
+      "inverse_aum_share": 0.0691,
+      "inverse_tv_share": 0.3602,
+      "retail_net_krw": 513618856000,
+      "foreign_net_krw": -1173193060000,
       "external_vs_spot": {
         "hk_notional_usd": null,
         "crypto_oi_usd": 0.0,
         "hk_over_spot_adv": null,
         "hk_notional_missing_reason_ko": "운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)",
-        "hk_tv_over_kr_cash_tv": 0.11246835187697667,
-        "hk_tv_as_of": "2026-10-12",
+        "hk_tv_over_kr_cash_tv": 0.17192820679375367,
+        "hk_tv_as_of": "2026-10-13",
         "hk_tv_tickers": [
           "7709.HK"
         ],
@@ -4549,23 +4549,23 @@
     {
       "ticker": "005930",
       "name": "삼성전자",
-      "day_return": 0.0,
-      "letf_turnover_ratio": 0.0335,
-      "leverage_exposure_pct_of_stock_ff": 0.3943,
+      "day_return": -0.09480000000000001,
+      "letf_turnover_ratio": 0.0273,
+      "leverage_exposure_pct_of_stock_ff": 0.3579,
       "wag_the_dog_band": "low",
-      "realized_ir_pct": 0.0,
-      "long_aum_share": 0.9894,
-      "inverse_aum_share": 0.0106,
-      "inverse_tv_share": 0.029,
-      "retail_net_krw": 117274608000,
-      "foreign_net_krw": -192503856000,
+      "realized_ir_pct": 4.147,
+      "long_aum_share": 0.9846,
+      "inverse_aum_share": 0.0154,
+      "inverse_tv_share": 0.0483,
+      "retail_net_krw": 978291930000,
+      "foreign_net_krw": -1528808400000,
       "external_vs_spot": {
         "hk_notional_usd": null,
         "crypto_oi_usd": 0.0,
         "hk_over_spot_adv": null,
         "hk_notional_missing_reason_ko": "운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)",
-        "hk_tv_over_kr_cash_tv": 0.022722634949576118,
-        "hk_tv_as_of": "2026-10-12",
+        "hk_tv_over_kr_cash_tv": 0.02566774684177715,
+        "hk_tv_as_of": "2026-10-13",
         "hk_tv_tickers": [
           "7747.HK",
           "7347.HK"
@@ -4580,34 +4580,34 @@
   "hynix_youtube_impact": {
     "ticker": "000660",
     "name": "SK하이닉스",
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-15",
     "spot": {
-      "close": 1419000.0,
-      "day_return": -0.0166,
-      "market_cap_krw": 1036568665935000.0,
-      "market_cap_usd_bn": 740.41,
-      "free_float_mcap_krw": 746329439473200.0,
-      "adv_spot_krw": 5420960555678.0,
-      "adv_spot_usd_bn": 3.87,
-      "adv_spot_jo": 5.421
+      "close": 1262000.0,
+      "day_return": -0.1106,
+      "market_cap_krw": 921881364630000.0,
+      "market_cap_usd_bn": 658.49,
+      "free_float_mcap_krw": 663754582533600.0,
+      "adv_spot_krw": 7499484389500.0,
+      "adv_spot_usd_bn": 5.36,
+      "adv_spot_jo": 7.499
     },
     "kr_letf": {
-      "aum_krw": 2524382496263.0,
-      "aum_usd_bn": 1.8,
-      "aum_jo": 2.524,
-      "notional_aum_x_L_krw": 5048764992526.0,
-      "notional_usd_bn": 3.61,
-      "day_trading_value_krw": 357164458120.0,
-      "day_trading_value_jo": 0.357,
-      "day_trading_value_usd_bn": 0.26,
+      "aum_krw": 2071615424043.0,
+      "aum_usd_bn": 1.48,
+      "aum_jo": 2.072,
+      "notional_aum_x_L_krw": 4143230848086.0,
+      "notional_usd_bn": 2.96,
+      "day_trading_value_krw": 605615000078.0,
+      "day_trading_value_jo": 0.606,
+      "day_trading_value_usd_bn": 0.43,
       "top3_by_aum": [
         {
           "ticker": "0193T0",
           "name": "KODEX SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum_krw": 1383663528236.0,
-          "aum_usd": 988331091.6,
-          "trading_value_krw": 172752057667.0,
+          "aum_krw": 1118249540036.0,
+          "aum_usd": 798749671.45,
+          "trading_value_krw": 275020084958.0,
           "structure": "cash",
           "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
         },
@@ -4615,9 +4615,9 @@
           "ticker": "0195S0",
           "name": "TIGER SK하이닉스단일종목레버리지",
           "L": 2.0,
-          "aum_krw": 910618070061.0,
-          "aum_usd": 650441478.62,
-          "trading_value_krw": 73686440980.0,
+          "aum_krw": 729458625107.0,
+          "aum_usd": 521041875.08,
+          "trading_value_krw": 104424459468.0,
           "structure": "cash",
           "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
         },
@@ -4625,9 +4625,9 @@
           "ticker": "0197X0",
           "name": "SOL SK하이닉스선물단일종목인버스2X",
           "L": -2.0,
-          "aum_krw": 130638483452.0,
-          "aum_usd": 93313202.47,
-          "trading_value_krw": 107858149281.0,
+          "aum_krw": 143240425084.0,
+          "aum_usd": 102314589.35,
+          "trading_value_krw": 218120517857.0,
           "structure": "futures",
           "note_ko": "KR listing MarCap ≈ AUM/NAV×주식수 프록시"
         }
@@ -4636,34 +4636,34 @@
     "youtube_impact_ko": {
       "metric_1_wag_the_dog": {
         "name": "LETF 일거래대금 / 현물 당일 거래대금",
-        "value_pct": 6.59,
+        "value_pct": 8.08,
         "band": "mid",
         "formula": "Σ LETF trading_value / underlying daily trading value",
         "read_ko": "유튜브 '개가 꼬리를 흔든다' — 레버 ETF 거래가 현물 대비 얼마나 큰지. low<5% · watch~10% · high≥10%."
       },
       "metric_2_size_vs_mcap": {
         "name": "LETF AUM / 하이닉스 시총",
-        "value_pct": 0.2435,
+        "value_pct": 0.2247,
         "formula": "Σ AUM / market_cap"
       },
       "metric_3_size_vs_ff": {
         "name": "LETF AUM×|L| / 유동시총",
-        "value_pct": 0.6765,
+        "value_pct": 0.6242,
         "formula": "Σ AUM×|L| / free_float"
       },
       "metric_4_short_gamma_ir": {
         "name": "실현 IR (순합 리밸런싱 추정)",
-        "value_pct": 1.706,
-        "tr_krw": -92483894177.14441,
-        "day_R": -0.0166,
+        "value_pct": 6.9553,
+        "tr_krw": -521610895855.47314,
+        "day_R": -0.1106,
         "formula": "TR=Σ[AUM×(L²−L)×R] (signed net) · IR=|TR|/현물 당일 거래대금×100",
         "read_ko": "상품별 signed TR을 먼저 합산한 모델 추정치. 실제 체결·딜러 감마·가격 영향 관측값이 아니다.",
-        "scenario_minus_5pct_ir": 5.1387
+        "scenario_minus_5pct_ir": 3.1443
       },
       "metric_5_inverse_tv_share": {
         "name": "인버스 ETF 거래대금 비중",
-        "value_pct": 30.2,
-        "inverse_aum_share_pct": 5.18,
+        "value_pct": 36.02,
+        "inverse_aum_share_pct": 6.91,
         "read_ko": "AUM 대비 인버스 거래비중이 크면 하락일에 헤지/리밸런싱 비대칭."
       }
     },
@@ -4671,8 +4671,8 @@
       "hk_notional_usd_bn": null,
       "hk_over_spot_adv": null,
       "hk_notional_missing_reason_ko": "운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)",
-      "hk_tv_over_kr_cash_tv": 0.11246835187697667,
-      "hk_tv_as_of": "2026-10-12",
+      "hk_tv_over_kr_cash_tv": 0.17192820679375367,
+      "hk_tv_as_of": "2026-10-13",
       "crypto_oi_usd_bn": 0.0,
       "crypto_oi_over_spot_adv": 0.0,
       "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
@@ -4689,14 +4689,14 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 988331091.6,
-      "notional_exposure_usd": 1976662183.19,
-      "trading_value_usd": 123394326.91,
+      "aum_usd": 798749671.45,
+      "notional_exposure_usd": 1597499342.91,
+      "trading_value_usd": 196442917.83,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 1,
-      "aum_usd_bn": 0.99,
-      "notional_usd_bn": 1.98,
+      "aum_usd_bn": 0.8,
+      "notional_usd_bn": 1.6,
       "nav_note_ko": "AUM≈NAV×발행좌수 프록시 (KR MarCap / HK Yahoo marketCap)"
     },
     {
@@ -4709,14 +4709,14 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 789269249.43,
-      "notional_exposure_usd": 1578538498.86,
-      "trading_value_usd": 63474331.35,
+      "aum_usd": 650322717.53,
+      "notional_exposure_usd": 1300645435.06,
+      "trading_value_usd": 92079018.81,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 2,
-      "aum_usd_bn": 0.79,
-      "notional_usd_bn": 1.58,
+      "aum_usd_bn": 0.65,
+      "notional_usd_bn": 1.3,
       "nav_note_ko": "AUM≈NAV×발행좌수 프록시 (KR MarCap / HK Yahoo marketCap)"
     },
     {
@@ -4729,14 +4729,14 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 650441478.62,
-      "notional_exposure_usd": 1300882957.23,
-      "trading_value_usd": 52633172.13,
+      "aum_usd": 521041875.08,
+      "notional_exposure_usd": 1042083750.15,
+      "trading_value_usd": 74588899.62,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 3,
-      "aum_usd_bn": 0.65,
-      "notional_usd_bn": 1.3,
+      "aum_usd_bn": 0.52,
+      "notional_usd_bn": 1.04,
       "nav_note_ko": "AUM≈NAV×발행좌수 프록시 (KR MarCap / HK Yahoo marketCap)"
     }
   ],
@@ -4744,23 +4744,23 @@
     {
       "field": "levered_etf_aum_usd",
       "paper_anchor": 26000000000.0,
-      "model_value": 14820017211.19,
-      "delta_pct": -42.9999338030989,
+      "model_value": 13150490111.36,
+      "delta_pct": -49.4211918794011,
       "note": "KR levered ETF AUM only (paper Korea chart); FX for USD",
       "quality": "observed"
     },
     {
       "field": "leverage_exposure_pct_aum_over_ff",
       "paper_anchor": 2.1,
-      "model_value": 0.5581,
-      "delta_pct": -73.42536613370562,
+      "model_value": 0.5358,
+      "delta_pct": -74.48402362143419,
       "note": "paper-style: KR total levered ETF AUM / KOSPI free float (no |L|)",
       "quality": "estimated"
     },
     {
       "field": "leverage_exposure_pct_notional",
       "paper_anchor": null,
-      "model_value": 0.5185,
+      "model_value": 0.474,
       "delta_pct": null,
       "note": "brief §4.3: Σ AUM×|L|×β / free_float of covered underlyings (KR only)",
       "quality": "estimated"
@@ -4777,9 +4777,9 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 988331091.6,
-      "notional_exposure_usd": 1976662183.19,
-      "trading_value_usd": 123394326.91,
+      "aum_usd": 798749671.45,
+      "notional_exposure_usd": 1597499342.91,
+      "trading_value_usd": 196442917.83,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 1
@@ -4794,9 +4794,9 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 789269249.43,
-      "notional_exposure_usd": 1578538498.86,
-      "trading_value_usd": 63474331.35,
+      "aum_usd": 650322717.53,
+      "notional_exposure_usd": 1300645435.06,
+      "trading_value_usd": 92079018.81,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 2
@@ -4811,9 +4811,9 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 650441478.62,
-      "notional_exposure_usd": 1300882957.23,
-      "trading_value_usd": 52633172.13,
+      "aum_usd": 521041875.08,
+      "notional_exposure_usd": 1042083750.15,
+      "trading_value_usd": 74588899.62,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 3
@@ -4828,9 +4828,9 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 475833144.22,
-      "notional_exposure_usd": 951666288.45,
-      "trading_value_usd": 39695168.57,
+      "aum_usd": 384906480.3,
+      "notional_exposure_usd": 769812960.6,
+      "trading_value_usd": 40134844.76,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 4
@@ -4845,9 +4845,9 @@
       "L": -2.0,
       "structure": "futures",
       "direction": "inverse",
-      "aum_usd": 93313202.47,
-      "notional_exposure_usd": 186626404.93,
-      "trading_value_usd": 77041535.2,
+      "aum_usd": 102314589.35,
+      "notional_exposure_usd": 204629178.69,
+      "trading_value_usd": 155800369.9,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 5
@@ -4862,80 +4862,12 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 21639311.94,
-      "notional_exposure_usd": 43278623.88,
-      "trading_value_usd": 246417.86,
+      "aum_usd": 17398673.69,
+      "notional_exposure_usd": 34797347.39,
+      "trading_value_usd": 1137789.49,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 6
-    },
-    {
-      "rank_key": "aum_usd",
-      "venue": "KR",
-      "ticker": "0194T0",
-      "name": "ACE SK하이닉스단일종목레버리지",
-      "underlying": "000660",
-      "underlying_name": "SK하이닉스",
-      "L": 2.0,
-      "structure": "cash",
-      "direction": "long",
-      "aum_usd": 21557596.31,
-      "notional_exposure_usd": 43115192.62,
-      "trading_value_usd": 383846.94,
-      "kr_spot_impact": "direct_cash_or_futures",
-      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
-      "rank": 7
-    },
-    {
-      "rank_key": "aum_usd",
-      "venue": "KR",
-      "ticker": "0197W0",
-      "name": "SOL SK하이닉스단일종목레버리지",
-      "underlying": "000660",
-      "underlying_name": "SK하이닉스",
-      "L": 2.0,
-      "structure": "cash",
-      "direction": "long",
-      "aum_usd": 18409514.02,
-      "notional_exposure_usd": 36819028.03,
-      "trading_value_usd": 896615.96,
-      "kr_spot_impact": "direct_cash_or_futures",
-      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
-      "rank": 8
-    },
-    {
-      "rank_key": "aum_usd",
-      "venue": "KR",
-      "ticker": "0192L0",
-      "name": "RISE SK하이닉스단일종목레버리지",
-      "underlying": "000660",
-      "underlying_name": "SK하이닉스",
-      "L": 2.0,
-      "structure": "cash",
-      "direction": "long",
-      "aum_usd": 15911779.57,
-      "notional_exposure_usd": 31823559.14,
-      "trading_value_usd": 441096.63,
-      "kr_spot_impact": "direct_cash_or_futures",
-      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
-      "rank": 9
-    },
-    {
-      "rank_key": "aum_usd",
-      "venue": "KR",
-      "ticker": "0192M0",
-      "name": "RISE 삼성전자단일종목레버리지",
-      "underlying": "005930",
-      "underlying_name": "삼성전자",
-      "L": 2.0,
-      "structure": "cash",
-      "direction": "long",
-      "aum_usd": 15476896.35,
-      "notional_exposure_usd": 30953792.7,
-      "trading_value_usd": 93519.3,
-      "kr_spot_impact": "direct_cash_or_futures",
-      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
-      "rank": 10
     },
     {
       "rank_key": "aum_usd",
@@ -4947,9 +4879,77 @@
       "L": -2.0,
       "structure": "futures",
       "direction": "inverse",
-      "aum_usd": 14133840.35,
-      "notional_exposure_usd": 28267680.69,
-      "trading_value_usd": 3103179.92,
+      "aum_usd": 16946025.47,
+      "notional_exposure_usd": 33892050.94,
+      "trading_value_usd": 6831206.72,
+      "kr_spot_impact": "direct_cash_or_futures",
+      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
+      "rank": 7
+    },
+    {
+      "rank_key": "aum_usd",
+      "venue": "KR",
+      "ticker": "0194T0",
+      "name": "ACE SK하이닉스단일종목레버리지",
+      "underlying": "000660",
+      "underlying_name": "SK하이닉스",
+      "L": 2.0,
+      "structure": "cash",
+      "direction": "long",
+      "aum_usd": 16819397.06,
+      "notional_exposure_usd": 33638794.12,
+      "trading_value_usd": 1116806.19,
+      "kr_spot_impact": "direct_cash_or_futures",
+      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
+      "rank": 8
+    },
+    {
+      "rank_key": "aum_usd",
+      "venue": "KR",
+      "ticker": "0197W0",
+      "name": "SOL SK하이닉스단일종목레버리지",
+      "underlying": "000660",
+      "underlying_name": "SK하이닉스",
+      "L": 2.0,
+      "structure": "cash",
+      "direction": "long",
+      "aum_usd": 16097011.85,
+      "notional_exposure_usd": 32194023.7,
+      "trading_value_usd": 2789295.29,
+      "kr_spot_impact": "direct_cash_or_futures",
+      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
+      "rank": 9
+    },
+    {
+      "rank_key": "aum_usd",
+      "venue": "KR",
+      "ticker": "0192L0",
+      "name": "RISE SK하이닉스단일종목레버리지",
+      "underlying": "000660",
+      "underlying_name": "SK하이닉스",
+      "L": 2.0,
+      "structure": "cash",
+      "direction": "long",
+      "aum_usd": 12785061.41,
+      "notional_exposure_usd": 25570122.82,
+      "trading_value_usd": 554786.92,
+      "kr_spot_impact": "direct_cash_or_futures",
+      "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
+      "rank": 10
+    },
+    {
+      "rank_key": "aum_usd",
+      "venue": "KR",
+      "ticker": "0192M0",
+      "name": "RISE 삼성전자단일종목레버리지",
+      "underlying": "005930",
+      "underlying_name": "삼성전자",
+      "L": 2.0,
+      "structure": "cash",
+      "direction": "long",
+      "aum_usd": 12424126.03,
+      "notional_exposure_usd": 24848252.05,
+      "trading_value_usd": 413377.46,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 11
@@ -4964,9 +4964,9 @@
       "L": 2.0,
       "structure": "futures",
       "direction": "long",
-      "aum_usd": 10070288.87,
-      "notional_exposure_usd": 20140577.73,
-      "trading_value_usd": 150891.84,
+      "aum_usd": 7927297.4,
+      "notional_exposure_usd": 15854594.79,
+      "trading_value_usd": 879975.46,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 12
@@ -4981,9 +4981,9 @@
       "L": 2.0,
       "structure": "futures",
       "direction": "long",
-      "aum_usd": 8485897.02,
-      "notional_exposure_usd": 16971794.03,
-      "trading_value_usd": 171701.43,
+      "aum_usd": 6803905.72,
+      "notional_exposure_usd": 13607811.43,
+      "trading_value_usd": 268037.47,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 13
@@ -4998,9 +4998,9 @@
       "L": 2.0,
       "structure": "cash",
       "direction": "long",
-      "aum_usd": 7495670.0,
-      "notional_exposure_usd": 14991339.99,
-      "trading_value_usd": 88224.94,
+      "aum_usd": 6035151.41,
+      "notional_exposure_usd": 12070302.82,
+      "trading_value_usd": 396915.18,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 14
@@ -5015,9 +5015,9 @@
       "L": 2.0,
       "structure": "futures",
       "direction": "long",
-      "aum_usd": 5095403.03,
-      "notional_exposure_usd": 10190806.06,
-      "trading_value_usd": 175984.48,
+      "aum_usd": 3990399.3,
+      "notional_exposure_usd": 7980798.59,
+      "trading_value_usd": 409091.72,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 15
@@ -5032,9 +5032,9 @@
       "L": 2.0,
       "structure": "futures",
       "direction": "long",
-      "aum_usd": 4656231.28,
-      "notional_exposure_usd": 9312462.57,
-      "trading_value_usd": 196598.17,
+      "aum_usd": 3728632.63,
+      "notional_exposure_usd": 7457265.26,
+      "trading_value_usd": 241892.22,
       "kr_spot_impact": "direct_cash_or_futures",
       "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
       "rank": 16
@@ -5053,8 +5053,8 @@
       "aum_as_of": null,
       "aum_observed": false,
       "notional_exposure_usd": null,
-      "trading_value_usd": 424083628.22,
-      "tv_over_kr_cash_tv": 0.11246835187697667,
+      "trading_value_usd": 1033371226.43,
+      "tv_over_kr_cash_tv": 0.17192820679375367,
       "kr_spot_impact": "indirect_swap",
       "note_ko": "HK CSOP swap — 유연 L. KR 현물 리밸런싱과 합산 금지.",
       "rank": null,
@@ -5074,8 +5074,8 @@
       "aum_as_of": null,
       "aum_observed": false,
       "notional_exposure_usd": null,
-      "trading_value_usd": 81213749.85,
-      "tv_over_kr_cash_tv": 0.021699827932680934,
+      "trading_value_usd": 113673205.97,
+      "tv_over_kr_cash_tv": 0.024292124370516862,
       "kr_spot_impact": "indirect_swap",
       "note_ko": "HK CSOP swap — 유연 L. KR 현물 리밸런싱과 합산 금지.",
       "rank": null,
@@ -5095,8 +5095,8 @@
       "aum_as_of": null,
       "aum_observed": false,
       "notional_exposure_usd": null,
-      "trading_value_usd": 3827956.31,
-      "tv_over_kr_cash_tv": 0.0010228070168951848,
+      "trading_value_usd": 6437123.99,
+      "tv_over_kr_cash_tv": 0.0013756224712602862,
       "kr_spot_impact": "indirect_swap",
       "note_ko": "HK CSOP swap — 유연 L. KR 현물 리밸런싱과 합산 금지.",
       "rank": null,
@@ -5114,9 +5114,9 @@
     "L": 2.0,
     "structure": "cash",
     "direction": "long",
-    "aum_usd": 988331091.6,
-    "notional_exposure_usd": 1976662183.19,
-    "trading_value_usd": 123394326.91,
+    "aum_usd": 798749671.45,
+    "notional_exposure_usd": 1597499342.91,
+    "trading_value_usd": 196442917.83,
     "kr_spot_impact": "direct_cash_or_futures",
     "note_ko": "KRX LETF — TR/IR · wag-the-dog 대상.",
     "rank": 1
