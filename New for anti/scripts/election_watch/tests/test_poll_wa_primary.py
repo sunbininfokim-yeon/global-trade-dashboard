@@ -1,4 +1,5 @@
 """WA official field, initial/leaner questions and exact finance identities."""
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
 import copy
 import json
 from pathlib import Path
@@ -137,7 +138,7 @@ class WashingtonEvidenceTests(unittest.TestCase):
         finance = load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026)
         state = build_state('WA', 'C', read(CONFIG/'state_evidence_plan_2026.json'), self.catalog,
             self.federal, self.governors, board, finance,
-            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), DAY,
+            read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), PUBLIC_SNAPSHOT_DAY,
             read(CONFIG/'state_finance_identities_2026.json'))
         self.assertEqual(state['office_coverage']['house']['candidate_id_links'], 20)
         self.assertEqual(state['office_coverage']['house']['with_observed_current_candidate_spending'], 10)

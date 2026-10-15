@@ -28,6 +28,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  capture:
+    # Fetch actual source data even if a historical regression fixture fails.
+    # This job cannot commit/publish. Both validation and capture gate refresh.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture polling source without changing published data
+        id: capture
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        run: python3 refresh_live_polls.py --capture-only --capture-output "$RUNNER_TEMP/us-polls-capture.json"
+      - name: Discover supplemental individual poll links
+        if: always()
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        # Discovery cannot alter or block the primary polling publication.
+        run: >-
+          python3 discover_poll_sources.py
+          --output "$RUNNER_TEMP/us-polls-capture.discovery.json"
+          --provider-capture "$RUNNER_TEMP/us-polls-capture.provider.json"
+      - name: Preserve source checkpoint and attempt status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-polls-source-capture
+          path: ${{ runner.temp }}/us-polls-capture*.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Report capture failure
+        if: steps.capture.outcome == 'failure'
+        run: exit 1
+
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +103,7 @@ jobs:
           fi
 
   refresh:
-    needs: validate
+    needs: [validate, capture]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -77,12 +116,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Load actual collection checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: us-polls-source-capture
+          path: ${{ runner.temp }}
       - name: Refresh selected polls and reviewed official results
         id: collect
         continue-on-error: true
         run: |
           python3 'New for anti/scripts/election_watch/publish_packet_projections.py'
-          python3 'New for anti/scripts/election_watch/refresh_live_polls.py' --capture-output "$RUNNER_TEMP/us-polls-capture.json"
+          python3 'New for anti/scripts/election_watch/refresh_live_polls.py' --retry-capture "$RUNNER_TEMP/us-polls-capture.json"
       - name: Retain reviewable output
         if: always()
         uses: actions/upload-artifact@v4

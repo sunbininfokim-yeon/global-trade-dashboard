@@ -35,6 +35,10 @@ STATE_INTEGRATION_BRANCH = 'codex/election-state-integration-20261010'
 # This allows only that workflow, never deploy.yml or production dispatch.
 STATE_RESEARCH_RULES_BRANCH = 'codex/election-research-rules-20261011'
 
+# 2026-10-14 user requested resilient automatic polling collection. Only the
+# existing polling workflow; no deployment workflow, Worker, UI or dispatch.
+POLL_RESILIENCE_BRANCH = 'codex/poll-refresh-resilience-20261014'
+
 # User requested monthly acquisition and existing Cloudflare-key integration
 # on 2026-10-07. No UI, wrangler settings or shared deployment workflow grant.
 COMMODITY_BRANCH = 'codex/commodity-monthly-automation'
@@ -60,5 +64,6 @@ def scoped_paths(branch):
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
             STATE_INTEGRATION_BRANCH: DAILY_POLLING_PATHS,
             STATE_RESEARCH_RULES_BRANCH: DAILY_POLLING_PATHS,
+            POLL_RESILIENCE_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS,
             COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS}.get(branch, frozenset())
