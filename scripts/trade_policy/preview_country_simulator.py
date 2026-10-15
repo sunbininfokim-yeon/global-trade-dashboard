@@ -11,6 +11,7 @@ import json
 
 ROOT = Path(__file__).resolve().parents[2] / 'New for anti'
 ASSETS = {
+    '/policy-simulator/china-verification.mjs': ('policy-simulator/china-verification.mjs', 'text/javascript'),
     '/policy-simulator/vietnam-verification.mjs': ('policy-simulator/vietnam-verification.mjs', 'text/javascript'),
     '/policy.js': ('policy.js', 'text/javascript'),
     '/style.css': ('style.css', 'text/css'),
