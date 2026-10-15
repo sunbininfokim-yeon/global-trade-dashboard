@@ -9,7 +9,7 @@
 
 ## 아직 운영 복구 완료가 아니다
 
-10/15 확인한 일일 실행 [38656771365](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/38656771365)는 `test_poll_nc_primary`의 `future state polling snapshot` 오류로 실패했고 refresh가 생략됐다. NC 자체의 새 state as_of보다 과거 national as_of를 테스트에 사용했다. 이 테스트의 검증 시각만 NC 관측일 이상으로 맞춘다. 데이터 수집일·원문 검토일·실제 미래 날짜 거부는 그대로다.
+10/15 확인한 일일 실행 [38656771365](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/38656771365)는 `test_poll_nc_primary`의 `future state polling snapshot` 오류로 실패했고 refresh가 생략됐다. NC 자체의 새 state as_of보다 과거 national as_of를 테스트에 사용했다. 공용 public fixture 기준일이 전국 as_of뿐 아니라 각 주 as_of도 포함하도록 고친다. MN 입력 통합 검증에서 추가로 발견한 WA 테스트도 현행 명부 검증에는 공용 검토일, public join에는 공용 관측일을 사용한다. WA 과거 조사 시나리오의10/13은 보존한다. 데이터 수집일·원문 검토일·실제 미래 날짜 거부는 그대로다.
 
 [배포 live](https://chokemonitor.com/public/data/usa_election_live_polls_v1.json)와 [health](https://chokemonitor.com/public/data/usa_election_live_polls_status_v1.json)를 실제 GET한 결과 as_of=10/11, fetched/checked=`2026-10-11T00:16:19.749666+00:00`이다. health의 옛 ok는 현재 수집 성공의 증거가 아니다. #557의 코드와 PR 검증만으로 운영 반영을 주장하지 않는다.
 
