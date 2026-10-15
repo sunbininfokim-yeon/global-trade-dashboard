@@ -19,7 +19,9 @@ main 보유 JSON 기준일은 2026-10-11. CA-48 SurveyUSA 8/27~9/1 DEM45/GOP42�
 - ops/소유권 단위 검사 14개와 deploy-chain 39개 검사 통과.
 - 실제 수정 모듈과 main CSS·보유 JSON의 CA48/22를 사용하는 로컬 preview에서 7일/14일 변경 및 제외 설명 확인.
 - 390px viewport: 문서 너비 375px, 가로 넘침 없음. viewport 복원 완료.
-- 로컬 증거: `/private/tmp/ca-poll-summary-20261016/summary-desktop.png`, 검사 로그 같은 디렉터리.
+- 로컬 증거: `/private/tmp/ca-poll-summary-20261016/summary-desktop.jpg`, 검사 로그 같은 디렉터리.
 - 공개 사이트 JSON 직접 요청은 403이어서 현재 배포 파일과 동일하다는 주장은 하지 않는다. main 자료와 로컬 변경 검증이다.
 
 병합·배포·main 수집 실행 안 함. UI와 CA 데이터 PR은 각각 main 기반 독립 검토 가능.
+
+GitHub PR #588: 소유권 guard 통과, polling517개·선거JS77개·주별 범위 validate 통과. CA 원문 입력은 독립 PR #589.
