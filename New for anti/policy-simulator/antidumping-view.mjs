@@ -19,10 +19,11 @@ const initial = () => {
     manual_case_id: '', company_name: '', reference_rate_pct: '', reference_url: '', reference_note: '' };
 };
 let draft = initial(), result = null, dirty = true, methodResult = null;
-let industryId = 'transformer', profileId = '';
+let industryId = 'transformer', profileId = '', evidenceOrigin = 'KOR';
+const originName = () => evidenceOrigin === 'VNM' ? '베트남' : '한국';
 let companySearch = '', allCompaniesOpen = false, overview = true, calculatorOpen = false;
 const selectedIndustry = () => COMPANY_INDUSTRIES.find(x => x.id === industryId);
-const hasADCase = () => Boolean(selectedIndustry().case_id);
+const hasADCase = () => evidenceOrigin === 'KOR' && Boolean(selectedIndustry().case_id);
 let example = createADExample(draft), editedFields = new Set(), processRecordId = '';
 let methodSegment = '2026-16663', methodRows = [], equalWeights = false;
 function seedMethod() {
@@ -35,6 +36,7 @@ seedMethod();
 export function selectAntidumping({ case_id, company_id }) {
   const c = catalog.cases.find(c => c.case_id === case_id);
   if (!c?.companies.some(x => x.id === company_id)) return;
+  evidenceOrigin = 'KOR';
   industryId = COMPANY_INDUSTRIES.find(x => x.case_id === case_id).id; profileId = ''; overview = false; calculatorOpen = true;
   companySearch = ''; allCompaniesOpen = false;
   draft = { ...initial(), case_id, company_id }; example = createADExample(draft); Object.assign(draft, example.values);
@@ -104,14 +106,15 @@ function companySearchResults() {
   return `<p class="ts-help" role="status">${query ? `검색 결과 ${matches.length}개` : `추가 법인 ${matches.length}개`} · 회사 규모·시장점유율 순위가 아닙니다.</p><div class="ts-ad-companies">${matches.map(companyButton).join('')}</div>`;
 }
 function verificationLabel(product) {
-  const c = adCoverageStatus(product);
+  const c = adCoverageStatus(product, evidenceOrigin);
   return `${c.research.label} · ${c.procedure.label}`;
 }
 function processSelection() {
   const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
-  if (!industry.case_id) return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">${industryPicker()}${overviewButton()}
-    <fieldset><legend>2. 기업 선택 · 선택사항 <span>${industry.profiles.length}개 기업</span></legend><div class="ts-ad-companies">${industry.profiles.map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${!overview && profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>${esc(verificationLabel(industry.product))}</small></button>`).join('')}</div></fieldset>
-    <p class="ts-ad-selection-context" role="status">선택: ${esc(industry.label)} → <b>${overview ? '품목 전체' : esc(COMPANY_PROFILES[profileId].name)}</b> · 기업별 예치율 미확정</p>
+  if (evidenceOrigin === 'VNM') return `<div class="ts-ad-selection" aria-label="산업과 원산지 선택">${industryPicker()}<p class="ts-ad-selection-context">선택: ${esc(industry.label)} · 베트남산 · 공식 자료 선별 조사</p><p class="ts-help">베트남 생산·수출 법인별 기업 선택·계산은 미연결입니다. 한국 본사나 한국산 예치율을 적용하지 않습니다. 확인한 법인명은 아래 원문 조사 결과에서 확인할 수 있습니다.</p></div>`;
+  if (!hasADCase()) return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">${industryPicker()}${overviewButton()}
+    <fieldset><legend>2. 기업 선택 · 선택사항 <span>${evidenceOrigin === 'KOR' ? industry.profiles.length : 0}개 기업</span></legend><div class="ts-ad-companies">${(evidenceOrigin === 'KOR' ? industry.profiles : []).map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${!overview && profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>${esc(verificationLabel(industry.product))}</small></button>`).join('')}</div></fieldset>
+    <p class="ts-ad-selection-context" role="status">선택: ${esc(industry.label)} → <b>${overview ? '품목 전체' : esc(COMPANY_PROFILES[profileId].name)}</b> · ${originName()}산 · 기업별 예치율 미확정</p>
     <p class="ts-help">공식 제품군과 한국 활성 사건 목록의 확인 결과를 연결했습니다. 아래 공식 자료 확인 결과에서 조사 범위와 남은 확인사항을 볼 수 있습니다. 기업별 AD 예치율 미확정은 0%를 뜻하지 않습니다.${industry.source ? ` <a href="${esc(industry.source)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a>` : ''}</p></div>`;
   const company = c.companies.find(x => x.id === draft.company_id);
   return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">
@@ -127,17 +130,17 @@ function overviewButton() {
 }
 function industryPicker() {
   const family = selectedIndustry().family;
-  return `<fieldset><legend>1. 산업 → 품목 선택</legend><label class="ts-ad-family">산업 분야<select data-ad-family aria-label="산업 분야">${INDUSTRY_FAMILIES.map(x => `<option value="${x.id}"${x.id === family ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><div class="ts-ad-industries">${COMPANY_INDUSTRIES.filter(x => x.family === family).map(x => `<button type="button" ${x.case_id ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id ? '공식 AD 공고 연결' : esc(verificationLabel(x.product))}</small></button>`).join('')}</div></fieldset>`;
+  return `<fieldset><legend>1. 산업 → 품목 선택</legend><label class="ts-ad-family">산업 분야<select data-ad-family aria-label="산업 분야">${INDUSTRY_FAMILIES.map(x => `<option value="${x.id}"${x.id === family ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><div class="ts-ad-industries">${COMPANY_INDUSTRIES.filter(x => x.family === family).map(x => `<button type="button" ${x.case_id && evidenceOrigin === 'KOR' ? `data-ad-case="${x.case_id}"` : `data-ad-industry="${x.id}"`} aria-label="${esc(x.label)}" aria-pressed="${x.id === industryId}">${esc(x.label)}<small>${esc(x.description)}</small><small>${x.case_id && evidenceOrigin === 'KOR' ? '공식 AD 공고 연결' : esc(verificationLabel(x.product))}</small></button>`).join('')}</div></fieldset>`;
 }
 function monitorNotices() {
-  return hasADCase() ? noticeReviewMarkup(AD_DISCOVERY, draft.case_id) : industryMonitorMarkup(selectedIndustry().product);
+  return hasADCase() ? noticeReviewMarkup(AD_DISCOVERY, draft.case_id) : industryMonitorMarkup(selectedIndustry().product, evidenceOrigin);
 }
 function coverageGap() {
-  const industry = selectedIndustry(), p = overview ? null : COMPANY_PROFILES[profileId];
+  const industry = selectedIndustry(), p = overview || evidenceOrigin !== 'KOR' ? null : COMPANY_PROFILES[profileId];
   const productSource = p ? companyCalibration(profileId, industry.product).selected_product_source?.url : null;
-  const verification = productVerification(industry.product);
-  const gap = verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : verification?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 공식 조사 근거 연결 · 한국산 대응 사건·기업별 예치율 미확인. 아래에서 다른 제품·원산지 사건의 구분 근거를 볼 수 있습니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
-  return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? verificationMarkup(industry.product) : coverageStatusMarkup(industry.product)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
+  const verification = productVerification(industry.product, evidenceOrigin);
+  const gap = verification?.ad.status === 'cvd_confirmed_ad_terminated' ? '과거 AD 조사 종료 · CVD 명령 및 공식 재심 발표 예정 확인. 최신 기업별 예치율은 미확인입니다.' : verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : verification?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 공식 조사 근거 연결 · 선택 원산지 대응 사건·기업별 예치율 미확인. 아래에서 다른 제품·원산지 사건의 구분 근거를 볼 수 있습니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
+  return `<div class="ts-ad-gap" data-ad-gap><h3>${p ? `${esc(p.name)} · ` : ''}${esc(industry.label)}</h3><p class="ts-unverified">${esc(gap)}</p>${verification ? verificationMarkup(industry.product, evidenceOrigin) : coverageStatusMarkup(industry.product, evidenceOrigin)}<p>계산에 필요한 사건번호, 대상 제품·원산지, 정확한 생산자·수출자 법인, 적용일과 세율의 공식 근거를 추가 확인해야 합니다. 다른 제품의 세율이나 계열사 세율을 대신 사용하지 않습니다.</p>${industry.id === 'switchgear' ? '<p class="ts-help">LS일렉트릭·효성중공업의 변압기 공고는 차단기·배전기기에 자동 적용되지 않습니다.</p>' : ''}${industry.family === 'auto' ? '<p class="ts-help">자동차 232 관세는 반덤핑과 별도입니다. 기업·품목 손익 분석에서 제품 원산지와 확인한 관세를 선택할 수 있습니다. 한국 기업의 미국 생산품에 한국산 수입관세를 적용하지 않습니다.</p>' : ''}${productSource ? `<p class="ts-help"><a href="${esc(productSource)}" target="_blank" rel="noopener noreferrer">선택 기업·품목의 공식 원문 ↗</a></p>` : ''}${p ? '<button type="button" class="ts-text-button" data-ad-open-company>기업·품목 손익 분석 →</button>' : '<p class="ts-help">기업별 확인은 위 기업 선택에서 이어집니다.</p>'}<p class="ts-help">기업 계산에는 실제 원산지·거래·원가와 확인한 관세 입력이 필요합니다.${industry.id === 'cable' ? ' 케이블은 사양 확인 전 대표 HTS를 지정하지 않고 직접 정의 품목으로 시작합니다.' : ''}</p></div>`;
 }
 function processMarkup() {
   if (!hasADCase()) return `<section class="ts-ad-process" aria-label="반덤핑 조사 재심 소송 단계"><div class="ts-section-label"><h2>산업·기업 선택</h2><span>기업 제품군 연결 · AD 적용 여부 별도 확인</span></div>${processSelection()}<p class="ts-basis">확인한 공식 공고·관세 근거는 아래에 표시합니다. AD 예치율이나 기업별 적용이 미확정이어도 공고를 볼 수 있으며, 다른 제도의 공고로 AD 단계 불을 켜지 않습니다.</p></section>`;
@@ -189,12 +192,12 @@ export function antidumpingMarkup() {
       <div><dt>자금 부담</dt><dd>예치액 × 연 금융비용률 ÷ 100 × 예치 일수 ÷ 365. 사용자 금리·기간에 따른 가정 비용이며 세관이 확정한 이자가 아닙니다.</dd></div></dl>
       <p><a href="https://www.trade.gov/antidumping-and-countervailing-duty-frequently-asked-questions" target="_blank" rel="noopener noreferrer">상무부 재심·예치금 안내 ↗</a> · <a href="https://www.ecfr.gov/current/title-19/chapter-III/part-351/subpart-B/section-351.212" target="_blank" rel="noopener noreferrer">관세 확정 규정 19 CFR §351.212 ↗</a>. 선택한 사건·기업의 근거 공고는 단계 카드와 세율 이력에서 확인할 수 있습니다.</p>
     </details>
-    <p class="ts-help" data-ad-origin>대상 원산지: 한국 · 현재 수록 사건은 한국산입니다. 기업 본사·선적 항구와 구분하며 다른 원산지의 AD 적용은 미검토입니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${monitorNotices()}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div>
+    <label>대상 제품 원산지<select data-ad-origin-country aria-label="반덤핑 자료 원산지"><option value="KOR"${evidenceOrigin === 'KOR' ? ' selected' : ''}>한국</option><option value="VNM"${evidenceOrigin === 'VNM' ? ' selected' : ''}>베트남 · 선별 조사</option></select><small>기업 본사·선적국과 구분합니다. 원산지를 바꾸면 계산·제품/법인 확인을 해제합니다.</small></label><p class="ts-help" data-ad-origin>대상 원산지: ${originName()} · 한국산 5개 AD 계산 사건과 베트남 선별 공고를 분리합니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${monitorNotices()}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div>
     <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>로컬 수집기의 공고 발견 목록을 별도로 제공합니다. 세율·단계의 자동 적용과 메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
 export function mountAntidumping(root, { openCompany } = {}) {
   const controller = new AbortController(), signal = controller.signal;
-  const paint = () => { root.querySelector('[data-ad-calculator]').open = calculatorOpen; root.querySelector('[data-ad-history]').innerHTML = hasADCase() ? history() : coverageGap(); root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = monitorNotices(); };
+  const paint = () => { root.querySelector('[data-ad-origin]').textContent = `대상 원산지: ${originName()} · 원산지별 수록 근거 / AD와 CVD 별도`; root.querySelector('[data-ad-origin-country]').value = evidenceOrigin; root.querySelector('[data-ad-calculator]').open = calculatorOpen; root.querySelector('[data-ad-history]').innerHTML = hasADCase() ? history() : coverageGap(); root.querySelector('[data-ad-editor]').innerHTML = editor(); root.querySelector('[data-ad-results]').innerHTML = output(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('[data-ad-notice-review]').innerHTML = monitorNotices(); };
   const updateGuide = () => { const panel = root.querySelector('[data-ad-input-guide]'), open = panel.querySelector('details')?.open; panel.innerHTML = inputGuide(); panel.querySelector('details').open = Boolean(open); };
   const clear = () => { clearFormErrors(root); dirty = true; const box = root.querySelector('[data-ad-error]'); if (box) box.hidden = true; root.querySelector('[data-ad-results]').innerHTML = output(); updateGuide(); root.querySelector('[data-ad-process]').innerHTML = processMarkup(); };
   const unconfirm = () => { draft.scope_confirmed = false; draft.identity_confirmed = false; };
@@ -216,12 +219,13 @@ export function mountAntidumping(root, { openCompany } = {}) {
   const chooseIndustry = industry => {
     companySearch = ''; allCompaniesOpen = false;
     overview = true; calculatorOpen = false; processRecordId = '';
-    if (industry.case_id) chooseContext(industry.case_id, catalog.cases.find(c => c.case_id === industry.case_id).companies[0].id);
+    if (industry.case_id && evidenceOrigin === 'KOR') chooseContext(industry.case_id, catalog.cases.find(c => c.case_id === industry.case_id).companies[0].id);
     else { industryId = industry.id; profileId = industry.profiles[0]; result = null; dirty = true; unconfirm(); paint(); }
   };
   root.addEventListener('toggle', event => { if (root.contains(event.target) && event.target.hasAttribute('data-ad-all')) allCompaniesOpen = event.target.open; if (event.target.hasAttribute('data-ad-calculator')) calculatorOpen = event.target.open; }, { capture: true, signal });
   root.addEventListener('input', event => {
     const el = event.target;
+    if (el.hasAttribute('data-ad-origin-country')) { if (!['KOR','VNM'].includes(el.value)) return; evidenceOrigin = el.value; result = null; unconfirm(); chooseIndustry(selectedIndustry()); return; }
     if (el.hasAttribute('data-ad-search')) {
       companySearch = el.value; allCompaniesOpen = true;
       root.querySelector('[data-ad-featured]').hidden = Boolean(companySearch.trim());
@@ -247,6 +251,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
     else if (el.dataset.adMethodKey) { methodRows[Number(el.closest('[data-ad-method-row]').dataset.adMethodRow)][el.dataset.adMethodKey] = el.type === 'checkbox' ? el.checked : el.value; methodResult = null; clearFormErrors(root.querySelector('[data-ad-method]')); root.querySelector('[data-ad-method-error]').hidden = true; root.querySelector('[data-ad-method-output]').innerHTML = methodOutput(); }
   }, { signal });
   root.addEventListener('submit', event => {
+    if (!hasADCase()) { event.preventDefault(); return; }
     const form = event.target; if (!form.matches('[data-ad-form], [data-ad-method-form]')) return; event.preventDefault();
     const method = form.matches('[data-ad-method-form]'), box = root.querySelector(method ? '[data-ad-method-error]' : '[data-ad-error]');
     const issue = firstFormIssue(form);
@@ -261,6 +266,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
     if (el.hasAttribute('data-ad-overview')) { overview = true; calculatorOpen = false; processRecordId = ''; paint(); return; }
     if (el.hasAttribute('data-ad-case')) {
+      if (evidenceOrigin !== 'KOR') return;
       overview = true; calculatorOpen = false; processRecordId = '';
       const caseId = el.dataset.adCase, c = catalog.cases.find(x => x.case_id === caseId);
       if (!c) return;
@@ -268,6 +274,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
       root.querySelector(`[data-ad-case="${caseId}"]`).focus({ preventScroll: true });
     }
     else if (el.hasAttribute('data-ad-company')) {
+      if (!hasADCase()) return;
       overview = false;
       const companyId = el.dataset.adCompany;
       chooseContext(draft.case_id, companyId);
@@ -275,17 +282,18 @@ export function mountAntidumping(root, { openCompany } = {}) {
     }
     else if (el.hasAttribute('data-ad-industry')) {
       const industry = COMPANY_INDUSTRIES.find(x => x.id === el.dataset.adIndustry);
-      if (!industry || industry.case_id || industry.id === industryId) return;
+      if (!industry || (industry.case_id && evidenceOrigin === 'KOR') || industry.id === industryId) return;
       chooseIndustry(industry);
       root.querySelector(`[data-ad-industry="${industryId}"]`).focus({ preventScroll: true });
     }
     else if (el.hasAttribute('data-ad-profile')) {
+      if (evidenceOrigin !== 'KOR') return;
       if (!selectedIndustry().profiles.includes(el.dataset.adProfile) || (!overview && profileId === el.dataset.adProfile)) return;
       overview = false;
       profileId = el.dataset.adProfile; paint(); root.querySelector(`[data-ad-profile="${profileId}"]`).focus({ preventScroll: true });
     }
-    else if (el.hasAttribute('data-ad-open-company') && !hasADCase()) openCompany?.(profileId, selectedIndustry().product);
-    else if (el.hasAttribute('data-ad-reset')) { overview = true; calculatorOpen = true; companySearch = ''; allCompaniesOpen = false; draft = initial(); industryId = 'transformer'; profileId = ''; example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
+    else if (el.hasAttribute('data-ad-open-company') && !hasADCase() && evidenceOrigin === 'KOR') openCompany?.(profileId, selectedIndustry().product);
+    else if (el.hasAttribute('data-ad-reset')) { evidenceOrigin = 'KOR'; overview = true; calculatorOpen = true; companySearch = ''; allCompaniesOpen = false; draft = initial(); industryId = 'transformer'; profileId = ''; example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
     else if (el.hasAttribute('data-ad-example')) { draft.entry_date = catalog.checked_on; example = createADExample(draft); Object.assign(draft, example.values); editedFields = new Set(); unconfirm(); dirty = true; paint(); }
     else if (el.hasAttribute('data-ad-days')) { draft.holding_days = el.dataset.adDays; editedFields.add('holding_days'); root.querySelector('[data-ad-key="holding_days"]').value = draft.holding_days; clear(); }
     else if (el.hasAttribute('data-ad-add') || el.hasAttribute('data-ad-remove')) { if (el.hasAttribute('data-ad-add') && methodRows.length < 30) methodRows.push({ name: '', margin_pct: '', weight: '', entirely_facts_available: false }); else if (el.hasAttribute('data-ad-remove') && methodRows.length > 1) methodRows.splice(Number(el.dataset.adRemove), 1); methodResult = null; root.querySelector('[data-ad-method]').innerHTML = methodEditor(); root.querySelector('.ts-ad-method').open = true; }
