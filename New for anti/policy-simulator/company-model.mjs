@@ -18,6 +18,7 @@ export function validateCompany(input) {
   const config = {
     company: String(input.company || '사용자 기업').slice(0, 100), product: String(input.product || 'custom').slice(0, 80), origin: input.origin,
     period: String(input.period || '사용자 분석 기간').slice(0, 100), source_note: String(input.source_note || '').slice(0, 1500),
+    ...(input.transaction_evidence ? {transaction_evidence:structuredClone(input.transaction_evidence)} : {}),
     basis: 'user_scenario', policy_confirmed: true, response_mode: input.response_mode || 'manual',
     price: number(input.price, '기준 통관 단가', 0.000001, 1e12), quantity: number(input.quantity, '기준 판매량', 0.000001, 1e12),
     cost: number(input.cost, '단위 변동원가', 0, 1e12), fixed_cost: number(input.fixed_cost, '기간 고정비', 0, 1e15),

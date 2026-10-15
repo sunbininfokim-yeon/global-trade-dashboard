@@ -5,6 +5,8 @@ import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { AD_CATALOG } from '../../New for anti/policy-simulator/antidumping-catalog.mjs';
 
+import { REMEDY_MONITOR_CATALOG, scheduleReviews } from '../../New for anti/policy-simulator/remedy-monitor-catalog.mjs';
+
 const API = 'https://www.federalregister.gov/api/v1/documents.json';
 const isoDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
 const digest = text => createHash('sha256').update(text).digest('hex');
@@ -68,6 +70,8 @@ export async function discoverNotices({ previous = null, from = '2026-01-01', th
   for (const c of catalog.cases) {
     if (fatal) break;
     const old = state.cases[c.case_id];
+    // Registry metadata is regenerated from the reviewed case universe, not source titles.
+    if(old && catalog===REMEDY_MONITOR_CATALOG)Object.assign(old,{product:c.product,country:c.country,duty:c.duty});
     if (resumeIncomplete && old?.status === 'complete' && old.searched_through === through) continue;
     try {
       // Each case is a transaction boundary. No successful watermark until every
@@ -109,13 +113,14 @@ export async function discoverNotices({ previous = null, from = '2026-01-01', th
       // returning it. Retain it and flag the disappearance for review.
       for (const n of old?.notices || []) if (!currentIds.has(n.document_id)) notices.push({ ...n, review_status: 'missing_from_search_needs_review', rate_activation_allowed: false });
       notices.sort((a, b) => b.published.localeCompare(a.published) || a.document_id.localeCompare(b.document_id));
-      state.cases[c.case_id] = { case_id: c.case_id, product: c.product, last_attempt_at: now(), last_success_at: now(), searched_through: through, status: 'complete', error: null, notices };
+      state.cases[c.case_id] = { case_id: c.case_id, product: c.product, country: c.country ?? 'KOR', duty: c.duty ?? 'AD', last_attempt_at: now(), last_success_at: now(), searched_through: through, status: 'complete', error: null, notices };
     } catch (e) {
       state.cases[c.case_id] = { ...(old || { case_id: c.case_id, product: c.product, last_success_at: null, searched_through: null, notices: [] }), last_attempt_at: now(), status: 'failed_preserved', error: String(e.message).slice(0, 200) };
     }
     await persist(state);
   }
   state.requests_this_run = requests;
+  if(catalog===REMEDY_MONITOR_CATALOG)state.schedule_reviews=scheduleReviews(through);
   state.status = catalog.cases.every(c => state.cases[c.case_id]?.status === 'complete' && state.cases[c.case_id]?.searched_through === through) && !fatal ? 'complete' : 'partial';
   state.completed_at = now(); await persist(state); return state;
 }
@@ -124,12 +129,14 @@ async function main() {
   const args = process.argv.slice(2), allowed = new Set(['--state-dir', '--from', '--through', '--snapshot']);
   const opts = {};
   for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--all-remedies') { opts.allRemedies = true; continue; }
     if (args[i] === '--resume') { opts.resume = true; continue; }
     if (!allowed.has(args[i]) || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error('Usage: node discover_antidumping_notices.mjs --state-dir /tmp/chokemonitor-ad-review [--from YYYY-MM-DD --through YYYY-MM-DD --snapshot path.mjs --resume]');
     opts[args[i]] = args[++i];
   }
-  const dir = resolve(opts['--state-dir'] || '/tmp/chokemonitor-ad-review'), file = join(dir, 'state.json');
+  const dir = resolve(opts['--state-dir'] || (opts.allRemedies ? '/tmp/chokemonitor-remedy-review' : '/tmp/chokemonitor-ad-review')), file = join(dir, 'state.json');
   await mkdir(dir, { recursive: true });
+  try { await readFile(join(dir,'STOP')); throw new Error('STOP file present; monitor not started'); } catch(e) { if(e.code!=='ENOENT')throw e; }
   // A second process must not race the checkpoint or double the source traffic.
   const lock = join(dir, 'running.lock');
   await mkdir(lock);
@@ -138,11 +145,11 @@ async function main() {
     let previous = null;
     try { previous = JSON.parse(await readFile(file, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     const state = await discoverNotices({ previous, from: opts['--from'] || '2026-01-01', through: opts['--through'] || new Date().toISOString().slice(0, 10),
-      resumeIncomplete: Boolean(opts.resume), persist: s => atomicJSON(file, s), cache: async (id, hash, source) => writeFile(join(dir, `${id}-${hash}.html`), source) });
+      catalog: opts.allRemedies ? REMEDY_MONITOR_CATALOG : AD_CATALOG, resumeIncomplete: Boolean(opts.resume), persist: s => atomicJSON(file, s), cache: async (id, hash, source) => writeFile(join(dir, `${id}-${hash}.html`), source) });
     if (opts['--snapshot']) {
       const output = resolve(opts['--snapshot']);
-      if (!output.endsWith('antidumping-discovery-snapshot.mjs')) throw new Error('Snapshot output must be antidumping-discovery-snapshot.mjs');
-      await writeFile(`${output}.tmp`, '// Generated discovery evidence only. Never a rate/stage input.\nexport const AD_DISCOVERY = ' + JSON.stringify(state, null, 2) + ';\n');
+      if (!output.endsWith(opts.allRemedies ? 'remedy-discovery-snapshot.mjs' : 'antidumping-discovery-snapshot.mjs')) throw new Error('Snapshot output must be antidumping-discovery-snapshot.mjs');
+      await writeFile(`${output}.tmp`, '// Generated discovery evidence only. Never a rate/stage input.\nexport const ' + (opts.allRemedies ? 'REMEDY_DISCOVERY' : 'AD_DISCOVERY') + ' = ' + JSON.stringify(state, null, 2) + ';\n');
       await rename(`${output}.tmp`, output);
     }
     console.log(JSON.stringify({ status: state.status, requests: state.requests_this_run, cases: Object.values(state.cases).map(c => ({ case_id: c.case_id, status: c.status, notices: c.notices.length, pending: c.notices.filter(n => n.review_status !== 'catalogued_not_reconciled').length, error: c.error })) }));

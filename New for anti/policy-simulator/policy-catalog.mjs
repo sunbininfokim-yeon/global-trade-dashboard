@@ -156,7 +156,7 @@ export function modelInput(draft) {
     calibration: { policy_as_of: POLICY_AS_OF, classification_checked_on: p.classification_checked_on || null, hts: p.hts, product_scope: p.scope, purchase_basis: 'user_assumption',
       policy_confirmation: 'user_confirmed_conditions', supplier_statistics_year: suppliers ? SUPPLIER_SNAPSHOT.year : null,
       supplier_source: suppliers ? { url: SUPPLIER_SNAPSHOT.url, fetched_at: SUPPLIER_SNAPSHOT.fetched_at, hts6: suppliers.hts6, flow: SUPPLIER_SNAPSHOT.flow, measure: SUPPLIER_SNAPSHOT.measure } : null,
-      market_calibration: marketCalibration(draft.product, SUPPLIER_SNAPSHOT),
+      market_calibration: {...marketCalibration(draft.product, SUPPLIER_SNAPSHOT),...(draft.market_evidence?{user_reviewed_input:structuredClone(draft.market_evidence)}:{})},
       input_basis: { purchases: draft.rows.map(r => ({ country: r.country, kind: r.purchase_origin || 'user_assumption' })), supply_elasticities: 'user_assumption', tariffs: 'conditional_official_reference' },
       product_verification: draft.rows.map(row => productVerification(draft.product, row.country)).filter(Boolean), elasticity },
     ...(elasticity.sigma.range ? { sensitivity_sigmas: [elasticity.sigma.range[0], Number(draft.sigma), elasticity.sigma.range[1]] } : {}) };
