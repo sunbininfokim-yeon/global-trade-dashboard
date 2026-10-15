@@ -18,7 +18,7 @@
 ## 검증
 
 - Node 연간/월별/보크사이트 31개, gateway 10개 = 41개 통과.
-- Python commodity 142개, ownership 11개 통과. 수정 JS 3종 문법과 diff 공백 검사 통과.
+- Python commodity 142개, 최신 main 통합 후 ownership 12개 통과. 수정 JS 3종 문법과 diff 공백 검사 통과.
 - Playwright로 실제 index/data/app/trade/trade-monthly 파일을 로컬에서 읽어 1440×1000, 390×1000 확인. `/bauxite` 진입 → 브라질 국가 카드 → 월별/연간 전환, HS2606 표시, 상대국별 미확보 안내, 기니 GIN 식별, 모바일 카드 폭과 기간 버튼 폭 검사. pageerror 0.
 - 브라우저 QA의 **연간 API 응답과 deck/WebGL은 테스트 대체물**이다. 정적 월별 계열은 checkout의 기존 JSON을 사용했다. 실제 원천 수집/배포 화면/실제 WebGL 렌더링을 검증했다는 뜻이 아니다. 테스트 스크린샷은 임시 QA용이며 운영 자료로 게시하지 않는다.
 
