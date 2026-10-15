@@ -13,6 +13,7 @@ from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.polls import read
 from election_watch.state_evidence import build_state, load_finance
 from publish_state_packets import rebuild
+from tests.poll_config_fixture import SNAPSHOT_DAY
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / 'config/usa_polls'
@@ -26,8 +27,8 @@ class OregonEvidenceTests(unittest.TestCase):
         cls.audit = read(PUBLIC / 'usa_election_poll_release_reviews/2026/OR-primary-20261014.json')
         cls.pages = cls.audit['official_candidate_list_pages']
         cls.policy = apply_targets(apply_matchups(apply_watchlist(read(CONFIG / 'live_2026.json'),
-            read(CONFIG / 'watchlist_2026.json')), read(ROOT / 'config/governor_matchups/2026.json'), DAY),
-            read(CONFIG / 'targets_2026.json'), read(CONFIG / 'ballot_reviews_2026.json'), DAY)
+            read(CONFIG / 'watchlist_2026.json')), read(ROOT / 'config/governor_matchups/2026.json'), SNAPSHOT_DAY),
+            read(CONFIG / 'targets_2026.json'), read(CONFIG / 'ballot_reviews_2026.json'), SNAPSHOT_DAY)
         cls.policy['quality_reviews'] = read(CONFIG / 'quality_reviews_2026.json')['reviews']
         cls.packet = read(ROOT / 'config/state_evidence/2026/OR.json')
         cls.raw = cls.packet['capture']['primary_records'][0]

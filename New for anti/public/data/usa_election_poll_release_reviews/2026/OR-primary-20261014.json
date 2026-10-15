@@ -513,5 +513,60 @@
   "limitations_ko": [
     "관측없음은조사전수부재/0달러/당선판정이아닙니다.",
     "최근발표는원문문항/방법확인전보류하며일반기관전체미래발표를승인하지않습니다."
-  ]
+  ],
+  "continuation_source_access_review": {
+    "reviewed_on": "2026-10-15",
+    "automated_probe": {
+      "schema": "usa_governor_source_access_v1",
+      "state": "OR",
+      "cycle": 2026,
+      "checked_at": "2026-10-15T06:28:52.907817+00:00",
+      "status": "source_unavailable",
+      "last_current_endpoint_accessible_at": null,
+      "financial_data_collected": false,
+      "candidate_amounts_available": false,
+      "current_portal_url": "https://secure.sos.state.or.us/orestar/GotoSearchByName.do",
+      "source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-14",
+        "official_directory_url": "https://sos.oregon.gov/elections/campaign-finance/Pages/search-campaign-finance.aspx",
+        "endpoints": [
+          {
+            "url": "https://secure.sos.state.or.us/orestar/GotoSearchByName.do",
+            "role": "current_public_portal"
+          }
+        ],
+        "source_scope": "ORESTAR_public_access_only_no_target_direction_transactions_collected",
+        "filing_login_required_for_public_read": false,
+        "note_ko": "공식안내가연결한공개ORESTAR조회경로. 일반캠프수입/비용은후보대상독립지출과다르며수혜후보·방향·정정매핑이완료되기전에는금액null."
+      },
+      "endpoints": [
+        {
+          "url": "https://secure.sos.state.or.us/orestar/GotoSearchByName.do",
+          "status": "source_unavailable",
+          "http_status": null,
+          "error_type": "URLError",
+          "role": "current_public_portal"
+        }
+      ],
+      "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다."
+    },
+    "web_reader_observation": {
+      "checked_on": "2026-10-15",
+      "tool": "web.open",
+      "reachable_urls": [
+        "https://secure.sos.state.or.us/orestar/GotoSearchByName.do",
+        "https://secure.sos.state.or.us/orestar/gotoPublicTransactionSearch.do"
+      ],
+      "observed_controls": [
+        "Independent Expenditures",
+        "Include Deleted Transactions",
+        "Show Expired Transactions"
+      ],
+      "transactions_collected": false
+    },
+    "original_20261014_capture_and_access_receipt_preserved": true,
+    "financial_data_collected": false,
+    "note_ko": "10/15 재확인: 웹 읽기 경로에서는 공개 이름/거래 검색 화면이 열렸으나 자동 수집 환경에서는 URLError. 지출 거래·수혜 후보·지지/반대·정정 매핑은 미구현/미확보. 10/14 원래 수집 영수증과 금융 기준일을 최신으로 덮어쓰지 않는다."
+  }
 }
