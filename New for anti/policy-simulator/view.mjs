@@ -1,3 +1,4 @@
+import {supplierObservationMarkup,parseMarketInputs} from './observed-inputs.mjs';
 import { basisMarkup, marketCalibration } from './default-basis.mjs';
 import { simulate, MODEL_VERSION, SOURCES } from './country-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, SUPPLIER_SNAPSHOT, initialDraft, newRow, policyOptions, missingPolicyReason, tariffPair, modelInput, elasticityCalibration } from './policy-catalog.mjs';
@@ -99,6 +100,8 @@ function editor() {
     ${suppliers ? `<div class="ts-suppliers"><p>추가할 공급국 · <a href="${SUPPLIER_SNAPSHOT.url}" target="_blank" rel="noopener noreferrer">USITC 2025 수입액 상위 8개국</a> · HS ${suppliers.hts6}</p>
       <div>${suppliers.suppliers.map((s, i) => `<button type="button" data-supplier="${s.country}" title="2025 소비용 수입 통관가액 ${fmt(s.customs_value_usd / 1e6, 1)} 백만 달러"${draft.rows.length >= 8 || draft.rows.some(r => r.country === s.country) ? ' disabled' : ''}>${i + 1}. ${esc(s.label_ko)}</button>`).join('')}</div>
       <small>HS6 범위의 실제 수입 공급국입니다. 대표 HTS보다 범위가 넓을 수 있으며, 기업 소재지·제조지 순위와는 다릅니다.</small></div>` : ''}
+    ${supplierObservationMarkup(SUPPLIER_SNAPSHOT,draft.product)}
+    <details><summary>검토한 시장자료 연결 · JSON</summary><p class="ts-help">미국 국내 판매와 수입 구매액을 동일 제품·기간·USD·관세 포함 기준으로 맞춘 자료만 연결합니다. 사용자가 검토한 입력이며 독립 검증 완료 표시가 아닙니다. 입력 양식은 <a href="https://github.com/sunbininfokim-yeon/global-trade-dashboard/blob/codex/simulator-operational-evidence-20261015/docs/simulator-operational-evidence-20261015.md" target="_blank" rel="noopener noreferrer">자료 연결 문서</a>를 참고하세요.</p><textarea data-market-import aria-label="검토한 시장자료 JSON" maxlength="30000" rows="4"></textarea><button type="button" data-market-apply>검토자료 연결</button><small>${draft.market_evidence?'사용자 검토자료 연결 · 독립 검증 미완료':'실측 시장자료 미연결'}</small></details>
     <button type="button" class="ts-text-button" data-add${draft.rows.length >= 8 ? ' disabled' : ''}>+ 다른 공급국 추가 <span>최대 8개</span></button>
     <p class="ts-help">구매액·공급탄력성은 가상 초기값입니다. 국가 추가 시 구매액은 비워 둡니다. 기타국 합계에서 새 국가를 빼서 중복을 피하세요. 미국 국내 공급은 수입 통계에 포함되지 않습니다.</p>
     <div class="ts-section-label"><h3>현행 관세·비교 시나리오</h3><span>${POLICY_AS_OF} 검토 스냅샷</span></div>
@@ -209,6 +212,7 @@ function mountCountry(root) {
     const el = event.target;
     if (el.dataset.key) {
       const key = el.dataset.key;
+      if (['product','period'].includes(key))delete draft.market_evidence;
       if (key === 'product') {
         const next = initialDraft(el.value);
         draft = { ...draft, ...next, period: draft.period, source_note: draft.source_note,
@@ -229,6 +233,7 @@ function mountCountry(root) {
     if (el.dataset.row !== undefined) {
       const row = draft.rows[Number(el.dataset.row)], field = el.dataset.field, old = row.country;
       row[field] = el.value;
+      if (['expenditure','country'].includes(field))delete draft.market_evidence;
       if (field === 'expenditure') { row.purchase_origin = 'user_assumption'; root.querySelector(`[data-row-purchase-basis="${el.dataset.row}"]`).textContent = '사용자 가정 · 실측 미검증'; }
       if (['country', 'baseline_policy', 'scenario_policy', 'manual_before', 'manual_after', 'extra_duty', 'tariff_note'].includes(field)) unconfirm();
       if (field === 'country') {
@@ -270,16 +275,19 @@ function mountCountry(root) {
   }, { signal });
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
-    if (button.hasAttribute('data-reset')) {
+    if(button.hasAttribute('data-market-apply')){
+      try{const v=parseMarketInputs(root.querySelector('[data-market-import]').value,draft.product,Object.keys(COUNTRIES));draft.rows=v.rows.map(r=>({...newRow(draft.product,r.country,r.expenditure),purchase_origin:'user_reviewed_not_independently_verified'}));draft.period=v.period;draft.market_evidence=v.provenance;if(!draft.rows.some(r=>r.country===draft.focus))draft.focus=draft.rows.find(r=>!['USA','ROW'].includes(r.country)).country;unconfirm();paintEditor();markDirty();}catch(err){error=err.message;showFormError(root,root.querySelector('[data-sim-error]'),{message:error,element:root.querySelector('[data-market-import]')});}
+    } else if (button.hasAttribute('data-reset')) {
       draft = initialDraft(); result = null; dirty = true; error = ''; root.innerHTML = countryMarkup();
     } else if (button.hasAttribute('data-literature')) {
       const e = PRODUCTS[draft.product].elasticity;
       if (e) { draft.sigma = e.sigma; if (e.eta !== undefined) draft.eta = e.eta; draft.elasticity_basis = 'literature'; draft.elasticity_overrides = {}; paintEditor(); markDirty(); }
     } else if ((button.hasAttribute('data-add') || button.dataset.supplier) && draft.rows.length < 8) {
       const country = button.dataset.supplier || Object.keys(COUNTRIES).find(code => code !== 'USA' && code !== 'ROW' && !draft.rows.some(row => row.country === code));
+      delete draft.market_evidence;
       if (country && !draft.rows.some(row => row.country === country)) { draft.rows.push(newRow(draft.product, country)); unconfirm(); paintEditor(); markDirty(); }
     } else if (button.dataset.remove !== undefined && draft.rows.length > 2) {
-      draft.rows.splice(Number(button.dataset.remove), 1); unconfirm();
+      delete draft.market_evidence;draft.rows.splice(Number(button.dataset.remove), 1); unconfirm();
       if (!draft.rows.some(row => row.country === draft.focus)) draft.focus = draft.rows.find(row => !['USA', 'ROW'].includes(row.country))?.country || '';
       paintEditor(); markDirty();
     } else if (button.hasAttribute('data-export') && !dirty) {

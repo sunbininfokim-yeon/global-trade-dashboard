@@ -1,3 +1,4 @@
+import {parseCompanyInputs} from './observed-inputs.mjs';
 import { basisMarkup } from './default-basis.mjs';
 import { simulateCompany, COMPANY_SOURCES, COMPANY_MODEL_VERSION } from './company-model.mjs';
 import { COUNTRIES, PRODUCTS, POLICY_AS_OF, newRow, policyOptions, tariffPair, missingPolicyReason } from './policy-catalog.mjs';
@@ -85,6 +86,7 @@ function editor() {
       ${field('market_change_pct', '시장 전체 수요 변화 %', -100, 300, '수동 가정 · 경쟁 제품 가격 변화와 별도로 입력. 국가 모형과 중복 적용하지 않음')}
       ${field('competitor_price', '경쟁 제품 기준 가격', 0.000001, 1e12, '선택 사항 · 같은 사양·단위의 관세 포함 비교가격', true)}</div>
       <p class="ts-help">초기 기업 탄력성 2, 계약 비중 0%, 경쟁 가격·시장 수요 변화 0%는 모두 사용자 가정입니다. 고객 인증·납기·품질 효과는 실측 모델로 추정하지 않습니다.</p>`}
+    <details><summary>제품별 거래·원가 자료 연결 · JSON</summary><p class="ts-help">같은 법인·제품·실제 원산지·기간의 USD 단가·물량·원가가 필요합니다. 전사 영업이익률은 단위 원가로 대입하지 않습니다. 입력은 서버에 전송하지 않으며 독립 검증되지 않은 사용자 자료로 표시합니다.</p><textarea data-company-import aria-label="기업 거래자료 JSON" maxlength="20000" rows="4"></textarea><button type="button" data-company-apply>거래자료 연결</button><small>${draft.transaction_evidence?'사용자 거래자료 연결 · 물량 단위 '+esc(draft.transaction_evidence.quantity_unit):'거래자료 미연결'}</small></details>
     <label class="ts-source-label">자료 출처·가정 메모<textarea data-company-key="source_note" aria-label="기업 자료 출처 메모" maxlength="1500" rows="2">${esc(draft.source_note)}</textarea></label>
     <div class="ts-actions"><button class="ts-primary" type="submit">기업 시나리오 계산 →</button><button type="button" data-company-reset>기업 입력 초기화</button></div>
     <p class="ts-error" role="alert" data-company-error${error ? '' : ' hidden'}>${esc(error)}</p></form>`;
@@ -144,6 +146,7 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
     else if (el.hasAttribute('data-company-profile')) { draft = initial(el.value); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
     else if (el.dataset.companyKey) {
       const key = el.dataset.companyKey;
+      if(['company','product','origin','period','price','quantity','cost','fixed_cost'].includes(key))delete draft.transaction_evidence;
       draft[key] = key === 'policy_confirmed' ? el.checked : el.value;
       if (key === 'product' || key === 'origin') { draft.tariff = newRow(draft.product, draft.origin); draft.country_inputs = null; unconfirm(); paint(); }
       else if (key === 'response_mode') paint();
@@ -176,7 +179,8 @@ export function mountCompany(root, { getCountryResult, openAntidumping }) {
   }, { signal });
   root.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button || !root.contains(button)) return;
-    if (button.hasAttribute('data-company-ad')) { const ad = companyADLink(draft.profile_id, draft.product); if (ad) openAntidumping?.(ad); }
+    if(button.hasAttribute('data-company-apply')){try{const v=parseCompanyInputs(root.querySelector('[data-company-import]').value,draft.company,draft.product,draft.origin);Object.assign(draft,v);unconfirm();paint();markDirty();}catch(err){fail(err,root.querySelector('[data-company-import]'));}}
+    else if (button.hasAttribute('data-company-ad')) { const ad = companyADLink(draft.profile_id, draft.product); if (ad) openAntidumping?.(ad); }
     else if (button.hasAttribute('data-company-reset')) { companyQuery = ''; draft = initial(); result = null; dirty = true; error = ''; root.innerHTML = companyMarkup(); }
     else if (button.hasAttribute('data-company-link')) {
       markDirty();
