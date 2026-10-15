@@ -43,3 +43,11 @@ Gemini API 실제 호출로 공개 문구를 사전 번역. 번역의 source·mo
 app.js·index.html·전역 style.css·배포·Worker·워크플로·공용 선거 생성물은 수정하지 않음.
 기존 로컬 미리보기 도구에 캐시 방지·경로 제한을 보강해 재현 검증에 사용.
 병합·배포·production dispatch 없음. 검토용 Draft PR까지만 준비.
+
+## 최신 main 동기화와 공통 CI
+
+첫 원격 검증은 이스라엘 외 NC 테스트의 `future state polling snapshot` 오류로 실패했다.
+공통 fixture가 전국 날짜만 보고 더 새로운 주별 관측일을 놓친 문제이며,
+기존 공통 수정 PR #577이 main에 병합돼 최신 main `0102ae1b68044f3a899367a6bd9ca6d0d01ee0e6`을
+이 작업 브랜치에 병합해 반영했다. 해당 NC·공통 파일은 이 PR diff에 포함되지 않는다.
+이스라엘 생성기와 번역 --check는 동일 산출물 재현을 확인했다.
