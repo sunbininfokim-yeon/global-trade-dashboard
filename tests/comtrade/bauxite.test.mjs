@@ -111,3 +111,28 @@ test('monthly observations and display holds are not filled from annual or alumi
     delete d.comtrade.reporters.BRA.flows.imports;
     assert.equal(monthly().buildView(d,'bauxite','BRA'),null);
 });
+
+test('legacy historical-date simulation cannot fabricate bauxite observations',()=>{
+    const app=source('app.js');
+    assert.match(app,/toggleAttribute\('disabled', target === 'bauxite'\)/);
+    const start=app.indexOf("document.getElementById('historical-date').addEventListener('change'");
+    const listener=app.slice(start,app.indexOf('// Panels render clickable',start));
+    let change;
+    const timers=[],title={textContent:'bauxite'};
+    const context={currentCommodity:'bauxite',currentViewTitle:title,
+        console:{log(){}},Math:{random(){assert.fail('simulated value generated');}},
+        window:{TradeData:{bauxite:{arcs:[{volume:123}]}}},
+        document:{getElementById(){return {addEventListener(_,fn){change=fn;}};}},
+        setTimeout:fn=>timers.push(fn)};
+    vm.runInNewContext(listener,context);
+    change({target:{value:'2025-01-01'}});
+    assert.equal(timers.length,0);
+    assert.equal(title.textContent,'bauxite');
+    // A timer started on another screen must also not alter bauxite later.
+    context.currentCommodity='aluminum';
+    change({target:{value:'2025-01-01'}});
+    assert.equal(timers.length,1);
+    context.currentCommodity='bauxite';
+    timers[0]();
+    assert.equal(context.window.TradeData.bauxite.arcs[0].volume,123);
+});

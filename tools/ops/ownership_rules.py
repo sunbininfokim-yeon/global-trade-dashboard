@@ -58,7 +58,8 @@ COMMODITY_OPS_PATHS = frozenset({
 })
 
 # 2026-10-15: user explicitly approved a separate bauxite menu and annual /
-# monthly UI. app.js is restricted by the TASKS claim to Guinea ISO fallback.
+# monthly UI. app.js is limited to Guinea ISO fallback and blocking the legacy
+# simulated date picker on bauxite (including an already-pending callback).
 # Style changes are limited to bauxite phone layout. No Worker, workflow,
 # credential or deployment grant.
 BAUXITE_UI_BRANCH = 'codex/commodity-bauxite-ui'
