@@ -19,7 +19,7 @@ class MinnesotaRecentTests(unittest.TestCase):
         cls.policy['quality_reviews']=read(ROOT/'config/usa_polls/quality_reviews_2026.json')['reviews']
         cls.raw=next(r for r in cls.packet['capture']['provider_records'] if r['id']=='us-202sur83d49b6b')
 
-    def test_q3_values_and_credibility_interval_are_not_fabricated_sampling_error(self):
+    def test_q7_values_and_credibility_interval_are_not_fabricated_sampling_error(self):
         observations,held=normalize([self.raw],self.policy,'2026-10-14')
         self.assertFalse(held);row=observations[0]
         self.assertEqual({a['name']:a['pct'] for a in row['answers']},{'Jake Johnson':46,'Brad Finstad':44})
