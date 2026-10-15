@@ -1,0 +1,2355 @@
+{
+ "schema_version": 1,
+ "note": "산지별 생육 일정 평년값. 해마다 날씨에 따라 1~3주 앞뒤로 움직인다. 키 = climate_registry_v1.json 의 crops_region_keys. 없는 산지는 국가 단위 캘린더로 대체.",
+ "regions": {
+  "great_plains": [
+   {
+    "crop": "winter_wheat",
+    "label_ko": "겨울밀",
+    "area_ko": "캔자스·오클라호마·텍사스·네브래스카·콜로라도",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "09-01",
+      "end": "10-31",
+      "what_ko": "가을에 씨를 뿌린다. 캔자스는 9월 중순~10월 중순이 중심."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼",
+      "start": "09-20",
+      "end": "11-30",
+      "what_ko": "싹이 트고 겨울 전에 곁가지(분얼)를 친다. 가을 토양수분이 겨울 생존을 좌우."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "월동(휴면)",
+      "start": "12-01",
+      "end": "02-28",
+      "what_ko": "추위로 생장이 멈춘다. 눈이 덮이지 않은 혹한은 동해 위험."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "생육 재개·마디신장",
+      "start": "03-01",
+      "end": "04-20",
+      "what_ko": "봄에 다시 푸르러지고 줄기가 자란다. 늦서리 위험."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "04-20",
+      "end": "05-25",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 고온·가뭄에 가장 민감한 시기."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙(알곡 채움)",
+      "start": "05-15",
+      "end": "06-20",
+      "what_ko": "알곡이 찬다. 5~6월 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "06-01",
+      "end": "07-20",
+      "what_ko": "남쪽 텍사스부터 북쪽으로 올라가며 수확. 캔자스는 6월 중순~7월 초."
+     }
+    ],
+    "critical_ko": "4~5월 출수·개화기 고온·가뭄",
+    "source_ko": "USDA NASS Usual Planting and Harvesting Dates (2010) · Crop Progress 주간 보고 평년"
+   }
+  ],
+  "northern_plains": [
+   {
+    "crop": "spring_wheat",
+    "label_ko": "봄밀",
+    "area_ko": "노스다코타·미네소타·몬태나·사우스다코타",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-10",
+      "end": "05-31",
+      "what_ko": "땅이 녹으면 봄에 뿌린다. 습한 봄에는 파종이 늦어진다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "04-25",
+      "end": "06-25",
+      "what_ko": "싹이 트고 줄기가 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "06-20",
+      "end": "07-15",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 늦게 뿌린 밭일수록 7월 더위를 맞는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "07-05",
+      "end": "08-05",
+      "what_ko": "알곡이 찬다. 7월 고온·건조가 핵심 위험."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "08-01",
+      "end": "09-20",
+      "what_ko": "8월 초부터 9월 중순까지."
+     }
+    ],
+    "critical_ko": "7월 출수·등숙기 고온",
+    "source_ko": "USDA NASS Usual Planting and Harvesting Dates (2010) · Crop Progress 주간 보고 평년"
+   }
+  ],
+  "corn_belt": [
+   {
+    "crop": "corn",
+    "label_ko": "옥수수",
+    "area_ko": "아이오와·일리노이·인디애나·네브래스카·미네소타 등",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-20",
+      "end": "05-31",
+      "what_ko": "4월 말~5월이 중심. 비가 잦으면 늦어진다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-05",
+      "end": "07-05",
+      "what_ko": "잎이 늘고 키가 큰다(V단계)."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "07-05",
+      "end": "07-31",
+      "what_ko": "수염이 나오고 수분된다. 연중 가장 민감한 2~3주로, 이때 고온·가뭄이 단수를 크게 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙(유숙→덴트)",
+      "start": "07-25",
+      "end": "09-05",
+      "what_ko": "알곡에 녹말이 찬다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "생리적 성숙·건조",
+      "start": "09-01",
+      "end": "10-10",
+      "what_ko": "알곡이 다 차고 밭에서 마른다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-20",
+      "end": "11-20",
+      "what_ko": "9월 말부터 11월까지."
+     }
+    ],
+    "critical_ko": "7월 출사·수분기 고온·가뭄",
+    "source_ko": "USDA NASS Usual Planting and Harvesting Dates (2010) · Crop Progress 주간 보고 평년"
+   },
+   {
+    "crop": "soybeans",
+    "label_ko": "대두",
+    "area_ko": "아이오와·일리노이·미네소타·인디애나 등",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "06-15",
+      "what_ko": "옥수수보다 조금 늦게 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "06-25",
+      "end": "08-10",
+      "what_ko": "꽃이 피고 꼬투리가 달린다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "08-01",
+      "end": "09-10",
+      "what_ko": "콩알이 찬다. 8월 강수가 단수를 좌우한다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "낙엽·성숙",
+      "start": "09-01",
+      "end": "10-05",
+      "what_ko": "잎이 떨어지고 익는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-20",
+      "end": "10-31",
+      "what_ko": "9월 말~10월."
+     }
+    ],
+    "critical_ko": "8월 종실 비대기 강수",
+    "source_ko": "USDA NASS Usual Planting and Harvesting Dates (2010) · Crop Progress 주간 보고 평년"
+   }
+  ],
+  "cotton_belt": [
+   {
+    "crop": "cotton",
+    "label_ko": "면화",
+    "area_ko": "텍사스·조지아·미시시피·아칸소 등",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-15",
+      "end": "06-10",
+      "what_ko": "남쪽부터 파종. 텍사스 건조지는 파종 전 토양수분이 관건."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·꽃봉오리(스퀘어)",
+      "start": "05-01",
+      "end": "07-05",
+      "what_ko": "싹이 트고 꽃봉오리가 생긴다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·다래 형성",
+      "start": "07-01",
+      "end": "08-20",
+      "what_ko": "꽃이 피고 다래(목화송이)가 달린다. 고온·가뭄에 다래가 떨어진다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "다래 성숙",
+      "start": "08-10",
+      "end": "09-30",
+      "what_ko": "다래가 커지고 섬유가 찬다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "다래 터짐",
+      "start": "08-20",
+      "end": "10-15",
+      "what_ko": "다래가 터지며 솜이 드러난다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-15",
+      "end": "12-15",
+      "what_ko": "9월 중순~12월. 텍사스 건조지는 버려지는 밭(포기)도 많다."
+     }
+    ],
+    "critical_ko": "7~8월 개화기 고온·가뭄(건조지 포기율)",
+    "source_ko": "USDA NASS Usual Planting and Harvesting Dates (2010) · Crop Progress 주간 보고 평년"
+   }
+  ],
+  "mato_grosso_soja": [
+   {
+    "crop": "soy",
+    "label_ko": "대두",
+    "area_ko": "마투그로수",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "09-15",
+      "end": "11-30",
+      "what_ko": "방역 휴작기(vazio sanitário)가 끝나는 9월 중순부터, 우기 시작과 함께 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "09-25",
+      "end": "12-10",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "11-15",
+      "end": "01-10",
+      "what_ko": "꽃이 피고 꼬투리가 달린다. 우기 중 건조기(veranico)가 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "12-15",
+      "end": "02-10",
+      "what_ko": "콩알이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "01-10",
+      "end": "03-31",
+      "what_ko": "1월부터 수확. 일찍 거둔 밭에 바로 2기작 옥수수를 심는다."
+     }
+    ],
+    "critical_ko": "12~1월 개화·종실 비대기 건조",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   },
+   {
+    "crop": "corn_safrinha",
+    "label_ko": "2기작 옥수수(사프리냐)",
+    "area_ko": "마투그로수",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "01-20",
+      "end": "03-10",
+      "what_ko": "대두를 거둔 밭에 바로 심는다. 늦게 심을수록 우기 끝에 걸린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "02-01",
+      "end": "04-10",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "04-01",
+      "end": "05-10",
+      "what_ko": "우기가 끝나가는 시기와 겹친다. 이때 비가 끊기면 단수가 크게 준다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "04-25",
+      "end": "06-15",
+      "what_ko": "건기에 알곡이 찬다. 남은 토양수분에 기댄다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "06-01",
+      "end": "08-31",
+      "what_ko": "6~8월 건기에 수확."
+     }
+    ],
+    "critical_ko": "4월 출사기 우기 종료 시점",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   }
+  ],
+  "parana_soja": [
+   {
+    "crop": "soy",
+    "label_ko": "대두",
+    "area_ko": "파라나",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "09-20",
+      "end": "12-10",
+      "what_ko": "남부는 기온이 올라야 뿌린다. 10~11월이 중심."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "10-01",
+      "end": "12-31",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "12-01",
+      "end": "01-31",
+      "what_ko": "꽃이 피고 꼬투리가 달린다. 라니냐 해의 가뭄이 가장 큰 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "01-10",
+      "end": "02-28",
+      "what_ko": "콩알이 찬다. 12~2월 강수가 단수를 좌우한다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "02-01",
+      "end": "04-30",
+      "what_ko": "2~4월."
+     }
+    ],
+    "critical_ko": "12~2월 강수(라니냐 가뭄)",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   },
+   {
+    "crop": "corn",
+    "label_ko": "옥수수(1기작 여름 옥수수)",
+    "area_ko": "파라나",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "08-20",
+      "end": "10-31",
+      "what_ko": "대두보다 먼저, 늦겨울~봄에 심는다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "09-05",
+      "end": "12-05",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "11-25",
+      "end": "01-15",
+      "what_ko": "수염이 나오고 수분된다. 고온일수가 단수를 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "12-20",
+      "end": "02-20",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "02-01",
+      "end": "04-30",
+      "what_ko": "2~4월."
+     }
+    ],
+    "critical_ko": "12~1월 출사기 고온·건조",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   },
+   {
+    "crop": "wheat",
+    "label_ko": "밀",
+    "area_ko": "파라나",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-15",
+      "end": "06-30",
+      "what_ko": "남반구 가을~초겨울에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-01",
+      "end": "08-10",
+      "what_ko": "겨울 동안 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "07-25",
+      "end": "09-10",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 개화기 장마가 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "알곡이 찬다. 수확기 비는 품질(발아)을 떨어뜨린다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-15",
+      "end": "11-30",
+      "what_ko": "9월 중순~11월."
+     }
+    ],
+    "critical_ko": "8~9월 개화기 서리·과습",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   }
+  ],
+  "matopiba_soja": [
+   {
+    "crop": "soy",
+    "label_ko": "대두",
+    "area_ko": "마라냥·토칸칭스·피아우이·바이아 서부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "10-15",
+      "end": "12-20",
+      "what_ko": "우기가 늦게 시작해 중서부보다 한 달가량 늦다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "10-25",
+      "end": "01-10",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "12-10",
+      "end": "02-10",
+      "what_ko": "꽃이 피고 꼬투리가 달린다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "01-10",
+      "end": "03-10",
+      "what_ko": "콩알이 찬다. 우기 중 건조기(veranico)와 고온이 위험."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "02-15",
+      "end": "04-30",
+      "what_ko": "2월 말~4월."
+     }
+    ],
+    "critical_ko": "1~2월 건조기·고온",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   },
+   {
+    "crop": "cotton",
+    "label_ko": "면화",
+    "area_ko": "바이아 서부 등",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "12-01",
+      "end": "01-31",
+      "what_ko": "우기에 심는다(1기작)."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·꽃봉오리",
+      "start": "12-10",
+      "end": "02-28",
+      "what_ko": "싹이 트고 꽃봉오리가 생긴다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·다래 형성",
+      "start": "02-15",
+      "end": "04-15",
+      "what_ko": "꽃이 피고 다래가 달린다. 우기 끝 강수가 중요."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "다래 성숙",
+      "start": "04-01",
+      "end": "05-31",
+      "what_ko": "건기 초입에 다래가 찬다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "다래 터짐",
+      "start": "05-15",
+      "end": "06-30",
+      "what_ko": "다래가 터진다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "06-15",
+      "end": "09-15",
+      "what_ko": "건기에 수확."
+     }
+    ],
+    "critical_ko": "3~4월 개화기 강수",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   }
+  ],
+  "sp_cana": [
+   {
+    "crop": "sugarcane",
+    "label_ko": "사탕수수",
+    "area_ko": "상파울루",
+    "stages": [
+     {
+      "kind": "veg",
+      "name_ko": "우기 생장",
+      "start": "11-01",
+      "end": "03-31",
+      "what_ko": "여름 우기에 줄기가 자란다. 신규 식재(1년 반 작형)는 1~3월."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "당 축적(성숙)",
+      "start": "04-01",
+      "end": "06-30",
+      "what_ko": "건기·저온으로 생장이 멈추며 당이 쌓인다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확·압착",
+      "start": "04-01",
+      "end": "11-30",
+      "what_ko": "4월부터 11월까지 공장이 돌며 순차 수확. 그루터기에서 다시 자란다(다년 재배)."
+     }
+    ],
+    "critical_ko": "전년 우기 강수와 그루 나이(다년생)",
+    "source_ko": "UNICA 수확 보고 · CONAB"
+   },
+   {
+    "crop": "coffee",
+    "label_ko": "커피(아라비카)",
+    "area_ko": "미나스제라이스 남부·상파울루",
+    "stages": [
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "09-01",
+      "end": "10-31",
+      "what_ko": "건기 뒤 첫 비에 꽃이 핀다. 이때 비가 늦으면 개화가 흩어진다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "착과·과실 팽창",
+      "start": "10-15",
+      "end": "01-15",
+      "what_ko": "열매가 달리고 커진다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "생두 충실",
+      "start": "01-01",
+      "end": "03-31",
+      "what_ko": "콩이 찬다. 1~2월 가뭄·고온이 위험."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "성숙",
+      "start": "03-15",
+      "end": "05-31",
+      "what_ko": "열매가 빨갛게 익는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "05-01",
+      "end": "08-31",
+      "what_ko": "5~8월. 그해 많이 열면 다음 해 적게 여는 격년 주기가 있다."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "휴지·꽃눈 분화",
+      "start": "06-01",
+      "end": "08-31",
+      "what_ko": "건기 휴지기. 6~8월 서리가 다음 해 작황까지 깎는다."
+     }
+    ],
+    "critical_ko": "6~8월 서리, 1~2월 가뭄, 격년 주기",
+    "source_ko": "CONAB Calendário de Plantio e Colheita · Embrapa 재배 지침"
+   },
+   {
+    "crop": "orange",
+    "label_ko": "오렌지",
+    "area_ko": "상파울루 시트러스 벨트",
+    "stages": [
+     {
+      "kind": "repro",
+      "name_ko": "개화·착과",
+      "start": "08-15",
+      "end": "10-31",
+      "what_ko": "건기 끝 첫 비에 꽃이 피고 열매가 달린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "과실 비대",
+      "start": "11-01",
+      "end": "04-30",
+      "what_ko": "우기에 열매가 커진다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "05-01",
+      "end": "01-31",
+      "what_ko": "조생종부터 만생종까지 5월~이듬해 1월."
+     }
+    ],
+    "critical_ko": "개화기 강수·고온, 그리닝병(HLB)",
+    "source_ko": "Fundecitrus 작황 추정"
+   }
+  ],
+  "pampas_soja": [
+   {
+    "crop": "soy",
+    "label_ko": "대두(1기작)",
+    "area_ko": "부에노스아이레스·코르도바·산타페",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "10-15",
+      "end": "12-15",
+      "what_ko": "1기작은 10월 말~11월. 밀 뒤 2기작은 12~1월."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "10-25",
+      "end": "01-10",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "12-20",
+      "end": "02-10",
+      "what_ko": "꽃이 피고 꼬투리가 달린다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "01-25",
+      "end": "03-10",
+      "what_ko": "콩알이 찬다. 2월 강수가 핵심(라니냐 가뭄)."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "03-20",
+      "end": "05-31",
+      "what_ko": "3월 말~5월."
+     }
+    ],
+    "critical_ko": "1~2월 강수(라니냐 가뭄)",
+    "source_ko": "Bolsa de Cereales de Buenos Aires 작황 주간 보고 평년 · INTA"
+   }
+  ],
+  "norte_soja": [
+   {
+    "crop": "soy",
+    "label_ko": "대두",
+    "area_ko": "아르헨티나 북부(살타·투쿠만·차코 등)",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "11-15",
+      "end": "01-15",
+      "what_ko": "여름 비가 오면 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "11-25",
+      "end": "02-05",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "01-20",
+      "end": "03-05",
+      "what_ko": "꽃이 피고 꼬투리가 달린다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "02-15",
+      "end": "03-31",
+      "what_ko": "콩알이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "04-01",
+      "end": "06-15",
+      "what_ko": "4~6월."
+     }
+    ],
+    "critical_ko": "2~3월 고온·강수",
+    "source_ko": "Bolsa de Cereales de Buenos Aires 작황 주간 보고 평년 · INTA"
+   }
+  ],
+  "pampas_maiz": [
+   {
+    "crop": "corn",
+    "label_ko": "옥수수",
+    "area_ko": "부에노스아이레스·코르도바·산타페",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "09-15",
+      "end": "12-31",
+      "what_ko": "조기 파종 9~10월, 만기 파종 12월(가뭄 회피용)."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "10-01",
+      "end": "01-10",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "12-10",
+      "end": "02-10",
+      "what_ko": "조기 파종은 12월, 만기 파종은 1월 말~2월에 수분된다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "01-05",
+      "end": "03-31",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "03-01",
+      "end": "07-31",
+      "what_ko": "조기 파종 3~4월, 만기 파종 6~7월."
+     }
+    ],
+    "critical_ko": "12~1월 출사기 고온·가뭄",
+    "source_ko": "Bolsa de Cereales de Buenos Aires 작황 주간 보고 평년 · INTA"
+   }
+  ],
+  "pampas_trigo": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀",
+    "area_ko": "부에노스아이레스·코르도바·산타페",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-15",
+      "end": "07-31",
+      "what_ko": "남반구 늦가을~겨울에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "06-01",
+      "end": "09-15",
+      "what_ko": "겨울 동안 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "09-10",
+      "end": "10-31",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 늦서리·가뭄 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "10-10",
+      "end": "11-30",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "11-15",
+      "end": "01-15",
+      "what_ko": "북쪽부터 11월 중순~1월."
+     }
+    ],
+    "critical_ko": "9~10월 개화기 늦서리·가뭄",
+    "source_ko": "Bolsa de Cereales de Buenos Aires 작황 주간 보고 평년 · INTA"
+   }
+  ],
+  "chaco_algodon": [
+   {
+    "crop": "cotton",
+    "label_ko": "면화",
+    "area_ko": "차코·산티아고델에스테로",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "10-01",
+      "end": "12-15",
+      "what_ko": "봄비 뒤 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·꽃봉오리",
+      "start": "10-20",
+      "end": "01-10",
+      "what_ko": "싹이 트고 꽃봉오리가 생긴다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·다래 형성",
+      "start": "12-20",
+      "end": "02-28",
+      "what_ko": "꽃이 피고 다래가 달린다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "다래 성숙·터짐",
+      "start": "02-15",
+      "end": "04-15",
+      "what_ko": "다래가 차고 터진다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "03-15",
+      "end": "06-30",
+      "what_ko": "3월 중순~6월."
+     }
+    ],
+    "critical_ko": "1~2월 개화기 고온·가뭄",
+    "source_ko": "INTA 면화 재배 지침"
+   }
+  ],
+  "tucuman_cana": [
+   {
+    "crop": "sugarcane",
+    "label_ko": "사탕수수",
+    "area_ko": "투쿠만",
+    "stages": [
+     {
+      "kind": "veg",
+      "name_ko": "우기 생장",
+      "start": "10-15",
+      "end": "03-31",
+      "what_ko": "여름 우기에 자란다."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "당 축적",
+      "start": "04-01",
+      "end": "06-15",
+      "what_ko": "가을 저온에 당이 쌓인다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확·압착",
+      "start": "05-15",
+      "end": "11-15",
+      "what_ko": "5월 중순~11월. 7월 이후 서리가 수량·당도를 깎는다."
+     }
+    ],
+    "critical_ko": "겨울 서리, 여름 강수",
+    "source_ko": "EEAOC 투쿠만 작황 보고"
+   }
+  ],
+  "southern_winter_wheat": [
+   {
+    "crop": "winter_wheat",
+    "label_ko": "겨울밀",
+    "area_ko": "크라스노다르·로스토프·스타브로폴",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "09-15",
+      "end": "10-31",
+      "what_ko": "늦여름~초가을에 뿌린다. 파종기 가뭄이면 출아가 고르지 않다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼",
+      "start": "10-01",
+      "end": "11-30",
+      "what_ko": "겨울 전에 곁가지를 친다."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "월동(휴면)",
+      "start": "12-01",
+      "end": "02-28",
+      "what_ko": "눈 아래에서 겨울을 난다. 눈 없는 혹한·결빙이 동해를 낸다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "생육 재개·마디신장",
+      "start": "03-01",
+      "end": "04-30",
+      "what_ko": "봄에 다시 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 5~6월 고온·건조가 핵심 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "05-25",
+      "end": "06-30",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "남쪽부터 수확."
+     }
+    ],
+    "critical_ko": "5~6월 출수·등숙기 고온·가뭄, 겨울 동해",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "cbe_winter_wheat": [
+   {
+    "crop": "winter_wheat",
+    "label_ko": "겨울밀",
+    "area_ko": "중앙흑토(보로네시·쿠르스크·벨고로드 등)",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "08-20",
+      "end": "09-30",
+      "what_ko": "늦여름~초가을에 뿌린다. 파종기 가뭄이면 출아가 고르지 않다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼",
+      "start": "09-05",
+      "end": "11-10",
+      "what_ko": "겨울 전에 곁가지를 친다."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "월동(휴면)",
+      "start": "11-15",
+      "end": "03-20",
+      "what_ko": "눈 아래에서 겨울을 난다. 눈 없는 혹한·결빙이 동해를 낸다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "생육 재개·마디신장",
+      "start": "03-25",
+      "end": "05-15",
+      "what_ko": "봄에 다시 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "05-20",
+      "end": "06-15",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 5~6월 고온·건조가 핵심 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "06-10",
+      "end": "07-15",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "07-10",
+      "end": "08-20",
+      "what_ko": "남쪽부터 수확."
+     }
+    ],
+    "critical_ko": "5~6월 출수·등숙기 고온·가뭄, 겨울 동해",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "volga_winter_wheat": [
+   {
+    "crop": "winter_wheat",
+    "label_ko": "겨울밀",
+    "area_ko": "볼가(사라토프·사마라·볼고그라드)",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "08-20",
+      "end": "09-25",
+      "what_ko": "늦여름~초가을에 뿌린다. 파종기 가뭄이면 출아가 고르지 않다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼",
+      "start": "09-05",
+      "end": "11-05",
+      "what_ko": "겨울 전에 곁가지를 친다."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "월동(휴면)",
+      "start": "11-10",
+      "end": "03-25",
+      "what_ko": "눈 아래에서 겨울을 난다. 눈 없는 혹한·결빙이 동해를 낸다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "생육 재개·마디신장",
+      "start": "03-30",
+      "end": "05-15",
+      "what_ko": "봄에 다시 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "05-15",
+      "end": "06-10",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 5~6월 고온·건조가 핵심 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "06-05",
+      "end": "07-10",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "07-05",
+      "end": "08-15",
+      "what_ko": "남쪽부터 수확."
+     }
+    ],
+    "critical_ko": "5~6월 출수·등숙기 고온·가뭄, 겨울 동해",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "russia_winter_wheat": [
+   {
+    "crop": "winter_wheat",
+    "label_ko": "겨울밀",
+    "area_ko": "러시아 겨울밀 주산지 합산",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "08-20",
+      "end": "10-31",
+      "what_ko": "늦여름~초가을에 뿌린다. 파종기 가뭄이면 출아가 고르지 않다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼",
+      "start": "09-05",
+      "end": "11-30",
+      "what_ko": "겨울 전에 곁가지를 친다."
+     },
+     {
+      "kind": "dormant",
+      "name_ko": "월동(휴면)",
+      "start": "12-01",
+      "end": "03-15",
+      "what_ko": "눈 아래에서 겨울을 난다. 눈 없는 혹한·결빙이 동해를 낸다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "생육 재개·마디신장",
+      "start": "03-15",
+      "end": "05-10",
+      "what_ko": "봄에 다시 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "05-10",
+      "end": "06-15",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 5~6월 고온·건조가 핵심 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "06-01",
+      "end": "07-10",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "06-25",
+      "end": "08-20",
+      "what_ko": "남쪽부터 수확."
+     }
+    ],
+    "critical_ko": "5~6월 출수·등숙기 고온·가뭄, 겨울 동해",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "southern_sunflower": [
+   {
+    "crop": "sunflower",
+    "label_ko": "해바라기",
+    "area_ko": "크라스노다르·로스토프",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-15",
+      "end": "05-20",
+      "what_ko": "땅이 데워지면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "04-25",
+      "end": "06-30",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-25",
+      "what_ko": "꽃이 핀다. 7월 고온·가뭄이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 충실",
+      "start": "07-15",
+      "end": "08-25",
+      "what_ko": "씨앗에 기름이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "가을에 수확."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·가뭄",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "cbe_sunflower": [
+   {
+    "crop": "sunflower",
+    "label_ko": "해바라기",
+    "area_ko": "중앙흑토",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "05-31",
+      "what_ko": "땅이 데워지면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-05",
+      "end": "07-05",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "07-05",
+      "end": "08-05",
+      "what_ko": "꽃이 핀다. 7월 고온·가뭄이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 충실",
+      "start": "07-25",
+      "end": "09-05",
+      "what_ko": "씨앗에 기름이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-01",
+      "end": "10-31",
+      "what_ko": "가을에 수확."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·가뭄",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "volga_sunflower": [
+   {
+    "crop": "sunflower",
+    "label_ko": "해바라기",
+    "area_ko": "볼가",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "땅이 데워지면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-10",
+      "end": "07-05",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "07-05",
+      "end": "08-05",
+      "what_ko": "꽃이 핀다. 7월 고온·가뭄이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 충실",
+      "start": "07-25",
+      "end": "09-05",
+      "what_ko": "씨앗에 기름이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-01",
+      "end": "10-31",
+      "what_ko": "가을에 수확."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·가뭄",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "russia_sunflower": [
+   {
+    "crop": "sunflower",
+    "label_ko": "해바라기",
+    "area_ko": "러시아 해바라기 주산지 합산",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-15",
+      "end": "05-31",
+      "what_ko": "땅이 데워지면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "04-25",
+      "end": "07-05",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "08-05",
+      "what_ko": "꽃이 핀다. 7월 고온·가뭄이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 충실",
+      "start": "07-15",
+      "end": "09-05",
+      "what_ko": "씨앗에 기름이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "08-20",
+      "end": "10-31",
+      "what_ko": "가을에 수확."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·가뭄",
+    "source_ko": "USDA FAS Crop Calendar (Russia) · 러시아 농업부 파종 진척 평년"
+   }
+  ],
+  "punjab_wheat": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(라비)",
+    "area_ko": "펀자브·하리아나",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "10-25",
+      "end": "12-10",
+      "what_ko": "벼를 거둔 뒤 11월에 뿌린다(라비 작기)."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "11-05",
+      "end": "01-31",
+      "what_ko": "겨울 동안 관개로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "02-01",
+      "end": "03-05",
+      "what_ko": "이삭이 나오고 꽃이 핀다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "02-20",
+      "end": "03-31",
+      "what_ko": "알곡이 찬다. 3월 이른 폭염이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "04-01",
+      "end": "05-15",
+      "what_ko": "4월~5월 중순."
+     }
+    ],
+    "critical_ko": "3월 등숙기 이른 폭염",
+    "source_ko": "인도 농업부 Crop Calendar · IMD 몬순 평년"
+   }
+  ],
+  "mp_soybean": [
+   {
+    "crop": "soy",
+    "label_ko": "대두(카리프)",
+    "area_ko": "마디아프라데시",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "06-15",
+      "end": "07-20",
+      "what_ko": "몬순 비가 충분히 온 뒤 뿌린다. 몬순이 늦으면 파종도 늦다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "06-25",
+      "end": "08-10",
+      "what_ko": "몬순 속에서 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "08-01",
+      "end": "09-05",
+      "what_ko": "꽃이 피고 꼬투리가 달린다. 몬순 중 장기 휴지(break)가 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "08-25",
+      "end": "09-30",
+      "what_ko": "콩알이 찬다. 수확기 늦은 비는 품질을 떨어뜨린다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-25",
+      "end": "11-10",
+      "what_ko": "9월 말~11월 초."
+     }
+    ],
+    "critical_ko": "8월 몬순 휴지기 가뭄",
+    "source_ko": "인도 농업부 Crop Calendar · IMD 몬순 평년"
+   }
+  ],
+  "vidarbha_cotton": [
+   {
+    "crop": "cotton",
+    "label_ko": "면화(카리프)",
+    "area_ko": "비다르바(마하라슈트라)",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "06-10",
+      "end": "07-20",
+      "what_ko": "몬순 시작과 함께 뿌린다(대부분 빗물 재배)."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·꽃봉오리",
+      "start": "06-25",
+      "end": "08-20",
+      "what_ko": "싹이 트고 꽃봉오리가 생긴다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·다래 형성",
+      "start": "08-10",
+      "end": "10-15",
+      "what_ko": "꽃이 피고 다래가 달린다. 몬순 후반 강수가 중요."
+     },
+     {
+      "kind": "mature",
+      "name_ko": "다래 성숙·터짐",
+      "start": "10-01",
+      "end": "11-30",
+      "what_ko": "다래가 차고 터진다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(여러 번 따기)",
+      "start": "10-15",
+      "end": "02-15",
+      "what_ko": "10월부터 이듬해 2월까지 여러 차례 딴다."
+     }
+    ],
+    "critical_ko": "8~9월 몬순 강수·휴지기",
+    "source_ko": "인도 농업부 Crop Calendar · IMD 몬순 평년"
+   }
+  ],
+  "wa_wheat": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "서호주 곡창지대",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-20",
+      "end": "06-15",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-05",
+      "end": "08-20",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-15",
+      "end": "09-30",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-10",
+      "end": "10-31",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-15",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "sa_wheat": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "남호주",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-20",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "08-31",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-25",
+      "end": "10-10",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-20",
+      "end": "11-10",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-25",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "vic_wheat": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "빅토리아",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-30",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "09-10",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "09-01",
+      "end": "10-20",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "10-01",
+      "end": "11-20",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "11-01",
+      "end": "01-15",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "sad_sk_canola_palliser": [
+   {
+    "crop": "canola",
+    "label_ko": "카놀라(봄밀 비슷한 일정)",
+    "area_ko": "서스캐처원 팔리저 건조지",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "늦서리가 지나면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·로제트·추대",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎을 펼치고 꽃대가 올라온다. 벼룩잎벌레 피해 시기."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "노란 꽃이 핀다. 7월 고온(30°C 이상)이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "꼬투리 충실",
+      "start": "07-20",
+      "end": "08-25",
+      "what_ko": "꼬투리에 씨가 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(베어 말리기 포함)",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "8월 말~10월 초."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·건조",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_ab_canola_south": [
+   {
+    "crop": "canola",
+    "label_ko": "카놀라(봄밀 비슷한 일정)",
+    "area_ko": "앨버타 남부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "늦서리가 지나면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·로제트·추대",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎을 펼치고 꽃대가 올라온다. 벼룩잎벌레 피해 시기."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "노란 꽃이 핀다. 7월 고온(30°C 이상)이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "꼬투리 충실",
+      "start": "07-20",
+      "end": "08-25",
+      "what_ko": "꼬투리에 씨가 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(베어 말리기 포함)",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "8월 말~10월 초."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·건조",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_ab_canola_central": [
+   {
+    "crop": "canola",
+    "label_ko": "카놀라(봄밀 비슷한 일정)",
+    "area_ko": "앨버타 중부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "늦서리가 지나면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·로제트·추대",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎을 펼치고 꽃대가 올라온다. 벼룩잎벌레 피해 시기."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "노란 꽃이 핀다. 7월 고온(30°C 이상)이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "꼬투리 충실",
+      "start": "07-20",
+      "end": "08-25",
+      "what_ko": "꼬투리에 씨가 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(베어 말리기 포함)",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "8월 말~10월 초."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·건조",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_ab_canola_peace": [
+   {
+    "crop": "canola",
+    "label_ko": "카놀라(봄밀 비슷한 일정)",
+    "area_ko": "앨버타 피스강 유역",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "늦서리가 지나면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·로제트·추대",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎을 펼치고 꽃대가 올라온다. 벼룩잎벌레 피해 시기."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "노란 꽃이 핀다. 7월 고온(30°C 이상)이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "꼬투리 충실",
+      "start": "07-20",
+      "end": "08-25",
+      "what_ko": "꼬투리에 씨가 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(베어 말리기 포함)",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "8월 말~10월 초."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·건조",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_mb_canola_central": [
+   {
+    "crop": "canola",
+    "label_ko": "카놀라(봄밀 비슷한 일정)",
+    "area_ko": "매니토바 중부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-01",
+      "end": "05-31",
+      "what_ko": "늦서리가 지나면 봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·로제트·추대",
+      "start": "05-15",
+      "end": "07-01",
+      "what_ko": "잎을 펼치고 꽃대가 올라온다. 벼룩잎벌레 피해 시기."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화",
+      "start": "06-25",
+      "end": "07-31",
+      "what_ko": "노란 꽃이 핀다. 7월 고온(30°C 이상)이 결실을 깎는다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "꼬투리 충실",
+      "start": "07-20",
+      "end": "08-25",
+      "what_ko": "꼬투리에 씨가 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확(베어 말리기 포함)",
+      "start": "08-20",
+      "end": "10-10",
+      "what_ko": "8월 말~10월 초."
+     }
+    ],
+    "critical_ko": "7월 개화기 고온·건조",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_on_corn_southern": [
+   {
+    "crop": "corn",
+    "label_ko": "옥수수",
+    "area_ko": "온타리오 남부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "05-31",
+      "what_ko": "봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-10",
+      "end": "07-10",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "07-10",
+      "end": "08-05",
+      "what_ko": "가장 민감한 시기."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "08-01",
+      "end": "09-20",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-01",
+      "end": "11-30",
+      "what_ko": "10~11월."
+     }
+    ],
+    "critical_ko": "7월 출사기 고온·가뭄",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_sk_wheat_palliser": [
+   {
+    "crop": "spring_wheat",
+    "label_ko": "봄밀",
+    "area_ko": "서스캐처원 팔리저 건조지",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "05-25",
+      "what_ko": "봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-05",
+      "end": "06-30",
+      "what_ko": "싹이 트고 줄기가 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "06-25",
+      "end": "07-20",
+      "what_ko": "이삭이 나오고 꽃이 핀다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "07-10",
+      "end": "08-15",
+      "what_ko": "알곡이 찬다. 7월 고온·가뭄이 핵심 위험."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "08-10",
+      "end": "09-30",
+      "what_ko": "8월 중순~9월."
+     }
+    ],
+    "critical_ko": "7월 출수·등숙기 고온·가뭄",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_on_corn_western": [
+   {
+    "crop": "corn",
+    "label_ko": "옥수수",
+    "area_ko": "온타리오 남부",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "05-31",
+      "what_ko": "봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-10",
+      "end": "07-10",
+      "what_ko": "잎이 늘고 키가 큰다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출사·수분",
+      "start": "07-10",
+      "end": "08-05",
+      "what_ko": "가장 민감한 시기."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "08-01",
+      "end": "09-20",
+      "what_ko": "알곡이 찬다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-01",
+      "end": "11-30",
+      "what_ko": "10~11월."
+     }
+    ],
+    "critical_ko": "7월 출사기 고온·가뭄",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "sad_mb_soy_redriver": [
+   {
+    "crop": "soy",
+    "label_ko": "대두",
+    "area_ko": "매니토바 레드강 유역",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "05-10",
+      "end": "06-05",
+      "what_ko": "봄에 뿌린다."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·영양생장",
+      "start": "05-20",
+      "end": "07-05",
+      "what_ko": "잎과 마디가 늘어난다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "개화·꼬투리 형성",
+      "start": "07-01",
+      "end": "08-10",
+      "what_ko": "꽃이 피고 꼬투리가 달린다."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "종실 비대",
+      "start": "08-01",
+      "end": "09-05",
+      "what_ko": "콩알이 찬다. 8월 강수가 중요."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "09-15",
+      "end": "10-15",
+      "what_ko": "9월 중순~10월 중순. 이른 서리 위험."
+     }
+    ],
+    "critical_ko": "8월 종실 비대기 강수, 이른 서리",
+    "source_ko": "Saskatchewan·Alberta·Manitoba 주정부 Crop Report 평년 · OMAFRA"
+   }
+  ],
+  "wa_barley": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "서호주 곡창지대",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-20",
+      "end": "06-15",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-05",
+      "end": "08-20",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-15",
+      "end": "09-30",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-10",
+      "end": "10-31",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-15",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "wa_canola": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "서호주 곡창지대",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-20",
+      "end": "06-15",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-05",
+      "end": "08-20",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-15",
+      "end": "09-30",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-10",
+      "end": "10-31",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-15",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "sa_barley": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "남호주",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-20",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "08-31",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-25",
+      "end": "10-10",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-20",
+      "end": "11-10",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-25",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "sa_canola": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "남호주",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-20",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "08-31",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "08-25",
+      "end": "10-10",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "09-20",
+      "end": "11-10",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "10-25",
+      "end": "12-31",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "vic_barley": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "빅토리아",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-30",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "09-10",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "09-01",
+      "end": "10-20",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "10-01",
+      "end": "11-20",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "11-01",
+      "end": "01-15",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ],
+  "vic_canola": [
+   {
+    "crop": "wheat",
+    "label_ko": "밀(보리·카놀라 동일 작기)",
+    "area_ko": "빅토리아",
+    "stages": [
+     {
+      "kind": "sow",
+      "name_ko": "파종",
+      "start": "04-25",
+      "end": "06-30",
+      "what_ko": "가을비(브레이크)가 오면 뿌린다. 비가 늦으면 건조 파종."
+     },
+     {
+      "kind": "veg",
+      "name_ko": "출아·분얼·마디신장",
+      "start": "05-10",
+      "end": "09-10",
+      "what_ko": "겨울 강수로 자란다."
+     },
+     {
+      "kind": "repro",
+      "name_ko": "출수·개화",
+      "start": "09-01",
+      "end": "10-20",
+      "what_ko": "이삭이 나오고 꽃이 핀다. 서리와 봄 가뭄이 위험."
+     },
+     {
+      "kind": "fill",
+      "name_ko": "등숙",
+      "start": "10-01",
+      "end": "11-20",
+      "what_ko": "알곡이 찬다. 봄철 고온이 단수를 깎는다."
+     },
+     {
+      "kind": "harvest",
+      "name_ko": "수확",
+      "start": "11-01",
+      "end": "01-15",
+      "what_ko": "늦봄~초여름 수확."
+     }
+    ],
+    "critical_ko": "8~10월 개화·등숙기 강수와 서리",
+    "source_ko": "ABARES Australian Crop Report · GRDC 재배 지침"
+   }
+  ]
+ }
+}
