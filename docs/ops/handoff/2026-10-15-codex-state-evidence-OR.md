@@ -1,6 +1,6 @@
 # Oregon 주별 입력 — 10/14 수집 보존, 10/15 검증 재개
 
-담당 주는 OR(C그룹) 하나다. checkout은 `/Users/yeoninair/Documents/해운 데이터/us-or-evidence-input-20261014`, branch는 `codex/or-evidence-20261014`다. 최신 main `57941ec0722940966abfe6c077d4c34db76efd7c`와 packet 없는 공통 기반 `89951df4`(PR #577)를 사용한다. CT/WA의 현행 명부 검증 테스트 시계 수정은 #577에만 둔다. 미병합 다른 주 입력 위에 쌓지 않는다. 공통 기반 병합 후 OR PR의 base를 main으로 바꾸고 실제 base SHA로 범위 검사를 다시 수행한다.
+담당 주는 OR(C그룹) 하나다. checkout은 `/Users/yeoninair/Documents/해운 데이터/us-or-evidence-input-20261014`, branch는 `codex/or-evidence-20261014`다. 조사 시작 시 최신 main `57941ec0722940966abfe6c077d4c34db76efd7c`와 packet 없는 공통 기반 `5412a31b`(PR #577)를 사용한다. 10/15 재개 때 main `fa630c37`까지 확인했으며 이 구간의 선거 코드/입력/계약 변경은 없었다. CT/WA의 현행 명부 및 레이스별 게시 기준일 테스트 시계 수정은 #577에만 둔다. 미병합 다른 주 입력 위에 쌓지 않는다. 공통 기반 병합 후 OR PR의 base를 main으로 바꾸고 실제 base SHA로 범위 검사를 다시 수행한다.
 
 ## 실제 자료와 기준일
 
@@ -35,6 +35,8 @@ Justin Filip 및 Andrea Townsend의 기존 FEC `PG` 정당/이름 표기는 공�
 
 OR만 replay한 보존 검사는 타주 여론조사 레이스 498개, 타주 이력 레이스 65개, 전역 as_of/fetched_at·출처·타주 수집 영수증·타주 coverage/gaps를 그대로 유지했다. `house_poll_focus`를 재계산했으며 타주 항목도 동일하다. 원본 공개 JSON 5,077개를 검증 시작/종료에 해시 대조해 동일함을 확인했다. 원래 OR 수집일·금융일을 현재 처리일로 덮어쓰지 않는다.
 
-최초 통합 polling은 최신 main의 WA 테스트 정책 시계 때문에 480개 실행/오류 1건이었다. 이 공용 오류를 #577에서 수정한 뒤 최종 통합 polling 491개를 모두 통과했다(OR 10개 포함, CT 14개 및 WA 11개도 별도 통과). 실제 base `89951df4` 대비 `check_state_packet_changes.py --base-ref 89951df4 --head-ref HEAD --branch codex/or-evidence-20261014`, ownership guard, `git diff --check`가 통과했으며 OR 소유 파일 6개만 포함한다. 이 수치는 로컬 최종 검증 결과다. 실제 GitHub 검사 결과는 PR 본문에 별도로 기록한다.
+최초 통합 polling은 최신 main의 WA 테스트 정책 시계 때문에 480개 실행/오류 1건이었다. 이 공용 오류를 #577에서 수정한 뒤 통합 polling 491개를 모두 통과했다(OR 10개 포함, CT 14개 및 WA 11개도 별도 통과). #579의 기존 head `301acb83`는 GitHub에서도 491개/JS 74개/범위 검사를 통과했다.
+
+OR가 없는 공통 PR #577에서는 NC의 더 최신 레이스 수집 기준일을 fixture가 누락한 오류가 추가로 드러났다. 이 공통 fixture와 새 회귀 3개도 #577에만 반영했고 OR 입력 없는 사본에서 NC 9개/새 회귀 3개를 통과했다. 원래 조사/수집일을 수정하지 않았다. 최종 공통 기반 `5412a31b`로 OR를 다시 맞추며 전체 검사 결과는 각 PR 본문에 기록한다. 실제 base `5412a31b` 대비 `check_state_packet_changes.py --base-ref 5412a31b --head-ref HEAD --branch codex/or-evidence-20261014`, ownership guard, `git diff --check`를 재실행한다. 범위는 OR 소유 파일 6개다.
 
 PR에는 OR packet·OR 원문/접근 감사·OR adapter·OR 전용 테스트·이 인수 문서만 포함한다. 전국 생성물, 공용 목록/테스트, UI, workflow, LETF, TASKS는 포함하지 않는다. 병합·배포·운영 workflow 실행은 하지 않는다. 다음 순서는 기존 계획의 MT → IN → IL → KY이지만 이번 요청에서 시작하지 않는다.
