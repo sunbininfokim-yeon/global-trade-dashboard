@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from urllib.error import HTTPError, URLError
 from unittest.mock import patch
+from contextlib import nullcontext
 import refresh_live_polls as refresh
 from election_watch import live_polls
 from election_watch.poll_run_capture import validate_capture
@@ -13,7 +14,7 @@ from test_live_polls import POLICY,poll
 
 
 class CaptureTests(unittest.TestCase):
-    def run_capture(self, root, failure=None):
+    def run_capture(self, root, failure=None, later_review_failure=False):
         policy=root/'policy.json';policy.write_text(json.dumps(POLICY))
         quality=root/'quality.json';quality.write_text(json.dumps({'schema':'usa_poll_quality_reviews_v1','cycle':2026,'reviews':{}}))
         output=root/'public.json';checkpoint=root/'capture.json'
@@ -22,7 +23,9 @@ class CaptureTests(unittest.TestCase):
                 '--policy',str(policy),'--quality-reviews',str(quality),'--output',str(output),'--as-of','2026-10-09']), \
              patch.object(refresh,'fetch_polls',side_effect=failure,return_value=([poll()],'https://api.votehub.com/polls?subject=2026')), \
              patch.object(refresh,'build_live',side_effect=AssertionError('capture must not publish')), \
-             patch.object(refresh,'publish_scenarios',side_effect=AssertionError('capture must not forecast')):
+             patch.object(refresh,'publish_scenarios',side_effect=AssertionError('capture must not forecast')), \
+             (patch.object(refresh,'apply_priorities',side_effect=[POLICY,ValueError('changed ballot review')])
+                 if later_review_failure else nullcontext()):
             code=refresh.main()
         return code,output,checkpoint
 
@@ -35,6 +38,24 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual(len(captured['provider_rows']),1)
             self.assertEqual(json.loads(output.read_text())['fetched_at'],'2026-10-01T00:00:00Z')
             self.assertFalse((root/'usa_election_live_polls_status_v1.json').exists())
+
+    def test_actual_provider_response_survives_later_review_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code,output,checkpoint=self.run_capture(Path(tmp),later_review_failure=True)
+            self.assertEqual(code,1);self.assertFalse(checkpoint.exists())
+            raw=json.loads(checkpoint.with_suffix('.provider.json').read_text())
+            self.assertEqual(raw['schema'],'usa_poll_provider_capture_v1')
+            self.assertEqual(raw['provider_rows'],[poll()]);self.assertEqual(raw['as_of'],'2026-10-09')
+            status=json.loads(checkpoint.with_suffix('.status.json').read_text())
+            self.assertTrue(status['provider_checkpoint_saved_for_attempt'])
+            self.assertFalse(status['public_data_modified'])
+            self.assertEqual(json.loads(output.read_text())['fetched_at'],'2026-10-01T00:00:00Z')
+
+    def test_provider_only_audit_cannot_be_replayed_for_publication(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            _,_,checkpoint=self.run_capture(Path(tmp))
+            with self.assertRaises(ValueError):
+                validate_capture(json.loads(checkpoint.with_suffix('.provider.json').read_text()))
             self.assertEqual(json.loads(checkpoint.with_suffix('.status.json').read_text())['status'],'captured_unpublished')
 
     def test_failure_records_attempt_without_replacing_last_valid_public_data(self):

@@ -124,6 +124,7 @@ def main():
                 # Review priority failures must not discard good polling data.
                 policy['house_poll_focus_health'] = {'status': 'hold', 'checked_as_of': args.as_of, 'error_type': type(exc).__name__}
         return policy
+    provider_saved = False
     try:
         ballots = read(ballot_reviews) if ballot_reviews else None
         policy = selected_policy()
@@ -133,6 +134,15 @@ def main():
         rows, url = ((retry['rows'], retry['source_url']) if retry else
                      (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of))
         provider_rows = retry['provider_rows'] if retry else rows
+        if args.capture_only:
+            # Retain the actual API response before supplemental-source or
+            # ballot review can fail. This audit format cannot be replayed as
+            # a complete, validated publication checkpoint.
+            atomic(args.capture_output.with_suffix('.provider.json'), {
+                'schema': 'usa_poll_provider_capture_v1', 'as_of': args.as_of,
+                'captured_at': checked, 'source_url': url,
+                'provider_rows': provider_rows, 'provider_rows_sha256': digest(provider_rows)})
+            provider_saved = True
         primary_receipts = retry['primary_receipts'] if retry else []
         if production_policy and not args.input and not retry:
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
@@ -184,7 +194,8 @@ def main():
         if args.capture_only:
             atomic(args.capture_output.with_suffix('.status.json'), {
                 'status': 'capture_failed', 'attempted_at': checked, 'as_of': args.as_of,
-                'error_type': type(exc).__name__, 'public_data_modified': False})
+                'error_type': type(exc).__name__, 'public_data_modified': False,
+                'provider_checkpoint_saved_for_attempt': provider_saved})
             print('Polling capture failed:', type(exc).__name__)
             return 1
         # Official outcomes are independent of the poll transport. If the API
