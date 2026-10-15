@@ -10,7 +10,7 @@ test('bounded Korean roster review is auditable, never a no-duty determination o
   assert.ok(KOREA_AD_REVIEW.case_ids.includes('A-580-870')); assert.ok(KOREA_AD_REVIEW.case_ids.includes('C-580-913'));
   for (const [product, row] of Object.entries(PRODUCT_VERIFICATIONS)) {
     assert.equal(productVerification(product).ad.rate_pct,null);
-    assert.equal(productVerification(product,'CHN').ad.status,'origin_not_reviewed');
+    assert.equal(productVerification(product,'DEU').ad.status,'origin_not_reviewed');
     assert.equal(productVerification(product,'JPN').ad.rate_pct,null);
     assert.equal(productVerification(product,'').ad.status,'origin_not_reviewed');
     assert.equal(productVerification(product,'USA').ad.case_ids.length,0);
@@ -62,7 +62,7 @@ test('advanced material research preserves mismatches and historical revocation 
     assert.deepEqual(r.ad.case_ids,[]); assert.ok(r.ad.research.terms.length>=2);
     assert.match(html,/품목별 조사 근거/); assert.match(html,/면제나 0% 판정이 아닙니다/);
     assert.match(html,/전수 재조회는 미실행/); assert.equal(companyADLink('hs-materials',product),null);
-    for (const origin of ['NLD','CHN','JPN','',null]) {
+    for (const origin of ['NLD','DEU','JPN','',null]) {
       const other=productVerification(product,origin);
       assert.equal(other.ad.status,'origin_not_reviewed'); assert.equal(other.ad.research,undefined);
       assert.ok(!verificationMarkup(product,origin).includes('data-material-research'));
@@ -79,7 +79,7 @@ test('advanced material research preserves mismatches and historical revocation 
 });
 
 test('coverage separates our investigation and integration gaps from official decisions without inventing pending proceedings', () => {
-  const unreviewed=adCoverageStatus('aramid','CHN');
+  const unreviewed=adCoverageStatus('aramid','DEU');
   assert.equal(unreviewed.research.state,'not_recorded'); assert.equal(unreviewed.checked_on,null);
   assert.equal(adCoverageStatus('not-in-catalog').research.state,'not_recorded');
   const roster=adCoverageStatus('switchgear'), materials=adCoverageStatus('aramid');
@@ -96,8 +96,8 @@ test('coverage separates our investigation and integration gaps from official de
   assert.equal(octg.coverage.integration.state,'deposit_interpretation_pending'); assert.equal(octg.ad.rate_pct,null);
   const html=coverageStatusMarkup('octg');
   assert.match(html,/data-coverage-procedure="final_published"/); assert.match(html,/정부의 최종결과 대기가 아닙니다/);
-  assert.match(verificationMarkup('aramid','CHN'),/조사 기록 없음/);
-  assert.ok(!verificationMarkup('aramid','CHN').includes('자료 확인 2026-10-14'));
+  assert.match(verificationMarkup('aramid','DEU'),/조사 기록 없음/);
+  assert.ok(!verificationMarkup('aramid','DEU').includes('자료 확인 2026-10-14'));
 });
 
 test('Vietnam review separates CVD sunset, historical AD termination and annual review schedule without rates', () => {

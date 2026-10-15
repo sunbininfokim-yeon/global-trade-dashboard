@@ -15,11 +15,12 @@ const koreaAutoNotice = {
 export function industryMonitor(product, country = 'KOR') {
   const group = COMPANY_INDUSTRIES.find(i => i.product === product);
   if (!group || !PRODUCTS[product]) return null;
-  if (country === 'VNM') {
+  if (['VNM','CHN'].includes(country)) {
+    const countryName = country === 'VNM' ? '베트남' : '중국';
     const v = productVerification(product,country);
-    if (!v) return {product,country,status:'origin_not_reviewed',events:[],sources:[],calculation_enabled:false};
-    return {product,country,status:'sources_only',events:[],sources:v.ad.sources.map(s=>({...s,kind:'베트남산 미국 공식 조사 근거'})),calculation_enabled:false,review:v.ad.status,
-      note:'베트남산 선별 조사입니다. AD/CVD·제품 범위·절차를 구분하며 한국산 예치율과 단계는 적용하지 않습니다.'};
+    if (!v || v.ad.status === 'origin_not_reviewed') return {product,country,status:'origin_not_reviewed',events:[],sources:[],calculation_enabled:false};
+    return {product,country,status:'sources_only',events:[],sources:v.ad.sources.map(s=>({...s,kind:`${countryName}산 미국 공식 조사 근거`})),calculation_enabled:false,review:v.ad.status,
+      note:`${countryName}산 선별 조사입니다. AD/CVD·제품 범위·절차를 구분하며 한국산 예치율과 단계는 적용하지 않습니다.`};
   }
   if (country !== 'KOR') return { product, country, status: 'origin_not_reviewed', events: [], sources: [], calculation_enabled: false };
   const verification = productVerification(product, country), events = [];
@@ -60,7 +61,7 @@ export function industryMonitorMarkup(product, country = 'KOR') {
   if (!r) return '';
   if (r.status === 'origin_not_reviewed') return '<p class="ts-help" data-industry-monitor>이 원산지의 공고 검토 자료 미수록 · 한국산 공고를 적용하지 않습니다.</p>';
   return `<section class="ts-ad-notices" data-industry-monitor data-monitor-product="${esc(product)}"><h2>공식 공고·정책 근거</h2><p>${esc(r.note)}</p>
-    ${r.events.length ? `<ol class="ts-ad-notice-list">${r.events.map(e=>`<li data-monitor-document="${esc(e.document_id)}"><span>${esc(e.published)} 발행 · ${esc(e.agency)} · ${esc(e.stage)} · 확인 ${esc(e.checked_on)}</span><b>${esc(e.title)}</b>${e.entry_effective_date ? `<small>대상 통관 적용일: ${esc(e.entry_effective_date)} · 이후 통관의 조건부 관세 경로</small>` : ''}${e.por_start ? `<small>조사대상 기간 (POR): ${esc(e.por_start)} ~ ${esc(e.por_end)}</small>` : ''}<small>${esc(e.note)}</small><a href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">공식 원문 ${esc(e.document_id)} ↗</a></li>`).join('')}</ol>` : country === 'VNM' ? '<p class="ts-unverified">베트남산 원문 목록 연결 · 법인별 현행 예치율·단계 계산 미연결</p>' : '<p class="ts-unverified">개별 시행·조사 공고 목록 미수록 · 아래 확인 근거를 연결했습니다. 공고가 없거나 관세·AD 적용이 없다는 뜻이 아닙니다.</p>'}
+    ${r.events.length ? `<ol class="ts-ad-notice-list">${r.events.map(e=>`<li data-monitor-document="${esc(e.document_id)}"><span>${esc(e.published)} 발행 · ${esc(e.agency)} · ${esc(e.stage)} · 확인 ${esc(e.checked_on)}</span><b>${esc(e.title)}</b>${e.entry_effective_date ? `<small>대상 통관 적용일: ${esc(e.entry_effective_date)} · 이후 통관의 조건부 관세 경로</small>` : ''}${e.por_start ? `<small>조사대상 기간 (POR): ${esc(e.por_start)} ~ ${esc(e.por_end)}</small>` : ''}<small>${esc(e.note)}</small><a href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">공식 원문 ${esc(e.document_id)} ↗</a></li>`).join('')}</ol>` : ['VNM','CHN'].includes(country) ? '<p class="ts-unverified">선택 원산지의 원문 목록 연결 · 법인별 현행 예치율·단계 계산 미연결</p>' : '<p class="ts-unverified">개별 시행·조사 공고 목록 미수록 · 아래 확인 근거를 연결했습니다. 공고가 없거나 관세·AD 적용이 없다는 뜻이 아닙니다.</p>'}
     <details><summary>관세·분류·기업 검토 근거 · ${r.sources.length}개</summary><ul>${r.sources.map(s=>`<li>${esc(s.kind)} · <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title || s.label)} ↗</a></li>`).join('')}</ul></details>
     <p class="ts-help">공고 연결과 예치율 계산은 별개입니다. 다른 품목·기업의 세율을 상속하지 않습니다.</p></section>`;
 }
