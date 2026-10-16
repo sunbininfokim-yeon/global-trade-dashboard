@@ -28,12 +28,34 @@ BOJ_OUTPUT_GAP_URL = "https://www.boj.or.jp/en/research/research_data/gap/gap.xl
 # ESRI publishes a new directory every quarterly-release vintage.  Keep the
 # release page explicit so a review can reproduce the exact Cabinet Office
 # vintage rather than silently switching revisions during a build.
-ESRI_RELEASE_PAGE_URL = (
-    "https://www.esri.cao.go.jp/en/sna/data/sokuhou/files/2026/qe261_2/gdemenuea.html"
-)
+ESRI_RELEASE_PAGE_URL = None          # None = follow the latest release (discover_esri_release_page)
+ESRI_SOKUHOU_TOP = "https://www.esri.cao.go.jp/en/sna/sokuhou/sokuhou_top.html"
+CAO_GETSUREI_INDEX = "https://www5.cao.go.jp/keizai3/getsurei/getsurei-index.html"
 
 PRIVATE_NONFINANCIAL_FFA = "FOF_FFAF411L700"
 GENERAL_GOVERNMENT_FFA = "FOF_FFAF420L700"
+
+
+def discover_esri_release_page(fetcher: Any) -> str:
+    """The English menu page of ESRI's newest quarterly release, linked from the sokuhou top page.
+    (Pinning a vintage left the numbers on 2026 Q1 after the Q2 release was out.)"""
+    from urllib.parse import urljoin
+    top = fetcher(ESRI_SOKUHOU_TOP).decode("utf-8", errors="replace")
+    m = re.search(r'href="([^"]*/qe\d+_\d+/gdemenuea\.html)"', top)
+    if not m:
+        raise ValueError("ESRI: no release menu linked from the sokuhou top page")
+    return urljoin(ESRI_SOKUHOU_TOP, m.group(1))
+
+
+def discover_cao_gap_xlsx(fetcher: Any) -> str:
+    """Cabinet Office's GDP-gap workbook (renamed every release, e.g. 2622gap.xlsx), linked from the
+    monthly economic report's related-data page."""
+    from urllib.parse import urljoin
+    page = fetcher(CAO_GETSUREI_INDEX).decode("utf-8", errors="replace")
+    m = re.search(r'href="([^"]*\d+gap\.xlsx)"', page)
+    if not m:
+        raise ValueError("Cabinet Office: no GDP-gap workbook linked")
+    return urljoin(CAO_GETSUREI_INDEX, m.group(1))
 
 
 def fetch_bytes(url: str, *, timeout: int = 60) -> bytes:
@@ -164,6 +186,76 @@ def parse_esri_nominal_quarterly_gdp(payload: bytes) -> dict[str, float]:
     return out
 
 
+def parse_esri_nominal_quarterly(payload: bytes, columns: tuple[str, ...]) -> dict[str, dict[str, float]]:
+    """Original (not annualised) nominal quarterly values, bn JPY, for each named column."""
+    rows = _decode_esri_csv(payload)
+    header_index = next((i for i, row in enumerate(rows) if all(c in row for c in columns)), None)
+    if header_index is None:
+        raise ValueError(f"ESRI quarterly nominal columns not found: {columns}")
+    cols = {c: rows[header_index].index(c) for c in columns}
+    out: dict[str, dict[str, float]] = {c: {} for c in columns}
+    current_year: int | None = None
+    for row in rows[header_index + 1:]:
+        if not row:
+            continue
+        period = (row[0] or "").strip()
+        ym = re.match(r"^(\d{4})/\s*(\d{1,2})-\s*(\d{1,2})\.", period)
+        if ym:
+            current_year, end_month = int(ym.group(1)), int(ym.group(3))
+        else:
+            rm = re.match(r"^(\d{1,2})-\s*(\d{1,2})\.", period)
+            if not rm or current_year is None:
+                continue
+            end_month = int(rm.group(2))
+        quarter = {3: 1, 6: 2, 9: 3, 12: 4}.get(end_month)
+        if quarter is None:
+            continue
+        day = _quarter_end(f"{current_year:04d}{quarter:02d}")
+        for c, idx in cols.items():
+            v = _number(row[idx]) if idx < len(row) else None
+            if v is not None:
+                out[c][day] = v
+    return out
+
+
+def build_capex_ratio_4q(capex: dict[str, float], gdp: dict[str, float]) -> list[dict[str, Any]]:
+    """Nominal private non-residential investment / nominal GDP over the latest four quarters (%)."""
+    common = sorted(d for d in gdp if d in capex)
+    out = []
+    for i in range(3, len(common)):
+        w = common[i - 3:i + 1]
+        if not _is_four_quarter_window(w):
+            continue
+        c, g = sum(capex[d] for d in w), sum(gdp[d] for d in w)
+        out.append({"date": w[-1], "value": round(c / g * 100.0, 4),
+                    "private_non_resi_investment_bn_jpy_4q": round(c, 1), "gdp_bn_jpy_4q": round(g, 1)})
+    if not out:
+        raise ValueError("no four-quarter ESRI capex / GDP overlap")
+    return out
+
+
+def parse_cao_gdp_gap(payload: bytes) -> list[dict[str, Any]]:
+    """Cabinet Office quarterly GDP gap (%), sheet 四半期: year in column A (blank = same year), quarter
+    as a Roman numeral in column B, the gap in column C."""
+    wb = load_workbook(io.BytesIO(payload), read_only=True, data_only=True)
+    ws = wb.worksheets[0]
+    roman = {"Ⅰ": 1, "Ⅱ": 2, "Ⅲ": 3, "Ⅳ": 4, "I": 1, "II": 2, "III": 3, "IV": 4}
+    out, year = [], None
+    for row in ws.iter_rows(values_only=True):
+        if not row or len(row) < 3:
+            continue
+        if isinstance(row[0], (int, float)) and 1900 < row[0] < 2200:
+            year = int(row[0])
+        q = roman.get(str(row[1] or "").strip())
+        v = _number(row[2])
+        if year and q and v is not None:
+            # "0.0" flagged ※ in column D means -0.0; the sign does not change the number
+            out.append({"date": _quarter_end(f"{year:04d}{q:02d}"), "value": round(v, 4)})
+    if not out:
+        raise ValueError("Cabinet Office GDP-gap workbook contained no quarters")
+    return out
+
+
 def parse_boj_output_gap(payload: bytes) -> list[dict[str, Any]]:
     """Read BOJ's quarterly output gap (% of potential GDP) from gap.xlsx."""
     workbook = load_workbook(io.BytesIO(payload), read_only=True, data_only=True)
@@ -281,15 +373,18 @@ def _boj_api_url(codes: list[str], *, start_date: str, end_date: str | None = No
 
 def build_snapshot(
     *,
-    release_page_url: str = ESRI_RELEASE_PAGE_URL,
+    release_page_url: str | None = ESRI_RELEASE_PAGE_URL,
     retrieved_at: str | None = None,
     fetcher: Any = fetch_bytes,
 ) -> dict[str, Any]:
     """Fetch official inputs and return the committed Japan-growth snapshot."""
+    release_page_url = release_page_url or discover_esri_release_page(fetcher)
     release_page = fetcher(release_page_url)
     annual_url, quarterly_url = _esri_table_urls(release_page_url, release_page)
     calendar_year = parse_esri_nominal_calendar_year(fetcher(annual_url))
-    quarterly_gdp = parse_esri_nominal_quarterly_gdp(fetcher(quarterly_url))
+    q = parse_esri_nominal_quarterly(fetcher(quarterly_url), ("GDP(Expenditure Approach)", "Private Non-Resi.Investment"))
+    quarterly_gdp = q["GDP(Expenditure Approach)"]
+    capex_4q = build_capex_ratio_4q(q["Private Non-Resi.Investment"], quarterly_gdp)
     ffa_url = _boj_api_url(
         [PRIVATE_NONFINANCIAL_FFA, GENERAL_GOVERNMENT_FFA],
         start_date="199801",
@@ -301,26 +396,35 @@ def build_snapshot(
         quarterly_gdp,
     )
     output_gap = parse_boj_output_gap(fetcher(BOJ_OUTPUT_GAP_URL))
+    try:
+        cao_gap_url = discover_cao_gap_xlsx(fetcher)
+        cao_gap = parse_cao_gdp_gap(fetcher(cao_gap_url))
+    except Exception:  # noqa: BLE001 -- the BOJ gap still stands on its own
+        cao_gap_url, cao_gap = None, []
     stamp = retrieved_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    vintage = re.search(r"/(qe\d+_\d+)/", release_page_url)
 
     latest_net = net_funding[-1]
     return {
-        "schema_version": "jp-growth-monitor-v1",
+        "schema_version": "jp-growth-monitor-v2",
         "retrieved_at": stamp,
+        "esri_vintage": vintage.group(1) if vintage else None,
         "source": {
             "cabinet_office_release_page": release_page_url,
             "cabinet_office_nominal_calendar_year_csv": annual_url,
             "cabinet_office_nominal_quarterly_csv": quarterly_url,
+            "cabinet_office_gdp_gap_xlsx": cao_gap_url,
             "boj_output_gap_xlsx": BOJ_OUTPUT_GAP_URL,
             "boj_ffa_api": ffa_url,
         },
         "series": {
             "capex_gdp_ratio": {
-                "frequency": "annual",
-                "asof": calendar_year[-1]["date"],
+                "frequency": "quarterly_rolling_4q",
+                "asof": capex_4q[-1]["date"],
                 "unit": "pct_gdp",
-                "formula_ko": "명목 민간기업 설비투자 ÷ 명목 GDP × 100",
-                "observations": calendar_year,
+                "formula_ko": "최근 4분기 명목 민간기업 설비투자 합계 ÷ 같은 4분기 명목 GDP 합계 × 100 (내각부 원계열)",
+                "observations": capex_4q,
+                "annual_observations": calendar_year,
             },
             "net_funding_demand": {
                 "frequency": "quarterly_rolling_4q",
@@ -342,8 +446,9 @@ def build_snapshot(
                 "frequency": "quarterly",
                 "asof": output_gap[-1]["date"],
                 "unit": "pct_potential_gdp",
-                "formula_ko": "BOJ 추정 GDP 갭 (% of potential GDP)",
+                "formula_ko": "(실제 GDP − 잠재 GDP) ÷ 잠재 GDP × 100. 일본은행 추정(수급갭)과 내각부 추정(GDP갭)을 함께 표시",
                 "observations": output_gap,
+                "cabinet_office_observations": cao_gap,
             },
         },
     }

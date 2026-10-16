@@ -1,20 +1,786 @@
 {
-  "schema_version": "jp-growth-monitor-v1",
-  "retrieved_at": "2026-10-23T20:46:22Z",
+  "schema_version": "jp-growth-monitor-v2",
+  "retrieved_at": "2026-10-30T05:02:48Z",
+  "esri_vintage": "qe262_2",
   "source": {
-    "cabinet_office_release_page": "https://www.esri.cao.go.jp/en/sna/data/sokuhou/files/2026/qe261_2/gdemenuea.html",
-    "cabinet_office_nominal_calendar_year_csv": "https://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2026/qe261_2/tables/gaku-mcy2612.csv",
-    "cabinet_office_nominal_quarterly_csv": "https://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2026/qe261_2/tables/gaku-mg2612.csv",
+    "cabinet_office_release_page": "https://www.esri.cao.go.jp/en/sna/data/sokuhou/files/2026/qe262_2/gdemenuea.html",
+    "cabinet_office_nominal_calendar_year_csv": "https://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2026/qe262_2/tables/gaku-mcy2622.csv",
+    "cabinet_office_nominal_quarterly_csv": "https://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2026/qe262_2/tables/gaku-mg2622.csv",
+    "cabinet_office_gdp_gap_xlsx": "https://www5.cao.go.jp/keizai3/getsurei/2622gap.xlsx",
     "boj_output_gap_xlsx": "https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx",
     "boj_ffa_api": "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=JSON&lang=EN&db=FF&startDate=199801&code=FOF_FFAF411L700,FOF_FFAF420L700"
   },
   "series": {
     "capex_gdp_ratio": {
-      "frequency": "annual",
-      "asof": "2025-12-31",
+      "frequency": "quarterly_rolling_4q",
+      "asof": "2026-06-30",
       "unit": "pct_gdp",
-      "formula_ko": "명목 민간기업 설비투자 ÷ 명목 GDP × 100",
+      "formula_ko": "최근 4분기 명목 민간기업 설비투자 합계 ÷ 같은 4분기 명목 GDP 합계 × 100 (내각부 원계열)",
       "observations": [
+        {
+          "date": "1994-12-31",
+          "value": 17.061,
+          "private_non_resi_investment_bn_jpy_4q": 89003.2,
+          "gdp_bn_jpy_4q": 521675.0
+        },
+        {
+          "date": "1995-03-31",
+          "value": 17.014,
+          "private_non_resi_investment_bn_jpy_4q": 88819.8,
+          "gdp_bn_jpy_4q": 522040.2
+        },
+        {
+          "date": "1995-06-30",
+          "value": 17.0523,
+          "private_non_resi_investment_bn_jpy_4q": 89379.9,
+          "gdp_bn_jpy_4q": 524152.2
+        },
+        {
+          "date": "1995-09-30",
+          "value": 17.2041,
+          "private_non_resi_investment_bn_jpy_4q": 90631.9,
+          "gdp_bn_jpy_4q": 526805.4
+        },
+        {
+          "date": "1995-12-31",
+          "value": 17.329,
+          "private_non_resi_investment_bn_jpy_4q": 91924.2,
+          "gdp_bn_jpy_4q": 530463.2
+        },
+        {
+          "date": "1996-03-31",
+          "value": 17.4609,
+          "private_non_resi_investment_bn_jpy_4q": 93364.7,
+          "gdp_bn_jpy_4q": 534706.3
+        },
+        {
+          "date": "1996-06-30",
+          "value": 17.5327,
+          "private_non_resi_investment_bn_jpy_4q": 94530.2,
+          "gdp_bn_jpy_4q": 539165.5
+        },
+        {
+          "date": "1996-09-30",
+          "value": 17.6814,
+          "private_non_resi_investment_bn_jpy_4q": 95901.2,
+          "gdp_bn_jpy_4q": 542385.1
+        },
+        {
+          "date": "1996-12-31",
+          "value": 17.7493,
+          "private_non_resi_investment_bn_jpy_4q": 96951.8,
+          "gdp_bn_jpy_4q": 546227.9
+        },
+        {
+          "date": "1997-03-31",
+          "value": 17.8968,
+          "private_non_resi_investment_bn_jpy_4q": 98317.8,
+          "gdp_bn_jpy_4q": 549359.0
+        },
+        {
+          "date": "1997-06-30",
+          "value": 17.8962,
+          "private_non_resi_investment_bn_jpy_4q": 98723.8,
+          "gdp_bn_jpy_4q": 551645.8
+        },
+        {
+          "date": "1997-09-30",
+          "value": 17.8891,
+          "private_non_resi_investment_bn_jpy_4q": 99040.1,
+          "gdp_bn_jpy_4q": 553632.5
+        },
+        {
+          "date": "1997-12-31",
+          "value": 17.9959,
+          "private_non_resi_investment_bn_jpy_4q": 99717.7,
+          "gdp_bn_jpy_4q": 554111.9
+        },
+        {
+          "date": "1998-03-31",
+          "value": 17.9543,
+          "private_non_resi_investment_bn_jpy_4q": 99154.6,
+          "gdp_bn_jpy_4q": 552260.7
+        },
+        {
+          "date": "1998-06-30",
+          "value": 17.8492,
+          "private_non_resi_investment_bn_jpy_4q": 98080.5,
+          "gdp_bn_jpy_4q": 549494.4
+        },
+        {
+          "date": "1998-09-30",
+          "value": 17.7441,
+          "private_non_resi_investment_bn_jpy_4q": 96866.2,
+          "gdp_bn_jpy_4q": 545906.5
+        },
+        {
+          "date": "1998-12-31",
+          "value": 17.3468,
+          "private_non_resi_investment_bn_jpy_4q": 94245.7,
+          "gdp_bn_jpy_4q": 543304.1
+        },
+        {
+          "date": "1999-03-31",
+          "value": 17.0022,
+          "private_non_resi_investment_bn_jpy_4q": 91974.3,
+          "gdp_bn_jpy_4q": 540956.8
+        },
+        {
+          "date": "1999-06-30",
+          "value": 16.7213,
+          "private_non_resi_investment_bn_jpy_4q": 90183.9,
+          "gdp_bn_jpy_4q": 539335.4
+        },
+        {
+          "date": "1999-09-30",
+          "value": 16.4527,
+          "private_non_resi_investment_bn_jpy_4q": 88488.3,
+          "gdp_bn_jpy_4q": 537835.1
+        },
+        {
+          "date": "1999-12-31",
+          "value": 16.4294,
+          "private_non_resi_investment_bn_jpy_4q": 87750.6,
+          "gdp_bn_jpy_4q": 534107.0
+        },
+        {
+          "date": "2000-03-31",
+          "value": 16.626,
+          "private_non_resi_investment_bn_jpy_4q": 89258.5,
+          "gdp_bn_jpy_4q": 536862.3
+        },
+        {
+          "date": "2000-06-30",
+          "value": 16.6477,
+          "private_non_resi_investment_bn_jpy_4q": 89735.4,
+          "gdp_bn_jpy_4q": 539024.3
+        },
+        {
+          "date": "2000-09-30",
+          "value": 16.8854,
+          "private_non_resi_investment_bn_jpy_4q": 91346.5,
+          "gdp_bn_jpy_4q": 540979.6
+        },
+        {
+          "date": "2000-12-31",
+          "value": 17.1561,
+          "private_non_resi_investment_bn_jpy_4q": 93225.2,
+          "gdp_bn_jpy_4q": 543394.8
+        },
+        {
+          "date": "2001-03-31",
+          "value": 17.2525,
+          "private_non_resi_investment_bn_jpy_4q": 94171.9,
+          "gdp_bn_jpy_4q": 545844.5
+        },
+        {
+          "date": "2001-06-30",
+          "value": 17.2902,
+          "private_non_resi_investment_bn_jpy_4q": 94320.6,
+          "gdp_bn_jpy_4q": 545514.4
+        },
+        {
+          "date": "2001-09-30",
+          "value": 17.1983,
+          "private_non_resi_investment_bn_jpy_4q": 93468.1,
+          "gdp_bn_jpy_4q": 543472.1
+        },
+        {
+          "date": "2001-12-31",
+          "value": 16.8791,
+          "private_non_resi_investment_bn_jpy_4q": 91053.1,
+          "gdp_bn_jpy_4q": 539441.6
+        },
+        {
+          "date": "2002-03-31",
+          "value": 16.5123,
+          "private_non_resi_investment_bn_jpy_4q": 88406.9,
+          "gdp_bn_jpy_4q": 535398.7
+        },
+        {
+          "date": "2002-06-30",
+          "value": 16.2358,
+          "private_non_resi_investment_bn_jpy_4q": 86566.3,
+          "gdp_bn_jpy_4q": 533180.8
+        },
+        {
+          "date": "2002-09-30",
+          "value": 15.9819,
+          "private_non_resi_investment_bn_jpy_4q": 85115.0,
+          "gdp_bn_jpy_4q": 532570.6
+        },
+        {
+          "date": "2002-12-31",
+          "value": 15.8981,
+          "private_non_resi_investment_bn_jpy_4q": 84640.2,
+          "gdp_bn_jpy_4q": 532390.8
+        },
+        {
+          "date": "2003-03-31",
+          "value": 15.803,
+          "private_non_resi_investment_bn_jpy_4q": 83842.6,
+          "gdp_bn_jpy_4q": 530547.3
+        },
+        {
+          "date": "2003-06-30",
+          "value": 15.811,
+          "private_non_resi_investment_bn_jpy_4q": 83882.3,
+          "gdp_bn_jpy_4q": 530531.9
+        },
+        {
+          "date": "2003-09-30",
+          "value": 15.6634,
+          "private_non_resi_investment_bn_jpy_4q": 83053.4,
+          "gdp_bn_jpy_4q": 530239.3
+        },
+        {
+          "date": "2003-12-31",
+          "value": 15.6616,
+          "private_non_resi_investment_bn_jpy_4q": 83039.8,
+          "gdp_bn_jpy_4q": 530211.8
+        },
+        {
+          "date": "2004-03-31",
+          "value": 15.6103,
+          "private_non_resi_investment_bn_jpy_4q": 83110.9,
+          "gdp_bn_jpy_4q": 532411.1
+        },
+        {
+          "date": "2004-06-30",
+          "value": 15.5827,
+          "private_non_resi_investment_bn_jpy_4q": 83048.2,
+          "gdp_bn_jpy_4q": 532952.2
+        },
+        {
+          "date": "2004-09-30",
+          "value": 15.64,
+          "private_non_resi_investment_bn_jpy_4q": 83547.3,
+          "gdp_bn_jpy_4q": 534191.1
+        },
+        {
+          "date": "2004-12-31",
+          "value": 15.6531,
+          "private_non_resi_investment_bn_jpy_4q": 83687.0,
+          "gdp_bn_jpy_4q": 534634.1
+        },
+        {
+          "date": "2005-03-31",
+          "value": 15.8268,
+          "private_non_resi_investment_bn_jpy_4q": 84610.6,
+          "gdp_bn_jpy_4q": 534603.2
+        },
+        {
+          "date": "2005-06-30",
+          "value": 16.1109,
+          "private_non_resi_investment_bn_jpy_4q": 86240.4,
+          "gdp_bn_jpy_4q": 535293.8
+        },
+        {
+          "date": "2005-09-30",
+          "value": 16.452,
+          "private_non_resi_investment_bn_jpy_4q": 88174.8,
+          "gdp_bn_jpy_4q": 535950.9
+        },
+        {
+          "date": "2005-12-31",
+          "value": 16.6275,
+          "private_non_resi_investment_bn_jpy_4q": 89354.0,
+          "gdp_bn_jpy_4q": 537385.3
+        },
+        {
+          "date": "2006-03-31",
+          "value": 16.7556,
+          "private_non_resi_investment_bn_jpy_4q": 90291.4,
+          "gdp_bn_jpy_4q": 538872.5
+        },
+        {
+          "date": "2006-06-30",
+          "value": 16.8363,
+          "private_non_resi_investment_bn_jpy_4q": 90765.9,
+          "gdp_bn_jpy_4q": 539108.1
+        },
+        {
+          "date": "2006-09-30",
+          "value": 16.8513,
+          "private_non_resi_investment_bn_jpy_4q": 90803.8,
+          "gdp_bn_jpy_4q": 538852.8
+        },
+        {
+          "date": "2006-12-31",
+          "value": 16.9656,
+          "private_non_resi_investment_bn_jpy_4q": 91710.1,
+          "gdp_bn_jpy_4q": 540566.0
+        },
+        {
+          "date": "2007-03-31",
+          "value": 17.1174,
+          "private_non_resi_investment_bn_jpy_4q": 92916.0,
+          "gdp_bn_jpy_4q": 542815.7
+        },
+        {
+          "date": "2007-06-30",
+          "value": 17.1145,
+          "private_non_resi_investment_bn_jpy_4q": 93218.7,
+          "gdp_bn_jpy_4q": 544676.1
+        },
+        {
+          "date": "2007-09-30",
+          "value": 17.0825,
+          "private_non_resi_investment_bn_jpy_4q": 93186.8,
+          "gdp_bn_jpy_4q": 545509.3
+        },
+        {
+          "date": "2007-12-31",
+          "value": 17.0334,
+          "private_non_resi_investment_bn_jpy_4q": 92758.7,
+          "gdp_bn_jpy_4q": 544571.0
+        },
+        {
+          "date": "2008-03-31",
+          "value": 17.0322,
+          "private_non_resi_investment_bn_jpy_4q": 92623.9,
+          "gdp_bn_jpy_4q": 543816.0
+        },
+        {
+          "date": "2008-06-30",
+          "value": 17.056,
+          "private_non_resi_investment_bn_jpy_4q": 92358.8,
+          "gdp_bn_jpy_4q": 541504.1
+        },
+        {
+          "date": "2008-09-30",
+          "value": 17.0981,
+          "private_non_resi_investment_bn_jpy_4q": 92080.7,
+          "gdp_bn_jpy_4q": 538545.0
+        },
+        {
+          "date": "2008-12-31",
+          "value": 17.053,
+          "private_non_resi_investment_bn_jpy_4q": 90952.9,
+          "gdp_bn_jpy_4q": 533355.5
+        },
+        {
+          "date": "2009-03-31",
+          "value": 16.7939,
+          "private_non_resi_investment_bn_jpy_4q": 87743.3,
+          "gdp_bn_jpy_4q": 522471.8
+        },
+        {
+          "date": "2009-06-30",
+          "value": 16.4528,
+          "private_non_resi_investment_bn_jpy_4q": 84519.5,
+          "gdp_bn_jpy_4q": 513710.4
+        },
+        {
+          "date": "2009-09-30",
+          "value": 15.9174,
+          "private_non_resi_investment_bn_jpy_4q": 80447.8,
+          "gdp_bn_jpy_4q": 505407.0
+        },
+        {
+          "date": "2009-12-31",
+          "value": 15.4813,
+          "private_non_resi_investment_bn_jpy_4q": 77307.6,
+          "gdp_bn_jpy_4q": 499361.7
+        },
+        {
+          "date": "2010-03-31",
+          "value": 15.1105,
+          "private_non_resi_investment_bn_jpy_4q": 75679.5,
+          "gdp_bn_jpy_4q": 500842.0
+        },
+        {
+          "date": "2010-06-30",
+          "value": 14.9333,
+          "private_non_resi_investment_bn_jpy_4q": 75088.3,
+          "gdp_bn_jpy_4q": 502826.1
+        },
+        {
+          "date": "2010-09-30",
+          "value": 14.788,
+          "private_non_resi_investment_bn_jpy_4q": 75127.8,
+          "gdp_bn_jpy_4q": 508033.1
+        },
+        {
+          "date": "2010-12-31",
+          "value": 14.7346,
+          "private_non_resi_investment_bn_jpy_4q": 75167.1,
+          "gdp_bn_jpy_4q": 510139.5
+        },
+        {
+          "date": "2011-03-31",
+          "value": 14.8082,
+          "private_non_resi_investment_bn_jpy_4q": 75400.2,
+          "gdp_bn_jpy_4q": 509179.3
+        },
+        {
+          "date": "2011-06-30",
+          "value": 14.8805,
+          "private_non_resi_investment_bn_jpy_4q": 75220.1,
+          "gdp_bn_jpy_4q": 505494.3
+        },
+        {
+          "date": "2011-09-30",
+          "value": 14.9469,
+          "private_non_resi_investment_bn_jpy_4q": 75151.2,
+          "gdp_bn_jpy_4q": 502786.6
+        },
+        {
+          "date": "2011-12-31",
+          "value": 15.2796,
+          "private_non_resi_investment_bn_jpy_4q": 76572.7,
+          "gdp_bn_jpy_4q": 501142.0
+        },
+        {
+          "date": "2012-03-31",
+          "value": 15.4719,
+          "private_non_resi_investment_bn_jpy_4q": 78010.1,
+          "gdp_bn_jpy_4q": 504204.6
+        },
+        {
+          "date": "2012-06-30",
+          "value": 15.6331,
+          "private_non_resi_investment_bn_jpy_4q": 79230.6,
+          "gdp_bn_jpy_4q": 506812.6
+        },
+        {
+          "date": "2012-09-30",
+          "value": 15.7872,
+          "private_non_resi_investment_bn_jpy_4q": 79914.0,
+          "gdp_bn_jpy_4q": 506193.6
+        },
+        {
+          "date": "2012-12-31",
+          "value": 15.7129,
+          "private_non_resi_investment_bn_jpy_4q": 79409.3,
+          "gdp_bn_jpy_4q": 505377.0
+        },
+        {
+          "date": "2013-03-31",
+          "value": 15.6565,
+          "private_non_resi_investment_bn_jpy_4q": 78992.8,
+          "gdp_bn_jpy_4q": 504538.3
+        },
+        {
+          "date": "2013-06-30",
+          "value": 15.6836,
+          "private_non_resi_investment_bn_jpy_4q": 79444.9,
+          "gdp_bn_jpy_4q": 506547.7
+        },
+        {
+          "date": "2013-09-30",
+          "value": 15.7671,
+          "private_non_resi_investment_bn_jpy_4q": 80473.6,
+          "gdp_bn_jpy_4q": 510388.7
+        },
+        {
+          "date": "2013-12-31",
+          "value": 15.9105,
+          "private_non_resi_investment_bn_jpy_4q": 81867.9,
+          "gdp_bn_jpy_4q": 514553.3
+        },
+        {
+          "date": "2014-03-31",
+          "value": 16.3173,
+          "private_non_resi_investment_bn_jpy_4q": 84712.0,
+          "gdp_bn_jpy_4q": 519154.2
+        },
+        {
+          "date": "2014-06-30",
+          "value": 16.4435,
+          "private_non_resi_investment_bn_jpy_4q": 85917.9,
+          "gdp_bn_jpy_4q": 522502.8
+        },
+        {
+          "date": "2014-09-30",
+          "value": 16.6446,
+          "private_non_resi_investment_bn_jpy_4q": 87327.3,
+          "gdp_bn_jpy_4q": 524660.0
+        },
+        {
+          "date": "2014-12-31",
+          "value": 16.7759,
+          "private_non_resi_investment_bn_jpy_4q": 88612.8,
+          "gdp_bn_jpy_4q": 528215.7
+        },
+        {
+          "date": "2015-03-31",
+          "value": 16.9355,
+          "private_non_resi_investment_bn_jpy_4q": 90392.7,
+          "gdp_bn_jpy_4q": 533746.2
+        },
+        {
+          "date": "2015-06-30",
+          "value": 17.0509,
+          "private_non_resi_investment_bn_jpy_4q": 91904.8,
+          "gdp_bn_jpy_4q": 539003.1
+        },
+        {
+          "date": "2015-09-30",
+          "value": 17.1298,
+          "private_non_resi_investment_bn_jpy_4q": 93261.9,
+          "gdp_bn_jpy_4q": 544442.3
+        },
+        {
+          "date": "2015-12-31",
+          "value": 17.2158,
+          "private_non_resi_investment_bn_jpy_4q": 94492.0,
+          "gdp_bn_jpy_4q": 548866.6
+        },
+        {
+          "date": "2016-03-31",
+          "value": 17.1234,
+          "private_non_resi_investment_bn_jpy_4q": 94511.7,
+          "gdp_bn_jpy_4q": 551944.8
+        },
+        {
+          "date": "2016-06-30",
+          "value": 17.0506,
+          "private_non_resi_investment_bn_jpy_4q": 94366.9,
+          "gdp_bn_jpy_4q": 553452.7
+        },
+        {
+          "date": "2016-09-30",
+          "value": 16.9597,
+          "private_non_resi_investment_bn_jpy_4q": 94017.6,
+          "gdp_bn_jpy_4q": 554360.0
+        },
+        {
+          "date": "2016-12-31",
+          "value": 16.9336,
+          "private_non_resi_investment_bn_jpy_4q": 94145.9,
+          "gdp_bn_jpy_4q": 555970.6
+        },
+        {
+          "date": "2017-03-31",
+          "value": 16.995,
+          "private_non_resi_investment_bn_jpy_4q": 94538.4,
+          "gdp_bn_jpy_4q": 556273.4
+        },
+        {
+          "date": "2017-06-30",
+          "value": 17.0687,
+          "private_non_resi_investment_bn_jpy_4q": 95222.6,
+          "gdp_bn_jpy_4q": 557879.2
+        },
+        {
+          "date": "2017-09-30",
+          "value": 17.1424,
+          "private_non_resi_investment_bn_jpy_4q": 96235.9,
+          "gdp_bn_jpy_4q": 561391.9
+        },
+        {
+          "date": "2017-12-31",
+          "value": 17.2232,
+          "private_non_resi_investment_bn_jpy_4q": 97331.7,
+          "gdp_bn_jpy_4q": 565119.0
+        },
+        {
+          "date": "2018-03-31",
+          "value": 17.3146,
+          "private_non_resi_investment_bn_jpy_4q": 98289.5,
+          "gdp_bn_jpy_4q": 567668.1
+        },
+        {
+          "date": "2018-06-30",
+          "value": 17.4756,
+          "private_non_resi_investment_bn_jpy_4q": 99600.5,
+          "gdp_bn_jpy_4q": 569938.9
+        },
+        {
+          "date": "2018-09-30",
+          "value": 17.5576,
+          "private_non_resi_investment_bn_jpy_4q": 99976.4,
+          "gdp_bn_jpy_4q": 569421.1
+        },
+        {
+          "date": "2018-12-31",
+          "value": 17.7192,
+          "private_non_resi_investment_bn_jpy_4q": 100849.3,
+          "gdp_bn_jpy_4q": 569153.4
+        },
+        {
+          "date": "2019-03-31",
+          "value": 17.8486,
+          "private_non_resi_investment_bn_jpy_4q": 101726.8,
+          "gdp_bn_jpy_4q": 569944.3
+        },
+        {
+          "date": "2019-06-30",
+          "value": 17.8199,
+          "private_non_resi_investment_bn_jpy_4q": 101717.1,
+          "gdp_bn_jpy_4q": 570805.8
+        },
+        {
+          "date": "2019-09-30",
+          "value": 17.9741,
+          "private_non_resi_investment_bn_jpy_4q": 102938.4,
+          "gdp_bn_jpy_4q": 572704.9
+        },
+        {
+          "date": "2019-12-31",
+          "value": 17.8284,
+          "private_non_resi_investment_bn_jpy_4q": 101949.7,
+          "gdp_bn_jpy_4q": 571838.0
+        },
+        {
+          "date": "2020-03-31",
+          "value": 17.8229,
+          "private_non_resi_investment_bn_jpy_4q": 101701.0,
+          "gdp_bn_jpy_4q": 570618.9
+        },
+        {
+          "date": "2020-06-30",
+          "value": 17.8497,
+          "private_non_resi_investment_bn_jpy_4q": 99865.6,
+          "gdp_bn_jpy_4q": 559480.6
+        },
+        {
+          "date": "2020-09-30",
+          "value": 17.5828,
+          "private_non_resi_investment_bn_jpy_4q": 97455.6,
+          "gdp_bn_jpy_4q": 554266.0
+        },
+        {
+          "date": "2020-12-31",
+          "value": 17.5134,
+          "private_non_resi_investment_bn_jpy_4q": 97037.5,
+          "gdp_bn_jpy_4q": 554074.3
+        },
+        {
+          "date": "2021-03-31",
+          "value": 17.4033,
+          "private_non_resi_investment_bn_jpy_4q": 96517.3,
+          "gdp_bn_jpy_4q": 554591.8
+        },
+        {
+          "date": "2021-06-30",
+          "value": 17.3735,
+          "private_non_resi_investment_bn_jpy_4q": 98231.4,
+          "gdp_bn_jpy_4q": 565410.2
+        },
+        {
+          "date": "2021-09-30",
+          "value": 17.4758,
+          "private_non_resi_investment_bn_jpy_4q": 99598.5,
+          "gdp_bn_jpy_4q": 569922.0
+        },
+        {
+          "date": "2021-12-31",
+          "value": 17.582,
+          "private_non_resi_investment_bn_jpy_4q": 100865.7,
+          "gdp_bn_jpy_4q": 573687.6
+        },
+        {
+          "date": "2022-03-31",
+          "value": 17.6734,
+          "private_non_resi_investment_bn_jpy_4q": 101833.5,
+          "gdp_bn_jpy_4q": 576197.4
+        },
+        {
+          "date": "2022-06-30",
+          "value": 17.8448,
+          "private_non_resi_investment_bn_jpy_4q": 103281.7,
+          "gdp_bn_jpy_4q": 578777.6
+        },
+        {
+          "date": "2022-09-30",
+          "value": 18.1373,
+          "private_non_resi_investment_bn_jpy_4q": 105354.2,
+          "gdp_bn_jpy_4q": 580871.4
+        },
+        {
+          "date": "2022-12-31",
+          "value": 18.3926,
+          "private_non_resi_investment_bn_jpy_4q": 107505.0,
+          "gdp_bn_jpy_4q": 584501.2
+        },
+        {
+          "date": "2023-03-31",
+          "value": 18.6291,
+          "private_non_resi_investment_bn_jpy_4q": 110208.5,
+          "gdp_bn_jpy_4q": 591593.7
+        },
+        {
+          "date": "2023-06-30",
+          "value": 18.6155,
+          "private_non_resi_investment_bn_jpy_4q": 111677.0,
+          "gdp_bn_jpy_4q": 599915.0
+        },
+        {
+          "date": "2023-09-30",
+          "value": 18.5077,
+          "private_non_resi_investment_bn_jpy_4q": 112701.1,
+          "gdp_bn_jpy_4q": 608942.1
+        },
+        {
+          "date": "2023-12-31",
+          "value": 18.5556,
+          "private_non_resi_investment_bn_jpy_4q": 114424.8,
+          "gdp_bn_jpy_4q": 616659.3
+        },
+        {
+          "date": "2024-03-31",
+          "value": 18.5943,
+          "private_non_resi_investment_bn_jpy_4q": 115397.5,
+          "gdp_bn_jpy_4q": 620605.4
+        },
+        {
+          "date": "2024-06-30",
+          "value": 18.7202,
+          "private_non_resi_investment_bn_jpy_4q": 116947.6,
+          "gdp_bn_jpy_4q": 624712.5
+        },
+        {
+          "date": "2024-09-30",
+          "value": 18.8041,
+          "private_non_resi_investment_bn_jpy_4q": 118558.4,
+          "gdp_bn_jpy_4q": 630492.3
+        },
+        {
+          "date": "2024-12-31",
+          "value": 18.7782,
+          "private_non_resi_investment_bn_jpy_4q": 119597.2,
+          "gdp_bn_jpy_4q": 636893.4
+        },
+        {
+          "date": "2025-03-31",
+          "value": 18.8176,
+          "private_non_resi_investment_bn_jpy_4q": 121399.6,
+          "gdp_bn_jpy_4q": 645138.8
+        },
+        {
+          "date": "2025-06-30",
+          "value": 18.7906,
+          "private_non_resi_investment_bn_jpy_4q": 122805.6,
+          "gdp_bn_jpy_4q": 653546.8
+        },
+        {
+          "date": "2025-09-30",
+          "value": 18.803,
+          "private_non_resi_investment_bn_jpy_4q": 124100.0,
+          "gdp_bn_jpy_4q": 660000.8
+        },
+        {
+          "date": "2025-12-31",
+          "value": 18.947,
+          "private_non_resi_investment_bn_jpy_4q": 126270.4,
+          "gdp_bn_jpy_4q": 666440.8
+        },
+        {
+          "date": "2026-03-31",
+          "value": 19.0293,
+          "private_non_resi_investment_bn_jpy_4q": 128004.3,
+          "gdp_bn_jpy_4q": 672669.6
+        },
+        {
+          "date": "2026-06-30",
+          "value": 19.0356,
+          "private_non_resi_investment_bn_jpy_4q": 129151.3,
+          "gdp_bn_jpy_4q": 678473.3
+        }
+      ],
+      "annual_observations": [
         {
           "date": "1994-12-31",
           "value": 17.0611,
@@ -179,46 +945,46 @@
         },
         {
           "date": "2021-12-31",
-          "value": 17.5743,
-          "gdp_bn_jpy": 573568.8,
-          "private_non_resi_investment_bn_jpy": 100800.9
+          "value": 17.582,
+          "gdp_bn_jpy": 573687.7,
+          "private_non_resi_investment_bn_jpy": 100865.7
         },
         {
           "date": "2022-12-31",
-          "value": 18.4328,
-          "gdp_bn_jpy": 584900.6,
-          "private_non_resi_investment_bn_jpy": 107813.7
+          "value": 18.3926,
+          "gdp_bn_jpy": 584501.3,
+          "private_non_resi_investment_bn_jpy": 107504.9
         },
         {
           "date": "2023-12-31",
-          "value": 18.4708,
-          "gdp_bn_jpy": 616033.0,
-          "private_non_resi_investment_bn_jpy": 113786.1
+          "value": 18.5556,
+          "gdp_bn_jpy": 616659.4,
+          "private_non_resi_investment_bn_jpy": 114424.8
         },
         {
           "date": "2024-12-31",
-          "value": 18.5288,
-          "gdp_bn_jpy": 634751.3,
-          "private_non_resi_investment_bn_jpy": 117611.9
+          "value": 18.7782,
+          "gdp_bn_jpy": 636893.3,
+          "private_non_resi_investment_bn_jpy": 119597.3
         },
         {
           "date": "2025-12-31",
-          "value": 18.6409,
-          "gdp_bn_jpy": 663465.6,
-          "private_non_resi_investment_bn_jpy": 123675.7
+          "value": 18.947,
+          "gdp_bn_jpy": 666440.7,
+          "private_non_resi_investment_bn_jpy": 126270.4
         }
       ]
     },
     "net_funding_demand": {
       "frequency": "quarterly_rolling_4q",
-      "asof": "2026-03-31",
+      "asof": "2026-06-30",
       "unit": "pct_gdp",
       "formula_ko": "(BOJ 민간비금융법인 금융잉여/부족 + 일반정부 금융잉여/부족)의 4분기 합계 ÷ 같은 4분기 명목 GDP 합계 × 100",
       "sign_convention_ko": "음수=기업·정부 합산 순자금수요(투자초과), 양수=순자금잉여.",
       "components_latest": {
-        "private_nonfinancial_pct_gdp": 3.1432,
-        "general_government_pct_gdp": -1.2599,
-        "nominal_gdp_bn_jpy_4q": 669369.2
+        "private_nonfinancial_pct_gdp": 3.9357,
+        "general_government_pct_gdp": -1.2196,
+        "nominal_gdp_bn_jpy_4q": 678473.3
       },
       "observations": [
         {
@@ -846,150 +1612,157 @@
         },
         {
           "date": "2021-03-31",
-          "value": -9.8677,
-          "private_nonfinancial_pct_gdp": -0.2352,
-          "general_government_pct_gdp": -9.6325,
-          "nominal_gdp_bn_jpy_4q": 554342.3
+          "value": -9.8633,
+          "private_nonfinancial_pct_gdp": -0.2351,
+          "general_government_pct_gdp": -9.6282,
+          "nominal_gdp_bn_jpy_4q": 554591.8
         },
         {
           "date": "2021-06-30",
-          "value": -5.5875,
-          "private_nonfinancial_pct_gdp": 2.2412,
-          "general_government_pct_gdp": -7.8286,
-          "nominal_gdp_bn_jpy_4q": 565137.7
+          "value": -5.5848,
+          "private_nonfinancial_pct_gdp": 2.2401,
+          "general_government_pct_gdp": -7.8248,
+          "nominal_gdp_bn_jpy_4q": 565410.2
         },
         {
           "date": "2021-09-30",
-          "value": -3.7431,
-          "private_nonfinancial_pct_gdp": 3.2627,
-          "general_government_pct_gdp": -7.0058,
-          "nominal_gdp_bn_jpy_4q": 569745.8
+          "value": -3.742,
+          "private_nonfinancial_pct_gdp": 3.2617,
+          "general_government_pct_gdp": -7.0037,
+          "nominal_gdp_bn_jpy_4q": 569922.0
         },
         {
           "date": "2021-12-31",
-          "value": -5.3256,
-          "private_nonfinancial_pct_gdp": 1.3896,
-          "general_government_pct_gdp": -6.7152,
-          "nominal_gdp_bn_jpy_4q": 573568.8
+          "value": -5.3245,
+          "private_nonfinancial_pct_gdp": 1.3893,
+          "general_government_pct_gdp": -6.7138,
+          "nominal_gdp_bn_jpy_4q": 573687.6
         },
         {
           "date": "2022-03-31",
-          "value": -3.9241,
-          "private_nonfinancial_pct_gdp": 1.967,
-          "general_government_pct_gdp": -5.8911,
-          "nominal_gdp_bn_jpy_4q": 576554.0
+          "value": -3.9265,
+          "private_nonfinancial_pct_gdp": 1.9683,
+          "general_government_pct_gdp": -5.8948,
+          "nominal_gdp_bn_jpy_4q": 576197.4
         },
         {
           "date": "2022-06-30",
-          "value": -4.0765,
-          "private_nonfinancial_pct_gdp": 1.2104,
-          "general_government_pct_gdp": -5.2869,
-          "nominal_gdp_bn_jpy_4q": 579294.3
+          "value": -4.0801,
+          "private_nonfinancial_pct_gdp": 1.2115,
+          "general_government_pct_gdp": -5.2916,
+          "nominal_gdp_bn_jpy_4q": 578777.6
         },
         {
           "date": "2022-09-30",
-          "value": -3.561,
-          "private_nonfinancial_pct_gdp": 0.759,
-          "general_government_pct_gdp": -4.3199,
-          "nominal_gdp_bn_jpy_4q": 581372.1
+          "value": -3.564,
+          "private_nonfinancial_pct_gdp": 0.7596,
+          "general_government_pct_gdp": -4.3237,
+          "nominal_gdp_bn_jpy_4q": 580871.4
         },
         {
           "date": "2022-12-31",
-          "value": -4.4705,
-          "private_nonfinancial_pct_gdp": -0.2679,
-          "general_government_pct_gdp": -4.2026,
-          "nominal_gdp_bn_jpy_4q": 584900.6
+          "value": -4.4736,
+          "private_nonfinancial_pct_gdp": -0.2681,
+          "general_government_pct_gdp": -4.2054,
+          "nominal_gdp_bn_jpy_4q": 584501.2
         },
         {
           "date": "2023-03-31",
-          "value": -2.2005,
-          "private_nonfinancial_pct_gdp": 1.5394,
-          "general_government_pct_gdp": -3.7399,
-          "nominal_gdp_bn_jpy_4q": 591651.3
+          "value": -2.2007,
+          "private_nonfinancial_pct_gdp": 1.5395,
+          "general_government_pct_gdp": -3.7402,
+          "nominal_gdp_bn_jpy_4q": 591593.7
         },
         {
           "date": "2023-06-30",
           "value": 0.0358,
-          "private_nonfinancial_pct_gdp": 2.8377,
-          "general_government_pct_gdp": -2.802,
-          "nominal_gdp_bn_jpy_4q": 599711.9
+          "private_nonfinancial_pct_gdp": 2.8368,
+          "general_government_pct_gdp": -2.801,
+          "nominal_gdp_bn_jpy_4q": 599915.0
         },
         {
           "date": "2023-09-30",
-          "value": -0.6521,
-          "private_nonfinancial_pct_gdp": 2.635,
-          "general_government_pct_gdp": -3.2872,
-          "nominal_gdp_bn_jpy_4q": 608447.1
+          "value": -0.6516,
+          "private_nonfinancial_pct_gdp": 2.6329,
+          "general_government_pct_gdp": -3.2845,
+          "nominal_gdp_bn_jpy_4q": 608942.1
         },
         {
           "date": "2023-12-31",
-          "value": 0.6852,
-          "private_nonfinancial_pct_gdp": 3.5404,
-          "general_government_pct_gdp": -2.8552,
-          "nominal_gdp_bn_jpy_4q": 616032.9
+          "value": 0.6845,
+          "private_nonfinancial_pct_gdp": 3.5368,
+          "general_government_pct_gdp": -2.8523,
+          "nominal_gdp_bn_jpy_4q": 616659.3
         },
         {
           "date": "2024-03-31",
-          "value": -0.4861,
-          "private_nonfinancial_pct_gdp": 2.0956,
-          "general_government_pct_gdp": -2.5817,
-          "nominal_gdp_bn_jpy_4q": 619565.0
+          "value": -0.4853,
+          "private_nonfinancial_pct_gdp": 2.092,
+          "general_government_pct_gdp": -2.5774,
+          "nominal_gdp_bn_jpy_4q": 620605.4
         },
         {
           "date": "2024-06-30",
-          "value": -0.1377,
-          "private_nonfinancial_pct_gdp": 2.4855,
-          "general_government_pct_gdp": -2.6232,
-          "nominal_gdp_bn_jpy_4q": 623359.7
+          "value": -0.1374,
+          "private_nonfinancial_pct_gdp": 2.4802,
+          "general_government_pct_gdp": -2.6175,
+          "nominal_gdp_bn_jpy_4q": 624712.5
         },
         {
           "date": "2024-09-30",
-          "value": 1.0684,
-          "private_nonfinancial_pct_gdp": 3.4798,
-          "general_government_pct_gdp": -2.4115,
-          "nominal_gdp_bn_jpy_4q": 628801.8
+          "value": 1.0655,
+          "private_nonfinancial_pct_gdp": 3.4705,
+          "general_government_pct_gdp": -2.405,
+          "nominal_gdp_bn_jpy_4q": 630492.3
         },
         {
           "date": "2024-12-31",
-          "value": 2.1111,
-          "private_nonfinancial_pct_gdp": 3.7031,
-          "general_government_pct_gdp": -1.592,
-          "nominal_gdp_bn_jpy_4q": 634751.3
+          "value": 2.104,
+          "private_nonfinancial_pct_gdp": 3.6907,
+          "general_government_pct_gdp": -1.5866,
+          "nominal_gdp_bn_jpy_4q": 636893.4
         },
         {
           "date": "2025-03-31",
-          "value": 3.2445,
-          "private_nonfinancial_pct_gdp": 4.2123,
-          "general_government_pct_gdp": -0.9678,
-          "nominal_gdp_bn_jpy_4q": 642781.2
+          "value": 3.2327,
+          "private_nonfinancial_pct_gdp": 4.1969,
+          "general_government_pct_gdp": -0.9643,
+          "nominal_gdp_bn_jpy_4q": 645138.8
         },
         {
           "date": "2025-06-30",
-          "value": 1.7936,
-          "private_nonfinancial_pct_gdp": 2.9695,
-          "general_government_pct_gdp": -1.1758,
-          "nominal_gdp_bn_jpy_4q": 650949.2
+          "value": 1.7865,
+          "private_nonfinancial_pct_gdp": 2.9577,
+          "general_government_pct_gdp": -1.1712,
+          "nominal_gdp_bn_jpy_4q": 653546.8
         },
         {
           "date": "2025-09-30",
-          "value": 1.8006,
-          "private_nonfinancial_pct_gdp": 2.9703,
-          "general_government_pct_gdp": -1.1698,
-          "nominal_gdp_bn_jpy_4q": 657186.3
+          "value": 1.7929,
+          "private_nonfinancial_pct_gdp": 2.9577,
+          "general_government_pct_gdp": -1.1648,
+          "nominal_gdp_bn_jpy_4q": 660000.8
         },
         {
           "date": "2025-12-31",
-          "value": 1.101,
-          "private_nonfinancial_pct_gdp": 2.5641,
-          "general_government_pct_gdp": -1.4631,
-          "nominal_gdp_bn_jpy_4q": 663465.6
+          "value": 1.0961,
+          "private_nonfinancial_pct_gdp": 2.5526,
+          "general_government_pct_gdp": -1.4566,
+          "nominal_gdp_bn_jpy_4q": 666440.8
         },
         {
           "date": "2026-03-31",
-          "value": 1.8834,
-          "private_nonfinancial_pct_gdp": 3.1432,
-          "general_government_pct_gdp": -1.2599,
-          "nominal_gdp_bn_jpy_4q": 669369.2
+          "value": 1.8741,
+          "private_nonfinancial_pct_gdp": 3.1278,
+          "general_government_pct_gdp": -1.2537,
+          "nominal_gdp_bn_jpy_4q": 672669.6
+        },
+        {
+          "date": "2026-06-30",
+          "value": 2.7161,
+          "private_nonfinancial_pct_gdp": 3.9357,
+          "general_government_pct_gdp": -1.2196,
+          "nominal_gdp_bn_jpy_4q": 678473.3
         }
       ]
     },
@@ -997,7 +1770,7 @@
       "frequency": "quarterly",
       "asof": "2026-06-30",
       "unit": "pct_potential_gdp",
-      "formula_ko": "BOJ 추정 GDP 갭 (% of potential GDP)",
+      "formula_ko": "(실제 GDP − 잠재 GDP) ÷ 잠재 GDP × 100. 일본은행 추정(수급갭)과 내각부 추정(GDP갭)을 함께 표시",
       "observations": [
         {
           "date": "1983-03-31",
@@ -1694,6 +2467,528 @@
         {
           "date": "2026-06-30",
           "value": 0.5497
+        }
+      ],
+      "cabinet_office_observations": [
+        {
+          "date": "1994-03-31",
+          "value": -0.8
+        },
+        {
+          "date": "1994-06-30",
+          "value": -1.9
+        },
+        {
+          "date": "1994-09-30",
+          "value": -1.3
+        },
+        {
+          "date": "1994-12-31",
+          "value": -2.0
+        },
+        {
+          "date": "1995-03-31",
+          "value": -1.4
+        },
+        {
+          "date": "1995-06-30",
+          "value": -0.9
+        },
+        {
+          "date": "1995-09-30",
+          "value": -0.1
+        },
+        {
+          "date": "1995-12-31",
+          "value": -0.2
+        },
+        {
+          "date": "1996-03-31",
+          "value": 0.3
+        },
+        {
+          "date": "1996-06-30",
+          "value": 1.0
+        },
+        {
+          "date": "1996-09-30",
+          "value": 0.9
+        },
+        {
+          "date": "1996-12-31",
+          "value": 1.6
+        },
+        {
+          "date": "1997-03-31",
+          "value": 2.0
+        },
+        {
+          "date": "1997-06-30",
+          "value": 0.9
+        },
+        {
+          "date": "1997-09-30",
+          "value": 0.8
+        },
+        {
+          "date": "1997-12-31",
+          "value": 0.5
+        },
+        {
+          "date": "1998-03-31",
+          "value": -1.3
+        },
+        {
+          "date": "1998-06-30",
+          "value": -2.1
+        },
+        {
+          "date": "1998-09-30",
+          "value": -2.3
+        },
+        {
+          "date": "1998-12-31",
+          "value": -1.7
+        },
+        {
+          "date": "1999-03-31",
+          "value": -3.3
+        },
+        {
+          "date": "1999-06-30",
+          "value": -3.1
+        },
+        {
+          "date": "1999-09-30",
+          "value": -2.8
+        },
+        {
+          "date": "1999-12-31",
+          "value": -3.1
+        },
+        {
+          "date": "2000-03-31",
+          "value": -1.5
+        },
+        {
+          "date": "2000-06-30",
+          "value": -1.1
+        },
+        {
+          "date": "2000-09-30",
+          "value": -1.4
+        },
+        {
+          "date": "2000-12-31",
+          "value": -0.6
+        },
+        {
+          "date": "2001-03-31",
+          "value": -0.2
+        },
+        {
+          "date": "2001-06-30",
+          "value": -1.2
+        },
+        {
+          "date": "2001-09-30",
+          "value": -2.6
+        },
+        {
+          "date": "2001-12-31",
+          "value": -3.0
+        },
+        {
+          "date": "2002-03-31",
+          "value": -3.0
+        },
+        {
+          "date": "2002-06-30",
+          "value": -2.5
+        },
+        {
+          "date": "2002-09-30",
+          "value": -2.4
+        },
+        {
+          "date": "2002-12-31",
+          "value": -2.4
+        },
+        {
+          "date": "2003-03-31",
+          "value": -2.8
+        },
+        {
+          "date": "2003-06-30",
+          "value": -2.2
+        },
+        {
+          "date": "2003-09-30",
+          "value": -2.1
+        },
+        {
+          "date": "2003-12-31",
+          "value": -1.3
+        },
+        {
+          "date": "2004-03-31",
+          "value": -0.7
+        },
+        {
+          "date": "2004-06-30",
+          "value": -1.0
+        },
+        {
+          "date": "2004-09-30",
+          "value": -0.7
+        },
+        {
+          "date": "2004-12-31",
+          "value": -1.3
+        },
+        {
+          "date": "2005-03-31",
+          "value": -0.8
+        },
+        {
+          "date": "2005-06-30",
+          "value": -0.1
+        },
+        {
+          "date": "2005-09-30",
+          "value": 0.6
+        },
+        {
+          "date": "2005-12-31",
+          "value": 0.7
+        },
+        {
+          "date": "2006-03-31",
+          "value": 0.7
+        },
+        {
+          "date": "2006-06-30",
+          "value": 0.8
+        },
+        {
+          "date": "2006-09-30",
+          "value": 0.7
+        },
+        {
+          "date": "2006-12-31",
+          "value": 1.9
+        },
+        {
+          "date": "2007-03-31",
+          "value": 2.5
+        },
+        {
+          "date": "2007-06-30",
+          "value": 2.6
+        },
+        {
+          "date": "2007-09-30",
+          "value": 1.9
+        },
+        {
+          "date": "2007-12-31",
+          "value": 2.4
+        },
+        {
+          "date": "2008-03-31",
+          "value": 2.6
+        },
+        {
+          "date": "2008-06-30",
+          "value": 2.1
+        },
+        {
+          "date": "2008-09-30",
+          "value": 0.9
+        },
+        {
+          "date": "2008-12-31",
+          "value": -1.5
+        },
+        {
+          "date": "2009-03-31",
+          "value": -5.9
+        },
+        {
+          "date": "2009-06-30",
+          "value": -4.9
+        },
+        {
+          "date": "2009-09-30",
+          "value": -5.5
+        },
+        {
+          "date": "2009-12-31",
+          "value": -4.0
+        },
+        {
+          "date": "2010-03-31",
+          "value": -2.9
+        },
+        {
+          "date": "2010-06-30",
+          "value": -1.7
+        },
+        {
+          "date": "2010-09-30",
+          "value": 0.0
+        },
+        {
+          "date": "2010-12-31",
+          "value": -1.0
+        },
+        {
+          "date": "2011-03-31",
+          "value": -2.6
+        },
+        {
+          "date": "2011-06-30",
+          "value": -3.3
+        },
+        {
+          "date": "2011-09-30",
+          "value": -1.1
+        },
+        {
+          "date": "2011-12-31",
+          "value": -1.3
+        },
+        {
+          "date": "2012-03-31",
+          "value": 0.0
+        },
+        {
+          "date": "2012-06-30",
+          "value": -1.1
+        },
+        {
+          "date": "2012-09-30",
+          "value": -1.7
+        },
+        {
+          "date": "2012-12-31",
+          "value": -2.0
+        },
+        {
+          "date": "2013-03-31",
+          "value": -1.0
+        },
+        {
+          "date": "2013-06-30",
+          "value": -0.2
+        },
+        {
+          "date": "2013-09-30",
+          "value": 0.5
+        },
+        {
+          "date": "2013-12-31",
+          "value": 0.1
+        },
+        {
+          "date": "2014-03-31",
+          "value": 0.8
+        },
+        {
+          "date": "2014-06-30",
+          "value": -0.8
+        },
+        {
+          "date": "2014-09-30",
+          "value": -0.9
+        },
+        {
+          "date": "2014-12-31",
+          "value": -0.6
+        },
+        {
+          "date": "2015-03-31",
+          "value": 0.7
+        },
+        {
+          "date": "2015-06-30",
+          "value": 0.5
+        },
+        {
+          "date": "2015-09-30",
+          "value": 0.4
+        },
+        {
+          "date": "2015-12-31",
+          "value": 0.0
+        },
+        {
+          "date": "2016-03-31",
+          "value": 0.6
+        },
+        {
+          "date": "2016-06-30",
+          "value": 0.1
+        },
+        {
+          "date": "2016-09-30",
+          "value": 0.1
+        },
+        {
+          "date": "2016-12-31",
+          "value": -0.1
+        },
+        {
+          "date": "2017-03-31",
+          "value": 0.4
+        },
+        {
+          "date": "2017-06-30",
+          "value": 0.6
+        },
+        {
+          "date": "2017-09-30",
+          "value": 1.6
+        },
+        {
+          "date": "2017-12-31",
+          "value": 1.6
+        },
+        {
+          "date": "2018-03-31",
+          "value": 1.3
+        },
+        {
+          "date": "2018-06-30",
+          "value": 1.8
+        },
+        {
+          "date": "2018-09-30",
+          "value": 1.2
+        },
+        {
+          "date": "2018-12-31",
+          "value": 1.2
+        },
+        {
+          "date": "2019-03-31",
+          "value": 1.2
+        },
+        {
+          "date": "2019-06-30",
+          "value": 1.5
+        },
+        {
+          "date": "2019-09-30",
+          "value": 1.5
+        },
+        {
+          "date": "2019-12-31",
+          "value": -1.5
+        },
+        {
+          "date": "2020-03-31",
+          "value": -1.2
+        },
+        {
+          "date": "2020-06-30",
+          "value": -8.4
+        },
+        {
+          "date": "2020-09-30",
+          "value": -3.9
+        },
+        {
+          "date": "2020-12-31",
+          "value": -2.5
+        },
+        {
+          "date": "2021-03-31",
+          "value": -1.4
+        },
+        {
+          "date": "2021-06-30",
+          "value": -0.9
+        },
+        {
+          "date": "2021-09-30",
+          "value": -1.3
+        },
+        {
+          "date": "2021-12-31",
+          "value": -0.2
+        },
+        {
+          "date": "2022-03-31",
+          "value": -0.8
+        },
+        {
+          "date": "2022-06-30",
+          "value": 0.0
+        },
+        {
+          "date": "2022-09-30",
+          "value": -0.4
+        },
+        {
+          "date": "2022-12-31",
+          "value": 0.0
+        },
+        {
+          "date": "2023-03-31",
+          "value": 0.7
+        },
+        {
+          "date": "2023-06-30",
+          "value": 0.7
+        },
+        {
+          "date": "2023-09-30",
+          "value": -0.7
+        },
+        {
+          "date": "2023-12-31",
+          "value": -0.3
+        },
+        {
+          "date": "2024-03-31",
+          "value": -0.5
+        },
+        {
+          "date": "2024-06-30",
+          "value": -0.8
+        },
+        {
+          "date": "2024-09-30",
+          "value": -0.1
+        },
+        {
+          "date": "2024-12-31",
+          "value": 0.2
+        },
+        {
+          "date": "2025-03-31",
+          "value": 0.6
+        },
+        {
+          "date": "2025-06-30",
+          "value": 0.6
+        },
+        {
+          "date": "2025-09-30",
+          "value": 0.1
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.2
+        },
+        {
+          "date": "2026-03-31",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-30",
+          "value": 0.7
         }
       ]
     }

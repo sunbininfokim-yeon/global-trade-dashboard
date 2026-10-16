@@ -330,7 +330,8 @@ def _attach_japan_growth_indicators(
     source_by_series = {
         "capex_gdp_ratio": {
             "name": "Cabinet Office (ESRI) Quarterly Estimates of GDP",
-            "urls": [source_map.get("cabinet_office_nominal_calendar_year_csv")],
+            "urls": [source_map.get("cabinet_office_nominal_quarterly_csv"),
+                     source_map.get("cabinet_office_release_page")],
         },
         "net_funding_demand": {
             "name": "BOJ Flow of Funds + Cabinet Office (ESRI) nominal GDP",
@@ -340,8 +341,8 @@ def _attach_japan_growth_indicators(
             ],
         },
         "gdp_gap": {
-            "name": "Bank of Japan Output Gap",
-            "urls": [source_map.get("boj_output_gap_xlsx")],
+            "name": "Bank of Japan Output Gap + Cabinet Office GDP Gap",
+            "urls": [source_map.get("boj_output_gap_xlsx"), source_map.get("cabinet_office_gdp_gap_xlsx")],
         },
     }
     for series_id in ("capex_gdp_ratio", "net_funding_demand", "gdp_gap"):
@@ -386,8 +387,30 @@ def _attach_japan_growth_indicators(
             "dates": [point.get("date") for point in observations],
             "values": [point.get("value") for point in observations],
         }
+        if snapshot.get("esri_vintage"):
+            ind["esri_vintage"] = snapshot["esri_vintage"]
         if row.get("sign_convention_ko"):
             ind["sign_convention_ko"] = row["sign_convention_ko"]
+        # Lines drawn next to the main series in the drawer's 원자료 view
+        extra_lines = []
+        if series_id == "gdp_gap" and row.get("cabinet_office_observations"):
+            cao = row["cabinet_office_observations"]
+            extra_lines.append({"id": "cabinet_office", "label_ko": "내각부 GDP갭",
+                                "dates": [p["date"] for p in cao], "values": [p["value"] for p in cao]})
+            ind["official_history"]["label_ko"] = "일본은행 수급갭"
+        if series_id == "net_funding_demand":
+            for key, label in (("private_nonfinancial_pct_gdp", "민간 비금융법인"), ("general_government_pct_gdp", "일반정부")):
+                extra_lines.append({"id": key, "label_ko": label, "dates": [p["date"] for p in observations],
+                                    "values": [p.get(key) for p in observations]})
+            ind["official_history"]["label_ko"] = "합계(순자금수요)"
+        if series_id == "capex_gdp_ratio":
+            ind["official_history"]["label_ko"] = "최근 4분기 기준"
+            annual = row.get("annual_observations") or []
+            if annual:
+                extra_lines.append({"id": "calendar_year", "label_ko": "역년(연간)", "dates": [p["date"] for p in annual],
+                                    "values": [p["value"] for p in annual], "step": True})
+        if extra_lines:
+            ind["official_history"]["extra_lines"] = extra_lines
         if series_id == "net_funding_demand":
             components = row.get("components_latest") or {}
             ind["components"] = [

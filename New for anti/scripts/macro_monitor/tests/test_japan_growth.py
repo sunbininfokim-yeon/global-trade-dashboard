@@ -72,3 +72,31 @@ class TestJapanGrowthAdapters(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Version2Additions(__import__("unittest").TestCase):
+    def test_capex_ratio_over_four_quarters(self):
+        from macro_monitor import japan_growth as jg
+        gdp = {"2025-09-30": 160.0, "2025-12-31": 170.0, "2026-03-31": 165.0, "2026-06-30": 175.0}
+        capex = {"2025-09-30": 30.0, "2025-12-31": 32.0, "2026-03-31": 31.0, "2026-06-30": 33.0}
+        (row,) = jg.build_capex_ratio_4q(capex, gdp)
+        self.assertEqual(row["date"], "2026-06-30")
+        self.assertAlmostEqual(row["value"], 126 / 670 * 100, places=3)
+
+    def test_release_discovery_follows_the_top_page(self):
+        from macro_monitor import japan_growth as jg
+        page = b'<a href="/en/sna/data/sokuhou/files/2026/qe262_2/gdemenuea.html">latest</a>'
+        url = jg.discover_esri_release_page(lambda u: page)
+        self.assertEqual(url, "https://www.esri.cao.go.jp/en/sna/data/sokuhou/files/2026/qe262_2/gdemenuea.html")
+        gap = b'<a href="2622gap.xlsx">GDP gap</a>'
+        self.assertEqual(jg.discover_cao_gap_xlsx(lambda u: gap), "https://www5.cao.go.jp/keizai3/getsurei/2622gap.xlsx")
+
+    def test_cabinet_office_gap_rows(self):
+        import io
+        from openpyxl import Workbook
+        from macro_monitor import japan_growth as jg
+        wb = Workbook(); ws = wb.active
+        ws.append(["title", None, "四半期"]); ws.append([2026, "Ⅰ", 0.5]); ws.append([None, "Ⅱ", 0.7]); ws.append([None, None, None])
+        buf = io.BytesIO(); wb.save(buf)
+        self.assertEqual(jg.parse_cao_gdp_gap(buf.getvalue()),
+                         [{"date": "2026-03-31", "value": 0.5}, {"date": "2026-06-30", "value": 0.7}])
