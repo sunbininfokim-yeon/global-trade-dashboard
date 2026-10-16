@@ -1239,5 +1239,23 @@ class NuclearAndBauxiteWindowTests(unittest.TestCase):
                 self.assertIn(src["default_country"], countries, src["id"])
 
 
+class NewProducerCountryTests(unittest.TestCase):
+    """Producer countries of the new menus (bauxite, uranium, manganese ore)
+    must be clickable on the map, so a headline naming them has to tag them."""
+
+    def setUp(self):
+        self.tagger = CountryTagger.from_config(cfg("countries.json"))
+
+    def test_producer_countries_are_tagged(self):
+        self.assertEqual(self.tagger.tag("Jamaica bauxite levy raised"), ["JAM"])
+        self.assertEqual(self.tagger.tag("Comilog manganese ore from Gabon"), ["GAB"])
+        self.assertEqual(self.tagger.tag("Niger uranium mine Arlit output"), ["NER"])
+        self.assertEqual(self.tagger.tag("Namibia uranium exports to China"), ["NAM", "CHN"])
+
+    def test_niger_is_not_nigeria(self):
+        self.assertEqual(self.tagger.tag("Nigeria crude exports in the Niger Delta"), ["NGA"])
+        self.assertEqual(self.tagger.tag("Nigerian output rises"), ["NGA"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -23,3 +23,9 @@
 - Kazatomprom 미디어 목록은 열리지만 링크가 러시아어 슬러그라 제목을 못 만든다. 영문 제목 경로가 필요.
 - 보크사이트·망간광은 여전히 건수가 적다. 기니·자메이카 광업부, IMnI는 피드 없음.
 - WNN·Cameco·Alcoa·Eramet은 기업/산업 매체이지 정부기관이 아니다(출처 notes에 명시).
+
+## 2차 보강 (같은 날)
+
+- 점검 31곳 중 쓸 수 있던 RSS 3곳 추가: `us_nrc_news`(NRC 뉴스, 164건), `int_nucnet`(NucNet), `jm_jbi_news`(자메이카 보크사이트 연구소; 최신 글이 5/29라 지금은 창에 안 뜸).
+- 국가 표에 자메이카·가봉·니제르·나미비아·수리남·가이아나·시에라리온·말리 추가. 보크사이트·망간광·우라늄 산지인데 빠져 있어서, 헤드라인에 이름이 나와도 국가 클릭 창에 안 걸렸다. `Niger`는 대소문자 구분 별칭이라 `Nigeria`/`Niger Delta`와 섞이지 않는다(테스트로 고정).
+- 점검했지만 못 쓴 곳: Mining.com 전체 피드(브라우저 헤더로만 열림, 상업 매체라 사용자 확인 전 보류), Mining.com 태그 피드(404), 구글 뉴스 RSS(보크사이트 검색에 미국 고교 스포츠 기사가 섞여 부적합), Denison RSS(제목이 'Home'/'Videos'뿐), WNA·Orano·Energy Fuels·NexGen·Paladin·DOE·EGA 등(404), OECD-NEA(403), 목록 페이지만 있는 Sprott·Urenco·Centrus·ANSTO·Jupiter·IMnI·Anglo American·Rusal·Chalco.
