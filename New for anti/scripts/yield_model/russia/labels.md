@@ -4,9 +4,14 @@
 
 | Field | Source | Unit | Resolution |
 |---|---|---|---|
-| `target` | **Rosstat** *Regions of Russia* extract (`tochno-st/regions_collection` indicator **13120000**) | **kg/ha** (c/ha × 100) | **Oblast**, then sown-area-weighted zone |
-| Area weights | Same yearbook, indicator **13050000** sown area of cereals+legumes | 1000 ha | Oblast |
-| 2024 patch | mojgorod.ru tabR4711 (Rosstat-derived cereals table) | c/ha → kg/ha | Oblast |
+| `target` | **Rosstat** *Regions of Russia* via tochno.st (`russia/tochno.py`, indicator **Y477110424**, formerly 13120000) | **kg/ha** (c/ha × 100) | **Oblast**, then sown-area-weighted zone |
+| Area weights | Same yearbook, **Y477110300** sown area of cereals+legumes | 1000 ha | Oblast |
+| Sunflower | **Y477110428** yield, **Y477110304** sown area | c/ha, 1000 ha | Oblast |
+
+`python3 -m russia.tochno` refreshes all four CSVs (2001–2024 as of release
+v20260313); the weekly forecast workflow runs it and rebuilds when a new year
+appears. rosstat.gov.ru, fedstat.ru and showdata.gks.ru answer 403 outside
+Russia, so tochno.st's open-data republication (CC BY 4.0) is the route.
 
 Files:
 
@@ -26,7 +31,7 @@ Zone builders in `labels.py`:
 ## Honest limitations
 
 1. **Crop basket = cereals + legumes**, not winter-wheat-only. In South/CBE the basket is winter-wheat dominated; Volga/Siberia spring wheat is outside this point set.
-2. **Annual span:** 2000–2021 continuous; **2024** sparse yearbook patch; **2022–2023** missing until EMISS/fedstat extract.
+2. **Annual span:** 2000–2024 continuous (2000 from the older extract, 2001–2024 from tochno.st). The yearbook lags a year: the 2025 harvest arrives with the next edition.
 3. Crimea / “new regions” never joined.
 4. USDA PSD national wheat remains a **cross-check** (`psd_yield_kg_ha`), not the training target.
 
