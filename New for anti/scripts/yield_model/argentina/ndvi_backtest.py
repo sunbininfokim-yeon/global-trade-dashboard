@@ -64,9 +64,9 @@ def log(msg):
     print(f"[ndvi-bt] {msg}", flush=True)
 
 
-def season_ndvi(nd, cfg, half=False, col="ndvi_p75"):
+def season_ndvi(nd, cfg, half=False, col="ndvi_p75", windows=None):
     """Production-weighted mean NDVI over the window, per harvest year."""
-    (m0, d0, o0), (m1, d1, o1) = WINDOWS[cfg.key]
+    (m0, d0, o0), (m1, d1, o1) = (windows or WINDOWS)[cfg.key]
     w = {p["name"]: p["weight"] for p in cfg.points}
     nd = nd[nd.point.isin(w)].dropna(subset=[col])
     out = {}
@@ -136,6 +136,58 @@ def rmse(a, b):
     return float(np.sqrt(np.mean((np.asarray(a) - np.asarray(b)) ** 2)))
 
 
+def score_region(nd, cfg, base, beats, windows=WINDOWS):
+    """Backtest every window/summary variant for one region and decide which
+    windows go live. Shared with russia.ndvi_backtest."""
+    key = cfg.key
+    entry_all = {"base": "model" if beats else "trend"}
+    for label, half, col in (("full", False, "ndvi_p75"),
+                             ("half", True, "ndvi_p75"),
+                             ("full_median", False, "ndvi_median"),
+                             ("half_median", True, "ndvi_median")):
+        ndvi = season_ndvi(nd, cfg, half, col, windows)
+        rows = correct(base, ndvi)
+        if len(rows) < 5:
+            continue
+        ys, t, p, c = map(np.array, zip(*rows))
+        r0, r1 = rmse(t, p), rmse(t, c)
+        # Correlation of the season's NDVI with the forecast's log error,
+        # over every scored season -- descriptive, not used for selection.
+        corr = float(np.corrcoef([ndvi[y] for y in ys], np.log(t / p))[0, 1])
+        entry_all[label] = {
+            "n": int(len(ys)), "years": [int(ys[0]), int(ys[-1])],
+            "rmse_base": r0, "rmse_ndvi": r1,
+            "skill_vs_base": 1 - r1 / r0, "corr_ndvi_error": corr,
+        }
+        log(f"{key:22} {entry_all['base']:5} {label:12} n={len(ys):2d} "
+            f"{int(ys[0])}-{int(ys[-1])}  base={r0:6.0f}  +ndvi={r1:6.0f}  "
+            f"skill={1 - r1 / r0:+6.1%}  corr={corr:+.2f}")
+    # Live decision per window, plus the correction fitted on every season
+    # available, for run_forecast to apply.
+    entry_all["live"] = {}
+    for win, half in (("full", False), ("half", True)):
+        a, b = entry_all.get(win), entry_all.get(f"{win}_median")
+        on = bool(a and b and a["skill_vs_base"] >= MIN_SKILL
+                  and b["skill_vs_base"] >= MIN_SKILL)
+        entry = {"enabled": on}
+        if on:
+            ndvi = season_ndvi(nd, cfg, half, COL, windows)
+            years = sorted(y for y in base if y in ndvi)
+            slope, mu, sd = fit(base, ndvi, years)
+            entry.update({"slope": slope, "mean": mu, "sd": sd,
+                          "fit_years": [years[0], years[-1]],
+                          "skill_vs_base": a["skill_vs_base"],
+                          "rmse_ratio": a["rmse_ndvi"] / a["rmse_base"]})
+        entry_all["live"][win] = entry
+    live = [w for w, e in entry_all["live"].items() if e["enabled"]]
+    log(f"{key:22} live windows: {', '.join(live) or 'none'}")
+    return entry_all
+
+
+RULE = (f"window live when the forward correction beats the forecast by "
+        f">= {MIN_SKILL:.0%} with both p75 and median")
+
+
 def main():
     nd = pd.read_csv(os.path.join(COND, "ndvi_points.csv"), parse_dates=["date"])
     report = {}
@@ -145,49 +197,8 @@ def main():
             log(f"{key}: no model, skipped")
             continue
         base, beats = base_forecasts(cfg)
-        report[key] = {"base": "model" if beats else "trend"}
-        for label, half, col in (("full", False, "ndvi_p75"),
-                                 ("half", True, "ndvi_p75"),
-                                 ("full_median", False, "ndvi_median"),
-                                 ("half_median", True, "ndvi_median")):
-            ndvi = season_ndvi(nd, cfg, half, col)
-            rows = correct(base, ndvi)
-            if len(rows) < 5:
-                continue
-            ys, t, p, c = map(np.array, zip(*rows))
-            r0, r1 = rmse(t, p), rmse(t, c)
-            # Correlation of the season's NDVI with the forecast's log error,
-            # over every scored season -- descriptive, not used for selection.
-            corr = float(np.corrcoef([ndvi[y] for y in ys], np.log(t / p))[0, 1])
-            report[key][label] = {
-                "n": int(len(ys)), "years": [int(ys[0]), int(ys[-1])],
-                "rmse_base": r0, "rmse_ndvi": r1,
-                "skill_vs_base": 1 - r1 / r0, "corr_ndvi_error": corr,
-            }
-            log(f"{key:14} {report[key]['base']:5} {label:12} n={len(ys):2d} "
-                f"{int(ys[0])}-{int(ys[-1])}  base={r0:6.0f}  +ndvi={r1:6.0f}  "
-                f"skill={1 - r1 / r0:+6.1%}  corr={corr:+.2f}")
-        # Live decision per window, plus the correction fitted on every
-        # season available, for run_forecast to apply.
-        report[key]["live"] = {}
-        for win, half in (("full", False), ("half", True)):
-            a, b = report[key].get(win), report[key].get(f"{win}_median")
-            on = bool(a and b and a["skill_vs_base"] >= MIN_SKILL
-                      and b["skill_vs_base"] >= MIN_SKILL)
-            entry = {"enabled": on}
-            if on:
-                ndvi = season_ndvi(nd, cfg, half, COL)
-                years = sorted(y for y in base if y in ndvi)
-                slope, mu, sd = fit(base, ndvi, years)
-                entry.update({"slope": slope, "mean": mu, "sd": sd,
-                              "fit_years": [years[0], years[-1]],
-                              "skill_vs_base": a["skill_vs_base"],
-                              "rmse_ratio": a["rmse_ndvi"] / a["rmse_base"]})
-            report[key]["live"][win] = entry
-        live = [w for w, e in report[key]["live"].items() if e["enabled"]]
-        log(f"{key:14} live windows: {', '.join(live) or 'none'}")
-    report["_rule"] = (f"window live when the forward correction beats the "
-                       f"forecast by >= {MIN_SKILL:.0%} with both p75 and median")
+        report[key] = score_region(nd, cfg, base, beats)
+    report["_rule"] = RULE
     with open(os.path.join(COND, "ndvi_backtest.json"), "w") as f:
         json.dump(report, f, indent=2)
 

@@ -111,13 +111,13 @@ def reduce(ndvi):
     return float(np.median(v)), float(np.percentile(v, 75)), n, len(ndvi)
 
 
-def collect_point(name, lat, lon, have):
+def collect_point(name, lat, lon, have, skip=SKIP_MONTHS):
     # The API takes a start and end date, not a list, so chunks are cut from
     # the full composite calendar (at most MAX_DATES per range) and then
     # trimmed to the wanted dates inside each.
     every = dates(lat, lon)
     want = {d for d in every if d not in have
-            and datetime.strptime(d[1:], "%Y%j").month not in SKIP_MONTHS}
+            and datetime.strptime(d[1:], "%Y%j").month not in skip}
     chunks = []
     for i in range(0, len(every), MAX_DATES):
         c = [d for d in every[i:i + MAX_DATES] if d in want]
@@ -140,21 +140,23 @@ def collect_point(name, lat, lon, have):
     return rows
 
 
-def main():
+def main(pts=None, out_path=OUT, skip=SKIP_MONTHS):
+    """Also the entry point for other countries (russia.ndvi): their own
+    points, output file and off-season months, the same collection."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true")
     args = ap.parse_args()
 
     old = pd.DataFrame()
-    if os.path.exists(OUT) and not args.full:
-        old = pd.read_csv(OUT, dtype={"modis_date": str})
-    pts = points()
+    if os.path.exists(out_path) and not args.full:
+        old = pd.read_csv(out_path, dtype={"modis_date": str})
+    pts = pts or points()
     log(f"{len(pts)} points, box ±{BOX_KM} km")
 
     def job(item):
         name, (lat, lon) = item
         have = set(old.loc[old.point == name, "modis_date"]) if len(old) else set()
-        return collect_point(name, lat, lon, have)
+        return collect_point(name, lat, lon, have, skip)
 
     with ThreadPoolExecutor(WORKERS) as ex:
         new = [r for rows in ex.map(job, pts.items()) for r in rows]
@@ -162,11 +164,11 @@ def main():
     out = pd.concat([old, pd.DataFrame(new)], ignore_index=True)
     out = (out.drop_duplicates(["point", "modis_date"], keep="last")
               .sort_values(["point", "modis_date"]))
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
     for c in ("ndvi_median", "ndvi_p75"):
         out[c] = out[c].round(4)
-    out.to_csv(OUT, index=False)
-    log(f"wrote {len(out)} rows ({len(new)} new) -> {OUT}")
+    out.to_csv(out_path, index=False)
+    log(f"wrote {len(out)} rows ({len(new)} new) -> {out_path}")
 
 
 if __name__ == "__main__":
