@@ -95,19 +95,34 @@
     "intercept": -2.238967271199377e-14
   },
   "beats_trend": false,
-  "raw_beats_trend": true,
+  "raw_beats_trend": false,
   "thin_evidence": [
     "6 forward folds < 8",
     "13 features > 22 seasons / 5"
   ],
-  "recent_skill_vs_trend": 0.051071851720895345,
-  "skill_vs_best_trend": 0.051071851720895345,
+  "recent_skill_vs_trend": -0.04537443980866662,
+  "skill_vs_best_trend": -0.04537443980866662,
   "best_trend_baseline_rmse": 266.77638469842975,
-  "weather_skill": 0.051071851720895345,
+  "skill_basis": "nested",
+  "nested": {
+    "n": 3,
+    "years": [
+      2019,
+      2021
+    ],
+    "picks": {
+      "all_deg1": 3
+    }
+  },
+  "skill_in_sample": {
+    "full_skill": 0.051071851720895345,
+    "recent_skill": 0.051071851720895345
+  },
+  "weather_skill": -0.04537443980866662,
   "recent_trend_bias": -2.5314985163864017,
   "recent_folds": 10,
   "uncertainty": {
-    "sigma": 266.77638469842975,
+    "sigma": 281.70572576647464,
     "unit": "kg/ha",
     "basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
   },
