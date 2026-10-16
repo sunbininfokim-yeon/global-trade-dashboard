@@ -124,9 +124,9 @@ def predict_one(cfg, year, oni, dmi):
     dailies = {p["name"]: recent_weather(p, year) for p in cfg.points}
     coverage = max(d.date.max() for d in dailies.values())
 
-    feats = blend_features(cfg, dailies, year)
-    if not feats:
-        return None
+    # Empty until the season's weather window opens; the climatology fill
+    # below still gives a projection then (as brazil.predict does).
+    feats = blend_features(cfg, dailies, year) or {}
     feats["oni_season"] = oni_for(oni, year, ONI_WINDOW.get(cfg.key, ONI_KHARIF))
     feats["dmi_season"] = dmi_for(dmi, year, DMI_WINDOW.get(cfg.key, DMI_KHARIF))
 
@@ -134,21 +134,45 @@ def predict_one(cfg, year, oni, dmi):
 
     missing = [f for f in model["features"]
                if f not in feats or feats[f] is None or pd.isna(feats[f])]
-    if missing:
-        return {"key": cfg.key, "year": year, "error":
-                f"features unavailable: {', '.join(missing)}",
-                "weather_through": str(coverage.date())}
 
     trend_log = float(np.polyval(model["trend"]["log_poly_coef"], year))
 
-    x = np.array([feats[f] for f in model["features"]], dtype=float)
-    z = (x - np.array(model["scaler"]["mean"])) / np.array(model["scaler"]["scale"])
-    weather_log = float(model["ridge"]["intercept"]
-                        + np.dot(z, model["ridge"]["coef"]))
+    x = np.array([feats.get(f, np.nan) for f in model["features"]], dtype=float)
+    # Features not yet observed (the season's window still ahead, or an index
+    # like the DMI not yet published) are filled from climatology: one
+    # scenario per training season, its values for the missing features and
+    # this season's for the rest. Without this a region dropped off the
+    # dashboard whenever one input lagged.
+    mean = np.array(model["scaler"]["mean"])
+    scale = np.array(model["scaler"]["scale"])
+    coef = np.array(model["ridge"]["coef"])
+    unk = np.array([f in missing for f in model["features"]])
+    if unk.any():
+        past = history[[f for f, u in zip(model["features"], unk) if u]].dropna()
+        if past.empty:
+            return {"key": cfg.key, "year": year, "error":
+                    f"features unavailable: {', '.join(missing)}",
+                    "weather_through": str(coverage.date())}
+        X = np.repeat(x[None, :], len(past), axis=0)
+        X[:, unk] = past.values
+        weather_log = float(np.mean(
+            model["ridge"]["intercept"] + ((X - mean) / scale) @ coef))
+    else:
+        weather_log = float(model["ridge"]["intercept"]
+                            + np.dot((x - mean) / scale, coef))
 
     trend_kg = float(np.exp(trend_log))
+    model_effect_pct = (np.exp(weather_log) - 1) * 100
+    # A model that lost to the trend out of sample does not get to move the
+    # published number; its would-be adjustment is kept for reference.
+    if not model["beats_trend"]:
+        weather_log = 0.0
     point_kg = float(np.exp(trend_log + weather_log))
     sigma = model["uncertainty"]["sigma_kg_ha"]
+    if unk.any():
+        # Validation scored complete seasons; with part of this one unknown
+        # the honest band is at least the trend's own.
+        sigma = max(sigma, model.get("best_trend_baseline_rmse") or sigma)
 
     last = history.dropna(subset=["yield_kg_ha"]).iloc[-1]
 
@@ -174,6 +198,8 @@ def predict_one(cfg, year, oni, dmi):
         "unit": "kg/ha",
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
+        "model_weather_effect_pct": model_effect_pct,
+        "point_basis": "model" if model["beats_trend"] else "trend",
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
         "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
@@ -183,7 +209,9 @@ def predict_one(cfg, year, oni, dmi):
         "weather_skill": model.get("weather_skill", model["recent_skill_vs_trend"]),
         "non_weather_features": model.get("non_weather_features", []),
         "last_actual": {"year": int(last.year), "yield": float(last.yield_kg_ha)},
-        "features": {f: float(feats[f]) for f in model["features"]},
+        "features": {f: (None if f in missing else float(feats[f]))
+                     for f in model["features"]},
+        "features_filled": missing,
         "weather_through": str(coverage.date()),
         "critical_window_observed": share,
         "season_complete": bool(share is not None and share >= 0.999),

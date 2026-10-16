@@ -10,9 +10,9 @@ on:
     inputs:
       rebuild:
         description: >-
-          Re-run collect + train from scratch (re-fetches the ICRISAT blob).
-          Leave off for the routine weekly refresh, which reuses the
-          committed training tables and models and only pulls fresh weather.
+          Re-run collect + train even without a new label year. Off for the
+          routine weekly refresh, which rebuilds on its own when India Data
+          Portal publishes a season the training tables lack.
         type: boolean
         default: false
 
@@ -35,24 +35,43 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas numpy scipy scikit-learn
 
-      # ICRISAT has no per-crop endpoint to check cheaply for a new season the
-      # way brazil_yield_forecast.yml checks SIDRA -- the whole district-year
-      # table comes back in one ~13 MB response, and that response has proven
-      # unreliable (the upstream server drops most transfers before
-      # completion; see india/icrisat.py). Re-attempting it on every weekly
-      # run would make routine forecasts hostage to a flaky one-shot fetch for
-      # no benefit, since ICRISAT's historical district series is not on a
-      # weekly publication cadence in the first place. So the rebuild is
-      # opt-in via workflow_dispatch rather than auto-detected.
+      # ICRISAT's district series ends in 2019 and is vendored
+      # (india/data/icrisat_apy.csv), so it is never re-fetched. Seasons after
+      # it come from India Data Portal's DES/UPAg extracts (india/idp.py),
+      # refreshed here every week; when they carry a label year the training
+      # tables do not yet have, the tables and models are rebuilt. A failed
+      # download keeps last week's extract and the routine forecast still runs.
+      - name: Refresh India Data Portal statistics
+        id: idp
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m india.idp || echo "::warning::India Data Portal refresh failed; keeping the committed extract"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import sys
+          import pandas as pd
+          from india import idp
+          from india.regions import ALL
+          new = False
+          for cfg in ALL:
+              later = idp.region_yield(cfg.crop, cfg.selector)
+              if later is None or later.empty:
+                  continue
+              t = pd.read_csv(f"india/training/{cfg.key}.csv").dropna(subset=["yield_kg_ha"])
+              if int(later.year.max()) > int(t.year.max()):
+                  print(f"{cfg.key}: IDP has {int(later.year.max())}, training ends {int(t.year.max())}", file=sys.stderr)
+                  new = True
+          print(f"new_season={'true' if new else 'false'}")
+          PY
+
       - name: Rebuild training tables and models
-        if: ${{ github.event.inputs.rebuild == 'true' }}
+        if: ${{ github.event.inputs.rebuild == 'true' || steps.idp.outputs.new_season == 'true' }}
         working-directory: "New for anti/scripts/yield_model"
         run: |
           python -m india.collect
           python -m india.train
 
       - name: Run forecast
-        # No API keys: ICRISAT, NASA POWER, NOAA CPC and NOAA PSL are all open.
+        # No API keys: India Data Portal, NASA POWER, NOAA CPC and NOAA PSL are all open.
         working-directory: "New for anti/scripts/yield_model"
         run: |
           python -m india.run_forecast
@@ -62,6 +81,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/india_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/india/data/idp_apy.csv" \
                   "New for anti/scripts/yield_model/india/training" \
                   "New for anti/scripts/yield_model/india/models"
           git commit -m "chore: weekly India regional yield forecast refresh" || exit 0

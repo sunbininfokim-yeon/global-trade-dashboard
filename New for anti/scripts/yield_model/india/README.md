@@ -20,7 +20,8 @@ python3 -m india.run_forecast   # writes public/data/india_yield_forecast.json
 
 | | source | span | key |
 |---|---|---|---|
-| Yield | ICRISAT District Level Database, **district level** | 1966–2017ish | none |
+| Yield | ICRISAT District Level Database, **district level** | 1966–2019 | none |
+| Yield after 2019 | DES APY + UPAg via India Data Portal (`idp.py`), district level | 1997– (UPAg to 2024-25) | none |
 | Weather | NASA POWER daily | 1984– (radiation opens later than meteorology) | none |
 | ENSO | NOAA CPC ONI | 1950– | none |
 | IOD | NOAA PSL HadISST Dipole Mode Index | 1870– | none |
@@ -58,6 +59,30 @@ ET0 is computed here by FAO-56 Penman-Monteith from POWER radiation, wind,
 dewpoint and temperature, rather than taken precomputed, the same choice
 Brazil's package makes and for the same reason: it is the FAO reference method
 and the cotton guide's Moisture_Deficit needs it directly.
+
+### Labels after ICRISAT's end
+
+ICRISAT stops at 2019, which froze every model's labels there. `idp.py`
+downloads the Ministry of Agriculture's district APY series (DES, and the newer
+UPAg) from India Data Portal's open CKAN and `collect.py` appends the years
+after ICRISAT's last one. On the overlap the two agree at a median ratio of
+1.000 and correlation 0.995-1.000 for Punjab+Haryana wheat and Madhya Pradesh
+soybean. Cotton is not spliced: its region is a set of Maharashtra divisions
+whose districts were renamed and split since, and DES reports lint in a
+different unit, so cotton still ends in 2019.
+
+The weekly workflow refreshes the extract and rebuilds tables and models on its
+own when it carries a year the training tables lack. ICRISAT itself is vendored
+(`data/icrisat_apy.csv`) and never re-fetched.
+
+### Forecast before the season's window opens
+
+When a feature is not yet observable (the window is still ahead, or the DMI
+has not been published), `predict.py` fills it from climatology: one scenario
+per training season, averaged. The band is then at least the trend's own
+error. A model that does not beat the trend out of sample publishes the trend
+(`point_basis: "trend"`); its would-be adjustment stays in
+`model_weather_effect_pct`.
 
 ### A known operational problem with the ICRISAT source
 
