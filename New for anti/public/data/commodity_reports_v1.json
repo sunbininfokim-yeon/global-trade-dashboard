@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-16T13:10:29.687929+00:00",
+  "generated_at": "2026-10-16T13:39:18.008657+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -20,12 +20,12 @@
     "sources_ok": 46,
     "sources_failed": 1,
     "raw_items": 843,
-    "scored": 194,
-    "unclassified": 548,
+    "scored": 196,
+    "unclassified": 546,
     "rejected": 60,
-    "published": 181,
+    "published": 183,
     "commodities": 30,
-    "buckets": 105
+    "buckets": 107
   },
   "feed_status": [
     {
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 46 reports linked, 10 read, 26 already known",
+      "note": "45 list pages, 45 reports linked, 12 read, 24 already known",
       "archived": 17
     },
     {
@@ -848,6 +848,18 @@
     "MLI": {
       "name": "Mali",
       "name_ko": "말리"
+    },
+    "SEN": {
+      "name": "Senegal",
+      "name_ko": "세네갈"
+    },
+    "BFA": {
+      "name": "Burkina Faso",
+      "name_ko": "부르키나파소"
+    },
+    "GNB": {
+      "name": "Guinea-Bissau",
+      "name_ko": "기니비사우"
     }
   },
   "index": {
@@ -907,6 +919,12 @@
       "CHN": [
         "b7b8e9c3c1038c73"
       ],
+      "SEN": [
+        "0eb0404d29d2bbc2"
+      ],
+      "BFA": [
+        "0eb0404d29d2bbc2"
+      ],
       "MLI": [
         "0eb0404d29d2bbc2"
       ],
@@ -958,8 +976,15 @@
       "VNM": [
         "2147f5407a8ae8de"
       ],
+      "ARG": [
+        "e36e7155dc085ab6",
+        "21c3dd4f0cf93fd0"
+      ],
       "CHN": [
         "6e3880b1a989890a"
+      ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
       ],
       "USA": [
         "0466c9487c9388ef",
@@ -970,9 +995,6 @@
       ],
       "_global": [
         "976dad99c36e6871"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
       ]
     },
     "corn": {
@@ -1081,9 +1103,6 @@
         "937f667ad21463f2"
       ],
       "USA": [
-        "00abaa8d059c1ade"
-      ],
-      "GBR": [
         "00abaa8d059c1ade"
       ]
     },
@@ -1325,7 +1344,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.525,
+      "importance": 5.522,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1358,7 +1377,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.157,
+      "importance": 5.155,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1391,7 +1410,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.797,
+      "importance": 4.795,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1423,7 +1442,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.791,
+      "importance": 4.789,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1456,7 +1475,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.554,
+      "importance": 4.553,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1489,7 +1508,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.237,
+      "importance": 4.235,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1521,7 +1540,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.199,
+      "importance": 4.197,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1553,7 +1572,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.121,
+      "importance": 4.119,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1586,7 +1605,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.121,
+      "importance": 4.119,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1618,7 +1637,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.776,
+      "importance": 3.775,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1652,7 +1671,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.726,
+      "importance": 3.725,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1682,7 +1701,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.536,
+      "importance": 3.534,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1713,7 +1732,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.444,
+      "importance": 3.443,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1771,13 +1790,15 @@
         "cotton"
       ],
       "countries": [
+        "SEN",
+        "BFA",
         "MLI"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.403,
+      "importance": 3.402,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1809,7 +1830,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.392,
+      "importance": 3.391,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1842,7 +1863,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.386,
+      "importance": 3.385,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1876,7 +1897,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.377,
+      "importance": 3.376,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1884,6 +1905,37 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "e36e7155dc085ab6",
+      "title": {
+        "original": "Argentina: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
+      "published_at": "2026-10-07T12:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.369,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-16T13:39:18.008657+00:00"
     },
     {
       "id": "80352747ac8a00ff",
@@ -1908,7 +1960,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.315,
+      "importance": 3.313,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1939,7 +1991,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.253,
+      "importance": 3.252,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1970,7 +2022,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.253,
+      "importance": 3.252,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2001,7 +2053,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.037,
+      "importance": 3.036,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -2032,7 +2084,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.034,
+      "importance": 3.033,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2065,7 +2117,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.026,
+      "importance": 3.025,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2098,7 +2150,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.026,
+      "importance": 3.025,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2129,7 +2181,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.026,
+      "importance": 3.025,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2160,7 +2212,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.995,
+      "importance": 2.994,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -2193,7 +2245,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.974,
+      "importance": 2.973,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2224,7 +2276,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.923,
+      "importance": 2.922,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2352,7 +2404,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.708,
+      "importance": 2.707,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2384,7 +2436,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.694,
+      "importance": 2.693,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2392,6 +2444,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.652,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-16T13:39:18.008657+00:00"
     },
     {
       "id": "71739cda84d2ebd6",
@@ -2416,7 +2499,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.653,
+      "importance": 2.652,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2448,7 +2531,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.653,
+      "importance": 2.652,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2477,7 +2560,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.652,
+      "importance": 2.651,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -2594,7 +2677,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.367,
+      "importance": 2.366,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2722,7 +2805,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.328,
+      "importance": 2.327,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2754,7 +2837,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.133,
+      "importance": 2.132,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2818,7 +2901,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.099,
+      "importance": 2.098,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2850,7 +2933,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.056,
+      "importance": 2.055,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2881,7 +2964,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.912,
+      "importance": 1.911,
       "reasons": [
         "country_in_text"
       ],
@@ -2986,7 +3069,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.846,
+      "importance": 1.845,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3011,14 +3094,13 @@
         "light_oils"
       ],
       "countries": [
-        "USA",
-        "GBR"
+        "USA"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.823,
+      "importance": 1.822,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -3050,7 +3132,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.767,
+      "importance": 1.766,
       "reasons": [
         "country_in_text"
       ],
@@ -3080,7 +3162,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.766,
+      "importance": 1.765,
       "reasons": [
         "country_in_text"
       ],
@@ -3110,7 +3192,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.763,
+      "importance": 1.762,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3173,7 +3255,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.731,
+      "importance": 1.73,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3314,7 +3396,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.649,
+      "importance": 1.648,
       "reasons": [
         "country_in_text"
       ],
@@ -3445,7 +3527,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.506,
+      "importance": 1.505,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3519,7 +3601,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.466,
+      "importance": 1.465,
       "reasons": [
         "country_in_text"
       ],
@@ -3535,32 +3617,6 @@
       },
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-06T11:28:52.962079+00:00"
-    },
-    {
-      "id": "1bce389d49273d38",
-      "title": {
-        "original": "Tin’s growing role in future hydrogen production",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Tin is emerging as a promising material in several hydrogen-production technologies, from green hydrogen generated through water splitting to turquoise hydrogen produced through methane pyrolysis. Recent research is highlighting how tin’s properties could support more efficient hydrogen generation and create new opportunities for the metal in future energy systems. Hydrogen is attracting increasing attention as an energy carrier, particularly for industries seeking to reduce their carbon emissions. However, most hydrogen is still produced using fossil fuels, driving interest in alternative…",
-      "url": "https://www.internationaltin.org/tins-growing-role-in-future-hydrogen-production/?utm_source=rss&utm_medium=rss&utm_campaign=tins-growing-role-in-future-hydrogen-production",
-      "published_at": "2026-10-13T12:25:39+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.463,
-      "reasons": [],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
     },
     {
       "id": "4098432089e3ba07",
@@ -3763,6 +3819,32 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "1bce389d49273d38",
+      "title": {
+        "original": "Tin’s growing role in future hydrogen production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tin is emerging as a promising material in several hydrogen-production technologies, from green hydrogen generated through water splitting to turquoise hydrogen produced through methane pyrolysis. Recent research is highlighting how tin’s properties could support more efficient hydrogen generation and create new opportunities for the metal in future energy systems. Hydrogen is attracting increasing attention as an energy carrier, particularly for industries seeking to reduce their carbon emissions. However, most hydrogen is still produced using fossil fuels, driving interest in alternative…",
+      "url": "https://www.internationaltin.org/tins-growing-role-in-future-hydrogen-production/?utm_source=rss&utm_medium=rss&utm_campaign=tins-growing-role-in-future-hydrogen-production",
+      "published_at": "2026-10-13T12:25:39+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.463,
+      "reasons": [],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
+    },
+    {
       "id": "b8e0e19f0f00a266",
       "title": {
         "original": "¡Crece la participación de la mujer en la minería del cobre!",
@@ -3815,7 +3897,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.448,
+      "importance": 1.447,
       "reasons": [
         "country_in_text"
       ],
@@ -3858,7 +3940,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.428,
+      "importance": 1.427,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3984,7 +4066,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.379,
+      "importance": 1.378,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4216,7 +4298,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.311,
+      "importance": 1.31,
       "reasons": [
         "country_in_text"
       ],
@@ -4290,7 +4372,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.289,
+      "importance": 1.288,
       "reasons": [
         "country_in_text"
       ],
@@ -4320,7 +4402,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.28,
+      "importance": 1.279,
       "reasons": [
         "country_in_text"
       ],
@@ -4350,7 +4432,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.28,
+      "importance": 1.279,
       "reasons": [
         "country_in_text"
       ],
@@ -4380,7 +4462,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.258,
+      "importance": 1.257,
       "reasons": [
         "country_in_text"
       ],
@@ -4409,7 +4491,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.239,
+      "importance": 1.238,
       "reasons": [
         "country_in_text"
       ],
@@ -4453,7 +4535,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.237,
+      "importance": 1.236,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4514,7 +4596,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.227,
+      "importance": 1.226,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4757,7 +4839,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.207,
+      "importance": 1.206,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4824,7 +4906,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.199,
+      "importance": 1.198,
       "reasons": [
         "country_in_text"
       ],
@@ -4855,7 +4937,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.199,
+      "importance": 1.198,
       "reasons": [
         "country_in_text"
       ],
@@ -5097,7 +5179,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.114,
+      "importance": 1.113,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5280,7 +5362,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.096,
+      "importance": 1.095,
       "reasons": [
         "country_in_text"
       ],
@@ -5394,7 +5476,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.07,
+      "importance": 1.069,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5426,7 +5508,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.055,
+      "importance": 1.054,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6535,7 +6617,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.917,
+      "importance": 0.916,
       "reasons": [],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
@@ -6631,7 +6713,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
+      "importance": 0.902,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6879,7 +6961,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.831,
+      "importance": 0.83,
       "reasons": [
         "country_in_text"
       ],
@@ -6908,7 +6990,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.791,
+      "importance": 0.79,
       "reasons": [],
       "board": "export_controls",
       "control": {
