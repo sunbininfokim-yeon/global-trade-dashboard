@@ -35,6 +35,8 @@ PRODUCT_ALIASES: dict[str, str] = {
     "lng": "lng",
     "coal": "coal",
     "uranium": "uranium",
+    "uranium_ore": "uranium_ore",
+    "manganese": "manganese",
     "wheat": "wheat",
     "corn": "corn",
     "soybeans": "soybeans",
@@ -48,8 +50,10 @@ COMMODITY_HS_STEMS: dict[str, list[str]] = {
     "petroleum_products": ["2710"],
     "lng": ["271111", "2711"],
     "coal": ["2701"],
-    "uranium": ["284410", "2844"],
+    "uranium": ["284410"],
+    "uranium_ore": ["261210"],
     "iron_ore": ["2601"],
+    "manganese": ["2602"],
     "copper": ["2603", "7403"],
     "nickel": ["2604", "7502"],
     "aluminum": ["7601"],
@@ -128,7 +132,10 @@ def resolve_commodity_id(raw: str) -> Optional[str]:
         for cid, stems in COMMODITY_HS_STEMS.items():
             for stem in stems:
                 rel = hs_relation(stem, hs)
-                if rel.relation in ("same", "parent", "child"):
+                # A broader parent can include thorium/enriched uranium or
+                # other ores. Never infer the narrow new products from it.
+                relations = ("same", "parent") if cid in {"uranium", "uranium_ore", "manganese"} else ("same", "parent", "child")
+                if rel.relation in relations:
                     return cid
     return None
 
