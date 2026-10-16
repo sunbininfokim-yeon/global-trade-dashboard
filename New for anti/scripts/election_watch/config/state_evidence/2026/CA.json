@@ -1,0 +1,685 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "CA",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202sur70c7e750"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-15",
+        "reviewed_at": "2026-10-15T16:50:07.744214+00:00",
+        "provider_record_sha256": "f12923eedff23b9351912b4d78033c596cc2d051e590726a9412edd5858924c4",
+        "sources": [
+          "https://results.surveyusa.com/client/PollReport.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+          "https://results.surveyusa.com/client/PollReport_main.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+          "https://results.surveyusa.com/client/PollReport_left.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+          "https://results.surveyusa.com/client/methodology.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2"
+        ],
+        "primary_toplines": {
+          "Marni von Wilpert": 47.0,
+          "Jim Desmond": 38.0
+        },
+        "question_sample_n": 518,
+        "primary_documents": [
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_main.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+            "sha256": "c769943a0d0af8361f8f57de385f3c8681056e74f2cc1000b1f1ccedeb21c664"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/PollReport_left.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+            "sha256": "9e4b33fd30874766e9c6bb63134091e7fa4740aca487bb81d2a23cc5bc5b1811"
+          },
+          {
+            "url": "https://results.surveyusa.com/client/methodology.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+            "sha256": "6625da99ee0495af681a59c56d6005bbd904510f1882dd9172dc96efa66eee88"
+          }
+        ],
+        "admission": {
+          "pollster": "SurveyUSA",
+          "provider_url": "https://results.surveyusa.com/client/PollReport.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+          "group": "surveyusa",
+          "methodology_url": "https://results.surveyusa.com/client/methodology.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 518,
+          "field_dates": [
+            "2026-10-01",
+            "2026-10-07"
+          ],
+          "primary_release_date": "2026-10-08",
+          "provider_record_date": "2026-10-09",
+          "sponsors": [
+            "KGTV-TV San Diego",
+            "San Diego Union-Tribune"
+          ],
+          "sampling_method": "mixed_probability_and_non_probability",
+          "sampling_frame": "47% Cint internet panel; 53% Aristotle probability-based registered-voter telephone sample via operator SMS-to-web",
+          "weighting": "Census gender, age, ethnicity, homeownership and CA-48 partisan registration",
+          "question_wording_checked": true,
+          "question": "Ordinary rotated named-candidate US House ballot, before issue questions; undecided retained",
+          "provider_pollster_label": "SurveyUSA",
+          "primary_pollster_name": "SurveyUSA"
+        },
+        "reported_precision": {
+          "kind": "credibility_interval",
+          "half_width_pp": 5.2,
+          "confidence_level_pct": null,
+          "scope": "question_LV518",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "KGTV-TV San Diego",
+            "San Diego Union-Tribune"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "precision_model_specification",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "518명 LV 본선 문항. 성인 685명·RV 589명과 분리합니다. credibility interval ±5.2를 sampling MOE로 바꾸지 않으며 수치상 9%p 차이를 통계적 유의·당선 확률로 해석하지 않습니다. 공식 발표일 10/08과 API 기록일 10/09를 구분합니다. 이 발표의 원문·의뢰자 검토이며 기관의 모든 미래 발표 승인이 아닙니다.",
+        "snapshot_sha256": "ff4dd1e13da04f05554ef713d5534d30fc4be9f206239171b86b65e6f821ddfd"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-15",
+    "fetched_at": "2026-10-15T06:36:49.172887+00:00",
+    "receipt": {
+      "state": "CA",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-15",
+      "captured_at": "2026-10-15T06:36:49.172887+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "provider_records": 13,
+      "serialized_provider_response_sha256": "4d39260f304a93198b762add5d1d5ae58594f2d4113f585004abbe195eacadfa",
+      "collection_checkpoint_sha256": "7e3c6cc471ee9a794ee91a9e608f4b4c28f892806151bb8a7a2d5d3c70954558",
+      "primary_review_checked_at": "2026-10-15T16:50:07.744214+00:00",
+      "review_basis": "Re-review of preserved provider transport; no new API/finance fetch",
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-ppic-ca-governor-20260910",
+          "state": "CA",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:44.262237+00:00",
+          "documents": [
+            {
+              "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-their-government-september-2026.pdf",
+              "status": "unchanged",
+              "sha256": "bba2caee3f1d62b755a16f03033585a8a3e6c393a2a304be7169a1afeb7b50a8"
+            },
+            {
+              "url": "https://www.ppic.org/wp-content/uploads/crosstabs-likely-voters-0926.pdf",
+              "status": "unchanged",
+              "sha256": "73f48a89c4085558f1fb6ceaae6bf8ce2bf77b57fce7fd605033918613a42ae0"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-ppic-ca-governor-20260706",
+          "state": "CA",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:46.627643+00:00",
+          "documents": [
+            {
+              "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-the-environment-july-2026.pdf",
+              "status": "unchanged",
+              "sha256": "c353d1cee2e5b8029b683635ae705b895ce02c6bd8f060e8535c8d935d57b10c"
+            },
+            {
+              "url": "https://www.ppic.org/wp-content/uploads/crosstabs-likely-voters-0726.pdf",
+              "status": "unchanged",
+              "sha256": "753484cc0fd5e78f681f9abee8a6c84c0916852b15e4f5c4a471adcbb40b1f62"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-ivc-ca-governor-20261002",
+          "state": "CA",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:47.378861+00:00",
+          "documents": [
+            {
+              "url": "https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/",
+              "status": "unchanged",
+              "sha256": "c9e64952330c2b086ddf3b4c3ad260a9423dca39cf7dd4ee7801362790321b23"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      ]
+    },
+    "provider_records": [
+      {
+        "id": "us-202pubd70ec8a7",
+        "poll_type": "us-representative",
+        "sample_size": 547,
+        "population": "a",
+        "url": "https://www.the-downballot.com/p/morning-digest-maine-will-decide?open=false#%C2%A7ca",
+        "created_at": "2026-04-27",
+        "start_date": "2025-08-06",
+        "end_date": "2025-08-08",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "David Valadao",
+            "pct": 42.0
+          },
+          {
+            "choice": "Jasmeet Bains",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": "CA-22",
+        "sponsors": [
+          "ASPIRE PAC",
+          "SEIU"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 CA-22"
+      },
+      {
+        "id": "gov202kree5c2edd2",
+        "poll_type": "governor",
+        "sample_size": 900,
+        "population": "lv",
+        "url": "https://kstrat.net/press/california-2026-governor-becerra-leads-hilton-june",
+        "created_at": "2026-06-18",
+        "start_date": "2026-06-13",
+        "end_date": "2026-06-17",
+        "pollster": "Kreate Strategies",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 58.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "us-202tul5fdc419c",
+        "poll_type": "us-representative",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/playbook/2026/07/21/trump-to-hill-im-not-that-into-you-01005915",
+        "created_at": "2026-07-21",
+        "start_date": "2026-06-15",
+        "end_date": "2026-06-21",
+        "pollster": "Tulchin Research",
+        "answers": [
+          {
+            "choice": "Randy Villegas",
+            "pct": 48.0
+          },
+          {
+            "choice": "David Valadao",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "CA-22",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 CA-22"
+      },
+      {
+        "id": "us-202thed03f59fe",
+        "poll_type": "us-representative",
+        "sample_size": 741,
+        "population": "lv",
+        "url": "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat",
+        "created_at": "2026-07-28",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-16",
+        "pollster": "The Bullfinch Group",
+        "answers": [
+          {
+            "choice": "Richard Pan",
+            "pct": 39.0
+          },
+          {
+            "choice": "Kevin Kiley",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": "CA-06",
+        "sponsors": [
+          "The Independent Center"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 CA-06"
+      },
+      {
+        "id": "gov202uc 82527a3d",
+        "poll_type": "governor",
+        "sample_size": 2310,
+        "population": "lv",
+        "url": "https://www.latimes.com/california/story/2026-08-13/becerra-holds-strong-lead-over-hilton-in-race-for-california-governor-poll",
+        "created_at": "2026-08-13",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
+        "pollster": "UC Berkeley Institute of Governmental Studies",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 55.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Los Angeles Times"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "us-202surf8843a2d",
+        "poll_type": "us-representative",
+        "sample_size": 522,
+        "population": "lv",
+        "url": "https://results.surveyusa.com/client/PollReport.aspx?g=0877c725-6e44-47fe-9856-dcf799865671",
+        "created_at": "2026-09-04",
+        "start_date": "2026-08-27",
+        "end_date": "2026-09-01",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Marni von Wilpert",
+            "pct": 45.0
+          },
+          {
+            "choice": "Jim Desmond",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": "CA-48",
+        "sponsors": [
+          "KGTV (San Diego)",
+          "The San Diego Union Tribune"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 CA-48"
+      },
+      {
+        "id": "us-202ame0ab6dda0",
+        "poll_type": "us-representative",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://youngkimforcongress.com/press-release/ca-40-poll-shows-young-kim-and-ken-calvert-locked-in-a-dead-heat",
+        "created_at": "2026-09-10",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-12",
+        "pollster": "American Viewpoint",
+        "answers": [
+          {
+            "choice": "Ken Calvert",
+            "pct": 33.0
+          },
+          {
+            "choice": "Young Kim",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": "CA-40",
+        "sponsors": [
+          "California First Fund"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 CA-40"
+      },
+      {
+        "id": "us-202gra1f1faac3",
+        "poll_type": "us-representative",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/california-playbook/2026/09/17/paramounts-nashville-overture-01081617",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-05",
+        "end_date": "2026-09-09",
+        "pollster": "Grassroots Targeting",
+        "answers": [
+          {
+            "choice": "Ken Calvert",
+            "pct": 34.0
+          },
+          {
+            "choice": "Young Kim",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": "CA-40",
+        "sponsors": [
+          "California First Fund"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 CA-40"
+      },
+      {
+        "id": "gov202surd1c462e5",
+        "poll_type": "governor",
+        "sample_size": 742,
+        "population": "lv",
+        "url": "https://www.10news.com/americavotes/poll-xavier-becerra-leads-california-gubernatorial-race-in-statewide-survey",
+        "created_at": "2026-09-22",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-20",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 55.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KGTV (San Diego)",
+          "The San Diego Union Tribune"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "gov202uc 6d968dc2",
+        "poll_type": "governor",
+        "sample_size": 4512,
+        "population": "lv",
+        "url": "https://www.latimes.com/california/story/2026-09-24/high-cost-of-living-tops-voter-concerns-becerra-remains-front-runner-in-governors-race-new-poll-shows",
+        "created_at": "2026-09-24",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-20",
+        "pollster": "UC Berkeley Institute of Governmental Studies",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 58.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Los Angeles Times"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "gov202uni2551add5",
+        "poll_type": "governor",
+        "sample_size": 1983,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/california-playbook/2026/09/25/xavier-becerras-dispassionate-supporters-01092984",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-11",
+        "end_date": "2026-09-16",
+        "pollster": "University of California Berkeley Jack Citrin Center for Public Opinion Research/Verasight/TrueDot",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 54.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Politico"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "us-202tav5e39c6e6",
+        "poll_type": "us-representative",
+        "sample_size": 658,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/california-playbook/2026/10/02/carl-demaio-is-the-establishment-now-01104622",
+        "created_at": "2026-10-02",
+        "start_date": "2026-09-15",
+        "end_date": "2026-09-17",
+        "pollster": "Tavern Research",
+        "answers": [
+          {
+            "choice": "Scott Wiener",
+            "pct": 45.0
+          },
+          {
+            "choice": "Connie Chan",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": "CA-11",
+        "sponsors": [
+          "Jobs and Democracy PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 CA-11"
+      },
+      {
+        "id": "us-202sur70c7e750",
+        "poll_type": "us-representative",
+        "sample_size": 518,
+        "population": "lv",
+        "url": "https://results.surveyusa.com/client/PollReport.aspx?g=01471c0a-ab87-499e-8974-8526fea475d2",
+        "created_at": "2026-10-09",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-07",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Marni von Wilpert",
+            "pct": 47.0
+          },
+          {
+            "choice": "Jim Desmond",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KGTV (San Diego)",
+          "The San Diego Union-Tribune"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 CA-48"
+      }
+    ],
+    "provider_records_sha256": "abab1495406582da1372ddd36ddfb70c05745b486d01eff5b7420d63b6e08741",
+    "primary_records": [
+      {
+        "id": "primary-ppic-ca-governor-20260910",
+        "subject": "2026 California",
+        "poll_type": "governor",
+        "pollster": "Public Policy Institute of California",
+        "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-their-government-september-2026.pdf",
+        "start_date": "2026-09-04",
+        "end_date": "2026-09-10",
+        "created_at": "2026-09-15",
+        "population": "lv",
+        "sample_size": 1103,
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 60
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 38
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:44.262237+00:00",
+          "documents": [
+            {
+              "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-their-government-september-2026.pdf",
+              "status": "unchanged",
+              "sha256": "bba2caee3f1d62b755a16f03033585a8a3e6c393a2a304be7169a1afeb7b50a8"
+            },
+            {
+              "url": "https://www.ppic.org/wp-content/uploads/crosstabs-likely-voters-0926.pdf",
+              "status": "unchanged",
+              "sha256": "73f48a89c4085558f1fb6ceaae6bf8ce2bf77b57fce7fd605033918613a42ae0"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-ppic-ca-governor-20260706",
+        "subject": "2026 California",
+        "poll_type": "governor",
+        "pollster": "Public Policy Institute of California",
+        "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-the-environment-july-2026.pdf",
+        "start_date": "2026-06-29",
+        "end_date": "2026-07-06",
+        "created_at": "2026-07-16",
+        "population": "lv",
+        "sample_size": 1003,
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 61
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 36
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:46.627643+00:00",
+          "documents": [
+            {
+              "url": "https://www.ppic.org/pdf/ppic-statewide-survey-californians-and-the-environment-july-2026.pdf",
+              "status": "unchanged",
+              "sha256": "c353d1cee2e5b8029b683635ae705b895ce02c6bd8f060e8535c8d935d57b10c"
+            },
+            {
+              "url": "https://www.ppic.org/wp-content/uploads/crosstabs-likely-voters-0726.pdf",
+              "status": "unchanged",
+              "sha256": "753484cc0fd5e78f681f9abee8a6c84c0916852b15e4f5c4a471adcbb40b1f62"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-ivc-ca-governor-20261002",
+        "subject": "2026 California",
+        "poll_type": "governor",
+        "pollster": "IVC Media",
+        "url": "https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/",
+        "start_date": "2026-09-23",
+        "end_date": "2026-10-02",
+        "created_at": "2026-10-04",
+        "population": "lv",
+        "sample_size": 2906,
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 48
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 38
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Independent Voter Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-08",
+          "checked_at": "2026-10-15T06:37:47.378861+00:00",
+          "documents": [
+            {
+              "url": "https://ivn.us/new-ca-poll-voter-id-measure-leads-today-its-undecided-voters-point-the-other-way/",
+              "status": "unchanged",
+              "sha256": "c9e64952330c2b086ddf3b4c3ad260a9423dca39cf7dd4ee7801362790321b23"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      }
+    ]
+  }
+}
