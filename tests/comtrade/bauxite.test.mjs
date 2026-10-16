@@ -114,14 +114,14 @@ test('monthly observations and display holds are not filled from annual or alumi
 
 test('legacy historical-date simulation cannot fabricate bauxite observations',()=>{
     const app=source('app.js');
-    assert.match(app,/toggleAttribute\('disabled', target === 'bauxite'\)/);
+    assert.match(app,/toggleAttribute\('disabled', !!window\.TradeData\?\.\[target\]\?\.observedOnly\)/);
     const start=app.indexOf("document.getElementById('historical-date').addEventListener('change'");
     const listener=app.slice(start,app.indexOf('// Panels render clickable',start));
     let change;
     const timers=[],title={textContent:'bauxite'};
     const context={currentCommodity:'bauxite',currentViewTitle:title,
         console:{log(){}},Math:{random(){assert.fail('simulated value generated');}},
-        window:{TradeData:{bauxite:{arcs:[{volume:123}]}}},
+        window:{TradeData:{bauxite:{observedOnly:true,arcs:[{volume:123}]}}},
         document:{getElementById(){return {addEventListener(_,fn){change=fn;}};}},
         setTimeout:fn=>timers.push(fn)};
     vm.runInNewContext(listener,context);
