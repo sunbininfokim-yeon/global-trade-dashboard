@@ -1,8 +1,8 @@
 name: Labels source probe (temporary)
 
-# Pulls the agriculture section of tochno.st's Rosstat "Regions of Russia"
-# collection (v20260313) and commits a filtered extract to this branch, so
-# its coverage can be checked. Branch-only; removed before merge.
+# Pulls India Data Portal's APY CSVs and commits a filtered extract (Punjab,
+# Madhya Pradesh, Maharashtra; wheat, soybean, cotton) to this branch, so
+# coverage can be checked. Branch-only; removed before merge.
 on:
   push:
     branches: ['claude/india-labels']
@@ -19,35 +19,27 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/t && cd /tmp/t
-          curl -sSL -m 600 -o s13.zip "https://storage.yandexcloud.net/tochno-st-catalog/Rosstat/data_regions_collection_102_v20260313/data_13_socio_economic_102_v20260313.zip"
-          ls -la; unzip -o -q s13.zip -d s13; find s13 -type f | head -50 > files.txt; cat files.txt
-          pip install -q pandas pyarrow
+          base="https://ckan.indiadataportal.com/dataset/5b8f4660-52d2-4edf-824b-1af41d290498/resource"
+          curl -sSL -m 900 -o upag.csv "$base/9668b3f8-8e23-45a5-b290-4193cbacc670/download/cropwise-area-production-yield-upag.csv"
+          curl -sSL -m 900 -o apy.csv "$base/a000ce51-a257-42e3-8ab7-3cd212966f88/download/crop-wise-area-production-yield.csv"
+          ls -la; head -3 upag.csv; head -3 apy.csv
+          pip install -q pandas
           python3 - <<'PY'
-          import glob, os, pandas as pd
-          out = "/tmp/t/extract"
-          os.makedirs(out, exist_ok=True)
-          files = glob.glob("/tmp/t/s13/**/*", recursive=True)
-          frames = []
-          for f in files:
-              if f.endswith(".parquet"):
-                  frames.append(pd.read_parquet(f))
-              elif f.endswith(".csv"):
-                  try:
-                      frames.append(pd.read_csv(f, sep=";", low_memory=False))
-                  except Exception as e:
-                      print("skip", f, e)
-          d = pd.concat(frames, ignore_index=True)
-          print(d.columns.tolist()); print(d.head(3).to_string())
-          d.head(200).to_csv(f"{out}/head.csv", index=False)
-          s = d.astype(str)
-          mask = s.apply(lambda c: c.str.contains("13120000|13160000|13050000|рожайн|осевн", regex=True)).any(axis=1)
-          d[mask].to_csv(f"{out}/agri_filtered.csv", index=False)
-          print("filtered rows", int(mask.sum()))
+          import os, pandas as pd
+          out = "/tmp/t/extract"; os.makedirs(out, exist_ok=True)
+          for name in ("upag", "apy"):
+              d = pd.read_csv(f"/tmp/t/{name}.csv", low_memory=False)
+              print(name, d.shape, d.columns.tolist())
+              d.head(50).to_csv(f"{out}/{name}_head.csv", index=False)
+              s = d.astype(str)
+              st = s.apply(lambda c: c.str.contains("Punjab|Madhya|Maharashtra", case=False)).any(axis=1)
+              cr = s.apply(lambda c: c.str.contains("wheat|soya|cotton", case=False)).any(axis=1)
+              d[st & cr].to_csv(f"{out}/{name}_filtered.csv", index=False)
+              print(name, "filtered", int((st & cr).sum()))
           PY
-          cp /tmp/t/files.txt /tmp/t/extract/
-          dest="$GITHUB_WORKSPACE/New for anti/scripts/yield_model/russia/training/_tochno_probe"
+          dest="$GITHUB_WORKSPACE/New for anti/scripts/yield_model/india/data/_idp_probe"
           mkdir -p "$dest"; cp /tmp/t/extract/* "$dest/"
           cd "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/scripts/yield_model/russia/training/_tochno_probe"
-          git commit -m "probe: tochno.st section 13 extract" && git push
+          git add "New for anti/scripts/yield_model/india/data/_idp_probe"
+          git commit -m "probe: India Data Portal APY extract" && git push
