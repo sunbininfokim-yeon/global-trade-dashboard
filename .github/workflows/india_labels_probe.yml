@@ -1,0 +1,27 @@
+name: India labels source probe (temporary)
+
+# Which post-2019 Indian crop-yield sources answer from Actions without a
+# login. Branch-only; removed before merge.
+on:
+  push:
+    branches: ['claude/india-labels']
+    paths: ['.github/workflows/india_labels_probe.yml']
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe
+        run: |
+          probe() {
+            code=$(curl -sSL -A "Mozilla/5.0" -o /tmp/out -w '%{http_code} %{content_type} %{size_download}' -m 60 "$1" || echo fail)
+            echo "::notice::$code | $1 | $(head -c 300 /tmp/out | tr -d '\n\r' | tr -c '[:print:]' ' ')"
+          }
+          probe "https://ckandev.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
+          probe "https://indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
+          probe "https://ckan.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
+          probe "https://ckandev.indiadataportal.com/api/3/action/package_search?q=apy&rows=5"
+          probe "https://data.desagri.gov.in/website/crops-apy-report-web"
+          probe "https://upag.gov.in/"
+          probe "https://aps.dac.gov.in/APY/Public_Report1.aspx"
+          probe "https://dataful.in/datasets/4889"
