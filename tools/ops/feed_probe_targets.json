@@ -1,207 +1,218 @@
 {
  "notes": [
-  "Candidate feeds for scripts/commodity_reports, checked by tools/ops/feed_probe.py on an Actions runner. Guesses until a run says otherwise; a URL listed here is not an endorsement."
+  "probe round 3: more uranium/bauxite/manganese candidates"
  ],
  "targets": [
   {
-   "group": "sanctions",
-   "id": "ofac_recent_actions",
-   "url": "https://ofac.treasury.gov/recent-actions",
-   "variants": true,
-   "link_text": true,
-   "link_re": "ofac\\.treasury\\.gov/recent-actions/\\d{8}",
-   "samples": 8
+   "group": "newcom3",
+   "id": "nrc_rssfeeds",
+   "url": "https://www.nrc.gov/rss-feeds",
+   "list_feeds": true,
+   "link_re": "[^\"' ]*(?:rss|\\.xml|feed)[^\"' ]*",
+   "samples": 25
   },
   {
-   "group": "sanctions",
-   "id": "ofac_rss_guess",
-   "url": "https://ofac.treasury.gov/recent-actions/rss.xml",
-   "variants": true,
-   "show_body": 300
-  },
-  {
-   "group": "sanctions",
-   "id": "fr_bis",
-   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=industry-and-security-bureau",
-   "show_body": 1200
-  },
-  {
-   "group": "sanctions",
-   "id": "fr_ofac",
-   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=foreign-assets-control-office",
-   "show_body": 1200
-  },
-  {
-   "group": "sanctions",
-   "id": "bis_news",
-   "url": "https://www.bis.gov/news-updates",
-   "variants": true,
-   "link_text": true,
-   "link_re": "bis\\.gov/(?:press-release|news-updates)/[a-z0-9-]+",
-   "samples": 8
-  },
-  {
-   "group": "sanctions",
-   "id": "eu_sanctions_news",
-   "url": "https://finance.ec.europa.eu/eu-and-world/sanctions-restrictive-measures_en",
-   "variants": true,
-   "link_text": true,
-   "link_re": "europa\\.eu/[^\\\"' ]*sanction[^\\\"' ]*",
-   "samples": 8
-  },
-  {
-   "group": "sanctions",
-   "id": "meti_export_control_en",
-   "url": "https://www.meti.go.jp/policy/anpo/englishpage.html",
-   "variants": true,
-   "link_text": true,
-   "link_re": "meti\\.go\\.jp/[^\\\"' ]+",
-   "samples": 10
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_oil_usa_p1",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=0",
-   "show_body": 500
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_oil_usa_p2",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=2",
-   "show_body": 500
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_corn_world",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=corn&limit=100",
-   "show_body": 300
-  },
-  {
-   "group": "prod",
-   "id": "reports_pager_index_html",
-   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/",
-   "show_body": 0,
-   "link_re": "trade\\.js\\?v=[a-z0-9-]+",
-   "samples": 3
-  },
-  {
-   "group": "opec",
-   "id": "opec_home_links",
-   "url": "https://www.opec.org/",
-   "link_re": "opec\\.org/[a-zA-Z0-9/_.-]{6,}",
-   "samples": 60
-  },
-  {
-   "group": "opec",
-   "id": "opec_pdf_1",
-   "url": "https://www.opec.org/assets/assetdb/momr-september-2026.pdf",
-   "show_body": 200
-  },
-  {
-   "group": "opec",
-   "id": "opec_pdf_2",
-   "url": "https://www.opec.org/opec_web/static_files_project/media/downloads/publications/MOMR%20September%202026.pdf",
-   "show_body": 200
-  },
-  {
-   "group": "opec",
-   "id": "opec_pdf_3",
-   "url": "https://momr.opec.org/pdf-download/",
-   "show_body": 200
-  },
-  {
-   "group": "wp",
-   "id": "icsg_types",
-   "url": "https://icsg.org/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "ilzsg_types",
-   "url": "https://www.ilzsg.org/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "insg_types",
-   "url": "https://insg.org/index.php/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "cobalt_types",
-   "url": "https://www.cobaltinstitute.org/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "ico_types",
-   "url": "https://ico.org/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "ita_types",
-   "url": "https://www.internationaltin.org/wp-json/wp/v2/types",
-   "show_body": 1500
-  },
-  {
-   "group": "wp",
-   "id": "icsg_press_pdf",
-   "url": "https://icsg.org/press-releases/",
-   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press-release)",
-   "samples": 12
-  },
-  {
-   "group": "wp",
-   "id": "ilzsg_press",
-   "url": "https://www.ilzsg.org/press-releases/",
-   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
-   "samples": 12
-  },
-  {
-   "group": "wp",
-   "id": "insg_press",
-   "url": "https://insg.org/index.php/press-releases/",
-   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
-   "samples": 12
-  },
-  {
-   "group": "wp",
-   "id": "cobalt_news",
-   "url": "https://www.cobaltinstitute.org/news/",
-   "link_re": "cobaltinstitute\\.org/(news|press)[^\\\"' ]*",
-   "samples": 12
-  },
-  {
-   "group": "more",
-   "id": "esdm_press",
-   "url": "https://www.esdm.go.id/id/media-center/siaran-pers",
-   "link_re": "/id/media-center/(siaran-pers|arsip-berita)/[a-z0-9-]{12,}",
-   "samples": 8,
+   "group": "newcom3",
+   "id": "nucnet_feed",
+   "url": "https://www.nucnet.org/feed",
    "list_feeds": true
   },
   {
-   "group": "more",
-   "id": "jodi_news",
-   "url": "https://www.jodidata.org/news-events/jodi-news.aspx",
-   "link_re": "jodidata\\.org/news[^\\\"' ]*",
-   "samples": 10
+   "group": "newcom3",
+   "id": "nucnet_home",
+   "url": "https://www.nucnet.org/",
+   "list_feeds": true,
+   "samples": 2
   },
   {
-   "group": "more",
-   "id": "bcr_links",
-   "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal",
-   "link_re": "/es/mercados/[a-z0-9/-]+/[a-z0-9-]{8,}",
-   "samples": 10,
+   "group": "newcom3",
+   "id": "wna_home",
+   "url": "https://world-nuclear.org/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "wna_news_rss",
+   "url": "https://world-nuclear.org/news-and-media/rss",
    "list_feeds": true
   },
   {
-   "group": "more",
-   "id": "irsg_news2",
-   "url": "https://www.rubberstudy.org/news",
-   "link_re": "rubberstudy\\.org/(news|press|nw|article)/[^\\\"' ]+",
-   "samples": 15
+   "group": "newcom3",
+   "id": "sprott_insights",
+   "url": "https://sprott.com/insights/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "nea_news",
+   "url": "https://www.oecd-nea.org/jcms/pl_14/news",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "orano_press",
+   "url": "https://www.orano.group/en/press-releases",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "urenco_news",
+   "url": "https://www.urenco.com/news",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "centrus_news",
+   "url": "https://www.centrusenergy.com/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "energyfuels_news",
+   "url": "https://www.energyfuels.com/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "nexgen_news",
+   "url": "https://www.nexgenenergy.ca/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "denison_news",
+   "url": "https://denisonmines.com/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "paladin_news",
+   "url": "https://www.paladinenergy.com.au/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "ansto_news",
+   "url": "https://www.ansto.gov.au/news",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "doe_ne_articles",
+   "url": "https://www.energy.gov/ne/articles",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "euratom_esa",
+   "url": "https://euratom-supply.ec.europa.eu/index_en",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "jbi",
+   "url": "https://jbi.org.jm/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "ega_news",
+   "url": "https://www.ega.ae/en/media/news",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "rusal_press",
+   "url": "https://rusal.ru/en/press-center/press-releases/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "chalco_news",
+   "url": "https://www.chalco.com.cn/chalco_en/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "mining_feed",
+   "url": "https://www.mining.com/feed/",
+   "list_feeds": true
+  },
+  {
+   "group": "newcom3",
+   "id": "mining_bauxite",
+   "url": "https://www.mining.com/tag/bauxite/feed/",
+   "list_feeds": true
+  },
+  {
+   "group": "newcom3",
+   "id": "mining_uranium",
+   "url": "https://www.mining.com/tag/uranium/feed/",
+   "list_feeds": true
+  },
+  {
+   "group": "newcom3",
+   "id": "mining_manganese",
+   "url": "https://www.mining.com/tag/manganese/feed/",
+   "list_feeds": true
+  },
+  {
+   "group": "newcom3",
+   "id": "gnews_bauxite",
+   "url": "https://news.google.com/rss/search?q=bauxite&hl=en-US&gl=US&ceid=US:en",
+   "list_feeds": true
+  },
+  {
+   "group": "newcom3",
+   "id": "industry_req",
+   "url": "https://www.industry.gov.au/publications/resources-and-energy-quarterly",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "jupiter_news",
+   "url": "https://www.jupitermines.com/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "imni",
+   "url": "https://www.manganese.org/news/",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "anglo_press",
+   "url": "https://www.angloamerican.com/media/press-releases",
+   "list_feeds": true,
+   "samples": 2
+  },
+  {
+   "group": "newcom3",
+   "id": "tshipi",
+   "url": "https://tshipi.co.za/",
+   "list_feeds": true,
+   "samples": 2
   }
  ]
 }
