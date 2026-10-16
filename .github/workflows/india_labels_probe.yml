@@ -1,7 +1,7 @@
-name: India labels source probe (temporary)
+name: Labels source probe (temporary)
 
-# Which post-2019 Indian crop-yield sources answer from Actions without a
-# login. Branch-only; removed before merge.
+# Which post-2021 Russian and post-2019 Indian crop-yield sources answer
+# from Actions without a login. Branch-only; removed before merge.
 on:
   push:
     branches: ['claude/india-labels']
@@ -15,13 +15,19 @@ jobs:
         run: |
           probe() {
             code=$(curl -sSL -A "Mozilla/5.0" -o /tmp/out -w '%{http_code} %{content_type} %{size_download}' -m 60 "$1" || echo fail)
-            echo "::notice::$code | $1 | $(head -c 300 /tmp/out | tr -d '\n\r' | tr -c '[:print:]' ' ')"
+            echo "::notice::$code | $1 | $(head -c 200 /tmp/out | tr -d '\n\r' | tr -c '[:print:]' ' ')"
           }
-          probe "https://ckandev.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
-          probe "https://indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
-          probe "https://ckan.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy"
-          probe "https://ckandev.indiadataportal.com/api/3/action/package_search?q=apy&rows=5"
-          probe "https://data.desagri.gov.in/website/crops-apy-report-web"
-          probe "https://upag.gov.in/"
-          probe "https://aps.dac.gov.in/APY/Public_Report1.aspx"
-          probe "https://dataful.in/datasets/4889"
+          # Russia
+          probe "https://fedstat.ru/indicator/31328"
+          probe "https://fedstat.ru/indicator/31533"
+          probe "https://rosstat.gov.ru/enterprise_economy"
+          probe "https://rosstat.gov.ru/folder/210/document/13204"
+          probe "https://rosstat.gov.ru/storage/mediabank/Rus_reg_2024.htm"
+          probe "https://showdata.gks.ru/finder/"
+          probe "https://www.mojgorod.ru/r_stat/tabR4711.html"
+          probe "https://www.mojgorod.ru/"
+          probe "https://ab-centre.ru/"
+          probe "https://www.gks.ru/"
+          # India: India Data Portal CKAN resource list
+          curl -sSL -m 60 "https://ckan.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy" \
+            | python3 -c "import json,sys; r=json.load(sys.stdin)['result']; print('::notice::IDP notes', (r.get('notes') or '')[:300].replace(chr(10),' ')); [print('::notice::IDP res', x.get('name'), x.get('format'), x.get('size'), x.get('last_modified'), x.get('url')) for x in r['resources']]"
