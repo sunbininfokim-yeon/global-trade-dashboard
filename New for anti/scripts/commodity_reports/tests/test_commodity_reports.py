@@ -1252,6 +1252,16 @@ class NewProducerCountryTests(unittest.TestCase):
         self.assertEqual(self.tagger.tag("Niger uranium mine Arlit output"), ["NER"])
         self.assertEqual(self.tagger.tag("Namibia uranium exports to China"), ["NAM", "CHN"])
 
+    def test_new_mexico_is_not_mexico(self):
+        from commodity_reports.tag import _strip_false_country_collocations as strip
+        self.assertEqual(self.tagger.tag(strip("Grants Reclamation Project, New Mexico")), [])
+        # The state is dropped, the country named separately is kept.
+        self.assertEqual(
+            set(self.tagger.tag(strip("Urenco USA in New Mexico expands; Mexico imports enriched uranium"))),
+            {"USA", "MEX"},
+        )
+        self.assertEqual(self.tagger.tag(strip("Urenco USA expansion in New Mexico")), ["USA"])
+
     def test_niger_is_not_nigeria(self):
         self.assertEqual(self.tagger.tag("Nigeria crude exports in the Niger Delta"), ["NGA"])
         self.assertEqual(self.tagger.tag("Nigerian output rises"), ["NGA"])

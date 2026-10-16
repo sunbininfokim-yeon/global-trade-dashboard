@@ -186,6 +186,9 @@ class Tagged:
 # trying to enumerate every possible collocation up front.
 _FALSE_COUNTRY_COLLOCATIONS = [
     re.compile(r"british\s+thermal\s+units?", re.I),
+    # A US state, not the country: Urenco USA (Eunice) and the Grants uranium
+    # sites sit in New Mexico, and both landed in Mexico's window (2026-10-16).
+    re.compile(r"new\s+mexico", re.I),
 ]
 
 
