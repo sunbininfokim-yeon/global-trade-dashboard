@@ -1200,5 +1200,44 @@ class BuildTests(unittest.TestCase):
         self.assertEqual({i["id"] for i in self.doc["items"]}, referenced)
 
 
+class NuclearAndBauxiteWindowTests(unittest.TestCase):
+    """Bauxite, uranium and uranium ore have their own menus (2026-10-16); the
+    report keys are the menu keys, so each needs a window of its own."""
+
+    def setUp(self):
+        self.tagger = CommodityTagger.from_config(cfg("commodities.json"))
+
+    def test_bauxite_is_its_own_window_not_aluminum(self):
+        hits = self.tagger.tag("Guinea bauxite exports rise as new mines ramp up")
+        self.assertIn("bauxite", hits)
+        self.assertNotIn("aluminum", hits)
+
+    def test_aluminum_and_alumina_stay_in_the_aluminum_window(self):
+        hits = self.tagger.tag("Alumina refinery restart lifts aluminium output")
+        self.assertIn("aluminum", hits)
+        self.assertNotIn("bauxite", hits)
+
+    def test_uranium_news_lands_in_both_uranium_windows(self):
+        hits = self.tagger.tag("Cameco lifts uranium production guidance as spot price climbs")
+        self.assertIn("uranium", hits)
+        self.assertIn("uranium_ore", hits)
+
+    def test_reactor_news_without_the_metal_is_not_uranium(self):
+        self.assertEqual(self.tagger.tag("BWXT microreactor selected for Canadian project"), [])
+
+    def test_manganese_ore_still_lands_in_manganese(self):
+        self.assertIn("manganese", self.tagger.tag("Gabon manganese ore exports to China"))
+        self.assertIn("manganese", self.tagger.tag("加蓬锰矿出口"))
+
+    def test_every_new_source_names_a_known_commodity_and_country(self):
+        known = set(cfg("commodities.json")["commodities"])
+        countries = set(cfg("countries.json")["countries"])
+        for src in cfg("sources.json")["sources"]:
+            for key in (src.get("commodity_hint") or []) + (src.get("commodity_scope") or []):
+                self.assertIn(key, known, f"{src['id']} names unknown commodity {key}")
+            if src.get("default_country"):
+                self.assertIn(src["default_country"], countries, src["id"])
+
+
 if __name__ == "__main__":
     unittest.main()
