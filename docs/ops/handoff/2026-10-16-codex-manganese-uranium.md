@@ -4,7 +4,7 @@
 - Branch: `codex/commodity-manganese-uranium`
 - Working checkout: `/private/tmp/commodity-bauxite-ui.adr6eq/checkout`
 - 모든 실행의 workdir: `/Users/yeoninair/Documents/New for anti-dart`
-- Base: `386504e8f5462fc5f9c0b761dd9e591113b22a4a` (보크사이트 #587 병합 후 main)
+- Base: `9781680aff57133648f37c71595ce6471be39830` (보크사이트 #587 및 후속 main 반영 후 rebase; 신규 생성 통계는 main 그대로 보존)
 - 사용자: 10/16 망간광·정광·우라늄 추가 및 재개 승인. 관련 UI만 좁게 허용.
 
 ## 품목 계약
