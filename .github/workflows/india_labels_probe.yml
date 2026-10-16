@@ -1,45 +1,27 @@
-name: Labels source probe (temporary)
+name: India labels pull (temporary)
 
-# Pulls India Data Portal's APY CSVs and commits a filtered extract (Punjab,
-# Madhya Pradesh, Maharashtra; wheat, soybean, cotton) to this branch, so
-# coverage can be checked. Branch-only; removed before merge.
+# Branch-only: run india.idp in Actions (the container cannot reach India
+# Data Portal) and commit data/idp_apy.csv back for review. Removed before
+# merge.
 on:
   push:
     branches: ['claude/india-labels']
-    paths: ['.github/workflows/india_labels_probe.yml']
+    paths: ['.github/workflows/india_labels_probe.yml', 'New for anti/scripts/yield_model/india/idp.py']
 
 jobs:
-  probe:
+  pull:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch and filter
-        run: |
-          set -e
-          mkdir -p /tmp/t && cd /tmp/t
-          base="https://ckan.indiadataportal.com/dataset/5b8f4660-52d2-4edf-824b-1af41d290498/resource"
-          curl -sSL -m 900 -o upag.csv "$base/9668b3f8-8e23-45a5-b290-4193cbacc670/download/cropwise-area-production-yield-upag.csv"
-          curl -sSL -m 900 -o apy.csv "$base/a000ce51-a257-42e3-8ab7-3cd212966f88/download/crop-wise-area-production-yield.csv"
-          ls -la; head -3 upag.csv; head -3 apy.csv
-          pip install -q pandas
-          python3 - <<'PY'
-          import os, pandas as pd
-          out = "/tmp/t/extract"; os.makedirs(out, exist_ok=True)
-          for name in ("upag", "apy"):
-              d = pd.read_csv(f"/tmp/t/{name}.csv", low_memory=False)
-              print(name, d.shape, d.columns.tolist())
-              d.head(50).to_csv(f"{out}/{name}_head.csv", index=False)
-              s = d.astype(str)
-              st = s.apply(lambda c: c.str.contains("Punjab|Madhya|Maharashtra", case=False)).any(axis=1)
-              cr = s.apply(lambda c: c.str.contains("wheat|soya|cotton", case=False)).any(axis=1)
-              d[st & cr].to_csv(f"{out}/{name}_filtered.csv", index=False)
-              print(name, "filtered", int((st & cr).sum()))
-          PY
-          dest="$GITHUB_WORKSPACE/New for anti/scripts/yield_model/india/data/_idp_probe"
-          mkdir -p "$dest"; cp /tmp/t/extract/* "$dest/"
-          cd "$GITHUB_WORKSPACE"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas
+      - working-directory: "New for anti/scripts/yield_model"
+        run: python -m india.idp
+      - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/scripts/yield_model/india/data/_idp_probe"
-          git commit -m "probe: India Data Portal APY extract" && git push
+          git add "New for anti/scripts/yield_model/india/data/idp_apy.csv"
+          git commit -m "chore: India Data Portal APY extract" && git push
