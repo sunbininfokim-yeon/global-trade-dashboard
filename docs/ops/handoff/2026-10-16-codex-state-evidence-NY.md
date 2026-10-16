@@ -31,3 +31,5 @@ ballot review는 county sample 근거의 인쇄 후보2명과 캠프가 밝힌 �
 NY 전용6개 통과: 원문 n/수치, 인쇄/기명 분리,7/14 창, 동일 파동 중복, 표본·의뢰자·URL 변경 거절, 미래 검토 출처 연결, 타주 race/history·원래 날짜·104석 focus 보존. 전체 polling531개·finance68개·기존 선거JS90개·ops/소유권16개 및 배포연결40workflow가 통과했다. 공용 기반 polling525·finance68·JS90·ops16·deploy-chain40 검증 근거는 #598에 있다.
 
 주별 diff는 NY packet·NY21 원문 감사·NY 테스트·이 인수 문서뿐이다. 공용 목록·전국 생성물·UI·workflow 편집 없음. 병합·배포·운영 workflow 실행·재설정 안 함. 다른 주의 다음 순서는 시작하지 않는다. #598이 게시 오류를 복구한 뒤 실제 예약 실행·서비스 기준일 갱신을 별도로 확인해야 한다.
+
+최종 원문 감사·테스트 이름은 주별 범위 규칙의 NY- / test_poll_ny_ 토큰을 따른다. NY만 재생성 및 전체 projection 성공, 오류 없음. PR #600. 원문 한 건의 보강이며 NY 전수 완료가 아니다.

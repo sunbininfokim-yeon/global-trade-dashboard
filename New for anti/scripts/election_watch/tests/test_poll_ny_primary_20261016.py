@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[1];CFG=ROOT/'config';PUBLIC=ROOT.parents[1
 class NewYork21PrimaryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):
-  cls.packet=read(CFG/'state_evidence/2026/NY.json');cls.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/NY21-primary-20261016.json')
+  cls.packet=read(CFG/'state_evidence/2026/NY.json');cls.audit=read(PUBLIC/'usa_election_poll_release_reviews/2026/NY-primary-20261016.json')
   cls.policy=apply_targets(apply_matchups(apply_watchlist(read(CFG/'usa_polls/live_2026.json'),read(CFG/'usa_polls/watchlist_2026.json')),read(CFG/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(CFG/'usa_polls/targets_2026.json'),read(CFG/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
   cls.policy['quality_reviews']=read(CFG/'usa_polls/quality_reviews_2026.json')['reviews'];cls.raw=next(r for r in cls.packet['capture']['provider_records']if r['id']==ID)
  def test_exact_release_is_admitted_with_sample_and_named_writein_disclosure(self):
