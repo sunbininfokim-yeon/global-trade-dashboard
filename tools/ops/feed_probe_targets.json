@@ -1,154 +1,52 @@
 {
  "notes": [
-  "probe: new commodities (bauxite, uranium, manganese ore)"
+  "probe round 2"
  ],
  "targets": [
   {
-   "group": "newcom",
-   "id": "wnn_rss",
-   "url": "https://www.world-nuclear-news.org/rss"
+   "group": "newcom2",
+   "id": "nrc_rssfeeds",
+   "url": "https://www.nrc.gov/rss-feeds",
+   "link_re": "[^\"' ]*(?:rss|feed)[^\"' ]*",
+   "samples": 15
   },
   {
-   "group": "newcom",
-   "id": "wnn_home",
-   "url": "https://www.world-nuclear-news.org/",
-   "samples": 3
+   "group": "newcom2",
+   "id": "nrc_news_links",
+   "url": "https://www.nrc.gov/about-nrc/news-releases/index",
+   "link_re": "/(?:docs|reading-rm)[^\"' ]*news[^\"' ]*|/about-nrc/news-releases/[^\"' ]+",
+   "samples": 8
   },
   {
-   "group": "newcom",
-   "id": "nrc_rss",
-   "url": "https://www.nrc.gov/rss/newsreleases.xml"
-  },
-  {
-   "group": "newcom",
-   "id": "nrc_news",
-   "url": "https://www.nrc.gov/reading-rm/doc-collections/news/",
-   "samples": 3
-  },
-  {
-   "group": "newcom",
-   "id": "doe_ne",
-   "url": "https://www.energy.gov/ne/office-nuclear-energy",
-   "samples": 3
-  },
-  {
-   "group": "newcom",
-   "id": "doe_rss_guess",
-   "url": "https://www.energy.gov/rss/ne.xml"
-  },
-  {
-   "group": "newcom",
-   "id": "iaea_feed",
-   "url": "https://www.iaea.org/feeds/topnews"
-  },
-  {
-   "group": "newcom",
-   "id": "iaea_news",
-   "url": "https://www.iaea.org/newscenter/pressreleases",
-   "samples": 3
-  },
-  {
-   "group": "newcom",
-   "id": "cameco_news",
-   "url": "https://www.cameco.com/media/news",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "cameco_rss",
-   "url": "https://www.cameco.com/rss/news"
-  },
-  {
-   "group": "newcom",
-   "id": "kazatomprom",
+   "group": "newcom2",
+   "id": "kaz_links",
    "url": "https://www.kazatomprom.kz/en/media",
-   "samples": 3,
-   "variants": true
+   "link_re": "kazatomprom\\.kz/en/(?:media|news|press)[^\"' ]*|/en/(?:media|news)/[^\"' ]{6,}",
+   "samples": 12,
+   "list_feeds": true
   },
   {
-   "group": "newcom",
-   "id": "eia_uranium",
-   "url": "https://www.eia.gov/uranium/",
-   "samples": 3
+   "group": "newcom2",
+   "id": "hydro_links",
+   "url": "https://www.hydro.com/en/global/media/news/",
+   "link_re": "/en/global/media/news/[a-z0-9-]{10,}",
+   "samples": 8,
+   "list_feeds": true
   },
   {
-   "group": "newcom",
-   "id": "wna_news",
-   "url": "https://world-nuclear.org/news-and-media/press-statements",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "alcoa_news",
-   "url": "https://news.alcoa.com/press-releases",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "alcoa_rss",
-   "url": "https://news.alcoa.com/rss",
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "hydro_rss",
-   "url": "https://www.hydro.com/en/media/news/rss/",
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "hydro_news",
-   "url": "https://www.hydro.com/en/media/news/",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "south32_news",
-   "url": "https://www.south32.net/news-media/latest-news",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "eramet_news",
-   "url": "https://www.eramet.com/en/news/",
-   "samples": 3,
-   "variants": true
-  },
-  {
-   "group": "newcom",
-   "id": "riotinto_media",
+   "group": "newcom2",
+   "id": "rio_links",
    "url": "https://www.riotinto.com/en/news/releases",
-   "samples": 3,
-   "variants": true
+   "link_re": "/en/news/releases/\\d{4}/[a-z0-9-]+",
+   "samples": 8,
+   "list_feeds": true
   },
   {
-   "group": "newcom",
-   "id": "usgs_minerals",
-   "url": "https://www.usgs.gov/centers/national-minerals-information-center/news",
-   "samples": 3
-  },
-  {
-   "group": "newcom",
-   "id": "fr_uranium",
-   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[term]=uranium",
-   "show_body": 900
-  },
-  {
-   "group": "newcom",
-   "id": "fr_bauxite",
-   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[term]=bauxite",
-   "show_body": 900
-  },
-  {
-   "group": "newcom",
-   "id": "fr_manganese",
-   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[term]=manganese",
-   "show_body": 900
+   "group": "newcom2",
+   "id": "cameco_links",
+   "url": "https://www.cameco.com/media/news",
+   "link_re": "/media/news/[a-z0-9-]{10,}",
+   "samples": 8
   }
  ]
 }
