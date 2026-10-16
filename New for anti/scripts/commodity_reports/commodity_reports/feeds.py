@@ -195,7 +195,13 @@ def parse_date(raw: str) -> Optional[str]:
         return None
     raw = raw.strip()
     try:
-        return datetime.fromisoformat(raw.replace("Z", "+00:00")).astimezone(timezone.utc).isoformat()
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        # A bare date ("2026-09-30", the Federal Register's publication_date)
+        # has no zone. astimezone() on a naive value reads it as the machine's
+        # local time, so a build run in Seoul moved it to the previous day.
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).isoformat()
     except ValueError:
         pass
     try:

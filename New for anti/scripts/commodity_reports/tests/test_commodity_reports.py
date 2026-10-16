@@ -1254,8 +1254,11 @@ class NewProducerCountryTests(unittest.TestCase):
 
     def test_new_mexico_is_not_mexico(self):
         from commodity_reports.tag import _strip_false_country_collocations as strip
-        self.assertEqual(self.tagger.tag(strip("Grants Reclamation Project, New Mexico")), [])
-        # The state is dropped, the country named separately is kept.
+        # The state is a US region now, not a stripped phrase: it tags the
+        # US instead of nothing (a world publisher has no default country).
+        self.assertEqual(self.tagger.tag(strip("Grants Reclamation Project, New Mexico")), ["USA"])
+        self.assertEqual(self.tagger.tag(strip("Weekly retail prices: New England 4.347")), ["USA"])
+        # The state is not Mexico; the country named separately is kept.
         self.assertEqual(
             set(self.tagger.tag(strip("Urenco USA in New Mexico expands; Mexico imports enriched uranium"))),
             {"USA", "MEX"},
@@ -1265,6 +1268,87 @@ class NewProducerCountryTests(unittest.TestCase):
     def test_niger_is_not_nigeria(self):
         self.assertEqual(self.tagger.tag("Nigeria crude exports in the Niger Delta"), ["NGA"])
         self.assertEqual(self.tagger.tag("Nigerian output rises"), ["NGA"])
+
+    def test_guinea_lookalikes(self):
+        from commodity_reports.tag import _strip_false_country_collocations as strip
+        self.assertEqual(self.tagger.tag(strip("Guinea-Bissau bans bauxite exports")), ["GNB"])
+        self.assertEqual(self.tagger.tag(strip("Gulf of Guinea piracy hits shipping")), [])
+        self.assertEqual(self.tagger.tag(strip("Bauxite deposits on New Guinea island")), [])
+        self.assertEqual(self.tagger.tag(strip("Papua New Guinea gold output")), ["PNG"])
+        self.assertEqual(self.tagger.tag(strip("Guinea bauxite exports at Boke")), ["GIN"])
+
+    def test_west_african_cotton_report_keeps_its_countries(self):
+        # FAS's "Senegal: Cotton" covers Burkina Faso and Mali too; before SEN
+        # and BFA existed it was filed under Mali alone.
+        r = tag_report(
+            title="Senegal: Cotton and Products Update",
+            summary="Burkina Faso, Mali, and Senegal combined MY 2026/27 cotton area harvested is forecast to decrease",
+            commodity_tagger=CommodityTagger.from_config(cfg("commodities.json")),
+            country_tagger=self.tagger,
+        )
+        self.assertEqual(r.countries[0], "SEN")
+        self.assertEqual(set(r.countries), {"SEN", "BFA", "MLI"})
+
+
+class BauxiteIsNotAluminiumTests(unittest.TestCase):
+    def setUp(self):
+        self.tagger = CommodityTagger.from_config(cfg("commodities.json"))
+
+    def test_ore_names_stay_off_the_aluminium_window(self):
+        for text in ("US imports of aluminium ore fall", "Aluminum ores exports from Guinea",
+                     "铝土矿进口量增加", "알루미늄광 수입 증가"):
+            self.assertEqual(self.tagger.tag(text), ["bauxite"], text)
+
+    def test_metal_and_alumina_still_aluminium(self):
+        self.assertEqual(self.tagger.tag("Aluminium smelter output rises"), ["aluminum"])
+        self.assertEqual(set(self.tagger.tag("Alcoa bauxite and alumina production")), {"aluminum", "bauxite"})
+        self.assertEqual(self.tagger.tag("铝价格上涨"), ["aluminum"])
+
+
+class TwinWindowCapTests(unittest.TestCase):
+    """uranium and uranium_ore share their aliases; the three-commodity cap
+    must keep or drop them together."""
+
+    def setUp(self):
+        self.ct = CommodityTagger.from_config(cfg("commodities.json"))
+        self.yt = CountryTagger.from_config(cfg("countries.json"))
+
+    def tag(self, title):
+        return tag_report(title=title, summary="", commodity_tagger=self.ct, country_tagger=self.yt).commodities
+
+    def test_twins_share_one_slot(self):
+        self.assertEqual(self.tag("Uranium, copper and gold output rises in Australia"),
+                         ["gold", "copper", "uranium", "uranium_ore"])
+
+    def test_twins_dropped_together_when_over_cap(self):
+        got = self.tag("Uranium, copper, gold and silver output rises in Australia")
+        self.assertEqual(len(got), 3)
+        self.assertEqual("uranium" in got, "uranium_ore" in got)
+
+    def test_cap_unchanged_for_ordinary_windows(self):
+        self.assertEqual(self.ct.cap(["gold", "silver", "copper", "zinc"], 3), ["gold", "silver", "copper"])
+
+
+class BareDateIsUtcTests(unittest.TestCase):
+    def test_bare_date_does_not_depend_on_machine_zone(self):
+        import os
+        import time
+        from commodity_reports.feeds import parse_date
+        if not hasattr(time, "tzset"):
+            self.skipTest("tzset unavailable")
+        before = os.environ.get("TZ")
+        try:
+            for zone in ("Asia/Seoul", "America/Los_Angeles", "UTC"):
+                os.environ["TZ"] = zone
+                time.tzset()
+                self.assertEqual(parse_date("2026-09-30"), "2026-09-30T00:00:00+00:00", zone)
+                self.assertEqual(parse_date("2026-09-30T09:00:00+09:00"), "2026-09-30T00:00:00+00:00", zone)
+        finally:
+            if before is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = before
+            time.tzset()
 
 
 if __name__ == "__main__":

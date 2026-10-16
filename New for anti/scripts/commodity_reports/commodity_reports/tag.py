@@ -93,11 +93,18 @@ class CommodityTagger:
     # Phrases that contain an alias but name another market: "crude steel"
     # and "crude palm oil" are not crude oil.
     not_when: Dict[str, List[re.Pattern[str]]] = field(default_factory=dict)
+    # Windows that share one alias list (uranium / uranium_ore: two menus on
+    # the same market news) -> the first such key. They count as one slot
+    # against max_commodities, so a cap can never keep one and drop its twin.
+    slots: Dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_config(cls, cfg: Dict[str, Any]) -> "CommodityTagger":
-        pats, need, labels, ctx, excl = {}, {}, {}, {}, {}
+        pats, need, labels, ctx, excl, slots = {}, {}, {}, {}, {}, {}
+        first_by_aliases: Dict[Tuple[str, ...], str] = {}
         for key, meta in (cfg.get("commodities") or {}).items():
+            alias_key = tuple(sorted(a.strip().lower() for a in meta.get("aliases") or [] if a.strip()))
+            slots[key] = first_by_aliases.setdefault(alias_key, key) if alias_key else key
             pats[key] = compile_terms(meta.get("aliases") or [])
             need[key] = bool(meta.get("require_context"))
             labels[key] = meta.get("label_ko") or key
@@ -105,7 +112,20 @@ class CommodityTagger:
             # Longest first: "crude palm oil" must go before "palm oil" or
             # "crude palm", or the leftover "crude"/"oil exports" still matches.
             excl[key] = compile_terms(sorted(meta.get("not_when") or [], key=len, reverse=True))
-        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl)
+        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl, slots)
+
+    def cap(self, commodities: Sequence[str], limit: int) -> List[str]:
+        """The first `limit` windows, twins (same alias list) counted once."""
+        kept: List[str] = []
+        used: List[str] = []
+        for key in commodities:
+            slot = self.slots.get(key, key)
+            if slot not in used:
+                if len(used) >= limit:
+                    continue
+                used.append(slot)
+            kept.append(key)
+        return kept
 
     def has_context(self, text: str) -> bool:
         return any(p.search(text) for p in self.context_pats)
@@ -186,9 +206,16 @@ class Tagged:
 # trying to enumerate every possible collocation up front.
 _FALSE_COUNTRY_COLLOCATIONS = [
     re.compile(r"british\s+thermal\s+units?", re.I),
-    # A US state, not the country: Urenco USA (Eunice) and the Grants uranium
-    # sites sit in New Mexico, and both landed in Mexico's window (2026-10-16).
-    re.compile(r"new\s+mexico", re.I),
+    # New Mexico and New England are not stripped here: they are USA regions
+    # in countries.json, and the longer alias claims the span before
+    # "mexico"/"england" can. Stripping them lost the US as well, so a world
+    # publisher's "New Mexico uranium mine" story fell to _global (2026-10-16).
+    #
+    # A sea and an island, not Guinea the country -- both landed on GIN, now
+    # a bauxite window that matters (2026-10-16). "Papua New Guinea" is a
+    # country alias of its own and must survive, hence the lookbehind.
+    re.compile(r"gulf\s+of\s+guinea", re.I),
+    re.compile(r"(?<!papua\s)new\s+guinea", re.I),
 ]
 
 
@@ -247,7 +274,7 @@ def tag_report(
         scope, origin = "global", "none"
 
     return Tagged(
-        commodities=commodities[:max_commodities],
+        commodities=commodity_tagger.cap(commodities, max_commodities),
         countries=countries,
         scope=scope,
         country_source=origin,
