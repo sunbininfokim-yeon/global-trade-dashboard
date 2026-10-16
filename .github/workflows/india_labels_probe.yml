@@ -17,17 +17,11 @@ jobs:
             code=$(curl -sSL -A "Mozilla/5.0" -o /tmp/out -w '%{http_code} %{content_type} %{size_download}' -m 60 "$1" || echo fail)
             echo "::notice::$code | $1 | $(head -c 200 /tmp/out | tr -d '\n\r' | tr -c '[:print:]' ' ')"
           }
-          # Russia
-          probe "https://fedstat.ru/indicator/31328"
-          probe "https://fedstat.ru/indicator/31533"
-          probe "https://rosstat.gov.ru/enterprise_economy"
-          probe "https://rosstat.gov.ru/folder/210/document/13204"
-          probe "https://rosstat.gov.ru/storage/mediabank/Rus_reg_2024.htm"
-          probe "https://showdata.gks.ru/finder/"
-          probe "https://www.mojgorod.ru/r_stat/tabR4711.html"
-          probe "https://www.mojgorod.ru/"
-          probe "https://ab-centre.ru/"
-          probe "https://www.gks.ru/"
-          # India: India Data Portal CKAN resource list
+          probe "https://github.com/tochno-st/regions_collection"
+          probe "https://api.github.com/repos/tochno-st/regions_collection/contents"
+          probe "https://tochno.st/datasets/regions_collection"
+          probe "https://statbase.ru/datasets/?q=%D1%83%D1%80%D0%BE%D0%B6%D0%B0%D0%B9%D0%BD%D0%BE%D1%81%D1%82%D1%8C"
+          probe "https://www.mojgorod.ru/r_stat/index.html"
+          curl -sSL -A "Mozilla/5.0" -m 60 https://www.mojgorod.ru/ | grep -oiE 'href="[^"]*r_stat[^"]*"' | head -20 | tr '\n' ' ' | sed 's/^/::notice::mojgorod links /'; echo
           curl -sSL -m 60 "https://ckan.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy" \
-            | python3 -c "import json,sys; r=json.load(sys.stdin)['result']; print('::notice::IDP notes', (r.get('notes') or '')[:300].replace(chr(10),' ')); [print('::notice::IDP res', x.get('name'), x.get('format'), x.get('size'), x.get('last_modified'), x.get('url')) for x in r['resources']]"
+            | python3 -c "import json,sys; r=json.load(sys.stdin)['result']; [print('::notice::IDP res', x.get('name'), x.get('format'), x.get('size'), x.get('last_modified'), x.get('url')) for x in r['resources'][:6]]"
