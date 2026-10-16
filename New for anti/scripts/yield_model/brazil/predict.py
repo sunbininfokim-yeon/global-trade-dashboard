@@ -255,6 +255,28 @@ def predict_one(cfg, year, oni, predicted):
     }
 
 
+def predict_with_lags(cfg, season, oni, max_gap=3):
+    """Forecast `season`, first filling unpublished prior seasons for the lags.
+
+    The lag features (coffee lag1/lag2, cane and orange lag1) need the yield
+    of the seasons before the one being forecast. IBGE publishes a year or
+    more late, so those seasons are forecast first, oldest first, each
+    standing on the one before. The chain is this crop's own: a shared
+    year-keyed dict once let orange's lag pick up coffee's 1,900 kg/ha and
+    publish a -72% weather effect.
+    """
+    history = pd.read_csv(os.path.join(TRAINING, f"{cfg.key}.csv"))
+    published = history.dropna(subset=["yield_kg_ha"]).year
+    last = int(published.max()) if len(published) else season - 1
+    own = {}
+    if any(v in ("__yield__", "__yield2__") for v in cfg.panel.values()):
+        for y in range(max(last + 1, season - max_gap), season):
+            r = predict_one(cfg, y, oni, own)
+            if r and "error" not in r:
+                own[y] = r["point"]
+    return predict_one(cfg, season, oni, own)
+
+
 def main():
     args = [a for a in sys.argv[1:]]
     year = None
@@ -266,20 +288,11 @@ def main():
     configs = [BY_KEY[k] for k in args] if args else ALL
     oni = load_oni()
 
-    # Predict the prior season first so coffee's lag has something to stand on
-    # when SIDRA has not caught up.
-    predicted = {}
     results = []
-    for offset in (-1, 0):
-        for cfg in configs:
-            target = (year or current_season(cfg)) + offset
-            r = predict_one(cfg, target, oni, predicted)
-            if r and "error" not in r:
-                predicted[target] = r["point"]
-                if offset == 0:
-                    results.append(r)
-            elif r and offset == 0:
-                results.append(r)
+    for cfg in configs:
+        r = predict_with_lags(cfg, year or current_season(cfg), oni)
+        if r:
+            results.append(r)
 
     log(f"season {year or 'per-crop (' + str(current_season()) + ')'}"
         "  -- beyond the last published SIDRA actual, so genuinely unseen")
