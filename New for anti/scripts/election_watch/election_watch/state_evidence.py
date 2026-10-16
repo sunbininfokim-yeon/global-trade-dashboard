@@ -10,6 +10,7 @@ from .polls import atomic, read, require
 from .superpac import STATES
 from .live_polls import summarize
 from .house_rosters import same_source_name
+from .review_clock import validation_day
 
 FEDERAL = ('super_pac',)
 STATE_IE = ('state_independent_expenditure_committee', 'state_independent_spender_unclassified')
@@ -64,6 +65,17 @@ def candidate_finance(candidate, asset, office):
 def build_state(state, group, plan, catalog, federal_rosters, governors, polls, finance, source_directory, as_of, identity_reviews=None, governor_audits=None, governor_access=None):
     require(state in catalog['states'] and finance['cycle'] == 2026 and polls['cycle'] == 2026, 'state evidence cycle')
     require(date.fromisoformat(polls['as_of']) <= date.fromisoformat(as_of), 'future polling snapshot')
+    audit = deepcopy((governor_audits or {}).get(state))
+    access = deepcopy((governor_access or {}).get(state))
+    # A new identity/portal review may be newer than the LAST published polls.
+    # Validate reviews against their own bounded clock, never re-date the poll
+    # snapshot or its 7/14-day windows to make the projection pass.
+    review_inputs = [federal_rosters, governors, identity_reviews or {}]
+    if audit:
+        review_inputs.append({'reviewed_on': audit['captured_at'][:10]})
+    if access:
+        review_inputs.append({'reviewed_on': access['checked_at'][:10]})
+    reviewed_as_of = validation_day(as_of, *review_inputs)
     races = []
     for rid in expected_races(state, catalog):
         poll = polls['races'].get(rid)
@@ -82,7 +94,7 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
         for candidate in candidates:
             for review in (identity_reviews or {}).get('races', {}).get(rid, []):
                 if review['candidate_name'] == candidate['name'] and review['party'] == candidate['party']:
-                    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(as_of), 'future finance identity review')
+                    require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(reviewed_as_of), 'future finance identity review')
                     if office == 'house':
                         require(review.get('office') == 'house' and re.fullmatch(r'H[0-9A-Z]{8}', review['candidate_id'])
                                 and review['candidate_id'] == candidate.get('reported_fec_id')
@@ -94,7 +106,7 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
                                       if p.get('state') == state and p.get('office') == 'house'
                                       and p.get('source_url') == review['source_url'] and p.get('sha256') == review['source_sha256']
                                       and p.get('role') == 'reviewed_secondary_identity_corroboration'
-                                      and date.fromisoformat(p['reviewed_on']) <= date.fromisoformat(as_of)
+                                      and date.fromisoformat(p['reviewed_on']) <= date.fromisoformat(reviewed_as_of)
                                       and {'race_id': rid, **review} in p.get('verified_candidates', [])]
                         finance_rows = [c for c in asset.get('candidates', []) if c['candidate_id'] == review['candidate_id']]
                         require(len(finance_rows) == 1 and candidate['party'] in finance_rows[0]['reported_parties']
@@ -165,16 +177,14 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
             'candidate_id_links': sum(c['finance']['join_status'] == 'same_reviewed_candidate_id'
                                      for r in selected for c in r['candidates'])}
     agency = deepcopy(source_directory['states'].get(state))
-    audit = deepcopy((governor_audits or {}).get(state))
     if audit:
         require(audit['schema'] == 'usa_governor_finance_audit_v1' and audit['state'] == state
                 and audit['cycle'] == 2026 and audit['status'] == 'collected_normalization_held'
-                and date.fromisoformat(audit['captured_at'][:10]) <= date.fromisoformat(as_of),
+                and date.fromisoformat(audit['captured_at'][:10]) <= date.fromisoformat(reviewed_as_of),
                 'governor finance audit scope/date mismatch')
-    access = deepcopy((governor_access or {}).get(state))
     if access:
         from .governor_source_access import validate_access
-        validate_access(access, state, 2026, as_of)
+        validate_access(access, state, 2026, reviewed_as_of)
     if state not in catalog['governor_states']:
         governor_route = {'status': 'non_election', 'agency': agency}
     elif finance['source_status'].get(state + '_governor'):
@@ -210,6 +220,7 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
         receipt.get('governor_source_checked_at') == access['checked_at'])
     return {'schema': 'usa_state_election_evidence_v1', 'cycle': 2026, 'state': state,
         'state_name': catalog['states'][state]['name'], 'group': group, 'checked_as_of': as_of,
+        'review_checked_as_of': reviewed_as_of,
         'status': 'partial_observed', 'work_status': 'live_sources_reviewed_partial' if reviewed else
             'live_poll_sources_reviewed_finance_blocked' if blocked_review else
             'live_poll_sources_reviewed_finance_mapping_required' if mapping_review else 'baseline_join_checked',
