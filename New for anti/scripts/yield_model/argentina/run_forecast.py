@@ -134,13 +134,15 @@ def main():
         "regions": {},
     }
 
-    predicted = {}
     skipped = []
 
     for cfg in ALL:
         # Resolved per crop: in August, wheat is a standing crop and the summer
         # crops are not yet sown, so they are not on the same harvest year.
         season = override or current_season(cfg)
+        # Per crop: a lag feature reads its own crop's previous season, never
+        # another crop's (brazil had that bug: SP orange read coffee, #582).
+        predicted = {}
         prior = predict_one(cfg, season - 1, oni, dmi, predicted)
         if prior and "error" not in prior:
             predicted[season - 1] = prior["point"]
@@ -177,6 +179,10 @@ def main():
             "range_95": [round(r["range_95"][0], 1), round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            # "trend" when the model lost to the trend out of sample; the
+            # model's would-be adjustment stays visible for reference.
+            "point_basis": r["point_basis"],
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
             # MODIS NDVI correction (None when off or not yet observable).
             "ndvi": nd,
