@@ -34,3 +34,5 @@ FL/ME/MN/NC/TX 최근 원문 테스트가 모든 주 명부를 읽으면서 정�
 병합·배포·운영 workflow 직접 실행 없음. PR 준비와 운영 정상화는 구분한다. 기반 병합 후 실제 예약 실행의 성공과 서비스 기준일 갱신을 다시 확인해야 한다.
 
 로컬 검사: polling525, finance68, 선거 JS90, ops/소유권16 통과, deploy-chain40 workflow 통과. 원래 실제 체크포인트의 projection→retry-capture→projection 정상, 상태50개 원래 영수증 및104석 focus 유지, projection errors={}. CI와 동일한 --pending 재생성+projection 후 polling도 별도로 재검증 중이다. 새 API-key 필요 없음.
+
+CI 방식 재생성 후525개 중523개 통과,2개는 임시 사본에 .git이 없어 git show HEAD를 실행하지 못했다. 실제 기반 worktree Git 메타데이터를 읽기 전용으로 제공해 두 검사만 재실행했고 모두 통과했다. 운영/원격 GitHub 검사 결과는 별도 확인한다. PR #598.
