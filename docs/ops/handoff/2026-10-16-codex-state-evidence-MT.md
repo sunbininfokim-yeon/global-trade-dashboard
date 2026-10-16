@@ -43,3 +43,5 @@ MT 전용 검사8개: 네 정당·기명 분리/ID, 문항별 n·초기/leaner·
 1차 #591 실패는 공용 FL/ME/MN/NC/TX 테스트 정책 날짜10/14 고정 때문이다. 해당 테스트만 공용 기반 `codex/poll-test-catalog-clock-20261016`에 분리하고 과거 normalize/summarize10/14와 실제 입력 날짜는 유지한다. 주별 PR에는 공용 테스트를 넣지 않는다. 전국 생성물은 `/private/tmp/mt-evidence-20261016/validation`에서만 재생성한다. 원자료/원문/검사 로그는 같은 임시 경로. 파일 보존과 최종 검사 결과는 PR에 기록한다.
 
 병합·배포·운영 workflow 직접 실행·사용자 전용 재설정 안 함. 다음 IN은 다른 세션 담당이고 이 작업에서는 시작하지 않는다.
+
+최종 공용 기반: PR #598 (`025fb042`), 이 기반에 없는 주별 변경만 #591 diff에 포함한다. 실제 base 기준 주별 범위 검사 통과, MT8개 통과. 기반 polling525·finance68·JS90·ops16·deploy-chain40 및 실제 main 체크포인트 재생성 통과. MT 전체 polling 재검증·원격 CI는 별도로 결과 확인한다. 새 FEC 행은 packet 감사 입력에만 보존하며 미배포다.
