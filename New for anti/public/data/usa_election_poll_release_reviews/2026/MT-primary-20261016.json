@@ -1,12 +1,79 @@
 {
-  "schema": "usa_state_primary_poll_review_v1",
+  "schema": "usa_mt_primary_review_v1",
   "state": "MT",
   "cycle": 2026,
   "reviewed_on": "2026-10-16",
-  "official_source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-  "source_sha256": "3b889ad77f92b59c736f3d41c720ab5d65e5c3310b70fac6c02348cd9eececa1",
-  "federal_races": [
-    {
+  "reviewed_at": "2026-10-16T04:11:37.278669+00:00",
+  "sources": {
+    "official-candidates.html": {
+      "url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "checked_at": "2026-10-16T04:05:04.506009+00:00",
+      "status": 200,
+      "final_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "bytes": 170237,
+      "sha256": "c86b28b9cf0a3e262d2978cda64510338f819c4f9d0779a6cc46d50f43668d8a"
+    },
+    "greenpapers.html": {
+      "url": "https://www.thegreenpapers.com/G26/MT",
+      "checked_at": "2026-10-16T04:05:04.506573+00:00",
+      "status": 200,
+      "final_url": "https://www.thegreenpapers.com/G26/MT",
+      "bytes": 44451,
+      "sha256": "ac89bd6623280c31c287a5089e807edc5001424f83f947fa772aacd7c28958fa"
+    },
+    "mtfp-method.pdf": {
+      "url": "https://montanafreepress.org/wp-content/uploads/2026/09/RU-ECPIP-MTFP-Poll-4-Methodology-Statement-September-2026.pdf",
+      "checked_at": "2026-10-16T04:05:04.506656+00:00",
+      "status": 200,
+      "final_url": "https://montanafreepress.org/wp-content/uploads/2026/09/RU-ECPIP-MTFP-Poll-4-Methodology-Statement-September-2026.pdf",
+      "bytes": 401417,
+      "sha256": "96ff5fd1d7b46d86ffa9c5fcf896ccbfbd0e0e862e70f4d9c5b47a39cc470730"
+    },
+    "mtfp-toplines.xlsx": {
+      "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+      "checked_at": "2026-10-16T04:05:04.506725+00:00",
+      "status": 200,
+      "final_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+      "bytes": 320880,
+      "sha256": "1f583aca7086fe433855c3158ca0fa07f038094e2a63e98dc4695cf46156e9bd"
+    },
+    "concord.pdf": {
+      "url": "https://static1.squarespace.com/static/6a5ff8e3d194df57f8833369/t/6ad1270faee1a77937e9dbec/1792091919214/CPOP+Montana+Statewide+Findings+Memo_10.10.pdf",
+      "checked_at": "2026-10-16T04:05:04.506798+00:00",
+      "status": 200,
+      "final_url": "https://static1.squarespace.com/static/6a5ff8e3d194df57f8833369/t/6ad1270faee1a77937e9dbec/1792091919214/CPOP+Montana+Statewide+Findings+Memo_10.10.pdf",
+      "bytes": 393511,
+      "sha256": "207194e28cd02b079ca9c76d2dbb4d8b602a07453b306652da8a82cef34a1b58"
+    },
+    "house1-release.html": {
+      "url": "https://www.montanarightnow.com/elections/aaron-flint-sam-forstag-nearly-tied-for-montana-congressional-district-1/article_96a2f7e1-334a-46c7-9a92-84ccc4c44171.html",
+      "checked_at": "2026-10-16T04:05:05.078393+00:00",
+      "error_type": "HTTPError",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    "senate-release.html": {
+      "url": "https://www.montanarightnow.com/elections/montana-senate-race-kurt-alme-tops-bodnar-and-bankhead-in-new-poll-findings/article_cd8401fb-0470-492c-a53a-c7dfe39552ff.html",
+      "checked_at": "2026-10-16T04:05:05.217020+00:00",
+      "error_type": "HTTPError",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    "quantus.html": {
+      "url": "https://quantusinsights.org/f/latest-survey-alme-leads-as-montana%E2%80%99s-senate-opposition-splits",
+      "checked_at": "2026-10-16T04:05:05.261071+00:00",
+      "status": 200,
+      "final_url": "https://quantusinsights.org/f/latest-survey-alme-leads-as-montana%E2%80%99s-senate-opposition-splits",
+      "bytes": 152414,
+      "sha256": "1447ea67f893cfe1a693ab75d172ffc13a414a1418d08d93ec5e2a3e1d5dcd45"
+    },
+    "hart.html": {
+      "url": "https://forwardmontana.org/results-of-new-polling-on-the-montana-u-s-senate-election/",
+      "checked_at": "2026-10-16T04:05:06.085761+00:00",
+      "error_type": "HTTPError",
+      "error": "HTTP Error 404: Not Found"
+    }
+  },
+  "official_rosters": {
+    "USA:MT:senate": {
       "race_id": "USA:MT:senate",
       "state": "MT",
       "office": "senate",
@@ -14,59 +81,119 @@
       "election_date": "2026-11-03",
       "status": "reported_general_matchup",
       "coverage": "complete_active_agency_listing",
-      "reviewed_on": "2026-10-16",
+      "source_role": "state_election_agency",
       "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "source_sha256": "c86b28b9cf0a3e262d2978cda64510338f819c4f9d0779a6cc46d50f43668d8a",
+      "reviewed_on": "2026-10-16",
+      "reviewed_general_from": "2026-06-03",
+      "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
       "candidates": [
         {
           "name": "Kurt Alme",
           "party": "REP",
+          "reported_name": "KURT ALME",
+          "reported_party": "REP",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
+          "candidate_id": "S6MT00295",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "candidate_id": null,
-          "reported_ballot_name": "KURT ALME",
+          "reported_fec_id": "S6MT00295",
+          "reported_fec_name": "ALME, KURT",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": []
         },
         {
           "name": "Kyle Austin",
           "party": "LIB",
-          "candidate_id": null,
+          "reported_name": "KYLE AUSTIN",
+          "reported_party": "LIB",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
+          "candidate_id": "S6MT00261",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "reported_ballot_name": "KYLE AUSTIN",
+          "reported_fec_id": "S6MT00261",
+          "reported_fec_name": "AUSTIN, KYLE",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": []
         },
         {
           "name": "Alani Bankhead",
           "party": "DEM",
+          "reported_name": "ALANI BANKHEAD",
+          "reported_party": "DEM",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
+          "candidate_id": "S6MT00253",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "candidate_id": null,
-          "reported_ballot_name": "ALANI BANKHEAD",
-          "poll_name_aliases": []
+          "reported_fec_id": "S6MT00253",
+          "reported_fec_name": "BANKHEAD, ALANI INES",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
+          "poll_name_aliases": [
+            "Alani Ines Bankhead"
+          ],
+          "poll_alias_review": {
+            "reviewed_on": "2026-10-16",
+            "source_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+            "basis": "Exact primary worksheet candidate spelling, official filing and explicit Green Papers identity association"
+          }
         },
         {
           "name": "Seth Bodnar",
           "party": "IND",
-          "candidate_id": null,
+          "reported_name": "SETH BODNAR",
+          "reported_party": "IND",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-20",
+          "ballot_access": "official_general_filing_listing",
+          "candidate_id": "S6MT00287",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "reported_ballot_name": "SETH BODNAR",
+          "reported_fec_id": "S6MT00287",
+          "reported_fec_name": "BODNAR, SETH",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": []
         }
       ],
+      "excluded_candidates": [],
+      "unconfirmed_candidates": [],
       "absent_parties": [],
-      "incumbent_ballot_status": "not_running",
+      "source_candidate_count": 4,
+      "unconfirmed_candidate_count": 0,
+      "unopposed_status": "contested_official_filing_listing",
+      "limitations_ko": "공식 FEDERAL GENERAL 2026의 FILED 명부. 본선 투표용지 별도 인증·당선 결과가 아닙니다. 상원 기명 후보를 별도 표시하며 일반 인쇄 후보 네 명의 조사와 혼동하지 않습니다.",
       "declared_write_ins": [
         {
           "name": "Jami Dee Woodman",
-          "party": "NON",
+          "party": "WRI",
+          "reported_name": "JAMI DEE WOODMAN",
+          "reported_party": "NON",
+          "write_in": true,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-08-07",
+          "ballot_access": "write_in",
           "candidate_id": null,
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "reported_ballot_name": "JAMI DEE WOODMAN",
           "poll_name_aliases": []
         }
       ],
-      "source_role": "state_election_agency",
-      "unconfirmed_candidates": [],
-      "limitations_ko": "공식 FILED 명부의 연방 3개 선거만 추출. 기명투표 등록은 인쇄 후보와 분리. 새 후보 FEC 신원·독립지출은 미검증이며 null 보존."
+      "declared_write_in_count": 1
     },
-    {
+    "USA:MT:house:01": {
       "race_id": "USA:MT:house:01",
       "state": "MT",
       "office": "house",
@@ -76,59 +203,80 @@
       "coverage": "complete_active_agency_listing",
       "source_role": "state_election_agency",
       "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "source_sha256": "c86b28b9cf0a3e262d2978cda64510338f819c4f9d0779a6cc46d50f43668d8a",
       "reviewed_on": "2026-10-16",
+      "reviewed_general_from": "2026-06-03",
+      "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
       "candidates": [
         {
           "name": "Aaron Flint",
           "party": "REP",
-          "reported_party": "Republican",
+          "reported_name": "AARON FLINT",
+          "reported_party": "REP",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": "H6MT01152",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H6MT01152",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
-          "reported_ballot_name": "AARON FLINT",
+          "reported_fec_name": "FLINT, AARON",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": []
         },
         {
-          "name": "Samuel Kelley \"Sam\" Forstag",
+          "name": "Sam Forstag",
           "party": "DEM",
-          "reported_party": "Democratic",
+          "reported_name": "SAM FORSTAG",
+          "reported_party": "DEM",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": "H6MT01137",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H6MT01137",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "reported_fec_name": "FORSTAG, SAMUEL KELLEY",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": [
-            "Sam Forstag"
+            "Samuel Kelley \"Sam\" Forstag"
           ],
-          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
-          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
-          "reported_ballot_name": "SAM FORSTAG"
+          "poll_alias_review": {
+            "reviewed_on": "2026-10-16",
+            "source_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+            "basis": "Exact primary worksheet candidate spelling, official filing and explicit Green Papers identity association"
+          }
         },
         {
           "name": "Nick Sheedy",
           "party": "LIB",
-          "reported_party": "Libertarian",
+          "reported_name": "NICK SHEEDY",
+          "reported_party": "LIB",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": null,
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "reported_ballot_name": "NICK SHEEDY",
           "poll_name_aliases": []
         }
       ],
-      "unconfirmed_candidates": [],
       "excluded_candidates": [],
+      "unconfirmed_candidates": [],
       "absent_parties": [],
-      "limitations_ko": "공식 FILED 명부의 연방 3개 선거만 추출. 기명투표 등록은 인쇄 후보와 분리. 새 후보 FEC 신원·독립지출은 미검증이며 null 보존.",
       "source_candidate_count": 3,
       "unconfirmed_candidate_count": 0,
-      "unopposed_status": "not_verified",
-      "declared_write_ins": []
+      "unopposed_status": "contested_official_filing_listing",
+      "limitations_ko": "공식 FEDERAL GENERAL 2026의 FILED 명부. 본선 투표용지 별도 인증·당선 결과가 아닙니다. 상원 기명 후보를 별도 표시하며 일반 인쇄 후보 네 명의 조사와 혼동하지 않습니다.",
+      "declared_write_ins": [],
+      "declared_write_in_count": 0
     },
-    {
+    "USA:MT:house:02": {
       "race_id": "USA:MT:house:02",
       "state": "MT",
       "office": "house",
@@ -138,90 +286,1325 @@
       "coverage": "complete_active_agency_listing",
       "source_role": "state_election_agency",
       "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "source_sha256": "c86b28b9cf0a3e262d2978cda64510338f819c4f9d0779a6cc46d50f43668d8a",
       "reviewed_on": "2026-10-16",
+      "reviewed_general_from": "2026-06-03",
+      "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
       "candidates": [
         {
           "name": "Troy Downing",
           "party": "REP",
-          "reported_party": "Republican",
+          "reported_name": "*TROY DOWNING",
+          "reported_party": "REP",
+          "write_in": false,
+          "incumbent": true,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": "H4MT02098",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H4MT02098",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
-          "reported_ballot_name": "TROY DOWNING",
+          "reported_fec_name": "DOWNING, TROY",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": []
         },
         {
-          "name": "Patrick Neal McCracken",
+          "name": "Patrick McCracken",
           "party": "LIB",
-          "reported_party": "Libertarian",
+          "reported_name": "PATRICK MCCRACKEN",
+          "reported_party": "LIB",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": "H6MT02176",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H6MT02176",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
-          "reported_ballot_name": "PATRICK MCCRACKEN",
+          "reported_fec_name": "MCCRACKEN, PATRICK NEAL MR.",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": [
-            "Patrick Mccracken"
-          ]
+            "Patrick Neal McCracken"
+          ],
+          "poll_alias_review": {
+            "reviewed_on": "2026-10-16",
+            "source_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+            "basis": "Exact primary worksheet candidate spelling, official filing and explicit Green Papers identity association"
+          }
         },
         {
-          "name": "Brian James Miller",
+          "name": "Brian J Miller",
           "party": "DEM",
-          "reported_party": "Democratic",
+          "reported_name": "BRIAN J MILLER",
+          "reported_party": "DEM",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-10",
+          "ballot_access": "official_general_filing_listing",
           "candidate_id": "H6MT02150",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H6MT02150",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
-          "reported_ballot_name": "BRIAN J MILLER",
+          "reported_fec_name": "MILLER, BRIAN JAMES",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": [
-            "Brian J Miller"
-          ]
+            "Brian James Miller",
+            "Brian Miller"
+          ],
+          "poll_alias_review": {
+            "reviewed_on": "2026-10-16",
+            "source_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+            "basis": "Exact primary worksheet candidate spelling, official filing and explicit Green Papers identity association"
+          }
         },
         {
-          "name": "Michael D. Eisenhauer",
+          "name": "Michael D Eisenhauer",
           "party": "IND",
-          "reported_party": "Independent",
-          "candidate_id": null,
+          "reported_name": "MICHAEL D EISENHAUER",
+          "reported_party": "IND",
+          "write_in": false,
+          "incumbent": false,
+          "agency_status": "FILED",
+          "filed_on": "2026-07-20",
+          "ballot_access": "official_general_filing_listing",
+          "candidate_id": "H6MT02168",
           "source_url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
-          "ballot_access": "reported_ballot_candidate",
           "reported_fec_id": "H6MT02168",
-          "source_status": "authority_confirmation_reported_by_secondary_source",
-          "reported_ballot_name": "MICHAEL D EISENHAUER",
+          "reported_fec_name": "EISENHAUER, MICHAEL D. DR.",
+          "candidate_id_source_url": "https://www.thegreenpapers.com/G26/MT",
+          "candidate_id_basis": "official_name_and_campaign_site_with_explicit_GP_name_same_race_FEC_master",
           "poll_name_aliases": [
-            "Michael D Eisenhauer"
-          ]
+            "Michael D. Eisenhauer",
+            "Michael Eisenhauer"
+          ],
+          "poll_alias_review": {
+            "reviewed_on": "2026-10-16",
+            "source_url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+            "basis": "Exact primary worksheet candidate spelling, official filing and explicit Green Papers identity association"
+          }
         }
       ],
-      "unconfirmed_candidates": [],
       "excluded_candidates": [],
+      "unconfirmed_candidates": [],
       "absent_parties": [],
-      "limitations_ko": "공식 FILED 명부의 연방 3개 선거만 추출. 기명투표 등록은 인쇄 후보와 분리. 새 후보 FEC 신원·독립지출은 미검증이며 null 보존.",
       "source_candidate_count": 4,
       "unconfirmed_candidate_count": 0,
-      "unopposed_status": "not_verified",
-      "declared_write_ins": []
+      "unopposed_status": "contested_official_filing_listing",
+      "limitations_ko": "공식 FEDERAL GENERAL 2026의 FILED 명부. 본선 투표용지 별도 인증·당선 결과가 아닙니다. 상원 기명 후보를 별도 표시하며 일반 인쇄 후보 네 명의 조사와 혼동하지 않습니다.",
+      "declared_write_ins": [],
+      "declared_write_in_count": 0
     }
-  ],
-  "primary_release_followup": [
+  },
+  "polls": [
     {
-      "url": "https://montanafreepress.org/2026/09/11/alme-holds-an-8-point-lead-over-bodnar-in-senate-race/",
-      "status": "discovered_methods_and_spreadsheet_review_pending"
+      "id": "primary-mtfp-mt-senate-20260911",
+      "record": {
+        "id": "primary-mtfp-mt-senate-20260911",
+        "subject": "2026 Montana",
+        "poll_type": "us-senator",
+        "pollster": "Rutgers-Eagleton / Montana Free Press",
+        "start_date": "2026-08-27",
+        "end_date": "2026-09-07",
+        "created_at": "2026-09-11",
+        "population": "rv",
+        "sample_size": 804,
+        "answers": [
+          {
+            "choice": "Kurt Alme",
+            "pct": 38.148375
+          },
+          {
+            "choice": "Alani Bankhead",
+            "pct": 16.324532
+          },
+          {
+            "choice": "Kyle Austin",
+            "pct": 4.63511
+          },
+          {
+            "choice": "Seth Bodnar",
+            "pct": 30.28403
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Montana Free Press"
+        ],
+        "internal": false,
+        "partisan": null,
+        "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx"
+      },
+      "documents": [
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+          "sha256": "1f583aca7086fe433855c3158ca0fa07f038094e2a63e98dc4695cf46156e9bd"
+        },
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/RU-ECPIP-MTFP-Poll-4-Methodology-Statement-September-2026.pdf",
+          "sha256": "96ff5fd1d7b46d86ffa9c5fcf896ccbfbd0e0e862e70f4d9c5b47a39cc470730"
+        }
+      ]
     },
     {
-      "url": "https://montanafreepress.org/2026/09/14/flint-forstag-in-dead-heat-for-house-seat/",
-      "status": "discovered_district_subsample_review_pending"
+      "id": "primary-mtfp-mt-house01-20260911",
+      "record": {
+        "id": "primary-mtfp-mt-house01-20260911",
+        "subject": "2026 MT-01",
+        "poll_type": "us-representative",
+        "pollster": "Rutgers-Eagleton / Montana Free Press",
+        "start_date": "2026-08-27",
+        "end_date": "2026-09-07",
+        "created_at": "2026-09-11",
+        "population": "rv",
+        "sample_size": 377,
+        "answers": [
+          {
+            "choice": "Aaron Flint",
+            "pct": 42.184196
+          },
+          {
+            "choice": "Sam Forstag",
+            "pct": 41.456143
+          },
+          {
+            "choice": "Nick Sheedy",
+            "pct": 5.065829
+          }
+        ],
+        "seat_name": "MT-01",
+        "sponsors": [
+          "Montana Free Press"
+        ],
+        "internal": false,
+        "partisan": null,
+        "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx"
+      },
+      "documents": [
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+          "sha256": "1f583aca7086fe433855c3158ca0fa07f038094e2a63e98dc4695cf46156e9bd"
+        },
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/RU-ECPIP-MTFP-Poll-4-Methodology-Statement-September-2026.pdf",
+          "sha256": "96ff5fd1d7b46d86ffa9c5fcf896ccbfbd0e0e862e70f4d9c5b47a39cc470730"
+        }
+      ]
+    },
+    {
+      "id": "primary-mtfp-mt-house02-20260911",
+      "record": {
+        "id": "primary-mtfp-mt-house02-20260911",
+        "subject": "2026 MT-02",
+        "poll_type": "us-representative",
+        "pollster": "Rutgers-Eagleton / Montana Free Press",
+        "start_date": "2026-08-27",
+        "end_date": "2026-09-07",
+        "created_at": "2026-09-11",
+        "population": "rv",
+        "sample_size": 421,
+        "answers": [
+          {
+            "choice": "Troy Downing",
+            "pct": 46.745154
+          },
+          {
+            "choice": "Brian Miller",
+            "pct": 23.595223
+          },
+          {
+            "choice": "Patrick McCracken",
+            "pct": 3.262843
+          },
+          {
+            "choice": "Michael Eisenhauer",
+            "pct": 7.748069
+          }
+        ],
+        "seat_name": "MT-02",
+        "sponsors": [
+          "Montana Free Press"
+        ],
+        "internal": false,
+        "partisan": null,
+        "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx"
+      },
+      "documents": [
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/Montana-Insights-Sept-2026-Data-Tables.xlsx",
+          "sha256": "1f583aca7086fe433855c3158ca0fa07f038094e2a63e98dc4695cf46156e9bd"
+        },
+        {
+          "url": "https://montanafreepress.org/wp-content/uploads/2026/09/RU-ECPIP-MTFP-Poll-4-Methodology-Statement-September-2026.pdf",
+          "sha256": "96ff5fd1d7b46d86ffa9c5fcf896ccbfbd0e0e862e70f4d9c5b47a39cc470730"
+        }
+      ]
+    },
+    {
+      "id": "primary-concord-mt-senate-20261009",
+      "record": {
+        "id": "primary-concord-mt-senate-20261009",
+        "subject": "2026 Montana",
+        "poll_type": "us-senator",
+        "pollster": "Concord Public Opinion Partners",
+        "start_date": "2026-10-06",
+        "end_date": "2026-10-08",
+        "created_at": "2026-10-09",
+        "population": "lv",
+        "sample_size": 405,
+        "answers": [
+          {
+            "choice": "Seth Bodnar",
+            "pct": 37.0
+          },
+          {
+            "choice": "Kurt Alme",
+            "pct": 35.0
+          },
+          {
+            "choice": "Alani Bankhead",
+            "pct": 13.0
+          },
+          {
+            "choice": "Kyle Austin",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "url": "https://static1.squarespace.com/static/6a5ff8e3d194df57f8833369/t/6ad1270faee1a77937e9dbec/1792091919214/CPOP+Montana+Statewide+Findings+Memo_10.10.pdf"
+      },
+      "documents": [
+        {
+          "url": "https://static1.squarespace.com/static/6a5ff8e3d194df57f8833369/t/6ad1270faee1a77937e9dbec/1792091919214/CPOP+Montana+Statewide+Findings+Memo_10.10.pdf",
+          "sha256": "207194e28cd02b079ca9c76d2dbb4d8b602a07453b306652da8a82cef34a1b58"
+        }
+      ]
     }
   ],
-  "finance_status": "existing_assets_only_not_recollected",
-  "governor_status": "no_2026_scheduled_contest",
-  "limitations_ko": [
-    "일부 집계 사이트의 Alme/Bodnar 수치·순서가 상충함. 원문 검토 전 새 수치 미편입.",
-    "본선 명부 연결은 여론조사 기관·개별 발표 검증 및 FEC 신원 검증과 다름."
-  ]
+  "non_election_governor": true,
+  "unopposed_status": "none_of_three_federal_races_single_candidate",
+  "finance_collection": {
+    "schema": "mt_federal_ie_audit_v1",
+    "state": "MT",
+    "cycle": 2026,
+    "captured_at": "2026-10-16T04:09:22.045445+00:00",
+    "requests": 4,
+    "raw_rows_sha256": "a49b8f8985b612a3caca69ba38fc94c0ef6ee3213397822d4aaa6fc529427494"
+  },
+  "finance_sources": [
+    {
+      "url": "https://www.fec.gov/files/bulk-downloads/2026/cn26.zip",
+      "retrieved_at": "2026-10-16T04:09:22.041832+00:00",
+      "sha256": "87393447166ad67dfc2e5914ba58b2d7b4056f1d26971a102d7b136d14f1d62c"
+    },
+    {
+      "url": "https://api.open.fec.gov/v1/schedules/schedule_e/?cycle=2026&candidate_office_state=MT&most_recent=true&is_notice=false&sort=expenditure_date&per_page=100",
+      "retrieved_at": "2026-10-16T04:08:56.931909+00:00"
+    }
+  ],
+  "finance_quality": {
+    "included_records": 212,
+    "excluded_records": {
+      "memo": 6
+    }
+  },
+  "finance_spending_audit": [
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01137",
+      "candidate_name": "FORSTAG, SAMUEL KELLEY",
+      "party": "DEM",
+      "committee_id": "C00580068",
+      "committee_name": "PROGRESSIVE TURNOUT PROJECT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00580068&candidate_id=H6MT01137&cycle=2026",
+      "support_cents": 1398490,
+      "oppose_cents": 0,
+      "records": 1,
+      "monthly": {
+        "2026-08": {
+          "support_cents": 1398490,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01137",
+      "candidate_name": "FORSTAG, SAMUEL KELLEY",
+      "party": "DEM",
+      "committee_id": "C00909994",
+      "committee_name": "FIELD TEAM 6, INC.",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00909994&candidate_id=H6MT01137&cycle=2026",
+      "support_cents": 94989,
+      "oppose_cents": 0,
+      "records": 3,
+      "monthly": {
+        "2026-07": {
+          "support_cents": 7121,
+          "oppose_cents": 0
+        },
+        "2026-09": {
+          "support_cents": 87868,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00523241",
+      "committee_name": "SPECIAL OPERATIONS FOR AMERICA",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00523241&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 2000000,
+      "oppose_cents": 0,
+      "records": 1,
+      "monthly": {
+        "2026-08": {
+          "support_cents": 2000000,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00764209",
+      "committee_name": "LEADERSHIP IN ACTION",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00764209&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 4745247,
+      "oppose_cents": 0,
+      "records": 4,
+      "monthly": {
+        "2026-03": {
+          "support_cents": 4745247,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01137",
+      "candidate_name": "FORSTAG, SAMUEL KELLEY",
+      "party": "DEM",
+      "committee_id": "C00580068",
+      "committee_name": "PROGRESSIVE TURNOUT PROJECT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00580068&candidate_id=H6MT01137&cycle=2026",
+      "support_cents": 23952014,
+      "oppose_cents": 0,
+      "records": 5,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 23952014,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01145",
+      "candidate_name": "BUSSE, RYAN",
+      "party": "DEM",
+      "committee_id": "C00732172",
+      "committee_name": "SAVE AMERICA FUND",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00732172&candidate_id=H6MT01145&cycle=2026",
+      "support_cents": 7087500,
+      "oppose_cents": 0,
+      "records": 2,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 7087500,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00722025",
+      "committee_name": "SEAL PAC USA",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00722025&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 10000000,
+      "oppose_cents": 0,
+      "records": 2,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 10000000,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00764209",
+      "committee_name": "LEADERSHIP IN ACTION",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00764209&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 21621660,
+      "oppose_cents": 0,
+      "records": 11,
+      "monthly": {
+        "2026-04": {
+          "support_cents": 14326001,
+          "oppose_cents": 0
+        },
+        "2026-05": {
+          "support_cents": 7295659,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00871012",
+      "committee_name": "MAKE MONTANA GREAT",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00871012&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 22849544,
+      "oppose_cents": 0,
+      "records": 9,
+      "monthly": {
+        "2026-03": {
+          "support_cents": 6025000,
+          "oppose_cents": 0
+        },
+        "2026-04": {
+          "support_cents": 13324544,
+          "oppose_cents": 0
+        },
+        "2026-05": {
+          "support_cents": 3500000,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01152",
+      "candidate_name": "FLINT, AARON",
+      "party": "REP",
+      "committee_id": "C00916692",
+      "committee_name": "AMERICAN MISSION",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00916692&candidate_id=H6MT01152&cycle=2026",
+      "support_cents": 59042752,
+      "oppose_cents": 0,
+      "records": 5,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 59042752,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "house",
+      "state": "MT",
+      "district": "01",
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "H6MT01160",
+      "candidate_name": "JACOBSEN, CHRISTI",
+      "party": "REP",
+      "committee_id": "C00890905",
+      "committee_name": "MONTANA WAY",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00890905&candidate_id=H6MT01160&cycle=2026",
+      "support_cents": 1494334,
+      "oppose_cents": 0,
+      "records": 1,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 1494334,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2024",
+      "election_type_label": null,
+      "candidate_id": "S6MT00162",
+      "candidate_name": "TESTER, JON R.",
+      "party": "DEM",
+      "committee_id": "C00747121",
+      "committee_name": "RED SENATE",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00747121&candidate_id=S6MT00162&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 1162076,
+      "records": 1,
+      "monthly": {
+        "2024-10": {
+          "support_cents": 0,
+          "oppose_cents": 1162076
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00253",
+      "candidate_name": "BANKHEAD, ALANI INES",
+      "party": "DEM",
+      "committee_id": "C00909994",
+      "committee_name": "FIELD TEAM 6, INC.",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00909994&candidate_id=S6MT00253&cycle=2026",
+      "support_cents": 126432,
+      "oppose_cents": 0,
+      "records": 3,
+      "monthly": {
+        "2026-07": {
+          "support_cents": 105941,
+          "oppose_cents": 0
+        },
+        "2026-09": {
+          "support_cents": 20491,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00693838",
+      "committee_name": "MORE JOBS, LESS GOVERNMENT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00693838&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 86607300,
+      "records": 4,
+      "monthly": {
+        "2026-07": {
+          "support_cents": 0,
+          "oppose_cents": 86607300
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00764209",
+      "committee_name": "LEADERSHIP IN ACTION",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00764209&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 1000000,
+      "records": 1,
+      "monthly": {
+        "2026-03": {
+          "support_cents": 0,
+          "oppose_cents": 1000000
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00943910",
+      "committee_name": "MONTANA FREEDOM PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00943910&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 1428000,
+      "oppose_cents": 0,
+      "records": 2,
+      "monthly": {
+        "2026-06": {
+          "support_cents": 1428000,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00295",
+      "candidate_name": "ALME, KURT",
+      "party": "REP",
+      "committee_id": "C00687103",
+      "committee_name": "AMERICANS FOR PROSPERITY ACTION, INC. (AFP ACTION) DBA CVA ACTION AND DBA LIBRE ACTION",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00687103&candidate_id=S6MT00295&cycle=2026",
+      "support_cents": 179376576,
+      "oppose_cents": 0,
+      "records": 18,
+      "monthly": {
+        "2026-06": {
+          "support_cents": 83379500,
+          "oppose_cents": 0
+        },
+        "2026-07": {
+          "support_cents": 43527886,
+          "oppose_cents": 0
+        },
+        "2026-08": {
+          "support_cents": 52469190,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "G2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00295",
+      "candidate_name": "ALME, KURT",
+      "party": "REP",
+      "committee_id": "C00943910",
+      "committee_name": "MONTANA FREEDOM PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00943910&candidate_id=S6MT00295&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 467592,
+      "records": 1,
+      "monthly": {
+        "2026-06": {
+          "support_cents": 0,
+          "oppose_cents": 467592
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00238",
+      "candidate_name": "NEILL, REILLY",
+      "party": "DEM",
+      "committee_id": "C00693838",
+      "committee_name": "MORE JOBS, LESS GOVERNMENT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00693838&candidate_id=S6MT00238&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 100587628,
+      "records": 19,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 0,
+          "oppose_cents": 100587628
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00238",
+      "candidate_name": "NEILL, REILLY",
+      "party": "DEM",
+      "committee_id": "C00948521",
+      "committee_name": "PROGRESSIVE VET PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00948521&candidate_id=S6MT00238&cycle=2026",
+      "support_cents": 252828,
+      "oppose_cents": 20508715,
+      "records": 5,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 252828,
+          "oppose_cents": 20508715
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00253",
+      "candidate_name": "BANKHEAD, ALANI INES",
+      "party": "DEM",
+      "committee_id": "C00693838",
+      "committee_name": "MORE JOBS, LESS GOVERNMENT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00693838&candidate_id=S6MT00253&cycle=2026",
+      "support_cents": 90117926,
+      "oppose_cents": 0,
+      "records": 12,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 90117926,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00253",
+      "candidate_name": "BANKHEAD, ALANI INES",
+      "party": "DEM",
+      "committee_id": "C00948521",
+      "committee_name": "PROGRESSIVE VET PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00948521&candidate_id=S6MT00253&cycle=2026",
+      "support_cents": 232639640,
+      "oppose_cents": 0,
+      "records": 20,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 225102464,
+          "oppose_cents": 0
+        },
+        "2026-06": {
+          "support_cents": 7537176,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00693838",
+      "committee_name": "MORE JOBS, LESS GOVERNMENT",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00693838&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 9605100,
+      "records": 3,
+      "monthly": {
+        "2026-03": {
+          "support_cents": 0,
+          "oppose_cents": 9605100
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00868604",
+      "committee_name": "MONTANANS FOR PUBLIC LANDS",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00868604&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 606983,
+      "oppose_cents": 0,
+      "records": 2,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 606983,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00287",
+      "candidate_name": "BODNAR, SETH",
+      "party": "IND",
+      "committee_id": "C00943910",
+      "committee_name": "MONTANA FREEDOM PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00943910&candidate_id=S6MT00287&cycle=2026",
+      "support_cents": 12020252,
+      "oppose_cents": 0,
+      "records": 6,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 10998695,
+          "oppose_cents": 0
+        },
+        "2026-06": {
+          "support_cents": 1021557,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00295",
+      "candidate_name": "ALME, KURT",
+      "party": "REP",
+      "committee_id": "C00687103",
+      "committee_name": "AMERICANS FOR PROSPERITY ACTION, INC. (AFP ACTION) DBA CVA ACTION AND DBA LIBRE ACTION",
+      "committee_type": "V",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00687103&candidate_id=S6MT00295&cycle=2026",
+      "support_cents": 33313780,
+      "oppose_cents": 0,
+      "records": 4,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 33313780,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00295",
+      "candidate_name": "ALME, KURT",
+      "party": "REP",
+      "committee_id": "C00916692",
+      "committee_name": "AMERICAN MISSION",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00916692&candidate_id=S6MT00295&cycle=2026",
+      "support_cents": 28635833,
+      "oppose_cents": 0,
+      "records": 1,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 28635833,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2026",
+      "election_type_label": null,
+      "candidate_id": "S6MT00295",
+      "candidate_name": "ALME, KURT",
+      "party": "REP",
+      "committee_id": "C00943910",
+      "committee_name": "MONTANA FREEDOM PAC",
+      "committee_type": "O",
+      "category": "super_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00943910&candidate_id=S6MT00295&cycle=2026",
+      "support_cents": 0,
+      "oppose_cents": 21293804,
+      "records": 3,
+      "monthly": {
+        "2026-05": {
+          "support_cents": 0,
+          "oppose_cents": 21293804
+        }
+      },
+      "candidate_scope": "current_official_filing"
+    },
+    {
+      "cycle": 2026,
+      "office": "senate",
+      "state": "MT",
+      "district": null,
+      "election_type": "P2030",
+      "election_type_label": null,
+      "candidate_id": "S4MT00183",
+      "candidate_name": "SHEEHY, TIM",
+      "party": "REP",
+      "committee_id": "C00448696",
+      "committee_name": "SENATE CONSERVATIVES FUND",
+      "committee_type": "W",
+      "category": "hybrid_pac",
+      "source_url": "https://www.fec.gov/data/independent-expenditures/?data_type=processed&committee_id=C00448696&candidate_id=S4MT00183&cycle=2026",
+      "support_cents": 15670,
+      "oppose_cents": 0,
+      "records": 63,
+      "monthly": {
+        "2025-01": {
+          "support_cents": 865,
+          "oppose_cents": 0
+        },
+        "2025-02": {
+          "support_cents": 3060,
+          "oppose_cents": 0
+        },
+        "2025-03": {
+          "support_cents": 3060,
+          "oppose_cents": 0
+        },
+        "2025-04": {
+          "support_cents": 3060,
+          "oppose_cents": 0
+        },
+        "2025-05": {
+          "support_cents": 500,
+          "oppose_cents": 0
+        },
+        "2025-06": {
+          "support_cents": 500,
+          "oppose_cents": 0
+        },
+        "2025-07": {
+          "support_cents": 500,
+          "oppose_cents": 0
+        },
+        "2025-08": {
+          "support_cents": 500,
+          "oppose_cents": 0
+        },
+        "2025-09": {
+          "support_cents": 375,
+          "oppose_cents": 0
+        },
+        "2025-10": {
+          "support_cents": 375,
+          "oppose_cents": 0
+        },
+        "2025-11": {
+          "support_cents": 375,
+          "oppose_cents": 0
+        },
+        "2025-12": {
+          "support_cents": 375,
+          "oppose_cents": 0
+        },
+        "2026-01": {
+          "support_cents": 375,
+          "oppose_cents": 0
+        },
+        "2026-02": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-03": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-04": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-05": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-06": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-07": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        },
+        "2026-08": {
+          "support_cents": 250,
+          "oppose_cents": 0
+        }
+      },
+      "candidate_scope": "not_current_official_filing"
+    }
+  ],
+  "finance_candidate_identity_review": {
+    "Sam Forstag": {
+      "candidate_id": "H6MT01137",
+      "name": "FORSTAG, SAMUEL KELLEY",
+      "party": "DEM",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "01",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Aaron Flint": {
+      "candidate_id": "H6MT01152",
+      "name": "FLINT, AARON",
+      "party": "REP",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "01",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Kurt Alme": {
+      "candidate_id": "S6MT00295",
+      "name": "ALME, KURT",
+      "party": "REP",
+      "election_year": 2026,
+      "office": "S",
+      "state": "MT",
+      "district": "00",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Kyle Austin": {
+      "candidate_id": "S6MT00261",
+      "name": "AUSTIN, KYLE",
+      "party": "LIB",
+      "election_year": 2026,
+      "office": "S",
+      "state": "MT",
+      "district": "00",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Alani Bankhead": {
+      "candidate_id": "S6MT00253",
+      "name": "BANKHEAD, ALANI INES",
+      "party": "DEM",
+      "election_year": 2026,
+      "office": "S",
+      "state": "MT",
+      "district": "00",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Seth Bodnar": {
+      "candidate_id": "S6MT00287",
+      "name": "BODNAR, SETH",
+      "party": "IND",
+      "election_year": 2026,
+      "office": "S",
+      "state": "MT",
+      "district": "00",
+      "candidate_status": "C",
+      "incumbent_challenge": "O"
+    },
+    "Troy Downing": {
+      "candidate_id": "H4MT02098",
+      "name": "DOWNING, TROY",
+      "party": "REP",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "02",
+      "candidate_status": "C",
+      "incumbent_challenge": "I"
+    },
+    "Brian J Miller": {
+      "candidate_id": "H6MT02150",
+      "name": "MILLER, BRIAN JAMES",
+      "party": "DEM",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "02",
+      "candidate_status": "C",
+      "incumbent_challenge": "C"
+    },
+    "Patrick Mccracken": {
+      "candidate_id": "H6MT02176",
+      "name": "MCCRACKEN, PATRICK NEAL MR.",
+      "party": "LIB",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "02",
+      "candidate_status": "N",
+      "incumbent_challenge": "C"
+    },
+    "Michael D Eisenhauer": {
+      "candidate_id": "H6MT02168",
+      "name": "EISENHAUER, MICHAEL D. DR.",
+      "party": "IND",
+      "election_year": 2026,
+      "office": "H",
+      "state": "MT",
+      "district": "02",
+      "candidate_status": "C",
+      "incumbent_challenge": "C"
+    }
+  },
+  "finance_publication_boundary_ko": "새 MT 단독 감사 수집입니다. UI 금액은 기존 전국 FEC 게시 자료를 사용하며 이 감사 파일이 전국 금액을 덮어쓰지 않습니다. 후보 ID 연결은 기존 자동 전국 수집에 적용됩니다.",
+  "held_sources": {
+    "AmericanPulse_senate": "직접/웹429 및 API3명 대진에 자유당 누락",
+    "Quantus_senate": "API3명 대진으로 현행 인쇄4명 비교와 다름. Kyle Austin 0으로 채우지 않음",
+    "Hart_ForwardMontana": "원문404",
+    "Tavern_hypothetical_fields": "최초 다후보/후발 질문/가상 양자/경선 전 후보를 혼합 편입하지 않음"
+  },
+  "finance_current_ballot_aggregates": 23,
+  "finance_other_candidate_aggregates": 6,
+  "reference_sources": {
+    "AmericanPulse_house01": "기존 검토로 참고 편입; 원문 수치/기간은 웹 도구로 확인. 직접429. API n314/LV와 원문 상세 표본·방법론은 미확인해 집계 제외.",
+    "Concord_senate": "10/6~8 LV405; 원문 네 후보 수치 확인. PAC 게시·실제 의뢰자/전체 문항 순서 미공개로 집계 제외."
+  },
+  "prior_first_pass_source_sha256": "3b889ad77f92b59c736f3d41c720ab5d65e5c3310b70fac6c02348cd9eececa1"
 }
