@@ -2967,17 +2967,35 @@ const mmLoadTileImage = (url, signal) => new Promise((resolve, reject) => {
     img.src = url;
 });
 
-const mmNightTileData = async ({ index, signal }) => {
+// mmNightBaseLayers draws every tile twice -- once plain, once as the
+// additive-blend "boost" layer (CLAUDE.md, 2026-09-04 가산 합성 결정). Each is
+// its own deck.gl TileLayer, so without this cache every visible tile was
+// decoded TWICE (two separate <img> elements, two async image decodes) for
+// identical bytes -- real, doubled CPU work on exactly the content that
+// dominates first paint ("지도 로딩이 너무 늦다", 2026-10-16). Cached by
+// z/y/x, shared across both layers; a tile that fails is evicted so it gets
+// retried on the next request rather than staying permanently broken.
+const MM_NIGHT_TILE_CACHE = new Map();
+
+const mmNightTileData = async ({ index }) => {
     const { x, y, z } = index;
-    await mmNightLocalReady();
-    if (z <= MM_NIGHT_LOCAL_MAX_Z) {
-        try {
-            return await mmLoadTileImage(MM_NIGHT_LOCAL_URL(z, y, x), signal);
-        } catch (_) {
-            // 아직 받아 두지 않았거나 그 줌만 빠진 경우. 프록시로 넘어간다.
+    const key = `${z}/${y}/${x}`;
+    const cached = MM_NIGHT_TILE_CACHE.get(key);
+    if (cached) return cached;
+    const promise = (async () => {
+        await mmNightLocalReady();
+        if (z <= MM_NIGHT_LOCAL_MAX_Z) {
+            try {
+                return await mmLoadTileImage(MM_NIGHT_LOCAL_URL(z, y, x));
+            } catch (_) {
+                // 아직 받아 두지 않았거나 그 줌만 빠진 경우. 프록시로 넘어간다.
+            }
         }
-    }
-    return mmLoadTileImage(MM_NIGHT_PROXY_URL(z, y, x), signal);
+        return mmLoadTileImage(MM_NIGHT_PROXY_URL(z, y, x));
+    })();
+    promise.catch(() => { MM_NIGHT_TILE_CACHE.delete(key); });
+    MM_NIGHT_TILE_CACHE.set(key, promise);
+    return promise;
 };
 const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
 
@@ -3311,6 +3329,15 @@ const renderMacroMonitor = async () => {
     currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
     // 바다색은 실제 타일에서 잰다 (한 번). 실패해도 기본값으로 그려진다.
     if (mmNightEnabled()) mmCalibrateSea();
+
+    // 지도(야간광 타일 포함)는 MM_INDEX 가 없어도 그릴 수 있다 -- mmDrawMap 의
+    // rows 는 `MM_INDEX?.countries_index || []` 로 이미 비어 있는 경우를
+    // 방어한다. 예전에는 /api/macro-monitor 인덱스 응답을 기다린 "다음에" 지도를
+    // 그리기 시작해서, 타일 요청 자체가 그 왕복만큼 늦게 시작됐다 ("지도 로딩이
+    // 너무 늦다", 2026-10-16) -- 핀 마커만 인덱스가 있어야 찍히지, 베이스맵은
+    // 필요 없다. 여기서 먼저 그려서 타일이 인덱스 응답과 동시에 받아지게 하고,
+    // 인덱스가 도착하면 같은 mmDrawMap 을 다시 불러 핀을 얹는다.
+    mmDrawMap();
 
     if (!MM_INDEX) {
         host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
