@@ -1,7 +1,8 @@
 name: Labels source probe (temporary)
 
-# Which post-2021 Russian and post-2019 Indian crop-yield sources answer
-# from Actions without a login. Branch-only; removed before merge.
+# Pulls the agriculture section of tochno.st's Rosstat "Regions of Russia"
+# collection (v20260313) and commits a filtered extract to this branch, so
+# its coverage can be checked. Branch-only; removed before merge.
 on:
   push:
     branches: ['claude/india-labels']
@@ -10,18 +11,43 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Probe
+      - uses: actions/checkout@v4
+      - name: Fetch and filter
         run: |
-          probe() {
-            code=$(curl -sSL -A "Mozilla/5.0" -o /tmp/out -w '%{http_code} %{content_type} %{size_download}' -m 60 "$1" || echo fail)
-            echo "::notice::$code | $1 | $(head -c 200 /tmp/out | tr -d '\n\r' | tr -c '[:print:]' ' ')"
-          }
-          probe "https://github.com/tochno-st/regions_collection"
-          probe "https://api.github.com/repos/tochno-st/regions_collection/contents"
-          probe "https://tochno.st/datasets/regions_collection"
-          probe "https://statbase.ru/datasets/?q=%D1%83%D1%80%D0%BE%D0%B6%D0%B0%D0%B9%D0%BD%D0%BE%D1%81%D1%82%D1%8C"
-          probe "https://www.mojgorod.ru/r_stat/index.html"
-          curl -sSL -A "Mozilla/5.0" -m 60 https://www.mojgorod.ru/ | grep -oiE 'href="[^"]*r_stat[^"]*"' | head -20 | tr '\n' ' ' | sed 's/^/::notice::mojgorod links /'; echo
-          curl -sSL -m 60 "https://ckan.indiadataportal.com/api/3/action/package_show?id=area-production-yield-apy" \
-            | python3 -c "import json,sys; r=json.load(sys.stdin)['result']; [print('::notice::IDP res', x.get('name'), x.get('format'), x.get('size'), x.get('last_modified'), x.get('url')) for x in r['resources'][:6]]"
+          set -e
+          mkdir -p /tmp/t && cd /tmp/t
+          curl -sSL -m 600 -o s13.zip "https://storage.yandexcloud.net/tochno-st-catalog/Rosstat/data_regions_collection_102_v20260313/data_13_socio_economic_102_v20260313.zip"
+          ls -la; unzip -o -q s13.zip -d s13; find s13 -type f | head -50 > files.txt; cat files.txt
+          pip install -q pandas pyarrow
+          python3 - <<'PY'
+          import glob, os, pandas as pd
+          out = "/tmp/t/extract"
+          os.makedirs(out, exist_ok=True)
+          files = glob.glob("/tmp/t/s13/**/*", recursive=True)
+          frames = []
+          for f in files:
+              if f.endswith(".parquet"):
+                  frames.append(pd.read_parquet(f))
+              elif f.endswith(".csv"):
+                  try:
+                      frames.append(pd.read_csv(f, sep=";", low_memory=False))
+                  except Exception as e:
+                      print("skip", f, e)
+          d = pd.concat(frames, ignore_index=True)
+          print(d.columns.tolist()); print(d.head(3).to_string())
+          d.head(200).to_csv(f"{out}/head.csv", index=False)
+          s = d.astype(str)
+          mask = s.apply(lambda c: c.str.contains("13120000|13160000|13050000|рожайн|осевн", regex=True)).any(axis=1)
+          d[mask].to_csv(f"{out}/agri_filtered.csv", index=False)
+          print("filtered rows", int(mask.sum()))
+          PY
+          cp /tmp/t/files.txt /tmp/t/extract/
+          dest="$GITHUB_WORKSPACE/New for anti/scripts/yield_model/russia/training/_tochno_probe"
+          mkdir -p "$dest"; cp /tmp/t/extract/* "$dest/"
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/russia/training/_tochno_probe"
+          git commit -m "probe: tochno.st section 13 extract" && git push
