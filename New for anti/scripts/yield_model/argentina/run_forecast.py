@@ -32,9 +32,11 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import numpy as np
 import pandas as pd
 
 from .collect import current_season, load_dmi, load_oni
+from .ndvi_blend import adjustment as ndvi_adjustment
 from .predict import predict_one
 from .regions import ALL, BY_KEY
 
@@ -151,6 +153,15 @@ def main():
             skipped.append((cfg.key, r["error"]))
             continue
 
+        # Satellite correction, only where the backtest earned it and only
+        # once enough of the critical window has been seen (ndvi_blend).
+        nd = ndvi_adjustment(cfg, season)
+        if nd:
+            k = float(np.exp(nd.pop("log_adjustment")))
+            r["point"] *= k
+            r["range_68"] = [v * k for v in r["range_68"]]
+            r["range_95"] = [v * k for v in r["range_95"]]
+
         label, value = enso_label(r.get("oni"))
         iod = r.get("iod")
 
@@ -167,6 +178,8 @@ def main():
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
+            # MODIS NDVI correction (None when off or not yet observable).
+            "ndvi": nd,
             "enso": {
                 "state": label,
                 "oni_growing_season": value,
