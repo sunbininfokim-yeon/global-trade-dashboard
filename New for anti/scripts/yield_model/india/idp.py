@@ -20,7 +20,15 @@ crops the Indian models use, and writes one tidy table:
                      area_ha, production_t
 
 Where both sources report a district-crop-year, both rows are kept with
-their source tag; india.labels decides which wins.
+their source tag; `region_yield` prefers DES APY and uses UPAg for the
+years DES has not reached.
+
+Year convention: "2019-2020" is year 2019, ICRISAT's convention. Checked on
+the overlap: Punjab+Haryana wheat and Madhya Pradesh soybean agree with
+ICRISAT at a median ratio of 1.000 and correlation 0.995-1.000 for both
+sources. Cotton does not line up yet (the region is a set of Maharashtra
+divisions whose districts were renamed and split since, and DES reports lint
+in a different unit), so cotton keeps ICRISAT only.
 """
 
 import io
@@ -84,6 +92,37 @@ def tidy(df, source):
                                   pd.Series("", index=df.index)),
     })
     return out
+
+
+# ICRISAT state codes used by regions.py selectors.
+STATE_CODES = {9: "Punjab", 4: "Haryana", 6: "Madhya Pradesh",
+               7: "Maharashtra", 3: "Gujarat"}
+SPLICE_CROPS = {"wheat", "soybean"}
+
+
+def region_yield(crop, selector, path=OUT):
+    """
+    Region yield (kg/ha) by year from the IDP table, or None when this crop
+    or selector is not supported (division-level selectors, cotton).
+    Same arithmetic as icrisat.region_yield: sum production / sum area.
+    """
+    if crop not in SPLICE_CROPS or any(div for _, div in selector):
+        return None
+    if not os.path.exists(path):
+        return None
+    d = pd.read_csv(path)
+    d = d[(d.crop == crop) & (d.season != "Total")
+          & d.state.isin([STATE_CODES[c] for c, _ in selector])]
+    d = d.assign(year=d.year_label.str[:4].astype(int))
+    out = []
+    for year, g in d.groupby("year"):
+        src = "des_apy" if (g.source == "des_apy").any() else "upag"
+        g = g[g.source == src]
+        area, prod = g.area.sum(), g.production.sum()
+        if area > 0:
+            out.append({"year": year, "yield_kg_ha": prod / area * 1000.0,
+                        "area_kha": area / 1000.0, "label_source": src})
+    return pd.DataFrame(out)
 
 
 def main():
