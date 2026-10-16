@@ -1,0 +1,85 @@
+[train] punjab_wheat  (Punjab + Haryana wheat)
+[train]   35 seasons 1990-2024, 9 usable features (4 core)
+[train]   best trend-only baseline: deg1, RMSE 312 (the bar the weather features have to clear)
+[train]     all_deg1_forward           n= 17  RMSE=  348.2  recent=  300.5  trend bias=   +125  vs trend= -11.7%
+[train]     all_deg1_loo               n= 35  RMSE=  254.8  recent=  296.9  trend bias=    +46  vs trend=  -2.4%
+[train]     all_deg2_forward           n= 17  RMSE=  369.4  recent=  278.9  trend bias=    +32  vs trend=  -6.8%
+[train]     all_deg2_loo               n= 35  RMSE=  244.3  recent=  266.0  trend bias=    -27  vs trend=  -0.5%
+[train]     all_recent10_forward       n= 17  RMSE=  379.5  recent=  314.9  trend bias=    +17  vs trend=  -6.0%
+[train]     all_recent10_loo           n= 35  RMSE=  594.2  recent=  316.9  trend bias=    -19  vs trend=  -1.3%
+[train]     all_recent20_forward       n= 17  RMSE=  325.9  recent=  309.5  trend bias=    +94  vs trend=  -2.1%
+[train]     all_recent20_loo           n= 35  RMSE=  260.5  recent=  281.6  trend bias=    +12  vs trend=  -0.7%
+[train]     core_deg1_forward          n= 17  RMSE=  318.4  recent=  303.4  trend bias=   +125  vs trend=  -2.1% <-
+[train]     core_deg1_loo              n= 35  RMSE=  265.0  recent=  292.6  trend bias=    +46  vs trend=  -6.6%
+[train]     core_deg2_forward          n= 17  RMSE=  351.5  recent=  283.9  trend bias=    +32  vs trend=  -1.6%
+[train]     core_deg2_loo              n= 35  RMSE=  256.3  recent=  265.0  trend bias=    -27  vs trend=  -5.5%
+[train]     core_recent10_forward      n= 17  RMSE=  404.2  recent=  337.3  trend bias=    +17  vs trend= -13.0%
+[train]     core_recent10_loo          n= 35  RMSE=  587.5  recent=  251.6  trend bias=    -19  vs trend=  -0.1%
+[train]     core_recent20_forward      n= 17  RMSE=  326.3  recent=  317.0  trend bias=    +94  vs trend=  -2.3%
+[train]     core_recent20_loo          n= 35  RMSE=  293.0  recent=  294.1  trend bias=    +12  vs trend= -13.3%
+[train]   nested selection over 14 seasons: -3.1% all, -5.6% recent (in-sample pick: -2.1%, -23.3%)
+[train]   trend form deg1, recent bias +125 kg/ha over the last 8 seasons
+[train]   VERDICT: does not beat a trend-only baseline out of sample.
+[train]   NOT A WEATHER PROBLEM: Punjab and Haryana wheat yields are shaped by the procurement system as much as by weather: assured MSP purchase, subsidised power for tubewells and canal rotation schedules set both the input intensity and the sowing window, and none of it is visible in a weather feed.
+[train]   effect of +1 SD: thsdd +0.0%, heat_days_30 +0.0%, oni_season -0.0%, warm_nights -0.0%
+[train] 
+[train] mp_soybean  (Madhya Pradesh soybeans)
+[train]   35 seasons 1990-2024, 11 usable features (5 core)
+[train]   best trend-only baseline: deg1, RMSE 241 (the bar the weather features have to clear)
+[train]     all_deg1_forward           n= 17  RMSE=  768.7  recent= 1095.0  trend bias=   +109  vs trend=-219.1%
+[train]     all_deg1_loo               n= 35  RMSE=  168.6  recent=  225.0  trend bias=    +58  vs trend= +14.0%
+[train]     all_deg2_forward           n= 17  RMSE=  757.6  recent= 1058.9  trend bias=    +40  vs trend=-190.3%
+[train]     all_deg2_loo               n= 35  RMSE=  198.1  recent=  253.1  trend bias=    +11  vs trend=  -2.2%
+[train]     all_recent10_forward       n= 17  RMSE=  294.5  recent=  239.8  trend bias=    -51  vs trend= -17.1%
+[train]     all_recent10_loo           n= 35  RMSE=  590.5  recent=  893.2  trend bias=    -23  vs trend=-182.9%
+[train]     all_recent20_forward       n= 17  RMSE=632328189.9  recent=921768814.3  trend bias=    +89  vs trend=-249301961.1%
+[train]     all_recent20_loo           n= 35  RMSE=  337.6  recent=  223.3  trend bias=     +2  vs trend=  -8.7%
+[train]     core_deg1_forward          n= 17  RMSE=  690.9  recent=  977.5  trend bias=   +109  vs trend=-186.8%
+[train]     core_deg1_loo              n= 35  RMSE=  201.2  recent=  232.3  trend bias=    +58  vs trend=  -2.7%
+[train]     core_deg2_forward          n= 17  RMSE=  678.0  recent=  947.2  trend bias=    +40  vs trend=-159.8%
+[train]     core_deg2_loo              n= 35  RMSE=  201.1  recent=  251.2  trend bias=    +11  vs trend=  -3.8%
+[train]     core_recent10_forward      n= 17  RMSE=  277.1  recent=  257.4  trend bias=    -51  vs trend= -10.2% <-
+[train]     core_recent10_loo          n= 35  RMSE=  732.3  recent=  291.8  trend bias=    -23  vs trend=-250.8%
+[train]     core_recent20_forward      n= 17  RMSE=29796199141.8  recent=43435050961.2  trend bias=    +89  vs trend=-11747465815.8%
+[train]     core_recent20_loo          n= 35  RMSE=  313.3  recent=  242.0  trend bias=     +2  vs trend=  -0.9%
+[train]   nested selection over 14 seasons: -245.0% all, -344.8% recent (in-sample pick: -15.0%, -4.0%)
+[train]   trend form recent10, recent bias -51 kg/ha over the last 8 seasons
+[train]   WARNING: even the best trend form runs -5.6% off recent yield; treat the level with caution.
+[train]   VERDICT: does not beat a trend-only baseline out of sample.
+[train]   NOT A WEATHER PROBLEM: Madhya Pradesh soybean area has moved with the relative price of soybean against maize and pulses, and a shift in the area mix changes the average yield without any weather having changed.
+[train]   effect of +1 SD: harvest_waterlog -23.8%, onset_delay +28.4%, flowering_stress +12.5%, oni_season -8.5%
+[train] 
+[train] vidarbha_cotton: regime restriction from 2003 (30 -> 17 seasons)
+[train] vidarbha_cotton  (Vidarbha + Marathwada + Gujarat cotton)
+[train]   17 seasons 2003-2019, 10 usable features (4 core)
+[train]   best trend-only baseline: deg1, RMSE 82 (the bar the weather features have to clear)
+[train]   WARNING: only 5 forward-chaining folds. Any skill figure below rests on too few unseen seasons to be relied on.
+[train]     all_deg1_forward           n=  5  RMSE=   49.1  recent=   49.1  trend bias=     +3  vs trend= +40.1%
+[train]     all_deg1_loo               n= 17  RMSE=   56.1  recent=   50.9  trend bias=     +9  vs trend= +26.4%
+[train]     all_deg2_forward           n=  5  RMSE=  116.6  recent=  116.6  trend bias=    -82  vs trend=  -1.2%
+[train]     all_deg2_loo               n= 17  RMSE=   70.4  recent=   78.3  trend bias=     +4  vs trend= +16.6%
+[train]     all_recent10_forward       n=  5  RMSE=   76.9  recent=   76.9  trend bias=    -37  vs trend= +16.5%
+[train]     all_recent10_loo           n= 17  RMSE=   63.5  recent=   69.7  trend bias=     +3  vs trend= +21.5%
+[train]     all_recent20_forward       n=  5  RMSE=   49.1  recent=   49.1  trend bias=     +3  vs trend= +40.1%
+[train]     all_recent20_loo           n= 17  RMSE=   56.1  recent=   50.9  trend bias=     +9  vs trend= +26.4%
+[train]     core_deg1_forward          n=  5  RMSE=   43.3  recent=   43.3  trend bias=     +3  vs trend= +47.2% <-
+[train]     core_deg1_loo              n= 17  RMSE=   48.6  recent=   47.0  trend bias=     +9  vs trend= +36.2%
+[train]     core_deg2_forward          n=  5  RMSE=  110.4  recent=  110.4  trend bias=    -82  vs trend=  +4.3%
+[train]     core_deg2_loo              n= 17  RMSE=   60.2  recent=   70.2  trend bias=     +4  vs trend= +28.7%
+[train]     core_recent10_forward      n=  5  RMSE=   75.1  recent=   75.1  trend bias=    -37  vs trend= +18.4%
+[train]     core_recent10_loo          n= 17  RMSE=   62.0  recent=   63.1  trend bias=     +3  vs trend= +23.3%
+[train]     core_recent20_forward      n=  5  RMSE=   43.3  recent=   43.3  trend bias=     +3  vs trend= +47.2%
+[train]     core_recent20_loo          n= 17  RMSE=   48.6  recent=   47.0  trend bias=     +9  vs trend= +36.2%
+[train]   NOTE: positive skill on thin evidence (5 forward folds < 8; 4 features > 17 seasons / 5) — not usable.
+[train]   trend form deg1, recent bias +3 kg/ha over the last 8 seasons
+[train]   VERDICT: does not beat a trend-only baseline out of sample.
+[train]   NOT A WEATHER PROBLEM: Cotton is the crop in this set least explainable by weather.
+[train]   effect of +1 SD: spi_monsoon +3.9%, pest_risk_days +3.5%, harvest_rain +3.2%, moisture_deficit -3.1%
+[train] 
+[train] ==================================================================================
+[train] region-crop            seasons  folds   vs trend  weather only    sigma  verdict
+[train] ----------------------------------------------------------------------------------
+[train] vidarbha_cotton             17      5    +47.2%       +47.2%       82  no skill - use trend [only 5 folds]
+[train] punjab_wheat                35     17     -5.6%        -5.6%      287  no skill - use trend
+[train] mp_soybean                  35     17   -344.8%      -344.8%      248  no skill - use trend
+[train] ==================================================================================
