@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T21:40:50.923853+00:00",
+  "generated_at": "2026-10-16T04:02:03.017377+00:00",
   "season": 2026,
   "country": "Russia",
   "source_note": "Target: Rosstat oblast grain yield (Regions of Russia / tochno-st 13120000), sown-area-weighted by zone (Krasnodar·Rostov·Stavropol / Belgorod·Voronezh·Kursk·Tambov). Basket is cereals+legumes (winter-wheat dominated in these oblasts). Crimea/new regions excluded. Weather: NASA POWER + GWETROOT; Open-Meteo T/P forecast tails only (no OM soil).",
@@ -12,18 +12,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 4587.8,
+      "point": 4909.0,
       "range_68": [
-        4212.0,
-        4963.5
+        4494.4,
+        5323.6
       ],
       "range_95": [
-        3851.3,
-        5324.2
+        4096.4,
+        5721.6
       ],
       "trend": 4570.5,
-      "weather_effect": 17.2,
-      "weather_effect_pct": 0.38,
+      "weather_effect": 338.5,
+      "weather_effect_pct": 7.41,
       "last_actual": {
         "year": 2024,
         "yield": 4225.5
@@ -36,7 +36,7 @@
         },
         "observed_share": 1.0
       },
-      "presentation": "weather-driven forecast",
+      "presentation": "trend extrapolation",
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
@@ -45,17 +45,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": 0.094,
-        "weather_skill": 0.094,
+        "skill_vs_trend_only": 0.1,
+        "weather_skill": 0.1,
         "detrended_r2": null,
-        "beats_trend": true,
+        "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 375.7,
-        "model_sigma": 375.7,
-        "sigma": 375.7,
+        "sigma_used": 414.6,
+        "model_sigma": 414.6,
+        "sigma": 414.6,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "out-of-sample RMSE over last 10 forward folds"
+        "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
       },
       "trained_years": [
         2000,
@@ -67,7 +67,7 @@
         "region_share": "Southern Federal District + Stavropol export winter-wheat belt; oblast labels exclude Volga/Siberia spring wheat dilution.",
         "caveat": "Target: Rosstat oblast grain yield (урожайность зерновых, c/ha→kg/ha), sown-area-weighted within the zone. Indicator is cereals+legumes (not winter-wheat-only); in South/CBE winter wheat dominates that basket. Crimea/new regions excluded. ERA5-Land snow optional; without it winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule).",
         "non_weather_drivers": "Russian wheat yields carry a strong post-Soviet recovery and variety trend, plus fertilizer and policy shocks (export duty regime). Those are not weather; the log technology trend absorbs the smooth part, not the policy steps.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -82,12 +82,12 @@
       "unit": "kg/ha",
       "point": 4482.4,
       "range_68": [
-        4107.8,
-        4856.9
+        3891.5,
+        5073.2
       ],
       "range_95": [
-        3748.2,
-        5216.5
+        3324.3,
+        5640.4
       ],
       "trend": 4973.3,
       "weather_effect": -490.9,
@@ -104,7 +104,7 @@
         },
         "observed_share": 1.0
       },
-      "presentation": "weather-driven forecast",
+      "presentation": "trend extrapolation",
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
@@ -116,14 +116,14 @@
         "skill_vs_trend_only": 0.366,
         "weather_skill": 0.366,
         "detrended_r2": null,
-        "beats_trend": true,
-        "low_confidence": false,
-        "sigma_used": 374.6,
-        "model_sigma": 374.6,
-        "sigma": 374.6,
+        "beats_trend": false,
+        "low_confidence": true,
+        "sigma_used": 590.8,
+        "model_sigma": 590.8,
+        "sigma": 590.8,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "out-of-sample RMSE over last 10 forward folds"
+        "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
       },
       "trained_years": [
         2000,
@@ -135,7 +135,7 @@
         "region_share": "Central Black Earth winter-wheat core; oblast labels match zone weather.",
         "caveat": "Target: Rosstat oblast grain yield (урожайность зерновых, c/ha→kg/ha), sown-area-weighted within the zone. Indicator is cereals+legumes (not winter-wheat-only); in South/CBE winter wheat dominates that basket. Crimea/new regions excluded. ERA5-Land snow optional; without it winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule).",
         "non_weather_drivers": "Russian wheat yields carry a strong post-Soviet recovery and variety trend, plus fertilizer and policy shocks (export duty regime). Those are not weather; the log technology trend absorbs the smooth part, not the policy steps.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -148,18 +148,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 4705.9,
+      "point": 4908.6,
       "range_68": [
-        4324.2,
-        5087.5
+        4526.9,
+        5290.2
       ],
       "range_95": [
-        3957.8,
-        5453.9
+        4160.5,
+        5656.6
       ],
       "trend": 4689.2,
-      "weather_effect": 16.7,
-      "weather_effect_pct": 0.36,
+      "weather_effect": 219.4,
+      "weather_effect_pct": 4.68,
       "last_actual": {
         "year": 2024,
         "yield": 3952.857142857143
@@ -181,8 +181,8 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.016,
-        "weather_skill": -0.016,
+        "skill_vs_trend_only": -0.044,
+        "weather_skill": -0.044,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
@@ -203,7 +203,7 @@
         "region_share": "South+CBE winter-wheat export weather; Siberia/Volga outside labels.",
         "caveat": "Target: Rosstat oblast grain yield (урожайность зерновых, c/ha→kg/ha), sown-area-weighted within the zone. Indicator is cereals+legumes (not winter-wheat-only); in South/CBE winter wheat dominates that basket. Crimea/new regions excluded. ERA5-Land snow optional; without it winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule).",
         "non_weather_drivers": "Russian wheat yields carry a strong post-Soviet recovery and variety trend, plus fertilizer and policy shocks (export duty regime). Those are not weather; the log technology trend absorbs the smooth part, not the policy steps.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -216,18 +216,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 3112.6,
+      "point": 3395.5,
       "range_68": [
-        2704.7,
-        3520.4
+        3048.9,
+        3742.1
       ],
       "range_95": [
-        2313.1,
-        3912.0
+        2716.2,
+        4074.8
       ],
-      "trend": 2832.4,
-      "weather_effect": 280.2,
-      "weather_effect_pct": 9.89,
+      "trend": 2718.3,
+      "weather_effect": 677.3,
+      "weather_effect_pct": 24.92,
       "last_actual": {
         "year": 2021,
         "yield": 1923.2727516177356
@@ -240,7 +240,7 @@
         },
         "observed_share": 1.0
       },
-      "presentation": "weather-driven forecast",
+      "presentation": "trend extrapolation",
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
@@ -249,17 +249,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": 0.205,
-        "weather_skill": 0.205,
+        "skill_vs_trend_only": 0.195,
+        "weather_skill": 0.195,
         "detrended_r2": null,
-        "beats_trend": true,
-        "low_confidence": false,
-        "sigma_used": 407.9,
-        "model_sigma": 407.9,
-        "sigma": 407.9,
+        "beats_trend": false,
+        "low_confidence": true,
+        "sigma_used": 346.6,
+        "model_sigma": 346.6,
+        "sigma": 346.6,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "out-of-sample RMSE over last 10 forward folds"
+        "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
       },
       "trained_years": [
         2000,
@@ -271,7 +271,7 @@
         "region_share": "Volga steppe — drier continental winter wheat / mixed cereals; export path differs from Black Sea South but climate signal is sharp.",
         "caveat": "Target: Rosstat oblast grain yield (урожайность зерновых, c/ha→kg/ha), sown-area-weighted within the zone. Indicator is cereals+legumes (not winter-wheat-only); in South/CBE winter wheat dominates that basket. Crimea/new regions excluded. ERA5-Land snow optional; without it winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule).",
         "non_weather_drivers": "Russian wheat yields carry a strong post-Soviet recovery and variety trend, plus fertilizer and policy shocks (export duty regime). Those are not weather; the log technology trend absorbs the smooth part, not the policy steps.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -284,18 +284,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2558.1,
+      "point": 2564.6,
       "range_68": [
-        2304.9,
-        2811.3
+        2282.9,
+        2846.3
       ],
       "range_95": [
-        2061.9,
-        3054.4
+        2012.5,
+        3116.7
       ],
       "trend": 2539.0,
-      "weather_effect": 19.1,
-      "weather_effect_pct": 0.75,
+      "weather_effect": 25.6,
+      "weather_effect_pct": 1.01,
       "last_actual": {
         "year": 2021,
         "yield": 2210.98210294449
@@ -308,7 +308,7 @@
         },
         "observed_share": 1.0
       },
-      "presentation": "weather-driven forecast",
+      "presentation": "trend extrapolation",
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
@@ -317,17 +317,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": 0.051,
-        "weather_skill": 0.051,
+        "skill_vs_trend_only": -0.045,
+        "weather_skill": -0.045,
         "detrended_r2": null,
-        "beats_trend": true,
+        "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 253.2,
-        "model_sigma": 253.2,
-        "sigma": 253.2,
+        "sigma_used": 281.7,
+        "model_sigma": 281.7,
+        "sigma": 281.7,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "out-of-sample RMSE over last 10 forward folds"
+        "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
       },
       "trained_years": [
         2000,
@@ -339,7 +339,7 @@
         "region_share": "Core Black Sea sunflower / oilseed export belt.",
         "caveat": "Target: Rosstat oblast sunflower yield (13160000), sown-area-weighted (13070000). Features follow North Caucasus / CFO agromet literature (April precip, flowering heat–drought, May–Aug moisture, radiation). WOFOST is a process benchmark only — this package stays ridge+trend.",
         "non_weather_drivers": "Sunflower carries hybrid turnover, rotation (often after cereals), and crush/export economics; weather models explain residual after trend.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -352,18 +352,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 3721.3,
+      "point": 3278.0,
       "range_68": [
-        3483.0,
-        3959.6
+        3031.4,
+        3524.7
       ],
       "range_95": [
-        3254.3,
-        4188.3
+        2794.6,
+        3761.5
       ],
-      "trend": 3520.8,
-      "weather_effect": 200.5,
-      "weather_effect_pct": 5.69,
+      "trend": 3255.5,
+      "weather_effect": 22.5,
+      "weather_effect_pct": 0.69,
       "last_actual": {
         "year": 2021,
         "yield": 2551.5546006216973
@@ -385,14 +385,14 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.415,
-        "weather_skill": -0.415,
+        "skill_vs_trend_only": -0.113,
+        "weather_skill": -0.113,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 238.3,
-        "model_sigma": 238.3,
-        "sigma": 238.3,
+        "sigma_used": 246.7,
+        "model_sigma": 246.7,
+        "sigma": 246.7,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
         "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
@@ -407,7 +407,7 @@
         "region_share": "CBE expanding sunflower; Hydrometcenter CFO forecast literature.",
         "caveat": "Target: Rosstat oblast sunflower yield (13160000), sown-area-weighted (13070000). Features follow North Caucasus / CFO agromet literature (April precip, flowering heat–drought, May–Aug moisture, radiation). WOFOST is a process benchmark only — this package stays ridge+trend.",
         "non_weather_drivers": "Sunflower carries hybrid turnover, rotation (often after cereals), and crush/export economics; weather models explain residual after trend.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -420,18 +420,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 1699.7,
+      "point": 1705.4,
       "range_68": [
-        1520.8,
-        1878.6
+        1488.5,
+        1922.3
       ],
       "range_95": [
-        1349.1,
-        2050.4
+        1280.2,
+        2130.6
       ],
       "trend": 1711.2,
-      "weather_effect": -11.5,
-      "weather_effect_pct": -0.67,
+      "weather_effect": -5.8,
+      "weather_effect_pct": -0.34,
       "last_actual": {
         "year": 2021,
         "yield": 1315.9705980483698
@@ -453,14 +453,14 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.059,
-        "weather_skill": -0.059,
+        "skill_vs_trend_only": 0.265,
+        "weather_skill": 0.265,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 178.9,
-        "model_sigma": 178.9,
-        "sigma": 178.9,
+        "sigma_used": 216.9,
+        "model_sigma": 216.9,
+        "sigma": 216.9,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
         "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
@@ -475,7 +475,7 @@
         "region_share": "Volga is a top RF sunflower production share (Saratov especially).",
         "caveat": "Target: Rosstat oblast sunflower yield (13160000), sown-area-weighted (13070000). Features follow North Caucasus / CFO agromet literature (April precip, flowering heat–drought, May–Aug moisture, radiation). WOFOST is a process benchmark only — this package stays ridge+trend.",
         "non_weather_drivers": "Sunflower carries hybrid turnover, rotation (often after cereals), and crush/export economics; weather models explain residual after trend.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -488,18 +488,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2485.2,
+      "point": 2476.5,
       "range_68": [
-        2354.7,
-        2615.7
+        2228.3,
+        2724.8
       ],
       "range_95": [
-        2229.5,
-        2740.9
+        1990.0,
+        2963.0
       ],
-      "trend": 2199.5,
-      "weather_effect": 285.7,
-      "weather_effect_pct": 12.99,
+      "trend": 2134.6,
+      "weather_effect": 341.9,
+      "weather_effect_pct": 16.02,
       "last_actual": {
         "year": 2021,
         "yield": 1679.671747381146
@@ -512,7 +512,7 @@
         },
         "observed_share": 1.0
       },
-      "presentation": "weather-driven forecast",
+      "presentation": "trend extrapolation",
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
@@ -521,17 +521,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": 0.315,
-        "weather_skill": 0.315,
+        "skill_vs_trend_only": 0.4,
+        "weather_skill": 0.4,
         "detrended_r2": null,
-        "beats_trend": true,
-        "low_confidence": false,
-        "sigma_used": 130.5,
-        "model_sigma": 130.5,
-        "sigma": 130.5,
+        "beats_trend": false,
+        "low_confidence": true,
+        "sigma_used": 248.2,
+        "model_sigma": 248.2,
+        "sigma": 248.2,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "out-of-sample RMSE over last 10 forward folds"
+        "uncertainty_basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
       },
       "trained_years": [
         2000,
@@ -543,7 +543,7 @@
         "region_share": "Main RF sunflower production geography for oilseed markets.",
         "caveat": "Target: Rosstat oblast sunflower yield (13160000), sown-area-weighted (13070000). Features follow North Caucasus / CFO agromet literature (April precip, flowering heat–drought, May–Aug moisture, radiation). WOFOST is a process benchmark only — this package stays ridge+trend.",
         "non_weather_drivers": "Sunflower carries hybrid turnover, rotation (often after cereals), and crush/export economics; weather models explain residual after trend.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -556,18 +556,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2932.1,
+      "point": 3012.8,
       "range_68": [
-        2710.7,
-        3153.6
+        2849.3,
+        3176.2
       ],
       "range_95": [
-        2498.1,
-        3366.1
+        2692.4,
+        3333.1
       ],
-      "trend": 2677.0,
-      "weather_effect": 255.1,
-      "weather_effect_pct": 9.53,
+      "trend": 2776.5,
+      "weather_effect": 236.2,
+      "weather_effect_pct": 8.51,
       "last_actual": {
         "year": 2024,
         "yield": 2460.0
@@ -589,17 +589,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.001,
-        "weather_skill": -0.001,
+        "skill_vs_trend_only": -0.536,
+        "weather_skill": -0.536,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 221.4,
-        "model_sigma": 221.4,
-        "sigma": 221.4,
+        "sigma_used": 163.5,
+        "model_sigma": 163.5,
+        "sigma": 163.5,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-0.1%, trend-only sigma used"
+        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-53.6%, trend-only sigma used"
       },
       "trained_years": [
         2000,
@@ -611,7 +611,7 @@
         "region_share": "South has spring (+ some winter) barley; Black Sea export relevant but national PSD dilutes Siberia/Volga production.",
         "caveat": "INTERIM ONLY: target is national PSD barley yield while weather is zone-level (South/CBE/Volga). Positive skill vs trend can be spurious (national y vs regional weather; Siberia omitted). NOT Track B oblast validation. Do not publish as usable forecast until oblast_barley_yields.csv lands.",
         "non_weather_drivers": "Barley carries variety turnover, feed vs malting mix, and area shifts across Volga/Siberia/South; national PSD absorbs geography the zone points do not sample.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -624,18 +624,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2629.6,
+      "point": 2795.7,
       "range_68": [
-        2408.2,
-        2851.0
+        2632.2,
+        2959.1
       ],
       "range_95": [
-        2195.6,
-        3063.6
+        2475.3,
+        3116.0
       ],
-      "trend": 2629.3,
-      "weather_effect": 0.3,
-      "weather_effect_pct": 0.01,
+      "trend": 2733.8,
+      "weather_effect": 61.8,
+      "weather_effect_pct": 2.26,
       "last_actual": {
         "year": 2024,
         "yield": 2460.0
@@ -652,22 +652,22 @@
       "season_status": "final_estimate",
       "status_note_ko": "2026 시즌 종료 · Rosstat 발표 전 최종 추정치",
       "enso": {
-        "state": "unknown",
-        "oni_growing_season": null
+        "state": "neutral",
+        "oni_growing_season": 0.1825
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.019,
-        "weather_skill": -0.019,
+        "skill_vs_trend_only": -0.105,
+        "weather_skill": -0.105,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 221.4,
-        "model_sigma": 221.4,
-        "sigma": 221.4,
+        "sigma_used": 163.5,
+        "model_sigma": 163.5,
+        "sigma": 163.5,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-1.9%, trend-only sigma used"
+        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-10.5%, trend-only sigma used"
       },
       "trained_years": [
         2000,
@@ -679,7 +679,7 @@
         "region_share": "CBE is a top spring-barley producer in recent rankings.",
         "caveat": "INTERIM ONLY: target is national PSD barley yield while weather is zone-level (South/CBE/Volga). Positive skill vs trend can be spurious (national y vs regional weather; Siberia omitted). NOT Track B oblast validation. Do not publish as usable forecast until oblast_barley_yields.csv lands.",
         "non_weather_drivers": "Barley carries variety turnover, feed vs malting mix, and area shifts across Volga/Siberia/South; national PSD absorbs geography the zone points do not sample.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -692,18 +692,18 @@
       "forecast_available": true,
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2755.3,
+      "point": 2907.6,
       "range_68": [
-        2533.9,
-        2976.7
+        2744.2,
+        3071.1
       ],
       "range_95": [
-        2321.3,
-        3189.3
+        2587.2,
+        3228.0
       ],
       "trend": 2677.0,
-      "weather_effect": 78.3,
-      "weather_effect_pct": 2.92,
+      "weather_effect": 230.6,
+      "weather_effect_pct": 8.61,
       "last_actual": {
         "year": 2024,
         "yield": 2460.0
@@ -725,17 +725,17 @@
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on recent folds",
-        "skill_vs_trend_only": -0.122,
-        "weather_skill": -0.122,
+        "skill_vs_trend_only": -0.351,
+        "weather_skill": -0.351,
         "detrended_r2": null,
         "beats_trend": false,
         "low_confidence": true,
-        "sigma_used": 221.4,
-        "model_sigma": 221.4,
-        "sigma": 221.4,
+        "sigma_used": 163.5,
+        "model_sigma": 163.5,
+        "sigma": 163.5,
         "sigma_unit": "kg/ha",
         "train_window_years": null,
-        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-12.2%, trend-only sigma used"
+        "uncertainty_basis": "INTERIM PSD labels: not usable for zone forecast; raw recent skill=-35.1%, trend-only sigma used"
       },
       "trained_years": [
         2000,
@@ -747,7 +747,7 @@
         "region_share": "Volga holds a large RF spring-barley sown-area share; Orenburg deferred until oblast labels.",
         "caveat": "INTERIM ONLY: target is national PSD barley yield while weather is zone-level (South/CBE/Volga). Positive skill vs trend can be spurious (national y vs regional weather; Siberia omitted). NOT Track B oblast validation. Do not publish as usable forecast until oblast_barley_yields.csv lands.",
         "non_weather_drivers": "Barley carries variety turnover, feed vs malting mix, and area shifts across Volga/Siberia/South; national PSD absorbs geography the zone points do not sample.",
-        "weather_through": "2026-10-24",
+        "weather_through": "2026-10-31",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
