@@ -3,11 +3,31 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_manganese_uranium_ui_scope_has_no_deployment_grant(self):
+        branch = 'codex/commodity-manganese-uranium'
+        self.assertEqual(scoped_paths(branch), {
+            'New for anti/index.html', 'New for anti/data.js',
+            'New for anti/trade-monthly.js', 'New for anti/app.js', 'New for anti/style.css'})
+        self.assertFalse(scoped_paths(branch + '-extra'))
+        for path in ('_worker.js', 'wrangler.jsonc', 'New for anti/shipping.js',
+                     '.github/workflows/deploy.yml', '.github/workflows/commodity_trade_refresh.yml'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_poll_resilience_only_allows_existing_collector_workflow(self):
         branch='codex/poll-refresh-resilience-20261014'
         self.assertEqual(scoped_paths(branch), {'.github/workflows/us_election_polls_refresh.yml'})
         self.assertFalse(scoped_paths(branch+'-extra'))
         for path in ('.github/workflows/deploy.yml', '_worker.js', 'New for anti/app.js'):
+            self.assertNotIn(path,scoped_paths(branch))
+
+    def test_bauxite_ui_grant_is_exact_and_excludes_deployment(self):
+        branch='codex/commodity-bauxite-ui'
+        self.assertEqual(scoped_paths(branch), {
+            'New for anti/index.html','New for anti/data.js',
+            'New for anti/trade-monthly.js','New for anti/app.js','New for anti/style.css'})
+        self.assertFalse(scoped_paths(branch+'-extra'))
+        for path in ('_worker.js','wrangler.jsonc','New for anti/shipping.js',
+                     '.github/workflows/deploy.yml','.github/workflows/commodity_trade_refresh.yml'):
             self.assertNotIn(path,scoped_paths(branch))
 
     def test_polling_card_ui_exception_excludes_deploy_worker_and_app(self):

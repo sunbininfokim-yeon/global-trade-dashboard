@@ -31,6 +31,20 @@
             name_ko: "천연가스",
             aliases: ["gas", "natural gas", "천연가스", "lng", "2711"]
         },
+        // Exact aliases only: enriched uranium / ferroalloys must never be
+        // pulled into the ore or natural-uranium bucket by substring matching.
+        "uranium_ore": {
+            id: "uranium_ore", name_ko: "우라늄 광석·정광", exactAliasesOnly: true,
+            aliases: ["uranium_ore", "uranium ore", "uranium ores and concentrates", "우라늄 광석·정광", "우라늄광", "우라늄 정광", "261210"]
+        },
+        "uranium": {
+            id: "uranium", name_ko: "천연우라늄·화합물", exactAliasesOnly: true,
+            aliases: ["uranium", "natural uranium", "우라늄", "천연우라늄", "천연우라늄·화합물", "284410"]
+        },
+        "manganese": {
+            id: "manganese", name_ko: "망간광·정광", exactAliasesOnly: true,
+            aliases: ["manganese", "manganese ore", "manganese ores and concentrates", "망간광", "망간광·정광", "망간 정광", "2602", "260200"]
+        },
         "gold": {
             id: "gold",
             name_ko: "금",
@@ -50,6 +64,11 @@
             id: "zinc",
             name_ko: "아연",
             aliases: ["zinc", "아연", "7901"]
+        },
+        "bauxite": {
+            id: "bauxite",
+            name_ko: "보크사이트",
+            aliases: ["bauxite", "보크사이트", "보크사이드", "알루미늄광", "알루미늄 정광", "aluminium ores", "aluminum ores", "2606", "260600"]
         },
         "aluminum": {
             id: "aluminum",
@@ -92,6 +111,7 @@
             if (COMMODITY_TAXONOMY[key].id === str || COMMODITY_TAXONOMY[key].aliases.includes(str)) {
                 return COMMODITY_TAXONOMY[key].id;
             }
+            if (COMMODITY_TAXONOMY[key].exactAliasesOnly) continue;
             for (const alias of COMMODITY_TAXONOMY[key].aliases) {
                 if (str.includes(alias) && alias.length > 2) {
                     return COMMODITY_TAXONOMY[key].id;
@@ -436,7 +456,8 @@
         // world #2), Mozambique/Madagascar (graphite), Zambia/Finland
         // (cobalt), Bolivia (refined tin), Rwanda (tin concentrate).
         266: "Gabon", 508: "Mozambique", 450: "Madagascar", 894: "Zambia",
-        246: "Finland", 68: "Bolivia", 646: "Rwanda"
+        246: "Finland", 68: "Bolivia", 646: "Rwanda",
+        324: "Guinea", 388: "Jamaica", 516: "Namibia", 562: "Niger"
     };
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
@@ -487,6 +508,25 @@
         aluminum: {
             hsCode: "7601",
             colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
+        },
+        // Ore/concentrate only: not alumina (281820) or metal (7601).
+        // Explicit scope includes Guinea/Jamaica without changing the shared
+        // Worker's cached country universe for unrelated commodities.
+        bauxite: {
+            hsCode: "2606",
+            reporters: ALL_M49_CODES,
+            partners: ALL_M49_CODES,
+            colorScheme: { source: [180, 83, 9], target: [217, 119, 6] }
+        },
+        uranium: {
+            hsCode: "284410", strictHs: true,
+            reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [132, 204, 22], target: [190, 242, 100] }
+        },
+        uranium_ore: {
+            hsCode: "261210", strictHs: true,
+            reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [101, 163, 13], target: [163, 230, 53] }
         },
         wheat: {
             hsCode: "1001",
@@ -549,15 +589,11 @@
         // Steel chain. Iron ore and manganese are the two largest dry-bulk
         // flows after coal, which the shipping screens already model.
         //
-        // Manganese and chromium carry their ferroalloys alongside the ore,
-        // because the ore alone describes a trade that mostly is not happening.
-        // Countries with no smelter buy the alloy, not the rock: US imports of
-        // chrome ore run $32M against $373M of ferrochromium, and manganese ore
-        // $5M against $203M of ferromanganese. On ore alone the United States
-        // read as a country that barely touches chromium, which is the opposite
-        // of true -- it has mined no chromite since 1961 and imports all of it.
+        // Manganese is explicitly ore/concentrate only. Chromium retains its
+        // existing alloy-inclusive scope; changing it is outside this task.
         iron_ore: { hsCode: "2601", colorScheme: { source: [180, 83, 9], target: [217, 119, 6] } },
-        manganese: { hsCode: "2602,720211,720219", colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
+        manganese: { hsCode: "2602", strictHs: true, reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
         chromium: { hsCode: "2610,720241,720249", colorScheme: { source: [120, 113, 108], target: [168, 162, 158] } },
 
         // Remaining industrial metals, and the platinum group as a precious
@@ -598,10 +634,12 @@
         console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode}, ${freq})...`);
 
         try {
-            // Reporter/partner list intentionally omitted: the Worker supplies
-            // its own canonical list, so this request lands on exactly the
-            // cache key the scheduled warm-up wrote. Same for the year.
+            // Usually omit reporter/partner lists to reuse the Worker's warm
+            // cache. Product-specific scope (bauxite) can include countries
+            // absent from that shared universe. The year still comes from it.
             const params = new URLSearchParams({ hs: config.hsCode });
+            if (config.reporters) params.set('reporters', config.reporters);
+            if (config.partners) params.set('partners', config.partners);
             if (freq === 'M') params.set('freq', 'M');
             if (opts.period) params.set('period', opts.period);
             const res = await fetch(`/api/comtrade?${params}`);
@@ -638,6 +676,8 @@
                 || (window.CountryCoords ? window.CountryCoords(name) : null);
 
             json.data.forEach(row => {
+                if (config.strictHs && (String(row.cmdCode || '') !== config.hsCode
+                    || !['X', 'M'].includes(row.flowCode))) return;
                 // Fall back to the names Comtrade ships with the row, so a code
                 // missing from M49_MAP no longer silently loses the route.
                 const reporterName = M49_MAP[row.reporterCode] || row.reporterDesc;
@@ -1024,6 +1064,28 @@
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 7601)
             news: defaultNews("Aluminum")
         },
+        bauxite: {
+            title: "광물: 보크사이트 (Bauxite)",
+            desc: "알루미늄광·정광 수출입 · 국가 클릭 후 연간·월별 확인",
+            hsNote: "HS2606 알루미늄광·정광(보크사이트) · 알루미나(HS281820)·알루미늄 금속(HS7601) 제외 · 신고·미러 자료 조회 범위",
+            totalVolume: "—",
+            observedOnly: true,
+            topExporter: "—",
+            arcs: [],
+            news: {} // No invented price, production, news or global total.
+        },
+        uranium: {
+            title: "에너지: 천연우라늄·화합물",
+            desc: "천연우라늄 수출입 · 국가 클릭 후 연간·월별 확인",
+            hsNote: "HS284410 천연우라늄·화합물 및 관련 혼합물 · 농축우라늄·토륨·핵연료 제외 · 신고 중량은 우라늄 함유량(tU)이 아님 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
+        },
+        uranium_ore: {
+            title: "에너지: 우라늄 광석·정광",
+            desc: "우라늄광·정광 수출입 · 천연우라늄·화합물과 별도 표시",
+            hsNote: "HS261210 우라늄광·정광 · HS2612 전체(토륨광 포함)·HS284410과 합산하지 않음 · 신고 중량은 우라늄 함유량(tU)이 아님 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
+        },
         nickel: {
             title: "전략광물: 니켈",
             desc: "스테인리스·배터리용 니켈 무역 흐름",
@@ -1073,12 +1135,10 @@
             news: defaultNews("iron_ore")
         },
         manganese: {
-            title: "철강원료: 망간",
-            desc: "합금철용 망간광 무역 흐름",
-            totalVolume: "20 Million Tonnes",
-            topExporter: "남아프리카공화국",
-            arcs: [],  // Lazy loaded from UN Comtrade API
-            news: defaultNews("manganese")
+            title: "철강원료: 망간광·정광",
+            desc: "망간광·정광 수출입 · 페로망간과 분리",
+            hsNote: "HS2602 망간광·정광 · 페로망간(HS720211·720219) 제외 · 중량은 망간 함유량이 아닌 신고 순중량 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
         },
         chromium: {
             title: "철강원료: 크롬",

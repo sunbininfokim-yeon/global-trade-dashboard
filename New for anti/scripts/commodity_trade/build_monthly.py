@@ -45,7 +45,7 @@ AGRI_IDS = {
     "sugar", "cotton", "soybean_meal", "barley", "soybean_oil",
 }
 MINERAL_IDS = {
-    "iron_ore", "copper", "nickel", "bauxite", "aluminum", "cobalt",
+    "iron_ore", "manganese", "copper", "nickel", "bauxite", "aluminum", "cobalt",
     "graphite", "tungsten", "antimony", "lithium", "rare_earths",
     "gallium", "germanium",
 }

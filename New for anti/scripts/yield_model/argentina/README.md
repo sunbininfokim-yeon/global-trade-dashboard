@@ -208,3 +208,31 @@ re-forecasts from fresh POWER weather, checks whether MAGyP has published a new
 campaign, and rebuilds the training tables and models if so. The cache
 (`cache/`, ~94 MB) is gitignored and regenerates on demand; the training tables,
 model artifacts and the forecast JSON are committed.
+
+## Satellite condition channel (MODIS NDVI)
+
+The Bolsa de Cereales weekly condition ratings are behind a Cloudflare browser
+challenge, so the in-season condition signal is MODIS MOD13Q1 NDVI from the
+keyless ORNL DAAC API, collected weekly by `.github/workflows/argentina_ndvi.yml`.
+
+```bash
+python3 -m argentina.ndvi            # append new composites -> condition/ndvi_points.csv
+python3 -m argentina.ndvi_backtest   # score the correction -> condition/ndvi_backtest.json
+```
+
+NDVI is a correction on top of the existing forecast, not a model feature: the
+forecast's log error is regressed on the season's production-weighted NDVI
+using only earlier seasons. A window goes live only when that beats the
+forecast by at least 5% with both the 75th-percentile and the median pixel
+summary. First run (2013–2025, 13 scored seasons):
+
+| region | full window | first half |
+|---|---|---|
+| Pampas soy (Jan–Mar) | **+16%** (live) | +4% (off) |
+| Chaco cotton (Jan–Mar) | **+19%** (live) | **+18%** (live) |
+| Pampas corn | −2% | −8% |
+| Pampas wheat | −10% | −36% |
+| Norte soy | −16% | −24% |
+
+`run_forecast` applies a live window through `ndvi_blend.py` and publishes it
+under `ndvi` in each region; nothing changes until half the window is observed.

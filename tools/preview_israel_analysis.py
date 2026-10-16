@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Local-only Israel election integration preview. Never serves repository secrets."""
+"""Local-only Israel election integration preview. Dotfiles, environment files and directory listings are blocked."""
 import argparse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, unquote
 
 ROOT = Path(__file__).resolve().parents[1] / 'New for anti'
 PREVIEW = '''<!doctype html><html lang="ko"><head><meta charset="utf-8">
@@ -31,6 +31,13 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-store')
+        super().end_headers()
+
+    def log_message(self, *args):
+        pass
+
     def do_GET(self):
         path = urlsplit(self.path).path
         if path.startswith('/politics') or path == '/':
@@ -40,6 +47,11 @@ class Handler(SimpleHTTPRequestHandler):
         elif path.startswith('/api/'):
             self.send_error(404, 'No production API in local preview')
         else:
+            parts = Path(unquote(path)).parts
+            target = (ROOT / unquote(path).lstrip('/')).resolve()
+            if any(part.startswith('.') for part in parts) or ROOT.resolve() not in target.parents or target.suffix.lower() not in {
+                '.html', '.js', '.mjs', '.css', '.json', '.geojson', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.woff', '.woff2', '.ttf'}:
+                self.send_error(404); return
             super().do_GET()
 
     def list_directory(self, path):

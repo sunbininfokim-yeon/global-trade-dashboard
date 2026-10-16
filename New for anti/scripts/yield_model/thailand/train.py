@@ -16,7 +16,8 @@ from sklearn.linear_model import RidgeCV
 from sklearn.preprocessing import StandardScaler
 
 from brazil.train import (ALPHAS, NON_WEATHER_FEATURES, RECENT_FOLDS,
-                          TREND_FORMS, evaluate, fit_trend, prepare, run_cv)
+                          TREND_FORMS, evaluate, fit_trend, nested_selection,
+                          prepare, run_cv)
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -92,6 +93,7 @@ def train_one(cfg):
             log(f"  ref: {s}")
 
     results = {}
+    paths = {}   # forward key -> {year: (truth, pred, trend)}
     sets = [("all", candidates)] + ([("core", core)] if core else [])
     for label, feats in sets:
         for tlabel, degree, window in TREND_FORMS:
@@ -101,6 +103,9 @@ def train_one(cfg):
                     continue
                 truth, pred, base, yrs = out
                 key = f"{label}_{tlabel}_{mode}"
+                if mode == "forward":
+                    paths[key] = {y: (t, pr, b) for y, t, pr, b
+                                  in zip(yrs, truth, pred, base)}
                 results[key] = evaluate(truth, pred, base)
                 results[key]["n"] = len(truth)
                 results[key]["years"] = [yrs[0], yrs[-1]]
@@ -129,10 +134,30 @@ def train_one(cfg):
             f"vs trend={r['skill_vs_trend']:+7.1%}{mark}")
 
     trend = fit_trend(df.year.values, df.yield_kg_ha.values, degree, window)
-    recent_skill = (1 - best["recent_rmse"] / best_baseline_recent
-                    if best_baseline_recent > 0 else float("nan"))
-    full_skill = (1 - best["rmse"] / best_baseline
-                  if best_baseline > 0 else float("nan"))
+    # Skill from nested selection (see brazil/train.py): each season is
+    # forecast by the combination that scored best on the seasons before it,
+    # so picking the winner on the test years no longer inflates the number.
+    in_sample = {
+        "full_skill": float(1 - best["rmse"] / best_baseline
+                            if best_baseline > 0 else float("nan")),
+        "recent_skill": float(1 - best["recent_rmse"] / best_baseline_recent
+                              if best_baseline_recent > 0 else float("nan")),
+    }
+    baseline_form = min(fwd.values(), key=lambda v: v["baseline_rmse"])["trend_form"]
+    nested = nested_selection(paths, baseline_form)
+    if nested is not None:
+        honest = evaluate(*nested["arrays"])
+        full_skill = 1 - honest["rmse"] / honest["baseline_rmse"]
+        recent_skill = 1 - honest["recent_rmse"] / honest["recent_baseline_rmse"]
+        best_baseline_recent = honest["recent_baseline_rmse"]
+        model_recent_rmse = honest["recent_rmse"]
+        log(f"  nested selection over {len(nested['years'])} seasons: "
+            f"{full_skill:+.1%} all, {recent_skill:+.1%} recent "
+            f"(in-sample pick: {in_sample['full_skill']:+.1%}, "
+            f"{in_sample['recent_skill']:+.1%})")
+    else:
+        full_skill, recent_skill = in_sample["full_skill"], in_sample["recent_skill"]
+        model_recent_rmse = best["recent_rmse"]
     beats_trend = full_skill > 0 and recent_skill > 0
 
     years = df.year.values.astype(float)
@@ -140,7 +165,7 @@ def train_one(cfg):
     scaler = StandardScaler().fit(X)
     resid = np.log(df.yield_kg_ha.values) - trend(years)
     final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
-    sigma = best["recent_rmse"] if beats_trend else best_baseline_recent
+    sigma = model_recent_rmse if beats_trend else best_baseline_recent
 
     provisional = _is_provisional(label_sources)
     season_imperfect = any(
@@ -191,6 +216,13 @@ def train_one(cfg):
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),
+        "skill_basis": "nested" if nested is not None else "in_sample",
+        "nested": (None if nested is None else {
+            "n": len(nested["years"]),
+            "years": [nested["years"][0], nested["years"][-1]],
+            "picks": nested["picks"],
+        }),
+        "skill_in_sample": in_sample,
         "weather_skill": float(recent_skill),
         "non_weather_features": [f for f in best_feats
                                  if f in NON_WEATHER_FEATURES],

@@ -29,7 +29,7 @@ import sys
 from datetime import datetime, timezone
 
 from .collect import current_season, load_oni
-from .predict import predict_one
+from .predict import predict_with_lags
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +78,6 @@ def main():
         "regions": {},
     }
 
-    predicted = {}
     skipped = []
 
     for cfg in ALL:
@@ -86,13 +85,7 @@ def main():
         # wheat with the calendar, so in October they are not all on the same
         # harvest year.
         season = override or current_season(cfg)
-        # The prior season first, so coffee's biennial lag has something to
-        # stand on where SIDRA has not published yet.
-        prior = predict_one(cfg, season - 1, oni, predicted)
-        if prior and "error" not in prior:
-            predicted[season - 1] = prior["point"]
-
-        r = predict_one(cfg, season, oni, predicted)
+        r = predict_with_lags(cfg, season, oni)
         if r is None:
             skipped.append((cfg.key, "no trained model"))
             continue
