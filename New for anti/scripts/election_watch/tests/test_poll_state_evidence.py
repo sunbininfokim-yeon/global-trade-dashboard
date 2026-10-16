@@ -86,7 +86,7 @@ class StateEvidenceTests(unittest.TestCase):
                          'baseline_join_checked')
 
     def test_finance_audit_wrong_state_or_future_date_is_held(self):
-        for state,day in [('TN','2026-10-08'),('AK','2026-10-09')]:
+        for state,day in [('TN','2026-10-08'),('AK','2999-10-09')]:
             audit={'schema':'usa_governor_finance_audit_v1','state':state,'cycle':2026,
                    'status':'collected_normalization_held','captured_at':day+'T01:00:00Z'}
             with self.assertRaises(ValueError):

@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { pollPresentationContext, pollPrecision } from '../../data/poll-presentation.js';
+import { pollPresentationContext, pollPrecision, pollSummaryNote } from '../../data/poll-presentation.js';
 import { normalizeParty, pollSignal, pollSourceReady, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 
 const money = (cents) => {
@@ -63,6 +63,7 @@ const referenceReasons = {
     forced_choice_after_undecided_probe: '미정층 재질문 문항', forced_choice_question_not_comparable: '문항 비교 제한',
     primary_sample_size_conflict: '원문 표본 수 상충', commissioner_affiliation_unverified: '의뢰자 성격 미확인',
     historical_matchup: '과거 후보 대진',
+    methodology_incomplete_reference: '방법론 미확인', party_internal_reference: '정파 내부 조사',
 };
 export const pollAnswersHtml = (row) => {
     const rank = (p) => normalizeParty(p) === 'DEM' ? 0 : normalizeParty(p) === 'REP' ? 1 : 2;
@@ -105,7 +106,7 @@ export const latestPollHtml = (race, board, health, now = Date.now()) => {
     const context = pollPresentationContext(board,health,now);
     const row = latestAdmittedPoll(race,context.available ? context.now : now);
     const stale = !pollSourceReady(board,health,now);
-    return `<div class="elections-latest-poll"><strong>최신 집계 채택 조사${stale ? ' · 갱신 대기' : ''}</strong>
+    return `<div class="elections-latest-poll"><strong>보유 조사 중 최신 채택 자료${stale ? ' · 갱신 대기' : ''}</strong>
         ${row ? observationHtml(row).replace(/^<li/, '<div').replace(/<\/li>$/, '</div>') + '<small>최신 보유 조사이며 오늘 발표된 조사라는 뜻은 아닙니다. 기관 정확도·당선 확률은 별도 평가하지 않았습니다.</small>' : '<span>검증·집계 조건을 충족한 본선 조사 미연결</span>'}</div>`;
 };
 
@@ -122,6 +123,7 @@ export const pollEvidenceHtml = (race, board, health, days = 7, { now = Date.now
     const observations = race?.phase === 'pre_election' && signal.status !== 'awaiting_certified_result'
         && signal.status !== 'certified_result' ? (race.observations || []) : [];
     const hasPoll = observations.length > 0;
+    const summary = hasPoll ? pollSummaryNote(race, pollPresentationContext(board, health, now), days) : null;
     const name = signal.leader ? ` · ${signal.leader}` : '';
     const party = normalizeParty(signal.party);
     const partyLabel = party === 'DEM' ? '민주' : party === 'REP' ? '공화' : '';
@@ -143,6 +145,7 @@ export const pollEvidenceHtml = (race, board, health, days = 7, { now = Date.now
         </span>
         ${signal.status === 'certified_result' ? `<small>확정 ${escapeHtml(race?.result?.certified_on || '')} ${sourceLink(race?.result?.source_url)}</small>` : ''}
         ${leadCountText ? `<small>${escapeHtml(leadCountText)}</small>` : ''}
+        ${summary ? `<p class="elections-panel-note" data-poll-summary-status="${escapeHtml(summary.status)}"><strong>${escapeHtml(summary.label)}</strong><br>${escapeHtml(summary.detail)}</p>` : ''}
         ${showLatest ? latestPollHtml(race, board, health, now) : ''}
         ${note}
         ${coverageLabel ? `<small>${escapeHtml(coverageLabel)}</small>` : ''}

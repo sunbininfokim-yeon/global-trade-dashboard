@@ -1985,13 +1985,13 @@ body.trade-map-mode .right-pane {
     width: min(340px, 32vw);
     max-width: 340px;
 }
-/* The new bauxite screen must not squeeze the period toggle into 32vw on
-   phones. Keep this change isolated from all existing commodity layouts. */
+/* Observed ore / uranium screens need room for country-period controls on
+   phones. Other commodity layouts remain unchanged. */
 @media (max-width: 720px) {
-    body:has([data-target="bauxite"].active) .split-layout {
+    body:has(:is([data-target="bauxite"], [data-target="manganese"], [data-target="uranium"], [data-target="uranium_ore"]).active) .split-layout {
         flex-direction: column;
     }
-    body:has([data-target="bauxite"].active) .left-pane {
+    body:has(:is([data-target="bauxite"], [data-target="manganese"], [data-target="uranium"], [data-target="uranium_ore"]).active) .left-pane {
         width: 100%;
         max-width: none;
         height: auto;
@@ -2000,17 +2000,17 @@ body.trade-map-mode .right-pane {
         border-right: 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    body:has([data-target="bauxite"].active) .map-pane {
+    body:has(:is([data-target="bauxite"], [data-target="manganese"], [data-target="uranium"], [data-target="uranium_ore"]).active) .map-pane {
         width: 100%;
         height: auto;
         min-height: 220px;
         flex: 1 0 38%;
     }
-    body:has([data-target="bauxite"].active) .trade-overlay {
+    body:has(:is([data-target="bauxite"], [data-target="manganese"], [data-target="uranium"], [data-target="uranium_ore"]).active) .trade-overlay {
         top: 12px;
         bottom: auto;
     }
-    body:has([data-target="bauxite"].active) .map-source-note {
+    body:has(:is([data-target="bauxite"], [data-target="manganese"], [data-target="uranium"], [data-target="uranium_ore"]).active) .map-source-note {
         max-width: calc(100% - 32px);
     }
 }

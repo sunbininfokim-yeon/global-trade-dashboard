@@ -11,6 +11,7 @@ from publish_state_packets import rebuild
 from election_watch.superpac import build_snapshot
 from election_watch.federal_matchups import validate_snapshot,merge_ballot_reviews
 from election_watch.review_clock import validation_day
+from tests.poll_config_fixture import SNAPSHOT_DAY
 
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'config'
@@ -23,7 +24,7 @@ class MaineEvidenceTests(unittest.TestCase):
         cls.packet=next(p for p in packets() if p['state']=='ME')
         cls.ballots=read(CONFIG/'usa_polls/ballot_reviews_2026.json')
         cls.policy=apply_targets(apply_matchups(read(CONFIG/'usa_polls/live_2026.json'),
-            read(CONFIG/'governor_matchups/2026.json'),DAY),read(CONFIG/'usa_polls/targets_2026.json'),cls.ballots,DAY)
+            read(CONFIG/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(CONFIG/'usa_polls/targets_2026.json'),cls.ballots,SNAPSHOT_DAY)
         cls.policy['quality_reviews']=read(CONFIG/'usa_polls/quality_reviews_2026.json')['reviews']
         cls.observations,cls.held=normalize(cls.packet['capture']['provider_records'],cls.policy,DAY)
 

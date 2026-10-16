@@ -71,6 +71,13 @@ BAUXITE_UI_PATHS = frozenset({
     'New for anti/style.css',
 })
 
+# 2026-10-16: explicit user request for manganese ore/concentrate and uranium.
+# Same five UI paths only; app.js changes are limited to ISO fallbacks and
+# disabling mock dates for observed-only products, CSS to those phone layouts.
+# No Worker, workflow, credential or deployment permission.
+MN_URANIUM_BRANCH = 'codex/commodity-manganese-uranium'
+MN_URANIUM_PATHS = BAUXITE_UI_PATHS
+
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
@@ -81,4 +88,5 @@ def scoped_paths(branch):
             POLL_RESILIENCE_BRANCH: DAILY_POLLING_PATHS,
             COMMODITY_BRANCH: COMMODITY_PATHS,
             COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS,
-            BAUXITE_UI_BRANCH: BAUXITE_UI_PATHS}.get(branch, frozenset())
+            BAUXITE_UI_BRANCH: BAUXITE_UI_PATHS,
+            MN_URANIUM_BRANCH: MN_URANIUM_PATHS}.get(branch, frozenset())

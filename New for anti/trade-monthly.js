@@ -33,6 +33,9 @@
         copper: 'copper',
         aluminum: 'aluminum',
         bauxite: 'bauxite',
+        manganese: 'manganese',
+        uranium: 'uranium',
+        uranium_ore: 'uranium_ore',
         nickel: 'nickel',
         cobalt: 'cobalt',
         graphite: 'graphite',
@@ -44,8 +47,22 @@
         palm_oil: 'palm_oil',
     };
 
+    // Narrow product scopes cannot borrow a broader parent or a related alloy.
+    const PRODUCT_HS = { manganese: '2602', uranium: '284410', uranium_ore: '261210' };
+    const inProductScope = (cid, hs) => !PRODUCT_HS[cid]
+        || String(hs || '').startsWith(PRODUCT_HS[cid]);
+    const PRODUCT_NOTES = {
+        manganese: 'HS2602 망간광·정광만 표시 · 페로망간 제외 · 신고 중량을 망간 함유량으로 환산하지 않습니다.',
+        uranium: 'HS284410 천연우라늄·화합물만 표시 · 농축우라늄·핵연료 제외 · 신고 중량을 우라늄 함유량(tU)으로 환산하지 않습니다.',
+        uranium_ore: 'HS261210 우라늄광·정광만 표시 · 토륨광·천연우라늄 화합물과 합산하지 않으며 중량을 우라늄 함유량(tU)으로 환산하지 않습니다.',
+    };
+    const missingBilateralNote = (cid) => (cid === 'bauxite' || PRODUCT_HS[cid])
+        ? '<p class="tm-note">월별 상대국별 자료 미확보 · 총량을 상대국별로 배분하거나 비중·순위를 추정하지 않습니다.</p>' : '';
+    const productNote = (cid) => PRODUCT_NOTES[cid] ? `<p class="tm-note">${PRODUCT_NOTES[cid]}</p>` : '';
+
     const SOURCE_LABEL = {
         comtrade_preview: 'UN Comtrade',
+        brazil_comexstat: '브라질 MDIC Comex Stat',
         jodi_oil: 'JODI-Oil',
         jodi_gas: 'JODI-Gas',
         ers_fatus_top10_world_total: 'USDA ERS',
@@ -194,34 +211,45 @@
         const out = [];
         for (const [name, flow] of [['exports', 'X'], ['imports', 'M']]) {
             const c = flows[name]?.commodities?.[cid];
-            if (c?.points?.length) out.push(...seriesFromPoints(c.points, { flow, hs: c.hs, preferUsd }));
+            if (c?.points?.length && inProductScope(cid, c.hs)) {
+                const points = c.points.filter((p) => inProductScope(cid, p.hs || c.hs));
+                out.push(...seriesFromPoints(points, { flow, hs: c.hs, preferUsd }));
+            }
         }
         return out;
     };
 
     const monthlyDocSeries = (doc, cid, iso3) => {
         for (const sector of Object.values(doc?.sectors || {})) {
-            const c = sector?.commodities?.[cid];
+            const c = sector?.commodities?.[cid]
+                || (PRODUCT_HS[cid] ? sector?.supplemental_commodities?.[cid] : null);
             const s = c?.countries?.[iso3];
             if (s?.points?.length) {
-                return seriesFromPoints(s.points, { flow: 'X', hs: (c.hs_stems || []).join('/') || null });
+                const stems = (c.hs_stems || []).filter((h) => inProductScope(cid, h));
+                if (PRODUCT_HS[cid] && !stems.length) continue;
+                return seriesFromPoints(s.points.filter((p) => !PRODUCT_HS[cid]
+                    || inProductScope(cid, p.hs || p.hs_bridge)), { flow: 'X', hs: stems.join('/') || null });
             }
         }
         return [];
     };
 
     const monthlyHsSet = (docs, cid) => {
-        const hs = new Set();
+        const hs = new Set(PRODUCT_HS[cid] ? [PRODUCT_HS[cid]] : []);
         for (const doc of [docs.comtrade, docs.national]) {
             for (const r of Object.values(doc?.reporters || {})) {
                 for (const f of Object.values(r?.flows || {})) {
                     const c = f?.commodities?.[cid];
-                    if (c?.hs) hs.add(String(c.hs));
+                    if (c?.hs && inProductScope(cid, c.hs)) hs.add(String(c.hs));
                 }
             }
         }
         for (const sector of Object.values(docs.monthly?.sectors || {})) {
-            for (const h of sector?.commodities?.[cid]?.hs_stems || []) hs.add(String(h));
+            const c = sector?.commodities?.[cid]
+                || (PRODUCT_HS[cid] ? sector?.supplemental_commodities?.[cid] : null);
+            for (const h of c?.hs_stems || []) {
+                if (inProductScope(cid, h)) hs.add(String(h));
+            }
         }
         return hs;
     };
@@ -347,18 +375,33 @@
     /**
      * Rows -> { X: [{month, usd, kg}], M: [...] }. Comtrade can return
      * breakdown rows (mode of transport, customs procedure) beside the total
-     * for the same month; the total is the largest, so the max per
-     * (month, flow, HS code) is kept, then HS codes are summed.
+     * for the same month. Legacy products retain their max-selection behavior.
+     * The narrow ore/uranium products require explicit total scope when supplied
+     * and discard conflicting totals rather than choosing the larger value.
      */
-    const aggregateComtradeMonthly = (rows) => {
+    const aggregateComtradeMonthly = (rows, requestedHs = null) => {
         const best = new Map();
+        const conflicts = new Set();
+        const scoped = Object.values(PRODUCT_HS).includes(requestedHs);
         for (const r of rows || []) {
-            if (!(r.primaryValue > 0) || !['X', 'M'].includes(r.flowCode)) continue;
+            if (scoped && String(r.cmdCode || '') !== requestedHs) continue;
+            if (scoped && Object.entries({partner2Code: '0', customsCode: 'C00', motCode: '0'})
+                .some(([k, v]) => r[k] != null && String(r[k]) !== v)) continue;
+            if (!(scoped ? Number.isFinite(r.primaryValue) && r.primaryValue >= 0 : r.primaryValue > 0)
+                || !['X', 'M'].includes(r.flowCode)) continue;
             if (r.partnerCode != null && String(r.partnerCode) !== '0') continue;
             const k = `${r.period}|${r.flowCode}|${r.cmdCode ?? ''}`;
+            if (conflicts.has(k)) continue;
             const b = best.get(k);
+            if (scoped && b && (b.usd !== r.primaryValue || b.kg !== (Number.isFinite(r.netWgt) && r.netWgt >= 0 ? r.netWgt : null))) {
+                best.delete(k);
+                conflicts.add(k);
+                continue;
+            }
             if (!b || r.primaryValue > b.usd) {
-                best.set(k, { period: r.period, flow: r.flowCode, usd: r.primaryValue, kg: r.netWgt > 0 ? r.netWgt : null });
+                const kg = scoped ? (Number.isFinite(r.netWgt) && r.netWgt >= 0 ? r.netWgt : null)
+                    : (r.netWgt > 0 ? r.netWgt : null);
+                best.set(k, { period: r.period, flow: r.flowCode, usd: r.primaryValue, kg });
             }
         }
         const out = { X: new Map(), M: new Map() };
@@ -399,7 +442,7 @@
                     }
                 }
                 if (failures === 3) liveCache.delete(key);   // let a later click retry
-                return { ...aggregateComtradeMonthly(rows), failures, hs };
+                return { ...aggregateComtradeMonthly(rows, hs), failures, hs };
             })());
         }
         return liveCache.get(key);
@@ -607,12 +650,13 @@
     const monthlyHtml = (view) => {
         const cards = view.series.slice(0, 6).map((s) => seriesCardHtml(s, view.latest)).join('');
         return `<p class="trade-focus-sub">월별 · 최근 12개월 · 출처마다 따로 표시하며 합산하지 않습니다 · 지도의 노선은 연간 데이터입니다</p>
+            ${productNote(view.cid)}
             ${comparisonHtml(view.comparisons || [])}
             ${view.saudi ? saudiCardHtml(view.saudi) : ''}
             ${cards}
             ${view.series.length > 6 ? `<p class="tm-note">최근 갱신 순 6개만 표시 · 나머지 ${view.series.length - 6}개 계열 생략</p>` : ''}
             ${view.dormant ? `<p class="tm-note">2년 넘게 갱신되지 않은 계열 ${view.dormant}개는 표시하지 않았습니다.</p>` : ''}
-            ${view.cid === 'bauxite' && !view.bilateral ? '<p class="tm-note">월별 상대국별 자료 미확보 · 총량을 상대국별로 배분하거나 비중·순위를 추정하지 않습니다.</p>' : ''}
+            ${!view.bilateral ? missingBilateralNote(view.cid) : ''}
             <div class="tm-bilateral"></div>`;
     };
 
@@ -663,7 +707,7 @@
         </div>`;
         const staticHtml = (v) => (v ? monthlyHtml(v)
             : '<p class="trade-focus-sub">월별 · UN Comtrade 보고국 신고 기준 · 지도의 노선은 연간 데이터입니다</p>'
-              + (commodity === 'bauxite' ? '<p class="tm-note">월별 상대국별 자료 미확보 · 총량을 상대국별로 배분하거나 비중·순위를 추정하지 않습니다.</p>' : ''));
+              + productNote(commodity) + missingBilateralNote(commodity));
         monthly.innerHTML = `${m49 ? '<div class="tm-live"></div>' : ''}<div class="tm-static">${staticHtml(view)}</div>`;
         if (typeof wireSparkCharts === 'function') wireSparkCharts(monthly);
 
@@ -679,7 +723,9 @@
             if (!data.X.length && !data.M.length) {
                 slot.innerHTML = `<p class="tm-note">${data.failures === 3
                     ? 'UN Comtrade 월별 자료를 지금 불러오지 못했습니다. 잠시 후 다시 눌러 주세요.'
-                    : `${esc(label)}은(는) 최근 ${SERIES_MONTHS}개월 이 품목을 UN Comtrade에 월별로 신고하지 않았습니다.`}</p>`;
+                    : PRODUCT_HS[commodity]
+                        ? `최근 ${SERIES_MONTHS}개월 조회 범위에서 표시 가능한 월별 자료를 확보하지 못했습니다.${data.failures ? ` ${data.failures}개 구간 조회 실패.` : ''} 무역량 0 또는 미신고로 단정하지 않습니다.`
+                        : `${esc(label)}은(는) 최근 ${SERIES_MONTHS}개월 이 품목을 UN Comtrade에 월별로 신고하지 않았습니다.`}</p>`;
                 if (data.failures === 3) liveStarted = false;
                 return;
             }

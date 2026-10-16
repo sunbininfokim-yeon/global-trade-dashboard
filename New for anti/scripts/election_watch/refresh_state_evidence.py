@@ -25,7 +25,8 @@ def main():
     p.add_argument('--public', type=Path, default=PUBLIC)
     p.add_argument('--polls', type=Path, default=PUBLIC/'usa_election_live_polls_v1.json')
     p.add_argument('--as-of', default=datetime.now(timezone.utc).date().isoformat())
-    args = p.parse_args(); plan = read(args.plan); order = ordered_states(plan, args.as_of)
+    args = p.parse_args(); plan = read(args.plan)
+    order = ordered_states(plan, validation_day(args.as_of, plan))
     selected = [(g, s) for g, s in order if args.all or args.state == s or args.group == g]
     if not selected: p.error('state must be one of the fifty states')
     catalog = read(ROOT/'config/usa_polls/targets_2026.json')

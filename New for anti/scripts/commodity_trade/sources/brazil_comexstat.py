@@ -24,6 +24,7 @@ BASE = "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/EXP_{year}.c
 STEM_TO_COMMODITY: dict[str, str] = {
     # minerals
     "2601": "iron_ore",
+    "2602": "manganese",  # ore/concentrate only; not ferroalloys in HS72
     "2603": "copper",
     "2604": "nickel",
     "7501": "nickel",
