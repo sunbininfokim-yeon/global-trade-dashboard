@@ -57,9 +57,18 @@ export const pollRaceAssessment = (race, context, days = 7) => {
     if (!context.available) return { status: 'unavailable', rows: [] };
     if (race?.schedule_status === 'single_candidate_ballot_listing') return { status: 'singleCandidate', rows: [] };
     if (race?.schedule_status !== 'reported_general_matchup') return { status: 'review', rows: [] };
+    // Backend admission preserves the publisher's spelling. Match only aliases
+    // explicitly reviewed in this race; never infer a nickname or fuzzy match.
+    const canonical = (name) => race.candidates?.[name]?.canonical_name || name;
+    const matchesField = (row) => {
+        const answers = (row.answers || []).map((a) => canonical(a.name));
+        const names = new Set(answers);
+        return names.size === answers.length
+            && (race.required_candidates || []).every((name) => names.has(canonical(name)));
+    };
     const sourceRows = (race.observations || []).filter((row) => row.aggregation_eligibility?.eligible === true
         && row.display_group === 'general' && row.contest_id === race.contest_id
-        && (race.required_candidates || []).every((name) => row.answers?.some((a) => a.name === name)));
+        && matchesField(row));
     const window = currentPollWindow({ ...race, observations: sourceRows }, days, context.now);
     const rows = sourceRows.filter((row) => window.included_ids.includes(row.id));
     if (!rows.length) return { status: window.conflicting_pollsters.length ? 'conflict'
