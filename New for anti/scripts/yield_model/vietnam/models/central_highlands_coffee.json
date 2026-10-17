@@ -1,0 +1,437 @@
+{
+  "key": "central_highlands_coffee",
+  "label": "Central Highlands robusta coffee",
+  "label_ko": "중부 고원 로부스타 커피",
+  "crop": "coffee",
+  "doc": "Regions/베트남/베트남_쌀_커피_상세수식.md §2 + 중부고원/커피",
+  "caveat": "Labels provisional. irrigation_buffer is POWER GWETROOT retention × literature irrig_fraction dummies — not metered irrigation. Never interpret WD alone as yield without this buffer.",
+  "non_weather_drivers": "Fertiliser, biennial bearing, farm-gate price, and tree age dominate robusta production; irrigation expansion changed the moisture surface after 2000.",
+  "label_source": "faostat_vietnam_national_coffee_green",
+  "label_sources": [
+    "faostat_vietnam_national_coffee_green"
+  ],
+  "labels_provisional": false,
+  "labels_season_imperfect": true,
+  "trained_years": [
+    1985,
+    2024
+  ],
+  "n_seasons": 40,
+  "n_forward_folds": 22,
+  "trend": {
+    "log_poly_coef": [
+      0.022169330209009,
+      -36.86367241889786
+    ],
+    "degree": 1,
+    "form": "recent20",
+    "window": 20,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "wd_feb_apr",
+    "irrigation_buffer_mm",
+    "wd_eff",
+    "sm_flowering_days_above",
+    "sm_flowering",
+    "t_penalty_kath",
+    "tmin_gs",
+    "tmax_gs",
+    "precip_feb_apr",
+    "precip_wet_prior",
+    "et0_feb_apr",
+    "oni_season",
+    "oni_djf"
+  ],
+  "feature_set": "all",
+  "trend_form": "recent20",
+  "scaler": {
+    "mean": [
+      334.94726221256025,
+      74.50555,
+      260.4417122125602,
+      48.85000000000001,
+      0.5528744619225969,
+      0.5529062663551403,
+      21.007173528037388,
+      30.35095179906542,
+      49.77047000000001,
+      880.2838650000001,
+      362.028103760745,
+      0.01983333333333332,
+      0.014750000000000018
+    ],
+    "scale": [
+      35.42484874467417,
+      38.49293171492658,
+      68.49659192245272,
+      38.967562151102044,
+      0.052811096262225424,
+      0.08085186165140554,
+      0.40392110860668073,
+      1.2733416508094986,
+      47.28408376937319,
+      522.1968209698091,
+      19.45604995637265,
+      0.8972073803381987,
+      1.0568395987565948
+    ]
+  },
+  "ridge": {
+    "alpha": 70.1703828670383,
+    "coef": [
+      -0.0037961591589916292,
+      0.007082744454428553,
+      -0.005943565237778369,
+      0.007122093996223663,
+      0.007761399064495395,
+      -0.007209892221460648,
+      -0.004568840530636037,
+      -0.007706661468115343,
+      -0.0019400811926020723,
+      0.003259915605952392,
+      -0.004025084752440392,
+      0.008241934974523822,
+      0.009537481677078984
+    ],
+    "intercept": -0.0011951383618861574
+  },
+  "beats_trend": false,
+  "recent_skill_vs_trend": -1.5160199184624488,
+  "skill_vs_best_trend": -0.646127614318529,
+  "best_trend_baseline_rmse": 200.16059791022417,
+  "skill_basis": "nested",
+  "nested": {
+    "n": 19,
+    "years": [
+      2006,
+      2024
+    ],
+    "picks": {
+      "core_deg2": 1,
+      "all_deg1": 11,
+      "all_recent20": 7
+    }
+  },
+  "skill_in_sample": {
+    "full_skill": -0.017920377969993462,
+    "recent_skill": -0.41686316774090626
+  },
+  "weather_skill": -1.5160199184624488,
+  "non_weather_features": [],
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 85.22464342874635,
+    "basis": "trend-only baseline (no skill)"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 244.42002285193362,
+      "mae": 193.0048320655049,
+      "detrended_r2": -0.03709392722187377,
+      "skill_vs_trend": -0.017170763699483338,
+      "baseline_rmse": 240.29399150538893,
+      "recent_rmse": 199.81627221639195,
+      "recent_baseline_rmse": 63.35606981034765,
+      "recent_trend_bias": 45.58444146009215,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 271.35671331955507,
+      "mae": 218.48904354713085,
+      "detrended_r2": -1.6291895387767412,
+      "skill_vs_trend": -0.3052721144494661,
+      "baseline_rmse": 207.8928296372953,
+      "recent_rmse": 316.5007659081529,
+      "recent_baseline_rmse": 87.69539173074658,
+      "recent_trend_bias": 72.13911606797447,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 227.58885577353712,
+      "mae": 171.3967071604189,
+      "detrended_r2": 0.1463112086124274,
+      "skill_vs_trend": 0.07751262333802467,
+      "baseline_rmse": 246.7121627149722,
+      "recent_rmse": 144.44802741722793,
+      "recent_baseline_rmse": 118.95161017358033,
+      "recent_trend_bias": -55.97359164761574,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 300.6810624291889,
+      "mae": 221.78380337740316,
+      "detrended_r2": -2.217974849486253,
+      "skill_vs_trend": 0.07764929180559721,
+      "baseline_rmse": 325.9942880271684,
+      "recent_rmse": 140.1946126568827,
+      "recent_baseline_rmse": 255.72964354259392,
+      "recent_trend_bias": -251.3526711888961,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 235.10607863058652,
+      "mae": 153.24993816012858,
+      "detrended_r2": -0.011931169906689965,
+      "skill_vs_trend": -0.0031657873518460278,
+      "baseline_rmse": 234.36413162695553,
+      "recent_rmse": 49.41514867587086,
+      "recent_baseline_rmse": 49.498745540581965,
+      "recent_trend_bias": -0.6528944693785433,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 203.74755147947525,
+      "mae": 138.9884667324993,
+      "detrended_r2": -0.03651162084133186,
+      "skill_vs_trend": -0.017920377969993462,
+      "baseline_rmse": 200.16059791022417,
+      "recent_rmse": 95.904523944505,
+      "recent_baseline_rmse": 85.22464342874635,
+      "recent_trend_bias": -28.670245028133102,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 245.10561456017487,
+      "mae": 160.94879410300535,
+      "detrended_r2": -0.1048550205217309,
+      "skill_vs_trend": -0.00019141633475983078,
+      "baseline_rmse": 245.05870632080996,
+      "recent_rmse": 59.1654131151761,
+      "recent_baseline_rmse": 51.90336486981668,
+      "recent_trend_bias": 1.7640581273348743,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 284.44346901771434,
+      "mae": 191.74607040320367,
+      "detrended_r2": -0.36750679991802704,
+      "skill_vs_trend": -0.1407863062083281,
+      "baseline_rmse": 249.33983469974248,
+      "recent_rmse": 173.85514794615014,
+      "recent_baseline_rmse": 67.68792225534267,
+      "recent_trend_bias": -23.648926056813387,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 255.9690816706753,
+      "mae": 207.68451120760756,
+      "detrended_r2": -0.13741657099568116,
+      "skill_vs_trend": -0.06523296761223785,
+      "baseline_rmse": 240.29399150538893,
+      "recent_rmse": 262.2710908149311,
+      "recent_baseline_rmse": 63.35606981034765,
+      "recent_trend_bias": 45.58444146009215,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 291.7418459123608,
+      "mae": 241.16518749216192,
+      "detrended_r2": -2.039052535910983,
+      "skill_vs_trend": -0.4033280821726968,
+      "baseline_rmse": 207.8928296372953,
+      "recent_rmse": 349.8284585746089,
+      "recent_baseline_rmse": 87.69539173074658,
+      "recent_trend_bias": 72.13911606797447,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 230.61949503808654,
+      "mae": 177.04514631490673,
+      "detrended_r2": 0.12342389397014042,
+      "skill_vs_trend": 0.06522851366463678,
+      "baseline_rmse": 246.7121627149722,
+      "recent_rmse": 179.36801768780114,
+      "recent_baseline_rmse": 118.95161017358033,
+      "recent_trend_bias": -55.97359164761574,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 302.6642859641277,
+      "mae": 217.71558037670965,
+      "detrended_r2": -2.2605648974956027,
+      "skill_vs_trend": 0.07156567743633713,
+      "baseline_rmse": 325.9942880271684,
+      "recent_rmse": 130.4190390140289,
+      "recent_baseline_rmse": 255.72964354259392,
+      "recent_trend_bias": -251.3526711888961,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 235.2133895455899,
+      "mae": 153.31043023455214,
+      "detrended_r2": -0.012855144674883023,
+      "skill_vs_trend": -0.0036236684885986303,
+      "baseline_rmse": 234.36413162695553,
+      "recent_rmse": 49.46267806368372,
+      "recent_baseline_rmse": 49.498745540581965,
+      "recent_trend_bias": -0.6528944693785433,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 226.567360025604,
+      "mae": 162.4104753725858,
+      "detrended_r2": -0.28169316226038355,
+      "skill_vs_trend": -0.13192787387267768,
+      "baseline_rmse": 200.16059791022417,
+      "recent_rmse": 109.04505420354862,
+      "recent_baseline_rmse": 85.22464342874635,
+      "recent_trend_bias": -28.670245028133102,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 245.36374455771022,
+      "mae": 161.09274105402955,
+      "detrended_r2": -0.10718337517573406,
+      "skill_vs_trend": -0.0012447557627310868,
+      "baseline_rmse": 245.05870632080996,
+      "recent_rmse": 59.417440831514895,
+      "recent_baseline_rmse": 51.90336486981668,
+      "recent_trend_bias": 1.7640581273348743,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 280.77326797760963,
+      "mae": 192.1546595942509,
+      "detrended_r2": -0.33244433622518454,
+      "skill_vs_trend": -0.1260666323763293,
+      "baseline_rmse": 249.33983469974248,
+      "recent_rmse": 190.3667655348873,
+      "recent_baseline_rmse": 67.68792225534267,
+      "recent_trend_bias": -23.648926056813387,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 203.74755147947525,
+    "mae": 138.9884667324993,
+    "detrended_r2": -0.03651162084133186,
+    "skill_vs_trend": -0.017920377969993462,
+    "baseline_rmse": 200.16059791022417,
+    "recent_rmse": 95.904523944505,
+    "recent_baseline_rmse": 85.22464342874635,
+    "recent_trend_bias": -28.670245028133102,
+    "n": 22,
+    "years": [
+      2003,
+      2024
+    ],
+    "degree": 1,
+    "window": 20,
+    "trend_form": "recent20"
+  },
+  "gee_used": false,
+  "salinity_is_proxy": true
+}

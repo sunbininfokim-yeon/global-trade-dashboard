@@ -1,26 +1,28 @@
 {
-  "generated_at": "2026-10-16T21:55:24.775522+00:00",
+  "generated_at": "2026-10-17T08:27:04.456745+00:00",
   "season": 2026,
   "country": "Vietnam",
   "forecast_available": true,
-  "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), ET0 FAO-56. ENSO: NOAA CPC ONI. Mekong WS labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 FAOSTAT national rice scaled to WS overlap (season imperfect). Coffee/RRD still provisional unless labels_official override. Salinity: coastal distance × dry-season hydrology proxy (not EC). GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build.",
+  "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), ET0 FAO-56. ENSO: NOAA CPC ONI. Mekong WS labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 FAOSTAT national rice scaled to WS overlap (season imperfect). Central Highlands coffee: FAOSTAT Viet Nam Coffee, green (the region holds ~90% of national coffee area). RRD has no labels. Salinity: coastal distance × dry-season hydrology proxy (not EC). GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build.",
   "methodology_note": "T1 models from Regions/베트남 master: Mekong WS rice (salt/ENSO), Central Highlands robusta (WD_eff + Kath), Red River rice (flood/typhoon rain proxy). Ridge on log-yield residual vs trend; read labels_provisional / labels_season_imperfect on each region.",
   "regions": {
     "mekong_rice_ws": {
       "label": "Mekong Delta Winter–Spring rice",
       "label_ko": "메콩 삼각주 동춘(건기) 쌀",
       "unit": "kg/ha",
-      "point": 7198.0,
+      "point": 7120.8,
       "range_68": [
-        6883.1,
-        7512.9
+        6805.8,
+        7435.7
       ],
       "range_95": [
-        6580.8,
-        7815.2
+        6503.5,
+        7738.0
       ],
       "trend": 7120.8,
-      "weather_effect_pct": 1.08,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": 1.08,
+      "point_basis": "trend",
       "last_actual": {
         "year": 2024,
         "yield": 7231.0,
@@ -32,7 +34,7 @@
         "low_confidence": true,
         "sigma_kg_ha": 314.9138122863915
       },
-      "weather_through": "2026-10-09",
+      "weather_through": "2026-10-10",
       "critical_window_observed": 1.0,
       "season_complete": true,
       "provenance": {
@@ -49,14 +51,75 @@
         "rice": {
           "label_ko": "메콩 삼각주 동춘(건기) 쌀",
           "unit": "kg/ha",
-          "point": 7198.0,
+          "point": 7120.8,
           "range_68": [
-            6883.1,
-            7512.9
+            6805.8,
+            7435.7
           ],
           "range_95": [
-            6580.8,
-            7815.2
+            6503.5,
+            7738.0
+          ],
+          "skill": {
+            "beats_trend": false,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "central_highlands_coffee": {
+      "label": "Central Highlands robusta coffee",
+      "label_ko": "중부 고원 로부스타 커피",
+      "unit": "kg/ha",
+      "point": 3138.2,
+      "range_68": [
+        3052.9,
+        3223.4
+      ],
+      "range_95": [
+        2971.1,
+        3305.2
+      ],
+      "trend": 3138.2,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": 4.66,
+      "point_basis": "trend",
+      "last_actual": {
+        "year": 2024,
+        "yield": 2969.9,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": false,
+        "recent_skill_vs_trend": -1.5160199184624488,
+        "low_confidence": true,
+        "sigma_kg_ha": 85.22464342874635
+      },
+      "weather_through": "2026-10-10",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/베트남/베트남_쌀_커피_상세수식.md §2 + 중부고원/커피",
+        "caveat": "Labels provisional. irrigation_buffer is POWER GWETROOT retention × literature irrig_fraction dummies — not metered irrigation. Never interpret WD alone as yield without this buffer.",
+        "non_weather_drivers": "Fertiliser, biennial bearing, farm-gate price, and tree age dominate robusta production; irrigation expansion changed the moisture surface after 2000.",
+        "label_source": "faostat_vietnam_national_coffee_green",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "salinity_is_proxy": true,
+        "gee_used": false
+      },
+      "crops": {
+        "coffee": {
+          "label_ko": "중부 고원 로부스타 커피",
+          "unit": "kg/ha",
+          "point": 3138.2,
+          "range_68": [
+            3052.9,
+            3223.4
+          ],
+          "range_95": [
+            2971.1,
+            3305.2
           ],
           "skill": {
             "beats_trend": false,
