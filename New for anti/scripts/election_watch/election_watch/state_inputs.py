@@ -17,7 +17,7 @@ CATALOGS = frozenset((
     'governor_matchups/2026_ballot_reviews.json',
     'usa_polls/ballot_reviews_2026.json', 'usa_polls/quality_reviews_2026.json',
     'usa_polls/live_2026.json', 'usa_polls/primary_supplements_2026.json',
-    'usa_polls/state_finance_identities_2026.json',
+    'usa_polls/state_finance_identities_2026.json', 'usa_polls/html_table_sources_2026.json',
     'usa_state_campaign_finance_sources_v1.json',
 ))
 
@@ -73,6 +73,9 @@ def validate_packet(packet, state_names):
         if (file=='usa_polls/primary_supplements_2026.json' and action=='append_item'
                 and not owned_subject(op['value']['record']['subject'])):
             raise ValueError('state primary review contains another state')
+        if file=='usa_polls/html_table_sources_2026.json' and (action!='append_item' or path!=['records']
+                or not op['value'].get('race_id','').startswith(f'USA:{state}:')):
+            raise ValueError('HTML source outside owned race')
         key = (file, tuple(path), action, digest(op.get('value')) if action.endswith('item') else '')
         if key in seen:
             raise ValueError('duplicate state input operation')

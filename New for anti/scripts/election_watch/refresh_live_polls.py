@@ -15,6 +15,7 @@ from election_watch.poll_gaps import attach_gaps, refresh_gap_lifecycle
 from election_watch.poll_house_focus import apply_house_focus, attach_house_focus, refresh_house_focus_lifecycle
 from election_watch.superpac import SourceError
 from election_watch.poll_primary_supplements import merge_primary_supplements
+from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews
 from election_watch.poll_refresh_provenance import retain_state_provenance
 
 ROOT = Path(__file__).resolve().parent
@@ -124,6 +125,7 @@ def main():
                 # Review priority failures must not discard good polling data.
                 policy['house_poll_focus_health'] = {'status': 'hold', 'checked_as_of': args.as_of, 'error_type': type(exc).__name__}
         return policy
+    html_snapshot = read(ROOT/'config/usa_polls/html_table_sources_2026.json') if production_policy else None
     provider_saved = False
     try:
         ballots = read(ballot_reviews) if ballot_reviews else None
@@ -146,6 +148,13 @@ def main():
         primary_receipts = retry['primary_receipts'] if retry else []
         if production_policy and not args.input and not retry:
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
+        if html_snapshot is not None and not args.input and not retry:
+            previous = read(args.output) if args.output.exists() else {}
+            old_html = previous.get('primary_supplement_receipts', [])
+            for receipt in previous.get('state_captures', {}).values():
+                old_html += receipt.get('primary_supplement_receipts', [])
+            rows, html_receipts = merge_html_tables(rows, html_snapshot, policy, args.as_of, old_html)
+            primary_receipts += html_receipts
         refresh_ballots()
         policy = selected_policy()
         if args.capture_output and not args.input:
@@ -158,6 +167,8 @@ def main():
             print('Polling source captured; publication still requires validation')
             return 0
         policy['quality_reviews'] = quality['reviews']
+        if html_snapshot is not None:
+            policy = bind_html_reviews(policy, rows, primary_receipts, html_snapshot, args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
         if primary_receipts:
             board['primary_supplement_receipts'] = primary_receipts
