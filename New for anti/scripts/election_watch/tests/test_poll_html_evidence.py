@@ -7,6 +7,9 @@ from urllib.error import URLError
 from election_watch.poll_html_evidence import canonical_region, html_region_fingerprint, FORMAT
 from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.polls import read
+from election_watch.live_polls import normalize, summarize
+from election_watch.governor_matchups import apply_matchups
+from election_watch.poll_targets import apply_targets
 
 ROOT = Path(__file__).resolve().parents[1]
 DOC = {'url': 'https://pollster.example/release-2026', 'format': FORMAT,
@@ -90,6 +93,27 @@ class HTMLEvidenceTests(unittest.TestCase):
         rows, receipts = self.merge(self.entry(), opener=unavailable)
         self.assertEqual(receipts[0]['status'], 'carried_forward_reference_only')
         self.assertEqual(rows[0]['start_date'], self.entry()['record']['start_date'])
+
+    def test_html_enters_existing_normalization_and_7_14_day_signal_contract(self):
+        entry = self.entry()
+        config = ROOT/'config/usa_polls'
+        policy = apply_targets(apply_matchups(read(config/'live_2026.json'),
+            read(ROOT/'config/governor_matchups/2026.json'), '2026-10-16'),
+            read(config/'targets_2026.json'), read(config/'ballot_reviews_2026.json'), '2026-10-16')
+        policy['quality_reviews'] = read(config/'quality_reviews_2026.json')['reviews']
+        policy['quality_reviews'][entry['record']['id']]['primary_documents'] = entry['documents']
+        rows, _ = self.merge(entry)
+        accepted, held = normalize(rows, policy, '2026-10-16')
+        self.assertFalse(held)
+        self.assertTrue(accepted[0]['aggregation_eligibility']['eligible'])
+        self.assertEqual(accepted[0]['verification'], 'reviewed_primary_source_snapshot')
+        race = policy['races'][accepted[0]['race_id']]
+        self.assertIsNone(summarize(accepted, race, '2026-10-16', 7)['party'])
+        self.assertEqual(summarize(accepted, race, '2026-10-16', 14)['party'], 'DEM')
+        changed, _ = self.merge(entry, HTML.replace(b'<td>51', b'<td>52'))
+        reference, held = normalize(changed, policy, '2026-10-16')
+        self.assertFalse(held)
+        self.assertFalse(reference[0]['aggregation_eligibility']['eligible'])
 
 
 if __name__ == '__main__': unittest.main()
