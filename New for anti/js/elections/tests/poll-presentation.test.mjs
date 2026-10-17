@@ -28,6 +28,35 @@ test('single-source numeric leads are counted, with uncertainty missing and sing
     assert.equal(s.recent,1);assert.equal(s.states,1);
 });
 
+test('reviewed MN01 legal-name and poll-name aliases count in both the card and summary', () => {
+    const legal = 'Jacob "Jake" Johnson';
+    const row = observation('mn01',46,44,{answers:[{name:'Jake Johnson',party:'DEM',pct:46},
+        {name:'Brad Finstad',party:'REP',pct:44}]});
+    const r = race([row],{race_id:'USA:MN:house:01',state:'MN',district:'01',
+        required_candidates:[legal,'Brad Finstad'],candidates:{
+            [legal]:{party:'DEM',canonical_name:legal},
+            'Jake Johnson':{party:'DEM',canonical_name:legal},
+            'Brad Finstad':{party:'REP',canonical_name:'Brad Finstad'}}});
+    assert.equal(summarizePollPresentation([r],board,health,14,now).recent,1);
+    assert.equal(summarizePollPresentation([r],board,health,14,now).dem,1);
+    assert.match(pollEvidenceHtml(r,board,health,14,{now}),/최근 14일 요약: DEM 수치상 우세/);
+    assert.match(pollEvidenceHtml(r,board,health,14,{now}),/Jake Johnson/);
+    assert.equal(r.observations[0].answers[0].name,'Jake Johnson');
+});
+
+test('similar spellings without reviewed aliases and duplicate aliases cannot count', () => {
+    const legal = 'Jacob "Jake" Johnson';
+    const row = observation('mn01',46,44,{answers:[{name:'Jake Johnson',party:'DEM',pct:46},
+        {name:'Brad Finstad',party:'REP',pct:44}]});
+    const r = race([row],{required_candidates:[legal,'Brad Finstad'],candidates:{
+        [legal]:{canonical_name:legal},'Brad Finstad':{canonical_name:'Brad Finstad'}}});
+    assert.equal(pollRaceAssessment(r,context,14).status,'missing');
+    r.candidates['Jake Johnson']={canonical_name:legal};
+    r.observations[0].answers.push({name:legal,party:'DEM',pct:1});
+    assert.equal(pollRaceAssessment(r,context,14).status,'missing');
+    assert.equal(summarizePollPresentation([r],board,health,14,now).recent,0);
+});
+
 test('candidate interval overlap uses twice reviewed same-sample MOE, including its boundary', () => {
     assert.equal(pollRowAssessment(observation('a',51,45,{source_quality:quality()})).status,'within');
     assert.equal(pollRowAssessment(observation('a',52,45,{source_quality:quality()})).status,'dem');
@@ -67,6 +96,41 @@ test('same-wave duplicates, conflicts, LV/RV and 7/14-day boundaries retain admi
     assert.equal(x.rows.length,1);assert.equal(x.status,'dem');
     const conflicting={...a,id:'conflict',answers:observation('x',42,54).answers};
     assert.equal(pollRaceAssessment(race([a,conflicting]),context,7).status,'conflict');
+});
+
+test('CA48 historical numerical DEM lead and CA22 internal reference explain zero recent seats', () => {
+    // Fixed incident fixtures: never depend on an evolving live JSON date.
+    const ca48=race([observation('ca48',45,42,{field_end:'2026-09-01'})],
+        {race_id:'USA:CA:house:48',state:'CA',district:'48'});
+    const ca22=race([observation('ca22',48,44,{field_end:'2026-06-21',
+        aggregation_eligibility:{eligible:false,reasons:['methodology_incomplete_reference','party_commissioned_reference','party_internal_reference']}})],
+        {race_id:'USA:CA:house:22',state:'CA',district:'22'});
+    for (const days of [7,14]) {
+        const summary=summarizePollPresentation([ca48,ca22],board,health,days,now);
+        assert.equal(summary.dem,0);assert.equal(summary.missing,2);
+        const first=pollEvidenceHtml(ca48,board,health,days,{now});
+        assert.match(first,new RegExp(`최근 ${days}일 요약: 기간 내 채택 조사 없음`));
+        assert.match(first,/2026-09-01/);assert.match(first,/선택 기간 밖/);assert.match(first,/45%/);
+        const second=pollEvidenceHtml(ca22,board,health,days,{now});
+        assert.match(second,/2026-06-21/);assert.match(second,/방법론 미확인/);assert.match(second,/정파 의뢰·내부 조사/);
+        assert.match(second,/누적 조사 1건 보기/);
+    }
+});
+
+test('the same poll card explains a 7-day exclusion and a 14-day counted lead without changing totals', () => {
+    const r=race([observation('older',51,45,{field_end:'2026-10-02'})]);
+    assert.match(pollEvidenceHtml(r,board,health,7,{now}),/최근 7일 요약: 기간 내 채택 조사 없음/);
+    assert.match(pollEvidenceHtml(r,board,health,14,{now}),/최근 14일 요약: DEM 수치상 우세/);
+    const html=pollOfficePanelsHtml([r],board,health,14,()=>'',{now});
+    assert.match(html,/최근 14일 DEM 수치상 우세<strong>1석/);
+});
+
+test('a current numerical lead inside overlapping precision intervals identifies the actual summary category', () => {
+    const r=race([observation('close',51,45,{source_quality:quality()})]);
+    const html=pollEvidenceHtml(r,board,health,7,{now});
+    assert.match(html,/최근 7일 요약: 오차구간 겹침/);
+    assert.match(html,/지지율 차이가 있어도/);
+    assert.equal(summarizePollPresentation([r],board,health,7,now).dem,0);
 });
 
 test('references and wrong contests cannot enter counts; opposing institutions remain mixed', () => {
