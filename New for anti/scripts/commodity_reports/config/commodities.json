@@ -90,9 +90,22 @@
     "aluminum": {
       "label_ko": "알루미늄",
       "aliases": [
-        "aluminium", "aluminum", "alumina", "bauxite",
-        "알루미늄", "보크사이트", "알루미나", "ألمنيوم", "铝", "алюмини",
-        "bauksit", "aluminio", "alumínio"
+        "aluminium", "aluminum", "alumina",
+        "알루미늄", "알루미나", "ألمنيوم", "铝", "алюмини",
+        "aluminio", "alumínio"
+      ],
+      "not_when": [
+        "aluminium ores", "aluminum ores", "aluminium ore", "aluminum ore",
+        "알루미늄광", "铝土矿"
+      ],
+      "notes": "not_when: the ore names are bauxite's aliases (2026-10-16). '铝土矿' contains '铝' and '알루미늄광' contains '알루미늄', so without this every Chinese or Korean bauxite headline also landed on the aluminium window. Alumina stays aluminium on purpose."
+    },
+    "bauxite": {
+      "label_ko": "보크사이트",
+      "aliases": [
+        "bauxite", "aluminium ore", "aluminum ore", "aluminium ores", "aluminum ores",
+        "보크사이트", "보크사이드", "알루미늄광", "铝土矿", "бокситы", "бокситов",
+        "bauksit", "bauxita"
       ]
     },
     "zinc": {
@@ -151,7 +164,21 @@
     },
     "manganese": {
       "label_ko": "망간",
-      "aliases": ["manganese", "ferromanganese", "망간", "锰", "марганец"]
+      "aliases": ["manganese", "ferromanganese", "manganese ore", "망간", "망간광", "锰", "锰矿", "марганец"]
+    },
+    "uranium": {
+      "label_ko": "천연우라늄",
+      "aliases": [
+        "uranium", "yellowcake", "u3o8", "haleu", "enriched uranium",
+        "우라늄", "옐로케이크", "铀", "урана", "урановы"
+      ]
+    },
+    "uranium_ore": {
+      "label_ko": "우라늄 광석·정광",
+      "aliases": [
+        "uranium", "yellowcake", "u3o8", "haleu", "enriched uranium",
+        "우라늄", "옐로케이크", "铀", "урана", "урановы"
+      ]
     },
     "chromium": {
       "label_ko": "크롬",
