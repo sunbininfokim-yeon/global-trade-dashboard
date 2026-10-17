@@ -49,16 +49,16 @@ LABELS_KO = {
 
 INDICATORS = [
     {"key": "dry_spell_lag1", "lag": 1, "unit": "일", "high_is": "unfavorable",
-     "label_ko": "작년 건기 최장 무강우 일수",
+     "label_ko": "건기 최장 무강우 일수",
      "why_ko": "건기 가뭄이 길면 약 12개월 뒤 수확할 송이가 떨어진다(낙과·수분 실패)."},
     {"key": "precip_dry_lag1", "lag": 1, "unit": "mm", "high_is": "favorable",
-     "label_ko": "작년 건기(6~10월) 강수량",
+     "label_ko": "건기(6~10월) 강수량",
      "why_ko": "건기 강수 부족은 이듬해 송이 수와 무게를 줄인다."},
     {"key": "oni_season", "lag": 1, "unit": "°C", "high_is": "unfavorable",
-     "label_ko": "작년 건기 엘니뇨/라니냐(ONI)",
+     "label_ko": "건기 엘니뇨/라니냐(ONI)",
      "why_ko": "엘니뇨 해 건기는 수마트라·칼리만탄 가뭄과 연무로 이어져 6~24개월 뒤 생산을 깎는다."},
     {"key": "soil_dry_lag2", "lag": 2, "unit": "", "high_is": "favorable",
-     "label_ko": "재작년 건기 토양수분",
+     "label_ko": "2년 전 건기 토양수분",
      "why_ko": "2년 전 가뭄은 암꽃 분화를 줄여 약 24개월 뒤 수확량을 낮춘다."},
 ]
 

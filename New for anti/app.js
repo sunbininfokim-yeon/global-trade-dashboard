@@ -4806,7 +4806,7 @@ const renderWeatherConditions = (wc) => {
                 <span class="climate-status-pill ${WEATHER_CONDITION_PILL[i.status] || 'blue'}" style="margin-left:4px;">${i.status_ko}</span></span>
         </div>`).join('');
     const observed = wc.season_observed_share != null && wc.season_observed_share < 1
-        ? `<div class="climate-sub">작년 건기 관측 ${Math.round(wc.season_observed_share * 100)}% · 같은 날짜까지의 평년과 비교</div>` : '';
+        ? `<div class="climate-sub">직전 건기 관측 ${Math.round(wc.season_observed_share * 100)}% · 같은 날짜까지의 평년과 비교</div>` : '';
     return `
         <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
             <div class="climate-metric-row" style="border:none;">
