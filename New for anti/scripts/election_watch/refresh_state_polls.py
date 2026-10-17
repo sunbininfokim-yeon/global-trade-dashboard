@@ -12,7 +12,9 @@ from election_watch.poll_targets import apply_targets
 from election_watch.poll_gaps import attach_gaps
 from election_watch.state_poll_capture import merge_capture
 from election_watch.poll_primary_supplements import merge_primary_supplements
+from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews, saved_html_receipts
 from election_watch.superpac import STATES
+from election_watch.state_inputs import packets
 
 ROOT=Path(__file__).resolve().parent
 
@@ -48,6 +50,12 @@ def main():
         # state entry before freeze moves it into the committed state packet.
         reviewed_entries=[e for e in primary_snapshot['records'] if e['state']==args.state] if args.packet else ()
         rows,primary_receipts=merge_primary_supplements(rows,primary_snapshot,args.as_of,[args.state],reviewed_entries=reviewed_entries)
+        html_snapshot=read(config/'html_table_sources_2026.json')
+        old_receipt=previous.get('state_captures',{}).get(args.state,{})
+        old_html=saved_html_receipts(previous,packets())
+        rows,html_receipts=merge_html_tables(rows,html_snapshot,policy,args.as_of,old_html,[args.state])
+        primary_receipts+=html_receipts
+        policy=bind_html_reviews(policy,rows,primary_receipts,html_snapshot,args.as_of)
         capture=build_live(rows,policy,read(config/'results_2026.json'),args.as_of,checked,url)
         finance=load_finance_links(args.public/'usa_election_finance_index_v1.json',2026)
         attach_coverage(capture,provider_rows,policy,finance);attach_gaps(capture,finance)

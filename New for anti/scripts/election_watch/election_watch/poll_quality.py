@@ -119,8 +119,10 @@ def source_quality(row, reviews, as_of):
     for name, value in review['primary_toplines'].items():
         observed = next((a['pct'] for a in row['answers'] if a['name'] == name), None)
         require(observed is not None and abs(observed - value) <= .51, 'primary_topline_mismatch')
+    automated = review.get('review_method') == 'structured_primary_html_table_v1'
     return {**base, 'verification_level': 'primary_toplines_checked',
-            'label_ko': '원문 수치 대조 완료 · 정확도 등급 미평가',
+            'review_method': review.get('review_method', 'manual_primary_review'),
+            'label_ko': ('원문 표 자동 대조 완료 · 정확도 등급 미평가' if automated else '원문 수치 대조 완료 · 정확도 등급 미평가'),
             'reviewed_on': review['reviewed_on'], 'review_sources': review['sources'],
             'primary_toplines': review['primary_toplines'],
             'question_sample_n': review.get('question_sample_n'),
@@ -128,7 +130,7 @@ def source_quality(row, reviews, as_of):
             'reported_precision': deepcopy(review.get('reported_precision')),
             'ballot_format': review.get('ballot_format', 'not_reviewed'),
             'sponsor_review': deepcopy(review.get('sponsor_review', {})),
-            'basis_ko': '수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.',
+            'basis_ko': ('검토된 원문 HTML 표 형식에서 날짜·All 열·후보·표본·방법론 자동 대조. 정확도 등급이나 당선확률이 아닙니다.' if automated else '수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.'),
             'missing_fields': review.get('missing_fields', []),
             'limitations_ko': review['limitations_ko']}
 

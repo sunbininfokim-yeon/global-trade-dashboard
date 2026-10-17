@@ -16,6 +16,7 @@ from election_watch.poll_targets import apply_targets
 from election_watch.poll_gaps import attach_gaps
 from election_watch.review_clock import validation_day
 from election_watch.state_poll_capture import merge_capture
+from election_watch.poll_html_tables import bind_html_reviews
 
 ROOT = Path(__file__).resolve().parent
 
@@ -47,6 +48,8 @@ def rebuild(previous, history, selected, public):
             replaced = set(capture.get('provider_duplicate_ids', []) + capture.get('reviewed_replaced_provider_ids', []))
             rows = [r for r in rows if r['id'] not in replaced]
             rows.append(deepcopy(raw))
+        policy = bind_html_reviews(policy, rows, receipt.get('primary_supplement_receipts', []),
+                                   read(config/'html_table_sources_2026.json'), saved['as_of'])
         capture = build_live(rows, policy, read(config/'results_2026.json'), saved['as_of'],
                              saved['fetched_at'], receipt['source_url'])
         attach_coverage(capture, provider, policy, finance); attach_gaps(capture, finance)
