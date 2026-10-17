@@ -13,7 +13,7 @@ from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.polls import read
 from election_watch.state_evidence import build_state, load_finance
 from publish_state_packets import rebuild
-from tests.poll_config_fixture import SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / 'config/usa_polls'
@@ -143,7 +143,7 @@ class OregonEvidenceTests(unittest.TestCase):
         state = build_state('OR', 'C', read(CONFIG / 'state_evidence_plan_2026.json'),
             read(CONFIG / 'targets_2026.json'), read(ROOT / 'config/federal_matchups/2026.json'),
             read(ROOT / 'config/governor_matchups/2026.json'), board, finance,
-            read(ROOT / 'config/usa_state_campaign_finance_sources_v1.json'), DAY,
+            read(ROOT / 'config/usa_state_campaign_finance_sources_v1.json'), PUBLIC_SNAPSHOT_DAY,
             read(CONFIG / 'state_finance_identities_2026.json'),
             governor_access={'OR': read(PUBLIC / 'usa_governor_source_access/2026/OR.json')})
         self.assertEqual(state['office_coverage']['house']['candidate_id_links'], 12)
