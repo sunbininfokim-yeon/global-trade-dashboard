@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-10-17T15:29:02.210904+00:00",
+  "generated_at": "2026-10-17T18:28:11.404731+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,19 +73,19 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 35,
-    "sources_failed": 3,
-    "raw_items": 812,
-    "scored_items": 86,
+    "sources_ok": 32,
+    "sources_failed": 6,
+    "raw_items": 702,
+    "scored_items": 70,
     "selected_items": 24,
     "region_histogram": {
       "commodity_specialist": 7,
       "india": 2,
-      "russia": 2,
       "japan": 2,
-      "mena": 4,
+      "russia": 2,
       "china": 2,
       "turkey": 2,
+      "mena": 4,
       "west": 1,
       "taiwan": 2
     },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 221,
+      "elapsed_ms": 114,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 292,
+      "elapsed_ms": 295,
       "error": null,
       "mode": "live"
     },
@@ -112,23 +112,23 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 130,
+      "elapsed_ms": 71,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tehran_times",
-      "ok": true,
-      "count": 30,
-      "elapsed_ms": 943,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 35122,
+      "error": "TimeoutError: The read operation timed out",
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 168,
+      "elapsed_ms": 66,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3040,
+      "elapsed_ms": 2482,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 766,
+      "elapsed_ms": 587,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 539,
+      "elapsed_ms": 305,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 124,
+      "elapsed_ms": 90,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 91,
+      "elapsed_ms": 44,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 447,
+      "elapsed_ms": 572,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 224,
+      "elapsed_ms": 178,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 309,
+      "elapsed_ms": 158,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1540,
+      "elapsed_ms": 1521,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 1021,
+      "elapsed_ms": 529,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 359,
+      "elapsed_ms": 558,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 559,
+      "elapsed_ms": 551,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 551,
+      "elapsed_ms": 676,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 224,
+      "elapsed_ms": 193,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 353,
+      "elapsed_ms": 232,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 143,
+      "elapsed_ms": 95,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 204,
+      "elapsed_ms": 114,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 137,
+      "elapsed_ms": 90,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 113,
+      "elapsed_ms": 128,
       "error": null,
       "mode": "live"
     },
@@ -288,31 +288,31 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 370,
+      "elapsed_ms": 77,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tass_en",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 963,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 18346,
+      "error": "URLError: <urlopen error timed out>",
       "mode": "live"
     },
     {
       "source_id": "tass_ru",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 873,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 18181,
+      "error": "URLError: <urlopen error timed out>",
       "mode": "live"
     },
     {
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2108,
+      "elapsed_ms": 2078,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 9430,
+      "elapsed_ms": 2134,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 218,
+      "elapsed_ms": 864,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 290,
+      "elapsed_ms": 244,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 120,
+      "elapsed_ms": 41,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 373,
+      "elapsed_ms": 108,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 204,
+      "elapsed_ms": 185,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 613,
+      "elapsed_ms": 328,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 376,
+      "elapsed_ms": 131,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 461,
+      "elapsed_ms": 308,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 345,
+      "elapsed_ms": 251,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +424,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.987,
-        "importance": 2.27,
-        "final": 2.627
+        "freshness": 0.908,
+        "importance": 2.089,
+        "final": 2.418
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -466,9 +466,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.599,
-        "importance": 1.911,
-        "final": 2.212
+        "freshness": 0.551,
+        "importance": 1.759,
+        "final": 2.036
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -510,9 +510,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.5,
-        "importance": 1.891,
-        "final": 2.188
+        "freshness": 0.46,
+        "importance": 1.74,
+        "final": 2.014
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -554,9 +554,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.599,
-        "importance": 1.711,
-        "final": 1.981
+        "freshness": 0.551,
+        "importance": 1.575,
+        "final": 1.823
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -572,88 +572,44 @@
       "country_hint": "USA"
     },
     {
-      "id": "a0c1e7f7e6642e0e",
-      "published_at": "2026-10-17T15:08:27+00:00",
+      "id": "767955552fa83836",
+      "published_at": "2026-10-17T18:10:26+00:00",
       "source": {
         "id": "the_hindu",
         "name": "The Hindu",
         "region": "india",
         "slant": null
       },
-      "url": "https://www.thehindu.com/business/Economy/adnoc-open-to-long-term-lpg-deals-with-india-eyes-bigger-strategic-reserves/article71575015.ece",
+      "url": "https://www.thehindu.com/videos/the-battle-against-inflation-is-entering-a-tougher-phase-what-it-means-for-you/article71583060.ece",
       "category": "commodity",
       "commodities": [
-        "oil",
-        "gas"
+        "oil"
       ],
       "title": {
-        "original": "ADNOC open to further long-term LPG deals with India, sees India among most important energy markets: Acting CEO, Downstream",
+        "original": "The battle against inflation is entering a tougher phase: What it means for you",
         "original_lang": "en",
-        "ko": "ADNOC는 인도와의 장기적인 LPG 거래를 위해 개방되어 있으며, 인도를 가장 중요한 에너지 시장 중 하나로 보고 있습니다: 하류 CEO"
+        "ko": "인플레이션과의 싸움은 더 힘든 단계로 접어들고 있습니다. 인플레이션의 의미"
       },
-      "summary": "ADNOC supplied more than 500,000 barrels of crude a day to India in 2025, “almost one in ten barrels of [India’s] crude imports”. The company is exploring opportunities with ISPRL to expand storage of crude oil, LNG and LPG, including strategic reserves",
+      "summary": "India’s retail inflation rose to 5.54% in September, its highest level in nearly two years, driven by rising food, fuel and transport costs. Rural households have been hit particularly hard, with food inflation crossing 8%. The surge comes amid elevated global crude oil prices, a",
       "scores": {
-        "commodity": 3.0,
+        "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.991,
-        "importance": 1.641,
-        "final": 1.862
+        "freshness": 0.992,
+        "importance": 1.095,
+        "final": 1.243
       },
       "rank_reasons": [
         "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:gas:1"
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
-    },
-    {
-      "id": "756dcf60375e5d3f",
-      "published_at": "2026-10-17T14:25:27+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://russian.rt.com/world/news/1695977-kanada-amara-dosrochnoe-osvobozhdenie?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "commodity",
-      "commodities": [
-        "rice"
-      ],
-      "title": {
-        "original": "CBC: в Канаде досрочно освободили организатора несостоявшихся терактов",
-        "original_lang": "ru",
-        "ko": "CBC: 실패한 테러 공격의 조직자가 캐나다에서 일찍 발표되었습니다."
-      },
-      "summary": "В Канаде полное условно-досрочное освобождение получил Закария Амара, один из руководителей террористической группировки, планировавшей нападение на парламент страны и серию взрывов. Читать далее",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.971,
-        "importance": 1.496,
-        "final": 1.664
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g2",
-        "commodity:rice:1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
     },
     {
       "id": "9c34a21cfaadd24e",
@@ -680,9 +636,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.558,
-        "importance": 1.166,
-        "final": 1.35
+        "freshness": 0.514,
+        "importance": 1.073,
+        "final": 1.242
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -722,9 +678,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.524,
-        "importance": 1.157,
-        "final": 1.339
+        "freshness": 0.482,
+        "importance": 1.065,
+        "final": 1.233
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -763,9 +719,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.486,
-        "importance": 1.118,
-        "final": 1.294
+        "freshness": 0.447,
+        "importance": 1.029,
+        "final": 1.191
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -777,46 +733,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "CHN"
-    },
-    {
-      "id": "1ad35ddfea9a054e",
-      "published_at": "2026-10-17T13:53:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1123183",
-      "category": "commodity",
-      "commodities": [
-        "gas"
-      ],
-      "title": {
-        "original": "Охранники танкера отразили нападение вооруженных людей на катере у берегов Йемена",
-        "original_lang": "ru",
-        "ko": "유조선 경비대가 예멘 해안에서 배를 타고 무장한 사람들의 공격을 격퇴했습니다."
-      },
-      "summary": "Экипаж танкера для перевозки сжиженного природного газа (СПГ) примерно в 250 км к юго-востоку от Эль-Мукаллы в Йемене отбил нападение вооруженной группы на катере, передает Управление морских торговых операций Великобритании (UKMTO).\"Капитан СПГ-танкера сообщил, что к нему прибли",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.957,
-        "importance": 1.056,
-        "final": 1.175
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
     },
     {
       "id": "e735bd03e3f62001",
@@ -859,36 +775,76 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "ec20a1c3ffba371b",
-      "published_at": "2026-10-17T11:10:22+00:00",
+      "id": "1ad35ddfea9a054e",
+      "published_at": "2026-10-17T13:53:00+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/2026/10/17/trump-eases-russia-oil-sanctions-but-is-europe-still-buying-moscows-gas?traffic_source=rss",
+      "url": "https://www.interfax.ru/world/1123183",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Охранники танкера отразили нападение вооруженных людей на катере у берегов Йемена",
+        "original_lang": "ru",
+        "ko": "유조선 경비대가 예멘 해안에서 배를 타고 무장한 사람들의 공격을 격퇴했습니다."
+      },
+      "summary": "Экипаж танкера для перевозки сжиженного природного газа (СПГ) примерно в 250 км к юго-востоку от Эль-Мукаллы в Йемене отбил нападение вооруженной группы на катере, передает Управление морских торговых операций Великобритании (UKMTO).\"Капитан СПГ-танкера сообщил, что к нему прибли",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.881,
+        "importance": 0.972,
+        "final": 1.082
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gas:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "87469ed4f28af673",
+      "published_at": "2026-10-17T14:23:42+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/diesel-midterms-low-stocks-why-trump-blinked-on-russian-oil-sanctions-12199814#publisher=newsstand",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Trump eases Russia oil sanctions, but is Europe still buying Moscow’s gas?",
+        "original": "Diesel, Midterms, Low Stocks: Why Trump Blinked On Russian Oil Sanctions",
         "original_lang": "en",
-        "ko": "트럼프는 러시아의 석유 제재를 완화하지만 유럽은 여전히 모스크바의 가스를 구입하고 있습니까?"
+        "ko": "Diesel, Midterms, Low Stocks: 트럼프가 러시아 석유 제재에 눈을 뜬 이유"
       },
-      "summary": "Analysts say Russia will benefit most from US sanctions waiver.",
+      "summary": "Low inventories leave the US more exposed to global oil shocks.",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.887,
-        "importance": 0.873,
-        "final": 1.03
+        "region_weight": 1.3,
+        "freshness": 0.893,
+        "importance": 0.879,
+        "final": 0.998
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:oil:1",
@@ -897,85 +853,47 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
+      "country_hint": "IND"
     },
     {
-      "id": "339ede05196e0507",
-      "published_at": "2026-10-17T07:32:33+00:00",
+      "id": "227145ba78bd4fa8",
+      "published_at": "2026-10-17T16:10:00+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.arabnews.com/middle-east/eu-gcc-energy-security-diversification-of-sources-cornerstone-of-economic-stability-and-sustainable-development-3006826",
-      "category": "diplomacy",
+      "url": "https://www.interfax.ru/world/1123191",
+      "category": "election",
       "commodities": [],
       "title": {
-        "original": "EU-GCC: Energy security, diversification of sources cornerstone of economic stability and sustainable development",
-        "original_lang": "en",
-        "ko": "EU-GCC: 에너지 안보, 경제 안정 및 지속 가능한 개발의 원천 다각화"
+        "original": "Президент Абхазии поручил обеспечить бесперебойные поставки цитрусовых через границу",
+        "original_lang": "ru",
+        "ko": "압하지야 대통령은 국경을 넘어 감귤류의 공급을 중단하지 말 것을 지시했다."
       },
-      "summary": "A joint statement from the EU and GCC emphasized the critical need for energy security and diversification of energy sources to foster economic stability and sustainable development. They called for enhanced cooperation in energy supply reliability, maritime security, and infrast",
+      "summary": "Президент Абхазии Бадра Гунба поручил ведомствам, несущим службу на КПП \"Псоу\" обеспечить бесперебойное прохождение цитрусовых грузов через российско-абхазскую границу в период сбора и экспорта урожая,-сообщает пресс-служба главы республики.\"За каждой партией цитрусовых стоит бол",
       "scores": {
         "commodity": 0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.802,
-        "importance": 0.869,
-        "final": 1.026
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.938,
+        "importance": 0.828,
+        "final": 0.921
       },
       "rank_reasons": [
-        "region:mena*1.40",
-        "category:diplomacy",
-        "tier:B*0.72/g2",
-        "diplomacy:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "2",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "99bca0e5cb8b4fef",
-      "published_at": "2026-10-17T10:16:15+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/world/zelensky-says-trump-waiving-sanctions-rewards-putin-warns-moscow-wants-blackout-in-ukraine-3006837-3006839",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Zelensky says Trump waiving sanctions ‘rewards’ Putin, warns Moscow wants ‘blackout’ in Ukraine",
-        "original_lang": "en",
-        "ko": "젤렌스키는 트럼프가 ‘보상‘ 푸틴을 포기한다고 말하며, 모스크바가 우크라이나에서 ‘정전‘ 을 원한다고 경고한다."
-      },
-      "summary": "Ukraine’s President Volodymyr Zelensky criticized President Donald Trump’s decision to waive US sanctions on Russia, warning it could aid Russian efforts to disrupt Ukraine’s energy supply before winter.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.865,
-        "importance": 0.757,
-        "final": 0.893
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:diplomacy",
-        "tier:A*1.00/g2",
-        "diplomacy:1",
-        "bridge:1"
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g3",
+        "bridge:2",
+        "election:local:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS"
+      "info_grade": "3",
+      "country_hint": "RUS",
+      "election_type": "local"
     },
     {
       "id": "089acd7591a7fabb",
@@ -1002,9 +920,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.727,
-        "importance": 0.803,
-        "final": 0.893
+        "freshness": 0.67,
+        "importance": 0.739,
+        "final": 0.822
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1043,9 +961,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.976,
-        "importance": 0.776,
-        "final": 0.881
+        "freshness": 0.899,
+        "importance": 0.714,
+        "final": 0.811
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1058,6 +976,47 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "TUR"
+    },
+    {
+      "id": "c842949009c4c87d",
+      "published_at": "2026-10-17T16:41:51+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/saudi-arabia/saudi-jordanian-foreign-ministers-call-for-closer-coordination-amid-regional-escalation-3006878",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Saudi, Jordanian foreign ministers call for closer coordination amid regional escalation",
+        "original_lang": "en",
+        "ko": "사우디아라비아, 요르단 외무장관들, 지역적 격화 속 긴밀한 공조 요청"
+      },
+      "summary": "RIYADH: Saudi Foreign Minister Prince Faisal bin Farhan and his Jordanian counterpart on Saturday stressed the need for closer coordination to address escalating regional tensions amid a wave of Houthi attacks on the Kingdom. Prince Faisal bin Farhan and Ayman Safadi discussed ef",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.952,
+        "importance": 0.675,
+        "final": 0.796
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "173cec76a6b8ee0e",
@@ -1085,9 +1044,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.482,
-        "importance": 0.725,
-        "final": 0.823
+        "freshness": 0.444,
+        "importance": 0.667,
+        "final": 0.757
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1127,9 +1086,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.643,
-        "importance": 0.71,
-        "final": 0.79
+        "freshness": 0.592,
+        "importance": 0.653,
+        "final": 0.727
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1167,9 +1126,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.913,
-        "importance": 0.647,
-        "final": 0.763
+        "freshness": 0.84,
+        "importance": 0.595,
+        "final": 0.702
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1182,45 +1141,6 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "SAU"
-    },
-    {
-      "id": "06bb34addbe28bee",
-      "published_at": "2026-10-17T04:18:43+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/indian-man-arrested-for-posing-as-us-citizen-voting-in-2024-general-election-12197863#publisher=newsstand",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Indian Man Arrested For Posing As US Citizen, Voting In 2024 General Election",
-        "original_lang": "en",
-        "ko": "미국 시민권자로 포즈를 취한 혐의로 체포된 인도 남성, 2024년 총선에서 투표"
-      },
-      "summary": "If convicted, he could face a maximum penalty of five years in prison on each count",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.3,
-        "freshness": 0.733,
-        "importance": 0.566,
-        "final": 0.642
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "IND",
-      "election_type": "general"
     },
     {
       "id": "61f00a561f2184a3",
@@ -1287,9 +1207,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.986,
-        "importance": 0.544,
-        "final": 0.606
+        "freshness": 0.908,
+        "importance": 0.501,
+        "final": 0.557
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1303,44 +1223,84 @@
       "country_hint": "JPN"
     },
     {
-      "id": "676db8d4ad823013",
-      "published_at": "2026-10-17T15:01:25+00:00",
+      "id": "09744a63a310d10b",
+      "published_at": "2026-10-17T16:49:07+00:00",
       "source": {
-        "id": "ltn",
-        "name": "Liberty Times",
-        "region": "taiwan",
-        "slant": "pan_green"
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
       },
-      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5609875",
+      "url": "https://www.aljazeera.com/video/newsfeed/2026/10/17/10-17-egypt-saudi-houths-clip?traffic_source=rss",
       "category": "commodity",
       "commodities": [
-        "coal"
+        "shipping"
       ],
       "title": {
-        "original": "盧秀燕轟民進黨「很可惡」：關掉核電後 中火燒煤炭多5成",
-        "original_lang": "zh-TW",
-        "ko": "Lu Xiuyan은 DPP에 \"가증스러운\" 폭격을 가했습니다. 원자력이 꺼진 후 화재 한가운데서 석탄이 50% 더 연소되었습니다."
+        "original": "Egypt’s el-Sisi vows to defend Saudi Arabia from Houthi attacks",
+        "original_lang": "en",
+        "ko": "후티의 공격으로부터 사우디아라비아를 보호하겠다는 이집트의 엘시시 서약"
       },
-      "summary": "國民黨今天（17日）下午在彰化縣員林市圓林園舉辦公投暨聯合造勢大會，主打廢除「非核家園」、重啟核電政策，即將卸任的台中市長盧秀燕站台助講時，矛頭直指民進黨錯誤的能源政策，痛罵民...…",
+      "summary": "Egyptian President Abdel Fattah el-Sisi has vowed to take 'any measure' to defend Saudi Arabia amid Houthi attacks.",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.988,
-        "importance": 0.392,
-        "final": 0.437
+        "region_weight": 1.4,
+        "freshness": 0.955,
+        "importance": 0.38,
+        "final": 0.448
       },
       "rank_reasons": [
-        "region:taiwan*1.25",
+        "region:mena*1.40",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:coal:1"
+        "commodity:shipping:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "TWN"
+      "country_hint": "SAU"
+    },
+    {
+      "id": "62b2f390050f19e9",
+      "published_at": "2026-10-17T15:41:51+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/yemens-military-claims-1417-strikes-on-houthis-about-800-fighters-killed-or-wounded-3006867",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Yemen’s military claims 1,417 strikes on Houthis, about 800 fighters killed or wounded",
+        "original_lang": "en",
+        "ko": "예멘 군은 후티에 1,417건의 공격, 약 800명의 전투원이 사망 또는 부상당했다고 주장합니다."
+      },
+      "summary": "ADEN: Yemen’s armed forces said on Saturday they had carried out 1,417 strikes against Iran-backed Houthi targets over 24 hours, claiming about 800 fighters had been killed or wounded and more than 190 military vehicles and other assets destroyed or disabled. In a statement issue",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.926,
+        "importance": 0.368,
+        "final": 0.434
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "a00278c44a19493a",
@@ -1381,6 +1341,46 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "JPN"
+    },
+    {
+      "id": "676db8d4ad823013",
+      "published_at": "2026-10-17T15:01:25+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5609875",
+      "category": "commodity",
+      "commodities": [
+        "coal"
+      ],
+      "title": {
+        "original": "盧秀燕轟民進黨「很可惡」：關掉核電後 中火燒煤炭多5成",
+        "original_lang": "zh-TW",
+        "ko": "Lu Xiuyan은 DPP에 \"가증스러운\" 폭격을 가했습니다. 원자력이 꺼진 후 화재 한가운데서 석탄이 50% 더 연소되었습니다."
+      },
+      "summary": "國民黨今天（17日）下午在彰化縣員林市圓林園舉辦公投暨聯合造勢大會，主打廢除「非核家園」、重啟核電政策，即將卸任的台中市長盧秀燕站台助講時，矛頭直指民進黨錯誤的能源政策，痛罵民...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.909,
+        "importance": 0.361,
+        "final": 0.402
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:coal:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }
