@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-10-17T18:28:11.404731+00:00",
+  "generated_at": "2026-10-17T21:25:29.924976+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,19 +73,19 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 32,
-    "sources_failed": 6,
-    "raw_items": 702,
-    "scored_items": 70,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 812,
+    "scored_items": 67,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 7,
-      "india": 2,
+      "commodity_specialist": 6,
+      "mena": 4,
+      "russia": 3,
       "japan": 2,
-      "russia": 2,
+      "india": 2,
       "china": 2,
       "turkey": 2,
-      "mena": 4,
       "west": 1,
       "taiwan": 2
     },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 114,
+      "elapsed_ms": 144,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 295,
+      "elapsed_ms": 223,
       "error": null,
       "mode": "live"
     },
@@ -112,23 +112,23 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 71,
+      "elapsed_ms": 56,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tehran_times",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 35122,
-      "error": "TimeoutError: The read operation timed out",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 970,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 66,
+      "elapsed_ms": 158,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2482,
+      "elapsed_ms": 2028,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 587,
+      "elapsed_ms": 1284,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 305,
+      "elapsed_ms": 279,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 90,
+      "elapsed_ms": 86,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 44,
+      "elapsed_ms": 107,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 572,
+      "elapsed_ms": 394,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 178,
+      "elapsed_ms": 102,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 158,
+      "elapsed_ms": 146,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1521,
+      "elapsed_ms": 683,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 529,
+      "elapsed_ms": 709,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 558,
+      "elapsed_ms": 386,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 551,
+      "elapsed_ms": 510,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 676,
+      "elapsed_ms": 430,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 193,
+      "elapsed_ms": 101,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 232,
+      "elapsed_ms": 387,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 95,
+      "elapsed_ms": 96,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 114,
+      "elapsed_ms": 116,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 90,
+      "elapsed_ms": 104,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 128,
+      "elapsed_ms": 248,
       "error": null,
       "mode": "live"
     },
@@ -288,31 +288,31 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 77,
+      "elapsed_ms": 69,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tass_en",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 18346,
-      "error": "URLError: <urlopen error timed out>",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 671,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "tass_ru",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 18181,
-      "error": "URLError: <urlopen error timed out>",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 932,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2078,
+      "elapsed_ms": 1368,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2134,
+      "elapsed_ms": 2081,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 864,
+      "elapsed_ms": 1181,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 244,
+      "elapsed_ms": 414,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 41,
+      "elapsed_ms": 81,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 108,
+      "elapsed_ms": 123,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 185,
+      "elapsed_ms": 123,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 328,
+      "elapsed_ms": 429,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 131,
+      "elapsed_ms": 137,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 308,
+      "elapsed_ms": 415,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 251,
+      "elapsed_ms": 269,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +424,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.908,
-        "importance": 2.089,
-        "final": 2.418
+        "freshness": 0.837,
+        "importance": 1.924,
+        "final": 2.228
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -439,6 +439,46 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "f16ab32d99cd9cf7",
+      "published_at": "2026-10-17T17:14:10+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/photo/531174/Iranians-rally-at-Persepolis-in-defense-of-national-identity",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Iranians rally at Persepolis in defense of national identity after Rubio remarks",
+        "original_lang": "en",
+        "ko": "루비오 발언 이후 페르세폴리스에서 이란인들이 국가 정체성을 지키기 위해 집결하다"
+      },
+      "summary": "TEHRAN – Hundreds of people from Fars Province gathered at the UNESCO-registered Persepolis complex on Wednesday afternoon in a rally dubbed “Devotees of Civilization” to protest recent anti-Iran remarks by U.S. Secretary of State Marco Rubio. The gathering, held from 15 at Takht",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.89,
+        "importance": 1.79,
+        "final": 2.113
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:B*0.72/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "4f9e3efd60ea8f0f",
@@ -466,9 +506,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.551,
-        "importance": 1.759,
-        "final": 2.036
+        "freshness": 0.508,
+        "importance": 1.621,
+        "final": 1.876
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -510,9 +550,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.46,
-        "importance": 1.74,
-        "final": 2.014
+        "freshness": 0.424,
+        "importance": 1.603,
+        "final": 1.855
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -554,9 +594,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.551,
-        "importance": 1.575,
-        "final": 1.823
+        "freshness": 0.508,
+        "importance": 1.451,
+        "final": 1.679
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -572,36 +612,203 @@
       "country_hint": "USA"
     },
     {
-      "id": "767955552fa83836",
-      "published_at": "2026-10-17T18:10:26+00:00",
+      "id": "23265877b7b502ee",
+      "published_at": "2026-10-17T17:22:34+00:00",
       "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.thehindu.com/videos/the-battle-against-inflation-is-entering-a-tougher-phase-what-it-means-for-you/article71583060.ece",
+      "url": "https://www.tehrantimes.com/news/531175/Second-supertanker-strikes-sea-mine-in-Strait-of-Hormuz-IRGC",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Second supertanker strikes sea mine in Strait of Hormuz: IRGC Navy",
+        "original_lang": "en",
+        "ko": "호르무즈 해협에서 두 번째 슈퍼탱커가 바다 광산을 공격하다: IRGC 해군"
+      },
+      "summary": "TEHRAN— A second supertanker carrying more than 2 million barrels of crude oil caught fire after striking a sea mine in the Strait of Hormuz, the Islamic Revolution Guard Corps (IRGC) Navy announced, reporting a second such incident within 24 hours.",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.894,
+        "importance": 1.344,
+        "final": 1.586
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "6ecd5362b61a40cb",
+      "published_at": "2026-10-17T20:02:22+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/video/newsfeed/2026/10/17/iranian-tv-airs-video-said-to-show-tanker-explosion-in-hormuz?traffic_source=rss",
+      "category": "commodity",
+      "commodities": [
+        "shipping",
+        "oil"
+      ],
+      "title": {
+        "original": "Iranian TV airs video said to show tanker explosion in Hormuz",
+        "original_lang": "en",
+        "ko": "이란 TV 방송 동영상은 호르무즈에서 유조선 폭발을 보여준다고 합니다."
+      },
+      "summary": "Iranian state TV aired footage claiming to show an oil tanker exploding after striking a naval mine in Hormuz",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.962,
+        "importance": 1.148,
+        "final": 1.354
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "1bc5cd2acacc5aa7",
+      "published_at": "2026-10-17T21:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Natural-Gas/Middle-East-Chemicals-Keep-Their-Cost-Edge-Despite-Hormuz-Crisis.html",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Middle East Chemicals Keep Their Cost Edge Despite Hormuz Crisis",
+        "original_lang": "en",
+        "ko": "중동 화학 물질은 Hormuz 위기에도 불구하고 비용 우위를 유지합니다."
+      },
+      "summary": "Despite the Iran war and the Hormuz crisis, the Middle East’s low-cost chemicals production is set to retain its long-term advantage over other regions. Near-term shifts in the sourcing of polymers are taking place due to the current constraints in the Persian Gulf’s industrial b",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.988,
+        "importance": 1.137,
+        "final": 1.316
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "da3b7c7c6b1e263a",
+      "published_at": "2026-10-17T20:14:31+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/economy/2203605",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oil prices may grow even further if Hormuz issue not settled — Russian deputy premier",
+        "original_lang": "en",
+        "ko": "호르무즈 문제가 해결되지 않으면 유가가 더욱 상승할 수 있음 — 러시아 부총리"
+      },
+      "summary": "Alexander Novak pointed out that the capacity to use oil stockpiles to stabilize the global market was nearly exhausted",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.968,
+        "importance": 1.069,
+        "final": 1.189
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "595f2c16cf1bf5f7",
+      "published_at": "2026-10-17T19:39:23+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/economy/2203597",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "The battle against inflation is entering a tougher phase: What it means for you",
+        "original": "Indian experts describe Trump’s waiver of Russian oil tariffs as economic relief for India",
         "original_lang": "en",
-        "ko": "인플레이션과의 싸움은 더 힘든 단계로 접어들고 있습니다. 인플레이션의 의미"
+        "ko": "인도 전문가들은 트럼프의 러시아 석유 관세 포기를 인도에 대한 경제적 구제책으로 설명합니다."
       },
-      "summary": "India’s retail inflation rose to 5.54% in September, its highest level in nearly two years, driven by rising food, fuel and transport costs. Rural households have been hit particularly hard, with food inflation crossing 8%. The surge comes amid elevated global crude oil prices, a",
+      "summary": "Continued access to competitively priced Russian crude oil will allow bringing down raw material costs, easing inflationary pressure and supporting economic growth, Indian experts say",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.992,
-        "importance": 1.095,
-        "final": 1.243
+        "region_weight": 1.25,
+        "freshness": 0.952,
+        "importance": 1.051,
+        "final": 1.17
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:oil:2"
@@ -610,6 +817,48 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
+    },
+    {
+      "id": "9b37ce865b92fa65",
+      "published_at": "2026-10-17T19:20:27+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/economy/2203595",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Many countries want to buy Russian oil — deputy premier",
+        "original_lang": "en",
+        "ko": "많은 국가들이 러시아 석유 구매를 원합니다 — 부총리"
+      },
+      "summary": "The first tanker has already been loaded in the port of Dikson, Russian Deputy Prime Minister Alexander Novak said",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.944,
+        "importance": 1.042,
+        "final": 1.159
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "9c34a21cfaadd24e",
@@ -636,9 +885,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.514,
-        "importance": 1.073,
-        "final": 1.242
+        "freshness": 0.473,
+        "importance": 0.989,
+        "final": 1.144
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -651,88 +900,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
-    },
-    {
-      "id": "8e74bdd7dc7c2c71",
-      "published_at": "2026-10-16T16:13:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Oil-Prices/Oil-Prices-Are-Stuck-at-105-as-Geopolitical-Risks-Mount.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Oil Prices Are Stuck at $105 as Geopolitical Risks Mount",
-        "original_lang": "en",
-        "ko": "지정학적 위험이 산재함에 따라 유가가 $ 105로 고정됨"
-      },
-      "summary": "Brent holds near $105 as Iranian tanker attacks and multiple geopolitical conflicts keep oil markets on edge. October 16, 2026 Oil prices have been relatively rangebound this week as the current modus operandi of frequent Hormuz transits and frequent Iranian drone attacks found a",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.482,
-        "importance": 1.065,
-        "final": 1.233
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:shipping:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "454358863c5a7935",
-      "published_at": "2026-10-16T13:30:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Iran-War-Set-To-Push-PetroChinas-Trading-Profit-to-Record-3-Billion.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Iran War Set To Push PetroChina’s Trading Profit to Record $3 Billion",
-        "original_lang": "en",
-        "ko": "이란 전쟁, 페트로차이나의 무역 이익을 $ 30억 달러 기록으로 밀어붙일 것"
-      },
-      "summary": "The trading arm of China’s state-owned giant PetroChina is set to reap a record more than $3 billion (20 billion yuan) in trading profits this year as the Middle East crisis hiked crude prices and rattled global fuel markets and trade flows. PetroChina International (PCI), the tr",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.447,
-        "importance": 1.029,
-        "final": 1.191
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN"
     },
     {
       "id": "e735bd03e3f62001",
@@ -775,46 +942,6 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "1ad35ddfea9a054e",
-      "published_at": "2026-10-17T13:53:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1123183",
-      "category": "commodity",
-      "commodities": [
-        "gas"
-      ],
-      "title": {
-        "original": "Охранники танкера отразили нападение вооруженных людей на катере у берегов Йемена",
-        "original_lang": "ru",
-        "ko": "유조선 경비대가 예멘 해안에서 배를 타고 무장한 사람들의 공격을 격퇴했습니다."
-      },
-      "summary": "Экипаж танкера для перевозки сжиженного природного газа (СПГ) примерно в 250 км к юго-востоку от Эль-Мукаллы в Йемене отбил нападение вооруженной группы на катере, передает Управление морских торговых операций Великобритании (UKMTO).\"Капитан СПГ-танкера сообщил, что к нему прибли",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.881,
-        "importance": 0.972,
-        "final": 1.082
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
       "id": "87469ed4f28af673",
       "published_at": "2026-10-17T14:23:42+00:00",
       "source": {
@@ -839,9 +966,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.893,
-        "importance": 0.879,
-        "final": 0.998
+        "freshness": 0.823,
+        "importance": 0.81,
+        "final": 0.919
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -854,46 +981,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
-    },
-    {
-      "id": "227145ba78bd4fa8",
-      "published_at": "2026-10-17T16:10:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1123191",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Президент Абхазии поручил обеспечить бесперебойные поставки цитрусовых через границу",
-        "original_lang": "ru",
-        "ko": "압하지야 대통령은 국경을 넘어 감귤류의 공급을 중단하지 말 것을 지시했다."
-      },
-      "summary": "Президент Абхазии Бадра Гунба поручил ведомствам, несущим службу на КПП \"Псоу\" обеспечить бесперебойное прохождение цитрусовых грузов через российско-абхазскую границу в период сбора и экспорта урожая,-сообщает пресс-служба главы республики.\"За каждой партией цитрусовых стоит бол",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.938,
-        "importance": 0.828,
-        "final": 0.921
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g3",
-        "bridge:2",
-        "election:local:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS",
-      "election_type": "local"
     },
     {
       "id": "089acd7591a7fabb",
@@ -920,9 +1007,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.67,
-        "importance": 0.739,
-        "final": 0.822
+        "freshness": 0.617,
+        "importance": 0.681,
+        "final": 0.758
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -961,9 +1048,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.899,
-        "importance": 0.714,
-        "final": 0.811
+        "freshness": 0.828,
+        "importance": 0.658,
+        "final": 0.747
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1002,9 +1089,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.952,
-        "importance": 0.675,
-        "final": 0.796
+        "freshness": 0.877,
+        "importance": 0.621,
+        "final": 0.733
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1044,9 +1131,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.444,
-        "importance": 0.667,
-        "final": 0.757
+        "freshness": 0.409,
+        "importance": 0.615,
+        "final": 0.698
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1086,9 +1173,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.592,
-        "importance": 0.653,
-        "final": 0.727
+        "freshness": 0.545,
+        "importance": 0.602,
+        "final": 0.669
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1100,47 +1187,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "CHN"
-    },
-    {
-      "id": "a3beccc4d8eb1dcf",
-      "published_at": "2026-10-17T12:10:56+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/10/17/us-and-iran-both-claim-control-of-strait-of-hormuz-amid-attacks-on-vessels?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "US and Iran both claim control of Strait of Hormuz amid attacks on vessels",
-        "original_lang": "en",
-        "ko": "미국과 이란은 모두 선박에 대한 공격으로 호르무즈 해협을 장악하고 있다고 주장한다."
-      },
-      "summary": "Two vessels have been struck with naval mines in the Strait of Hormuz this week.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.84,
-        "importance": 0.595,
-        "final": 0.702
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
     },
     {
       "id": "61f00a561f2184a3",
@@ -1183,6 +1229,46 @@
       "country_hint": "USA"
     },
     {
+      "id": "c8c00cf0b2daf8f8",
+      "published_at": "2026-10-17T17:31:33+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/saudi-arabia-intercepted-four-drones-over-riyadh-amid-houthi-attacks-12200439#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Saudi Arabia Intercepts Four Drones Over Riyadh Amid Houthi Attacks",
+        "original_lang": "en",
+        "ko": "사우디아라비아, 후티 공격 중 리야드 상공에서 드론 4대 요격"
+      },
+      "summary": "The kingdom has faced sustained Houthi missile and drone attacks",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.898,
+        "importance": 0.495,
+        "final": 0.562
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
       "id": "fdcfc182385b0982",
       "published_at": "2026-10-17T14:58:36+00:00",
       "source": {
@@ -1207,9 +1293,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.908,
-        "importance": 0.501,
-        "final": 0.557
+        "freshness": 0.836,
+        "importance": 0.462,
+        "final": 0.513
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1221,86 +1307,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "JPN"
-    },
-    {
-      "id": "09744a63a310d10b",
-      "published_at": "2026-10-17T16:49:07+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/video/newsfeed/2026/10/17/10-17-egypt-saudi-houths-clip?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Egypt’s el-Sisi vows to defend Saudi Arabia from Houthi attacks",
-        "original_lang": "en",
-        "ko": "후티의 공격으로부터 사우디아라비아를 보호하겠다는 이집트의 엘시시 서약"
-      },
-      "summary": "Egyptian President Abdel Fattah el-Sisi has vowed to take 'any measure' to defend Saudi Arabia amid Houthi attacks.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.955,
-        "importance": 0.38,
-        "final": 0.448
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "62b2f390050f19e9",
-      "published_at": "2026-10-17T15:41:51+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/middle-east/yemens-military-claims-1417-strikes-on-houthis-about-800-fighters-killed-or-wounded-3006867",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Yemen’s military claims 1,417 strikes on Houthis, about 800 fighters killed or wounded",
-        "original_lang": "en",
-        "ko": "예멘 군은 후티에 1,417건의 공격, 약 800명의 전투원이 사망 또는 부상당했다고 주장합니다."
-      },
-      "summary": "ADEN: Yemen’s armed forces said on Saturday they had carried out 1,417 strikes against Iran-backed Houthi targets over 24 hours, claiming about 800 fighters had been killed or wounded and more than 190 military vehicles and other assets destroyed or disabled. In a statement issue",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.926,
-        "importance": 0.368,
-        "final": 0.434
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
     },
     {
       "id": "a00278c44a19493a",
@@ -1367,9 +1373,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.909,
-        "importance": 0.361,
-        "final": 0.402
+        "freshness": 0.837,
+        "importance": 0.333,
+        "final": 0.37
       },
       "rank_reasons": [
         "region:taiwan*1.25",
