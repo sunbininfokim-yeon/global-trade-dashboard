@@ -57,7 +57,8 @@ def main():
             "Mekong WS labels: GSO Yearbook Mekong-region spring paddy "
             "(2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 "
             "FAOSTAT national rice scaled to WS overlap (season imperfect). "
-            "Coffee/RRD still provisional unless labels_official override. "
+            "Central Highlands coffee: FAOSTAT Viet Nam Coffee, green (the "
+            "region holds ~90% of national coffee area). RRD has no labels. "
             "Salinity: coastal distance × dry-season hydrology proxy (not EC). "
             "GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build."),
         "methodology_note": (
@@ -98,6 +99,8 @@ def main():
                          round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
+            "point_basis": r["point_basis"],
             "last_actual": {
                 "year": r["last_actual"]["year"],
                 "yield": round(r["last_actual"]["yield"], 1),

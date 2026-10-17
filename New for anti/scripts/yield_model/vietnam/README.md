@@ -32,6 +32,23 @@ with GSO Yearbook / MTN Đông Xuân (+ FAOSTAT prior) — see
 | `central_coast_rice` | T2 stub | rice | schema only unless `--stubs` |
 | `central_highlands_pepper` | T2 stub | pepper | schema only unless `--stubs` |
 
+## 2026-10 update: coffee labels, trend fallback, NDVI tested
+
+- `faostat.py` writes `training/labels_official/central_highlands_coffee.csv`
+  from FAOSTAT Viet Nam "Coffee, green" (1961-2024). The Central Highlands hold
+  about nine tenths of Vietnam's coffee area, so the national yield stands in
+  for the region; the model was untrained before because it had only synthetic
+  labels. On real labels it does not beat the trend (nested -64.6%), so it
+  publishes the trend.
+- `predict.py` now publishes the trend when a model does not beat it
+  (`point_basis: "trend"`, would-be adjustment in `model_weather_effect_pct`).
+  Mekong winter-spring rice (-3.6% vs trend) had been moving the dashboard
+  number with an unvalidated weather adjustment.
+- MODIS NDVI (Argentina/Thailand method, windows fixed beforehand: Mekong
+  Jan-Feb, coffee May-Aug) made both forecasts worse in the forward test
+  (Mekong -3.0% / -0.1% median, coffee -58.5% / -34.7%), so it is not wired in.
+  Red River rice still has no labels: national rice is mostly the Mekong.
+
 ## Real vs provisional
 
 | feed | status |
