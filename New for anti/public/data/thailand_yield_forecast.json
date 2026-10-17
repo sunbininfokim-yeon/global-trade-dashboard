@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T06:25:20.284395+00:00",
+  "generated_at": "2026-10-17T06:03:33.010760+00:00",
   "season": 2026,
   "country": "Thailand",
   "forecast_available": true,
@@ -10,17 +10,20 @@
       "label": "Central–NE Thailand sugarcane",
       "label_ko": "중부·북동 사탕수수",
       "unit": "kg/ha",
-      "point": 50622.0,
+      "point": 26010.2,
       "range_68": [
-        39581.3,
-        61662.6
+        13837.5,
+        38182.9
       ],
       "range_95": [
-        28982.4,
-        72261.5
+        2151.8,
+        49868.6
       ],
       "trend": 50622.0,
-      "weather_effect_pct": 0.0,
+      "weather_effect_pct": -48.62,
+      "model_weather_effect_pct": -48.62,
+      "point_basis": "model",
+      "ndvi": null,
       "last_actual": {
         "year": 2024,
         "yield": 55281.3,
@@ -28,12 +31,12 @@
       },
       "skill": {
         "beats_trend": true,
-        "recent_skill_vs_trend": 0.1621034554175792,
+        "recent_skill_vs_trend": 0.0761894055328467,
         "low_confidence": true,
-        "sigma_kg_ha": 11040.604721464233
+        "sigma_kg_ha": 12172.657444357963
       },
-      "weather_through": "2026-08-01",
-      "critical_window_observed": 0.7006578947368421,
+      "weather_through": "2026-10-10",
+      "critical_window_observed": 0.930921052631579,
       "season_complete": false,
       "provenance": {
         "doc": "Regions/태국/중부_북동부/설탕_고무 + Pipitpukdee et al. 2020",
@@ -43,7 +46,7 @@
         "labels_provisional": false,
         "labels_season_imperfect": true,
         "dam_storage_is_proxy": false,
-        "weather_withheld_incomplete_season": true,
+        "weather_withheld_incomplete_season": false,
         "rid_dam_wired": false,
         "gee_used": false,
         "sources": [
@@ -58,14 +61,14 @@
         "sugarcane": {
           "label_ko": "중부·북동 사탕수수",
           "unit": "kg/ha",
-          "point": 50622.0,
+          "point": 26010.2,
           "range_68": [
-            39581.3,
-            61662.6
+            13837.5,
+            38182.9
           ],
           "range_95": [
-            28982.4,
-            72261.5
+            2151.8,
+            49868.6
           ],
           "skill": {
             "beats_trend": true,
@@ -78,17 +81,30 @@
       "label": "Chao Phraya wet-season rice",
       "label_ko": "짜오프라야 우기 쌀",
       "unit": "kg/ha",
-      "point": 2987.2,
+      "point": 3128.4,
       "range_68": [
-        2863.7,
-        3110.7
+        2994.7,
+        3262.1
       ],
       "range_95": [
-        2745.2,
-        3229.2
+        2866.3,
+        3390.4
       ],
       "trend": 2987.2,
       "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -5.72,
+      "point_basis": "trend",
+      "ndvi": {
+        "window": "half",
+        "ndvi": 0.5145,
+        "z": -1.98,
+        "adjustment_pct": 4.73,
+        "backtest_skill": 0.153,
+        "fit_years": [
+          2008,
+          2024
+        ]
+      },
       "last_actual": {
         "year": 2024,
         "yield": 2982.7,
@@ -96,12 +112,12 @@
       },
       "skill": {
         "beats_trend": false,
-        "recent_skill_vs_trend": 0.08165442351650543,
+        "recent_skill_vs_trend": -0.2890896601651083,
         "low_confidence": true,
-        "sigma_kg_ha": 123.46659089120739
+        "sigma_kg_ha": 127.6587039143245
       },
-      "weather_through": "2026-08-01",
-      "critical_window_observed": 0.5054347826086957,
+      "weather_through": "2026-10-10",
+      "critical_window_observed": 0.8858695652173914,
       "season_complete": false,
       "provenance": {
         "doc": "Regions/태국/중부_짜오프라야/쌀 + Prabnakorn et al. 2018",
@@ -111,7 +127,7 @@
         "labels_provisional": false,
         "labels_season_imperfect": true,
         "dam_storage_is_proxy": false,
-        "weather_withheld_incomplete_season": true,
+        "weather_withheld_incomplete_season": false,
         "rid_dam_wired": false,
         "gee_used": false,
         "sources": [
@@ -124,14 +140,14 @@
         "rice": {
           "label_ko": "짜오프라야 우기 쌀",
           "unit": "kg/ha",
-          "point": 2987.2,
+          "point": 3128.4,
           "range_68": [
-            2863.7,
-            3110.7
+            2994.7,
+            3262.1
           ],
           "range_95": [
-            2745.2,
-            3229.2
+            2866.3,
+            3390.4
           ],
           "skill": {
             "beats_trend": false,
@@ -144,29 +160,42 @@
       "label": "Chao Phraya off-season rice",
       "label_ko": "짜오프라야 건기 쌀",
       "unit": "kg/ha",
-      "point": 2936.0,
+      "point": 3099.3,
       "range_68": [
-        2864.0,
-        3008.0
+        2971.2,
+        3227.4
       ],
       "range_95": [
-        2794.9,
-        3077.1
+        2848.2,
+        3350.4
       ],
       "trend": 2987.2,
-      "weather_effect_pct": -1.71,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -1.74,
+      "point_basis": "trend",
+      "ndvi": {
+        "window": "full",
+        "ndvi": 0.5942,
+        "z": 1.55,
+        "adjustment_pct": 3.75,
+        "backtest_skill": 0.166,
+        "fit_years": [
+          2003,
+          2024
+        ]
+      },
       "last_actual": {
         "year": 2024,
         "yield": 2982.7,
         "provisional": false
       },
       "skill": {
-        "beats_trend": true,
-        "recent_skill_vs_trend": 0.41700959670158144,
+        "beats_trend": false,
+        "recent_skill_vs_trend": -0.21353185008138942,
         "low_confidence": true,
-        "sigma_kg_ha": 71.97983761754584
+        "sigma_kg_ha": 123.46659089120331
       },
-      "weather_through": "2026-08-01",
+      "weather_through": "2026-10-10",
       "critical_window_observed": 1.0,
       "season_complete": true,
       "provenance": {
@@ -191,17 +220,17 @@
         "rice": {
           "label_ko": "짜오프라야 건기 쌀",
           "unit": "kg/ha",
-          "point": 2936.0,
+          "point": 3099.3,
           "range_68": [
-            2864.0,
-            3008.0
+            2971.2,
+            3227.4
           ],
           "range_95": [
-            2794.9,
-            3077.1
+            2848.2,
+            3350.4
           ],
           "skill": {
-            "beats_trend": true,
+            "beats_trend": false,
             "low_confidence": true
           }
         }
@@ -211,17 +240,20 @@
       "label": "Thailand natural rubber",
       "label_ko": "태국 천연고무",
       "unit": "kg/ha",
-      "point": 1026.4,
+      "point": 1292.8,
       "range_68": [
-        988.3,
-        1064.5
+        1254.8,
+        1330.9
       ],
       "range_95": [
-        951.7,
-        1101.0
+        1218.2,
+        1367.5
       ],
       "trend": 1292.8,
-      "weather_effect_pct": -20.61,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -23.37,
+      "point_basis": "trend",
+      "ndvi": null,
       "last_actual": {
         "year": 2024,
         "yield": 1332.0,
@@ -229,12 +261,12 @@
       },
       "skill": {
         "beats_trend": false,
-        "recent_skill_vs_trend": -0.19206491464892794,
+        "recent_skill_vs_trend": -1.9244284082450336,
         "low_confidence": true,
-        "sigma_kg_ha": 38.09654064165297
+        "sigma_kg_ha": 38.09654064165053
       },
-      "weather_through": "2026-08-01",
-      "critical_window_observed": 0.7702020202020202,
+      "weather_through": "2026-10-10",
+      "critical_window_observed": 0.946969696969697,
       "season_complete": false,
       "provenance": {
         "doc": "Regions/태국/중부_북동부/설탕_고무 + Makkaew & Sdoodee 2015",
@@ -257,14 +289,14 @@
         "rubber": {
           "label_ko": "태국 천연고무",
           "unit": "kg/ha",
-          "point": 1026.4,
+          "point": 1292.8,
           "range_68": [
-            988.3,
-            1064.5
+            1254.8,
+            1330.9
           ],
           "range_95": [
-            951.7,
-            1101.0
+            1218.2,
+            1367.5
           ],
           "skill": {
             "beats_trend": false,
@@ -301,7 +333,7 @@
     }
   },
   "climate_context": {
-    "oni_djf": -0.37,
+    "oni_djf": -0.39,
     "enso": "neutral"
   }
 }
