@@ -1,0 +1,113 @@
+{
+  "mekong_rice_ws": {
+    "base": "trend",
+    "full": {
+      "n": 11,
+      "years": [
+        2014,
+        2024
+      ],
+      "rmse_base": 300.2666751407381,
+      "rmse_ndvi": 309.20086592115024,
+      "skill_vs_base": -0.02975418692808529,
+      "corr_ndvi_error": -0.3903417190999853
+    },
+    "half": {
+      "n": 11,
+      "years": [
+        2014,
+        2024
+      ],
+      "rmse_base": 300.2666751407381,
+      "rmse_ndvi": 308.54261148874895,
+      "skill_vs_base": -0.027561954199985195,
+      "corr_ndvi_error": -0.37455717156572005
+    },
+    "full_median": {
+      "n": 11,
+      "years": [
+        2014,
+        2024
+      ],
+      "rmse_base": 300.2666751407381,
+      "rmse_ndvi": 300.4936756661519,
+      "skill_vs_base": -0.0007559963998915453,
+      "corr_ndvi_error": -0.341221186686009
+    },
+    "half_median": {
+      "n": 11,
+      "years": [
+        2014,
+        2024
+      ],
+      "rmse_base": 300.2666751407381,
+      "rmse_ndvi": 307.26164648754667,
+      "skill_vs_base": -0.023295863064157762,
+      "corr_ndvi_error": -0.0861340730056568
+    },
+    "live": {
+      "full": {
+        "enabled": false
+      },
+      "half": {
+        "enabled": false
+      }
+    }
+  },
+  "central_highlands_coffee": {
+    "base": "trend",
+    "full": {
+      "n": 16,
+      "years": [
+        2009,
+        2024
+      ],
+      "rmse_base": 103.83154538055787,
+      "rmse_ndvi": 164.59089642374084,
+      "skill_vs_base": -0.5851723656860834,
+      "corr_ndvi_error": 0.09021376699735867
+    },
+    "half": {
+      "n": 16,
+      "years": [
+        2009,
+        2024
+      ],
+      "rmse_base": 103.83154538055787,
+      "rmse_ndvi": 173.13696701670574,
+      "skill_vs_base": -0.6674794387595149,
+      "corr_ndvi_error": -0.4839843038654366
+    },
+    "full_median": {
+      "n": 16,
+      "years": [
+        2009,
+        2024
+      ],
+      "rmse_base": 103.83154538055787,
+      "rmse_ndvi": 139.87628510378107,
+      "skill_vs_base": -0.3471463281328804,
+      "corr_ndvi_error": 0.04436379936146473
+    },
+    "half_median": {
+      "n": 16,
+      "years": [
+        2009,
+        2024
+      ],
+      "rmse_base": 103.83154538055787,
+      "rmse_ndvi": 123.8000031743424,
+      "skill_vs_base": -0.19231590669865484,
+      "corr_ndvi_error": -0.4592848321611178
+    },
+    "live": {
+      "full": {
+        "enabled": false
+      },
+      "half": {
+        "enabled": false
+      }
+    }
+  },
+  "_rule": "window live when the forward correction beats the forecast by >= 5% with both p75 and median (min 6 prior seasons)"
+}
