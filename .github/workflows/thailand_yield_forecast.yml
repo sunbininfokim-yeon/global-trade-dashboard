@@ -1,0 +1,61 @@
+name: Weekly Thailand Yield Forecast
+
+# Thailand had no scheduled refresh; its forecast JSON was last written by
+# hand. This runs the MODIS NDVI refresh, re-scores the NDVI correction
+# against the committed models, and rewrites the forecast.
+on:
+  schedule:
+    # Fri 17:34 UTC -- after Russia (17:12), before the multi-country batch.
+    - cron: '34 17 * * 5'
+  workflow_dispatch:
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      - name: Collect NDVI
+        # Incremental: only composites missing from thailand/condition/.
+        # A slow or failing ORNL day keeps last week's composites.
+        working-directory: "New for anti/scripts/yield_model"
+        env:
+          NDVI_BUDGET_MIN: '60'
+        run: python -m thailand.ndvi || echo "::warning::NDVI refresh failed; using committed composites"
+
+      - name: Re-score the NDVI correction
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m thailand.ndvi_backtest
+
+      - name: Run forecast
+        # No API keys: NASA POWER, NOAA CPC, ORNL DAAC are open.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m thailand.run_forecast
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/thailand_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/thailand/condition"
+          git commit -m "chore: weekly Thailand yield forecast refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
