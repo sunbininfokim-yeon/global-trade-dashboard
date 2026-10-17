@@ -119,6 +119,23 @@ The live season is assembled as NASA POWER observation, then 16-day Open-Meteo
 temperature/precipitation/radiation forecast, then the prior-20-year daily
 climatology. Open-Meteo soil moisture is never used.
 
+## Palm oil (CPO) from USDA PSD
+
+FAOSTAT's oil-palm fruit series is flagged estimated/imputed for recent years
+and is nearly a straight line, so no weather variable can explain it (climate
+candidate 0.0% against the trend). `palm_psd.py` tests the same dry-season and
+ENSO features on USDA FAS PSD crude palm oil production and yield instead
+(`training/palm_psd_experiment.json`): over 20 forward folds no feature set
+beats the trend there either (best all-season skill +0.7%). The weather signal
+in national palm output is real but small against replanting and ageing trees.
+
+What it does give is a publishable production number for the traded product.
+FAOSTAT fruit production is stopped by the 15% backtest gate. The forecast JSON
+now carries an `indonesia_palm_oil` region: the PSD trend for the next
+marketing year (October-September), USDA's own estimate beside it
+(`usda_estimate`), and last dry season's ONI as context only. The weekly
+workflow `indonesia_yield_forecast.yml` refreshes the PSD slice and the forecast.
+
 ## Important limitations
 
 - FAOSTAT's recent oil-palm production/yield is estimated and harvested area is
