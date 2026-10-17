@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 from .polls import require
 from .poll_quality import answer_correction_fingerprint
 from .state_inputs import primary_document_approved
+from .poll_html_evidence import FORMAT as HTML_REGION_FORMAT, html_region_fingerprint
 
 # Reviewed publishers with finite release URLs and SHA-256 snapshots below.
 # New releases still require a committed record/document review.
@@ -113,6 +114,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document.get('format') == 'reviewed_surveyusa_report_v1'
                             and document['url'] in PRIMARY_SURVEYUSA_RELEASES
                          or state_review and (parsed.path.endswith(('.pdf','.xlsx'))
+                            or document.get('format') == HTML_REGION_FORMAT
                             or document.get('format') == 'reviewed_pdf_v1'
                             or document.get('format') == 'reviewed_html_article_v1'
                             or document.get('format') == 'reviewed_surveyusa_report_v1'
@@ -155,7 +157,9 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                     require(response.status==200 and response.geturl()==document['url'], 'primary document redirect/response')
                     body=response.read(3*1024*1024+1)
                 require(len(body)<=3*1024*1024, 'primary document size changed')
-                if document.get('format') == 'reviewed_html_article_v1':
+                if document.get('format') == HTML_REGION_FORMAT:
+                    digest = html_region_fingerprint(body, document)
+                elif document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
                 elif document.get('format') == 'reviewed_surveyusa_report_v1':
                     digest = surveyusa_html_fingerprint(body, str(document.get('report_id') or PRIMARY_SURVEYUSA_RELEASES[document['url']]))
