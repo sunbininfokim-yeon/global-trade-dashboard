@@ -168,6 +168,12 @@ def forecast(today=None):
         oni = oni_for(load_oni(refresh=True), target)
     except Exception as exc:  # noqa: BLE001 -- context only
         log(f"ONI unavailable: {exc}")
+    conditions = None
+    try:
+        from .palm_conditions import assess
+        conditions = assess(target, today)
+    except Exception as exc:  # noqa: BLE001 -- context only
+        log(f"weather conditions unavailable: {exc}")
     validation = model["validation"][model["configuration"]]
     return {
         "label": "Indonesia palm oil (CPO) production",
@@ -188,6 +194,7 @@ def forecast(today=None):
         "enso": {"oni_dry_season_before": None if oni is None else round(oni, 2),
                  "note": ("El Nino in the preceding dry season tends to cut "
                           "output 6-24 months later; context only, not applied.")},
+        "weather_conditions": conditions,
         "skill": {
             "beats_trend": False,
             "skill_vs_trend_only": 0.0,

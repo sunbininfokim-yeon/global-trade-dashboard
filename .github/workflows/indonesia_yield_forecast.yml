@@ -33,6 +33,11 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         run: python -m indonesia.palm_psd fetch || echo "::warning::PSD refresh failed; using the committed slice"
 
+      - name: Refresh palm weather-condition backtest
+        # Offline: re-scores past seasons from the committed feature table.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m indonesia.palm_conditions backtest
+
       - name: Run forecast
         # No API keys: NASA POWER, Open-Meteo, NOAA CPC, USDA PSD are open.
         working-directory: "New for anti/scripts/yield_model"
@@ -43,7 +48,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/indonesia_yield_forecast.json" \
-                  "New for anti/scripts/yield_model/indonesia/training/psd_palm_indonesia.csv"
+                  "New for anti/scripts/yield_model/indonesia/training/psd_palm_indonesia.csv" \
+                  "New for anti/scripts/yield_model/indonesia/training/palm_conditions_backtest.json"
           git commit -m "chore: weekly Indonesia yield forecast refresh" || exit 0
           for i in 1 2 3; do
             git push && exit 0
