@@ -155,7 +155,7 @@ def collect_entry(entry, policy, as_of, opener=urlopen):
             qindex,qindex_doc=document(meta['question_index'],opener)
             links=question_links(qindex,meta['question_index']);require(len(links)==1,'ordinary House Q4 not available')
             qurl=links[0][1];qtext,qdoc=document(qurl,opener);answers,title,other=question(qtext,race)
-            checked=qdoc['checked_at'];docs=[article_doc,qindex_doc,qdoc]
+            checked=qdoc['checked_at'];docs=[index_doc,article_doc,qindex_doc,qdoc]
             raw={'id':'primary-html-wason-'+digest({'race_id':entry['race_id'],'end':meta['end'],'question':'Q4'})[:20],
                 'subject':race['subject'],'poll_type':race['poll_type'],'seat_name':race.get('seat_name'),
                 'pollster':entry['pollster'],'start_date':meta['start'],'end_date':meta['end'],
