@@ -23,7 +23,7 @@ from sklearn.preprocessing import StandardScaler
 
 from brazil.train import (ALPHAS, NON_WEATHER_FEATURES, RECENT_FOLDS,
                           TREND_FORMS, evaluate, fit_trend, nested_selection,
-                          prepare, run_cv)
+                          prepare, run_cv, window_rows)
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -168,9 +168,14 @@ def train_one(cfg):
 
     years = df.year.values.astype(float)
     X = prepare(df, best_feats, years, trend)
-    scaler = StandardScaler().fit(X)
-    resid = np.log(df.yield_kg_ha.values) - trend(years)
-    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
+    # Residuals only over the rows the trend was fitted to (brazil.train
+    # window_rows): against a trailing-window trend the older seasons sit far
+    # off the line, and the intercept absorbed that as a level shift that
+    # went straight into the live forecast.
+    fit = window_rows(years, np.ones(len(years), dtype=bool), degree, window)
+    scaler = StandardScaler().fit(X[fit])
+    resid = np.log(df.yield_kg_ha.values[fit]) - trend(years[fit])
+    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid)
     sigma = model_recent_rmse if beats_trend else best_baseline_recent
 
     provisional = _is_provisional(label_sources)
