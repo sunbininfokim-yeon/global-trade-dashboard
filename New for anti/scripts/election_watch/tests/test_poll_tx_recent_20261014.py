@@ -8,6 +8,7 @@ from election_watch.poll_targets import apply_targets
 from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize,summarize
 from publish_state_packets import rebuild
+from tests.poll_config_fixture import SNAPSHOT_DAY
 ROOT=Path(__file__).resolve().parents[1];PUBLIC=ROOT.parents[1]/'public/data'
 IDS={'us-202recc152b3f7','gov202rec101a5410','us-202quaee83ce98'}
 
@@ -15,7 +16,7 @@ class TexasRecentTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.packet=next(p for p in packets() if p['state']=='TX')
-        cls.policy=apply_targets(apply_matchups(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-14'),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),'2026-10-14')
+        cls.policy=apply_targets(apply_matchups(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
         cls.policy['quality_reviews']=read(ROOT/'config/usa_polls/quality_reviews_2026.json')['reviews']
         cls.rows=[r for r in cls.packet['capture']['provider_records'] if r['id'] in IDS]
 

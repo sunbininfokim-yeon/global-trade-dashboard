@@ -28,6 +28,35 @@ test('single-source numeric leads are counted, with uncertainty missing and sing
     assert.equal(s.recent,1);assert.equal(s.states,1);
 });
 
+test('reviewed MN01 legal-name and poll-name aliases count in both the card and summary', () => {
+    const legal = 'Jacob "Jake" Johnson';
+    const row = observation('mn01',46,44,{answers:[{name:'Jake Johnson',party:'DEM',pct:46},
+        {name:'Brad Finstad',party:'REP',pct:44}]});
+    const r = race([row],{race_id:'USA:MN:house:01',state:'MN',district:'01',
+        required_candidates:[legal,'Brad Finstad'],candidates:{
+            [legal]:{party:'DEM',canonical_name:legal},
+            'Jake Johnson':{party:'DEM',canonical_name:legal},
+            'Brad Finstad':{party:'REP',canonical_name:'Brad Finstad'}}});
+    assert.equal(summarizePollPresentation([r],board,health,14,now).recent,1);
+    assert.equal(summarizePollPresentation([r],board,health,14,now).dem,1);
+    assert.match(pollEvidenceHtml(r,board,health,14,{now}),/최근 14일 요약: DEM 수치상 우세/);
+    assert.match(pollEvidenceHtml(r,board,health,14,{now}),/Jake Johnson/);
+    assert.equal(r.observations[0].answers[0].name,'Jake Johnson');
+});
+
+test('similar spellings without reviewed aliases and duplicate aliases cannot count', () => {
+    const legal = 'Jacob "Jake" Johnson';
+    const row = observation('mn01',46,44,{answers:[{name:'Jake Johnson',party:'DEM',pct:46},
+        {name:'Brad Finstad',party:'REP',pct:44}]});
+    const r = race([row],{required_candidates:[legal,'Brad Finstad'],candidates:{
+        [legal]:{canonical_name:legal},'Brad Finstad':{canonical_name:'Brad Finstad'}}});
+    assert.equal(pollRaceAssessment(r,context,14).status,'missing');
+    r.candidates['Jake Johnson']={canonical_name:legal};
+    r.observations[0].answers.push({name:legal,party:'DEM',pct:1});
+    assert.equal(pollRaceAssessment(r,context,14).status,'missing');
+    assert.equal(summarizePollPresentation([r],board,health,14,now).recent,0);
+});
+
 test('candidate interval overlap uses twice reviewed same-sample MOE, including its boundary', () => {
     assert.equal(pollRowAssessment(observation('a',51,45,{source_quality:quality()})).status,'within');
     assert.equal(pollRowAssessment(observation('a',52,45,{source_quality:quality()})).status,'dem');
