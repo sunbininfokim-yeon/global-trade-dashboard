@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T09:01:51.163517+00:00",
+  "generated_at": "2026-10-17T06:03:21.394236+00:00",
   "season": 2026,
   "country": "India",
   "source_note": "Yields: ICRISAT District Level Database, district level, aggregated to region by actual production / actual area. Weather: NASA POWER daily, area-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST Dipole Mode Index.",
@@ -10,17 +10,20 @@
       "crop": "wheat",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 5105.8,
+      "point": 5105.6,
       "range_68": [
-        4818.5,
-        5393.1
+        4818.3,
+        5392.9
       ],
       "range_95": [
-        4542.7,
-        5668.9
+        4542.5,
+        5668.7
       ],
       "trend": 5105.6,
       "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "features_filled": [],
       "last_actual": {
         "year": 2024,
         "yield": 4981.786290425095
@@ -49,7 +52,61 @@
         "guide": "Regions/인도/북서부_펀자브/밀/밀_상세분석_및_수식.md",
         "caveat": "The guide's Hybrid LASSO-Random Forest is replaced by the same ridge-on-log-yield used across this repo. With ~40 seasons, LASSO variable selection over daily weather would select on noise; the weekly-resolution heat tensor it is meant to search is collapsed to the guide's own named windows instead. MODIS LST and NDVI from §3 are omitted -- MODIS starts in 2000 and would halve the record.",
         "non_weather_drivers": "Punjab and Haryana wheat yields are shaped by the procurement system as much as by weather: assured MSP purchase, subsidised power for tubewells and canal rotation schedules set both the input intensity and the sowing window, and none of it is visible in a weather feed. Groundwater depletion is a slow constraint moving underneath the whole series, and it enters the technology trend rather than any seasonal feature.",
-        "weather_through": "2026-10-09",
+        "weather_through": "2026-10-10",
+        "critical_window_observed": 1.0,
+        "season_complete": true
+      }
+    },
+    "mp_soybean": {
+      "label": "Madhya Pradesh soybeans",
+      "crop": "soybean",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 851.6,
+      "range_68": [
+        604.0,
+        1099.1
+      ],
+      "range_95": [
+        366.4,
+        1336.7
+      ],
+      "trend": 851.6,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -22.46,
+      "point_basis": "trend",
+      "features_filled": [
+        "dmi_season"
+      ],
+      "last_actual": {
+        "year": 2024,
+        "yield": 916.9999984383516
+      },
+      "enso": {
+        "state": "strong El Nino",
+        "oni_growing_season": 1.98
+      },
+      "iod": {
+        "state": "unknown",
+        "dmi_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -3.448,
+        "weather_skill": -3.448,
+        "weather_driven": false,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "low_confidence": true,
+        "label_through": 2024,
+        "stale_label": false,
+        "sigma_kg_ha": 247.5
+      },
+      "provenance": {
+        "guide": "Regions/인도/중부_마디아프라데시/대두/대두_상세분석_및_수식.md",
+        "caveat": "The guide asks for an ENSO-coupled LSTM. With roughly forty labelled seasons a recurrent network cannot be trained -- it would memorise the record -- so the temporal narrative the LSTM was meant to learn is encoded explicitly instead, as the three features the guide itself names (onset delay, flowering dry-spell stress, harvest waterlogging), fed to a regularised linear model. That is a weaker claim than the guide's and is the largest departure in this set.",
+        "non_weather_drivers": "Madhya Pradesh soybean area has moved with the relative price of soybean against maize and pulses, and a shift in the area mix changes the average yield without any weather having changed. Seed replacement rate and yellow mosaic virus pressure are also real drivers that no climate feature reaches.",
+        "weather_through": "2026-10-10",
         "critical_window_observed": 1.0,
         "season_complete": true
       }
@@ -59,17 +116,20 @@
       "crop": "cotton",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 419.2,
+      "point": 483.5,
       "range_68": [
-        337.2,
-        501.2
+        401.5,
+        565.5
       ],
       "range_95": [
-        258.6,
-        579.8
+        322.9,
+        644.2
       ],
       "trend": 483.5,
-      "weather_effect_pct": -13.3,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -13.3,
+      "point_basis": "trend",
+      "features_filled": [],
       "last_actual": {
         "year": 2019,
         "yield": 527.4506551666943
@@ -98,13 +158,11 @@
         "guide": "Regions/인도/서부_마하라슈트라/면화/면화_상세분석_및_수식.md",
         "caveat": "The guide requires XGBoost/LightGBM and bans linear regression because cotton's yield-rainfall response is an inverted U. The shape is preserved in the features -- a signed moisture deficit and a pest counter that fires only inside a temperature-humidity box give the model both arms of the curve -- but the estimator is the same ridge used elsewhere, because a gradient-boosted ensemble on ~20 post-Bt seasons would fit noise. The guide's irrigation-percentage categorical is not implemented: it would need a district irrigation series joined per year.",
         "non_weather_drivers": "Cotton is the crop in this set least explainable by weather. The post-2002 Bt transition, seed pricing and availability, the spread of pink bollworm resistance from about 2015, and the minimum support price relative to soybean and pigeonpea all move planted area and input intensity from year to year. ICRISAT also reports cotton in lint terms, so a change in ginning ratio moves the series without any change in the field.",
-        "weather_through": "2026-10-09",
-        "critical_window_observed": 0.761,
+        "weather_through": "2026-10-10",
+        "critical_window_observed": 0.772,
         "season_complete": false
       }
     }
   },
-  "skipped": {
-    "mp_soybean": "features unavailable: dmi_season"
-  }
+  "skipped": {}
 }
