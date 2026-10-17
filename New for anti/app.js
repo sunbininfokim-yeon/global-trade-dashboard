@@ -3425,6 +3425,12 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         unit: entry.unit || f.unit || 'kg/ha',
         lastActual: num(la.yield) ?? num(la.value) ?? num(la.yield_kg_ha),
         lastActualYear: num(la.year),
+        // A region can forecast a different year from the file (Indonesia
+        // palm oil runs one marketing year ahead of the FAOSTAT crops).
+        season: num(entry.season),
+        // Optional favourable/unfavourable/neutral read-out that does not
+        // move the number (see indonesia/palm_conditions.py).
+        weatherConditions: entry.weather_conditions || null,
         // Four ways to say "do not trust this as weather skill":
         // low_confidence flag, beats_trend false, skill_vs_trend < 0.20,
         // climate_gate stopped for short sample (Indonesia).
@@ -4146,7 +4152,10 @@ const buildRegionPoints = async (cfg) => {
         const meanPct = scored.length
             ? scored.reduce((s, c) => s + c.pct, 0) / scored.length
             : null;
-        const stress = regionStressFromPct(meanPct);
+        const conditionStress = relevant
+            .map(c => weatherConditionStress(c.weatherConditions))
+            .find(Boolean);
+        const stress = conditionStress || regionStressFromPct(meanPct);
         const unit = relevant[0]?.unit || 'kg/ha';
         const point = relevant[0]?.point;
         return {
@@ -4774,6 +4783,44 @@ const renderClimateModelOnLeft = async (cfg, regionCfg, fc = null) => {
         </div>`;
 };
 
+// Weather read-out that sits beside a trend-only number: which lagged
+// drought mechanisms are active, and the overall call. The pipeline decides
+// the verdict; this only draws it.
+const WEATHER_CONDITION_PILL = { unfavorable: 'red', favorable: 'green', neutral: 'blue' };
+
+const weatherConditionStress = (wc) => {
+    if (!wc || !wc.verdict) return null;
+    if (wc.verdict === 'unfavorable') return { level: 'high', rgba: [248, 113, 113, 210], ko: '기상 불리' };
+    if (wc.verdict === 'favorable') return { level: 'ok', rgba: [74, 222, 128, 210], ko: '기상 유리' };
+    return { level: 'neutral', rgba: [148, 163, 184, 200], ko: '기상 중립' };
+};
+
+const renderWeatherConditions = (wc) => {
+    if (!wc || !Array.isArray(wc.indicators)) return '';
+    const fmt = (v, unit) => (v == null ? '—'
+        : `${Math.abs(v) >= 100 ? Math.round(v).toLocaleString() : v.toFixed(unit === '' ? 2 : 1)}${unit ? ` ${unit}` : ''}`);
+    const rows = wc.indicators.map(i => `
+        <div class="climate-metric-row">
+            <span class="nm" title="${i.why_ko || ''}">${i.label_ko} <span style="color:#64748b;">(${i.season})</span></span>
+            <span class="vl" style="font-size:12px;">${fmt(i.value, i.unit)}${i.normal != null ? ` <span style="color:#64748b;">/ 평년 ${fmt(i.normal, i.unit)}</span>` : ''}
+                <span class="climate-status-pill ${WEATHER_CONDITION_PILL[i.status] || 'blue'}" style="margin-left:4px;">${i.status_ko}</span></span>
+        </div>`).join('');
+    const observed = wc.season_observed_share != null && wc.season_observed_share < 1
+        ? `<div class="climate-sub">작년 건기 관측 ${Math.round(wc.season_observed_share * 100)}% · 같은 날짜까지의 평년과 비교</div>` : '';
+    return `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+            <div class="climate-metric-row" style="border:none;">
+                <span class="nm" style="font-weight:600;color:#e2e8f0;">${wc.target_year ?? ''} 기상 조건</span>
+                <span class="climate-status-pill ${WEATHER_CONDITION_PILL[wc.verdict] || 'blue'}">${wc.verdict_ko}</span>
+            </div>
+            <div class="climate-sub">${wc.reason_ko || ''}</div>
+            ${rows}
+            ${observed}
+            ${wc.history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${wc.history_ko}</div>` : ''}
+            ${wc.note_ko ? `<div class="climate-sub">${wc.note_ko}</div>` : ''}
+        </div>`;
+};
+
 // Region yield numbers stay on the right; left holds model provenance.
 const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = null) => {
     fc = fc || await loadClimateForecast(cfg);
@@ -4810,12 +4857,13 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                         <span class="vl">${fmtYield(c.lastActual, c.unit)} ${c.unit || ''}</span>
                     </div>
                     <div class="climate-metric-row">
-                        <span class="nm">${fc?.season ?? ''} 예상</span>
+                        <span class="nm">${c.season ?? fc?.season ?? ''} 예상</span>
                         <span class="vl" style="color:${color};">${fmtYield(c.point, c.unit)} ${c.unit || ''}
                             ${c.pct != null ? ` (${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%)` : ''}</span>
                     </div>
                     ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
+                ${renderWeatherConditions(c.weatherConditions)}
             </div>`;
         }).join('')
         : `<div class="climate-card"><div class="climate-sub">이 산지의 작물 슬롯 없음</div></div>`;

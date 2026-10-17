@@ -150,3 +150,30 @@ workflow `indonesia_yield_forecast.yml` refreshes the PSD slice and the forecast
 - Feature-set selection sees the same forward folds reported in the artifact.
   The season-by-season last-five-year report is therefore a configuration
   backtest, not a fully nested model-selection test.
+
+## 팜유 기상 조건 판정 (`palm_conditions.py`)
+
+팜유(CPO) 생산은 어떤 기상 회귀도 추세를 못 이겨 숫자는 추세 그대로 둔다. 대신
+알려진 시차 가뭄 메커니즘 4개를 유리·불리·중립으로 판정해 `weather_conditions`
+로 붙인다. 예측치에는 반영하지 않는다.
+
+| 지표 | 시점(목표연도 T 기준) | 불리 조건 |
+|---|---|---|
+| 건기 최장 무강우 일수 | T-1년 6~10월 | z ≥ +0.75 |
+| 건기 강수량 | T-1년 6~10월 | z ≤ −0.75 |
+| ONI (엘니뇨) | T-1년 건기 | ≥ +0.5 |
+| 뿌리층 토양수분 | T-2년 6~10월 | z ≤ −0.75 |
+
+z 는 직전 20개 시즌(최소 10) 대비. 불리 지표가 2개 이상이면(점수 ≤ −2) 종합
+"불리", 아니면 "중립". 건기가 아직 진행 중이면 모든 해를 같은 날짜까지 잘라
+비교한다(반쯤 지난 시즌을 가뭄으로 오판하지 않도록).
+
+임계값은 결과를 보기 전에 정했다. 1996~2025 USDA PSD 기준
+(`training/palm_conditions_backtest.json`): 불리 판정 4번(1998·2016·2020·2024)
+모두 생산이 직전 10년 추세보다 낮았고 평균 −14.8% (중립 해 −3.1%).
+습윤·라니냐 쪽(점수 ≥ +2, 7번)은 평균 −7.1% 로 오히려 낮아 "유리" 종합 판정은
+내지 않는다.
+
+```bash
+python -m indonesia.palm_conditions backtest   # 오프라인 재검증
+```

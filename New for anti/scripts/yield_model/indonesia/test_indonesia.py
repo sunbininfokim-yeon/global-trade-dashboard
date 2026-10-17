@@ -46,5 +46,50 @@ class ModelTests(unittest.TestCase):
         self.assertGreater(forecast["point"], forecast["trend"])
 
 
+class PalmConditionsTests(unittest.TestCase):
+    def _dailies(self, dry_from=None):
+        from datetime import date as _d
+        from .regions import PALM
+        dates = pd.date_range("1990-01-01", "2026-10-15")
+        rng = np.random.default_rng(0)
+        out = {}
+        for point in PALM.points:
+            frame = pd.DataFrame({"date": dates})
+            for column in C.WEATHER_COLUMNS:
+                frame[column] = 25.0
+            frame["precip"] = rng.choice([0.0, 12.0], len(dates), p=[0.4, 0.6])
+            frame["soil"] = 0.8
+            frame["tdew"] = 22.0
+            if dry_from is not None:
+                frame.loc[frame.date.between(dry_from, "2026-10-15"), "precip"] = 0.0
+            out[point["name"]] = C.add_vpd(frame)
+        return out
+
+    def _oni(self):
+        rows = [{"year": y, "season": s, "anom": 0.0}
+                for y in range(1985, 2027) for s in ("JJA", "JAS", "ASO", "SON", "OND")]
+        return pd.DataFrame(rows)
+
+    def test_partial_season_is_not_read_as_drought(self):
+        from datetime import date
+        from .palm_conditions import classify, current_frame
+        frame, observed = current_frame(2027, self._dailies(), self._oni(), date(2026, 10, 15))
+        self.assertLess(observed, 1.0)
+        items, score, verdict = classify(frame[frame.year == 2027].iloc[0])
+        self.assertEqual(verdict, "neutral")
+        precip = next(i for i in items if i["key"] == "precip_dry_lag1")
+        self.assertEqual(precip["status"], "neutral")
+
+    def test_long_dry_spell_with_el_nino_is_unfavourable(self):
+        from datetime import date
+        from .palm_conditions import classify, current_frame
+        oni = self._oni()
+        oni.loc[oni.year.eq(2026), "anom"] = 1.9
+        frame, _ = current_frame(2027, self._dailies("2026-08-01"), oni, date(2026, 10, 15))
+        items, score, verdict = classify(frame[frame.year == 2027].iloc[0])
+        self.assertEqual(verdict, "unfavorable")
+        self.assertLessEqual(score, -2)
+
+
 if __name__ == "__main__":
     unittest.main()
