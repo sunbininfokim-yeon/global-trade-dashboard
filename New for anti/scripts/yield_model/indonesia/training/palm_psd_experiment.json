@@ -1,0 +1,492 @@
+{
+  "label_years": {
+    "faostat": [
+      1986,
+      2024
+    ],
+    "psd": [
+      1986,
+      2025
+    ]
+  },
+  "prior20:yield_kg_ha": {
+    "selected": "trend_only__recent_20_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "core__full_linear",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "vpd_dry_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 19,
+      "required_seasons": 30,
+      "candidate_skill_vs_trend": -0.00012413861945304028
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.02841629975941744,
+      "latest_operational_ape": 0.005030005577641056,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_linear",
+        "recent_rmse": 634.9901761161034,
+        "skill_recent": -0.00012413861945304028,
+        "skill_all": 0.00011119787683600002,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      },
+      "all": {
+        "config": "all__full_linear",
+        "recent_rmse": 670.5226233538585,
+        "skill_recent": -0.05608856062683132,
+        "skill_all": -0.06054399557552914,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      },
+      "enso": {
+        "config": "enso__full_linear",
+        "recent_rmse": 652.7009953516852,
+        "skill_recent": -0.028019086444586616,
+        "skill_all": -0.007223925216298666,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      }
+    }
+  },
+  "prior20:production_tonnes": {
+    "selected": "trend_only__recent_10_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "core__full_quadratic",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "vpd_dry_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 19,
+      "required_seasons": 30,
+      "candidate_skill_vs_trend": 0.00015490549083052585
+    },
+    "forecast_gate": {
+      "publishable": false,
+      "recent_operational_mape": 0.09423994185128126,
+      "latest_operational_ape": 0.1526743361854519,
+      "maximum_publish_mape": 0.15,
+      "status": "stopped_poor_recent_backtest"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_quadratic",
+        "recent_rmse": 21907947.37459612,
+        "skill_recent": 0.00015490549083052585,
+        "skill_all": 0.00010069344053631468,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      },
+      "all": {
+        "config": "all__full_quadratic",
+        "recent_rmse": 22158870.386521123,
+        "skill_recent": -0.01129683566423556,
+        "skill_all": -0.009165959008224922,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      },
+      "enso": {
+        "config": "enso__full_quadratic",
+        "recent_rmse": 21908842.253586903,
+        "skill_recent": 0.00011406458712481804,
+        "skill_all": 9.37955189449502e-05,
+        "n": 9,
+        "years": [
+          2016,
+          2024
+        ]
+      }
+    }
+  },
+  "prior20:psd_yield_t_ha": {
+    "selected": "trend_only__full_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "all__recent_10_linear",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "precip_dry_lag1_anom",
+        "vpd_dry_lag1_anom",
+        "solar_haze_lag1_anom",
+        "dry_spell_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 20,
+      "required_seasons": 45,
+      "candidate_skill_vs_trend": 0.1429739121248168
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.034806855902077175,
+      "latest_operational_ape": 0.035306976383530204,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_quadratic",
+        "recent_rmse": 0.15481630056886403,
+        "skill_recent": -0.00044173993184459803,
+        "skill_all": -0.00038832303074642915,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      },
+      "all": {
+        "config": "all__recent_10_linear",
+        "recent_rmse": 0.14223795155574023,
+        "skill_recent": 0.1429739121248168,
+        "skill_all": 0.03651189325999615,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      },
+      "enso": {
+        "config": "enso__full_quadratic",
+        "recent_rmse": 0.15477497072555488,
+        "skill_recent": -0.00017466146401279303,
+        "skill_all": -0.00017948436335490925,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      }
+    }
+  },
+  "prior20:psd_production_kt": {
+    "selected": "trend_only__recent_10_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "enso__full_quadratic",
+      "candidate_features": [
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 20,
+      "required_seasons": 25,
+      "candidate_skill_vs_trend": -0.00012196065691361113
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.09301355313700785,
+      "latest_operational_ape": 0.056468609781268664,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_quadratic",
+        "recent_rmse": 2410.491441192862,
+        "skill_recent": -0.00021602817541843677,
+        "skill_all": -0.0017726283304819734,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      },
+      "all": {
+        "config": "all__full_quadratic",
+        "recent_rmse": 2601.7928582383543,
+        "skill_recent": -0.0795951706489062,
+        "skill_all": 0.007356201612156221,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      },
+      "enso": {
+        "config": "enso__full_quadratic",
+        "recent_rmse": 2410.264741218194,
+        "skill_recent": -0.00012196065691361113,
+        "skill_all": -0.003959067036281905,
+        "n": 10,
+        "years": [
+          2016,
+          2025
+        ]
+      }
+    }
+  },
+  "expanding10:yield_kg_ha": {
+    "selected": "trend_only__recent_20_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "core__recent_20_linear",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "vpd_dry_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 29,
+      "required_seasons": 30,
+      "candidate_skill_vs_trend": -0.0001176038041126315
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.02841629975941744,
+      "latest_operational_ape": 0.005030005577641056,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__recent_20_linear",
+        "recent_rmse": 576.0414383056132,
+        "skill_recent": -0.0001176038041126315,
+        "skill_all": -0.01627520992981002,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      },
+      "all": {
+        "config": "all__recent_20_linear",
+        "recent_rmse": 603.4889782574132,
+        "skill_recent": -0.047771758629599814,
+        "skill_all": -0.07571025263686737,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      },
+      "enso": {
+        "config": "enso__recent_20_linear",
+        "recent_rmse": 618.0155853784797,
+        "skill_recent": -0.07299271417067832,
+        "skill_all": -0.02749768424162302,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      }
+    }
+  },
+  "expanding10:production_tonnes": {
+    "selected": "trend_only__recent_10_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_no_incremental_skill",
+      "candidate_configuration": "enso__full_quadratic",
+      "candidate_features": [
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 29,
+      "required_seasons": 25,
+      "candidate_skill_vs_trend": 0.0024626965287699587
+    },
+    "forecast_gate": {
+      "publishable": false,
+      "recent_operational_mape": 0.09423994185128126,
+      "latest_operational_ape": 0.1526743361854519,
+      "maximum_publish_mape": 0.15,
+      "status": "stopped_poor_recent_backtest"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_quadratic",
+        "recent_rmse": 21905260.095470347,
+        "skill_recent": 0.000402326829880173,
+        "skill_all": -0.014272030418626569,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      },
+      "all": {
+        "config": "all__full_quadratic",
+        "recent_rmse": 22167197.042050514,
+        "skill_recent": -0.01155058133818887,
+        "skill_all": -0.0392870652651931,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      },
+      "enso": {
+        "config": "enso__full_quadratic",
+        "recent_rmse": 21860108.995824553,
+        "skill_recent": 0.0024626965287699587,
+        "skill_all": -0.0010867322145140523,
+        "n": 19,
+        "years": [
+          2006,
+          2024
+        ]
+      }
+    }
+  },
+  "expanding10:psd_yield_t_ha": {
+    "selected": "trend_only__full_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_insufficient_sample",
+      "candidate_configuration": "all__recent_10_linear",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "precip_dry_lag1_anom",
+        "vpd_dry_lag1_anom",
+        "solar_haze_lag1_anom",
+        "dry_spell_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 30,
+      "required_seasons": 45,
+      "candidate_skill_vs_trend": 0.20602010786347258
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.034806855902077175,
+      "latest_operational_ape": 0.035306976383530204,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__recent_15_linear",
+        "recent_rmse": 0.1556181967624567,
+        "skill_recent": -0.0003170675891377428,
+        "skill_all": -0.057273348760370046,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      },
+      "all": {
+        "config": "all__recent_10_linear",
+        "recent_rmse": 0.13177437073583564,
+        "skill_recent": 0.20602010786347258,
+        "skill_all": 0.001635793106634864,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      },
+      "enso": {
+        "config": "enso__recent_15_linear",
+        "recent_rmse": 0.1555862998955297,
+        "skill_recent": -0.00011203385238012231,
+        "skill_all": -0.05163853781609129,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      }
+    }
+  },
+  "expanding10:psd_production_kt": {
+    "selected": "trend_only__recent_10_linear",
+    "beats_trend": false,
+    "climate_gate": {
+      "status": "stopped_no_incremental_skill",
+      "candidate_configuration": "core__full_quadratic",
+      "candidate_features": [
+        "soil_dry_lag1_anom",
+        "soil_dry_lag2_anom",
+        "vpd_dry_lag1_anom",
+        "oni_season",
+        "oni_lag2"
+      ],
+      "available_seasons": 30,
+      "required_seasons": 30,
+      "candidate_skill_vs_trend": -0.0004299113223116269
+    },
+    "forecast_gate": {
+      "publishable": true,
+      "recent_operational_mape": 0.09301355313700785,
+      "latest_operational_ape": 0.056468609781268664,
+      "maximum_publish_mape": 0.15,
+      "status": "publishable_baseline"
+    },
+    "best_per_feature_set": {
+      "core": {
+        "config": "core__full_quadratic",
+        "recent_rmse": 3198.0385958085876,
+        "skill_recent": -0.0004299113223116269,
+        "skill_all": -5.4287990129964214e-05,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      },
+      "all": {
+        "config": "all__full_quadratic",
+        "recent_rmse": 3286.0838158124925,
+        "skill_recent": -0.027972753286853003,
+        "skill_all": -0.04202807171450451,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      },
+      "enso": {
+        "config": "enso__full_quadratic",
+        "recent_rmse": 3201.7423065256075,
+        "skill_recent": -0.0015885286664074627,
+        "skill_all": 0.0006176147510824626,
+        "n": 20,
+        "years": [
+          2006,
+          2025
+        ]
+      }
+    }
+  }
+}
