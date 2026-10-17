@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from election_watch.polls import digest
 from election_watch.poll_html_tables import (contracts,document,article_links,article_metadata,
-    question,question_links,merge_html_tables,bind_html_reviews)
+    question,question_links,merge_html_tables,bind_html_reviews,saved_html_receipts)
 from election_watch.live_polls import normalize
 from election_watch.poll_run_capture import make_capture,validate_capture
 
@@ -124,6 +124,15 @@ class HtmlTablesTests(TestCase):
         self.assertEqual(rows[0]['answers'],original[0]['answers'])
         good,bad=normalize(rows,bind_html_reviews(POLICY,rows,new,SNAP,DAY),DAY)
         self.assertEqual(bad,[]);self.assertFalse(good[0]['aggregation_eligibility']['eligible'])
+    def test_first_publication_outage_uses_reviewed_packet_without_importing_old_api(self):
+        original,old=self.capture()
+        packet={'capture':{'receipt':{'primary_supplement_receipts':old},'provider_records':[{'id':'old-api'}]}}
+        prior=saved_html_receipts({},[packet])
+        rows,receipts=self.capture(previous=prior,p={ENTRY['index_url']:html('source unavailable')})
+        self.assertEqual(len(rows),1);self.assertEqual(rows[0]['id'],original[0]['id'])
+        self.assertEqual(rows[0]['primary_source_capture']['checked_at'],original[0]['primary_source_capture']['checked_at'])
+        good,bad=normalize(rows,bind_html_reviews(POLICY,rows,receipts,SNAP,DAY),DAY)
+        self.assertFalse(bad);self.assertFalse(good[0]['aggregation_eligibility']['eligible'])
     def test_duplicate_previous_receipts_do_not_duplicate_observation(self):
         _,old=self.capture();rows,new=self.capture(previous=old+old,p={ENTRY['index_url']:html('down')})
         self.assertEqual(len(rows),1);self.assertEqual(len(new),1)

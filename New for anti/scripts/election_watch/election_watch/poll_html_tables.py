@@ -200,6 +200,17 @@ def collect_entry(entry, policy, as_of, opener=urlopen):
     return records,failures
 
 
+def saved_html_receipts(previous, state_packets=()):
+    # A newly merged packet can be the only last-good primary observation
+    # before the first daily publication. Import source receipts, never old API rows.
+    receipts=deepcopy(previous.get('primary_supplement_receipts',[]))
+    for capture in previous.get('state_captures',{}).values():
+        receipts.extend(deepcopy(capture.get('primary_supplement_receipts',[])))
+    for packet in state_packets:
+        receipts.extend(deepcopy(packet['capture']['receipt'].get('primary_supplement_receipts',[])))
+    return [r for r in receipts if r.get('kind')=='html_table']
+
+
 def merge_html_tables(rows, snapshot, policy, as_of, previous_receipts=(), states=None, opener=urlopen):
     output=deepcopy(rows);receipts=[]
     for entry in contracts(snapshot,as_of,states):

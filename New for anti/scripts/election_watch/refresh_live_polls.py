@@ -15,8 +15,9 @@ from election_watch.poll_gaps import attach_gaps, refresh_gap_lifecycle
 from election_watch.poll_house_focus import apply_house_focus, attach_house_focus, refresh_house_focus_lifecycle
 from election_watch.superpac import SourceError
 from election_watch.poll_primary_supplements import merge_primary_supplements
-from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews
+from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews, saved_html_receipts
 from election_watch.poll_refresh_provenance import retain_state_provenance
+from election_watch.state_inputs import packets
 
 ROOT = Path(__file__).resolve().parent
 
@@ -150,9 +151,7 @@ def main():
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
         if html_snapshot is not None and not args.input and not retry:
             previous = read(args.output) if args.output.exists() else {}
-            old_html = previous.get('primary_supplement_receipts', [])
-            for receipt in previous.get('state_captures', {}).values():
-                old_html += receipt.get('primary_supplement_receipts', [])
+            old_html = saved_html_receipts(previous, packets())
             rows, html_receipts = merge_html_tables(rows, html_snapshot, policy, args.as_of, old_html)
             primary_receipts += html_receipts
         refresh_ballots()
@@ -183,7 +182,6 @@ def main():
             board['ballot_source_health'] = ballot_health
         history = poll_history(rows, policy, args.as_of)
         previous = read(args.output) if args.output.exists() else None
-        from election_watch.state_inputs import packets
         retain_state_provenance(board, history, previous, packets() if production_policy else ())
         if args.input:
             board['source_status'] = 'replay'
