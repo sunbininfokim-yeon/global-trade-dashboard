@@ -30,7 +30,9 @@ def contracts(snapshot, as_of, states=None):
                 entry['index_url']=='https://cnu.edu/wason/surveys/' and
                 entry['pollster']=='Christopher Newport University' and
                 entry['pollster_group']=='cnu_wason', 'unreviewed HTML source contract')
-        require(date.fromisoformat(entry['reviewed_on'])<=date.fromisoformat(as_of), 'future HTML source contract')
+        # A newly approved source must not deadlock an older capture/replay.
+        # It is unavailable before approval, not permission to advance dates.
+        if date.fromisoformat(entry['reviewed_on'])>date.fromisoformat(as_of):continue
         if states is None or entry['state'] in states:selected.append(entry)
     return selected
 

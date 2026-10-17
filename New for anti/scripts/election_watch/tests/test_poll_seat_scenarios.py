@@ -144,6 +144,7 @@ class SeatScenarioTests(unittest.TestCase):
                                     '--election-board',str(Path(tmp)/'missing.json')]),\
                  patch.object(refresh_live_polls,'fetch_polls',return_value=([poll()], 'test')),\
                  patch.object(refresh_live_polls,'merge_primary_supplements',return_value=([poll()], [])),\
+                 patch.object(refresh_live_polls,'merge_html_tables',return_value=([poll()], [])),\
                  patch.object(refresh_live_polls,'fetch_florida',side_effect=ValueError('synthetic agency outage')):
                 self.assertEqual(refresh_live_polls.main(),0)
             polls=json.loads(out.read_text())

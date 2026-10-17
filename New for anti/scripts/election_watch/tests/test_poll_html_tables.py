@@ -140,6 +140,10 @@ class HtmlTablesTests(TestCase):
         with self.assertRaises(ValueError):bind_html_reviews(POLICY,rows,receipts,changed,DAY)
         rows[0]['answers'][0]['pct']=47
         with self.assertRaises(ValueError):bind_html_reviews(POLICY,rows,receipts,SNAP,DAY)
+    def test_new_source_is_skipped_for_older_api_capture(self):
+        with patch('election_watch.poll_html_tables.document',side_effect=AssertionError('future-source network')):
+            rows,receipts=merge_html_tables([{'id':'previous-api'}],SNAP,POLICY,'2026-10-16')
+        self.assertEqual(rows,[{'id':'previous-api'}]);self.assertEqual(receipts,[])
     def test_empty_html_history_does_not_break_historical_replay(self):
         self.assertEqual(bind_html_reviews(POLICY,[],[],SNAP,'2025-01-01'),POLICY)
     def test_new_dated_release_is_discovered_without_new_record(self):
