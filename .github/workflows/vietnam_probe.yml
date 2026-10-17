@@ -1,0 +1,39 @@
+name: Vietnam coffee labels + NDVI backfill (temporary)
+# Branch-only; removed before the PR. Bump to re-run: 1
+on:
+  push:
+    branches: [claude/vietnam-ndvi]
+    paths: ['.github/workflows/vietnam_probe.yml']
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 230
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy scipy scikit-learn
+      - name: Coffee labels, collect, train
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          mkdir -p vietnam/_probe_log
+          python -m vietnam.faostat 2>&1 | tee vietnam/_probe_log/faostat.log
+          python -m vietnam.collect central_highlands_coffee 2>&1 | tail -40 | tee vietnam/_probe_log/collect.log
+          python -m vietnam.train 2>&1 | tee vietnam/_probe_log/train.log
+      - name: Collect NDVI
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m vietnam.ndvi
+      - name: Backtest
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m vietnam.ndvi_backtest 2>&1 | tee vietnam/_probe_log/backtest.log || true
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/vietnam"
+          git commit -m "chore: Vietnam coffee labels and NDVI backfill" || exit 0
+          git push
