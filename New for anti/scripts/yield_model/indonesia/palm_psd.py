@@ -4,6 +4,8 @@ Indonesian palm oil from USDA PSD: a label with year-to-year signal.
 Usage: python3 -m indonesia.palm_psd fetch      # PSD slice -> training/psd_palm_indonesia.csv
        python3 -m indonesia.palm_psd evaluate   # climate-vs-trend test, both labels
 
+run_forecast calls forecast() for the dashboard's palm-oil region.
+
 Why: the oil-palm model trains on FAOSTAT "Oil palm fruit", whose recent
 yield and area are flagged estimated/imputed. That series is close to a
 straight line (latest trend error 0.5%), so no weather variable can explain
@@ -37,7 +39,9 @@ import numpy as np
 import pandas as pd
 
 from . import climate as C
-from .model import train_target
+from datetime import date
+
+from .model import predict_target, train_target
 from .regions import BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -129,6 +133,78 @@ def evaluate():
                     f"recent {v['skill_recent']:+.1%}  all {v['skill_all']:+.1%}")
     with open(os.path.join(TRAINING, "palm_psd_experiment.json"), "w") as fh:
         json.dump(report, fh, indent=2, default=float)
+
+
+def _complete(year, today):
+    """Label year Y is market year Y-1, which ends on 30 September of Y."""
+    return date(int(year), 9, 30) < today
+
+
+def forecast(today=None):
+    """Palm-oil production region for the forecast JSON, or None without data.
+
+    Trend only: in the evaluation (training/palm_psd_experiment.json) none of
+    the dry-season or ENSO feature sets beat the trend on this label over
+    20 forward folds, so no weather adjustment is applied. USDA's own figure
+    for the same marketing year is published beside it for comparison.
+    """
+    if not os.path.exists(PSD_CSV):
+        return None
+    today = today or date.today()
+    labels = psd_labels()
+    done = labels[[_complete(y, today) for y in labels.year]]
+    model = train_target(done, "psd_production_kt", {"trend_only": []},
+                         min_train=10)
+    if model is None:
+        return None
+    last = done.iloc[-1]
+    target = int(last.year) + 1
+    p = predict_target(model, target, {})
+    publishable = model["forecast_gate"]["publishable"]
+    usda = labels.set_index("year").psd_production_kt.get(target)
+    oni = None
+    try:
+        from .data import load_oni, oni_for
+        oni = oni_for(load_oni(refresh=True), target)
+    except Exception as exc:  # noqa: BLE001 -- context only
+        log(f"ONI unavailable: {exc}")
+    validation = model["validation"][model["configuration"]]
+    return {
+        "label": "Indonesia palm oil (CPO) production",
+        "label_ko": "팜유(CPO) 생산",
+        "crop": "palm_oil",
+        "season": target,
+        "marketing_year": f"{target - 1}/{str(target)[-2:]} (Oct-Sep)",
+        "unit": "천 t",
+        "point": round(p["point"], 0) if publishable else None,
+        "range_68": [round(v, 0) for v in p["range_68"]] if publishable else None,
+        "range_95": [round(v, 0) for v in p["range_95"]] if publishable else None,
+        "trend": round(p["trend"], 0),
+        "weather_effect_pct": 0.0,
+        "point_basis": "trend",
+        "usda_estimate": None if usda is None else float(usda),
+        "last_actual": {"year": int(last.year), "value": float(last.psd_production_kt),
+                        "source": "USDA PSD estimate"},
+        "enso": {"oni_dry_season_before": None if oni is None else round(oni, 2),
+                 "note": ("El Nino in the preceding dry season tends to cut "
+                          "output 6-24 months later; context only, not applied.")},
+        "skill": {
+            "beats_trend": False,
+            "skill_vs_trend_only": 0.0,
+            "low_confidence": True,
+            "forward_folds": validation["n_folds"],
+            "recent_mape": round(validation["recent_baseline_mape"], 4),
+            "trend_form": model["trend"]["name"],
+            "climate_test": "training/palm_psd_experiment.json",
+        },
+        "forecast_gate": model["forecast_gate"],
+        "provenance": {
+            "label_source": "USDA FAS PSD Oilseeds, Oil, Palm, Indonesia",
+            "url": URL,
+            "caveat": ("USDA marketing-year estimates, not a census; the current "
+                       "year is revised monthly."),
+        },
+    }
 
 
 if __name__ == "__main__":

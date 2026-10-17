@@ -929,6 +929,57 @@
         "caveat": "Fungal-risk days are a weather proxy and are not observed Pestalotiopsis incidence.",
         "non_weather_drivers": "Rubber price, tapping intensity, labour, mature area and disease control."
       }
+    },
+    "indonesia_palm_oil": {
+      "label": "Indonesia palm oil (CPO) production",
+      "label_ko": "팜유(CPO) 생산",
+      "crop": "palm_oil",
+      "season": 2027,
+      "marketing_year": "2026/27 (Oct-Sep)",
+      "unit": "천 t",
+      "point": 47895.0,
+      "range_68": [
+        43775.0,
+        52015.0
+      ],
+      "range_95": [
+        39820.0,
+        55970.0
+      ],
+      "trend": 47895.0,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "usda_estimate": 45000.0,
+      "last_actual": {
+        "year": 2026,
+        "value": 46700.0,
+        "source": "USDA PSD estimate"
+      },
+      "enso": {
+        "oni_dry_season_before": null,
+        "note": "El Nino in the preceding dry season tends to cut output 6-24 months later; context only, not applied."
+      },
+      "skill": {
+        "beats_trend": false,
+        "skill_vs_trend_only": 0.0,
+        "low_confidence": true,
+        "forward_folds": 52,
+        "recent_mape": 0.0859,
+        "trend_form": "recent_10_linear",
+        "climate_test": "training/palm_psd_experiment.json"
+      },
+      "forecast_gate": {
+        "publishable": true,
+        "recent_operational_mape": 0.08594687233857438,
+        "latest_operational_ape": 0.037364509693225925,
+        "maximum_publish_mape": 0.15,
+        "status": "publishable_baseline"
+      },
+      "provenance": {
+        "label_source": "USDA FAS PSD Oilseeds, Oil, Palm, Indonesia",
+        "url": "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
+        "caveat": "USDA marketing-year estimates, not a census; the current year is revised monthly."
+      }
     }
   },
   "skipped": {}

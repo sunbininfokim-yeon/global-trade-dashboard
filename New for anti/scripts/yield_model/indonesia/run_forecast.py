@@ -5,6 +5,7 @@ import os
 import sys
 from datetime import date, datetime, timezone
 
+from . import palm_psd
 from .predict import predict_crop
 from .regions import ALL
 
@@ -87,6 +88,13 @@ def main():
             "provenance": {"guide": cfg.doc, "caveat": cfg.caveat,
                            "non_weather_drivers": cfg.non_weather_drivers},
         }
+
+    # Crude palm oil, the traded product, from USDA PSD (indonesia/palm_psd.py).
+    palm = palm_psd.forecast()
+    if palm:
+        payload["regions"]["indonesia_palm_oil"] = palm
+    else:
+        payload["skipped"]["indonesia_palm_oil"] = "USDA PSD slice missing"
 
     if not payload["regions"]:
         return 1
