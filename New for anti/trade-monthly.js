@@ -254,14 +254,31 @@
         return hs;
     };
 
-    /** Newest bilateral part this reporter published for the commodity. */
-    const bilateralEntry = (index, hsSet, iso3) => {
+    /**
+     * Every bilateral part of the newest period this reporter published, per
+     * HS line. One period can have two files -- the FOB export return and the
+     * CIF import return (Chile HS2603) -- and picking "the newest one" dropped
+     * a whole direction (#602 A09). They stay separate files on the card:
+     * FOB and CIF never share a denominator.
+     */
+    const bilateralEntries = (index, hsSet, iso3) => {
         const entries = (index?.entries || []).filter((e) => e.frequency === 'M'
             && e.reporter_iso3 === iso3 && hsSet.has(String(e.hs))
             && /^parts\/[a-f0-9]{64}\.json$/.test(e.path || ''));
-        entries.sort((a, b) => (a.period < b.period ? 1 : a.period > b.period ? -1 : 0));
-        return entries[0] || null;
+        const newest = new Map();
+        for (const e of entries) {
+            const hs = String(e.hs);
+            if (!newest.has(hs) || e.period > newest.get(hs)) newest.set(hs, e.period);
+        }
+        const flowRank = (e) => ((e.flows || [])[0] === 'M' ? 1 : 0);
+        return entries.filter((e) => e.period === newest.get(String(e.hs)))
+            .sort((a, b) => (a.period < b.period ? 1 : a.period > b.period ? -1 : 0)
+                || String(a.hs).localeCompare(String(b.hs))
+                || flowRank(a) - flowRank(b)
+                || String(a.value_basis || '').localeCompare(String(b.value_basis || '')));
     };
+    /** Newest bilateral part (the first of bilateralEntries), kept for callers. */
+    const bilateralEntry = (index, hsSet, iso3) => bilateralEntries(index, hsSet, iso3)[0] || null;
 
     /**
      * Everything the monthly view shows for one commodity x country, or null
@@ -275,6 +292,10 @@
      * within about 1% on 2025-06..09, and their headline numbers differ only
      * because JODI runs to 2026-05 and GASTAT stops at 2025-09.
      */
+    const hsScope = (hs) => String(hs || '').split(/[\/,]/).map((h) => h.trim()).filter(Boolean).sort().join('/');
+    // Unknown scope on either side is not a match: it cannot be checked.
+    const sameScope = (a, b) => !!hsScope(a) && hsScope(a) === hsScope(b);
+
     const compareSources = (series) => {
         const out = [];
         for (const flow of ['X', 'M']) {
@@ -284,6 +305,16 @@
                     const a = same[i];
                     const b = same[j];
                     if (a.source === b.source) continue;
+                    // Same unit is not the same indicator: copper ore (2603)
+                    // and refined copper (7403) are both 천 톤 (#602 A08). Only
+                    // series of the same HS scope are set against each other.
+                    if (!sameScope(a.hs, b.hs)) {
+                        if (!out.some((o) => o.kind === 'scope' && o.flow === flow
+                            && o.a.source === a.source && o.b.source === b.source)) {
+                            out.push({ flow, a, b, kind: 'scope' });
+                        }
+                        continue;
+                    }
                     if (a.unit !== b.unit) {
                         // One note per source pair is enough.
                         if (!out.some((o) => o.kind === 'units' && o.flow === flow
@@ -328,14 +359,15 @@
         series.sort((a, b) => (a.flow === b.flow ? 0 : a.flow === 'X' ? -1 : 1)
             || (a.latest < b.latest ? 1 : a.latest > b.latest ? -1 : 0)
             || b.points.length - a.points.length);
-        const bilateral = bilateralEntry(docs.bilateralIndex, monthlyHsSet(docs, cid), iso3);
+        const bilaterals = bilateralEntries(docs.bilateralIndex, monthlyHsSet(docs, cid), iso3);
+        const bilateral = bilaterals[0] || null;
         const saudi = cid === 'crude_oil' && iso3 === 'SAU' && docs.saudi?.points?.length
             ? docs.saudi : null;
         if (!series.length && !bilateral && !saudi) return null;
         const months = series.map((s) => s.latest).filter(Boolean);
         if (bilateral) months.push(monthKey(bilateral.period));
         months.sort();
-        return { cid, iso3, series, bilateral, saudi, dormant: dormant.length,
+        return { cid, iso3, series, bilateral, bilaterals, saudi, dormant: dormant.length,
             comparisons: compareSources(series), latest: months[months.length - 1] || null };
     };
 
@@ -373,49 +405,111 @@
     };
 
     /**
-     * Rows -> { X: [{month, usd, kg}], M: [...] }. Comtrade can return
+     * Rows -> { X: [{month, usd, kg, kgKnown}], M: [...] }. Comtrade can return
      * breakdown rows (mode of transport, customs procedure) beside the total
-     * for the same month. Legacy products retain their max-selection behavior.
-     * The narrow ore/uranium products require explicit total scope when supplied
-     * and discard conflicting totals rather than choosing the larger value.
+     * for the same month; legacy products keep the larger of those. The narrow
+     * ore/uranium products require explicit total scope when supplied and
+     * discard conflicting totals rather than choosing the larger value.
+     *
+     * requestedHs is the commodity's basket ("8105,2822,283329"). Rows outside
+     * it are dropped, and a child line of a basket heading (270900 under 2709)
+     * is the same trade, so it never adds to the heading (#602 A05). Lines of
+     * the basket are summed in USD; their kg are not, because ore and metal
+     * tonnes are different quantities.
+     *
+     * Zero is an observation and is kept for every product; a missing value
+     * is not zero (#602 A04). A month whose USD is unknown for some line says
+     * so (usdKnown: false) instead of reading as the full total.
      */
+    const basketOf = (hs) => (hs ? String(hs).split(',').map((h) => h.trim()).filter(Boolean)
+        .filter((h, _i, all) => !all.some((p) => p !== h && h.startsWith(p))) : null);
+    const obs = (v) => (v === null || v === undefined || v === '' || !Number.isFinite(Number(v))
+        || Number(v) < 0 ? null : Number(v));
     const aggregateComtradeMonthly = (rows, requestedHs = null) => {
         const best = new Map();
         const conflicts = new Set();
         const scoped = Object.values(PRODUCT_HS).includes(requestedHs);
+        const basket = basketOf(requestedHs);
         for (const r of rows || []) {
-            if (scoped && String(r.cmdCode || '') !== requestedHs) continue;
+            if (!['X', 'M'].includes(r.flowCode)) continue;
+            if (r.partnerCode != null && String(r.partnerCode) !== '0') continue;
+            const cmd = String(r.cmdCode ?? '');
+            if (scoped && cmd !== requestedHs) continue;
             if (scoped && Object.entries({partner2Code: '0', customsCode: 'C00', motCode: '0'})
                 .some(([k, v]) => r[k] != null && String(r[k]) !== v)) continue;
-            if (!(scoped ? Number.isFinite(r.primaryValue) && r.primaryValue >= 0 : r.primaryValue > 0)
-                || !['X', 'M'].includes(r.flowCode)) continue;
-            if (r.partnerCode != null && String(r.partnerCode) !== '0') continue;
-            const k = `${r.period}|${r.flowCode}|${r.cmdCode ?? ''}`;
+            const line = basket ? basket.find((h) => cmd === h || cmd.startsWith(h)) : cmd;
+            if (line === undefined) continue;
+            const usd = obs(r.primaryValue);
+            const kg = obs(r.netWgt);
+            if (usd === null && kg === null) continue;
+            const exact = !basket || cmd === line;
+            const k = `${r.period}|${r.flowCode}|${line}`;
             if (conflicts.has(k)) continue;
             const b = best.get(k);
-            if (scoped && b && (b.usd !== r.primaryValue || b.kg !== (Number.isFinite(r.netWgt) && r.netWgt >= 0 ? r.netWgt : null))) {
+            if (scoped && b && (b.usd !== usd || b.kg !== kg)) {
                 best.delete(k);
                 conflicts.add(k);
                 continue;
             }
-            if (!b || r.primaryValue > b.usd) {
-                const kg = scoped ? (Number.isFinite(r.netWgt) && r.netWgt >= 0 ? r.netWgt : null)
-                    : (r.netWgt > 0 ? r.netWgt : null);
-                best.set(k, { period: r.period, flow: r.flowCode, usd: r.primaryValue, kg });
-            }
+            const better = !b
+                || (exact && !b.exact)
+                || (exact === b.exact && (usd ?? -1) > (b.usd ?? -1));
+            if (better) best.set(k, { period: r.period, flow: r.flowCode, line, usd, kg, exact });
         }
         const out = { X: new Map(), M: new Map() };
         for (const b of best.values()) {
             const month = monthKey(b.period);
             if (!month) continue;
-            const cur = out[b.flow].get(month) || { month, usd: 0, kg: 0, kgKnown: true };
-            cur.usd += b.usd;
-            if (b.kg == null) cur.kgKnown = false;
-            else cur.kg += b.kg;
+            const cur = out[b.flow].get(month) || { month, usd: null, kg: null, kgKnown: true, lines: new Set(), usdGap: false };
+            if (b.usd === null) cur.usdGap = true;
+            else cur.usd = (cur.usd ?? 0) + b.usd;
+            if (b.kg === null) cur.kgKnown = false;
+            else cur.kg = (cur.kg ?? 0) + b.kg;
+            cur.lines.add(b.line);
             out[b.flow].set(month, cur);
         }
-        const list = (m) => [...m.values()].sort((a, b) => (a.month < b.month ? -1 : 1));
+        const finish = (p) => {
+            const point = { month: p.month, usd: p.usd, kg: p.kg ?? 0, kgKnown: p.kgKnown && p.kg !== null };
+            // Several lines: a summed tonnage would add ore to metal.
+            if (p.lines.size > 1 && point.kgKnown) { point.kgKnown = false; point.kgMixed = true; }
+            if (p.usdGap && p.usd !== null) point.usdKnown = false;
+            return point;
+        };
+        const list = (m) => [...m.values()].map(finish).sort((a, b) => (a.month < b.month ? -1 : 1));
         return { X: list(out.X), M: list(out.M) };
+    };
+
+    /**
+     * The pipeline's publication hold (preview_quality.py, policy
+     * comtrade-preview-publication-v1) applied to the live series too, so the
+     * card that replaces the pipeline's preview does not show a month the
+     * pipeline would hold (#602 A11). Same rule: a month below 1% of the
+     * median of up to 12 earlier accepted months (USD, else kg) is held --
+     * kept and listed, out of the headline and the chart. Zero stays a value.
+     */
+    const HOLD_RATIO = 0.01;
+    const applyPreviewHold = (points) => {
+        const accepted = [];
+        for (const p of points) {
+            const metric = p.usd != null ? 'usd' : (p.kgKnown ? 'kg' : null);
+            const value = metric ? p[metric] : null;
+            const prior = metric ? accepted.filter((q) => q.month < p.month
+                && Number.isFinite(q[metric]) && q[metric] > 0
+                && (metric === 'usd' || q.kgKnown)).slice(-12) : [];
+            if (prior.length && Number.isFinite(value)) {
+                const vals = prior.map((q) => q[metric]).sort((a, b) => a - b);
+                const mid = vals.length >> 1;
+                const median = vals.length % 2 ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
+                const ratio = value / median;
+                if (ratio < HOLD_RATIO) {
+                    p.held = true;
+                    p.ratio = ratio;
+                    continue;
+                }
+            }
+            accepted.push(p);
+        }
+        return points;
     };
 
     const liveCache = new Map();
@@ -425,6 +519,8 @@
             liveCache.set(key, (async () => {
                 const rows = [];
                 let failures = 0;
+                let incomplete = 0;
+                const partialMonths = new Set();
                 let period = null;
                 // Newest block first: it is the one most likely to be cold.
                 for (const block of monthBlocks().reverse()) {
@@ -435,6 +531,13 @@
                         const r = await fetch(`/api/comtrade?${params}`);
                         if (!r.ok) { failures++; continue; }
                         const j = await r.json();
+                        // HTTP 200 is not "complete": the Worker marks a body
+                        // with missing chunks (#602 A12). Its rows are kept,
+                        // its months are marked, nothing is shown as a total.
+                        if (j.partial === true || Number(j.missing_chunks) > 0 || j.status === 'partial') {
+                            incomplete++;
+                            for (const m of block) partialMonths.add(monthKey(m));
+                        }
                         for (const row of j.data || []) rows.push(row);
                         period = period || block[block.length - 1];
                     } catch {
@@ -442,7 +545,12 @@
                     }
                 }
                 if (failures === 3) liveCache.delete(key);   // let a later click retry
-                return { ...aggregateComtradeMonthly(rows, hs), failures, hs };
+                const agg = aggregateComtradeMonthly(rows, hs);
+                for (const flow of ['X', 'M']) {
+                    for (const p of agg[flow]) if (partialMonths.has(p.month)) p.partial = true;
+                    applyPreviewHold(agg[flow]);
+                }
+                return { ...agg, failures, incomplete, hs };
             })());
         }
         return liveCache.get(key);
@@ -451,30 +559,49 @@
     const pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);
 
     const liveFlowHtml = (flow, points, range) => {
-        if (!points.length) {
+        // Months with a USD value, not held: what the headline and chart use.
+        const usdPts = points.filter((p) => p.usd != null && !p.held);
+        if (!usdPts.length) {
+            const kgOnly = points.filter((p) => p.usd == null && p.kgKnown).length;
             return `<div class="tm-live-flow"><span class="tm-flow tm-flow-${flow}">${FLOW_LABEL[flow]}</span>
-                <span class="tm-note">최근 ${SERIES_MONTHS}개월 보고 없음</span></div>`;
+                <span class="tm-note">${kgOnly ? `최근 ${SERIES_MONTHS}개월 금액 미확보 · 중량만 ${kgOnly}개월 신고` : `최근 ${SERIES_MONTHS}개월 보고 없음`}</span></div>`;
         }
-        const last = points[points.length - 1];
-        const lastYear = points.find((p) => monthsBetween(p.month, last.month) === 12);
-        const yoy = lastYear ? pct(last.usd, lastYear.usd) : null;
-        const shown = points.filter((p) => monthsBetween(p.month, last.month) < range);
-        const kt = last.kgKnown && last.kg > 0 ? ` · ${fmtValue(last.kg / 1e6)} 천 톤` : '';
+        const last = usdPts[usdPts.length - 1];
+        const lastYear = usdPts.find((p) => monthsBetween(p.month, last.month) === 12);
+        // A partial month or one missing a basket line's USD is not a total
+        // to grow from.
+        const solid = (p) => p && !p.partial && p.usdKnown !== false;
+        const yoy = solid(last) && solid(lastYear) ? pct(last.usd, lastYear.usd) : null;
+        const shown = usdPts.filter((p) => monthsBetween(p.month, last.month) < range);
+        const inRange = points.filter((p) => monthsBetween(p.month, last.month) < range);
+        const kt = last.kgKnown ? ` · ${fmtValue(last.kg / 1e6)} 천 톤` : '';
         const chart = typeof sparkChartHtml === 'function' && shown.length >= 2 ? sparkChartHtml({
             points: shown.map((p) => ({ label: p.month, value: p.usd / 1e6 })),
             unit: 'M USD',
             formatValue: fmtValue,
             ariaLabel: `UN Comtrade ${FLOW_LABEL[flow]} 월별 ${range}개월`,
         }) : '';
+        const held = inRange.filter((p) => p.held);
+        const kgOnly = inRange.filter((p) => p.usd == null).length;
+        const partial = shown.filter((p) => p.partial).length;
+        const flags = [
+            last.partial ? '부분 응답' : '',
+            last.usdKnown === false ? '일부 HS 금액 미확보' : '',
+        ].filter(Boolean).join(' · ');
         return `<div class="tm-live-flow">
             <div class="tm-latest">
                 <span class="tm-flow tm-flow-${flow}">${FLOW_LABEL[flow]}</span>
                 <strong>${fmtValue(last.usd / 1e6)}</strong> <span class="tm-unit">M USD${kt}</span>
                 ${yoy != null ? `<span class="tm-yoy ${yoy >= 0 ? 'up' : 'down'}">전년 동월 ${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%</span>` : ''}
-                <span class="tm-when">${monthLabel(last.month)}</span>
+                <span class="tm-when${flags ? ' is-stale' : ''}">${monthLabel(last.month)}${flags ? ` · ${flags}` : ''}</span>
             </div>
             ${chart || '<p class="tm-note">관측이 부족해 추이를 그리지 않습니다</p>'}
-            <p class="tm-note">${range}개월 중 ${shown.length}개월 보고 · 빠진 달은 0이 아니라 미보고입니다</p>
+            <p class="tm-note">${range}개월 중 ${shown.length}개월 보고 · 빠진 달은 0이 아니라 미보고입니다${kgOnly
+                ? ` · 금액 없이 중량만 신고된 ${kgOnly}개월은 금액 추이에서 제외` : ''}</p>
+            ${partial ? `<p class="tm-note is-warn">${partial}개월은 부분 응답 구간이라 그 달 전체 합계가 아닐 수 있습니다.</p>` : ''}
+            ${held.length ? `<p class="tm-note is-warn">보류: ${held.map((p) =>
+                `${monthLabel(p.month)} ${fmtValue((p.usd ?? p.kg) / 1e6)} ${p.usd != null ? 'M USD' : '천 톤'} (직전 중앙값의 ${p.ratio < 0.001 ? '0.1% 미만' : `${(p.ratio * 100).toFixed(1)}%`})`).join(', ')}
+                — 부분 집계로 의심되어 대표값·추이에서 뺐습니다. 확정된 값은 아닙니다.</p>` : ''}
         </div>`;
     };
 
@@ -490,7 +617,8 @@
         ${liveFlowHtml('X', data.X, range)}
         ${liveFlowHtml('M', data.M, range)}
         <p class="tm-note">${esc(countryLabel)}이(가) UN Comtrade에 직접 신고한 값 · 금액은 신고 통화의 USD 환산${data.failures
-            ? ` · ${data.failures}개 구간을 불러오지 못했습니다` : ''}</p>
+            ? ` · ${data.failures}개 구간을 불러오지 못했습니다` : ''}${data.incomplete
+            ? ` · ${data.incomplete}개 구간은 일부 자료만 받았습니다` : ''}</p>
     </div>`;
 
     // ---- data loading ------------------------------------------------------
@@ -598,35 +726,69 @@
         return iso ? [iso, iso] : [String(code), `M49 ${code}`];
     };
 
+    // The pipeline's verdict when it would not compute a share (bilateral.py).
+    const SHARE_REASON = {
+        partner_exceeds_world: '세계합계 초과 · 보류',
+        observed_sum_exceeds_world: '합계가 세계 초과 · 보류',
+        world_total_missing: '세계합계 없음',
+        world_total_zero: '세계합계 0',
+        unknown_comparison_scope: '범위 불명',
+        measurement_missing: '미확보',
+        mirror_denominator_not_comparable: '비중 없음',
+    };
+    const BILATERAL_METRICS = [
+        { key: 'trade_value_usd', ko: '금액', fmt: (v) => `${fmtValue(v / 1e6)} M USD` },
+        { key: 'net_weight_kg', ko: '중량', fmt: (v) => `${fmtValue(v / 1e6)} 천 톤` },
+        { key: 'quantity_bbl', ko: '물량', fmt: (v) => `${fmtValue(v / 1e3)} 천 배럴` },
+    ];
+
+    /**
+     * One partner table per flow and per metric, as the pipeline computed it.
+     * Shares and ranks are the backend's (analysis[metric]): a share it held
+     * (partner above the world total) stays held, and tied partners share a
+     * rank (1, 1, 3) -- the renderer used to recompute both (#602 A06/A07).
+     * A partner with weight but no USD is a row of the weight table, not
+     * dropped for lacking the other metric (#602 A07b).
+     */
     const bilateralHtml = (part, entry) => {
         const blocks = [];
+        const basis = part?.meta?.value_basis && part.meta.value_basis !== 'unknown' ? part.meta.value_basis : '';
         for (const [flow, block] of Object.entries(part?.flows || {})) {
-            const rows = (block?.rows || [])
-                .filter((r) => Number.isFinite(r?.metrics?.trade_value_usd) && r.metrics.trade_value_usd > 0)
-                .sort((a, b) => b.metrics.trade_value_usd - a.metrics.trade_value_usd);
-            if (!rows.length) continue;
-            const total = block?.metrics?.trade_value_usd?.world_total;
-            const max = rows[0].metrics.trade_value_usd;
-            const list = rows.slice(0, 8).map((r, i) => {
-                const usdM = r.metrics.trade_value_usd / 1e6;
-                const share = Number.isFinite(total) && total > 0 ? `${((r.metrics.trade_value_usd / total) * 100).toFixed(1)}%` : '—';
-                const [code, full] = partnerLabel(r.partner);
-                return `<div class="trade-rank-row trade-bar-row${flow === 'M' ? ' is-inbound' : ''}"
-                             title="${FLOW_LABEL[flow] || flow} · ${esc(full)} · ${fmtValue(usdM)} M USD">
-                    <span class="tr-i">${i + 1}</span>
-                    <span class="tr-dir"></span>
-                    <span class="tr-name tr-code">${esc(code)}</span>
-                    <span class="tr-bar"><i style="width:${Math.max(3, (r.metrics.trade_value_usd / max) * 100)}%"></i></span>
-                    <span class="tr-pct">${share}</span>
-                    <span class="tr-vol">${fmtValue(usdM)} M USD</span>
-                </div>`;
-            }).join('');
-            blocks.push(`<p class="trade-rank-group-head">${FLOW_LABEL[flow] || flow} 상대국 · ${monthLabel(entry.period)} · HS ${esc(entry.hs)}</p>
-                <div class="trade-rank-list">${list}</div>`);
+            const tables = [];
+            for (const m of BILATERAL_METRICS) {
+                const rows = (block?.rows || []).filter((r) => Number.isFinite(r?.metrics?.[m.key]))
+                    .sort((a, b) => (a.analysis?.[m.key]?.rank ?? Infinity) - (b.analysis?.[m.key]?.rank ?? Infinity)
+                        || b.metrics[m.key] - a.metrics[m.key]);
+                if (!rows.length) continue;
+                const max = Math.max(...rows.map((r) => r.metrics[m.key])) || 0;
+                const list = rows.slice(0, 8).map((r) => {
+                    const a = r.analysis?.[m.key] || {};
+                    const share = Number.isFinite(a.share_pct) ? `${a.share_pct.toFixed(1)}%`
+                        : (SHARE_REASON[a.share_reason] || '—');
+                    const value = r.metrics[m.key];
+                    const [code, full] = partnerLabel(r.partner);
+                    return `<div class="trade-rank-row trade-bar-row${flow === 'M' ? ' is-inbound' : ''}"
+                                 title="${FLOW_LABEL[flow] || flow} · ${esc(full)} · ${m.fmt(value)}${a.share_reason ? ` · ${esc(SHARE_REASON[a.share_reason] || a.share_reason)}` : ''}">
+                        <span class="tr-i">${a.rank ?? '—'}</span>
+                        <span class="tr-dir"></span>
+                        <span class="tr-name tr-code">${esc(code)}</span>
+                        <span class="tr-bar"><i style="width:${max > 0 ? Math.max(3, (value / max) * 100) : 3}%"></i></span>
+                        <span class="tr-pct">${share}</span>
+                        <span class="tr-vol">${m.fmt(value)}</span>
+                    </div>`;
+                }).join('');
+                const head = `${FLOW_LABEL[flow] || flow} 상대국 · ${m.ko}${m.key === 'trade_value_usd' && basis ? `(${esc(basis)})` : ''} · ${monthLabel(entry.period)} · HS ${esc(entry.hs)}`;
+                tables.push({ m, html: `<p class="trade-rank-group-head">${head}</p><div class="trade-rank-list">${list}</div>` });
+            }
+            if (!tables.length) continue;
+            // Value first; the other metrics fold away unless they are all
+            // there is.
+            const [first, ...rest] = tables;
+            blocks.push(first.html + rest.map((t) => `<details class="tm-metric"><summary>${FLOW_LABEL[flow] || flow} · ${t.m.ko} 기준 순위</summary>${t.html}</details>`).join(''));
         }
         if (!blocks.length) return '';
         return `${blocks.join('')}
-            <p class="tm-note">UN Comtrade 보고국 기준 · 비중은 그 달 세계 합계 대비 · 표에 없는 상대국은 0이 아니라 미보고입니다.</p>`;
+            <p class="tm-note">UN Comtrade 보고국 기준${basis ? ` · 금액 ${esc(basis)}` : ''} · 비중·순위는 파이프라인 계산(그 달 세계 합계 대비, 동률은 같은 순위) · 표에 없는 상대국은 0이 아니라 미보고입니다.</p>`;
     };
 
     const MEASURE = (s) => (/usd|thb|aud|sar/i.test(s.unit) ? '금액' : '물량');
@@ -635,6 +797,9 @@
             const who = `${FLOW_LABEL[flow]} · ${esc(a.sourceLabel)} vs ${esc(b.sourceLabel)}`;
             if (kind === 'units') {
                 return `${who}: ${MEASURE(a)}(${esc(a.unitLabel)})과 ${MEASURE(b)}(${esc(b.unitLabel)})은 다른 지표라 숫자를 직접 비교하지 않습니다. 둘 다 맞을 수 있습니다.`;
+            }
+            if (kind === 'scope') {
+                return `${who}: 상품 범위(HS ${esc(a.hs || '?')} / ${esc(b.hs || '?')})가 다르거나 확인되지 않아 같은 단위여도 비교하지 않습니다.`;
             }
             if (kind === 'no_overlap') {
                 return `${who}: 겹치는 달이 없어 서로 검증할 수 없습니다 (${monthLabel(a.latest)} / ${monthLabel(b.latest)} 기준).`;
@@ -656,7 +821,7 @@
             ${cards}
             ${view.series.length > 6 ? `<p class="tm-note">최근 갱신 순 6개만 표시 · 나머지 ${view.series.length - 6}개 계열 생략</p>` : ''}
             ${view.dormant ? `<p class="tm-note">2년 넘게 갱신되지 않은 계열 ${view.dormant}개는 표시하지 않았습니다.</p>` : ''}
-            ${!view.bilateral ? missingBilateralNote(view.cid) : ''}
+            ${!view.bilaterals?.length ? missingBilateralNote(view.cid) : ''}
             <div class="tm-bilateral"></div>`;
     };
 
@@ -747,18 +912,20 @@
                 trimmed.comparisons = compareSources(trimmed.series);
                 monthly.querySelector('.tm-static').innerHTML = staticHtml(trimmed);
                 if (typeof wireSparkCharts === 'function') wireSparkCharts(monthly.querySelector('.tm-static'));
-                if (trimmed.bilateral) fillBilateral(trimmed.bilateral);
+                if (trimmed.bilaterals?.length) fillBilateral(trimmed.bilaterals);
             }
             const latest = [data.X.at(-1)?.month, data.M.at(-1)?.month, view?.latest].filter(Boolean).sort().at(-1);
             const btn = card.querySelector('.tm-toggle button[data-mode="monthly"]');
             if (btn && latest) btn.textContent = `월별 · ${monthLabel(latest)}`;
         };
 
-        const fillBilateral = async (entry) => {
-            const part = await loadPart(entry.path);
+        const fillBilateral = async (entries) => {
+            const parts = await Promise.all(entries.map((e) => loadPart(e.path)));
             if (!alive()) return;
             const slot = monthly.querySelector('.tm-bilateral');
-            if (slot && part?.meta?.reporter_iso3 === iso3) slot.innerHTML = bilateralHtml(part, entry);
+            if (!slot) return;
+            slot.innerHTML = entries.map((e, i) => (parts[i]?.meta?.reporter_iso3 === iso3
+                ? bilateralHtml(parts[i], e) : '')).join('');
         };
 
         const choose = (mode) => {
@@ -772,12 +939,12 @@
         }));
         choose(preferred);
 
-        if (view?.bilateral) fillBilateral(view.bilateral);
+        if (view?.bilaterals?.length) fillBilateral(view.bilaterals);
     };
 
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { aggregateComtradeMonthly, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel, monthlyHtml },
+        _internal: { aggregateComtradeMonthly, applyPreviewHold, bilateralEntries, loadComtradeSeries, liveFlowHtml, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel, monthlyHtml },
     };
 })();

@@ -857,9 +857,11 @@ function comtradePeriodLabel(arcs) {
     if (!first || !first.period) return '';
     const parts = String(first.period).split(',').sort();
     const fmt = (v) => (v.length === 6 ? `${v.slice(0, 4)}년 ${Number(v.slice(4))}월` : `${v}년`);
-    if (first.blendFrom) return `${fmt(parts[0])} 연간 · 미신고국 ${first.blendFrom}년`;
-    if (parts.length === 1) return first.freq === 'M' ? fmt(parts[0]) : `${fmt(parts[0])} 연간`;
-    return `${fmt(parts[0])}~${fmt(parts[parts.length - 1])}`;
+    // A partial response is still shown, never as the period's full total.
+    const partial = first.partial ? ' · 일부 자료 누락' : '';
+    if (first.blendFrom) return `${fmt(parts[0])} 연간 · 미신고국 ${first.blendFrom}년${partial}`;
+    if (parts.length === 1) return (first.freq === 'M' ? fmt(parts[0]) : `${fmt(parts[0])} 연간`) + partial;
+    return `${fmt(parts[0])}~${fmt(parts[parts.length - 1])}${partial}`;
 }
 
 function comtradeSourceText(arcs) {
@@ -5476,8 +5478,9 @@ const updatePageMeta = (target) => {
 
 const setView = (target) => {
     updatePageMeta(target);
-    // Observed-only commodities use actual source periods, never mock dates.
-    document.getElementById('historical-date')?.toggleAttribute('disabled', !!window.TradeData?.[target]?.observedOnly);
+    // No view has a historical lookup yet; every one shows its source periods
+    // (#602 A10). Was disabled only for observed-only commodities.
+    document.getElementById('historical-date')?.setAttribute('disabled', '');
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
     const isPolicyView = target === 'us-policy-hub' || target === 'us-congress-overview' || target === 'us-executive';
@@ -6086,40 +6089,11 @@ document.getElementById('home-logo').addEventListener('click', () => {
     navigateTo('home');
 });
 
-// Date Picker Event (Historical Data Simulation)
-document.getElementById('historical-date').addEventListener('change', (e) => {
-    if (window.TradeData?.[currentCommodity]?.observedOnly) return;
-    const selectedDate = e.target.value;
-    console.log(`Loading historical data for: ${selectedDate}`);
-    
-    // UI Feedback
-    const originalTitle = currentViewTitle.textContent;
-    currentViewTitle.textContent = "과거 데이터 불러오는 중...";
-    
-    setTimeout(() => {
-        // A pending simulation must not mutate an observed-only commodity.
-        if (window.TradeData?.[currentCommodity]?.observedOnly) return;
-        // Simulate data swapping by modifying the mock data slightly
-        // In a real app, this would fetch data from Cloudflare D1/KV via an API endpoint.
-        const randomFactor = 0.5 + Math.random(); // 0.5 to 1.5
-        
-        if (window.TradeData[currentCommodity] && window.TradeData[currentCommodity].arcs) {
-            window.TradeData[currentCommodity].arcs.forEach(arc => {
-                arc.volume = Math.round(arc.volume * randomFactor);
-            });
-            // Re-render the map if we are on a commodity view
-            if (currentCommodity !== 'home' && currentCommodity !== 'climate' && currentCommodity !== 'export_controls' && !currentCommodity.startsWith('inst_')) {
-                setView(currentCommodity);
-            }
-        }
-        
-        currentViewTitle.textContent = `${selectedDate} 기준 데이터 조회됨`;
-        setTimeout(() => {
-            currentViewTitle.textContent = originalTitle; // Revert after 3 seconds
-        }, 3000);
-        
-    }, 500); // 500ms mock network delay
-});
+// Date picker: there is no historical lookup behind it. It used to scale
+// every arc's volume by 0.5 + Math.random() and announce "<date> 기준 데이터
+// 조회됨" -- an invented number shown as an observation (#602 A10). Until a
+// real per-period query exists the picker stays disabled for every view
+// (setView), and nothing here may change TradeData.
 
 // Panels render clickable region lists, so these need to be reachable
 // from inline handlers.

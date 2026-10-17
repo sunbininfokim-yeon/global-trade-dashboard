@@ -86,6 +86,16 @@ body {
     outline: none;
 }
 
+/* No historical lookup exists yet (#602 A10): the picker is disabled on
+   every view and should look it, not like a control that does nothing. */
+.historical-date-picker:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.historical-date-picker:disabled::-webkit-calendar-picker-indicator {
+    cursor: not-allowed;
+}
+
 /* Chrome, Safari, Edge date picker icon styling */
 .historical-date-picker::-webkit-calendar-picker-indicator {
     filter: invert(1);
