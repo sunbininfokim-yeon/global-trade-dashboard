@@ -112,27 +112,12 @@ test('monthly observations and display holds are not filled from annual or alumi
     assert.equal(monthly().buildView(d,'bauxite','BRA'),null);
 });
 
-test('legacy historical-date simulation cannot fabricate bauxite observations',()=>{
+test('date picker has no simulated lookup for bauxite or any other product (#602 A10)',()=>{
     const app=source('app.js');
-    assert.match(app,/toggleAttribute\('disabled', !!window\.TradeData\?\.\[target\]\?\.observedOnly\)/);
-    const start=app.indexOf("document.getElementById('historical-date').addEventListener('change'");
-    const listener=app.slice(start,app.indexOf('// Panels render clickable',start));
-    let change;
-    const timers=[],title={textContent:'bauxite'};
-    const context={currentCommodity:'bauxite',currentViewTitle:title,
-        console:{log(){}},Math:{random(){assert.fail('simulated value generated');}},
-        window:{TradeData:{bauxite:{observedOnly:true,arcs:[{volume:123}]}}},
-        document:{getElementById(){return {addEventListener(_,fn){change=fn;}};}},
-        setTimeout:fn=>timers.push(fn)};
-    vm.runInNewContext(listener,context);
-    change({target:{value:'2025-01-01'}});
-    assert.equal(timers.length,0);
-    assert.equal(title.textContent,'bauxite');
-    // A timer started on another screen must also not alter bauxite later.
-    context.currentCommodity='aluminum';
-    change({target:{value:'2025-01-01'}});
-    assert.equal(timers.length,1);
-    context.currentCommodity='bauxite';
-    timers[0]();
-    assert.equal(context.window.TradeData.bauxite.arcs[0].volume,123);
+    // The old listener scaled arcs by 0.5 + Math.random(); nothing may listen now.
+    assert.equal(app.includes("getElementById('historical-date').addEventListener"),false);
+    assert.doesNotMatch(app,/arc\.volume\s*=\s*Math\.round\(arc\.volume\s*\*/);
+    // Disabled on every view, not only observed-only products.
+    assert.match(app,/getElementById\('historical-date'\)\?\.setAttribute\('disabled', ''\)/);
+    assert.match(source('index.html'),/id="historical-date"[^>]*\sdisabled[\s>]/);
 });
