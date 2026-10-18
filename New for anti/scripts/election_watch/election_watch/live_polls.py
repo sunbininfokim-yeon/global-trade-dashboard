@@ -310,7 +310,12 @@ def normalize(rows, policy, as_of):
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             if count_commissioned:
+                sponsor_review = policy['quality_reviews'][p['id']].get('sponsor_review', {})
+                primary_sponsors = sponsor_review.get('primary_commissioners') or (
+                    [sponsor_review['commissioner']] if sponsor_review.get('commissioner') else [])
                 observation['commissioning'].update(
+                    provider_sponsors=deepcopy(p.get('sponsors') or []),
+                    sponsors=deepcopy(p.get('sponsors') or primary_sponsors),
                     aggregation_policy='reviewed_commissioned_initial_ballot',
                     label_ko='정당·후보 측 의뢰 포함',
                     policy_reviewed_on=policy['commissioned_poll_aggregation']['reviewed_on'])
@@ -332,6 +337,10 @@ def normalize(rows, policy, as_of):
                 reasons.append('outside_reviewed_general_period')
             observation['aggregation_eligibility'] = {
                 'eligible': not reasons, 'reasons': sorted(set(reasons))}
+            if count_commissioned:
+                observation['commissioning']['aggregation_eligible'] = not reasons
+                observation['commissioning']['label_ko'] = (
+                    '정당·후보 측 의뢰 포함' if not reasons else '정당·후보 측 의뢰 참고')
             observation['display_group'] = 'general' if in_general_period else 'historical_matchup_reference'
             observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
             if publisher_reference:
@@ -502,6 +511,10 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
     require(policy['schema'] == 'usa_live_poll_policy_v1', 'policy schema')
     accepted, rejected = normalize(rows, policy, as_of)
     confirmed = validated_results(results, policy, as_of)
+    commissioned_setting = deepcopy(policy.get('commissioned_poll_aggregation', {}))
+    commissioned_setting['effective'] = bool(commissioned_setting.get('enabled') is True
+        and commissioned_setting.get('reviewed_on')
+        and date.fromisoformat(commissioned_setting['reviewed_on']) <= date.fromisoformat(as_of))
     races = {}
     for rid, race in policy['races'].items():
         observations = sorted([p for p in accepted if p['race_id'] == rid], key=lambda p: (p['field_end'], p['id']), reverse=True)
@@ -518,7 +531,9 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                 '기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.',
                 '기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.',
                 '기관 미등록이라도 원문·방법·대진·개별 레코드 대조 완료 시 편입. 참고 전용 조사는 누적 목록에 보관하고 우세 집계에서 제외.',
-                'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.',
+                ('LV 우선·없을 때 RV 별도 집계. 원문과 의뢰주체를 개별 검증한 정당·후보 의뢰 조사도 집계하며 의뢰표기를 유지. 경선·미검증 대진·다른 문항은 보류.'
+                 if commissioned_setting['effective'] else
+                 'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.'),
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',
                 '선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다.'],
@@ -527,6 +542,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                          'aggregation_eligible_observations': sum(p['aggregation_eligibility']['eligible'] for p in accepted),
                          'reference_only_observations': sum(not p['aggregation_eligibility']['eligible'] for p in accepted),
                          'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
+            'commissioned_poll_aggregation': commissioned_setting,
             'watchlist': policy.get('watchlist'),
             'governor_roster_coverage': deepcopy(policy.get('governor_roster_coverage')),
             'target_catalog': deepcopy(policy.get('target_catalog')),

@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """CA48 exact-release admission and state-only replay."""
 import copy
 from pathlib import Path
@@ -13,7 +14,7 @@ class CaliforniaReleaseTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):
   cls.packet=next(p for p in packets() if p['state']=='CA')
-  cls.policy=apply_targets(apply_matchups(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-16'),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),'2026-10-16')
+  cls.policy=apply_targets(apply_matchups(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
   cls.policy['quality_reviews']=read(ROOT/'config/usa_polls/quality_reviews_2026.json')['reviews']
   cls.raw=next(r for r in cls.packet['capture']['provider_records'] if r['id']=='us-202sur70c7e750')
  def test_primary_values_question_population_and_distinct_release_dates(self):
