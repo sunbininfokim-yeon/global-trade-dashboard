@@ -14,7 +14,7 @@ from urllib.error import HTTPError, URLError
 from time import sleep
 from .polls import atomic, digest, require
 from .poll_reference_sources import reference_source, reference_quality
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question, commissioned_aggregation
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -208,11 +208,13 @@ def normalize(rows, policy, as_of):
             p, sample_correction = corrected_provider_sample(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
             publisher_reference = source.get('reference_only') is True and not admission
+            count_commissioned = commissioned_aggregation(raw,
+                policy.get('quality_reviews', {}).get(p['id'], {}), policy, as_of)
             primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
                 'sponsor_review', {}).get('primary_internal') is True
             if primary_internal:
                 # A primary release can disclose internal commissioning that the
-                # aggregator omitted. Keep its raw flag, but never count it in a signal.
+                # aggregator omitted. Keep both flags and require an exact review.
                 require(admission and admission['signal_eligible'] is False
                         and 'party_internal_reference' in admission.get('signal_exclusion_reasons', [])
                         and admission.get('allow_partisan_reference') is True,
@@ -307,17 +309,24 @@ def normalize(rows, policy, as_of):
                 observation['ballot_question'] = ranked
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
+            if count_commissioned:
+                observation['commissioning'].update(
+                    aggregation_policy='reviewed_commissioned_initial_ballot',
+                    label_ko='정당·후보 측 의뢰 포함',
+                    policy_reviewed_on=policy['commissioned_poll_aggregation']['reviewed_on'])
             if primary_internal:
                 observation['commissioning'].update(internal=True, provider_internal=p.get('internal'),
                     internal_basis='explicitly_disclosed_in_reviewed_primary_release')
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if count_commissioned:
+                reasons = []  # helper permits only sponsor-related exclusions
             if publisher_reference:
                 reasons.append('publisher_identified_release_review_pending')
                 if p.get('sample_size') is None:reasons.append('reference_sample_n_not_disclosed_by_api')
             if primary and primary['status']=='carried_forward_reference_only':
                 reasons.append('primary_source_unavailable_or_changed')
-            if partisan_reference:
+            if partisan_reference and not count_commissioned:
                 reasons.append('party_commissioned_reference')
             if not in_general_period:
                 reasons.append('outside_reviewed_general_period')
@@ -344,6 +353,7 @@ def normalize(rows, policy, as_of):
 def poll_detail(poll):
     values = sorted((a['pct'] for a in poll['answers']), reverse=True)
     return {'id': poll['id'], 'source_quality': poll['source_quality'],
+            'commissioning': deepcopy(poll.get('commissioning', {})),
             'leading_margin_pp': round(values[0] - values[1], 3),
             'significance': 'not_evaluated'}
 
@@ -407,6 +417,8 @@ def summarize(rows, race, as_of, days):
             'status_note_ko': ('기간 내 참고 전용 자료는 있으나 우세 집계 가능한 조사는 없습니다.'
                                if references and not chosen else None),
             'lead_counts': dict(counts), 'tie_count': ties, 'pollster_count': len(chosen),
+            'commissioned_poll_count': sum(p.get('commissioning', {}).get('aggregation_policy')
+                == 'reviewed_commissioned_initial_ballot' for p in chosen),
             'included_ids': [p['id'] for p in chosen], 'conflicting_pollsters': conflicting,
             'latest_field_end': max((p['field_end'] for p in chosen), default=None)}
 
