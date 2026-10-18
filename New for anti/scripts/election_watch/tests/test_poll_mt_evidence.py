@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from pathlib import Path
 import unittest
 from election_watch.polls import read
@@ -36,7 +37,7 @@ class MontanaPrimaryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):
   cls.packet=next(p for p in packets() if p['state']=='MT')
-  cls.policy=apply_targets(apply_matchups(apply_watchlist(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/usa_polls/watchlist_2026.json')),read(ROOT/'config/governor_matchups/2026.json'),'2026-10-16'),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),'2026-10-16')
+  cls.policy=apply_targets(apply_matchups(apply_watchlist(read(ROOT/'config/usa_polls/live_2026.json'),read(ROOT/'config/usa_polls/watchlist_2026.json')),read(ROOT/'config/governor_matchups/2026.json'),SNAPSHOT_DAY),read(ROOT/'config/usa_polls/targets_2026.json'),read(ROOT/'config/usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
   cls.policy['quality_reviews']=read(ROOT/'config/usa_polls/quality_reviews_2026.json')['reviews']
  def test_initial_question_subsamples_and_whole_survey_error_remain_distinct(self):
   rows,held=normalize(self.packet['capture']['primary_records'],self.policy,'2026-10-16');self.assertFalse(held)
