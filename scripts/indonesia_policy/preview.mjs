@@ -8,6 +8,8 @@ const require=createRequire(import.meta.url),{loadEnvFile}=require('../lib/load-
 const index=process.argv.indexOf('--env-file');
 if(index<0||!process.argv[index+1])throw Error('--env-file PATH required');
 loadEnvFile(process.argv[index+1]);
+const geminiIndex=process.argv.indexOf('--gemini-env-file');
+if(geminiIndex>=0&&process.argv[geminiIndex+1]){loadEnvFile(process.argv[geminiIndex+1]);process.env.IDN_SEMANTIC_ENABLED='true';}
 if(!process.env.SUPABASE_URL||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw Error('Missing server credentials');
 const files={'/indonesia-policy/':['index.html','text/html; charset=utf-8'],
  '/indonesia-policy/search.mjs':['search.mjs','text/javascript; charset=utf-8'],

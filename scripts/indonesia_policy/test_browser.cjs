@@ -25,6 +25,7 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
    await page.getByRole('button',{name:'이전',exact:true}).click();
    await page.waitForFunction(()=>new URLSearchParams(location.search).get('offset')==='0'&&document.querySelector('article'));
   }
+  await page.locator('.advanced summary').click();
   const government=page.locator('select[name=level]');
   await government.selectOption('national');
   await page.waitForFunction(()=>!document.querySelector('#status').textContent.includes('검색 중')&&document.querySelector('article'));
@@ -68,5 +69,25 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
   await page.waitForFunction(()=>document.querySelector('#coverage').textContent.includes('연결 오류'));
   assert.ok(responses.filter(x=>x.items).every(x=>x.country==='IDN'&&x.items.every(d=>d.document_id.startsWith('idn-'))));
   assert.deepEqual(errors,[]);console.log(JSON.stringify({initialDocuments:initial.total,biofuelDocuments:biofuel.total,viewportWidths:[1360,390],pageErrors:errors.length}));
+ }finally{await browser.close();}
+});
+test('mineral/stage filters, common-law labels and hybrid overview remain distinct',async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.IDN_BROWSER_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ try{
+  const page=await browser.newPage({viewport:{width:1360,height:950}});
+  await page.goto('http://127.0.0.1:4317/indonesia-policy/?group=business');
+  await page.waitForFunction(()=>document.querySelector('article'));
+  assert.equal(await page.locator('article .badges').first().locator('span').first().innerText(),'공통 사업법규');
+  assert.ok(!(await page.locator('article .badges').allInnerTexts()).some(x=>x.includes('석탄')));
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/common-business-desktop.png'});
+  await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=보크사이트,제련&topic=bauxite&stream=midstream&mode=hybrid');
+  await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('의미검색'));
+  assert.equal(await page.locator('select[name=topic]').inputValue(),'bauxite');
+  assert.equal(await page.locator('select[name=stream]').inputValue(),'midstream');
+  assert.ok(await page.locator('article').count()>0);
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/value-chain-desktop.png'});
+  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(150);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/value-chain-mobile.png'});
  }finally{await browser.close();}
 });

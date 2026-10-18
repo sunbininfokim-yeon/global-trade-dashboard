@@ -10,11 +10,14 @@ async function main() {
   if (!file || envIndex < 0 || !args[envIndex + 1]) throw Error('collection.json --env-file PATH [--write]');
   loadEnvFile(args[envIndex + 1]);
   const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const taxonomy = require('./taxonomy.json');
   if (!Array.isArray(data.documents) || data.documents.length > 100) throw Error('Invalid bounded collection');
   const crypto = require('node:crypto');
   for (const d of data.documents) {
     if (d.country_code !== 'IDN' || d.legal_status !== 'unverified' ||
       crypto.createHash('sha256').update(d.text_content).digest('hex') !== d.content_hash) throw Error('Invalid source hash/country/status');
+    // Curated retrieval tags survive historical-manifest reimports. No legal conclusion.
+    d.topics = [...new Set([...d.topics, ...(taxonomy[d.document_id]?.tags || [])])].sort();
   }
   let changed = 0;
   if (args.includes('--write')) for (const d of data.documents) {

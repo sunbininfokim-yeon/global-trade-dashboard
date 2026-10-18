@@ -29,10 +29,13 @@ test('business-law queries preserve distinct issues and multilingual phrases',()
  assert.ok(!parseTerms('파산')[0].aliases.includes('pkpu'));
  assert.ok(parseTerms('팜유, 양도담보')[1].aliases.includes('fidusia'));
  assert.ok(!parseTerms('투자')[0].aliases.includes('subsidies_incentives'));
+ assert.ok(parseTerms('금')[0].aliases.includes('gold'));
+ assert.ok(!parseTerms('금')[0].aliases.includes('금'));
+ assert.ok(parseTerms('은광')[0].aliases.includes('perak'));
 });
 test('IDN handler calls only IDN RPC and keeps the server key out of responses',async()=>{
  const handler=createHandler(async(url,options)=>{
-  assert.equal(url,'https://db.test/rest/v1/rpc/idn_search_documents');
+  assert.equal(url,'https://db.test/rest/v1/rpc/idn_search_documents_v2');
   assert.equal(options.headers.Authorization,undefined);
   const args=JSON.parse(options.body);assert.equal(args.p_terms.length,2);assert.equal(args.p_topic,'coal');
   return Response.json({country:'IDN',items:[],total:0});

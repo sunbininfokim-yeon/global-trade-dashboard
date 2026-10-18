@@ -6,7 +6,7 @@ const source=fs.readFileSync(require.resolve('../../_worker.js'),'utf8').replace
 test('shared Worker dispatches IDN reads to the isolated handler, never the US path',async()=>{
  const {createHandler}=await import('./search-api.mjs');let calls=0;
  const handleIdnPolicy=createHandler(async(url,options)=>{
-  calls++;assert.equal(new URL(url).pathname,'/rest/v1/rpc/idn_search_documents');
+  calls++;assert.equal(new URL(url).pathname,'/rest/v1/rpc/idn_search_documents_v2');
   assert.equal(JSON.parse(options.body).p_terms.length,2);
   return Response.json({country:'IDN',items:[{document_id:'idn-test',matched_condition_count:2}],total:1});
  });

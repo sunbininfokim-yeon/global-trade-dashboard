@@ -1,5 +1,6 @@
 // IDN-only read API. No collection, provider calls, user data or US fallback.
-export const TOPICS = {coal:'석탄',nickel_mining:'니켈·광산',palm_oil:'팜유',biofuel:'바이오연료'};
+import {embedTexts} from './embeddings.mjs';
+export const TOPICS = {coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류'};
 const GROUPS = [
  ['석탄','coal','batubara','batu bara'],
  ['유연탄','bituminous','bituminus'],['무연탄','anthracite','antrasit'],
@@ -44,6 +45,15 @@ const GROUPS = [
  ['중재','arbitration','arbitrase'],['분쟁해결','dispute resolution','penyelesaian sengketa'],
  ['투자','investment','penanaman modal'],
  ['트레이딩','무역','trading','trade','perdagangan'],
+ ['보크사이트','알루미늄','bauxite','bauksit','alumina','aluminium','aluminum'],
+ ['구리','copper','tembaga'],['주석','tin','timah'],['코발트','cobalt','kobal'],
+ ['망간','manganese','mangan'],['철광석','철강','iron ore','iron_steel','bijih besi','besi baja'],
+ ['실리카','석영','silica','silika','kuarsa'],['금·은','금은','금광','은광','gold_silver','gold','silver','emas','perak'],
+ ['희토류','rare earths','rare_earths','logam tanah jarang'],
+ ['상류','upstream','hulu','stream_upstream'],['중류','midstream','stream_midstream'],
+ ['하류','downstream','hilir','stream_downstream'],
+ ['제련','정련','smelter','pemurnian','pengolahan'],['배터리','battery','baterai'],
+ ['인증','certification','sertifikasi'],['대통령령','perpres','peraturan presiden'],
 ];
 export function parseTerms(query) {
  if(query.length>240)throw Error('검색어는 240자 이내로 입력하세요.');
@@ -51,10 +61,11 @@ export function parseTerms(query) {
   GROUPS.some(g=>g.some(a=>a.toLowerCase()===term.toLowerCase()))||/^[a-z. -]+\s+\d[\d/. -]*$/i.test(term)
    ?[term]:term.split(/\s+/));
  if(raw.length>6)throw Error('검색 조건은 최대 6개입니다.');
- return [...new Set(raw)].map(term=>({term,aliases:GROUPS.find(g=>g.some(a=>a.toLowerCase()===term.toLowerCase()))||[term]}));
+ return [...new Set(raw)].map(term=>{const lookup=term==='금'?'금광':term==='은'?'은광':term;return {term,aliases:GROUPS.find(g=>g.some(a=>a.toLowerCase()===lookup.toLowerCase()))||[term]};});
 }
 function response(body,status=200){return Response.json(body,{status,headers:{'Cache-Control':status===200?'public, max-age=60':'no-store','X-Content-Type-Options':'nosniff'}});}
 export function createHandler(fetcher=fetch){
+ const queryCache=new Map();
  return async function handleIdnPolicy(request,env){
   const url=new URL(request.url),path=url.pathname;
   if(request.method!=='GET')return response({error:'GET만 지원합니다.'},405);
@@ -68,9 +79,23 @@ export function createHandler(fetcher=fetch){
     if(level==='national'&&jurisdiction)throw Error('중앙정부 문서는 지방 발행지역을 선택하지 않고 검색하세요.');
     const limit=Number(url.searchParams.get('limit')||20),offset=Number(url.searchParams.get('offset')||0);
     if(!Number.isInteger(limit)||limit<1||limit>50||!Number.isInteger(offset)||offset<0||offset>10000)throw Error('페이지 범위를 확인하세요.');
-    args={p_terms:parseTerms(q),p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
-      p_require_all:url.searchParams.get('match')==='all',p_limit:limit,p_offset:offset};
-    rpc='idn_search_documents';
+    const stream=url.searchParams.get('stream')||null,group=url.searchParams.get('group')||null,type=url.searchParams.get('type')||null;
+    if(stream&&!['upstream','midstream','downstream','trading'].includes(stream)||group&&!['business','sector'].includes(group)||type&&!['UU','PP','Perpres','Inpres','Permen','Permendag','PMK','Perda','Pergub','Perbup','Keputusan','Kepmen','Permentan','Permenperin'].includes(type))throw Error('사업단계·자료 필터를 확인하세요.');
+    const mode=url.searchParams.get('mode')||'keyword';if(!['keyword','hybrid'].includes(mode))throw Error('검색 방식을 확인하세요.');
+    if(mode==='hybrid'&&q.trim()&&(env.IDN_SEMANTIC_ENABLED!=='true'||!env.GEMINI_API_KEY))return response({error:'인도네시아 문서개요 의미검색이 이 서버에서 활성화되지 않았습니다.'},503);
+    const terms=parseTerms(q);
+    if(!env.SUPABASE_URL||!env.SUPABASE_SERVICE_ROLE_KEY)return response({error:'인도네시아 검색 연결이 준비되지 않았습니다.',unavailable:true},503);
+    let queryVector=null;
+    if(mode==='hybrid'&&q.trim()){
+     try{
+      const cached=queryCache.get(q);
+      if(cached&&cached.expires>Date.now())queryVector=cached.vector;
+      else{[queryVector]=await embedTexts([q],env.GEMINI_API_KEY,'RETRIEVAL_QUERY',fetcher);if(queryCache.size>=64)queryCache.delete(queryCache.keys().next().value);queryCache.set(q,{vector:queryVector,expires:Date.now()+600000});}
+     }catch{return response({error:'의미검색 연결에 실패했습니다. 키워드 검색을 이용하세요.'},503);}
+    }
+    args={p_terms:terms,p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
+      p_require_all:url.searchParams.get('match')==='all',p_limit:limit,p_offset:offset,p_stream:stream,p_group:group,p_type:type,p_query_embedding:queryVector};
+    rpc='idn_search_documents_v2';
    }else if(path.startsWith('/api/idn/documents/')){
     const id=decodeURIComponent(path.slice('/api/idn/documents/'.length));
     if(!/^idn-[a-z0-9-]{1,160}$/.test(id))throw Error('문서 ID를 확인하세요.');
@@ -88,6 +113,7 @@ export function createHandler(fetcher=fetch){
    const body=await upstream.json();
    if(body===null)return response({error:'저장된 문서가 없습니다.'},404);
    if(body.country!=='IDN')return response({error:'국가별 데이터 검증에 실패했습니다.'},502);
+   if(rpc==='idn_search_documents_v2')body.semantic_enabled=env.IDN_SEMANTIC_ENABLED==='true'&&Boolean(env.GEMINI_API_KEY);
    return response(body);
   }catch{return response({error:'인도네시아 검색에 연결하지 못했습니다.',unavailable:true},502);}
  };
