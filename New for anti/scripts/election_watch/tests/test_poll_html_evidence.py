@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """HTML cells survive extraction; changed releases never inherit approval."""
 import copy
 from pathlib import Path
@@ -98,8 +99,8 @@ class HTMLEvidenceTests(unittest.TestCase):
         entry = self.entry()
         config = ROOT/'config/usa_polls'
         policy = apply_targets(apply_matchups(read(config/'live_2026.json'),
-            read(ROOT/'config/governor_matchups/2026.json'), '2026-10-16'),
-            read(config/'targets_2026.json'), read(config/'ballot_reviews_2026.json'), '2026-10-16')
+            read(ROOT/'config/governor_matchups/2026.json'), SNAPSHOT_DAY),
+            read(config/'targets_2026.json'), read(config/'ballot_reviews_2026.json'), SNAPSHOT_DAY)
         policy['quality_reviews'] = read(config/'quality_reviews_2026.json')['reviews']
         policy['quality_reviews'][entry['record']['id']]['primary_documents'] = entry['documents']
         rows, _ = self.merge(entry)
