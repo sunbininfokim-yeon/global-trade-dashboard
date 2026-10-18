@@ -92,10 +92,30 @@ Numbers are observed races / scheduled targets, followed by recent-14-day observ
 
 ## Validation
 
-New source-lane regression tests: 11 passed. Finance 68, election JS 92, ownership rules 13 passed. `check_deploy_chain.py`: all 42 committing workflows chained, no deploy.yml edits. Full polling: 589/590 before commit; the remaining check compares the catalog against HEAD and must run after committing the intentional policy change. No test assertion was relaxed. No generated JSON is committed.
+New source-lane regression tests: 11 passed. Finance 68, election JS 92, ownership rules 13 passed. `check_deploy_chain.py`: all 42 committing workflows chained, no deploy.yml edits. Full polling after committing the intended policy: all 590 passed. The pre-commit HEAD/catalog comparison required a committed catalog; no test assertion was relaxed. No generated JSON is committed.
 
 ## Full unpublished collection
 
 Actual `refresh_live_polls.py --capture-only --capture-output /private/tmp/poll-national-sources-20261018/full-capture.json` succeeded. Original capture start 2026-10-18T16:22:20.155706+00:00; API 1,511 rows plus 31 supplemental rows = 1,542 source rows. 36 primary receipts: 35 rechecked, CA IVC changed-document reference carried at its original review date (not claimed as fresh verification). Same full capture before/after: observations 165 -> 188, eligible 118 -> 118, reference 47 -> 70. Recent-14-day observed races house 4 -> 4, senate 7 -> 9, governor 8 -> 9. These are observed races including references, not projected seats or wins. All 506 scheduled targets remain.
 
 The all-state table above uses API-only rows by design. Full comparison is in the temporary `full-comparison.json`; no national generated files were edited or committed. Exact NM and AR releases are being isolated into their respective state inputs, not included in this foundation's 23 references.
+
+Final validation: polling 590 passed; finance 68, JS 92, ownership 13, scope valid, deploy chain 42. Foundation PR #616. NM exact-release PR #617 branches independently from this foundation; AR exact-release PR is separate. Merge/deployment remain unperformed.
+
+## Combined independent-input rehearsal
+
+Temporary source copy `/private/tmp/poll-source-integration-20261019` includes only the separately reviewed NM and AR packets atop the same foundation; no branch or generated JSON merge. Replayed the identical unpublished full capture: baseline foundation-before-changes 165 observations / 118 eligible / 47 references; combined #616 + #617 + #618 yields 190 observations / 121 eligible / 69 references. Net +25 observations across 12 states (the 11 reference-lane states plus NM); three exact releases newly eligible, 22 net references added. Recent 14-day observed-race counts, including references: House 4 -> 6, Senate 7 -> 9, Governor 8 -> 9. These are neither poll question totals nor projected/confirmed seats. Rehearsal output `/private/tmp/poll-source-integrated-report/full-comparison.json`.
+
+PR order: #616 packet-free foundation first; #617 NM and #618 AR are independent on that common foundation and may follow in either order after retargeting to main and scope verification against the actual PR base. Do not merge state PRs into each other or text-merge generated data. No merge or deployment was performed. Existing daily main polling workflow will use these inputs after approved merging; no separate daily user click is required. API omissions and new unreviewed original sources still require source work.
+
+## Follow-up admission request, 2026-10-19 KST
+
+User explicitly requested admission of remaining source-gated observations. Reviewed 23 actually linked public pages, plus official Emerson Iowa release, original Trafalgar/Tyson PDFs and Utah Debate Commission candidate/method images. HTTP 403/429/timeouts remain unavailable; no challenge bypass. New source routes identify actual reporting separately from original publication, with all new routes reference-only until exact individual review.
+
+Registry expands from 22 aliases/17 groups to 32 aliases/27 groups. Added Mitchell/WWMT, Tyson/Breitbart, PPP/Chicago News Weekly, RMG/Yellowhammer, Bravo newsletter, TPOR/Slingshot, American Pulse/NonStop Local, the exact university-linked Emerson Iowa sheet, Change Research/Carolina Forward, Lighthouse/Utah Debate Commission and an alternate co/efficient/NYPost reporting route. Reporting routes explicitly leave original poll document and pollster-name correspondence unverified; they cannot create leads or accuracy grades. Primary source routes retain their distinct roles. Shared Mailchimp paths, like Google/cloud storage, require exact/bounded publisher paths.
+
+Same saved full source capture now produces 200 observations / 118 eligible / 82 reference versus the prior foundation 188 / 118 / 70. New observed-reference states include MI, IL, NC, PA and NY. The original 78 recent-30-day held API records are NOT 78 independent missing polls: e.g. AL RMG records are already replaced by reviewed primary supplements in the full capture. Full-capture deduplication is retained, not inflated by counting them twice.
+
+Original images exposed Utah RV/LV metadata and candidate spelling issues; these are handled in an independent UT packet, not a fuzzy national correction. Emerson's official page links the API's same sheet and supplies exact question/sample/method; IA admission is independent. Michigan Enjoyer '<1%' answers were encoded by the provider as zero; these records remain held, not presented as verified zero. Checked Trafalgar PDF discloses finite decimal minor-candidate values, suitable for an exact state-bound correction; party reference remains excluded from leads. GA timeouts, Florida Politics/AARP 403 and Minnesota newspaper 429 remain source constraints. API omission or HTTP failure is never zero.
+
+New source-route regressions: 13 passed. Subsequent committed full-suite validation and independent PRs are recorded after completion. No UI, workflow, national output or state packet is changed by this common foundation.

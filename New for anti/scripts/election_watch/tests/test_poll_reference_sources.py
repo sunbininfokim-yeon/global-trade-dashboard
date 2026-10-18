@@ -89,3 +89,24 @@ class PublisherReferenceTests(unittest.TestCase):
                 for host in entry['hosts']:
                     if host.endswith('.cloudfront.net') or host=='docs.google.com':
                         self.assertTrue(entry.get('approved_urls')or entry.get('url_patterns'))
+    def test_reporting_route_is_separate_from_primary_source_identity(self):
+        raw,policy=self.fixture();entry=policy['reference_sources'][raw['pollster']]
+        route=deepcopy(entry);route.update(hosts=['news.example'],source_role='news_reporter_reference',
+            approved_urls=['https://news.example/poll'])
+        entry['alternate_routes']=[route];raw['url']='https://news.example/poll'
+        rows,held=normalize([raw],policy,DAY);self.assertFalse(held)
+        quality=rows[0]['source_quality']
+        self.assertEqual(quality['verification_level'],'partial')
+        self.assertEqual(quality['publisher_reference_review']['source_role'],'news_reporter_reference')
+        self.assertIn('original_poll_document',quality['missing_fields'])
+        self.assertFalse(rows[0]['aggregation_eligibility']['eligible'])
+        raw['url']='https://news.example/different';self.assertFalse(normalize([raw],policy,DAY)[0])
+        raw['url']='https://research.example/poll';rows,_=normalize([raw],policy,DAY)
+        self.assertEqual(rows[0]['source_quality']['publisher_reference_review']['source_role'],'research_institution')
+    def test_shared_email_service_cannot_be_approved_wholesale(self):
+        raw,policy=self.fixture(url='https://mailchi.mp/other/send')
+        entry=policy['reference_sources'][raw['pollster']];entry['hosts']=['mailchi.mp']
+        self.assertFalse(normalize([raw],policy,DAY)[0])
+        entry['url_patterns']=[r'https://mailchi\.mp/research/[a-z]+']
+        self.assertFalse(normalize([raw],policy,DAY)[0])
+        raw['url']='https://mailchi.mp/research/send';self.assertEqual(len(normalize([raw],policy,DAY)[0]),1)
