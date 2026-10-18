@@ -20,6 +20,8 @@ class CommissionedAggregationTests(unittest.TestCase):
         self.assertTrue(obs[0]['commissioning']['internal'])
         self.assertEqual(obs[0]['commissioning']['aggregation_policy'],'reviewed_commissioned_initial_ballot')
         self.assertEqual(obs[0]['source_quality']['sponsor_review']['commissioner'],'DCCC')
+        self.assertEqual(obs[0]['commissioning']['sponsors'],['DCCC'])
+        self.assertEqual(obs[0]['commissioning']['provider_sponsors'],[])
     def test_policy_off_and_earlier_snapshot_retain_reference(self):
         p=deepcopy(self.policy);p['commissioned_poll_aggregation']['enabled']=False
         obs,held=self.normalize(policy=p);self.assertFalse(held);self.assertFalse(obs[0]['aggregation_eligibility']['eligible'])
@@ -44,3 +46,20 @@ class CommissionedAggregationTests(unittest.TestCase):
         obs[0]['aggregation_eligibility']={'eligible':False,'reasons':['primary_source_unavailable_or_changed']}
         result=summarize(obs,p['races']['USA:WI:house:01'],'2026-10-08',30)
         self.assertEqual(result['pollster_count'],0);self.assertEqual(result['commissioned_poll_count'],0)
+    def test_published_contract_describes_the_effective_policy(self):
+        from election_watch.live_polls import build_live
+        board=build_live([self.raw],self.policy,{'schema':'usa_confirmed_results_v1','cycle':2026,'results':[]},'2026-10-18','2026-10-18T22:00:00+00:00','https://api.votehub.com/polls')
+        self.assertTrue(board['commissioned_poll_aggregation']['effective'])
+        self.assertIn('정당·후보 의뢰 조사도 집계',board['rules_ko'][4])
+        self.assertNotIn('내부·정파 조사는 우세 집계 제외',board['rules_ko'][4])
+    def test_changed_primary_document_stays_reference_even_with_policy_enabled(self):
+        review=self.policy['quality_reviews'][self.raw['id']]
+        raw=deepcopy(self.raw)
+        raw['primary_source_capture']={'status':'carried_forward_reference_only',
+            'original_reviewed_on':review['reviewed_on'],
+            'documents':[{'url':d['url'],'status':'unavailable'}for d in review['primary_documents']]}
+        obs,held=self.normalize(raw);self.assertFalse(held)
+        self.assertFalse(obs[0]['aggregation_eligibility']['eligible'])
+        self.assertIn('primary_source_unavailable_or_changed',obs[0]['aggregation_eligibility']['reasons'])
+        self.assertFalse(obs[0]['commissioning']['aggregation_eligible'])
+        self.assertEqual(obs[0]['commissioning']['label_ko'],'정당·후보 측 의뢰 참고')
