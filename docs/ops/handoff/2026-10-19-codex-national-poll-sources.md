@@ -92,10 +92,18 @@ Numbers are observed races / scheduled targets, followed by recent-14-day observ
 
 ## Validation
 
-New source-lane regression tests: 11 passed. Finance 68, election JS 92, ownership rules 13 passed. `check_deploy_chain.py`: all 42 committing workflows chained, no deploy.yml edits. Full polling: 589/590 before commit; the remaining check compares the catalog against HEAD and must run after committing the intentional policy change. No test assertion was relaxed. No generated JSON is committed.
+New source-lane regression tests: 11 passed. Finance 68, election JS 92, ownership rules 13 passed. `check_deploy_chain.py`: all 42 committing workflows chained, no deploy.yml edits. Full polling after committing the intended policy: all 590 passed. The pre-commit HEAD/catalog comparison required a committed catalog; no test assertion was relaxed. No generated JSON is committed.
 
 ## Full unpublished collection
 
 Actual `refresh_live_polls.py --capture-only --capture-output /private/tmp/poll-national-sources-20261018/full-capture.json` succeeded. Original capture start 2026-10-18T16:22:20.155706+00:00; API 1,511 rows plus 31 supplemental rows = 1,542 source rows. 36 primary receipts: 35 rechecked, CA IVC changed-document reference carried at its original review date (not claimed as fresh verification). Same full capture before/after: observations 165 -> 188, eligible 118 -> 118, reference 47 -> 70. Recent-14-day observed races house 4 -> 4, senate 7 -> 9, governor 8 -> 9. These are observed races including references, not projected seats or wins. All 506 scheduled targets remain.
 
 The all-state table above uses API-only rows by design. Full comparison is in the temporary `full-comparison.json`; no national generated files were edited or committed. Exact NM and AR releases are being isolated into their respective state inputs, not included in this foundation's 23 references.
+
+Final validation: polling 590 passed; finance 68, JS 92, ownership 13, scope valid, deploy chain 42. Foundation PR #616. NM exact-release PR #617 branches independently from this foundation; AR exact-release PR is separate. Merge/deployment remain unperformed.
+
+## Combined independent-input rehearsal
+
+Temporary source copy `/private/tmp/poll-source-integration-20261019` includes only the separately reviewed NM and AR packets atop the same foundation; no branch or generated JSON merge. Replayed the identical unpublished full capture: baseline foundation-before-changes 165 observations / 118 eligible / 47 references; combined #616 + #617 + #618 yields 190 observations / 121 eligible / 69 references. Net +25 observations across 12 states (the 11 reference-lane states plus NM); three exact releases newly eligible, 22 net references added. Recent 14-day observed-race counts, including references: House 4 -> 6, Senate 7 -> 9, Governor 8 -> 9. These are neither poll question totals nor projected/confirmed seats. Rehearsal output `/private/tmp/poll-source-integrated-report/full-comparison.json`.
+
+PR order: #616 packet-free foundation first; #617 NM and #618 AR are independent on that common foundation and may follow in either order after retargeting to main and scope verification against the actual PR base. Do not merge state PRs into each other or text-merge generated data. No merge or deployment was performed. Existing daily main polling workflow will use these inputs after approved merging; no separate daily user click is required. API omissions and new unreviewed original sources still require source work.
