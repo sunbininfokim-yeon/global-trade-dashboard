@@ -11,6 +11,7 @@ loadEnvFile(process.argv[index+1]);
 if(!process.env.SUPABASE_URL||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw Error('Missing server credentials');
 const files={'/indonesia-policy/':['index.html','text/html; charset=utf-8'],
  '/indonesia-policy/search.mjs':['search.mjs','text/javascript; charset=utf-8'],
+ '/indonesia-policy/source-links.mjs':['source-links.mjs','text/javascript; charset=utf-8'],
  '/indonesia-policy/search.css':['search.css','text/css; charset=utf-8']};
 http.createServer(async(req,res)=>{
  try{

@@ -110,17 +110,29 @@ def collect(entry, cache_dir):
     if soup:
         for a in soup.select("a[href], iframe[src], embed[src], object[data]"):
             href = a.get("href") or a.get("src") or a.get("data")
+            # Some official catalogues expose the PDF as a literal window.open
+            # URL. Parse that literal only; never execute JavaScript.
+            inline = re.search(r"window\.open\(\s*(['\"])(https?://[^'\"]+|/[^'\"]+)\1", a.get("onclick", ""))
+            if inline:
+                href = inline.group(2)
             target = urljoin(url, href)
             label = normalized(a.get_text(" ", strip=True))
             if official_url(target) and (re.search(r"\.pdf(?:[?#]|$)|/download|/unduh", target, re.I)):
                 if not any(x["url"] == target for x in links):
-                    links.append({"url": target, "label": label[:250]})
+                    links.append({"url": target, "label": label[:250], "document_link": a.get("id") == "link_lampiran"})
     text_source_url = url
     raw_text_sha256 = raw_hash
     body_status = "extracted" if is_pdf and kind == "official_text" else "metadata_only"
+    if entry.get("metadata_only") and is_pdf:
+        raise ValueError("metadata_only_requires_catalogue")
     # Prefer the publisher's explicit final-document link. Draft links are
     # separate on Kemendag pages and must never substitute for signed text.
-    preferred = [x for x in links if re.search(r"Fulltext|Peraturan \[ID\]|Download Dokumen", x["label"], re.I)]
+    preferred = [x for x in links if (x.get("document_link") or re.search(r"Fulltext|Peraturan \[ID\]|Download Dokumen|^(?:Download|Unduh(?: File Peraturan)?|Lihat File Peraturan)$", x["label"], re.I))
+                 and not re.search(r"abstrak|abstract", x["url"] + " " + x["label"], re.I)]
+    blocked_body_host = None
+    if entry.get("metadata_only"):
+        preferred = []
+        body_status = "metadata_requested"
     if not is_pdf and preferred:
         candidate = preferred[0]
         try:
@@ -140,6 +152,8 @@ def collect(entry, cache_dir):
             body_status = "extracted"
         except Exception as exc:
             body_status = "unavailable:" + str(exc)[:150]
+            if getattr(getattr(exc, "response", None), "status_code", None) in (403, 429):
+                blocked_body_host = urlparse(candidate["url"]).hostname
     # Save evidence, never scrape a guessed download address or draft link.
     observed = datetime.now(timezone.utc).isoformat()
     excerpt = text[:MAX_CHARS]
@@ -157,6 +171,7 @@ def collect(entry, cache_dir):
         "raw_sha256": raw_hash, "download_candidates": links,
         "text_source_url": text_source_url, "raw_text_sha256": raw_text_sha256,
         "body_status": body_status,
+        "body_fetch_blocked_host": blocked_body_host,
         "legal_status": "unverified", "status_note": "Official source found; current legal effect and amendments require review.",
     }
 
@@ -194,6 +209,8 @@ def main():
             if urlparse(entry["url"]).hostname in blocked_hosts:
                 raise ValueError("host_blocked_earlier_in_run")
             doc = collect(entry, out / "raw")
+            if doc.get("body_fetch_blocked_host"):
+                blocked_hosts.add(doc["body_fetch_blocked_host"])
             result["documents"].append(doc)
             print(json.dumps({"id": entry["document_id"], "status": "collected", "kind": doc["content_kind"], "chars": len(doc["text_content"])}), flush=True)
         except Exception as exc:

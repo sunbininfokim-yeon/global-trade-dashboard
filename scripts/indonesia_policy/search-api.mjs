@@ -18,6 +18,14 @@ const GROUPS = [
  ['세금감면','세금 감면','법인세감면','tax allowance','tax holiday','tax_incentive','pengurangan pajak','fasilitas pajak','keringanan pajak'],
  ['투자인센티브','투자 인센티브','investment incentive','insentif','subsidies_incentives'],
  ['환경','environment','lingkungan','environmental_land'],
+ ['환경영향평가','환경평가','amdal','ukl-upl','sppl','environmental_assessment'],
+ ['산림','forest','forestry','kehutanan'],['토지','land rights','hak atas tanah','land_rights'],
+ ['공간계획','토지이용','spatial planning','tata ruang','spatial_planning'],
+ ['폐수','오폐수','wastewater','air limbah'],['폐기물','유해폐기물','hazardous waste','limbah b3','hazardous_waste'],
+ ['대기오염','대기배출','air emissions','emisi','air_emissions'],
+ ['광산복구','폐광','reclamation','reklamasi','pascatambang'],
+ ['이탄지','peatland','gambut'],['기후적응','climate adaptation','adaptasi perubahan iklim','climate_adaptation'],
+ ['환경성과평가','기업환경평가','proper','properlink','environmental_performance'],
  ['로열티','royalty','royalties','iuran produksi','royalties_tax'],
  ['재식재','replanting','peremajaan'],['인프라지원','infrastructure_support','sarana dan prasarana'],
 ];
@@ -40,7 +48,8 @@ export function createHandler(fetcher=fetch){
     const q=url.searchParams.get('q')||'';
     const topic=url.searchParams.get('topic')||null,level=url.searchParams.get('level')||null;
     const jurisdiction=url.searchParams.get('jurisdiction')||null,sort=url.searchParams.get('sort')||'relevance';
-    if(topic&&!Object.hasOwn(TOPICS,topic)||level&&!['national','provincial','regency','city'].includes(level)||!['relevance','year'].includes(sort)||jurisdiction?.length>120)throw Error('필터를 확인하세요.');
+    if(topic&&!Object.hasOwn(TOPICS,topic)||level&&!['national','local','provincial','regency','city'].includes(level)||!['relevance','year'].includes(sort)||jurisdiction?.length>120)throw Error('필터를 확인하세요.');
+    if(level==='national'&&jurisdiction)throw Error('중앙정부 문서는 지방 발행지역을 선택하지 않고 검색하세요.');
     const limit=Number(url.searchParams.get('limit')||20),offset=Number(url.searchParams.get('offset')||0);
     if(!Number.isInteger(limit)||limit<1||limit>50||!Number.isInteger(offset)||offset<0||offset>10000)throw Error('페이지 범위를 확인하세요.');
     args={p_terms:parseTerms(q),p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,

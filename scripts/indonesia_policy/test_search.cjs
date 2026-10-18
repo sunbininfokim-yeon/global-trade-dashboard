@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {createHash}=require('node:crypto');
 const {PGlite}=require(require.resolve('@electric-sql/pglite',{paths:[process.env.IDN_TEST_NODE_MODULES||__dirname]}));
-const migrations=['20261017080335_indonesia_policy_corpus.sql','20261017080543_indonesia_policy_source_checks.sql','20261018112152_indonesia_policy_isolation.sql','20261018112503_indonesia_policy_biofuel.sql','20261018113918_indonesia_policy_search.sql'];
+const migrations=['20261017080335_indonesia_policy_corpus.sql','20261017080543_indonesia_policy_source_checks.sql','20261018112152_indonesia_policy_isolation.sql','20261018112503_indonesia_policy_biofuel.sql','20261018113918_indonesia_policy_search.sql','20261018161434_indonesia_policy_government_sources.sql'];
 const text='PERATURAN MENTERI tentang perdagangan NIKEL dan EKSPOR. '.repeat(6);
 const d={document_id:'idn-test-search',country_code:'IDN',title:'Ekspor Nikel',title_ko:'니켈 수출',issuer_name:'Ministry',issuer_level:'national',jurisdiction:'Indonesia',document_type:'Permen',document_number:'32/MK/BC',document_year:2026,topics:['nickel_mining'],primary_stage:'nickel_mining',scope_note:'Test only, unverified',source_url:'https://example.go.id/doc',legal_status:'unverified',status_note:'Unverified',observed_at:'2026-10-18T00:00:00Z',content_hash:createHash('sha256').update(text).digest('hex'),content_kind:'official_text',text_content:text,text_truncated:false};
 test('IDN search: multilingual terms, evidence, partial/all, filters, details and denied public access',async()=>{
@@ -27,6 +27,15 @@ test('IDN search: multilingual terms, evidence, partial/all, filters, details an
   const detail=(await db.query('select public.idn_get_document($1) d',[d.document_id])).rows[0].d;
   assert.equal(detail.version.text_content,text);assert.equal(detail.country,'IDN');
   assert.equal((await db.query("select public.idn_get_document('us-nickel') d")).rows[0].d,null);
+  for(const [id,level,region,topic] of [['idn-test-province','provincial','Province','coal'],['idn-test-regency','regency','Regency','nickel_mining']]){
+   await db.query('select public.idn_store_document($1)',[JSON.stringify({...d,document_id:id,issuer_level:level,jurisdiction:region,topics:[topic],text_source_url:'https://example.go.id/Download/doc.pdf'})]);
+  }
+  const government=async(level,region=null,topic=null)=>(await db.query('select public.idn_search_documents(p_level=>$1,p_jurisdiction=>$2,p_topic=>$3) s',[level,region,topic])).rows[0].s;
+  const national=await government('national');assert.equal(national.total,1);assert.deepEqual(national.jurisdictions,[]);assert.ok(national.items.every(x=>x.issuer_level==='national'));
+  const local=await government('local');assert.equal(local.total,2);assert.deepEqual(local.jurisdictions,['Province','Regency']);assert.ok(local.items.every(x=>x.issuer_level!=='national'));
+  assert.equal(local.items[0].text_source_url,'https://example.go.id/Download/doc.pdf');
+  assert.equal((await government('provincial')).total,1);assert.equal((await government('regency')).total,1);assert.equal((await government('city')).total,0);
+  assert.equal((await government('local','Regency')).total,1);assert.deepEqual((await government('local',null,'coal')).jurisdictions,['Province']);
   await assert.rejects(db.query("select public.idn_search_documents('[{\"term\":\"x\",\"aliases\":[\"\"]}]')"));
   for(const role of ['anon','authenticated']){
    await db.exec('reset role;set role '+role);await assert.rejects(search('니켈'));

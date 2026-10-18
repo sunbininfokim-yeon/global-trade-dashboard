@@ -3,6 +3,7 @@ import subprocess
 import sys
 import tempfile
 import io
+import requests
 from pypdf import PdfWriter
 from unittest.mock import patch
 from pathlib import Path
@@ -78,6 +79,35 @@ class SourceEvidenceTests(unittest.TestCase):
         self.assertEqual(result['content_kind'],'official_text')
         self.assertIn('Legal text',result['text_content'])
         self.assertTrue(result['text_source_url'].endswith('.HTM'))
+
+    def test_explicit_download_block_preserves_metadata_and_stops_the_host(self):
+        entry=dict(document_id='idn-download',title='Environment',title_ko='환경',issuer_name='Government',
+                   issuer_level='national',jurisdiction='Indonesia',document_type='PP',document_number='4',
+                   document_year=2021,topics=['coal'],primary_stage='coal',scope_note='Test',
+                   url='https://example.go.id/law',identity_phrases=['4 TAHUN 2021'])
+        metadata=b'<main>PERATURAN 4 TAHUN 2021 '+b'Catalogue '*20+b'<a href="/Download/text.pdf">Download</a></main>'
+        response=requests.Response();response.status_code=429
+        with patch('collect.fetch',side_effect=[(metadata,entry['url'],'a'*64),requests.HTTPError('429',response=response)]),patch('collect.time.sleep'):
+            result=collect(entry,Path('/tmp'))
+        self.assertEqual(result['content_kind'],'official_metadata')
+        self.assertEqual(result['body_fetch_blocked_host'],'example.go.id')
+
+    def test_literal_official_attachment_link_is_parsed_without_running_script(self):
+        entry=dict(document_id='idn-attachment',title='Environment',title_ko='환경',issuer_name='Government',
+                   issuer_level='national',jurisdiction='Indonesia',document_type='PP',document_number='4',
+                   document_year=2021,topics=['coal'],primary_stage='coal',scope_note='Test',
+                   url='https://example.go.id/law',identity_phrases=['4 TAHUN 2021'])
+        metadata=b'<main>PERATURAN 4 TAHUN 2021 '+b'Catalogue '*20+b'<a id="link_lampiran" href="#" onclick="window.open(\'https://example.go.id/files/doc.pdf\')">Lampiran</a></main>'
+        text='PERATURAN 4 TAHUN 2021 '+ 'Legal text '*30
+        with patch('collect.fetch',side_effect=[(metadata,entry['url'],'a'*64),(b'%PDF-test','https://example.go.id/files/doc.pdf','b'*64)]),patch('collect.pdf_content',return_value=text),patch('collect.time.sleep'):
+            result=collect(entry,Path('/tmp'))
+        self.assertEqual(result['content_kind'],'official_text')
+        self.assertEqual(result['text_source_url'],'https://example.go.id/files/doc.pdf')
+        with patch('collect.fetch',return_value=(metadata,entry['url'],'a'*64)) as fetcher:
+            metadata_only=collect({**entry,'metadata_only':True},Path('/tmp'))
+        fetcher.assert_called_once()
+        self.assertEqual(metadata_only['content_kind'],'official_metadata')
+        self.assertEqual(metadata_only['body_status'],'metadata_requested')
 
 
 if __name__ == "__main__":
