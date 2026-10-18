@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-from world_link import to_kg
+from world_link import to_kg, mass_basis, goods_mass_comparable
 
 
 QUALITY_SCHEMA_VERSION = "commodity-trade-quality-v1"
@@ -41,7 +41,7 @@ def unit_class(unit: str | None) -> str:
         return "conversion_factor"
     if normalized in {"KBBL", "M3"}:
         return "volume"
-    if normalized.lower() in {"usd", "usd_million", "aud_million_fob"} or normalized.lower().endswith(("_fob", "_cif")):
+    if normalized.lower() in {"usd", "nok", "usd_million", "aud_million_fob"} or normalized.lower().endswith(("_fob", "_cif")):
         return "monetary"
     return "unknown"
 
@@ -58,22 +58,25 @@ def annotate_point(point: dict[str, Any]) -> None:
         "value": None,
         "unit": None,
         "method": None,
+        "measurement_basis": mass_basis(point),
     }
     if category == "mass":
         try:
-            value_kg = to_kg(float(raw_value), unit)
+            value_kg = to_kg(raw_value, unit)
         except (TypeError, ValueError):
             value_kg = None
         if value_kg is not None:
             normalized.update(
                 {
-                    "comparison_class": "mass_kg",
-                    "comparable_across_reporters": True,
+                    "comparison_class": "contained_metal_kg" if mass_basis(point).startswith("contained_") else "mass_kg",
+                    "comparable_across_reporters": goods_mass_comparable(point),
                     "value": value_kg,
                     "unit": "kg",
                     "method": "exact_unit_conversion",
                 }
             )
+            if not normalized["comparable_across_reporters"]:
+                normalized["comparison_reason"] = "measurement_basis_or_product_scope_not_goods_mass"
     elif category == "conversion_factor":
         normalized["method"] = "not_a_trade_observation"
     elif category == "volume":
@@ -110,6 +113,10 @@ def _quality_flags(points: list[dict[str, Any]], reference_month: str) -> list[s
         flags.append("high_adjacent_value_repeat_rate")
     if any("proxy" in str(point.get("hs_relation") or "") for point in points):
         flags.append("proxy_series_not_pure_hs_commodity")
+    if any(mass_basis(point).startswith("contained_") for point in points):
+        flags.append("contained_metal_not_goods_net_mass")
+    if any(point.get("hs_relation") == "mixed_hs_not_comparable" for point in points):
+        flags.append("mixed_product_scope_not_comparable")
     return flags
 
 
@@ -159,7 +166,8 @@ def annotate_monthly_payload(sectors: dict[str, Any], reference_month: str) -> d
                     for flag in (country.get("series_quality") or {}).get("flags", [])
                 }
             )
-            mass_only = bool(all_classes) and set(all_classes) == {"mass_kg"}
+            all_points = [p for country in countries.values() for p in country.get("points") or []]
+            mass_only = bool(all_points) and all(goods_mass_comparable(p) for p in all_points)
             commodity["comparison_policy"] = {
                 "schema_version": QUALITY_SCHEMA_VERSION,
                 "cross_reporter_numeric_comparison": "allowed_as_kg" if mass_only else "not_allowed",
@@ -167,6 +175,7 @@ def annotate_monthly_payload(sectors: dict[str, Any], reference_month: str) -> d
                 "comparison_classes_present": all_classes,
                 "country_quality_flags": all_flags,
                 "coverage_scope": "reported_countries_only",
+                "requires_same_product_scope": True,
             }
     return {
         "schema_version": QUALITY_SCHEMA_VERSION,

@@ -127,8 +127,10 @@ def parse_bulletin(html: str) -> list[dict]:
                             "unit": "kMT_cu_content",
                             "product_code": "copper_total_shipments",
                             "source": "cochilco_bulletin",
-                            "hs_bridge": "2603",
-                            "hs_relation": "alias_physical_copper",
+                            "hs_bridge": None,
+                            "hs_relation": "source_product_not_hs_equivalent",
+                            "measurement_basis": "contained_copper_mass",
+                            "comparison_scope": "COCHILCO:copper_total_shipments:contained_copper_mass",
                             "code_system": "COCHILCO",
                         }
                     )

@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import csv
 import io
+import math
+import json
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
-
-from hs_match import resolve_commodity_id
 
 JODI_BASE = "https://www.jodidata.org"
 PRIMARY_URLS = {
@@ -29,32 +30,63 @@ PREFERRED_UNITS = ("KTONS", "KBBL")  # CONVBBL is a conversion factor, not volum
 
 PRODUCT_TO_COMMODITY = {
     "CRUDEOIL": "crude_oil",
-    "TOTCRUDE": "crude_oil",
-    "GASDIES": "petroleum_products",
-    "MOTORGAS": "petroleum_products",
-    "JETKERO": "petroleum_products",
-    "RESFUEL": "petroleum_products",
-    "LPG": "petroleum_products",
+    "TOTCRUDE": "crude_ngl_other",
+    # Only the explicitly published source total is the petroleum-products
+    # total. Subproducts are separate supplemental series, not substitutes.
+    "TOTPRODS": "petroleum_products",
+    "GASDIES": "gasoil_diesel",
+    "MOTORGAS": "motor_gasoline",
+    "JETKERO": "jet_kerosene",
+    "RESFUEL": "residual_fuel_oil",
+    "LPG": "lpg",
 }
+
+
+def product_scope(product: str) -> dict[str, Any]:
+    crude = product == "CRUDEOIL"
+    return {
+        "product_code": product,
+        "comparison_scope": f"JODI:{product}",
+        "measurement_basis": "goods_net_mass",
+        "hs_bridge": "2709" if crude else None,
+        "hs_relation": "alias" if crude else "source_product_not_hs_equivalent",
+        "scope_note": "JODI source product; not an exact HS basket" if not crude else "JODI crude source product",
+    }
 
 
 def _fetch(url: str, cache_dir: Path, timeout: int = 120) -> Path:
     cache_dir.mkdir(parents=True, exist_ok=True)
-    name = url.rstrip("/").split("/")[-1]
+    # primary/2025.csv and secondary/2025.csv must never share a cache.
+    # Do not reuse the ambiguous legacy basename cache.
+    name = sha256(url.encode()).hexdigest()[:20] + "-" + url.rstrip("/").split("/")[-1]
     dest = cache_dir / name
     complete = dest.with_suffix(dest.suffix + ".complete")
-    if dest.exists() and complete.exists() and dest.stat().st_size > 1000:
-        return dest
+    if dest.exists() and complete.exists():
+        try:
+            stamp = json.loads(complete.read_text())
+            if (stamp.get('url') == url and stamp.get('bytes') == dest.stat().st_size
+                    and stamp.get('sha256') == sha256(dest.read_bytes()).hexdigest()):
+                return dest
+        except (OSError, ValueError, AttributeError):
+            pass  # unverified legacy/truncated cache must be reacquired
     req = Request(url, headers={"User-Agent": "commodity-trade-jodi/1.0"})
     temporary = dest.with_suffix(dest.suffix + ".tmp")
+    size = 0
+    digest = sha256()
     with urlopen(req, timeout=timeout) as response, temporary.open("wb") as output:
+        length = getattr(response, 'headers', {}).get('Content-Length')
+        expected = int(length) if length is not None else None
         while True:
             chunk = response.read(1024 * 1024)
             if not chunk:
                 break
             output.write(chunk)
+            size += len(chunk)
+            digest.update(chunk)
+    if size == 0 or (expected is not None and size != expected):
+        raise OSError('incomplete JODI download; previous completed snapshot preserved')
     temporary.replace(dest)
-    complete.write_text("complete\n", encoding="utf-8")
+    complete.write_text(json.dumps({'url':url,'bytes':size,'sha256':digest.hexdigest()})+'\n', encoding="utf-8")
     return dest
 
 
@@ -65,7 +97,8 @@ def _parse_value(raw: str) -> float | None:
     if s in ("", "-", "x", "X", "na", "NA"):
         return None
     try:
-        return float(s)
+        value = float(s)
+        return value if math.isfinite(value) and value >= 0 else None
     except ValueError:
         return None
 
@@ -79,7 +112,7 @@ def load_export_series(
 ) -> dict[str, Any]:
     """Return monthly export series keyed by commodity_id → country → [{month, value, unit}]."""
     years = years or [2025, 2026]
-    products = products or list(PRODUCT_TO_COMMODITY.keys())
+    products = list(PRODUCT_TO_COMMODITY) if products is None else products
     # commodity -> iso2 -> month -> {value, unit, product, source}
     bucket: dict[str, dict[str, dict[str, dict[str, Any]]]] = {}
     files_used = []
@@ -110,7 +143,7 @@ def load_export_series(
                     val = _parse_value(row.get("OBS_VALUE") or "")
                     if val is None:
                         continue
-                    cid = PRODUCT_TO_COMMODITY.get(prod) or resolve_commodity_id(prod)
+                    cid = PRODUCT_TO_COMMODITY.get(prod)
                     if not cid:
                         continue
                     iso2 = (row.get("REF_AREA") or "").strip().upper()
@@ -119,18 +152,21 @@ def load_export_series(
                         continue
                     ctry = bucket.setdefault(cid, {}).setdefault(iso2, {})
                     prev = ctry.get(month)
-                    # Prefer KTONS > KBBL; if same unit keep first
+                    # Prefer KTONS > KBBL within the same source product.
+                    # Identical duplicates are harmless; conflicting ones fail.
                     rank = {u: i for i, u in enumerate(PREFERRED_UNITS)}
+                    if prev is not None and unit == prev.get('unit') and prev['value'] != val:
+                        raise ValueError(f'conflicting JODI product/month/unit: {prod}/{iso2}/{month}/{unit}')
                     if prev is None or rank.get(unit, 99) < rank.get(prev.get("unit"), 99):
                         ctry[month] = {
                             "value": val,
                             "unit": unit,
-                            "product_code": prod,
+                            **product_scope(prod),
                             "flow": flow,
                             "source": "jodi_oil",
                             "code_system": "JODI",
-                            "hs_bridge": "2709" if cid == "crude_oil" else "2710",
-                            "hs_relation": "alias",
+                            "assessment_code": row.get("ASSESSMENT_CODE"),
+                            "source_file_url": url,
                         }
 
     # flatten
@@ -143,10 +179,10 @@ def load_export_series(
                     "month": m,
                     "value": months[m]["value"],
                     "unit": months[m]["unit"],
-                    "product_code": months[m]["product_code"],
+                    **product_scope(months[m]["product_code"]),
                     "source": "jodi_oil",
-                    "hs_bridge": months[m]["hs_bridge"],
-                    "hs_relation": months[m]["hs_relation"],
+                    "assessment_code": months[m].get("assessment_code"),
+                    "source_file_url": months[m].get("source_file_url"),
                 }
                 for m in sorted(months.keys())
             ]
@@ -159,5 +195,5 @@ def load_export_series(
         "flow": flow,
         "files": files_used,
         "series": out_series,
-        "note_ko": "JODI 월별 수출(TOTEXPSB). CRUDEOIL↔HS2709 별칭. 단위는 KTONS 우선.",
+        "note_ko": "JODI 원천 상품별 월별 수출. 석유제품 합계는 TOTPRODS만 사용하며 경유 등 하위품목을 합계로 대체하지 않음. TOTPRODS도 HS2710과 동일 범위는 아님. 단위는 KTONS 우선.",
     }

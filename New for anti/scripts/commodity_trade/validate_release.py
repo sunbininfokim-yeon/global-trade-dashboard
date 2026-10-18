@@ -10,6 +10,29 @@ from validate_bilateral_public import validate as validate_bilateral
 from monthly_coverage import coverage_report
 from world_link import to_kg
 from preview_quality import annotate_preview_series
+from sources.jodi_oil import PRODUCT_TO_COMMODITY
+
+
+def validate_source_scopes(payload):
+    """Reject known misclassification even when values/units look valid."""
+    checked = 0
+    for sector in payload.get('sectors', {}).values():
+        for group in ('commodities', 'supplemental_commodities'):
+            for cid, block in sector.get(group, {}).items():
+                for country in block.get('countries', {}).values():
+                    for point in country.get('points', []):
+                        if point.get('source') == 'jodi_oil':
+                            expected = PRODUCT_TO_COMMODITY.get(point.get('product_code'))
+                            if expected is None or expected != cid:
+                                raise ValueError('JODI source product misclassified; run repair_source_scopes.py')
+                            checked += 1
+                        if point.get('unit') == 'kMT_cu_content' and (
+                                point.get('normalized', {}).get('comparable_across_reporters') is not False
+                                or block.get('comparison_policy', {}).get('cross_reporter_numeric_comparison') != 'not_allowed'):
+                            raise ValueError('contained copper must not be comparable as goods net mass')
+                        if point.get('source') == 'brazil_comexstat' and cid == 'nickel' and point.get('product_code') != '2604':
+                            raise ValueError('Brazil nickel forms mixed; raw source regeneration required')
+    return checked
 
 
 def validate_preview_publication(payload):
@@ -54,6 +77,7 @@ def validate(data_dir):
         return json.loads((data_dir/name).read_text())
     monthly = read('commodity_trade_monthly_v1.json')
     _validate_monthly_contract(monthly, read('commodity_trade_board_v1.json'))
+    source_scope_points = validate_source_scopes(monthly)
     factors = bad_mass = 0
     def walk(obj):
         nonlocal factors, bad_mass
@@ -89,6 +113,7 @@ def validate(data_dir):
         raise ValueError('coverage asset is stale')
     crude = national['reporters']['SAU']['flows']['exports']['commodities']['crude_oil']
     return {'status':'pass', 'monthly_invalid_conversion_factors':factors, 'monthly_bad_mass_normalization':bad_mass,
+            'jodi_source_scope_points_checked':source_scope_points,
             'priority_coverage':coverage['counts'], 'bilateral':bilateral,
             'preview_held_months':preview_held,
             'saudi': {'bulletin_oil_value_latest':bulletin['latest_available_month'],

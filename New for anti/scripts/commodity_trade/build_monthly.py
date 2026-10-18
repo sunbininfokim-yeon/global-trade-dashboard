@@ -48,6 +48,7 @@ MINERAL_IDS = {
     "iron_ore", "manganese", "copper", "nickel", "bauxite", "aluminum", "cobalt",
     "graphite", "tungsten", "antimony", "lithium", "rare_earths",
     "gallium", "germanium",
+    "nickel_mattes", "nickel_unwrought",
 }
 
 def trailing_window(months_sorted: list[str], n: int = 12) -> list[str]:
@@ -105,12 +106,13 @@ def build_energy(cache: Path) -> dict:
             "default_month": latest,
             "source_primary": "jodi_gas" if cid == "lng" else "jodi_oil",
             "comtrade_status": "not_requested",
-            "hs_stems": COMMODITY_HS_STEMS.get(cid, []),
+            "hs_stems": COMMODITY_HS_STEMS.get(cid, []) if cid in {"crude_oil", "lng"} else [],
+            "source_product_scope": sorted({p.get("product_code") for c in countries.values() for p in c["points"] if p.get("product_code")}),
             "code_bridge": {
                 "from_system": "JODI",
-                "to_system": "HS",
-                "example": "CRUDEOIL → 2709",
-                "relation": "alias",
+                "to_system": "HS" if cid in {"crude_oil", "lng"} else None,
+                "example": {"crude_oil": "CRUDEOIL → 2709", "lng": "NATGAS EXPLNG → 271111"}.get(cid),
+                "relation": "alias" if cid in {"crude_oil", "lng"} else "source_product_not_hs_equivalent",
                 "algorithm": "hs_match.resolve_commodity_id + PRODUCT_ALIASES",
             },
             "countries": countries,
@@ -197,6 +199,7 @@ def build_minerals(cache: Path) -> dict:
                 "available": bra.get("available"),
                 "url": bra.get("source_url"),
                 "files": bra.get("files"),
+                "incomplete_cells": bra.get("incomplete_cells", []),
                 "note_ko": bra.get("note_ko"),
             },
             "cochilco_copper": {
@@ -288,6 +291,7 @@ def build_agri(cache: Path) -> dict:
             "brazil_comexstat": {
                 "available": bool(series),
                 "url": bra.get("source_url"),
+                "incomplete_cells": bra.get("incomplete_cells", []),
                 "note_ko": "농산물도 동일 EXP_YYYY.csv. 대두·설탕·옥수수 등 브라질 강세 품목 우선.",
             },
             "usa_ers_fatus": {
