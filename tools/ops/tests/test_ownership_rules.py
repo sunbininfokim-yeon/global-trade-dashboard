@@ -3,6 +3,14 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_indonesia_search_allows_worker_connection_without_deployment(self):
+        branch = 'codex/policy-indonesia-20261017'
+        self.assertEqual(scoped_paths(branch), {'_worker.js'})
+        self.assertFalse(scoped_paths(branch + '-extra'))
+        for path in ('wrangler.jsonc', 'New for anti/app.js', 'New for anti/index.html',
+                     '.github/workflows/deploy.yml', '.github/workflows/ownership_guard.yml'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_manganese_uranium_ui_scope_has_no_deployment_grant(self):
         branch = 'codex/commodity-manganese-uranium'
         self.assertEqual(scoped_paths(branch), {

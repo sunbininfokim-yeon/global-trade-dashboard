@@ -78,6 +78,12 @@ BAUXITE_UI_PATHS = frozenset({
 MN_URANIUM_BRANCH = 'codex/commodity-manganese-uranium'
 MN_URANIUM_PATHS = BAUXITE_UI_PATHS
 
+# 2026-10-18: user clarified Codex builds the IDN search connection and Claude
+# deploys. Only the IDN handler import and dispatch in the shared Worker.
+# No deployment, US route, shared navigation or workflow permission.
+IDN_SEARCH_BRANCH = 'codex/policy-indonesia-20261017'
+IDN_SEARCH_PATHS = frozenset({'_worker.js'})
+
 
 def scoped_paths(branch):
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
@@ -89,4 +95,5 @@ def scoped_paths(branch):
             COMMODITY_BRANCH: COMMODITY_PATHS,
             COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS,
             BAUXITE_UI_BRANCH: BAUXITE_UI_PATHS,
-            MN_URANIUM_BRANCH: MN_URANIUM_PATHS}.get(branch, frozenset())
+            MN_URANIUM_BRANCH: MN_URANIUM_PATHS,
+            IDN_SEARCH_BRANCH: IDN_SEARCH_PATHS}.get(branch, frozenset())

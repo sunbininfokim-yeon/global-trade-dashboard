@@ -1,0 +1,72 @@
+-- Reviewed retrieval scope, not an assertion of legal applicability.
+begin;
+set local lock_timeout='3s';
+alter table policy_idn.documents drop constraint if exists idn_policy_documents_primary_stage_check;
+alter table policy_idn.documents add constraint idn_policy_documents_primary_stage_check
+ check(primary_stage in ('coal','nickel_mining','palm_oil','biofuel','mineral_mining'));
+with curated(document_id,tags) as (values
+('idn-uu-4-2009',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-uu-3-2020',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-uu-2-2025',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-pp-96-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-pp-25-2024',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-pp-39-2025',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_trading','cross_sector']::text[]),
+('idn-uu-40-2007',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-25-2007',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-42-1999',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-37-2004',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-30-1999',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-pp-28-2025',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-32-2009',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-6-2023',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-pp-22-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-pp-18-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-pp-21-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-lhk-4-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-lhk-5-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-lhk-6-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','stream_trading','cross_sector']::text[]),
+('idn-uu-41-1999',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','cross_sector']::text[]),
+('idn-pp-23-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','cross_sector']::text[]),
+('idn-pp-24-2021',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','cross_sector']::text[]),
+('idn-pp-78-2010',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','cross_sector']::text[]),
+('idn-pp-78-2019',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','cross_sector']::text[]),
+('idn-pmk-130-2020',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','cross_sector']::text[]),
+('idn-pmk-69-2024',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','cross_sector']::text[]),
+('idn-kaltim-pergub-18-2016',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','cross_sector']::text[]),
+('idn-kaltim-pergub-53-2019',ARRAY['bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','stream_upstream','stream_midstream','stream_downstream','cross_sector']::text[]),
+('idn-kemendag-permendag-15-2026',ARRAY['stream_trading']::text[]),
+('idn-kemenkeu-31mkbc-2026',ARRAY['stream_trading']::text[]),
+('idn-kemenkeu-32mkbc-2026',ARRAY['stream_trading']::text[]),
+('idn-kemenkeu-pmk-68-2025',ARRAY['stream_trading']::text[]),
+('idn-kemendag-permendag-16-2026',ARRAY['stream_trading']::text[]),
+('idn-kemenkeu-per8bc-2020',ARRAY['stream_trading']::text[]),
+('idn-per11bc-2023',ARRAY['stream_trading']::text[]),
+('idn-lh-9-2006',ARRAY['stream_upstream']::text[]),
+('idn-sulteng-perda-1-2026',ARRAY['stream_upstream']::text[]),
+('idn-uu-39-2014',ARRAY['stream_upstream']::text[]),
+('idn-pmk-84-2017',ARRAY['stream_upstream']::text[]),
+('idn-pmk-49-2018',ARRAY['stream_upstream']::text[]),
+('idn-paser-perbup-46-2023',ARRAY['stream_upstream']::text[]),
+('idn-kaltim-perda-7-2018',ARRAY['stream_upstream']::text[]),
+('idn-banten-pergub-18-2025',ARRAY['stream_upstream']::text[]),
+('idn-kaltim-pergub-11-2024',ARRAY['stream_upstream']::text[]),
+('idn-pmk-80-2016',ARRAY['stream_midstream','stream_downstream']::text[]),
+('idn-kemenkeu-pmk-69-2025',ARRAY['stream_midstream','stream_downstream']::text[]),
+('idn-pmk-9-2026',ARRAY['stream_midstream','stream_downstream']::text[]),
+('idn-perpres-132-2024',ARRAY['palm_oil','biofuel','financing','subsidies_incentives','stream_upstream','stream_midstream','stream_downstream']::text[]),
+('idn-perpres-16-2025',ARRAY['palm_oil','biofuel','sustainability','certification','stream_upstream','stream_midstream','stream_downstream','stream_trading']::text[]),
+('idn-perpres-10-2021',ARRAY['coal','nickel_mining','palm_oil','biofuel','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','cross_sector','investment','subsidies_incentives','stream_upstream','stream_midstream','stream_downstream','stream_trading']::text[]),
+('idn-perpres-49-2021',ARRAY['coal','nickel_mining','palm_oil','biofuel','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','cross_sector','investment','subsidies_incentives','stream_upstream','stream_midstream','stream_downstream','stream_trading']::text[]),
+('idn-perpres-55-2019',ARRAY['nickel_mining','cobalt','copper','iron_steel','subsidies_incentives','battery','stream_downstream']::text[]),
+('idn-perpres-79-2023',ARRAY['nickel_mining','cobalt','copper','iron_steel','subsidies_incentives','battery','stream_downstream']::text[]),
+('idn-pp-40-2021',ARRAY['coal','nickel_mining','palm_oil','biofuel','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','cross_sector','subsidies_incentives','special_economic_zone','stream_upstream','stream_midstream','stream_downstream','stream_trading']::text[]),
+('idn-pp-45-2019',ARRAY['coal','nickel_mining','palm_oil','biofuel','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','cross_sector','tax_incentive','subsidies_incentives','research_development','vocational_training','stream_upstream','stream_midstream','stream_downstream']::text[]),
+('idn-esdm-kepmen-296-2023',ARRAY['nickel_mining','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','critical_minerals','stream_upstream','stream_midstream','stream_downstream']::text[]),
+('idn-esdm-kepmen-69-2024',ARRAY['nickel_mining','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','strategic_minerals','stream_upstream','stream_midstream','stream_downstream']::text[]),
+('idn-pp-19-2025',ARRAY['coal','nickel_mining','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','royalties_tax','stream_upstream','stream_midstream','stream_trading']::text[]),
+('idn-esdm-permen-6-2026',ARRAY['coal','nickel_mining','bauxite','copper','tin','cobalt','manganese','iron_steel','silica','gold_silver','rare_earths','licensing','rkab','stream_upstream','stream_midstream']::text[])
+)
+update policy_idn.documents d set topics=(select array_agg(t order by t) from (select distinct unnest(d.topics||c.tags) t) s)
+from curated c where d.document_id=c.document_id and not c.tags <@ d.topics;
+comment on table policy_idn.documents is '인도네시아 자원개발·트레이딩 공식문서. 품목·가치사슬 태그는 검토 관련성, 현행 효력·적용성 미확인.';
+commit;
