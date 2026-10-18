@@ -142,8 +142,23 @@
         return v.toLocaleString(undefined, { maximumFractionDigits: digits });
     };
 
+    // Measurement basis (#614). A point's `measurement_basis` says what the
+    // number measures. The declared goods weight is the default reading
+    // ("goods_net_mass", and "unknown" for older series that never said), so
+    // both map to '' and nothing changes for them. Anything else -- copper
+    // content, today -- is a different quantity that can share a unit string
+    // ("kt") with a goods weight once units are normalised below, so it keys its
+    // own series and is never set against a goods series.
+    const GOODS_BASIS = new Set(['', 'goods_net_mass', 'unknown']);
+    const basisOf = (p) => {
+        const b = String(p?.normalized?.measurement_basis ?? p?.measurement_basis ?? '');
+        return GOODS_BASIS.has(b) ? '' : b;
+    };
+    const BASIS_LABEL = { contained_copper_mass: '구리 함량 기준' };
+    const basisLabel = (b) => (b ? (BASIS_LABEL[b] || '상품 중량이 아닌 기준') : '신고 상품 중량');
+
     /**
-     * One card per (flow, source, unit). A series whose unit changes midway
+     * One card per (flow, source, unit, basis). A series whose unit changes midway
      * (Thailand reports both FOB and CIF) splits instead of mixing.
      */
     const seriesFromPoints = (raw, { flow, hs, preferUsd }) => {
@@ -180,8 +195,9 @@
                 continue;
             }
             const source = p.source || '';
-            const key = `${source}|${unit}`;
-            if (!byKey.has(key)) byKey.set(key, { flow, hs, source, unit, byMonth: new Map() });
+            const basis = basisOf(p);
+            const key = `${source}|${unit}|${basis}`;
+            if (!byKey.has(key)) byKey.set(key, { flow, hs, source, unit, basis, byMonth: new Map() });
             const ratio = p.publication?.evidence?.ratio;
             byKey.get(key).byMonth.set(month, {
                 month, value, held: isHeld(p), ratio: Number.isFinite(ratio) ? ratio : null,
@@ -198,7 +214,10 @@
                 source: s.source,
                 sourceLabel: SOURCE_LABEL[s.source] || s.source,
                 unit: s.unit,
-                unitLabel: UNIT_LABEL[s.unit] || s.unit,
+                basis: s.basis,
+                // A unit label that already says "구리 함량" needs no second tag.
+                unitLabel: (UNIT_LABEL[s.unit] || s.unit)
+                    + (s.basis && !/함량/.test(UNIT_LABEL[s.unit] || '') ? ` · ${basisLabel(s.basis)}` : ''),
                 points,
                 latest: points.length ? points[points.length - 1].month : null,
             };
@@ -320,6 +339,15 @@
                         if (!out.some((o) => o.kind === 'units' && o.flow === flow
                             && o.a.source === a.source && o.b.source === b.source)) {
                             out.push({ flow, a, b, kind: 'units' });
+                        }
+                        continue;
+                    }
+                    // Same unit string, different quantity (goods weight vs
+                    // contained metal): the numbers are not the same indicator.
+                    if ((a.basis || '') !== (b.basis || '')) {
+                        if (!out.some((o) => o.kind === 'basis' && o.flow === flow
+                            && o.a.source === a.source && o.b.source === b.source)) {
+                            out.push({ flow, a, b, kind: 'basis' });
                         }
                         continue;
                     }
@@ -798,6 +826,9 @@
             if (kind === 'units') {
                 return `${who}: ${MEASURE(a)}(${esc(a.unitLabel)})과 ${MEASURE(b)}(${esc(b.unitLabel)})은 다른 지표라 숫자를 직접 비교하지 않습니다. 둘 다 맞을 수 있습니다.`;
             }
+            if (kind === 'basis') {
+                return `${who}: 측정 기준이 다릅니다(${basisLabel(a.basis)} / ${basisLabel(b.basis)}). 같은 단위여도 직접 비교하지 않습니다.`;
+            }
             if (kind === 'scope') {
                 return `${who}: 상품 범위(HS ${esc(a.hs || '?')} / ${esc(b.hs || '?')})가 다르거나 확인되지 않아 같은 단위여도 비교하지 않습니다.`;
             }
@@ -945,6 +976,6 @@
     window.TradeMonthly = {
         attach,
         // exposed for tests
-        _internal: { aggregateComtradeMonthly, applyPreviewHold, bilateralEntries, loadComtradeSeries, liveFlowHtml, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel, monthlyHtml },
+        _internal: { aggregateComtradeMonthly, applyPreviewHold, bilateralEntries, loadComtradeSeries, liveFlowHtml, monthBlocks, reporterCodeFor, liveCardHtml, compareSources, comparisonHtml, MONTHLY_ID, buildView, seriesFromPoints, basisOf, trailing12, isHeld, monthLabel, bilateralHtml, seriesCardHtml, partnerLabel, monthlyHtml },
     };
 })();
