@@ -13,7 +13,13 @@ const GROUPS = [
  ['인허가','허가','permitting','perizinan','izin'],
  ['혼합의무','혼합 의무','blending','pencampuran'],
  ['지속가능성','지속가능','sustainability','berkelanjutan','ispo'],
- ['기금','fund','dana'],['보조금','subsidy','subsidi','financing','pembiayaan'],
+ ['기금','fund','dana'],['보조금','지원금','subsidy','subsidi','bantuan','subsidies_incentives'],
+ ['금융지원','financing','pembiayaan'],
+ ['세금감면','세금 감면','법인세감면','tax allowance','tax holiday','tax_incentive','pengurangan pajak','fasilitas pajak','keringanan pajak'],
+ ['투자인센티브','투자 인센티브','investment incentive','insentif','subsidies_incentives'],
+ ['환경','environment','lingkungan','environmental_land'],
+ ['로열티','royalty','royalties','iuran produksi','royalties_tax'],
+ ['재식재','replanting','peremajaan'],['인프라지원','infrastructure_support','sarana dan prasarana'],
 ];
 export function parseTerms(query) {
  if(query.length>240)throw Error('검색어는 240자 이내로 입력하세요.');

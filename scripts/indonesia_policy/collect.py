@@ -126,9 +126,12 @@ def collect(entry, cache_dir):
         try:
             time.sleep(2)
             pdf, pdf_url, pdf_hash = fetch(candidate["url"], cache_dir)
-            if not pdf.startswith(b"%PDF"):
-                raise ValueError("not_pdf")
-            pdf_text = pdf_content(pdf)
+            if pdf.startswith(b"%PDF"):
+                pdf_text = pdf_content(pdf)
+            else:
+                pdf_text, _ = html_content(pdf)
+                if not re.search(r"\bPasal\s+\d", pdf_text, re.I) or not re.search(r"MEMUTUSKAN|DENGAN RAHMAT", pdf_text, re.I):
+                    raise ValueError("not_final_legal_text")
             pdf_kind = classify_pdf(pdf_text)
             if pdf_kind != "official_text" or not verify_identity(pdf_text, entry):
                 raise ValueError("pdf_identity_or_final_status_unverified")
@@ -162,6 +165,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--stage", choices=[*ORDER, "all"], default="coal")
     p.add_argument("--document-id", action="append", help="Retry only selected manifest IDs in a new run directory")
+    p.add_argument("--manifest", type=Path, default=Path(__file__).with_name("sources.json"))
     p.add_argument("--output-dir", required=True)
     p.add_argument("--limit", type=int, default=30)
     args = p.parse_args()
@@ -175,7 +179,7 @@ def main():
         p.error("limit must be 1..100")
     out.mkdir(parents=True, exist_ok=True)
     (out / "raw").mkdir(exist_ok=True)
-    manifest = json.loads(Path(__file__).with_name("sources.json").read_text())
+    manifest = json.loads(args.manifest.read_text())
     entries = [e for e in manifest if args.stage == "all" or e["primary_stage"] == args.stage]
     if args.document_id:
         requested = set(args.document_id)

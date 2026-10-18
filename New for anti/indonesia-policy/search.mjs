@@ -8,7 +8,7 @@ let controller,detailController,serial=0;
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const official=url=>{try{const u=new URL(url);return u.protocol==='https:'&&u.hostname.endsWith('.go.id')?u.href:null;}catch{return null;}};
 function sourceLink(url,label){const href=official(url);if(!href)return node('span','원문 링크 확인 필요');const a=node('a',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
-function badges(item){const row=node('div',undefined,'badges');for(const text of [topics[item.primary_stage],levels[item.issuer_level],item.jurisdiction,item.content_kind==='official_text'?'원문 자료':'메타데이터'])row.append(node('span',text,'badge'));row.append(node('span','현행 효력 미확인','badge unverified'));return row;}
+function badges(item){const row=node('div',undefined,'badges');for(const text of [topics[item.primary_stage],levels[item.issuer_level],item.jurisdiction,item.content_kind==='official_text'?'원문 자료':'메타데이터'])row.append(node('span',text,'badge'));if(item.topics?.includes('cross_sector'))row.append(node('span','공통 제도 · 적용대상 별도 확인','badge'));row.append(node('span','현행 효력 미확인','badge unverified'));return row;}
 function ref(item){return `${item.document_type} ${item.document_number}/${item.document_year}`;}
 function matchEvidence(item){const box=node('details');box.append(node('summary','일치 근거 보기'));for(const m of item.matched_terms||[])box.append(node('p',`${m.term} → ${m.alias} · ${fields[m.field]||m.field}`,'meta'));return box;}
 function card(item){
@@ -43,7 +43,7 @@ async function search(offset=0,writeHistory=true){
  try{
   const r=await fetch(`/api/idn/search?${p}`,{signal:controller.signal}),data=await r.json();
   if(!r.ok)throw Error(data.error||'검색하지 못했습니다.');if(data.country!=='IDN')throw Error('국가별 데이터 검증에 실패했습니다.');if(token!==serial)return;
-  coverage.textContent=`저장 문서 ${data.coverage.documents}건 · 원문 확인 보류 출처 ${data.coverage.held_sources}건 · 시범 수집 중`;
+  coverage.textContent=`저장 문서 ${data.coverage.documents}건 · 수집 실패 이력이 있는 출처 ${data.coverage.held_sources}건 · 시범 수집 중`;
   const select=document.querySelector('#jurisdictions'),chosen=select.value||p.get('jurisdiction')||'';
   select.replaceChildren(new Option('전체',''),...data.jurisdictions.map(j=>new Option(j,j)));select.value=chosen;
   status.textContent=data.total?`${data.total}건 검색됨 · 키워드·동의어 검색`:'저장된 자료에서 일치하는 문서를 찾지 못했습니다. 조건을 줄이거나 품목을 선택해 보세요.';

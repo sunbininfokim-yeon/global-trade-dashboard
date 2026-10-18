@@ -8,6 +8,9 @@ test('Korean topics and issuer-independent terms expand without paid AI',()=>{
  assert.equal(parseTerms('32/MK/BC')[0].aliases[0],'32/MK/BC');
  assert.equal(parseTerms('니켈 수출').length,2);assert.equal(parseTerms('palm oil').length,1);
  assert.equal(parseTerms('Permendag 15/2026').length,1);
+ assert.ok(parseTerms('보조금')[0].aliases.includes('bantuan'));
+ assert.ok(parseTerms('세금감면')[0].aliases.includes('pengurangan pajak'));
+ assert.ok(!parseTerms('금융지원')[0].aliases.includes('tax_incentive'));
  assert.throws(()=>parseTerms('a,b,c,d,e,f,g'));
 });
 test('IDN handler calls only IDN RPC and keeps the server key out of responses',async()=>{

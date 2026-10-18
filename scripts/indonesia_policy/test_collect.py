@@ -66,6 +66,19 @@ class SourceEvidenceTests(unittest.TestCase):
         with self.assertRaises(subprocess.CalledProcessError):
             pdf_content(data.getvalue())
 
+    def test_official_fulltext_html_is_not_discarded_as_missing_pdf(self):
+        entry=dict(document_id='idn-test-html',title='Mining',title_ko='광업',issuer_name='Government',
+                   issuer_level='national',jurisdiction='Indonesia',document_type='UU',document_number='4',
+                   document_year=2009,topics=['coal'],primary_stage='coal',scope_note='Test',
+                   url='https://example.go.id/dok/uu-4',identity_phrases=['4 TAHUN 2009','MINERAL'])
+        metadata=b'<main>UNDANG-UNDANG 4 TAHUN 2009 MINERAL '+b'Catalogue '*20+b'<a href="/api/download/fulltext/law.HTM">Fulltext HTML (Indonesia)</a></main>'
+        legal=b'<main>UNDANG-UNDANG NOMOR 4 TAHUN 2009 MINERAL MEMUTUSKAN Pasal 1 '+b'Legal text '*30+b'</main>'
+        with patch('collect.fetch',side_effect=[(metadata,entry['url'],'a'*64),(legal,'https://example.go.id/api/download/fulltext/law.HTM','b'*64)]),patch('collect.time.sleep'):
+            result=collect(entry,Path('/tmp'))
+        self.assertEqual(result['content_kind'],'official_text')
+        self.assertIn('Legal text',result['text_content'])
+        self.assertTrue(result['text_source_url'].endswith('.HTM'))
+
 
 if __name__ == "__main__":
     unittest.main()

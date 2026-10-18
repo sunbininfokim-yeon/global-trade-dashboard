@@ -8,9 +8,21 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
   const page=await browser.newPage({viewport:{width:1360,height:950}}),errors=[],responses=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('response',async r=>{if(r.url().includes('/api/idn/'))responses.push(await r.json());});
+  const initial=await (await page.request.get('http://127.0.0.1:4317/api/idn/search')).json();
+  const biofuel=await (await page.request.get('http://127.0.0.1:4317/api/idn/search?topic=biofuel')).json();
+  assert.ok(initial.total>=11);assert.ok(biofuel.items.some(x=>x.document_id==='idn-kemenkeu-pmk-69-2025'));
   await page.goto('http://127.0.0.1:4317/indonesia-policy/');
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
-  assert.equal(await page.locator('article').count(),11);
+  assert.equal(await page.locator('article').count(),Math.min(initial.total,20));
+  if(initial.total>20){
+   const firstTitle=await page.locator('article h2').first().innerText();
+   await page.getByRole('button',{name:'다음',exact:true}).click();
+   await page.waitForFunction(()=>new URLSearchParams(location.search).get('offset')==='20'&&document.querySelector('article'));
+   assert.equal(await page.locator('article').count(),Math.min(initial.total-20,20));
+   assert.notEqual(await page.locator('article h2').first().innerText(),firstTitle);
+   await page.getByRole('button',{name:'이전',exact:true}).click();
+   await page.waitForFunction(()=>new URLSearchParams(location.search).get('offset')==='0'&&document.querySelector('article'));
+  }
   await page.locator('#query').fill('니켈, 수출');await page.getByRole('button',{name:'검색',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.matches'));
   assert.ok(await page.locator('article').count()>0);
@@ -20,7 +32,7 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
   await page.locator('select[name=topic]').selectOption('biofuel');
   await page.waitForFunction(()=>!document.querySelector('#status').textContent.includes('검색 중'));
   await page.locator('#query').fill('');await page.getByRole('button',{name:'검색',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('2건'));
+  await page.waitForFunction(n=>document.querySelector('#status').textContent.startsWith(n+'건'),biofuel.total);
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/search-mobile.png',fullPage:true});
@@ -33,6 +45,6 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
   await page.getByRole('button',{name:'검색',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#coverage').textContent.includes('연결 오류'));
   assert.ok(responses.filter(x=>x.items).every(x=>x.country==='IDN'&&x.items.every(d=>d.document_id.startsWith('idn-'))));
-  assert.deepEqual(errors,[]);console.log(JSON.stringify({initialDocuments:11,biofuelDocuments:2,viewportWidths:[1360,390],pageErrors:errors.length}));
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({initialDocuments:initial.total,biofuelDocuments:biofuel.total,viewportWidths:[1360,390],pageErrors:errors.length}));
  }finally{await browser.close();}
 });
