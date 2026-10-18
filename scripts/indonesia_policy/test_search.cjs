@@ -24,6 +24,24 @@ test('IDN search: multilingual terms, evidence, partial/all, filters, details an
   assert.equal((await search('32/MK/BC')).total,1);
   assert.equal((await search('')).total,1);
   assert.equal((await search('존재하지않는검색어')).total,0);
+  // General business law is a separate shared document, not a duplicate law per commodity.
+  const common={...d,document_id:'idn-test-common-law',title:'Kepailitan',title_ko:'파산법',
+   document_number:'common-law-test',topics:['coal','nickel_mining','palm_oil','biofuel','insolvency','cross_sector','cross_sector_business'],
+   scope_note:'Cross-sector review candidate; applicability and current amendments unverified',
+   text_content:'UNDANG-UNDANG tentang KEPAILITAN. '.repeat(8)};
+  common.content_hash=createHash('sha256').update(common.text_content).digest('hex');
+  await db.query('select public.idn_store_document($1)',[JSON.stringify(common)]);
+  const commonResult=await search('석탄, 파산',true,'coal');
+  assert.equal(commonResult.total,1);assert.equal(commonResult.items[0].document_id,common.document_id);
+  assert.equal(commonResult.items[0].matched_condition_count,2);
+  assert.equal(commonResult.items[0].legal_status,'unverified');
+  assert.ok(commonResult.items[0].matched_terms.some(x=>x.field==='catalogue'));
+  assert.equal((await search('팜유, 파산',true,'palm_oil')).total,1);
+  assert.equal((await search('팜유, 양도담보',true,'palm_oil')).total,0);
+  await db.exec('reset role');
+  await db.query('delete from policy_idn.versions where document_id=$1',[common.document_id]);
+  await db.query('delete from policy_idn.documents where document_id=$1',[common.document_id]);
+  await db.exec('set role service_role');
   const detail=(await db.query('select public.idn_get_document($1) d',[d.document_id])).rows[0].d;
   assert.equal(detail.version.text_content,text);assert.equal(detail.country,'IDN');
   assert.equal((await db.query("select public.idn_get_document('us-nickel') d")).rows[0].d,null);

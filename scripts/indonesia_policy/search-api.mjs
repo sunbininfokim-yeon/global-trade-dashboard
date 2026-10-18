@@ -28,6 +28,22 @@ const GROUPS = [
  ['환경성과평가','기업환경평가','proper','properlink','environmental_performance'],
  ['로열티','royalty','royalties','iuran produksi','royalties_tax'],
  ['재식재','replanting','peremajaan'],['인프라지원','infrastructure_support','sarana dan prasarana'],
+ // Business-law relevance is a retrieval aid, never a finding of applicability.
+ ['민법','civil law','kuhperdata','kitab undang-undang hukum perdata','civil_law'],
+ ['상법','commercial law','hukum dagang','kuhd','kitab undang-undang hukum dagang','commercial_law'],
+ ['계약','계약서','contract','kontrak','perjanjian','contract_law'],
+ ['매매','sale and purchase','jual beli','sale_purchase'],
+ ['채무불이행','계약위반','breach of contract','wanprestasi','contract_breach'],
+ ['불가항력','force majeure','keadaan memaksa','overmacht'],
+ ['회사법','회사설립','company law','perseroan terbatas','corporate_law'],
+ ['지분인수','기업인수','acquisition','pengambilalihan','share_acquisition'],
+ ['담보','담보권','security interest','jaminan','collateral'],
+ ['양도담보','fiduciary security','fidusia','fiduciary_security'],
+ ['파산','도산','bankruptcy','kepailitan','insolvency'],
+ ['채무재조정','지급의무유예','pkpu','penundaan kewajiban pembayaran utang','debt_restructuring'],
+ ['중재','arbitration','arbitrase'],['분쟁해결','dispute resolution','penyelesaian sengketa'],
+ ['투자','investment','penanaman modal'],
+ ['트레이딩','무역','trading','trade','perdagangan'],
 ];
 export function parseTerms(query) {
  if(query.length>240)throw Error('검색어는 240자 이내로 입력하세요.');

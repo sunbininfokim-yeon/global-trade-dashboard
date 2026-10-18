@@ -16,9 +16,9 @@ python3 scripts/indonesia_policy/collect.py \
 
 stage: coal → nickel_mining → palm_oil → biofuel, 또는 all. 실행마다 새 결과 디렉터리를 사용한다. 기존 collection.json을 덮어쓰지 않는다. 실패 문서만 재확인하려면 같은 stage에 `--document-id idn-esdm-permen-4-2025`를 추가하고 새 결과 디렉터리를 지정한다. 결과 JSON과 원본 SHA256 캐시는 저장소 밖에 보관한다. 매 시도 이후 체크포인트를 원자 교체한다. 실패한 실행에서도 collection.json의 성공 문서는 즉시 저장할 수 있다.
 
-기본 sources.json은 확대·복구 결과를 합친 80개 검토 후보 목록이다(저장 57, 미저장 23). 일부는 아직 접근 실패 상태이며 80개 모두 확보됐다는 뜻이 아니다. `--stage all --limit 100`이면 현재 목록 전체가 시도 대상이다. 기본 limit 30은 일부만 시도하므로 품목별 stage·ID 또는 명시적인 limit을 사용한다. 이번에 상시 작업을 켜지는 않았다.
+기본 sources.json은 확대·복구 결과를 합친 85개 검토 후보 목록이다(저장 59, 미저장 26). 일부는 아직 접근 실패 상태이며 85개 모두 확보됐다는 뜻이 아니다. `--stage all --limit 100`이면 현재 목록 전체가 시도 대상이다. 기본 limit 30은 일부만 시도하므로 품목별 stage·ID 또는 명시적인 limit을 사용한다. 이번에 상시 작업을 켜지는 않았다.
 
-개별 수집을 재현할 때만 `--manifest scripts/indonesia_policy/sources-expansion-20261018.json` 등 이력 목록을 선택한다. 2026-10-19 환경·복구·지방·메타데이터 목록의 결과와 공백은 [최신 보고서](../../docs/indonesia-policy-environment-and-sources-20261019.md)를 따른다. 이미 실패한 오래된 주소를 일괄 재실행하지 않는다. 현재 실행 중인 수집기와 같은 호스트를 병렬 수집하지 않는다. `metadata_only` 후보는 카탈로그만 수집해 대형/실패 PDF의 불필요한 재다운로드를 막는다.
+개별 수집을 재현할 때만 `--manifest scripts/indonesia_policy/sources-expansion-20261018.json` 등 이력 목록을 선택한다. 2026-10-19 사업법규 후보·파산/중재 원문·법전 본체 보류는 [사업법규 보고서](../../docs/indonesia-policy-business-law-20261019.md)를 따른다. 환경·복구·지방·메타데이터 목록의 결과와 공백은 [최신 보고서](../../docs/indonesia-policy-environment-and-sources-20261019.md)를 따른다. 이미 실패한 오래된 주소를 일괄 재실행하지 않는다. 현재 실행 중인 수집기와 같은 호스트를 병렬 수집하지 않는다. `metadata_only` 후보는 카탈로그만 수집해 대형/실패 PDF의 불필요한 재다운로드를 막는다.
 
 기존 공식 Fulltext가 HTML인 경우에도 최종 법령 표식·조문·문서번호를 검증한 뒤 원문으로 저장한다. 공식 페이지의 `window.open`에는 문자열 URL만 읽고 JavaScript를 실행하지 않는다. PDF 하위 요청에서 403/429를 받으면 공식 메타데이터를 보존하고 그 호스트의 남은 요청을 중단한다.
 

@@ -16,6 +16,20 @@ test('Korean topics and issuer-independent terms expand without paid AI',()=>{
  assert.ok(parseTerms('광산복구')[0].aliases.includes('reklamasi'));
  assert.throws(()=>parseTerms('a,b,c,d,e,f,g'));
 });
+test('business-law queries preserve distinct issues and multilingual phrases',()=>{
+ const terms=parseTerms('니켈, 계약, 불가항력');
+ assert.equal(terms.length,3);
+ assert.ok(terms[1].aliases.includes('perjanjian'));
+ assert.ok(terms[2].aliases.includes('keadaan memaksa'));
+ assert.equal(parseTerms('security interest').length,1);
+ assert.equal(parseTerms('kitab undang-undang hukum perdata').length,1);
+ assert.ok(parseTerms('민법')[0].aliases.includes('kuhperdata'));
+ assert.ok(!parseTerms('민법')[0].aliases.includes('kuhd'));
+ assert.ok(parseTerms('석탄, 파산')[1].aliases.includes('kepailitan'));
+ assert.ok(!parseTerms('파산')[0].aliases.includes('pkpu'));
+ assert.ok(parseTerms('팜유, 양도담보')[1].aliases.includes('fidusia'));
+ assert.ok(!parseTerms('투자')[0].aliases.includes('subsidies_incentives'));
+});
 test('IDN handler calls only IDN RPC and keeps the server key out of responses',async()=>{
  const handler=createHandler(async(url,options)=>{
   assert.equal(url,'https://db.test/rest/v1/rpc/idn_search_documents');
