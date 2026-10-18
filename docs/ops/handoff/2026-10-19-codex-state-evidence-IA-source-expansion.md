@@ -1,0 +1,9 @@
+# IA — Emerson official release and same linked results sheet
+
+User requested remaining source-gated poll admission. State IA only; checkout `/Users/yeoninair/Documents/해운 데이터/us-poll-IA-source-coverage-20261019`, branch `codex/poll-ia-source-coverage-20261019`, common base 52546e0a (#616). Independent of all other state PRs.
+
+Reused the actual provider response captured 2026-10-18T16:20:04.208175+00:00; no claim of a new API request. New original-source HTTP receipt: official Emerson October Iowa release links precisely the same spreadsheet ID supplied by the API. Both initial vote-intention questions total 650 LV; field Oct 5–6, publication Oct 9. Governor Sand 49.0 / Lahn 45.3; Senate Turek 45.0 / Hinson 46.6 / Laehn 1.5. Exact values already match provider decimals, so no numerical override. Official methods: Aristotle file, MMS text-to-web plus matched PureSpectrum panel, weighted gender/education/party registration/region, sponsor Nexstar. Reported precision is a credibility interval 3.8pp, not a probability-sample MOE or candidate-margin significance test.
+
+Two exact primary reviews enter 14-day numeric lead counts at as_of Oct 18; neither is in 7 days. Same-wave/new-record mutation remains bound by raw/normalized hashes. A different future sheet question remains reference until individually reviewed. No college-wide blanket promotion. Original IA primary supplement and source receipts retain original clocks; no finance, roster-certification or winner changes.
+
+State-owned packet, original-source review audit, IA-specific regression and this handoff only. No common code/policy, national generated JSON, UI/workflow, merge/deploy/dispatch. Final tests and temporary integration-replay results recorded after completion. #616 first, then this independent state PR retargeted to main after checking current base.
