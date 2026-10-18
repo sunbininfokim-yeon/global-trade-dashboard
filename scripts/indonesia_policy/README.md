@@ -41,7 +41,7 @@ node scripts/indonesia_policy/import.cjs /ABSOLUTE/RUN-UNIQUE/collection.json \
 python3 -m unittest discover -s scripts/indonesia_policy -p 'test_*.py' -v
 npm install --prefix /tmp/idn-db-tests --no-audit --no-fund @electric-sql/pglite@0.5.8
 IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
-  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs scripts/indonesia_policy/test_search.cjs scripts/indonesia_policy/test_api.mjs
+  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs scripts/indonesia_policy/test_search.cjs scripts/indonesia_policy/test_api.mjs scripts/indonesia_policy/test_worker.cjs
 ```
 
 원문 확보와 현행 효력 확정, 관측 변경과 법적 개정은 서로 다르다. 해시 변화만으로 단계 알림이나 법적 의무를 생성하면 안 된다.

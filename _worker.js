@@ -2,6 +2,7 @@ import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
 import PolicyEvidence from './New for anti/policy-evidence.js';
 import { selectComtradeTotals } from './New for anti/scripts/commodity_trade/gateway/comtrade-totals.mjs';
 import { handleTradePipeline, boundedText } from './New for anti/scripts/commodity_trade/gateway/handler.mjs';
+import { handleIdnPolicy } from './scripts/indonesia_policy/search-api.mjs';
 
 export default {
     async fetch(request, env, ctx) {
@@ -84,6 +85,11 @@ export default {
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
+        }
+
+        // Independent Indonesian corpus: no US search or lifecycle fallback.
+        if (url.pathname.startsWith('/api/idn/')) {
+            return await handleIdnPolicy(request, env);
         }
 
         // US policy (bills / executive orders / regulations) out of Supabase

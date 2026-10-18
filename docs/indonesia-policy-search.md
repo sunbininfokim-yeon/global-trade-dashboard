@@ -55,13 +55,22 @@
 - 기존 미국 Worker 회귀검증 16개 통과.
 - Supabase 보안 검사에서 IDN 관련 항목은 비공개 테이블의 RLS 정책 없음 INFO 3건이다. 공개 역할 접근을 의도적으로 거부하고 서비스 역할만 사용하는 설계다. 공개 정책을 추가하지 않는다. 설명: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
 
-Worker 연결은 `_worker.js`의 import 및 `/api/idn/` 분기를 추가해야 한다. 저장소 OWNERS에 따른 이번 연결 예외를 사용자에게 요청했다. 승인 전에는 이 공유 파일과 소유권 예외 규칙을 변경하지 않는다. 운영 사이트 공개·배포 검증은 별도다.
+Worker 연결은 `_worker.js`의 import 및 `/api/idn/` 분기로 구현했다. 2026-10-18 사용자가 Codex 구현·Claude 배포 역할을 확인한 데 따라 이번 브랜치에 `_worker.js`만 정확한 소유권 예외를 추가했다. 기존 미국 처리·공용 내비게이션·배포 워크플로는 수정하지 않았다. 운영 사이트 공개·배포 검증은 Claude 담당이다.
 
 ```js
 import { handleIdnPolicy } from './scripts/indonesia_policy/search-api.mjs';
 // Worker.fetch 내부, 기존 US 라우트와 별도로:
 if (url.pathname.startsWith('/api/idn/')) return await handleIdnPolicy(request, env);
 ```
+
+## Claude 배포 인수
+
+1. PR #613의 최종 diff와 검사 결과를 검토한다. 이 PR의 DB 마이그레이션 1~5는 운영에 이미 적용됐으므로 수동 재실행하지 않는다. 새 DB에서만 순서대로 적용한다.
+2. 실제 Worker의 SUPABASE_URL·SUPABASE_SERVICE_ROLE_KEY 바인딩을 기존 미국 서비스와 같은 프로젝트인지 비공개로 확인한다. 새 키나 Gemini 설정은 필요하지 않다.
+3. 사람의 병합·배포 승인 이후 기존 배포 경로를 따른다. Codex는 병합·배포하지 않았다.
+4. `/indonesia-policy/`가 새 독립 페이지인지 확인한다. 첫 연결 주소는 이 URL이며 기존 대시보드 메뉴는 아직 바꾸지 않았다.
+5. `/api/idn/search?q=니켈,수출` 및 문서번호 검색, 바이오연료 필터 2건, 원문 상세, 미국 `/api/us/search?q=hr3633`를 배포 후 확인한다. 오류가 0건 결과로 숨지 않는지도 확인한다.
+6. 기존 정책 메뉴에 인도네시아 링크를 넣는 작업은 공용 index/app 담당자인 Claude가 충돌 없이 반영한다. 미국식 입법 보드로 연결하지 않는다.
 
 로컬 실제 DB 미리보기:
 
