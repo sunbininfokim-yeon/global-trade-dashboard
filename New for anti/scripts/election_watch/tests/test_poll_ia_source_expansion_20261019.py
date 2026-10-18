@@ -32,3 +32,9 @@ class IAEmersonSourceTests(unittest.TestCase):
     def test_original_evidence_clocks_and_money_unchanged(self):
         self.assertFalse(self.audit['new_provider_collection']);self.assertTrue(self.audit['preserved_primary_records'])
         self.assertFalse(self.audit['finance_recollected'])
+
+    def test_existing_suffolk_observations_are_preserved_with_their_original_dates(self):
+        packet=read(C/'state_evidence/2026/IA.json')
+        rows=packet['capture']['primary_records']
+        self.assertEqual({r['id']for r in rows},{'primary-suffolk-ia-senate-20261007','primary-suffolk-ia-governor-20261007'})
+        self.assertTrue(all(r['end_date']=='2026-10-04'for r in rows))
