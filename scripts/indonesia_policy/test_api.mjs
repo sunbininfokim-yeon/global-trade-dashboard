@@ -13,6 +13,11 @@ test('Korean topics and issuer-independent terms expand without paid AI',()=>{
  assert.ok(!parseTerms('금융지원')[0].aliases.includes('tax_incentive'));
  assert.ok(parseTerms('환경영향평가')[0].aliases.includes('amdal'));
  assert.ok(parseTerms('폐수')[0].aliases.includes('air limbah'));
+ assert.ok(parseTerms('니켈, 국산화율')[1].aliases.includes('tkdn'));
+ assert.equal(parseTerms('local content').length,1);
+ assert.ok(parseTerms('산업정보 보고')[0].aliases.includes('siinas'));
+ assert.ok(!parseTerms('국산화율')[0].aliases.includes('subsidies_incentives'));
+ assert.ok(!parseTerms('산업보고')[0].aliases.includes('rkab'));
  assert.ok(parseTerms('광산복구')[0].aliases.includes('reklamasi'));
  assert.throws(()=>parseTerms('a,b,c,d,e,f,g'));
 });

@@ -54,6 +54,9 @@ const GROUPS = [
  ['하류','downstream','hilir','stream_downstream'],
  ['제련','정련','smelter','pemurnian','pengolahan'],['배터리','battery','baterai'],
  ['인증','certification','sertifikasi'],['대통령령','perpres','peraturan presiden'],
+ ['국산화','국산화율','현지조달','local content','tkdn','tingkat komponen dalam negeri','local_content'],
+ ['기업기여도','bmp','bobot manfaat perusahaan'],
+ ['산업정보보고','산업정보 보고','산업보고','siinas','sistem informasi industri nasional','industrial_reporting'],
 ];
 export function parseTerms(query) {
  if(query.length>240)throw Error('검색어는 240자 이내로 입력하세요.');

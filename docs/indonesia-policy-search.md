@@ -2,11 +2,13 @@
 
 2026-10-18. 선행 PR #613. 운영 DB의 비공개 policy_idn 자료만 조회한다.
 
+2026-10-19 후속: 국산화율·TKDN/BMP·SIINas 다국어 검색을 추가했다. TKDN 원문은 저장했고 SIINas 원문은 시간 초과로 미저장이다. [최신 수집 결과](indonesia-policy-official-recovery-20261019.md)를 따른다.
+
 2026-10-19 범위 보강: 품목별 규제 외 자원개발·트레이딩의 민법·상법·회사·계약·투자·담보·도산·분쟁 법규도 관련 검색 대상이다. [공통 사업법규 계약](indonesia-policy-business-law-20261019.md)에 검색 사전, 공식 출처 후보, 법전 본체 미저장과 개정 검토 공백을 구분했다. 사전 추가는 문서 확보·임베딩 완료를 뜻하지 않는다.
 
-## 실제 저장 문서 63건
+## 실제 저장 문서 64건
 
-초기 11건에서 환경 등 57건, 파산·중재 원문 2건, 투자·기금·ISPO 대통령령 원문 4건을 추가해 현재 63건이다. 최신 원문·부속서 44건(일부 수집 2건 포함), 메타데이터만 19건이다. 초기 확대는 [1차 범위](indonesia-policy-coverage-20261018.md), 환경은 [환경 보고서](indonesia-policy-environment-and-sources-20261019.md), 사업법규는 [사업법규 보고서](indonesia-policy-business-law-20261019.md), 최신 검색은 [가치사슬 보고서](indonesia-policy-value-chain-20261019.md)를 따른다. 아래는 최초 시범 11건의 목록이며 현재 전체 목록이 아니다.
+초기 11건에서 환경 등 57건, 파산·중재 원문 2건, 투자·기금·ISPO 대통령령 원문 4건, TKDN 인증 원문 1건을 추가해 현재 64건이다. 최신 원문·부속서 45건(일부 수집 2건 포함), 메타데이터만 19건이다. 초기 확대는 [1차 범위](indonesia-policy-coverage-20261018.md), 환경은 [환경 보고서](indonesia-policy-environment-and-sources-20261019.md), 사업법규는 [사업법규 보고서](indonesia-policy-business-law-20261019.md), 최신 검색은 [가치사슬 보고서](indonesia-policy-value-chain-20261019.md)를 따른다. 아래는 최초 시범 11건의 목록이며 현재 전체 목록이 아니다.
 
 | 품목 | 문서 | 한국어 설명 |
 |---|---|---|
