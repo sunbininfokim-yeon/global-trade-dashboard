@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=crop-stage-timeline-20261016-mn-u">
+    <link rel="stylesheet" href="style.css?v=agg-602">
     <link rel="stylesheet" href="export-controls.css?v=4">
 </head>
 <body>
@@ -214,7 +214,7 @@
             </div>
             <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
-                <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
+                <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01" disabled title="과거 시점 조회는 아직 지원하지 않습니다. 화면의 값은 각 출처의 실제 기간 자료입니다.">
             </div>
             <script>
                 // Set the historical date picker to today's date dynamically
@@ -340,12 +340,12 @@
                         <button type="button" class="to-btn is-on" id="trade-flow-toggle">켜기</button>
                     </div>
                     <div class="to-scale">
-                        <span class="to-label">물동량</span>
+                        <span class="to-label" title="선 굵기는 거래금액(USD) 기준">거래금액</span>
                         <span class="to-scale-row"><i class="s1"></i>낮음</span>
                         <span class="to-scale-row"><i class="s2"></i>중간</span>
                         <span class="to-scale-row"><i class="s3"></i>높음</span>
                     </div>
-                    <p class="to-hint">국가 호버 → 교역량 · 클릭 → 해당 국가 노선만 강조 · 배경 클릭 → 초기화</p>
+                    <p class="to-hint">국가 호버 → 거래금액 · 클릭 → 해당 국가 노선만 강조 · 배경 클릭 → 초기화</p>
                 </div>
 
                 <!-- Climate country drill-down: TARGET frame over the globe -->
@@ -445,7 +445,7 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=24"></script>
+    <script src="data.js?v=25"></script>
     <script src="shipping.js?v=23"></script>
     <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
          and window.auth-container are ready by the time app.js's other
@@ -480,10 +480,10 @@
     <script src="mypage.js?v=9"></script>
     <script src="tutorial.js?v=8"></script>
     <script src="export-controls.js?v=12"></script>
-    <script src="app.js?v=144"></script>
+    <script src="app.js?v=145"></script>
     <script src="gas-storage.js?v=3"></script>
-    <script src="trade.js?v=lo-total-2"></script>
-    <script src="trade-monthly.js?v=9"></script>
+    <script src="trade.js?v=agg-602"></script>
+    <script src="trade-monthly.js?v=10"></script>
     <script type="module" src="js/elections/index.js?v=20"></script>
 </body>
 </html>

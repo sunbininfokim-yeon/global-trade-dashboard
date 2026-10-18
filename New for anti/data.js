@@ -658,13 +658,34 @@
             // Set when the Worker served the newest year per country, with the
             // previous year only where neither end of a route has filed yet.
             const blendFrom = res.headers.get('X-Comtrade-Blend') || json.blend_from || null;
+            // HTTP 200 with chunks missing (Worker body.partial): keep the rows,
+            // but the totals are not the whole year and must not read as one.
+            const partial = json.partial === true || Number(json.missing_chunks) > 0;
 
-            // Two passes. Within one period, a route appears up to twice --
-            // the exporter's report (X) and the importer's mirror (M) -- and
-            // the larger of the two wins, as before. Across periods (a
-            // multi-month request) the winners are then summed. Keeping only
-            // the max across all rows, as this did when every call was a
-            // single year, would report one month's trade as the whole window.
+            // The commodity's HS basket. A code whose parent heading is also in
+            // the basket is the same trade counted twice (2709 ⊃ 270900), so
+            // only the parent is kept as a basket member; its children's rows
+            // fold into it below (#602 A05).
+            const basket = String(config.hsCode).split(',').map((h) => h.trim()).filter(Boolean)
+                .filter((h, _i, all) => !all.some((p) => p !== h && h.startsWith(p)));
+            // Which basket member a row belongs to; null = not this commodity.
+            // A row without cmdCode (older proxy responses) is the whole basket.
+            const memberOf = (cmd) => {
+                if (!cmd) return basket.length === 1 ? basket[0] : '*';
+                return basket.find((h) => cmd === h || cmd.startsWith(h)) || null;
+            };
+            // kg as reported: null when the filer left it blank, never 0
+            // (#602 A03). A real 0 stays 0.
+            const kgOf = (v) => (v === null || v === undefined || v === '' || !Number.isFinite(Number(v)) ? null : Number(v));
+
+            // Two passes. Within one period and one HS line, a route appears up
+            // to twice -- the exporter's report (X) and the importer's mirror
+            // (M) -- and the larger of the two wins, as before. Then the winners
+            // are summed: across HS lines of the basket (cobalt is 8105 + 2822 +
+            // 283329, three different goods, so all three are trade) and across
+            // periods of a multi-month request. The key used to leave HS out,
+            // so a basket's lines competed as if they were mirror reports and
+            // only the largest survived (#602 A01).
             const perPeriod = {};
 
             // Position lookup. COUNTRIES is a 65-entry hand-written table; anything
@@ -676,8 +697,13 @@
                 || (window.CountryCoords ? window.CountryCoords(name) : null);
 
             json.data.forEach(row => {
-                if (config.strictHs && (String(row.cmdCode || '') !== config.hsCode
-                    || !['X', 'M'].includes(row.flowCode))) return;
+                if (!['X', 'M'].includes(row.flowCode)) return;
+                const cmd = String(row.cmdCode || '');
+                const hs = memberOf(cmd);
+                if (!hs) return;
+                // Narrow products (manganese ore, uranium) take only their own
+                // line, and a row that does not say which line it is is not it.
+                if (config.strictHs && cmd !== config.hsCode) return;
                 // Fall back to the names Comtrade ships with the row, so a code
                 // missing from M49_MAP no longer silently loses the route.
                 const reporterName = M49_MAP[row.reporterCode] || row.reporterDesc;
@@ -686,9 +712,11 @@
                 if (!posOf(reporterName) || !posOf(partnerName)) return;
                 if (reporterName === partnerName) return; // Ignore domestic trade
 
-                const tradeValue = row.primaryValue || 0;  // USD
-                const netWeight = row.netWgt || 0;          // kg
-                if (tradeValue <= 0) return;
+                const tradeValue = Number(row.primaryValue);  // USD, full precision
+                // A route on the map is a value flow; a row with no or zero USD
+                // draws nothing (weight-only rows are a monthly-table matter).
+                if (!(tradeValue > 0)) return;
+                const netWeight = kgOf(row.netWgt);
 
                 let sourceName, targetName;
                 if (row.flowCode === "M") {
@@ -699,10 +727,10 @@
                     targetName = partnerName;
                 }
 
-                const periodKey = `${row.period ?? ''}|${sourceName}|${targetName}`;
+                const periodKey = `${row.period ?? ''}|${hs}|${sourceName}|${targetName}`;
                 const seen = perPeriod[periodKey];
                 if (!seen || seen.usdValue < tradeValue) {
-                    perPeriod[periodKey] = { sourceName, targetName, usdValue: tradeValue, netWeight, year: String(row.period ?? '') };
+                    perPeriod[periodKey] = { sourceName, targetName, hs, usdValue: tradeValue, netWeight, year: String(row.period ?? '') };
                 }
             });
 
@@ -729,27 +757,46 @@
                         sourcePosition: posOf(r.sourceName),
                         targetPosition: posOf(r.targetName),
                         volume: 0,
-                        netWeightMt: 0,
+                        netWeightMt: null,
                         percentage: 0,
                         typeName: config.hsCode,
                         sourceColor: config.colorScheme.source,
                         targetColor: config.colorScheme.target,
                         usdValue: 0,
-                        netWeightKg: 0,
+                        netWeightKg: null,
+                        // kg per HS line. Ore, oxide and metal tonnes are not
+                        // one quantity, so a multi-line basket keeps them apart.
+                        weightByHs: {},
+                        weightPartial: false,
                         period,
                         freq,
                         blendFrom,
+                        partial,
                         dataYear: r.year || period,
                         dataSource: "UN Comtrade (comtradeapi.un.org)"
                     };
                 }
-                arcMap[arcKey].usdValue += r.usdValue;
-                arcMap[arcKey].netWeightKg += r.netWeight;
+                const a = arcMap[arcKey];
+                a.usdValue += r.usdValue;
+                if (r.netWeight === null) {
+                    a.weightPartial = true;
+                } else {
+                    a.weightByHs[r.hs] = (a.weightByHs[r.hs] || 0) + r.netWeight;
+                }
             }
+            // Raw USD and kg are what every sum, share and rank below uses.
+            // `volume` (M USD) and `netWeightMt` are the same numbers in display
+            // units, unrounded: rounding here turned a $400k route into 0 and
+            // dropped it from every ranking (#602 A02). Formatting rounds.
             for (const a of Object.values(arcMap)) {
-                a.volume = Math.round(a.usdValue / 1000000); // Millions USD
-                a.netWeightMt = Math.round(a.netWeightKg / 1000000000 * 100) / 100;
-                delete a.netWeightKg;
+                a.volume = a.usdValue / 1e6;
+                const lines = Object.keys(a.weightByHs);
+                // One HS line: its kg is the route's weight. Several: no single
+                // tonnage (shown per line), and partial weight is never a total.
+                if (lines.length === 1 && basket.length === 1) {
+                    a.netWeightKg = a.weightByHs[lines[0]];
+                    a.netWeightMt = a.weightPartial ? null : a.netWeightKg / 1e9;
+                }
             }
 
             // No Comex Stat override here any more.
@@ -772,15 +819,15 @@
             // Keep one decimal: trade is dominated by a few mega-routes (Brazil->China
             // alone is ~71% of soybeans), so Math.round() collapsed every remaining
             // route to 0 and the map's `percentage >= 1` filter then dropped ~95% of them.
-            const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
+            const totalUsd = arcs.reduce((sum, a) => sum + a.usdValue, 0);
             arcs.forEach(a => {
-                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 1000) / 10 : 0;
+                a.percentage = totalUsd > 0 ? Math.round((a.usdValue / totalUsd) * 1000) / 10 : 0;
             });
 
-            // Sort by volume descending
-            arcs.sort((a, b) => b.volume - a.volume);
+            // Sort by value descending
+            arcs.sort((a, b) => b.usdValue - a.usdValue);
 
-            console.log(`[Comtrade] ✅ ${commodityKey} ${period || '?'}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
+            console.log(`[Comtrade] ✅ ${commodityKey} ${period || '?'}: ${arcs.length} trade flows loaded (Total: $${(totalUsd / 1e6).toFixed(1)}M)`);
             return arcs;
 
         } catch (e) {

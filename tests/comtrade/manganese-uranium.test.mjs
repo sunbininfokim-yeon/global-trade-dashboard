@@ -125,21 +125,9 @@ test('scoped monthly totals never pick a detail row or the larger conflicting to
     assert.equal(t.aggregateComtradeMonthly([row,{...row}],'284410').X.length,1);
 });
 
-test('mock-date listener and pending callbacks cannot alter any observed-only product',()=>{
+test('no date-picker callback can alter any product, observed-only or not (#602 A10)',()=>{
     const app=source('app.js');
-    assert.match(app,/toggleAttribute\('disabled', !!window\.TradeData\?\.\[target\]\?\.observedOnly\)/);
-    const start=app.indexOf("document.getElementById('historical-date').addEventListener('change'");
-    const listener=app.slice(start,app.indexOf('// Panels render clickable',start));
-    for(const cid of ['bauxite',...Object.keys(products)]) {
-        let change; const timers=[],title={textContent:cid};
-        const ctx={currentCommodity:cid,currentViewTitle:title,console:{log(){}},
-            Math:{random(){assert.fail('generated mock trade value');}},
-            window:{TradeData:{[cid]:{observedOnly:true,arcs:[{volume:123}]}}},
-            document:{getElementById:()=>({addEventListener(_,fn){change=fn;}})},setTimeout:fn=>timers.push(fn)};
-        vm.runInNewContext(listener,ctx);
-        change({target:{value:'2025-01-01'}}); assert.equal(timers.length,0);
-        ctx.currentCommodity='aluminum'; change({target:{value:'2025-01-01'}});
-        ctx.currentCommodity=cid; timers[0]();
-        assert.equal(ctx.window.TradeData[cid].arcs[0].volume,123);
-    }
+    assert.equal(app.includes("getElementById('historical-date').addEventListener"),false);
+    assert.equal(/Math\.random\(\)[^\n]*\n[\s\S]{0,400}TradeData\[currentCommodity\]\.arcs/.test(app),false);
+    assert.match(app,/getElementById\('historical-date'\)\?\.setAttribute\('disabled', ''\)/);
 });
