@@ -26,6 +26,21 @@
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
 
+// Arc `volume` (M USD) and `netWeightMt` arrive unrounded from data.js; every
+// sum, share and rank uses them as they are, and only display rounds
+// (#602 A02). A positive amount too small for the precision shown says so
+// instead of reading as zero.
+const fmtTradeAmount = (v, digits = 1) => {
+    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    if (v === 0) return '0';
+    const floor = 10 ** -digits;
+    if (Math.abs(v) < floor) return `${v < 0 ? '-' : ''}<${floor.toFixed(digits)}`;
+    return v.toLocaleString(undefined, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : digits });
+};
+// A share is a percentage of a positive total; a positive sliver is "<0.1%",
+// not "0.0%" (that read as no trade at all).
+const fmtSharePct = (pct) => (pct > 0 && pct < 0.05 ? '<0.1%' : `${pct.toFixed(1)}%`);
+
 // Re-centers the globe so the focused country lands in the middle of
 // whatever map width is left once the side panels take theirs. #map is
 // absolutely positioned inside .map-pane (flex-grow:1 between the two fixed-
@@ -62,7 +77,10 @@ const clearTradeFocus = () => {
     const d = window.TradeData?.[currentCommodity];
     const lv = document.getElementById('stat-label-volume');
     const lt = document.getElementById('stat-label-exporter');
-    if (lv) lv.textContent = '글로벌 무역량';
+    if (lv) {
+        lv.textContent = '글로벌 무역량';
+        lv.removeAttribute('title');
+    }
     if (lt) lt.textContent = '최대 수출국';
     if (d) {
         if (totalVolumeEl) totalVolumeEl.textContent = d.totalVolume;
@@ -143,13 +161,15 @@ const focusTradeCountry = (countryName) => {
         // alone can't distinguish "49.9% of a small trade" from "49.9% of a
         // huge one" -- tonnage is what answers that, so put it one click away
         // instead of burying it in the title-attribute tooltip only.
+        // Null when the weight is unknown, partial, or a multi-HS basket whose
+        // ore/metal tonnes are not one quantity (data.js).
         const mt = Number.isFinite(a.netWeightMt) && a.netWeightMt > 0 ? a.netWeightMt : null;
         // In a blended year, routes neither end has filed for yet carry the
         // previous year's value; say so on the row.
         const olderYear = a.blendFrom && a.dataYear && a.dataYear !== a.period ? ` · ${a.dataYear}년 값` : '';
         const volLabel = (mt != null
-            ? `${a.volume.toLocaleString()} ${unit} · ${mt.toLocaleString(undefined, { maximumFractionDigits: 2 })} Mt`
-            : `${a.volume.toLocaleString()} ${unit}`) + olderYear;
+            ? `${fmtTradeAmount(a.volume)} ${unit} · ${fmtTradeAmount(mt, 2)} Mt`
+            : `${fmtTradeAmount(a.volume)} ${unit}`) + olderYear;
         return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}"
                      role="button" tabindex="0" data-partner="${partner}"
                      title="${isIn ? '수입' : '수출'} · ${partner} · ${volLabel}">
@@ -157,7 +177,7 @@ const focusTradeCountry = (countryName) => {
             <span class="tr-dir" aria-label="${isIn ? '수입' : '수출'}"></span>
             <span class="tr-name tr-code">${countryCode(partner)}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
-            <span class="tr-pct">${share.toFixed(1)}%</span>
+            <span class="tr-pct">${fmtSharePct(share)}</span>
             <span class="tr-vol">${volLabel}</span>
         </div>`;
     }).join('');
@@ -168,11 +188,11 @@ const focusTradeCountry = (countryName) => {
     const statsHtml = `
         <div class="trade-stat-row" data-unit="${unit}">
             <div class="ts-cell"><span class="ts-k">수출 (${unit})</span>
-                <span class="ts-v">${exportVol.toLocaleString()}</span></div>
+                <span class="ts-v">${fmtTradeAmount(exportVol)}</span></div>
             <div class="ts-cell"><span class="ts-k">수입 (${unit})</span>
-                <span class="ts-v">${importVol.toLocaleString()}</span></div>
+                <span class="ts-v">${fmtTradeAmount(importVol)}</span></div>
             <div class="ts-cell"><span class="ts-k">순수지 (${unit})</span>
-                <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
+                <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${fmtTradeAmount(net)}</span></div>
         </div>`;
 
     // Which side carries the dependency follows the country's net position.
@@ -200,7 +220,7 @@ const focusTradeCountry = (countryName) => {
                 </div>
                 ${subProductsCardHtml(currentCommodity)}
                 <div class="tm-annual">
-                    <p class="trade-focus-sub">${annualLabel ? `${annualLabel} · ` : ''}수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
+                    <p class="trade-focus-sub">${annualLabel ? `${annualLabel} · ` : ''}수출·수입 양방향 · 비중은 각 방향 내 비중 · 거래금액(${unit})</p>
                     ${statsHtml}
                     ${depHtml}
                     <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
@@ -223,8 +243,11 @@ const focusTradeCountry = (countryName) => {
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
     // 98.5 Million bpd" said the same thing on every country's screen, which
     // is the one number a country view should not repeat.
-    const worldVol = arcs.reduce((s, a) => s + (a.volume > 0 ? a.volume : 0), 0) || 1;
-    const countryVol = exportVol + importVol;
+    // Denominator is every route this map loaded (each counted once, by
+    // value), not an official world total, and a mixed-year map when the year
+    // is blended. Exports and imports are shares of it separately: adding them
+    // and dividing by one side's total was the old "글로벌 비중" (#602 A13).
+    const routeTotal = arcs.reduce((s, a) => s + (a.volume > 0 ? a.volume : 0), 0) || 1;
     const top = focused[0];
     if (top) {
         const isIn = inboundKeys.has(`${top.sourceName}>${top.targetName}`);
@@ -232,10 +255,14 @@ const focusTradeCountry = (countryName) => {
             || (isIn ? top.sourceName : top.targetName);
         const statLabelVol = document.getElementById('stat-label-volume');
         const statLabelTop = document.getElementById('stat-label-exporter');
-        if (statLabelVol) statLabelVol.textContent = '글로벌 비중';
+        if (statLabelVol) {
+            statLabelVol.textContent = '확보 노선 내 금액 비중 (수출 · 수입)';
+            statLabelVol.title = '이 지도에 불러온 노선 전체의 거래금액(USD) 대비 비중. 공식 세계 수출입 통계 대비 점유율이 아님.';
+        }
         if (statLabelTop) statLabelTop.textContent = isIn ? '최대 공급국' : '최대 수출 대상국';
         if (totalVolumeEl) {
-            totalVolumeEl.textContent = `${((countryVol / worldVol) * 100).toFixed(1)}%`;
+            const pct = (v) => fmtSharePct((v / routeTotal) * 100);
+            totalVolumeEl.textContent = `${pct(exportVol)} · ${pct(importVol)}`;
         }
         if (topExporterEl) topExporterEl.textContent = partner;
     }
@@ -632,11 +659,11 @@ const worldRankRows = ({ ranked, total, max }, n = 10) => ranked.slice(0, n).map
     const share = (vol / total) * 100;
     return `<div class="trade-rank-row trade-bar-row is-world climate-click"
                  role="button" tabindex="0" data-trade-country="${name}"
-                 title="${name} · ${share.toFixed(1)}%">
+                 title="${name} · ${fmtSharePct(share)}">
         <span class="tr-i">${i + 1}</span>
         <span class="tr-name tr-code">${countryCode(name)}</span>
         <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
-        <span class="tr-pct">${share.toFixed(1)}%</span>
+        <span class="tr-pct">${fmtSharePct(share)}</span>
     </div>`;
 }).join('');
 
@@ -1251,8 +1278,11 @@ const renderTradeWorldPanel = (arcs) => {
     if (totalVolumeEl && staticTotal === '—' && arcs.length) {
         const usdM = arcs.reduce((sum, a) => sum + (a.volume > 0 ? a.volume : 0), 0);
         const mt = arcs.reduce((sum, a) => sum + (a.netWeightMt > 0 ? a.netWeightMt : 0), 0);
-        const usd = usdM >= 1000 ? `$${(usdM / 1000).toFixed(0)}B` : `$${usdM.toLocaleString()}M`;
+        const usd = usdM >= 1000 ? `$${(usdM / 1000).toFixed(0)}B` : `$${fmtTradeAmount(usdM)}M`;
         totalVolumeEl.textContent = mt > 0 ? `${Math.round(mt).toLocaleString()} Mt · ${usd}` : usd;
+        // Summed from the routes on the map, not a published world figure.
+        const lv = document.getElementById('stat-label-volume');
+        if (lv) lv.textContent = '확보 노선 합계';
     }
 
     if (!newsContentEl) return;
@@ -1262,7 +1292,7 @@ const renderTradeWorldPanel = (arcs) => {
         <div class="trade-focus-card">
             <div id="futures-slot"></div>
             ${subProductsCardHtml(currentCommodity)}
-            <p class="trade-focus-sub">${typeof comtradePeriodLabel === 'function' && comtradePeriodLabel(arcs) ? `<span class="tm-period-badge">${comtradePeriodLabel(arcs)}</span> ` : ''}비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
+            <p class="trade-focus-sub">${typeof comtradePeriodLabel === 'function' && comtradePeriodLabel(arcs) ? `<span class="tm-period-badge">${comtradePeriodLabel(arcs)}</span> ` : ''}비중% · 막대는 각 방향 내 상대 거래금액 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
@@ -1643,7 +1673,7 @@ const renderMapLayers = (arcs, opts = {}) => {
                 tooltipEl.innerHTML = `
                     <div class="tooltip-title">${d.sourceName} → ${d.targetName}</div>
                     <div class="tooltip-stat"><span>비중</span><span style="color:#38bdf8;font-weight:700;">${share}%</span></div>
-                    <div class="tooltip-stat"><span>물동량</span><span>${d.volume.toLocaleString()}</span></div>`;
+                    <div class="tooltip-stat"><span>거래금액</span><span>${fmtTradeAmount(d.volume)} M USD</span></div>`;
             },
             onClick: handleLineClick,
             autoHighlight: true,
