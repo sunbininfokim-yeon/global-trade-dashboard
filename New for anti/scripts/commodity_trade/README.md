@@ -1,5 +1,50 @@
 # commodity_trade — 월별 무역 파이프
 
+## 2026-10-18 원천 계약 교정 (#602 B01–B07)
+
+인수 문서: `docs/ops/handoff/2026-10-18-codex-source-contracts-602.md`.
+화면 수정 #608과 별개인 수집기·정규화 변경이다. 학습 모델은 없다.
+
+- ERS는 월별 현재 연도 E열만 읽는다. 결측을 비교 연도 D열로 채우지 않는다.
+- JODI `GASDIES` 등 하위품목, `TOTPRODS`, `TOTCRUDE`를 각각 보존한다.
+  `TOTCRUDE`는 원유·NGL·기타 합계이며 HS2709 순수 원유가 아니다.
+  `TOTPRODS`도 HS2710과 동일한 범위로 취급하지 않는다.
+- JODI 캐시는 전체 URL로 식별하고 URL·바이트 수·SHA256을 확인한다.
+  검증되지 않은 옛 `2025.csv` 캐시는 재사용하지 않는다. 기존 캐시 만료 정책을
+  새로 구현한 것은 아니므로 과거 원천 수정 수집 여부는 별도 운영 확인이 필요하다.
+- SSB는 예상 세번이 전부 있는 측정치만 총계로 제공한다. 부분합은 진단에만
+  남기고, 금액·중량의 완전성을 따로 확인한다. 결측 금액을 0으로 만들지 않는다.
+- 한국 관세청은 중량이 없어도 수출입 금액이 있으면 보존한다.
+- 브라질 니켈광/정광(2604), 매트(7501), 비가공 금속(7502)은 분리한다.
+  하나의 원본 중량이라도 비어 있으면 해당 월·형태의 합계를 결측으로 둔다.
+- Cochilco 함유 구리 질량은 광석 자체의 순중량과 비교하지 않는다.
+  `normalized.comparable_across_reporters`, `measurement_basis`,
+  `comparison_scope` 및 `comparison_policy`를 소비자도 준수해야 한다.
+
+오프라인 기존 자료 교정은 **새 수집이 아니다**. 원본 값·단위·월·수집 시각을
+보존하며, 임의의 석유제품 총계를 만들지 않는다. 기본은 dry-run이다.
+
+```bash
+python3 'New for anti/scripts/commodity_trade/repair_source_scopes.py'
+# 실제 쓰기에는 별도의 새 백업 경로가 필수다. 백업·원본 캐시는 커밋하지 않는다.
+python3 'New for anti/scripts/commodity_trade/repair_source_scopes.py' \
+  --write --backup /absolute/non-repository/monthly-before-repair.json
+python3 'New for anti/scripts/commodity_trade/validate_release.py'
+
+# 별도로 확보한 완전한 공식 파일과 동일 보고국·상품·월·원단위로 대조한다.
+# 기존 output 파일은 덮어쓰지 않는다. 재실행 때 새 output 이름을 지정한다.
+python3 'New for anti/scripts/commodity_trade/reconcile_source_contracts.py' \
+  --published 'New for anti/public/data/commodity_trade_monthly_v1.json' \
+  --jodi-csv /absolute/raw/jodi-primary-2025.csv /absolute/raw/jodi-secondary-2025.csv \
+    /absolute/raw/jodi-primary-2026.csv /absolute/raw/jodi-secondary-2026.csv \
+  --ers-workbook /absolute/raw/ERS_top10_export_markets_volume.xlsx \
+  --output /absolute/non-repository/reconciliation-new.json
+```
+
+현재 원천 값이 과거 저장 값과 다르면 `source_value_changed_requires_revision_review`다.
+이는 과거 파서 오류의 자동 확정이나 덮어쓰기 지시가 아니다. 원천이 없거나 실패한
+경우는 미검증으로 남긴다. 한국 실호출에는 기존 서비스키/중계 환경 연결이 필요하다.
+
 ## 2026-10-07 월별 자동 갱신 보강 (병합·배포 대기)
 
 운영 점검과 설치 순서는 [최신 인수인계](CLAUDE_DEPLOY_2026-10-07.md)를 따른다.
