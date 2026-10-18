@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config';DAY='2026-10-18'
 class IAEmersonSourceTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/IA-source-expansion-20261019.json')
-        self.rows=[r['provider_record']for r in self.audit['records']]
+        self.rows=[r['provider_record']for r in self.audit['records'] if r['provider_record']['id'].startswith(('gov202eme','us-202eme'))]
         self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY)
         self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
     def test_both_primary_questions_eligible_and_precise_values_retained(self):
@@ -38,3 +38,10 @@ class IAEmersonSourceTests(unittest.TestCase):
         rows=packet['capture']['primary_records']
         self.assertEqual({r['id']for r in rows},{'primary-suffolk-ia-senate-20261007','primary-suffolk-ia-governor-20261007'})
         self.assertTrue(all(r['end_date']=='2026-10-04'for r in rows))
+
+    def test_yougov_question_n_is_not_the_study_sample(self):
+        raw=next(r['provider_record']for r in self.audit['records']if r['provider_record']['id']=='gov202youbb5e2c57')
+        obs,held=normalize([raw],self.policy,DAY);self.assertFalse(held);self.assertEqual(obs[0]['sample_n'],2244)
+        self.assertEqual(obs[0]['provider_sample_correction']['original_provider_sample_n'],2245)
+        self.assertIsNone(obs[0]['source_quality']['reported_precision'])
+        for days in (7,14):self.assertEqual(summarize(obs,self.policy['races']['USA:IA:governor'],DAY,days)['party'],'DEM')

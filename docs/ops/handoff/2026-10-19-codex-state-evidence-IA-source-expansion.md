@@ -9,3 +9,7 @@ Two exact primary reviews enter 14-day numeric lead counts at as_of Oct 18; neit
 State-owned packet, original-source review audit, IA-specific regression and this handoff only. No common code/policy, national generated JSON, UI/workflow, merge/deploy/dispatch. Final tests and temporary integration-replay results recorded after completion. #616 first, then this independent state PR retargeted to main after checking current base.
 
 Preservation check: both existing Suffolk governor and Senate supplements remain in this new packet, retaining actual field end 2026-10-04. Original source receipts and full-capture time are preserved. A new state packet must not discard previously published legacy supplements during replay. IA regressions: 20 passed, including this preservation contract.
+
+## Additional exact YouGov governor review
+
+Q8 original cross-tab has unweightedn2244, not studywide2245. Bound sample correction preserves API2245, using2244 only for this exact governor record. Original question Sand50/Lahn44, fieldOctober6–12, is eligible in both7/14 atOctober18. Study MOE3.1 atn2245 is not assigned toQ8. Senate undecided-allocation question remains reference-only. Previously fetched primary receipt/time is reused explicitly; no new PDF fetch claimed here. Source-expansion tests now6; both Suffolk original records and October4 field dates remain.
