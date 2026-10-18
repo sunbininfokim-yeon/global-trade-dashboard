@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from time import sleep
 from .polls import atomic, digest, require
+from .poll_reference_sources import reference_source, reference_quality
 from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
@@ -130,10 +131,14 @@ def reviewed_source(raw, policy, as_of):
                 'missing_reference_reason')
         return {'group': admission['group'], 'methodology_url': admission['methodology_url']}, admission
     source = policy['pollsters'].get(raw.get('pollster'))
-    require(source is not None, 'pollster_not_selected')
+    fallback = reference_source(raw, policy, as_of)
+    if source is None:
+        require(fallback is not None, 'pollster_not_selected')
+        return fallback, None
     url = urlparse(raw.get('url') if isinstance(raw.get('url'), str) else '')
-    require(url.scheme == 'https' and not url.username and not url.password
-            and url.hostname in source['hosts'], 'unregistered_primary_host')
+    if not (url.scheme == 'https' and not url.username and not url.password and url.hostname in source['hosts']):
+        require(fallback is not None, 'unregistered_primary_host')
+        return fallback, None
     if source.get('approved_sponsor_sets'):
         require(sorted(raw.get('sponsors') or []) in
                 [sorted(s) for s in source['approved_sponsor_sets']], 'commissioner_not_reviewed')
@@ -202,6 +207,7 @@ def normalize(rows, policy, as_of):
             p, metadata_correction = corrected_provider_metadata(p, policy.get("quality_reviews", {}).get(p["id"], {}), as_of)
             p, sample_correction = corrected_provider_sample(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
+            publisher_reference = source.get('reference_only') is True and not admission
             primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
                 'sponsor_review', {}).get('primary_internal') is True
             if primary_internal:
@@ -219,6 +225,8 @@ def normalize(rows, policy, as_of):
                                   and (p.get('internal') is False or p.get('internal') is True and primary_internal)
                                   and p.get('partisan') == admission.get('reviewed_partisan')
                                   and p.get('sponsors') == admission.get('reviewed_sponsors'))
+            if publisher_reference and p.get('internal') is False and p.get('partisan') in ('DEM','REP'):
+                partisan_reference = True
             require((p.get('internal') is False or p.get('internal') is True and primary_internal) and (p.get('partisan') is None or partisan_reference),
                     'internal_or_partisan')
             start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
@@ -231,7 +239,8 @@ def normalize(rows, policy, as_of):
             require((in_general_period or historical_reference)
                     and end < date.fromisoformat(race['election_date']), 'outside_reviewed_general_period')
             require(p.get('population') in ('lv', 'rv'), 'unsupported_population')
-            require(type(p.get('sample_size')) is int and p['sample_size'] > 0, 'missing_sample_size')
+            require((type(p.get('sample_size')) is int and p['sample_size'] > 0)
+                    or publisher_reference and p.get('sample_size') is None, 'missing_sample_size')
             require(p.get('seat_name') in (None, race.get('seat_name')), 'ambiguous_seat')
             answers = p.get('answers')
             require(isinstance(answers, list) and len(answers) >= 2, 'missing_answers')
@@ -303,6 +312,9 @@ def normalize(rows, policy, as_of):
                     internal_basis='explicitly_disclosed_in_reviewed_primary_release')
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if publisher_reference:
+                reasons.append('publisher_identified_release_review_pending')
+                if p.get('sample_size') is None:reasons.append('reference_sample_n_not_disclosed_by_api')
             if primary and primary['status']=='carried_forward_reference_only':
                 reasons.append('primary_source_unavailable_or_changed')
             if partisan_reference:
@@ -313,6 +325,10 @@ def normalize(rows, policy, as_of):
                 'eligible': not reasons, 'reasons': sorted(set(reasons))}
             observation['display_group'] = 'general' if in_general_period else 'historical_matchup_reference'
             observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
+            if publisher_reference:
+                observation['verification']='publisher_identified_aggregator_reference'
+                observation['source_admission']='publisher_reference'
+                observation['source_quality']=reference_quality(observation['source_quality'],source,p)
             accepted.append(observation)
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': raw.get('id'), 'race_id': rid, 'pollster': raw.get('pollster'),
