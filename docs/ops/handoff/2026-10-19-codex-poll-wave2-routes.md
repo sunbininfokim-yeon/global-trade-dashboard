@@ -1,0 +1,11 @@
+# Poll expansion wave2 — independent common publisher route
+
+User requested further expansion after #616–#624. Owner Codex, branch `codex/poll-wave2-routes-20261019`, checkout `/Users/yeoninair/Documents/해운 데이터/us-poll-wave2-routes-20261019`. Packet-free base f0878e183670c5c7c6f888468c05e303bc9e4883 (#616); no main merge/deploy or workflow dispatch.
+
+MDW and MDW Communications now resolve to one mdw_edge reference group for the exact reviewed public release and bounded `/media/florida-statewide-poll-[month]-2026.html` path. Actual publisher HTML request returned200; SHA/time are in policy evidence. Future API imports on this path may be displayed automatically as references, with no lead/accuracy grade inherited. Exact state release reviews retain precedence. All candidate/date/population/commissioning/conflict guards remain. Shared host/global source approval is not added.
+
+API was requested anew2026-10-18T23:03:56.165943+00:00;1511rows, zero new/changed against prior capture. Source discovery found MDW governor45.9/43.8 and Senate47.6/42.4 with shared LV2351; API Senate800 and rounded answer values require individual correction. Existing staged answer→metadata review supports this safely; no common correction code relaxation is needed. Separate FL input handles exact values. New GA exact review reads pollster-owned James original via web; direct HTTP remains timeout and no raw-body hash or future automatic James route is claimed.
+
+KY original DCCC HTML is available200 despite the archive index403. One finite reviewed evidence region can be rechecked using the existing HTML region adapter; independent KY PR #622 receives this input. MO FM3 original PDF200 is an old initial ballot, separated from positive-profile and generic questions. SD DocumentCloud is403; LA has reporting but no original memo; neither is falsely admitted by this source policy.
+
+Source scope is34 aliases/28 reference groups. This is not34 institutions or28 new live polls. No national output, state packet, UI, Worker or workflow changes. Source-route tests5 passed; full combined validation/report appended after state input integration. Merge order: #616 → this common route PR → independent FL/MO/GA PRs. Existing #617–#624 stay independent on #616; KY can update on its own base.
