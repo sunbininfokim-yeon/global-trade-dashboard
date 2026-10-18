@@ -15,3 +15,5 @@ The same primary publisher has a governor release (Sanders 51 / Love 32 / Shelby
 ## Validation and handoff
 
 Five AR regressions pass: raw preservation, exact-value correction, metadata conflicts held, later releases stay references, partial roster preserved. Temporary packet rebuild `/private/tmp/poll-ar-preview/data` admitted the release; all non-AR races remain identical. Finance not recollected. Only AR packet/audit/test/handoff change. No national generated files, common policy/code, UI/workflow, merge/deploy/production dispatch. Further full-suite results appended when complete. Merge foundation #616 first; retarget independent NM and AR PRs to main afterward in either order.
+
+Final validation: polling 595/595, finance 68, election JS 92, ownership 13 passed; deploy chain 42 workflows. State scope valid. Independent Draft PR #618. Common #616 documentation advanced to 23ebc5fa; original branch point remains 402f054e. Current head/base and CI must be rechecked on retarget; no merge or deployment.
