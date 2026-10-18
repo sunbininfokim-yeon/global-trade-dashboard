@@ -20,6 +20,8 @@ class CommissionedAggregationTests(unittest.TestCase):
         self.assertTrue(obs[0]['commissioning']['internal'])
         self.assertEqual(obs[0]['commissioning']['aggregation_policy'],'reviewed_commissioned_initial_ballot')
         self.assertEqual(obs[0]['source_quality']['sponsor_review']['commissioner'],'DCCC')
+        self.assertEqual(obs[0]['commissioning']['sponsors'],['DCCC'])
+        self.assertEqual(obs[0]['commissioning']['provider_sponsors'],[])
     def test_policy_off_and_earlier_snapshot_retain_reference(self):
         p=deepcopy(self.policy);p['commissioned_poll_aggregation']['enabled']=False
         obs,held=self.normalize(policy=p);self.assertFalse(held);self.assertFalse(obs[0]['aggregation_eligibility']['eligible'])

@@ -310,7 +310,12 @@ def normalize(rows, policy, as_of):
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
             if count_commissioned:
+                sponsor_review = policy['quality_reviews'][p['id']].get('sponsor_review', {})
+                primary_sponsors = sponsor_review.get('primary_commissioners') or (
+                    [sponsor_review['commissioner']] if sponsor_review.get('commissioner') else [])
                 observation['commissioning'].update(
+                    provider_sponsors=deepcopy(p.get('sponsors') or []),
+                    sponsors=deepcopy(p.get('sponsors') or primary_sponsors),
                     aggregation_policy='reviewed_commissioned_initial_ballot',
                     label_ko='정당·후보 측 의뢰 포함',
                     policy_reviewed_on=policy['commissioned_poll_aggregation']['reviewed_on'])
