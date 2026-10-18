@@ -44,3 +44,9 @@ class CommissionedAggregationTests(unittest.TestCase):
         obs[0]['aggregation_eligibility']={'eligible':False,'reasons':['primary_source_unavailable_or_changed']}
         result=summarize(obs,p['races']['USA:WI:house:01'],'2026-10-08',30)
         self.assertEqual(result['pollster_count'],0);self.assertEqual(result['commissioned_poll_count'],0)
+    def test_published_contract_describes_the_effective_policy(self):
+        from election_watch.live_polls import build_live
+        board=build_live([self.raw],self.policy,{'schema':'usa_confirmed_results_v1','cycle':2026,'results':[]},'2026-10-18','2026-10-18T22:00:00+00:00','https://api.votehub.com/polls')
+        self.assertTrue(board['commissioned_poll_aggregation']['effective'])
+        self.assertIn('정당·후보 의뢰 조사도 집계',board['rules_ko'][4])
+        self.assertNotIn('내부·정파 조사는 우세 집계 제외',board['rules_ko'][4])
