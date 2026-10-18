@@ -106,6 +106,44 @@ def corrected_provider_sample(raw, review, as_of):
         'sources': deepcopy(review['sources']), 'basis_ko': correction['basis_ko']}
 
 
+def commissioned_aggregation(raw, review, policy, as_of):
+    """Count an exact-reviewed initial ballot even when its sponsor is partisan.
+
+    Publisher-only references and changed snapshots never inherit this policy.
+    Other exclusions (RCV, leaner probes, methods, historical matchups) remain.
+    """
+    setting = policy.get('commissioned_poll_aggregation', {})
+    if (setting.get('enabled') is not True or not setting.get('reviewed_on')
+            or date.fromisoformat(setting['reviewed_on']) > date.fromisoformat(as_of)):
+        return False
+    admission = review.get('admission', {})
+    disclosure = review.get('disclosure_review', {})
+    sponsorship = review.get('sponsor_review', {})
+    exclusions = set(admission.get('signal_exclusion_reasons', []))
+    only_sponsor = {'party_commissioned_reference', 'party_internal_reference',
+                    'provider_partisan_reference', 'partisan_commissioned_reference'}
+    initial_formats = {'initial_named_multicandidate_vote_intention',
+                       'named_initial_ballot_with_undecided', 'party_internal_head_to_head',
+                       'two_candidate_initial_with_undecided', 'named_two_candidate_initial',
+                       'initial_named_head_to_head', 'named_candidate_vote_intention_as_reported'}
+    snapshot = answer_correction_fingerprint(raw)
+    return bool(admission.get('allow_partisan_reference') is True
+        and admission.get('source_role') in ('pollster_primary', 'commissioner_primary')
+        and raw.get('partisan') == admission.get('reviewed_partisan')
+        and raw.get('sponsors') == admission.get('reviewed_sponsors')
+        and (raw.get('partisan') in ('DEM', 'REP') or sponsorship.get('primary_internal') is True)
+        and snapshot in (review.get('provider_record_sha256'), review.get('primary_supplement_record_sha256'))
+        and exclusions and exclusions <= only_sponsor
+        and review.get('ballot_format') in initial_formats
+        and not review.get('ranked_choice_question')
+        and (review.get('question_sample_n') or disclosure.get('sample_n')) == raw.get('sample_size')
+        and str(disclosure.get('population', '')).lower() == raw.get('population')
+        and disclosure.get('field_dates') == [raw.get('start_date'), raw.get('end_date')]
+        and (raw.get('sponsors') or sponsorship.get('commissioner')
+             or sponsorship.get('primary_commissioners'))
+        and len(review.get('primary_toplines', {})) >= 2 and review.get('sources'))
+
+
 def source_quality(row, reviews, as_of):
     base = {'verification_level': 'partial', 'methodological_quality': 'unrated',
             'accuracy_grade': None, 'label_ko': '출처 연결 · 집계값 부분 검증',
@@ -143,6 +181,7 @@ def evidence_context(pollster_count, agreement_fraction, conflicting=()):
             'coverage_label_ko': {'none': '조사 없음', 'single_source': '단일 기관 참고',
                                   'multiple_sources': '복수 기관 집계'}[coverage],
             'independent_pollster_count': pollster_count,
+            'count_basis': 'distinct_pollster_groups_not_independent_commissioners',
             'agreement_fraction': agreement_fraction if pollster_count else None,
             'conflicting_pollsters': list(conflicting),
             'basis_ko': '기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.',
