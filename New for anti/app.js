@@ -6086,9 +6086,13 @@ window.addEventListener('popstate', () => {
 // Event Listeners for Nav
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
-        e.preventDefault();
         // currentTarget is the <a data-target>; e.target can be a text node.
         const target = link.getAttribute('data-target') || e.currentTarget?.getAttribute?.('data-target');
+        // A real link (no data-target, e.g. 정책 > 인도네시아's standalone
+        // /indonesia-policy/ page) isn't part of this SPA -- let the browser
+        // navigate there normally instead of swallowing the click.
+        if (!target) return;
+        e.preventDefault();
         navigateTo(target);
     });
 });
