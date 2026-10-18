@@ -20,14 +20,15 @@ from typing import Optional
 PRODUCT_ALIASES: dict[str, str] = {
     # JODI oil
     "CRUDEOIL": "crude_oil",
-    "TOTCRUDE": "crude_oil",
-    "OTHERCRUDE": "crude_oil",
-    "NGL": "petroleum_products",  # partial; not pure petroleum products
-    "GASDIES": "petroleum_products",
-    "MOTORGAS": "petroleum_products",
-    "JETKERO": "petroleum_products",
-    "RESFUEL": "petroleum_products",
-    "LPG": "petroleum_products",
+    "TOTCRUDE": "crude_ngl_other",
+    "OTHERCRUDE": "other_crude_inputs",
+    "NGL": "ngl",
+    "TOTPRODS": "petroleum_products",
+    "GASDIES": "gasoil_diesel",
+    "MOTORGAS": "motor_gasoline",
+    "JETKERO": "jet_kerosene",
+    "RESFUEL": "residual_fuel_oil",
+    "LPG": "lpg",
     "NATGAS": "lng",  # volume not always LNG; flag as proxy in adapter
     # board ids identity
     "crude_oil": "crude_oil",

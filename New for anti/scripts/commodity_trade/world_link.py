@@ -25,6 +25,7 @@ Normalization to kg (mass only). Value series (AUD, USD) stay incomparable to ma
 from __future__ import annotations
 
 from typing import Any
+import math
 
 # unit → multiply to kg
 TO_KG = {
@@ -72,15 +73,32 @@ def world_rollup_policy() -> dict[str, Any]:
 
 
 def to_kg(value: float, unit: str | None) -> float | None:
-    if value is None or not unit:
+    if value is None or isinstance(value, bool) or not unit:
         return None
     u = unit.strip()
-    if u in TO_KG:
-        return float(value) * TO_KG[u]
-    # already described as kg-like
-    if u.lower() in TO_KG:
-        return float(value) * TO_KG[u.lower()]
-    return None
+    factor = TO_KG.get(u, TO_KG.get(u.lower()))
+    try:
+        result = float(value) * factor if factor is not None else None
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return result if result is not None and math.isfinite(result) and result >= 0 else None
+
+
+def mass_basis(point: dict[str, Any]) -> str:
+    """Unit conversion does not turn contained copper into goods net mass."""
+    if point.get("unit") == "kMT_cu_content":
+        return "contained_copper_mass"
+    explicit = point.get("measurement_basis")
+    if explicit:
+        return str(explicit)
+    return "goods_net_mass" if point.get("unit") in TO_KG else "unknown"
+
+
+def goods_mass_comparable(point: dict[str, Any]) -> bool:
+    return (mass_basis(point) == "goods_net_mass"
+            and to_kg(point.get("value"), point.get("unit")) is not None
+            and "proxy" not in str(point.get("hs_relation") or "")
+            and point.get("hs_relation") != "mixed_hs_not_comparable")
 
 
 def _index_by_month(points: list[dict]) -> dict[str, dict]:
@@ -137,6 +155,8 @@ def link_country_world(
             "point_count": len(pts),
             "latest": block.get("latest_available_month"),
             "mass_convertible": unit in TO_KG if unit else False,
+            "measurement_bases": sorted({mass_basis(p) for p in pts}),
+            "aggregation_eligible": bool(pts) and all(goods_mass_comparable(p) for p in pts),
         }
         if iso == "USA" and usa_is_export_to_world:
             # identity: USA series == reporter export-to-world
@@ -156,7 +176,7 @@ def link_country_world(
             }
 
     # --- partial sum proxy for mass-convertible countries ---
-    mass_isos = [iso for iso, n in nodes.items() if n.get("type") == "country" and n.get("mass_convertible")]
+    mass_isos = [iso for iso, n in nodes.items() if n.get("type") == "country" and n.get("aggregation_eligible")]
     proxy_series: list[dict] = []
     if len(mass_isos) >= 1:
         for month in sorted(month_union):
@@ -214,13 +234,14 @@ def link_country_world(
     for iso, n in list(nodes.items()):
         if n.get("type") != "country":
             continue
-        if not n.get("mass_convertible"):
+        if not n.get("aggregation_eligible"):
             edges.append(
                 {
                     "from": iso,
                     "to": "PARTIAL_SUM" if "PARTIAL_SUM" in nodes else "WORLD_VIEW",
                     "link_type": "incomparable",
-                    "note_ko": f"단위 {n.get('unit_native')} → kg 환산 불가, 숫자 연동 없음",
+                    "reason": "measurement_basis_or_scope_not_goods_mass" if n.get("mass_convertible") else "unit_not_mass_convertible",
+                    "note_ko": f"단위 {n.get('unit_native')}, 측정기준 {n.get('measurement_bases')}: 상품 순중량 부분합과 비교하지 않음",
                 }
             )
 

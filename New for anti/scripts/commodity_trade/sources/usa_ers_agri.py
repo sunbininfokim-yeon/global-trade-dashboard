@@ -7,6 +7,7 @@ This is U.S. export total — NOT global production/trade of all countries.
 from __future__ import annotations
 
 import re
+import math
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -67,8 +68,10 @@ def _sheet_month_year(ws) -> tuple[str | None, int | None]:
     # current year for monthly column (col index 4 -> r3[4] if 1-based)
     # openpyxl row values: index 0 = col A
     year = None
-    for idx in (4, 3, 2):
-        if idx < len(r3) and isinstance(r3[idx], (int, float)):
+    # The observation below is column E. Never take a comparison-year header
+    # from D/C while still reading E's values.
+    for idx in (4,):
+        if idx < len(r3) and type(r3[idx]) in (int, float) and 1900 <= r3[idx] <= 2100:
             year = int(r3[idx])
             break
     # sheet title fallback: 'Aug. update of Jun. data'
@@ -94,11 +97,12 @@ def _parse_sheet(ws) -> list[dict]:
         if name_s.lower().startswith("world total") and current_cid:
             # monthly current year column = index 4
             val = row[4] if len(row) > 4 else None
-            if val is None:
-                val = row[3] if len(row) > 3 else None
             try:
                 v = float(val)
             except (TypeError, ValueError):
+                current_cid = None
+                continue
+            if isinstance(val, bool) or not math.isfinite(v) or v < 0:
                 current_cid = None
                 continue
             points.append(
@@ -148,8 +152,8 @@ def load_us_agri_exports(*, cache_dir: Path) -> dict[str, Any]:
             # year from row3 col E
             r3 = [c.value for c in ws[3]]
             year = None
-            for idx in (4, 3, 2):
-                if idx < len(r3) and isinstance(r3[idx], (int, float)):
+            for idx in (4,):
+                if idx < len(r3) and type(r3[idx]) in (int, float) and 1900 <= r3[idx] <= 2100:
                     year = int(r3[idx])
                     break
             if not year:
@@ -166,10 +170,13 @@ def load_us_agri_exports(*, cache_dir: Path) -> dict[str, Any]:
                     current_cid = COMMODITY_MAP[name_s]
                     continue
                 if name_s.lower().startswith("world total") and current_cid:
-                    val = row[4] if len(row) > 4 else row[3]
+                    val = row[4] if len(row) > 4 else None
                     try:
                         v = float(val)
                     except (TypeError, ValueError):
+                        current_cid = None
+                        continue
+                    if isinstance(val, bool) or not math.isfinite(v) or v < 0:
                         current_cid = None
                         continue
                     pts.append(

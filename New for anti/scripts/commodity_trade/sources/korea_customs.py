@@ -67,19 +67,20 @@ def parse_itemtrade_xml(document: bytes, *, period: str, hs_code: str) -> dict[s
     month = f"{period[:4]}-{period[4:]}"
 
     def point(flow: str, mass: float | None, usd: float | None) -> list[dict[str, Any]]:
-        if mass is None:
+        if mass is None and usd is None:
             return []
         return [
             {
                 "month": month,
-                "value": mass,
-                "unit": "kg",
+                "value": mass if mass is not None else usd,
+                "unit": "kg" if mass is not None else "usd",
                 "source": "korea_customs_itemtrade",
                 "source_access": "official_api_service_key",
                 "hs": hs_code,
                 "flow": flow,
                 "partner_m49": "0",
                 "primary_value_usd": usd,
+                "net_weight_kg": mass,
                 "quality": {
                     "partner_scope": "Korea total trade (all partner countries)",
                     "amount_basis": "FOB declared USD" if flow == "X" else "CIF dutiable USD",

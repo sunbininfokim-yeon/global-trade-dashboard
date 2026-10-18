@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| COMMODITY-SOURCE-602 | #602 B01–B07 원천 계약·원본 재대조 | codex | commodity_trade 수집기·정규화·검증·회귀시험·오프라인 분류 교정 JSON·전용 인수 문서 | `codex/commodity-source-contracts-602-recovered` | in_progress | 사용자 지정 수집기 범위. UI/Worker/workflow 변경 없음. 임시 디렉터리 소실 후 기록의 패치를 영구 격리 worktree에 복구; 검증 재실행 중. #608 화면 수정과 분리. |
 | POLL-HTML-TABLES-20261017 | API 외 공개 원문 표 자동 수집·검토·중복 연결 | codex | election_watch HTML 표 어댑터·수집/재생성·검사·빈 공용 계약·인수 문서 | `codex/poll-html-table-transport-20261017` | review | 사용자10/17 수집 확대 요청. 공용 #606·VA 실제 입력 #607 분리; 선행 공용 #604. workflow/UI/전국 생성물/병합/배포 제외. |
 | POLL-TEST-CATALOG-CLOCK-20261016 | 주별 검토일·과거 조사일 분리 및 일일 게시 교착 복구 | codex | state_evidence·refresh_state_evidence·공용 polling tests·전용 인수 문서 | `codex/poll-test-catalog-clock-20261016` | review | 10/16 capture/validate 성공 후 OR identity review 날짜 오류로 publish 실패. poll 원래 날짜·기간·적격 기준 보존. poll525·finance68·JS90·ops16·deploy-chain40 및 실제 checkpoint 재생성 통과. packet/전국 JSON/UI/workflow 변경 없음. |
 | ELECTION-POLL-COUNT-NOTES-20261016 | CA48·CA22 누적 지지율과 최근 우세 합계 차이 설명 | codex | poll-presentation·usa-election-evidence·usa-poll-panels·전용 JS 검사·인수 문서 | `codex/poll-count-explanations-20261016` | review | 사용자 10/16 요청. 동일 집계 함수의 상태·기간·제외 근거를 카드에 표시. 실제 수치·기간·적격성·전국 생성물·수집기·workflow·공용 스타일·Worker·병합/배포 변경 없음. |

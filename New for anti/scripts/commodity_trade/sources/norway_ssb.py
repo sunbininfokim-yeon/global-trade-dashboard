@@ -10,6 +10,7 @@ point for auditability.
 from __future__ import annotations
 
 import json
+import math
 import re
 from datetime import datetime, timezone
 from itertools import product
@@ -101,9 +102,11 @@ def _dataset_values(dataset: dict[str, Any]) -> list[tuple[dict[str, str], float
         raise ValueError("SSB json-stat category size mismatch")
     result: list[tuple[dict[str, str], float | None]] = []
     for flat, coordinates in enumerate(product(*(range(size) for size in sizes))):
-        raw = values[flat] if flat < len(values) else None
+        raw = values.get(str(flat)) if isinstance(values, dict) else values[flat] if flat < len(values) else None
         try:
-            numeric = float(raw) if raw is not None else None
+            numeric = float(raw) if raw is not None and not isinstance(raw, bool) else None
+            if numeric is not None and (not math.isfinite(numeric) or numeric < 0):
+                numeric = None
         except (TypeError, ValueError):
             numeric = None
         result.append(({dimension: codes[index][coordinate] for index, (dimension, coordinate) in enumerate(zip(dimensions, coordinates))}, numeric))
@@ -136,6 +139,12 @@ def fetch_monthly_hs_world(
     except ValueError as exc:
         return {"available": False, "reason": str(exc), "series_by_hs": {}}
     selected_lines = sorted({line for lines in lines_by_hs.values() for line in lines})
+    variable = next((v for v in metadata.get('variables', []) if v.get('code') == 'Varekoder'), {})
+    all_current = [str(code) for code,label in zip(variable.get('values', []),variable.get('valueTexts', []))
+                   if CURRENT_LINE.search(str(label))]
+    unsupported = {hs:sorted(code for code in all_current
+                    if code.split('_',1)[0].startswith(hs) and code not in lines_by_hs[hs])
+                   for hs in requested_hs}
     if not selected_lines:
         return {"available": False, "reason": "no current SSB mass lines for requested HS codes", "series_by_hs": {}}
     path = _response_cache_path(cache_dir, period=period, flow=flow, hs_codes=requested_hs)
@@ -173,35 +182,58 @@ def fetch_monthly_hs_world(
             value_by_line[line] = value
     month = f"{period[:4]}-{period[4:]}"
     series_by_hs: dict[str, list[dict[str, Any]]] = {hs: [] for hs in requested_hs}
+    diagnostics_by_hs: dict[str, Any] = {}
     for hs, lines in lines_by_hs.items():
-        observed_lines = [line for line in lines if line in mass_by_line]
-        if not observed_lines:
+        mass_lines = [line for line in lines if line in mass_by_line]
+        value_lines = [line for line in lines if line in value_by_line]
+        mass_complete = bool(lines) and not unsupported[hs] and len(mass_lines) == len(lines)
+        value_complete = bool(lines) and not unsupported[hs] and len(value_lines) == len(lines)
+        mass = sum(mass_by_line[line] for line in lines) if mass_complete else None
+        amount = sum(value_by_line[line] for line in lines) if value_complete else None
+        diagnostics_by_hs[hs] = {
+            "expected_line_codes": lines,
+            "unsupported_current_line_codes": unsupported[hs],
+            "mass_missing_line_codes": sorted(set(lines) - set(mass_lines)),
+            "value_missing_line_codes": sorted(set(lines) - set(value_lines)),
+            "partial_net_weight_kg": sum(mass_by_line[line] for line in mass_lines) if mass_lines else None,
+            "partial_value_nok": sum(value_by_line[line] for line in value_lines) if value_lines else None,
+        }
+        # Retain raw partials in diagnostics/cache, never announce them as an
+        # HS total. A complete monetary metric can survive missing mass.
+        if mass is None and amount is None:
             continue
         series_by_hs[hs].append(
             {
                 "month": month,
-                "value": sum(mass_by_line[line] for line in observed_lines),
-                "unit": "kg",
+                "value": mass if mass is not None else amount,
+                "unit": "kg" if mass is not None else "NOK",
                 "source": "norway_ssb_11008",
                 "source_access": "official_public_api",
                 "hs": hs,
                 "flow": flow,
                 "partner_m49": "0",
-                "primary_value_nok": sum(value_by_line.get(line, 0.0) for line in observed_lines),
+                "primary_value_nok": amount,
+                "net_weight_kg": mass,
                 "quality": {
                     "partner_scope": "All countries",
-                    "source_line_codes": observed_lines,
-                    "source_line_count": len(observed_lines),
+                    "source_line_codes": lines,
+                    "source_line_count": len(lines),
+                    "metric_completeness": {
+                        "net_weight_kg": {"complete": mass_complete, "observed_lines": len(mass_lines), "expected_lines": len(lines)},
+                        "primary_value_nok": {"complete": value_complete, "observed_lines": len(value_lines), "expected_lines": len(lines)},
+                    },
                     "zero_may_include_confidentiality": True,
                 },
             }
         )
     return {
-        "available": True,
+        "available": any(series_by_hs.values()),
+        "reason": None if any(series_by_hs.values()) else "no complete HS metric across selected tariff lines",
         "source": "norway_ssb_11008",
         "period": period,
         "flow": flow,
         "series_by_hs": series_by_hs,
+        "diagnostics_by_hs": diagnostics_by_hs,
         "cache": {
             "path": str(path),
             "hit": response_hit,
