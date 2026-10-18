@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """Real VA-02 primary HTML capture replay, without another network collection."""
 from pathlib import Path
 from copy import deepcopy
@@ -29,7 +30,7 @@ class VirginiaHtmlEvidenceTests(TestCase):
         saved=read(CONFIG/'state_evidence/2026/VA.json')['capture'];c=CONFIG/'usa_polls';day=saved['as_of']
         p=apply_priorities(apply_watchlist(read(c/'live_2026.json'),read(c/'watchlist_2026.json')),
             read(c/'priorities_2026.json'),PUBLIC/'congressional_districts/USA',day)
-        p=apply_targets(p,read(c/'targets_2026.json'),read(c/'ballot_reviews_2026.json'),day)
+        p=apply_targets(p,read(c/'targets_2026.json'),read(c/'ballot_reviews_2026.json'),SNAPSHOT_DAY)
         p['races']={k:v for k,v in p['races'].items()if v['state']=='VA'}
         p['quality_reviews']=read(c/'quality_reviews_2026.json')['reviews']
         rows=deepcopy(saved['provider_records']+saved['primary_records'])
