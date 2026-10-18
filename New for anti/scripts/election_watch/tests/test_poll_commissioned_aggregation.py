@@ -52,3 +52,14 @@ class CommissionedAggregationTests(unittest.TestCase):
         self.assertTrue(board['commissioned_poll_aggregation']['effective'])
         self.assertIn('정당·후보 의뢰 조사도 집계',board['rules_ko'][4])
         self.assertNotIn('내부·정파 조사는 우세 집계 제외',board['rules_ko'][4])
+    def test_changed_primary_document_stays_reference_even_with_policy_enabled(self):
+        review=self.policy['quality_reviews'][self.raw['id']]
+        raw=deepcopy(self.raw)
+        raw['primary_source_capture']={'status':'carried_forward_reference_only',
+            'original_reviewed_on':review['reviewed_on'],
+            'documents':[{'url':d['url'],'status':'unavailable'}for d in review['primary_documents']]}
+        obs,held=self.normalize(raw);self.assertFalse(held)
+        self.assertFalse(obs[0]['aggregation_eligibility']['eligible'])
+        self.assertIn('primary_source_unavailable_or_changed',obs[0]['aggregation_eligibility']['reasons'])
+        self.assertFalse(obs[0]['commissioning']['aggregation_eligible'])
+        self.assertEqual(obs[0]['commissioning']['label_ko'],'정당·후보 측 의뢰 참고')

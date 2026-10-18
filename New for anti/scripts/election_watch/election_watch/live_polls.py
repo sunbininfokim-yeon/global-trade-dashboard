@@ -337,6 +337,10 @@ def normalize(rows, policy, as_of):
                 reasons.append('outside_reviewed_general_period')
             observation['aggregation_eligibility'] = {
                 'eligible': not reasons, 'reasons': sorted(set(reasons))}
+            if count_commissioned:
+                observation['commissioning']['aggregation_eligible'] = not reasons
+                observation['commissioning']['label_ko'] = (
+                    '정당·후보 측 의뢰 포함' if not reasons else '정당·후보 측 의뢰 참고')
             observation['display_group'] = 'general' if in_general_period else 'historical_matchup_reference'
             observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
             if publisher_reference:
