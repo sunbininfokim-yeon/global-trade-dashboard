@@ -1,6 +1,6 @@
 # 인도네시아 정책 시범 수집기
 
-미국과 분리된 policy_idn 전용 수집·저장 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)을 따른다. UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
+미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
 ## 수집
 
@@ -20,7 +20,7 @@ HTTPS 정부 도메인만 사용하며 TLS 검증을 끄지 않는다. 403/429�
 
 ## 저장
 
-Node.js 20 이상. 분리 계약의 마이그레이션 4개를 순서대로 적용해야 한다. 키는 출력하지 않고 로컬 파일에서 읽는다.
+Node.js 20 이상. 저장에는 분리 계약의 마이그레이션 1~4, 검색에는 5번까지 적용해야 한다. 키는 출력하지 않고 로컬 파일에서 읽는다.
 
 ```bash
 node scripts/indonesia_policy/import.cjs /ABSOLUTE/RUN-UNIQUE/collection.json \
@@ -41,7 +41,9 @@ node scripts/indonesia_policy/import.cjs /ABSOLUTE/RUN-UNIQUE/collection.json \
 python3 -m unittest discover -s scripts/indonesia_policy -p 'test_*.py' -v
 npm install --prefix /tmp/idn-db-tests --no-audit --no-fund @electric-sql/pglite@0.5.8
 IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
-  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs
+  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs scripts/indonesia_policy/test_search.cjs scripts/indonesia_policy/test_api.mjs
 ```
 
 원문 확보와 현행 효력 확정, 관측 변경과 법적 개정은 서로 다르다. 해시 변화만으로 단계 알림이나 법적 의무를 생성하면 안 된다.
+
+실제 DB 검색 미리보기는 `node scripts/indonesia_policy/preview.mjs --env-file /ABSOLUTE/ENV` 후 `http://127.0.0.1:4317/indonesia-policy/`를 연다. 127.0.0.1에만 바인딩하며 쓰기 RPC는 제공하지 않는다. 운영 배포 명령이 아니다. 통합 브라우저 검사는 실행 중인 미리보기와 Playwright를 사용한다: `IDN_BROWSER_NODE_MODULES=/PATH/TO/node_modules node --test scripts/indonesia_policy/test_browser.cjs`. 기본 Chrome 경로는 macOS용이며 IDN_BROWSER_EXECUTABLE로 변경할 수 있다.

@@ -10,12 +10,12 @@
 |---|---|---|
 | 원본 목록 | 기존 bills/public_laws/executive_orders/regulations | policy_idn.documents |
 | 버전·출처 확인 | 기존 미국 수집·검색 이력 | policy_idn.versions / policy_idn.source_checks |
-| 임베딩·검색 | 기존 policy_search_* 및 미국 RPC | 전용 passages·검색 RPC 미구현 |
+| 임베딩·검색 | 기존 policy_search_* 및 미국 RPC | 전용 검색·상세 RPC 구현, 구절 임베딩 미구현 |
 | 수집·재개 | 기존 Congress/FR/GovInfo 상태 | scripts/indonesia_policy, 독립 실행 결과·체크포인트 |
 | 즐겨찾기·알림 | 기존 미국 대상과 알림 대기열 | 아직 미연결 |
-| 화면 | 기존 미국 정책 화면 | 인도네시아 화면 미구현 |
+| 화면 | 기존 미국 정책 화면 | 독립 검색 화면 로컬 검증, 사이트 배포 전 |
 
-`policy_idn`을 Data API의 전역 노출 목록에 추가하지 않는다. 서비스 자격증명 전용 `public.idn_store_document`, `public.idn_store_source_check`, `public.idn_status`가 비공개 스키마로 전달한다. 함수의 public은 API 전송 네임스페이스다. 데이터·상태는 policy_idn에 있으며 미국 테이블/RPC를 재사용하거나 UNION/fallback하지 않는다. SECURITY INVOKER, 빈 search_path, 명시적 스키마 참조를 사용한다. anon/authenticated는 스키마·테이블·함수에 접근할 수 없다.
+`policy_idn`을 Data API의 전역 노출 목록에 추가하지 않는다. 서비스 자격증명 전용 `public.idn_store_document`, `public.idn_store_source_check`, `public.idn_status`, `public.idn_search_documents`, `public.idn_get_document`가 비공개 스키마로 전달한다. 함수의 public은 API 전송 네임스페이스다. 데이터·상태는 policy_idn에 있으며 미국 테이블/RPC를 재사용하거나 UNION/fallback하지 않는다. SECURITY INVOKER, 빈 search_path, 명시적 스키마 참조를 사용한다. anon/authenticated는 스키마·테이블·함수에 접근할 수 없다.
 
 중앙·지방은 발행기관 등급이다. 발행기관, 적용지역, 품목 적용성은 별개다. 중앙정부가 특정 주에 내린 결정은 지방정부 문서로 바꾸지 않는다. 광업 공통 규정을 니켈 전용 의무로, 수출 부담금을 수출 허가로 해석하지 않는다. 인도네시아 고유 문서 유형에 미국 EO/입법 단계를 강제 적용하지 않는다.
 
@@ -45,12 +45,13 @@
 
 ## 마이그레이션·검증
 
-운영 이력 버전과 로컬 파일명이 일치하며 SQL 본문 MD5도 4개 모두 일치한다.
+운영 이력 버전과 로컬 파일명이 일치하며 SQL 본문 MD5도 5개 모두 일치한다.
 
 1. `20261017080335_indonesia_policy_corpus.sql`: 초기 IDN 시범 테이블.
 2. `20261017080543_indonesia_policy_source_checks.sql`: 출처 성공·실패 이력.
 3. `20261018112152_indonesia_policy_isolation.sql`: IDN 테이블·FK·인덱스 이동 및 서버 전용 gateway. 기존 저장 함수 제거.
 4. `20261018112503_indonesia_policy_biofuel.sql`: 바이오연료 대표 분류 추가.
+5. `20261018113918_indonesia_policy_search.sql`: 전용 검색·상세 읽기 함수. 구현/검증 상태는 indonesia-policy-search.md 참고.
 
 이동 전 비공개 백업: `/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/before-isolation.json` (0600). 기존 6문서·9버전의 이동 전후 (document_id,content_hash) 집합 MD5는 `a659c67c2696d146793fc03463452890`로 동일했다. 이후 팜유·바이오연료만 추가했다.
 
@@ -60,5 +61,5 @@
 
 1. 보류 출처 복구 및 중앙·주·군/시별 범위 확대. JDIHN 연계 규격이 있어도 전국 공통 API가 있다고 가정하지 않는다.
 2. 최종 조항·부속서와 개정/폐지를 연결한 뒤 효력 판정 모델을 설계한다.
-3. 인도네시아 전용 번역·구절 임베딩·검색을 연결한다. 번역은 원문/모델/생성일/검수 상태와 분리 저장한다. 임베딩은 번역 생성 기능이 아니다.
-4. UI·즐겨찾기·메일 및 주기 수집은 별도 구현·검증한다. 이번 시범 수집은 상시 실행이나 사이트 배포가 아니다. Gemini 유료 호출은 아직 사용하지 않았다.
+3. 인도네시아 전용 키워드 검색은 구현했다. 번역·구절 임베딩은 미구현이다. 번역은 원문/모델/생성일/검수 상태와 분리 저장한다. 임베딩은 번역 생성 기능이 아니다.
+4. 독립 검색 UI는 로컬 실제 DB로 검증했다. 사이트 연결·배포, 즐겨찾기·메일 및 주기 수집은 별도다. 이번 시범 수집은 상시 실행이나 사이트 배포가 아니다. Gemini 유료 호출은 아직 사용하지 않았다.

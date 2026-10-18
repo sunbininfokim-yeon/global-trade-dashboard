@@ -1,0 +1,26 @@
+// Local-only review server: real IDN DB reads, no production writes/deploy.
+import http from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {createRequire} from 'node:module';
+import {handleIdnPolicy} from './search-api.mjs';
+const require=createRequire(import.meta.url),{loadEnvFile}=require('../lib/load-env.js');
+const index=process.argv.indexOf('--env-file');
+if(index<0||!process.argv[index+1])throw Error('--env-file PATH required');
+loadEnvFile(process.argv[index+1]);
+if(!process.env.SUPABASE_URL||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw Error('Missing server credentials');
+const files={'/indonesia-policy/':['index.html','text/html; charset=utf-8'],
+ '/indonesia-policy/search.mjs':['search.mjs','text/javascript; charset=utf-8'],
+ '/indonesia-policy/search.css':['search.css','text/css; charset=utf-8']};
+http.createServer(async(req,res)=>{
+ try{
+  const path=new URL(req.url,'http://localhost').pathname;
+  if(path.startsWith('/api/idn/')){
+   const response=await handleIdnPolicy(new Request('http://localhost'+req.url,{method:req.method}),process.env);
+   res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));return;
+  }
+  const file=files[path];if(!file){res.writeHead(404);res.end('Not found');return;}
+  const data=await readFile(fileURLToPath(new URL('../../New for anti/indonesia-policy/'+file[0],import.meta.url)));
+  res.writeHead(200,{'Content-Type':file[1],'Cache-Control':'no-store'});res.end(data);
+ }catch{res.writeHead(500);res.end('Local preview unavailable');}
+}).listen(4317,'127.0.0.1',()=>console.log('IDN preview: http://127.0.0.1:4317/indonesia-policy/'));
