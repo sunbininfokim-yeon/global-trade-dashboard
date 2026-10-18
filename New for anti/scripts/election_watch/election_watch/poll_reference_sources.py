@@ -10,17 +10,25 @@ import re
 from urllib.parse import urlparse
 from .polls import require
 
-SHARED_HOSTS=frozenset(('docs.google.com','drive.google.com','static1.squarespace.com',
+SHARED_HOSTS=frozenset(('docs.google.com','drive.google.com','static1.squarespace.com','mailchi.mp',
     'www.documentcloud.org','s3.documentcloud.org','x.com','bsky.app'))
 
 
 def reference_source(raw, policy, as_of):
     entry=policy.get('reference_sources',{}).get(raw.get('pollster'))
     if not entry:return None
+    for route in [entry, *entry.get('alternate_routes', [])]:
+        matched = reference_route(raw, route, as_of)
+        if matched:
+            return matched
+    return None
+
+
+def reference_route(raw, entry, as_of):
     # Historical replays must not consume later source approval or stop the API.
     if date.fromisoformat(entry['reviewed_on'])>date.fromisoformat(as_of):return None
     require(entry['reference_only'] is True and entry['group'] and entry['evidence']
-        and entry['source_role'] in ('pollster_primary','commissioner_primary','research_institution'),
+        and entry['source_role'] in ('pollster_primary','commissioner_primary','research_institution','news_reporter_reference'),
         'invalid_reference_source_policy')
     url=raw.get('url');u=urlparse(url if isinstance(url,str)else'')
     if u.scheme!='https' or not u.hostname or u.username or u.password or u.port not in (None,443):return None
@@ -40,11 +48,14 @@ def reference_source(raw, policy, as_of):
 
 def reference_quality(quality, source, raw):
     entry=source['reference_policy']
+    reporting = entry['source_role'] == 'news_reporter_reference'
     missing=set(quality.get('missing_fields',[]))|{'individual_release_values_and_methods_recheck'}
+    if reporting:missing.update(('original_poll_document','pollster_identity_correspondence'))
     if raw.get('sample_size') is None:missing.add('sample_n')
-    return {**quality,'label_ko':'발표 주체 확인 · 개별 원문 검토 대기',
+    return {**quality,'verification_level':'partial',
+        'label_ko':('보도 경로 확인 · 조사 원문 검토 대기' if reporting else '발표 주체 확인 · 개별 원문 검토 대기'),
         'accuracy_grade':None,'methodological_quality':'unrated',
-        'basis_ko':'검토한 조사기관·대학·의뢰 언론과 URL 범위가 일치한 API 전달값. 해당 발표의 문항·수치·방법 재검증 전이므로 우세 합계에서 제외합니다.',
+        'basis_ko':('확인한 언론 보도 URL을 통해 전달된 API 수치. 기사 중계이며 조사기관 신원·원문 수치·방법 일치 검증 전이므로 우세 합계에서 제외합니다.' if reporting else '검토한 조사기관·대학·의뢰 언론과 URL 범위가 일치한 API 전달값. 해당 발표의 문항·수치·방법 재검증 전이므로 우세 합계에서 제외합니다.'),
         'missing_fields':sorted(missing),
         'publisher_reference_review':{'reviewed_on':entry['reviewed_on'],'source_role':entry['source_role'],
             'group':entry['group'],'evidence':deepcopy(entry['evidence']),
