@@ -191,6 +191,11 @@ def build_usa_state_drilldown(
         ballot_path = ROOT / 'config' / 'usa_polls' / 'ballot_reviews_2026.json'
         state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat(),
                                      load_json(ballot_path) if ballot_path.exists() else None)
+    from election_watch.governor_matchups import attach_state_matchups
+    governor_roster_path = ROOT / 'config/governor_matchups/2026.json'
+    if governor_roster_path.exists():
+        state_cards = attach_state_matchups(state_cards, load_json(governor_roster_path),
+                                            datetime.now(timezone.utc).date().isoformat())
     from election_watch.candidate_profiles import attach_profiles
     from election_watch.state_inputs import packets
     state_cards = attach_profiles(state_cards, packets(), datetime.now(timezone.utc).date().isoformat())

@@ -34,11 +34,14 @@ def cents(raw):
 
 
 def rows_from_zip(body, filename, width):
-    with zipfile.ZipFile(io.BytesIO(body)) as archive:
-        require(archive.namelist() == [filename], 'changed FEC ZIP members')
-        info = archive.getinfo(filename)
-        require(info.file_size <= 30_000_000 and not info.flag_bits & 1, 'oversized/encrypted FEC member')
-        text = archive.read(filename).decode('utf-8-sig')
+    try:
+        with zipfile.ZipFile(io.BytesIO(body)) as archive:
+            require(archive.namelist() == [filename], 'changed FEC ZIP members')
+            info = archive.getinfo(filename)
+            require(info.file_size <= 30_000_000 and not info.flag_bits & 1, 'oversized/encrypted FEC member')
+            text = archive.read(filename).decode('utf-8-sig')
+    except zipfile.BadZipFile:
+        raise ValueError('invalid FEC ZIP document') from None
     rows = list(csv.reader(io.StringIO(text), delimiter='|'))
     require(rows and all(len(r) == width for r in rows), 'empty/changed FEC row layout')
     return rows

@@ -49,6 +49,7 @@ class FundraisingTests(unittest.TestCase):
   self.assertEqual(rows_from_zip(b.getvalue(),'weball26.txt',30),[self.row])
   with self.assertRaises(ValueError):rows_from_zip(b.getvalue(),'weball26.txt',29)
   with self.assertRaises(ValueError):rows_from_zip(b.getvalue(),'other.txt',30)
+  with self.assertRaisesRegex(ValueError,'invalid FEC ZIP'):rows_from_zip(b'<html>source outage</html>','weball26.txt',30)
  def test_cli_source_failure_keeps_last_good_file_and_writes_failure_health(self):
   with tempfile.TemporaryDirectory()as tmp:
    folder=Path(tmp)/'usa_election_finance/2026';folder.mkdir(parents=True);good=folder/'candidate_fundraising_v1.json';good.write_text(json.dumps(self.doc()));before=good.read_bytes()
