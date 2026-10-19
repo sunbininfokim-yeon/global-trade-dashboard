@@ -1,4 +1,5 @@
 import {officialUrl,documentLinks} from './source-links.mjs';
+import {effectLabel,findingLabels} from './legal-effect.mjs';
 const form=document.querySelector('#search-form'),results=document.querySelector('#results');
 const status=document.querySelector('#status'),coverage=document.querySelector('#coverage'),pages=document.querySelector('#pagination');
 const dialog=document.querySelector('#detail'),detail=document.querySelector('#detail-content');
@@ -31,7 +32,18 @@ function badges(item){
  for(const text of [levels[item.issuer_level]||item.issuer_level,regionNames[item.jurisdiction]||item.jurisdiction,item.content_kind==='official_text'?'원문 확보':'본문 미확보 · 메타데이터'])row.append(node('span',text,'badge'));
  if(item.text_truncated)row.append(node('span','본문 일부 수집 · 원문 링크 확인','badge unverified'));
  if(item.topics?.includes('cross_sector'))row.append(node('span','공통 제도 · 적용대상 별도 확인','badge'));
- row.append(node('span','현행 효력 미확인','badge unverified'));return row;
+ row.append(node('span',effectLabel(item.legal_effect),'badge unverified'));return row;
+}
+function effectDetails(effect){
+ const section=node('section');section.append(node('h3','시행·개정·폐지 검토'),node('p',effectLabel(effect),'scope'));
+ section.append(node('p','확보한 공식 원문의 검토 범위입니다. 시행일 확인만으로 현재 유효하다고 확정하지 않습니다. 후속 개폐와 개별 사업 적용성은 별도 확인이 필요합니다.','meta'));
+ if(effect?.reviewed_at)section.append(node('p',`근거 검토 ${new Date(effect.reviewed_at).toLocaleDateString('ko-KR')}`,'meta'));
+ if(effect?.stale_evidence_count)section.append(node('p',`본문 변경으로 이전 효력 근거 ${effect.stale_evidence_count}건을 제외했습니다.`,'meta'));
+ if(effect?.transition_review_required)section.append(node('p','경과조치 확인 · 기존 인증·허가·시행규칙 유지 조건을 함께 검토하세요.','scope'));
+ for(const f of effect?.findings||[]){const entry=node('details');entry.append(node('summary',`${findingLabels[f.finding_type]||f.finding_type} · ${f.article} · ${f.effective_on||'적용일 미확인'}`),node('p',f.scope_note_ko,'scope'),node('blockquote',f.quote));
+  if(f.date_quote)entry.append(node('p',`날짜 근거: ${f.date_quote}`,'meta'));entry.append(sourceLink(f.source_url,'효력 근거 원문'));section.append(entry);
+ }
+ return section;
 }
 function ref(item){return `${item.document_type} ${item.document_number}/${item.document_year}`;}
 function matchEvidence(item){
@@ -85,6 +97,7 @@ async function showDetail(id){
   if(d.country!=='IDN')throw Error('국가별 데이터 검증에 실패했습니다.');
   const v=d.version;detail.replaceChildren(node('h2',d.title_ko),node('p',d.title,'original'),badges({...d,content_kind:v.content_kind,text_truncated:v.text_truncated}),node('p',`${ref(d)} · ${d.issuer_name}`,'meta'),node('p','수집 범위·검토 사항','meta'),node('p',d.scope_note,'scope'));
   detail.append(node('p',`자료 확인: ${new Date(v.observed_at).toLocaleString('ko-KR')} · 한국어 제목은 번역·정리 제목입니다.`,'meta'));
+  detail.append(effectDetails(d.legal_effect));
   const links=node('div',undefined,'actions');appendSources(links,{...d,content_kind:v.content_kind,text_source_url:v.text_source_url});detail.append(links);
   const context=node('div');detail.append(context);void appendContext(id,signal,context);
   detail.append(node('h3',v.content_kind==='official_metadata'?'공식 메타데이터':'수집한 원문 자료'));

@@ -9,6 +9,20 @@ from catalogue_queue import build
 
 JATENG=b'<span class="category-count">2</span><table><tr class="info-row"><td class="info-cell-title">Undang-undang Nomor 3 Tahun 2020 tentang Minerba</td><td class="info-cell-file"><a href="/law.pdf">Download</a></td></tr><tr class="info-row"><td class="info-cell-title">Peraturan Daerah Provinsi Jawa Tengah Nomor 6 Tahun 2010 tentang Tata Ruang</td><td class="info-cell-file"><a href="https://drive.google.com/file/d/example">Download</a></td></tr></table>'
 class CatalogueTests(unittest.TestCase):
+ def test_original_ministry_pagination_retains_status_without_claiming_legal_effect(self):
+  s=self.source('kemendag_pages');s['url']='https://example.go.id/peraturan'
+  data=b'<p>Menampilkan 10 dari 2,406 peraturan</p><div class="flex-grow-1"><span class="badge-status">Peraturan Menteri</span><span class="badge-status">Berlaku</span><h6><a href="/peraturan/law-1">1 Tahun 2026</a></h6><p>Peraturan Menteri Perdagangan Nomor 1 Tahun 2026 tentang Ekspor...</p></div><ul class="pagination"><a href="?page=1">1</a><a href="?page=2">2</a></ul>'
+  rows,links,total=parse_page(data,s['url'],s);self.assertEqual(total,2406);self.assertEqual(links,['https://example.go.id/peraturan?page=2'])
+  self.assertEqual(rows[0]['publisher_fields']['status'],'Berlaku');self.assertTrue(rows[0]['publisher_fields']['title_truncated']);self.assertNotIn('legal_status',rows[0])
+  with tempfile.TemporaryDirectory() as d:
+   state=run([s],d,set(),2,fetcher=lambda u,_:(data,u,'a'*64),delay=0)['sources'][0]
+   self.assertEqual(state['status'],'failed');self.assertEqual(len(state['visited_urls']),1);self.assertIn('pagination_no_progress',state['failures'][0]['error'])
+ def test_original_ministry_cannot_claim_complete_when_reported_total_is_larger(self):
+  s=self.source('kemendag_pages');s['url']='https://example.go.id/peraturan'
+  data=b'<p>Menampilkan 1 dari 2 peraturan</p><div class="flex-grow-1"><h6><a href="/peraturan/law">Law</a></h6><p>Unknown title</p></div>'
+  with tempfile.TemporaryDirectory() as d:
+   state=run([s],d,set(),1,fetcher=lambda u,_:(data,u,'a'*64),delay=0)['sources'][0]
+   self.assertEqual(state['visited_urls'],[]);self.assertIn('reported_count_mismatch',state['failures'][0]['error'])
  def source(self,adapter='jateng_table'):
   return dict(source_id='test',adapter=adapter,url='https://example.go.id/list',scope='All rows of one explicitly bounded published listing')
  def test_inventory_keeps_every_row_without_following_external_attachments(self):

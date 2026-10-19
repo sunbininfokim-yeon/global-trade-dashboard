@@ -2,6 +2,27 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {chromium}=require(require.resolve('playwright',{paths:[process.env.IDN_BROWSER_NODE_MODULES||__dirname]}));
+test('legal effect uses live reviewed evidence and preserves a usable mobile detail view',async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ try{
+  const page=await browser.newPage({viewport:{width:1360,height:950}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const read=async url=>{const r=await page.request.get('http://127.0.0.1:4317'+url);assert.equal(r.status(),200);return r.json();};
+  const effects=await read('/api/idn/legal-effect?ids=idn-perpres-44-2020,idn-perpres-191-2014,idn-perpres-10-2021');
+  assert.deepEqual(effects.items.map(x=>x.status).sort(),['amended','fully_repealed','partially_repealed'].sort());
+  const d=await read('/api/idn/documents/idn-perpres-16-2025');assert.equal(d.legal_effect.transition_review_required,true);
+  await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=16%2F2025&type=Perpres');
+  const card=page.locator('article').filter({has:page.getByRole('heading',{name:d.title_ko,exact:true})});await card.waitFor();
+  assert.ok((await card.innerText()).includes('시행일 확인 · 후속 개폐 미확인'));
+  await card.getByRole('button',{name:'세부사항',exact:true}).click();await page.getByRole('heading',{name:'시행·개정·폐지 검토',exact:true}).waitFor();
+  assert.ok((await page.locator('#detail-content').innerText()).includes('경과조치 확인'));
+  await page.locator('#detail-content summary').filter({hasText:'시행 · Pasal 30'}).click();
+  assert.ok((await page.locator('#detail-content').innerText()).includes('2025-03-19'));
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261019/legal-effect-desktop.png'});
+  await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  assert.equal(await page.locator('#detail').evaluate(e=>e.scrollWidth>e.clientWidth),false);
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261019/legal-effect-mobile.png'});assert.deepEqual(errors,[]);
+ }finally{await browser.close();}
+});
 test('real DB search/detail, country isolation, empty/error states and mobile layout',async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.IDN_BROWSER_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
  try{
