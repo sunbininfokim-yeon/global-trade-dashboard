@@ -17,8 +17,10 @@
   "selection_criteria_ko": [
     "대학 조사센터 또는 지역 언론 공동 조사이며 원문과 조사 방법을 공개하는 기관을 우선 선정",
     "수치적 정확도 순위가 아니라 출처 공개·지역 선거 보도 연속성에 따른 편입 기준",
-    "기관 등록은 우선 수집 경로. 미등록 기관·공유 문서도 개별 원문 수치·방법·대진·레코드 검토로 편입 가능. 내부·정파 조사와 미검증 출처는 우세 집계 제외",
-    "VoteHub API는 발견·전송 수단이며 원문 재전사 검증과 구분"
+    "기관 등록은 우선 수집 경로. 미등록 기관·공유 문서도 개별 원문 수치·방법·대진·레코드 검토로 편입 가능. 정당·후보 의뢰 조사도 정확한 원문 검토를 거치면 집계하며, 미검증 출처와 다른 문항은 제외",
+    "VoteHub API는 발견·전송 수단이며 원문 재전사 검증과 구분",
+    "미등록 표기·대체 발표 경로 중 확인된 대학/조사기관/의뢰 언론의 API 수치는 참고로 자동 수집. 개별 원문 검토 전 우세 합계 제외. 공유 저장소는 검토한 URL/경로만 허용.",
+    "발표기관 직접 자료와 확인된 언론 중계의 참고 경로를 구분. 중계 기사는 조사기관 신원·개별 문항 검증 완료로 표시하지 않으며 우세 집계 제외."
   ],
   "pollsters": {
     "Emerson College": {
@@ -1510,5 +1512,676 @@
       "note_ko": "ASU 원문N1300 전체표본과 API LV/sample null 충돌. Q8초기47/34/2/1과 미정16 확인, LV문항N/전체모집단/가중 미검증.",
       "provider_record_sha256": "76607b3585144ea518200982a6c91b24cbd8f4088ec862c6af504ce69d5f29a0"
     }
+  },
+  "reference_sources": {
+    "Bowling Green State University": {
+      "group": "bgsu",
+      "hosts": [
+        "scholarworks.bgsu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://scholarworks.bgsu.edu/depo/",
+          "checked_at": "2026-10-18T12:10:23.975595+00:00",
+          "sha256": "92ea4075ce606593bd1ef5f623972255434f3fd605c71adfb8afa2b6ede10413"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://scholarworks\\.bgsu\\.edu/cgi/viewcontent\\.cgi\\?article=\\d+&context=depo",
+        "https://scholarworks\\.bgsu\\.edu/depo/\\d+/?"
+      ]
+    },
+    "Bowling Green State University/YouGov": {
+      "group": "bgsu",
+      "hosts": [
+        "scholarworks.bgsu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://scholarworks.bgsu.edu/depo/",
+          "checked_at": "2026-10-18T12:10:23.975595+00:00",
+          "sha256": "92ea4075ce606593bd1ef5f623972255434f3fd605c71adfb8afa2b6ede10413"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://scholarworks\\.bgsu\\.edu/cgi/viewcontent\\.cgi\\?article=\\d+&context=depo",
+        "https://scholarworks\\.bgsu\\.edu/depo/\\d+/?"
+      ]
+    },
+    "Saint Anselm": {
+      "group": "saint_anselm",
+      "hosts": [
+        "www.anselm.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.anselm.edu/about/offices-centers-institutes/centers-institutes/new-hampshire-institute-politics/programs/polling",
+          "checked_at": "2026-10-18T12:10:23.975951+00:00",
+          "sha256": "4f34cb6217cb6ec942203bbde79c6ff7acd393718b34cfdab376114a42a0391e"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Saint Anselm College Survey Center": {
+      "group": "saint_anselm",
+      "hosts": [
+        "www.anselm.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.anselm.edu/about/offices-centers-institutes/centers-institutes/new-hampshire-institute-politics/programs/polling",
+          "checked_at": "2026-10-18T12:10:23.975951+00:00",
+          "sha256": "4f34cb6217cb6ec942203bbde79c6ff7acd393718b34cfdab376114a42a0391e"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Massachusetts Lowell Center for Public Opinion/YouGov": {
+      "group": "umass_lowell",
+      "hosts": [
+        "www.uml.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uml.edu/research/public-opinion/",
+          "checked_at": "2026-10-18T12:10:23.976024+00:00",
+          "sha256": "524b168b36e70e8852ae95c88c64d221dde6d1ea398f4956315c9ce04ff0f4d9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Texas Politics Project at the University of Texas/YouGov": {
+      "group": "ut_austin",
+      "hosts": [
+        "texaspolitics.utexas.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://texaspolitics.utexas.edu/polling",
+          "checked_at": "2026-10-18T12:10:23.976086+00:00",
+          "sha256": "e847c9fce2d1cb3c8639660ab242460ba43f9ebff7618fba428934efd3c466fa"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "The Texas Politics Project at the University of Texas at Austin/YouGov": {
+      "group": "ut_austin",
+      "hosts": [
+        "texaspolitics.utexas.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://texaspolitics.utexas.edu/polling",
+          "checked_at": "2026-10-18T12:10:23.976086+00:00",
+          "sha256": "e847c9fce2d1cb3c8639660ab242460ba43f9ebff7618fba428934efd3c466fa"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston Hobby School of Public Affairs/YouGov": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston/YouGov": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston Hobby School of Public Affairs/Texas Southern University School of Public Affairs": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Michigan State University Institute for Public Policy and Social Research/YouGov": {
+      "group": "msu_ippsr",
+      "hosts": [
+        "ippsr.msu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://ippsr.msu.edu/survey-research/state-state-survey-soss",
+          "checked_at": "2026-10-18T12:10:25.476862+00:00",
+          "sha256": "af029ceb24ca2c8bc61ceaba7f96de9a200ef809705b5367ce44f53ca34ade62"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Wesleyan University Survey Lab/YouGov": {
+      "group": "wesleyan",
+      "hosts": [
+        "surveylab.wescreates.wesleyan.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://surveylab.wescreates.wesleyan.edu/uncategorized/wesleyan-surveylab-ct-poll-lamont-leads-in-governors-race-while-connecticut-voters-express-concern-about-cost-of-living/",
+          "checked_at": "2026-10-18T12:10:26.221605+00:00",
+          "sha256": "aaaeb679c803195cb096b077f1756087076910d2f2d87a0aeaaa6331589276ea"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Hendrix College": {
+      "group": "hendrix",
+      "hosts": [
+        "talkbusiness.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+          "checked_at": "2026-10-18T12:10:26.682121+00:00",
+          "sha256": "0592771cbbef378393fe8baa4120b0b4844956fa50435fc409ab417854e80e59"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://talkbusiness\\.net/2026/\\d{2}/poll-[a-z0-9-]+/?"
+      ]
+    },
+    "Research & Polling Inc.": {
+      "group": "research_polling_inc",
+      "hosts": [
+        "www.abqjournal.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.abqjournal.com/news/journal-poll-congressional-incumbents-stansbury-and-leger-fernandez-lead-challengers/3141828",
+          "checked_at": "2026-10-18T12:10:26.784939+00:00",
+          "sha256": "988360aa550ed0d8018b1499eaa272d04155f8d7e64b6a5d62cf311d4c3c5e03"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.abqjournal\\.com/news/journal-poll-[a-z0-9-]+/\\d+"
+      ]
+    },
+    "SurveyUSA": {
+      "group": "surveyusa",
+      "hosts": [
+        "kstp.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.surveyusa.com/",
+          "checked_at": "2026-10-18T12:10:27.696846+00:00",
+          "sha256": "c08bb8e09ff16d52e03ea2acd9899f24e5d67a0f7ce609d371109a266255ca8e"
+        },
+        {
+          "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-swing-in-senate-and-ag-races-klobuchar-up-slightly-on-demuth/",
+          "checked_at": "2026-10-18T12:10:27.941712+00:00",
+          "sha256": "69d2886e81b83ae99863efcc027e911f6fb6724140d54ed3fc0438d95e27cb96"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-swing-in-senate-and-ag-races-klobuchar-up-slightly-on-demuth/"
+      ]
+    },
+    "MassINC Polling Group": {
+      "group": "massinc",
+      "hosts": [
+        "commonwealthbeacon.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.massincpolling.com/",
+          "checked_at": "2026-10-18T12:10:28.210987+00:00",
+          "sha256": "82628a54e858b6fb48829ec78cb781507636e04cf4a4e83944f780bf799949d3"
+        },
+        {
+          "url": "https://commonwealthbeacon.org/wp-content/uploads/2026/09/Topline-2026-09-CWB-Ballot-Questions-TUES-RELEASE.pdf",
+          "checked_at": "2026-10-18T12:10:28.613686+00:00",
+          "sha256": "845d87079bdeba92583d95a3049cc3d9c0d971a2040d64b370c48cb79c7ae43c"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://commonwealthbeacon.org/wp-content/uploads/2026/09/Topline-2026-09-CWB-Ballot-Questions-TUES-RELEASE.pdf"
+      ]
+    },
+    "co/efficient": {
+      "group": "coefficient",
+      "hosts": [
+        "battlegrounds.coefficient.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://battlegrounds.coefficient.org/oh",
+          "checked_at": "2026-10-18T12:10:30.380299+00:00",
+          "sha256": "2076e6ff23dfe17e0454c1ce56573f89640aa367ba8aab1aeb1730fe3f1ef418"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://battlegrounds\\.coefficient\\.org/[a-z]{2}/?"
+      ],
+      "alternate_routes": [
+        {
+          "group": "coefficient",
+          "hosts": [
+            "nypost.com"
+          ],
+          "reviewed_on": "2026-10-18",
+          "reference_only": true,
+          "source_role": "news_reporter_reference",
+          "evidence": [
+            {
+              "url": "https://nypost.com/2026/10/05/us-news/more-than-half-of-new-york-voters-concerned-about-rise-of-socialism-poll/",
+              "checked_at": "2026-10-18T16:41:33.023619+00:00",
+              "sha256": "8426f532830f1907d9aa06ef089b3526ac8e14f24237091d74422dc1ed8cc158"
+            }
+          ],
+          "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+          "approved_urls": [
+            "https://nypost.com/2026/10/05/us-news/more-than-half-of-new-york-voters-concerned-about-rise-of-socialism-poll/"
+          ]
+        }
+      ]
+    },
+    "ActiVote": {
+      "group": "activote",
+      "hosts": [
+        "www.activote.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://www.activote.net/polls/2026/tx-governor/",
+          "checked_at": "2026-10-18T12:10:30.795872+00:00",
+          "sha256": "23e50e2e26457045a669ef124748f0ef7bd9957cc63c35ee2656aa5d386cfe4b"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.activote\\.net/polls/2026/[a-z0-9/-]+/"
+      ]
+    },
+    "Targoz Market Research": {
+      "group": "targoz",
+      "hosts": [
+        "jmipoll.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://jmipoll.com",
+          "checked_at": "2026-10-18T12:10:31.350708+00:00",
+          "sha256": "02dc9fb886105c0660689ecf4c86de31809042498d243419dc97bb79b33f64ff"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://jmipoll.com",
+        "https://jmipoll.com/"
+      ]
+    },
+    "Glengariff Group, Inc.": {
+      "group": "glengariff",
+      "hosts": [
+        "www.detroitchamber.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.detroitchamber.com/polls/",
+          "checked_at": "2026-10-18T12:10:32.228682+00:00",
+          "sha256": "81d0a61d40b4a0272f0556f8d1bb0579a36677fffc2fd423f5c98a67487cc7b9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.detroitchamber\\.com/wp-content/uploads/2026/\\d{2}/[A-Za-z0-9_.-]+\\.pdf"
+      ]
+    },
+    "YouGov": {
+      "group": "yougov",
+      "hosts": [
+        "d3nkl3psvxxpe9.cloudfront.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf",
+          "checked_at": "2026-10-18T12:10:32.234967+00:00",
+          "sha256": "86968315dabd82f898119fa650f277257dce2e37915cdea0772a3d4c4d4090d9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf"
+      ]
+    },
+    "University of Maryland Baltimore County Institute of Politics": {
+      "group": "umbc",
+      "hosts": [
+        "politics.umbc.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://politics.umbc.edu/wp-content/uploads/sites/778/2026/10/UMBC-Poll-Tuesday-Oct-6.pdf",
+          "checked_at": "2026-10-18T12:10:26.030452+00:00",
+          "sha256": "0ccbe24a497e316f2d0a30b9b73c3431eecf7b89fa51ec36a506f2c851a55aad"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Mitchell Research & Communications": {
+      "group": "mitchell",
+      "hosts": [
+        "wwmt.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://wwmt.com/news/michigan-politics/mitchell-poll-michigan-us-senate-election-abdul-el-sayed-mike-rogers-politics-government-vote-polls-state",
+          "checked_at": "2026-10-18T16:41:31.628311+00:00",
+          "sha256": "b5c60cd8e52e8e2d5721f839c8d2410ff29986131a34a1b1b650e11f7ac44e63"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://wwmt.com/news/michigan-politics/mitchell-poll-michigan-us-senate-election-abdul-el-sayed-mike-rogers-politics-government-vote-polls-state"
+      ]
+    },
+    "The Tyson Group": {
+      "group": "tyson",
+      "hosts": [
+        "www.breitbart.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://www.breitbart.com/politics/2026/10/15/exclusive-poll-shows-mike-rogers-edging-out-abdul-el-sayed-in-michigan-senate-race/",
+          "checked_at": "2026-10-18T16:41:28.027718+00:00",
+          "sha256": "5d71e4861a528ec0ff26c7a6ea952c855caeb4ce99375205c4dbe6f105dd1b96"
+        },
+        {
+          "url": "https://betterfutureai.org/docs/mike-rogers-support-for-ai-security.pdf",
+          "checked_at": "2026-10-18T16:46:29.591804+00:00",
+          "sha256": "cbd1d9cb58f8e65ad83883be0cd63acdab2c75968d76285f00e8d39b10c1ec8d"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.breitbart.com/politics/2026/10/15/exclusive-poll-shows-mike-rogers-edging-out-abdul-el-sayed-in-michigan-senate-race/"
+      ]
+    },
+    "Public Policy Polling": {
+      "group": "public_policy_polling",
+      "hosts": [
+        "www.cnwmedia.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.cnwmedia.com/article/cnw-poll-pritzker-leads-bailey-by-20-points-democrats-ahead-in-four-other-statewide-races",
+          "checked_at": "2026-10-18T16:41:32.739232+00:00",
+          "sha256": "29599d642748b94c5ede80b2e7781f8cac2b8ed58d584b6579fbea5cf6b996ae"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.cnwmedia.com/article/cnw-poll-pritzker-leads-bailey-by-20-points-democrats-ahead-in-four-other-statewide-races"
+      ]
+    },
+    "RMG Research": {
+      "group": "rmg",
+      "hosts": [
+        "yellowhammernews.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/",
+          "checked_at": "2026-10-18T16:41:29.206992+00:00",
+          "sha256": "ce781ebc6e66dd5f0b0418d675ad89e9c0e0592f89aa8a5a7832eb623905c7f0"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/"
+      ]
+    },
+    "Bravo Group": {
+      "group": "bravo_group",
+      "hosts": [
+        "mailchi.mp"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://mailchi.mp/thebravogroup.com/morning-scrapple-sept26-results-s?e=46e0e177e8",
+          "checked_at": "2026-10-18T16:41:30.373325+00:00",
+          "sha256": "34511d46a45ac7f2e611fd434ebd153ddf913c375ef2e1146d6fbd25fc07a1e8"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://mailchi\\.mp/thebravogroup\\.com/morning-scrapple-[a-zA-Z0-9-]+(?:\\?[^#]+)?"
+      ]
+    },
+    "Slingshot Strategies": {
+      "group": "slingshot_tpor",
+      "hosts": [
+        "texaspublicopinionresearch.substack.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
+          "checked_at": "2026-10-18T16:41:28.028456+00:00",
+          "sha256": "dfd30ede3ee6fcd31470c751fe612ed7dff35d67aab82812e2554d599dc7380a"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://texaspublicopinionresearch\\.substack\\.com/p/[a-z0-9-]+"
+      ]
+    },
+    "American Pulse Research & Polling": {
+      "group": "american_pulse",
+      "hosts": [
+        "www.montanarightnow.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.montanarightnow.com/elections/montana-senate-race-kurt-alme-tops-bodnar-and-bankhead-in-new-poll-findings/article_cd8401fb-0470-492c-a53a-c7dfe39552ff.html",
+          "checked_at": "2026-10-18T16:41:28.140263+00:00",
+          "sha256": "9d54b2d529861c585e5027ddc50c300ca25bc340f3e49da8759d019eba973dd9"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.montanarightnow.com/elections/montana-senate-race-kurt-alme-tops-bodnar-and-bankhead-in-new-poll-findings/article_cd8401fb-0470-492c-a53a-c7dfe39552ff.html"
+      ]
+    },
+    "Emerson College": {
+      "group": "emerson",
+      "hosts": [
+        "docs.google.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://emersoncollegepolling.com/iowa-2026-poll-u-s-senate-race-tightens-sand-maintains-edge-for-governor/",
+          "checked_at": "2026-10-18T16:46:29.591121+00:00",
+          "sha256": "0493d0414b438f125b785c7995dc754e5309bb914d2d29fb9f8bd3a89fe0fc71"
+        },
+        {
+          "url": "https://docs.google.com/spreadsheets/d/1mKToIlrAwY0ehEA60PVFemP5WjwxsTxN/edit?rtpof=true&sd=true",
+          "checked_at": "2026-10-18T16:41:33.773008+00:00",
+          "sha256": "f43a40e6a8975e07764525f23ee651c05a44fb431c0215b021afaed282e96c19"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://docs\\.google\\.com/spreadsheets/d/1mKToIlrAwY0ehEA60PVFemP5WjwxsTxN/edit(?:\\?[^#]+)?"
+      ]
+    },
+    "Change Research": {
+      "group": "change_research",
+      "hosts": [
+        "carolinaforward.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://carolinaforward.org/news/the-october-2026-carolina-forward-poll/?emci=e7b29264-2cc4-f111-bf5b-000d3a4fbe83&emdi=beb3dd17-f1c6-f111-bf5b-000d3a4fbe83&ceid=27194997",
+          "checked_at": "2026-10-18T16:41:35.219093+00:00",
+          "sha256": "2b5fb04b4e55382198c5ef6eee6d961ab689f6e1c7fbeed27482592dd8aec3c4"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://carolinaforward.org/news/the-october-2026-carolina-forward-poll/?emci=e7b29264-2cc4-f111-bf5b-000d3a4fbe83&emdi=beb3dd17-f1c6-f111-bf5b-000d3a4fbe83&ceid=27194997"
+      ]
+    },
+    "Lighthouse Research": {
+      "group": "lighthouse",
+      "hosts": [
+        "utahdebatecommission.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "approved_urls": [
+        "https://utahdebatecommission.org/2026-polling/"
+      ],
+      "evidence": [
+        {
+          "url": "https://utahdebatecommission.org/2026-polling/",
+          "sha256": "e181c44446660dd67859969f68360b5d03cae611b65dc5ab1b0ebd97197760e6",
+          "checked_at": "2026-10-18T16:41:28.669347+00:00"
+        },
+        {
+          "url": "https://utahdebatecommission.org/wp-content/uploads/2026/09/CD2-Polling-Results-2026.jpg",
+          "sha256": "6743e4511227cc3d38831301b3bcfca617ed0f156584ea7ff2f16f4a51ba09c2",
+          "checked_at": "2026-10-18T16:50:13.257839+00:00"
+        },
+        {
+          "url": "https://utahdebatecommission.org/wp-content/uploads/2026/09/Hinckley-Institute-2026-Congressional-Poll-Methodology.jpg",
+          "sha256": "f39316e3a1ba57a26dde99350825d53cf92e8c71235c6e19db3de02e8ff10644",
+          "checked_at": "2026-10-18T16:50:14.269940+00:00"
+        }
+      ],
+      "selection_reason_ko": "위원회 공개 질문·방법론 이미지에서 Lighthouse 연구 수행 확인. API 문항별 표본·RV/LV·후보 대조 전 참고 전용."
+    }
+  },
+  "commissioned_poll_aggregation": {
+    "enabled": true,
+    "reviewed_on": "2026-10-18",
+    "basis_ko": "사용자 요청에 따라 정당·후보 측 의뢰 조사도 집계. 정확한 원문·대진·기간·표본·모집단·의뢰주체를 개별 검토한 최초 후보 선택 문항만 포함. 의뢰주체를 보존하고 같은 기관 파동은 한 번 계산.",
+    "publisher_reference_eligible": false,
+    "accuracy_grade": null
   }
 }

@@ -13,7 +13,8 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from time import sleep
 from .polls import atomic, digest, require
-from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question
+from .poll_reference_sources import reference_source, reference_quality
+from .poll_quality import source_quality, evidence_context, corrected_provider_answers, corrected_provider_source, corrected_provider_sample, answer_correction_fingerprint, ranked_choice_question, commissioned_aggregation
 
 OFFICES = {'governor': 'governor', 'us-senator': 'senate', 'us-representative': 'house'}
 API = 'https://api.votehub.com/polls'
@@ -130,10 +131,14 @@ def reviewed_source(raw, policy, as_of):
                 'missing_reference_reason')
         return {'group': admission['group'], 'methodology_url': admission['methodology_url']}, admission
     source = policy['pollsters'].get(raw.get('pollster'))
-    require(source is not None, 'pollster_not_selected')
+    fallback = reference_source(raw, policy, as_of)
+    if source is None:
+        require(fallback is not None, 'pollster_not_selected')
+        return fallback, None
     url = urlparse(raw.get('url') if isinstance(raw.get('url'), str) else '')
-    require(url.scheme == 'https' and not url.username and not url.password
-            and url.hostname in source['hosts'], 'unregistered_primary_host')
+    if not (url.scheme == 'https' and not url.username and not url.password and url.hostname in source['hosts']):
+        require(fallback is not None, 'unregistered_primary_host')
+        return fallback, None
     if source.get('approved_sponsor_sets'):
         require(sorted(raw.get('sponsors') or []) in
                 [sorted(s) for s in source['approved_sponsor_sets']], 'commissioner_not_reviewed')
@@ -202,11 +207,14 @@ def normalize(rows, policy, as_of):
             p, metadata_correction = corrected_provider_metadata(p, policy.get("quality_reviews", {}).get(p["id"], {}), as_of)
             p, sample_correction = corrected_provider_sample(p, policy.get('quality_reviews', {}).get(p['id'], {}), as_of)
             source, admission = reviewed_source(p, policy, as_of)
+            publisher_reference = source.get('reference_only') is True and not admission
+            count_commissioned = commissioned_aggregation(raw,
+                policy.get('quality_reviews', {}).get(p['id'], {}), policy, as_of)
             primary_internal = policy.get('quality_reviews', {}).get(p['id'], {}).get(
                 'sponsor_review', {}).get('primary_internal') is True
             if primary_internal:
                 # A primary release can disclose internal commissioning that the
-                # aggregator omitted. Keep its raw flag, but never count it in a signal.
+                # aggregator omitted. Keep both flags and require an exact review.
                 require(admission and admission['signal_eligible'] is False
                         and 'party_internal_reference' in admission.get('signal_exclusion_reasons', [])
                         and admission.get('allow_partisan_reference') is True,
@@ -219,6 +227,8 @@ def normalize(rows, policy, as_of):
                                   and (p.get('internal') is False or p.get('internal') is True and primary_internal)
                                   and p.get('partisan') == admission.get('reviewed_partisan')
                                   and p.get('sponsors') == admission.get('reviewed_sponsors'))
+            if publisher_reference and p.get('internal') is False and p.get('partisan') in ('DEM','REP'):
+                partisan_reference = True
             require((p.get('internal') is False or p.get('internal') is True and primary_internal) and (p.get('partisan') is None or partisan_reference),
                     'internal_or_partisan')
             start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
@@ -231,7 +241,8 @@ def normalize(rows, policy, as_of):
             require((in_general_period or historical_reference)
                     and end < date.fromisoformat(race['election_date']), 'outside_reviewed_general_period')
             require(p.get('population') in ('lv', 'rv'), 'unsupported_population')
-            require(type(p.get('sample_size')) is int and p['sample_size'] > 0, 'missing_sample_size')
+            require((type(p.get('sample_size')) is int and p['sample_size'] > 0)
+                    or publisher_reference and p.get('sample_size') is None, 'missing_sample_size')
             require(p.get('seat_name') in (None, race.get('seat_name')), 'ambiguous_seat')
             answers = p.get('answers')
             require(isinstance(answers, list) and len(answers) >= 2, 'missing_answers')
@@ -298,21 +309,44 @@ def normalize(rows, policy, as_of):
                 observation['ballot_question'] = ranked
             observation['commissioning'] = {'internal': p.get('internal'), 'partisan': p.get('partisan'),
                                              'sponsors': p.get('sponsors') or []}
+            if count_commissioned:
+                sponsor_review = policy['quality_reviews'][p['id']].get('sponsor_review', {})
+                primary_sponsors = sponsor_review.get('primary_commissioners') or (
+                    [sponsor_review['commissioner']] if sponsor_review.get('commissioner') else [])
+                observation['commissioning'].update(
+                    provider_sponsors=deepcopy(p.get('sponsors') or []),
+                    sponsors=deepcopy(p.get('sponsors') or primary_sponsors),
+                    aggregation_policy='reviewed_commissioned_initial_ballot',
+                    label_ko='정당·후보 측 의뢰 포함',
+                    policy_reviewed_on=policy['commissioned_poll_aggregation']['reviewed_on'])
             if primary_internal:
                 observation['commissioning'].update(internal=True, provider_internal=p.get('internal'),
                     internal_basis='explicitly_disclosed_in_reviewed_primary_release')
             observation['source_admission'] = 'reviewed_release' if admission else 'registered_pollster'
             reasons = list(admission.get('signal_exclusion_reasons', [])) if admission else []
+            if count_commissioned:
+                reasons = []  # helper permits only sponsor-related exclusions
+            if publisher_reference:
+                reasons.append('publisher_identified_release_review_pending')
+                if p.get('sample_size') is None:reasons.append('reference_sample_n_not_disclosed_by_api')
             if primary and primary['status']=='carried_forward_reference_only':
                 reasons.append('primary_source_unavailable_or_changed')
-            if partisan_reference:
+            if partisan_reference and not count_commissioned:
                 reasons.append('party_commissioned_reference')
             if not in_general_period:
                 reasons.append('outside_reviewed_general_period')
             observation['aggregation_eligibility'] = {
                 'eligible': not reasons, 'reasons': sorted(set(reasons))}
+            if count_commissioned:
+                observation['commissioning']['aggregation_eligible'] = not reasons
+                observation['commissioning']['label_ko'] = (
+                    '정당·후보 측 의뢰 포함' if not reasons else '정당·후보 측 의뢰 참고')
             observation['display_group'] = 'general' if in_general_period else 'historical_matchup_reference'
             observation['source_quality'] = source_quality(observation, policy.get('quality_reviews', {}), as_of)
+            if publisher_reference:
+                observation['verification']='publisher_identified_aggregator_reference'
+                observation['source_admission']='publisher_reference'
+                observation['source_quality']=reference_quality(observation['source_quality'],source,p)
             accepted.append(observation)
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': raw.get('id'), 'race_id': rid, 'pollster': raw.get('pollster'),
@@ -328,6 +362,7 @@ def normalize(rows, policy, as_of):
 def poll_detail(poll):
     values = sorted((a['pct'] for a in poll['answers']), reverse=True)
     return {'id': poll['id'], 'source_quality': poll['source_quality'],
+            'commissioning': deepcopy(poll.get('commissioning', {})),
             'leading_margin_pp': round(values[0] - values[1], 3),
             'significance': 'not_evaluated'}
 
@@ -391,6 +426,8 @@ def summarize(rows, race, as_of, days):
             'status_note_ko': ('기간 내 참고 전용 자료는 있으나 우세 집계 가능한 조사는 없습니다.'
                                if references and not chosen else None),
             'lead_counts': dict(counts), 'tie_count': ties, 'pollster_count': len(chosen),
+            'commissioned_poll_count': sum(p.get('commissioning', {}).get('aggregation_policy')
+                == 'reviewed_commissioned_initial_ballot' for p in chosen),
             'included_ids': [p['id'] for p in chosen], 'conflicting_pollsters': conflicting,
             'latest_field_end': max((p['field_end'] for p in chosen), default=None)}
 
@@ -474,6 +511,10 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
     require(policy['schema'] == 'usa_live_poll_policy_v1', 'policy schema')
     accepted, rejected = normalize(rows, policy, as_of)
     confirmed = validated_results(results, policy, as_of)
+    commissioned_setting = deepcopy(policy.get('commissioned_poll_aggregation', {}))
+    commissioned_setting['effective'] = bool(commissioned_setting.get('enabled') is True
+        and commissioned_setting.get('reviewed_on')
+        and date.fromisoformat(commissioned_setting['reviewed_on']) <= date.fromisoformat(as_of))
     races = {}
     for rid, race in policy['races'].items():
         observations = sorted([p for p in accepted if p['race_id'] == rid], key=lambda p: (p['field_end'], p['id']), reverse=True)
@@ -490,7 +531,9 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                 '기관별 최신 1회. 단일 기관은 수치상 앞섬 참고값, 복수 기관 과반 우세는 별도 신호.',
                 '기관 수·일치도는 사실값으로 표시하며 상/중/하 품질 등급으로 변환하지 않습니다. 원문 검토·방법론 공개 상태는 별도.',
                 '기관 미등록이라도 원문·방법·대진·개별 레코드 대조 완료 시 편입. 참고 전용 조사는 누적 목록에 보관하고 우세 집계에서 제외.',
-                'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.',
+                ('LV 우선·없을 때 RV 별도 집계. 원문과 의뢰주체를 개별 검증한 정당·후보 의뢰 조사도 집계하며 의뢰표기를 유지. 경선·미검증 대진·다른 문항은 보류.'
+                 if commissioned_setting['effective'] else
+                 'LV 우선·없을 때 RV 별도 집계. 내부·정파 조사는 우세 집계 제외. 원문 대조한 정당 의뢰 조사만 참고 목록 편입. 경선·미검증 대진 보류.'),
                 '색상은 조사상 우세이며 통계적 유의성·당선확률·당선 예측이 아닙니다.',
                 '선거 다음 날부터 화면용 조사 목록과 우세 신호를 비웁니다. 검증용 과거 조사 기록은 별도 파일에 보존합니다.',
                 '선거일 이후 공식 확정 결과 전에는 회색. 인증된 승자 결과가 여론조사보다 우선합니다.'],
@@ -499,6 +542,7 @@ def build_live(rows, policy, results, as_of, fetched_at, source_url):
                          'aggregation_eligible_observations': sum(p['aggregation_eligibility']['eligible'] for p in accepted),
                          'reference_only_observations': sum(not p['aggregation_eligibility']['eligible'] for p in accepted),
                          'exclusion_reasons': dict(Counter(p['reason'] for p in rejected))},
+            'commissioned_poll_aggregation': commissioned_setting,
             'watchlist': policy.get('watchlist'),
             'governor_roster_coverage': deepcopy(policy.get('governor_roster_coverage')),
             'target_catalog': deepcopy(policy.get('target_catalog')),
