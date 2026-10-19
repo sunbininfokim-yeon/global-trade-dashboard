@@ -99,10 +99,26 @@ export function createHandler(fetcher=fetch){
     args={p_terms:terms,p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
       p_require_all:url.searchParams.get('match')==='all',p_limit:limit,p_offset:offset,p_stream:stream,p_group:group,p_type:type,p_query_embedding:queryVector};
     rpc='idn_search_documents_v2';
-   }else if(path.startsWith('/api/idn/documents/')){
-    const id=decodeURIComponent(path.slice('/api/idn/documents/'.length));
+   }else if(path==='/api/idn/catalogue-status'){
+    rpc='idn_catalogue_status';args={};
+   }else if(path==='/api/idn/catalogue-gaps'){
+    const source=url.searchParams.get('source')||null,limit=Number(url.searchParams.get('limit')||100),offset=Number(url.searchParams.get('offset')||0);
+    if(source&&!/^[a-z0-9-]{1,100}$/.test(source)||!Number.isInteger(limit)||limit<1||limit>200||!Number.isInteger(offset)||offset<0||offset>10000)throw Error('목록 대조 범위를 확인하세요.');
+    rpc='idn_catalogue_gaps';args={p_source_id:source,p_limit:limit,p_offset:offset};
+   }else if(path==='/api/idn/coverage'){
+    const topic=url.searchParams.get('topic')||null,rawPriority=url.searchParams.get('priority');
+    const priority=rawPriority===null?null:Number(rawPriority);
+    if(topic&&!Object.hasOwn(TOPICS,topic)||priority!==null&&(!Number.isInteger(priority)||priority<1||priority>3))throw Error('공백 목록 필터를 확인하세요.');
+    rpc='idn_coverage';args={p_topic:topic,p_priority:priority};
+   }else if(path==='/api/idn/business'){
+    const role=url.searchParams.get('role'),region=url.searchParams.get('region')||null,issue=url.searchParams.get('issue')||null;
+    if(!['miner','smelter','trader','plantation','bioenergy','manufacturer','investor','transporter'].includes(role)||region?.length>120||issue&&!/^[a-z_]{1,80}$/.test(issue))throw Error('사업자·지역·검토사항을 확인하세요.');
+    rpc='idn_business_search';args={p_role:role,p_region:region,p_issue:issue};
+   }else if(path.startsWith('/api/idn/documents/')||path.startsWith('/api/idn/context/')){
+    const context=path.startsWith('/api/idn/context/');
+    const id=decodeURIComponent(path.slice((context?'/api/idn/context/':'/api/idn/documents/').length));
     if(!/^idn-[a-z0-9-]{1,160}$/.test(id))throw Error('문서 ID를 확인하세요.');
-    args={p_document_id:id};rpc='idn_get_document';
+    args={p_document_id:id};rpc=context?'idn_document_context':'idn_get_document';
    }else return response({error:'인도네시아 API 경로를 찾을 수 없습니다.'},404);
   }catch(e){return response({error:e.message},400);}
   if(!env.SUPABASE_URL||!env.SUPABASE_SERVICE_ROLE_KEY)return response({error:'인도네시아 검색 연결이 준비되지 않았습니다.',unavailable:true},503);
@@ -117,6 +133,18 @@ export function createHandler(fetcher=fetch){
    if(body===null)return response({error:'저장된 문서가 없습니다.'},404);
    if(body.country!=='IDN')return response({error:'국가별 데이터 검증에 실패했습니다.'},502);
    if(rpc==='idn_search_documents_v2')body.semantic_enabled=env.IDN_SEMANTIC_ENABLED==='true'&&Boolean(env.GEMINI_API_KEY);
+   if(rpc==='idn_search_documents_v2'&&body.items?.length&&args.p_terms?.length){
+    // Optional evidence annotations cannot change document ranking, totals or hard filters.
+    body.passage_annotations_available=false;
+    try{
+     const notes=await fetcher(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/idn_search_passages`,{
+      method:'POST',headers,body:JSON.stringify({p_document_ids:body.items.map(x=>x.document_id),p_terms:args.p_terms,p_query_embedding:args.p_query_embedding}),signal:AbortSignal.timeout(12000)});
+     if(!notes.ok){await notes.body?.cancel();throw Error('Unavailable evidence');}
+     const evidence=await notes.json();if(evidence.country!=='IDN'||!Array.isArray(evidence.items))throw Error('Invalid evidence');
+     for(const item of body.items)item.matched_passages=evidence.items.filter(x=>x.document_id===item.document_id);
+     body.passage_annotations_available=true;
+    }catch{/* A failed evidence lookup is unavailable, never a verified empty set. */}
+   }
    return response(body);
   }catch{return response({error:'인도네시아 검색에 연결하지 못했습니다.',unavailable:true},502);}
  };

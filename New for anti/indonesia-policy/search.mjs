@@ -34,7 +34,39 @@ function badges(item){
  row.append(node('span','현행 효력 미확인','badge unverified'));return row;
 }
 function ref(item){return `${item.document_type} ${item.document_number}/${item.document_year}`;}
-function matchEvidence(item){const box=node('details');box.append(node('summary','일치 근거 보기'));for(const m of item.matched_terms||[])box.append(node('p',`${m.term} → ${m.alias} · ${fields[m.field]||m.field}`,'meta'));return box;}
+function matchEvidence(item){
+ const box=node('details');box.append(node('summary','일치 근거 보기'));for(const m of item.matched_terms||[])box.append(node('p',`${m.term} → ${m.alias} · ${fields[m.field]||m.field}`,'meta'));
+ for(const p of item.matched_passages||[]){const section=node('details',undefined,'passage');
+  section.append(node('summary',`${p.article} · ${p.total_condition_count}개 조건 중 ${p.matched_condition_count}개 원문 일치`),node('p',p.interpretation_ko,'scope'),node('blockquote',p.quote),sourceLink(p.source_url,'근거 원문'));
+  if(p.semantic_similarity>=0.60)section.append(node('p','선택 발췌 의미 연관 후보 · 적용성 판단 아님','meta'));
+  box.append(section);
+ }
+ return box;
+}
+const roleNames={miner:'광산',smelter:'제련·정련',trader:'무역',plantation:'농장',bioenergy:'바이오에너지',manufacturer:'제조',investor:'투자',transporter:'운송'};
+const permitNames={IUP:'IUP',IUPK:'IUPK',IUPK_continuation:'계약·협정 연장 IUPK',industrial_license:'산업 허가',governor_transport_permission:'주지사 운송 허가'};
+function citation(id){const m=/^idn-(pp|perpres|uu)-(\d+)-(\d+)$/.exec(id);return m?`${m[1].toUpperCase()} ${m[2]}/${m[3]}`:id;}
+async function appendContext(id,signal,target){
+ try{
+  const r=await fetch(`/api/idn/context/${encodeURIComponent(id)}`,{signal}),context=await r.json();
+  if(!r.ok||context.country!=='IDN')throw Error('Unavailable context');
+  if(signal.aborted)return;
+  const section=node('section',undefined,'review-context');section.append(node('h3','관계·사업 검토 근거'),node('p','저장된 원문 발췌를 검토한 범위입니다. 현행 효력·개별 사업 적용성과 지원 자격은 미확인입니다.','meta'));
+  if(context.stale_evidence_count)section.append(node('p',`본문 버전 변경으로 이전 근거 ${context.stale_evidence_count}건을 제외했습니다.`,'meta'));
+  for(const rel of context.relations||[]){const outgoing=rel.document_id===id,other=outgoing?rel.target_id:rel.document_id;
+   const relationName={amends:'일부 개정 문구 확인',repeals:'폐지 문구 확인',implements:'시행 근거 문구 확인'}[rel.relation_type]||'관계 문구 확인';
+   const entry=node('details');entry.append(node('summary',`${outgoing?citation(other):rel.source_title_ko} · ${relationName} · ${rel.article}`),node('p',rel.interpretation_ko,'scope'),node('blockquote',rel.quote),sourceLink(rel.source_url,'관계 근거 원문'));
+   if(!outgoing||rel.target_stored){const b=node('button','관련 문서 보기');b.type='button';b.addEventListener('click',()=>showDetail(other));entry.append(b);}else entry.append(node('p','대상 법령 본문 미확보 · 관계 인용만 확인','meta'));
+   section.append(entry);
+  }
+  for(const scope of context.applicability||[]){const entry=node('details');entry.append(node('summary',`${scope.article} · 사업 검토범위`),node('p',scope.interpretation_ko,'scope'));
+   entry.append(node('p',`사업자: ${scope.operator_roles.map(x=>roleNames[x]||x).join(' · ')||'미분류'} · 허가: ${scope.permit_types.map(x=>permitNames[x]||x).join(' · ')||'별도 확인'}`,'meta'));
+   entry.append(node('p',scope.geographic_scope==='national_framework'?'지역: 중앙 공통 제도 검토 · 개별 적용성 미확인':`지역: ${scope.applicable_regions.map(x=>regionNames[x]||x).join(' · ')||'미확인'}`,'meta'),node('blockquote',scope.quote),sourceLink(scope.source_url,'검토 근거 원문'));section.append(entry);
+  }
+  if(!context.relations?.length&&!context.applicability?.length)section.append(node('p','이 문서의 관계·사업범위는 아직 검토되지 않았습니다. 규정이 없거나 적용되지 않는다는 뜻은 아닙니다.','meta'));
+  target.replaceChildren(section);
+ }catch(e){if(e.name!=='AbortError'&&!signal.aborted)target.replaceChildren(node('p','관계·사업 검토 근거를 불러오지 못했습니다. 원문 자료는 아래에서 확인하세요.','meta'));}
+}
 function card(item){
  const e=node('article');e.append(badges(item),node('h2',item.title_ko),node('p',item.title,'original'),node('p',`${ref(item)} · ${item.issuer_name}`,'meta'));
  if(item.semantic_similarity>=0.60)e.append(node('p','문서개요 의미 연관 후보 · 적용성 판단 아님','matches'));
@@ -54,6 +86,7 @@ async function showDetail(id){
   const v=d.version;detail.replaceChildren(node('h2',d.title_ko),node('p',d.title,'original'),badges({...d,content_kind:v.content_kind,text_truncated:v.text_truncated}),node('p',`${ref(d)} · ${d.issuer_name}`,'meta'),node('p','수집 범위·검토 사항','meta'),node('p',d.scope_note,'scope'));
   detail.append(node('p',`자료 확인: ${new Date(v.observed_at).toLocaleString('ko-KR')} · 한국어 제목은 번역·정리 제목입니다.`,'meta'));
   const links=node('div',undefined,'actions');appendSources(links,{...d,content_kind:v.content_kind,text_source_url:v.text_source_url});detail.append(links);
+  const context=node('div');detail.append(context);void appendContext(id,signal,context);
   detail.append(node('h3',v.content_kind==='official_metadata'?'공식 메타데이터':'수집한 원문 자료'));
   if(v.text_truncated)detail.append(node('p','저장 길이 제한으로 일부만 확보한 본문입니다.','badge unverified'));
   detail.append(node('pre',v.text_content));

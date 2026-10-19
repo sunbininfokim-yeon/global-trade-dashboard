@@ -91,3 +91,30 @@ test('mineral/stage filters, common-law labels and hybrid overview remain distin
   await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/value-chain-mobile.png'});
  }finally{await browser.close();}
 });
+test('reviewed passages and business scope distinguish document matches, clause matches and unavailable context',async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.IDN_BROWSER_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ try{
+  const page=await browser.newPage({viewport:{width:1360,height:950}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const query=new URLSearchParams({q:'니켈, 국산화율, 금융지원',stream:'midstream',match:'all'});
+  await page.goto('http://127.0.0.1:4317/indonesia-policy/?'+query);
+  const card=page.locator('article').filter({has:page.getByRole('heading',{name:'국산화율 TKDN·기업기여도 BMP 인증 규정',exact:true})});
+  await card.waitFor();assert.ok((await card.innerText()).includes('3개 조건 중 3개 일치'));
+  await card.getByText('일치 근거 보기',{exact:true}).click();
+  await card.getByText('Pasal 52-54 · 3개 조건 중 2개 원문 일치',{exact:true}).click();
+  assert.ok((await card.locator('.passage').first().innerText()).includes('자동 수급권'));
+  await card.getByRole('button',{name:'세부사항',exact:true}).click();
+  await page.locator('.review-context').waitFor();assert.ok((await page.locator('.review-context').innerText()).includes('개별 사업 적용성과 지원 자격은 미확인'));
+  await page.locator('.review-context summary').filter({hasText:'Pasal 52-54'}).click();
+  assert.ok((await page.locator('.review-context').innerText()).includes('제조'));
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261019/evidence-desktop.png'});
+  await page.setViewportSize({width:390,height:844});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  assert.equal(await page.locator('#detail').evaluate(e=>e.scrollWidth>e.clientWidth),false);
+  await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261019/evidence-mobile.png'});
+  await page.getByRole('button',{name:'상세 닫기'}).click();
+  await page.route('**/api/idn/context/**',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Unavailable'})}));
+  await card.getByRole('button',{name:'세부사항',exact:true}).click();
+  await page.getByText('관계·사업 검토 근거를 불러오지 못했습니다. 원문 자료는 아래에서 확인하세요.',{exact:true}).waitFor();
+  assert.ok((await page.locator('#detail pre').innerText()).length>1000);assert.deepEqual(errors,[]);
+ }finally{await browser.close();}
+});

@@ -42,6 +42,10 @@
 
 공식 입법 설명: https://www.dpr.go.id/kegiatan-dpr/fungsi-dpr/fungsi-legislasi
 
+## 근거·사업 범위 후속
+
+[2026-10-19 근거 구조](indonesia-policy-evidence-20261019.md): 별도 공백 목록, 버전과 인용문으로 검증한 개정·폐지 관계, 사업자/제품/허가/지역의 검토범위와 선택 조문 API를 추가했다. 기존 문서 검색 필터와 순위는 유지하며 조문은 이미 선정된 문서에 근거를 덧붙인다. 현행 효력 및 개별 적용성 판정이 아니다. 화면 연결은 Claude 인수 대상이다.
+
 ## 검색·보안
 
 `GET /api/idn/search?q=니켈,수출&topic=nickel_mining&level=national&sort=relevance&match=all`
@@ -88,3 +92,7 @@ if (url.pathname.startsWith('/api/idn/')) return await handleIdnPolicy(request, 
 node scripts/indonesia_policy/preview.mjs --env-file /ABSOLUTE/PATH/TO/ENV
 # http://127.0.0.1:4317/indonesia-policy/
 ```
+
+## 공식 목록 후보 대조 API
+
+`/api/idn/catalogue-status`와 `/api/idn/catalogue-gaps?source=SOURCE_ID&limit=100&offset=0`는 법령 검색과 별도인 목록 수집·대조다. limit은1–200, offset은0–10000이다. 식별 후보를 검증된 원문으로 표시하지 않으며 목록의 열거 완료를 기관/전국 완전성으로 해석하지 않는다. 구현·운영 범위는 [목록 수집 보고서](indonesia-policy-catalogue-20261019.md)를 따른다.

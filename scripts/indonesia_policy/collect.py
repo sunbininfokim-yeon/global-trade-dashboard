@@ -52,6 +52,25 @@ def classify_pdf(text):
     return "unclassified_pdf"
 
 
+def reviewed_pdf_kind(text, entry, raw_hash):
+    kind = classify_pdf(text)
+    review = entry.get("pdf_review")
+    if review is None:
+        return kind
+    # A curator may resolve a hidden draft-template artifact only for the exact
+    # visually reviewed bytes. Never strip words or generalize across PDFs.
+    if (not isinstance(review, dict) or review.get("raw_sha256") != raw_hash
+            or review.get("method") != "visual_final_form"
+            or review.get("decision") != "official_text"
+            or not isinstance(review.get("note"), str) or len(review["note"]) < 40
+            or not isinstance(review.get("pages"), list) or not review["pages"]
+            or any(type(p) is not int or not 1 <= p <= 300 for p in review["pages"])):
+        raise ValueError("invalid_or_stale_pdf_review")
+    if kind != "draft":
+        raise ValueError("pdf_review_does_not_match_draft_classification")
+    return "official_text"
+
+
 def pdf_content(data):
     # Some scanned PDFs stall parsers; kill only the bounded child, retain metadata.
     code = "import io,sys\nfrom pypdf import PdfReader\nr=PdfReader(io.BytesIO(sys.stdin.buffer.read()))\nif len(r.pages)>300: sys.exit('pdf_page_limit')\nprint(' '.join((p.extract_text() or '') for p in r.pages)[:600000])"
@@ -91,6 +110,13 @@ def verify_identity(text, entry):
 
 
 def collect(entry, cache_dir):
+    catalogue_review = entry.get("catalogue_review")
+    if catalogue_review is not None and (not isinstance(catalogue_review, dict)
+            or not re.fullmatch(r"[a-z0-9-]{1,100}", catalogue_review.get("source_id", ""))
+            or not 1 <= len(str(catalogue_review.get("source_record_id", ""))) <= 200
+            or not official_url(catalogue_review.get("source_page", ""))
+            or catalogue_review.get("decision") != "collect_identified_official_text_not_legal_effect"):
+        raise ValueError("invalid_catalogue_review")
     data, url, raw_hash = fetch(entry["url"], cache_dir)
     is_pdf = data.startswith(b"%PDF")
     if is_pdf:
@@ -102,7 +128,7 @@ def collect(entry, cache_dir):
             raise ValueError("blocked_or_maintenance")
     if len(text) < 150 or not verify_identity(text, entry):
         raise ValueError("document_identity_not_verified")
-    kind = classify_pdf(text) if is_pdf else "official_metadata"
+    kind = reviewed_pdf_kind(text, entry, raw_hash) if is_pdf else "official_metadata"
     # Drafts can be observed but never silently stored as an enacted text.
     if kind in ("draft", "unclassified_pdf"):
         raise ValueError("draft_or_unclassified_document")
@@ -144,7 +170,7 @@ def collect(entry, cache_dir):
                 pdf_text, _ = html_content(pdf)
                 if not re.search(r"\bPasal\s+\d", pdf_text, re.I) or not re.search(r"MEMUTUSKAN|DENGAN RAHMAT", pdf_text, re.I):
                     raise ValueError("not_final_legal_text")
-            pdf_kind = classify_pdf(pdf_text)
+            pdf_kind = reviewed_pdf_kind(pdf_text, entry, pdf_hash) if pdf.startswith(b"%PDF") else classify_pdf(pdf_text)
             if pdf_kind != "official_text" or not verify_identity(pdf_text, entry):
                 raise ValueError("pdf_identity_or_final_status_unverified")
             text, kind = pdf_text, pdf_kind
@@ -172,6 +198,8 @@ def collect(entry, cache_dir):
         "text_source_url": text_source_url, "raw_text_sha256": raw_text_sha256,
         "body_status": body_status,
         "body_fetch_blocked_host": blocked_body_host,
+        **({"catalogue_review": catalogue_review} if catalogue_review is not None else {}),
+        **({"pdf_review": entry["pdf_review"]} if entry.get("pdf_review") and kind == "official_text" else {}),
         "legal_status": "unverified", "status_note": "Official source found; current legal effect and amendments require review.",
     }
 
