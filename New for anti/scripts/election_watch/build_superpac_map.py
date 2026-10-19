@@ -206,7 +206,7 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
                         state, office, district, cycle)
                 payload['campaign_fundraising_status'] = ('state_adapter_not_connected' if office == 'governor'
                     else 'collected' if funding else 'not_collected')
-                payload['campaign_fundraising_source_status_key'] = 'candidate_fundraising'
+                payload['campaign_fundraising_source_status_key'] = 'candidate_fundraising' if office != 'governor' else None
             if office == 'governor' and source:
                 payload['amount_basis'] = source.get('amount_basis')
                 payload['source_limitations_ko'] = source.get('limitations_ko', [])

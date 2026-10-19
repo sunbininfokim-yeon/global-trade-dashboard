@@ -21,10 +21,18 @@ def parse_nga(html, inputs, catalog, captured_at):
             continue
         require(state not in found, 'duplicate governor context panel')
         text = ' '.join(unescape(re.sub('<[^>]+>', ' ', body)).split())
-        incumbent = re.search(r'Incumbent: Gov\. (.*?) Length of Regular Terms:', text)
+        incumbent = re.search(r'Incumbent:</strong>\s*<a\b[^>]*>(.*?)</a>', body, re.S)
         require(incumbent, 'governor context incumbent missing')
-        found[state] = {'incumbent_name': incumbent[1].rstrip('*'),
-                        'term_limited_reported': True if '* Term Limited' in text else None}
+        name = ' '.join(unescape(re.sub('<[^>]+>', ' ', incumbent[1])).split())
+        require(name.startswith('Gov. '), 'changed governor incumbent prefix')
+        listing = re.search(r'General Election Candidates.*?<ul\b[^>]*>(.*?)</ul>', body, re.S)
+        candidate_names = [unescape(re.sub('<[^>]+>', ' ', x)).strip()
+                           for x in re.findall(r'<li\b[^>]*>(.*?)</li>', listing[1], re.S)] if listing else []
+        listed = any(identity(re.sub(r'\s*\([^)]*\)\s*$', '', n).removeprefix('Gov. '))
+                     == identity(name[5:].rstrip('*')) for n in candidate_names) if listing else None
+        found[state] = {'incumbent_name': name[5:].rstrip('*'),
+                        'term_limited_reported': True if '* Term Limited' in text else None,
+                        'incumbent_listed_as_candidate': listed}
     require(set(found) == set(catalog['governor_states']) == set(inputs['contests']),
             'changed governor context election universe')
     require(found == inputs['contests'], 'governor incumbent/term status changed; manual review required')
@@ -55,6 +63,8 @@ def build_context(inputs, catalog, state_cards, as_of):
                 status = 'incumbent_identity_conflict'
             elif entry['term_limited_reported'] is True:
                 status = 'term_limited_reported'; limited = True
+            elif entry.get('incumbent_listed_as_candidate') is True:
+                status = 'running_reported'
             else:
                 review = inputs.get('incumbent_status_reviews', {}).get(state)
                 if review:
