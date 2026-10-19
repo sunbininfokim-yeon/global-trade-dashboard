@@ -42,6 +42,10 @@
 
 공식 입법 설명: https://www.dpr.go.id/kegiatan-dpr/fungsi-dpr/fungsi-legislasi
 
+## 근거·사업 범위 후속
+
+[2026-10-19 근거 구조](indonesia-policy-evidence-20261019.md): 별도 공백 목록, 버전과 인용문으로 검증한 개정·폐지 관계, 사업자/제품/허가/지역의 검토범위와 선택 조문 API를 추가했다. 기존 문서 검색 필터와 순위는 유지하며 조문은 이미 선정된 문서에 근거를 덧붙인다. 현행 효력 및 개별 적용성 판정이 아니다. 화면 연결은 Claude 인수 대상이다.
+
 ## 검색·보안
 
 `GET /api/idn/search?q=니켈,수출&topic=nickel_mining&level=national&sort=relevance&match=all`

@@ -64,6 +64,10 @@ IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
 
 실제 DB 검색 미리보기는 `node scripts/indonesia_policy/preview.mjs --env-file /ABSOLUTE/ENV` 후 `http://127.0.0.1:4317/indonesia-policy/`를 연다. 127.0.0.1에만 바인딩하며 쓰기 RPC는 제공하지 않는다. 운영 배포 명령이 아니다. 통합 브라우저 검사는 실행 중인 미리보기와 Playwright를 사용한다: `IDN_BROWSER_NODE_MODULES=/PATH/TO/node_modules node --test scripts/indonesia_policy/test_browser.cjs`. 기본 Chrome 경로는 macOS용이며 IDN_BROWSER_EXECUTABLE로 변경할 수 있다.
 
+## 근거 관계·사업 범위·선택 조문
+
+[근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 문서 본문은 기존 64건이며 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
+
 ## 문서개요 임베딩
 
 ```bash

@@ -1,7 +1,8 @@
 'use strict';
 const SCHEMA = 'policy_idn';
 const GATEWAY_SCHEMA = 'public';
-const ROUTES = new Set(['rpc/idn_store_document','rpc/idn_store_source_check','rpc/idn_status','rpc/idn_embedding_queue','rpc/idn_store_embedding']);
+const ROUTES = new Set(['rpc/idn_store_document','rpc/idn_store_source_check','rpc/idn_status','rpc/idn_embedding_queue','rpc/idn_store_embedding',
+  'rpc/idn_store_coverage','rpc/idn_store_review','rpc/idn_passage_embedding_queue','rpc/idn_store_passage_embedding']);
 async function request(path, {method='GET', body}={}) {
   if (!ROUTES.has(path) || method !== 'POST') throw Error('Not an IDN gateway RPC');
   const url = process.env.SUPABASE_URL;

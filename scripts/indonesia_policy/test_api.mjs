@@ -66,3 +66,28 @@ test('local government selection reaches the IDN query without including nationa
  });
  assert.equal((await handler(new Request('https://site/api/idn/search?level=local'),env)).status,200);
 });
+test('coverage, review context and combined national/regional business candidates use explicit IDN gateways',async()=>{
+ const calls=[];
+ const handler=createHandler(async(url,options)=>{calls.push({url,args:JSON.parse(options.body)});return Response.json({country:'IDN',items:[]});});
+ for(const url of ['/api/idn/coverage?topic=coal&priority=1','/api/idn/context/idn-example','/api/idn/business?role=miner&region=Sulawesi%20Tengah&issue=licensing']){
+  assert.equal((await handler(new Request('https://site'+url),env)).status,200);
+ }
+ assert.ok(calls[0].url.endsWith('/rpc/idn_coverage'));assert.equal(calls[0].args.p_priority,1);
+ assert.ok(calls[1].url.endsWith('/rpc/idn_document_context'));
+ assert.ok(calls[2].url.endsWith('/rpc/idn_business_search'));assert.equal(calls[2].args.p_region,'Sulawesi Tengah');
+ for(const url of ['/api/idn/coverage?priority=0','/api/idn/context/us-example','/api/idn/business?role=unknown'])assert.equal((await handler(new Request('https://site'+url),env)).status,400);
+ assert.equal(calls.length,3);
+});
+test('passage evidence cannot expand candidates or replace a failed evidence lookup with verified zero hits',async()=>{
+ const doc={document_id:'idn-nickel-example',matched_condition_count:2};let failure=false;
+ const handler=createHandler(async(url,options)=>{
+  if(url.endsWith('/idn_search_documents_v2'))return Response.json({country:'IDN',total:1,items:[{...doc}]});
+  assert.ok(url.endsWith('/idn_search_passages'));assert.deepEqual(JSON.parse(options.body).p_document_ids,[doc.document_id]);
+  if(failure)return new Response('private failure',{status:500});
+  return Response.json({country:'IDN',items:[{document_id:doc.document_id,article:'Pasal 52',matched_condition_count:1},{document_id:'idn-excluded',article:'Unrelated'}]});
+ });
+ let r=await (await handler(new Request('https://site/api/idn/search?q=니켈,국산화율'),env)).json();
+ assert.equal(r.total,1);assert.equal(r.items.length,1);assert.equal(r.items[0].matched_condition_count,2);assert.equal(r.items[0].matched_passages.length,1);assert.equal(r.passage_annotations_available,true);
+ failure=true;r=await (await handler(new Request('https://site/api/idn/search?q=니켈,국산화율'),env)).json();
+ assert.equal(r.total,1);assert.equal(r.passage_annotations_available,false);assert.equal(r.items[0].matched_passages,undefined);
+});
