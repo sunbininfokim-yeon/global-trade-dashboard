@@ -85,7 +85,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
                 onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }) })
                 .then((drawn) => { if (drawn && !isStale()) mapShows = `country:${iso3}`; return drawn; });
             if (usaElectionMode) {
-                host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.</p></div>';
+                host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.<span class="inline-spinner" aria-hidden="true"></span></p></div>';
                 // 전국 자금 파일은 폴과 상관없이 필요하다. 폴이 와서 감시 주 목록을 알게 된 뒤에야 받기
                 // 시작하면 한 번 더 기다리므로, 폴과 같이 미리 받기 시작한다.
                 loadUsaElectionFinance();
@@ -118,7 +118,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
             if (iso3 === 'CHN') applyCnPartyChart(await loadCnPartyChart());
             if (iso3 === 'ISR') {
-                host.roots.country.innerHTML = '<div class="panel-header"><h2>이스라엘</h2><p>검토한 선거 자료를 연결하는 중입니다.</p></div>';
+                host.roots.country.innerHTML = '<div class="panel-header"><h2>이스라엘</h2><p>검토한 선거 자료를 연결하는 중입니다.<span class="inline-spinner" aria-hidden="true"></span></p></div>';
                 const result = await loadIsraelElectionAnalysis();
                 if (isStale()) return;
                 country.israel_analysis = result;
