@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| US-ELECTION-CONTEXT-UI-20261019 | 주지사 맥락·캠프 모금·후보 약력 UI와 원문 출처 | codex | js/elections 전용 렌더러·회귀 검사·전용 handoff | `codex/us-election-context-ui-20261019` | review | 사용자 UI 연결·원문 출처 명시 요청. #635 공용 기반 의존. 주별 packet·수집기·전국 생성물·Worker·workflow·공용 index/style·병합·배포 제외. |
 | US-ELECTION-CONTEXT-DATA-20261019 | 주지사 선거·현직 상태, 공개 조사 발견 경로, 후보 캠프 모금 계약 | codex | election_watch 공용 backend·설정·검사·전용 handoff | `codex/us-election-context-data-20261019` | review | 사용자 4개 후속 지시. packet 없는 공용 기반. 전국 생성물·UI·workflow·병합·배포 제외. 주별 실제 조사 입력은 독립 PR. |
 | COMMODITY-SOURCE-602 | #602 B01–B07 원천 계약·원본 재대조 | codex | commodity_trade 수집기·정규화·검증·회귀시험·오프라인 분류 교정 JSON·전용 인수 문서 | `codex/commodity-source-contracts-602-recovered` | review | 사용자 지정 수집기 범위. Python190/Node60/소유권13·release gate 통과. 127개 재분류, 1,872개 원관측 보존·멱등성 확인. JODI 공식 CSV 4개 재확보, 815개 값 일치·24개 원천 개정 차이는 보존. 한국 키 미연결/ERS DNS 실패·브라질 원본 전체 대조 미실시 명시. UI/Worker/workflow·병합/배포 없음. #608 소비자 비교 계약 확인 필요. handoff/2026-10-18-codex-source-contracts-602.md. |
 | TRADE-AGG-602-20261017 | #602 화면 집계 경로(A01–A13): 난수 과거조회 차단·다중 HS 합산·raw 정밀도·월별 X/M·backend 비중/순위·partial/보류 | claude | `New for anti/{app.js,data.js,trade.js,trade-monthly.js,index.html,style.css}`, tests/comtrade | `claude/trade-aggregation-602` | review | 사용자 10/17 요청. B01–B07 수집기·원천 재대조는 이슈 권장 분업대로 Codex 범위로 남김. 공개 JSON 수기 편집 없음. 인수: handoff/2026-10-17-claude.md. |

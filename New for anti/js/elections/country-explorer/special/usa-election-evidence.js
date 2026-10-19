@@ -1,6 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { pollPresentationContext, pollPrecision, pollSummaryNote } from '../../data/poll-presentation.js';
 import { normalizeParty, pollSignal, pollSourceReady, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
+import { originLink } from './usa-candidate-context.js';
 
 const money = (cents) => {
     if (cents == null) return '관측 없음';
@@ -70,7 +71,9 @@ export const pollAnswersHtml = (row) => {
     return `<div class="elections-poll-scoreboard">${[...(row.answers || [])].sort((a,b) => rank(a.party) - rank(b.party)).map((answer) => {
         const party = normalizeParty(answer.party);
         const label = party === 'REP' ? 'GOP' : party || '기타·정당 미확인';
-        return `<div class="elections-poll-score ${party === 'DEM' ? 'is-dem' : party === 'REP' ? 'is-gop' : 'is-other'}"><small>${escapeHtml(label)}</small><strong>${escapeHtml(answer.name)}</strong><b>${Number.isFinite(answer.pct) && answer.pct >= 0 && answer.pct <= 100 ? escapeHtml(answer.pct) + '%' : '수치 미확인'}</b></div>`;
+        const primary = row.source_quality?.primary_toplines;
+        const unchecked = primary && primary[answer.canonical_name || answer.name] !== answer.pct;
+        return `<div class="elections-poll-score ${party === 'DEM' ? 'is-dem' : party === 'REP' ? 'is-gop' : 'is-other'}"><small>${escapeHtml(label)}</small><strong>${escapeHtml(answer.name)}</strong><b>${Number.isFinite(answer.pct) && answer.pct >= 0 && answer.pct <= 100 ? escapeHtml(answer.pct) + '%' : '수치 미확인'}</b>${unchecked ? '<small class="elections-primary-unchecked">API 전달값 · 원문 수치 미대조</small>' : ''}</div>`;
     }).join('')}</div>`;
 };
 export const observationHtml = (row) => {
@@ -78,15 +81,18 @@ export const observationHtml = (row) => {
     const sponsors = sponsorNames.length ? ` · 의뢰 ${sponsorNames.join(', ')}` : '';
     const reference = row.aggregation_eligibility?.eligible === false;
     const quality = row.source_quality;
-    const review = quality?.verification_level === 'primary_toplines_checked' ? '원문 수치 대조' : '등록 출처 자동 수입 · 원문 추가 검토 전';
+    const review = quality?.verification_level === 'primary_toplines_checked' ? '원문 수치 대조' : quality?.label_ko || '수집 출처 기록 · 원문 추가 검토 전';
     const method = quality?.methodological_quality === 'unrated' ? ' · 정확도 미등급' : '';
     const exclusions = reference ? ` · 참고 전용: ${(row.aggregation_eligibility.reasons || []).map((reason) => referenceReasons[reason] || '집계 제외 · 출처 검토 메모').join(', ')}` : '';
     const precision = pollPrecision(row);
+    const checkedSources = [...new Set((quality?.review_sources || []).map((s) => typeof s === 'string' ? s : s?.url || s?.source_url).filter(Boolean))].slice(0,10);
+    const origins = checkedSources.map((url, i) => originLink(url, `검토 원문${checkedSources.length > 1 ? ` ${i+1}` : ''} ↗`)).join(' ');
     return `<li class="elections-poll-observation${reference ? ' is-reference' : ''}">${pollAnswersHtml(row)}
         <small>${escapeHtml(row.pollster || '조사기관 미기재')} · ${escapeHtml(row.field_start || '')}~${escapeHtml(row.field_end || '')}
         · ${escapeHtml((row.population || '').toUpperCase())} · n=${escapeHtml(row.sample_n ?? '?')}${escapeHtml(sponsors)}</small>
         <small>${escapeHtml(review + method + exclusions)} · ${precision ? `후보별 표본오차 ±${escapeHtml(precision.halfWidth)}%p` : '해당 문항 표본오차 미확인'}</small>
-        <small>${sourceLink(row.source_url)} ${row.methodology_url ? sourceLink(row.methodology_url).replace('원문 ↗', '방법론 ↗') : ''}</small></li>`;
+        <small class="elections-origin-links">${origins}${!checkedSources.includes(row.source_url) ? originLink(row.source_url, '수집에 기록된 출처 ↗') : ''}${row.methodology_url && !checkedSources.includes(row.methodology_url) ? originLink(row.methodology_url, '방법론 ↗') : ''}${quality?.reviewed_on ? `<span>원문 검토 ${escapeHtml(quality.reviewed_on)}</span>` : ''}</small>
+        ${quality?.limitations_ko ? `<details class="elections-disclosure"><summary>이 조사의 검토 범위</summary><p>${escapeHtml(quality.limitations_ko)}</p></details>` : ''}</li>`;
 };
 
 export const latestAdmittedPoll = (race, now = Date.now()) => {

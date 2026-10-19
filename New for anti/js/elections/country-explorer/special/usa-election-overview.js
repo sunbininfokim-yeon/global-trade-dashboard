@@ -2,6 +2,7 @@ import { escapeHtml } from '../../ui.js';
 import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES } from '../../data/election-overview.js?v=3';
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
+import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -64,6 +65,7 @@ export const electionOverviewHtml = (country, ratings, { state = null, board = n
                     <div class="is-gop"><span>GOP</span><strong>${number(row.counts?.GOP)}</strong></div>
                 </div></div>
                 ${[others, unknown, vacant].filter(Boolean).length ? `<p class="elections-seat-extras">${[others, unknown, vacant].filter(Boolean).join(' · ')}</p>` : ''}
+                ${office === 'governor' ? state ? governorContextHtml(state,now) : governorElectionSummaryHtml(country,now) : ''}
                 ${office === 'senate' && resultUniverse ? `<div class="elections-senate-scope" aria-label="상원 비선거와 선거 대상 현재 보유">
                     <div><span>비선거 유지 <strong>${number(outlook?.retained)}석</strong></span><span><b class="is-dem">DEM ${number(outlook?.retainedCounts.DEM)}</b> · <b class="is-gop">GOP ${number(outlook?.retainedCounts.GOP)}</b>${outlook?.retainedCounts.IND ? ` · 무소속 ${outlook.retainedCounts.IND}` : ''}</span></div>
                     <div><span>이번 선거 <strong>${resultUniverse.contested}석</strong> · 현재</span><span><b class="is-dem">DEM ${number(outlook?.contestedCurrentCounts?.DEM)}</b> · <b class="is-gop">GOP ${number(outlook?.contestedCurrentCounts?.GOP)}</b>${outlook?.contestedCurrentCounts?.IND ? ` · 무소속 ${outlook.contestedCurrentCounts.IND}` : ''}</span></div>
