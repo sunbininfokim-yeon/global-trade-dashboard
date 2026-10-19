@@ -7,12 +7,46 @@ import requests
 from pypdf import PdfWriter
 from unittest.mock import patch
 from pathlib import Path
-from collect import classify_pdf, collect, html_content, official_url, pdf_content, verify_identity
+from collect import classify_pdf, collect, html_content, official_url, pdf_content, verify_identity, reviewed_pdf_kind
 
 
 class SourceEvidenceTests(unittest.TestCase):
     def test_draft_pdf_cannot_be_final_text(self):
         self.assertEqual(classify_pdf("RANCANGAN PERATURAN MENTERI NOMOR 15 TAHUN 2026"), "draft")
+
+    def test_visual_final_form_review_is_pinned_and_preserves_original_text(self):
+        text = 'RANCANGAN PERATURAN NOMOR 15 TAHUN 2026 ' * 5
+        review = dict(raw_sha256='a'*64, method='visual_final_form', decision='official_text',
+                      pages=[1,9], note='White template text; visible dated publication and signatures reviewed.')
+        entry = dict(document_id='idn-review',title='Coal',title_ko='Coal',issuer_name='Government',
+                     issuer_level='national',jurisdiction='Indonesia',document_type='Permendag',
+                     document_number='15',document_year=2026,topics=['coal'],primary_stage='coal',
+                     scope_note='Test',url='https://example.go.id/final.pdf',
+                     identity_phrases=['NOMOR 15 TAHUN 2026'],pdf_review=review)
+        with patch('collect.fetch',return_value=(b'%PDF-test',entry['url'],'a'*64)),patch('collect.pdf_content',return_value=text):
+            result=collect(entry,Path('/tmp'))
+        self.assertEqual(result['content_kind'],'official_text')
+        self.assertEqual(result['text_content'],text)
+        self.assertEqual(result['pdf_review'],review)
+        self.assertEqual(result['legal_status'],'unverified')
+        with self.assertRaisesRegex(ValueError,'invalid_or_stale_pdf_review'):
+            reviewed_pdf_kind(text,entry,'b'*64)
+        self.assertEqual(reviewed_pdf_kind(text,{},'a'*64),'draft')
+
+    def test_visual_review_cannot_promote_abstracts_or_unclassified_text(self):
+        review = dict(raw_sha256='a'*64,method='visual_final_form',decision='official_text',
+                      pages=[1,9],note='White template text; visible dated publication and signatures reviewed.')
+        for text in ['ABSTRAK PERATURAN', 'A general government catalogue']:
+            with self.assertRaisesRegex(ValueError,'does_not_match_draft'):
+                reviewed_pdf_kind(text,{'pdf_review':review},'a'*64)
+
+    def test_visual_review_still_requires_exact_document_identity(self):
+        entry=dict(url='https://example.go.id/final.pdf',identity_phrases=['NOMOR 99 TAHUN 2026'],
+                   pdf_review=dict(raw_sha256='a'*64,method='visual_final_form',decision='official_text',
+                                   pages=[1,9],note='White template text; visible dated publication and signatures reviewed.'))
+        with patch('collect.fetch',return_value=(b'%PDF-test',entry['url'],'a'*64)),patch('collect.pdf_content',return_value='RANCANGAN PERATURAN NOMOR 15 TAHUN 2026 '*5):
+            with self.assertRaisesRegex(ValueError,'document_identity_not_verified'):
+                collect(entry,Path('/tmp'))
 
     def test_abstract_is_not_full_text(self):
         self.assertEqual(classify_pdf("PERATURAN MENTERI ABSTRAK : dasar hukum"), "abstract")

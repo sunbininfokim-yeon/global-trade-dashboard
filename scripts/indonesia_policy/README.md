@@ -16,7 +16,7 @@ python3 scripts/indonesia_policy/collect.py \
 
 stage: coal → nickel_mining → palm_oil → biofuel → mineral_mining, 또는 all. 실행마다 새 결과 디렉터리를 사용한다. 기존 collection.json을 덮어쓰지 않는다. 실패 문서만 재확인하려면 같은 stage에 `--document-id idn-esdm-permen-4-2025`를 추가하고 새 결과 디렉터리를 지정한다. 결과 JSON과 원본 SHA256 캐시는 저장소 밖에 보관한다. 매 시도 이후 체크포인트를 원자 교체한다. 실패한 실행에서도 collection.json의 성공 문서는 즉시 저장할 수 있다.
 
-기본 sources.json은 확대·복구 결과를 합친 99개 검토 후보 목록이다(저장 64, 미저장 35). 일부는 아직 접근 실패 상태이며 99개 모두 확보됐다는 뜻이 아니다. `--stage all --limit 100`이면 현재 목록 전체가 시도 대상이다. 기본 limit 30은 일부만 시도하므로 품목별 stage·ID 또는 명시적인 limit을 사용한다. 이번에 상시 작업을 켜지는 않았다. 최신 범위는 [공식 출처 복구·산업 규정 후속](../../docs/indonesia-policy-official-recovery-20261019.md)을 따른다. 가치사슬·UI·개요 임베딩 구조는 [가치사슬 보고서](../../docs/indonesia-policy-value-chain-20261019.md)에 있다.
+기본 sources.json은 확대·복구 결과를 합친 99개 검토 후보 목록이다(저장 66, 미저장 33). 일부는 아직 접근 실패 상태이며 99개 모두 확보됐다는 뜻이 아니다. `--stage all --limit 100`이면 현재 목록 전체가 시도 대상이다. 기본 limit 30은 일부만 시도하므로 품목별 stage·ID 또는 명시적인 limit을 사용한다. 이번에 상시 작업을 켜지는 않았다. 최신 원문 확보 범위는 [우선 원문 5건 복구](../../docs/indonesia-policy-priority-recovery-20261019.md)를 따른다. 가치사슬·UI·개요 임베딩 구조는 [가치사슬 보고서](../../docs/indonesia-policy-value-chain-20261019.md)에 있다.
 
 개별 수집을 재현할 때만 `--manifest scripts/indonesia_policy/sources-expansion-20261018.json` 등 이력 목록을 선택한다. 2026-10-19 사업법규 후보·파산/중재 원문·법전 본체 보류는 [사업법규 보고서](../../docs/indonesia-policy-business-law-20261019.md)를 따른다. 환경·복구·지방·메타데이터 목록의 결과와 공백은 [최신 보고서](../../docs/indonesia-policy-environment-and-sources-20261019.md)를 따른다. 이미 실패한 오래된 주소를 일괄 재실행하지 않는다. 현재 실행 중인 수집기와 같은 호스트를 병렬 수집하지 않는다. `metadata_only` 후보는 카탈로그만 수집해 대형/실패 PDF의 불필요한 재다운로드를 막는다.
 
@@ -33,6 +33,8 @@ python3 scripts/indonesia_policy/discover.py \
 기본 목록에서 선택한 공식 문서 페이지의 관련 법규 링크를 한 단계만 탐색한다. 최대 20개 출발 문서, 순차 요청·호스트 차단·원본 해시·매 시도 체크포인트를 사용한다. candidates.json의 `review_status=candidate`는 미검토 후보이며 DB에 자동 저장하지 않는다. 관련 링크에 환율 고시 등 무관한 문서도 섞이므로 제목·문서번호·발행기관·관할·품목·지원 방식과 개정 관계를 사람이 확인한 뒤 별도 manifest에 추가한다. HTML 링크만으로 현행 효력이나 보조금 수급권을 확정하지 않는다.
 
 HTTPS 정부 도메인만 사용하며 TLS 검증을 끄지 않는다. 403/429이면 같은 호스트의 나머지 시도도 중단한다. 점검·차단·초안·문서 식별 실패를 성공으로 대체하지 않는다. 다운로드 최대 12MiB, 본문 최대 300,000자, PDF 최대 300페이지이며 추출 제한·원본 해시를 보존한다. 잘린 본문은 전체 원문으로 표시하지 않는다. 본문 링크 식별이 불확실하면 공식 메타데이터만 저장한다.
+
+PDF의 숨김 초안 템플릿처럼 자동 분류가 오탐한 경우는 화면·공포 표기를 대조한 뒤 `pdf_review`로 원본 SHA256·검토 페이지·이유를 고정한다. 해당 바이트만 예외이며 원본 변경 시 중단한다. 일반 초안·추상·미분류 자료 승격과 문서 식별 생략은 허용하지 않는다. [이번 검토 근거](../../docs/indonesia-policy-priority-recovery-20261019.md)를 따른다.
 
 ## 저장
 
@@ -66,7 +68,7 @@ IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
 
 ## 근거 관계·사업 범위·선택 조문
 
-[근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 문서 본문은 기존 64건이며 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
+[근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 근거 구조 도입 시 문서는 64건이었고 후속 원문 복구로 현재 66건이다. 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
 
 ## 문서개요 임베딩
 
