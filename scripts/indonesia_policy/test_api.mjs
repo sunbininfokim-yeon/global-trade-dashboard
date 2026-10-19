@@ -91,3 +91,11 @@ test('passage evidence cannot expand candidates or replace a failed evidence loo
  failure=true;r=await (await handler(new Request('https://site/api/idn/search?q=니켈,국산화율'),env)).json();
  assert.equal(r.total,1);assert.equal(r.passage_annotations_available,false);assert.equal(r.items[0].matched_passages,undefined);
 });
+test('catalogue inventory has separate bounded reads without promoting candidates to law search',async()=>{
+ const calls=[];const handler=createHandler(async(url,options)=>{calls.push({url,args:JSON.parse(options.body)});return Response.json({country:'IDN',items:[]});});
+ assert.equal((await handler(new Request('https://site/api/idn/catalogue-status'),env)).status,200);
+ assert.equal((await handler(new Request('https://site/api/idn/catalogue-gaps?source=djbc-kemendag&limit=20&offset=0'),env)).status,200);
+ assert.ok(calls[0].url.endsWith('/idn_catalogue_status'));assert.ok(calls[1].url.endsWith('/idn_catalogue_gaps'));assert.equal(calls[1].args.p_limit,20);
+ for(const query of ['limit=201','offset=-1','source=us/table'])assert.equal((await handler(new Request('https://site/api/idn/catalogue-gaps?'+query),env)).status,400);
+ assert.equal(calls.length,2);
+});

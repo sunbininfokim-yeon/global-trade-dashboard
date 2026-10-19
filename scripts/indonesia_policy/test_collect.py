@@ -81,6 +81,23 @@ class SourceEvidenceTests(unittest.TestCase):
         self.assertEqual(result['body_status'], 'extracted')
         self.assertEqual(result['content_kind'], 'official_text')
 
+    def test_catalogue_origin_is_retained_without_changing_legal_effect(self):
+        review=dict(source_id='official-list',source_record_id='42',source_page='https://example.go.id/list',
+                    decision='collect_identified_official_text_not_legal_effect')
+        entry=dict(document_id='idn-list-law',title='Coal',title_ko='Coal',issuer_name='Government',
+                   issuer_level='national',jurisdiction='Indonesia',document_type='PP',document_number='18',
+                   document_year=2025,topics=['coal'],primary_stage='coal',scope_note='Review',
+                   url='https://example.go.id/18.pdf',identity_phrases=['NOMOR 18 TAHUN 2025'],catalogue_review=review)
+        text='PERATURAN PEMERINTAH NOMOR 18 TAHUN 2025 '+ 'Legal text '*30
+        with patch('collect.fetch',return_value=(b'%PDF-test',entry['url'],'a'*64)),patch('collect.pdf_content',return_value=text):
+            result=collect(entry,Path('/tmp'))
+        self.assertEqual(result['catalogue_review'],review)
+        self.assertEqual(result['legal_status'],'unverified')
+        with patch('collect.fetch') as fetcher:
+            with self.assertRaisesRegex(ValueError,'invalid_catalogue_review'):
+                collect({**entry,'catalogue_review':{**review,'source_page':'https://evil.example/list'}},Path('/tmp'))
+            fetcher.assert_not_called()
+
     def test_existing_checkpoint_is_never_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
             checkpoint = Path(directory) / 'collection.json'

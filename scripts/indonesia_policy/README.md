@@ -2,6 +2,21 @@
 
 미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
+## 공식 목록을 먼저 수집·대조
+
+개별 검색과 관련 링크 탐색에 앞서 [기관별 목록 수집](../../docs/indonesia-policy-catalogue-20261019.md)을 사용한다. 현재 공식 목록4개에서 출처별 후보2,038행을 수집했고 원 부처5개는 연동 미확인으로 보류했다. 실제 등록된 JSON 피드는 아직 없으며 이번 실수집은 HTML 표·페이지 어댑터다. 목록 후보는 검토된 법령 본문·벡터와 별도다.
+
+```bash
+python3 scripts/indonesia_policy/catalogue.py --output-dir /ABS/NEW-RUN --max-pages 20
+# 부분 수집 재개는 같은 경로와 --resume 사용
+node scripts/indonesia_policy/import-catalogue.cjs /ABS/RUN/catalogue.json --env-file /ABS/ENV
+# 검토 뒤 --write --report-dir /ABS/PRIVATE-REPORT 추가
+# 저장 없이 현재 DB 대조만: --report-only --report-dir /ABS/NEW-REPORT
+python3 scripts/indonesia_policy/catalogue_queue.py /ABS/REPORT/reconciliation.json --output /ABS/NEW-queue.json
+```
+
+새 설치는 `20261019095306_indonesia_policy_catalogue_inventory.sql`까지 적용한다. 완료 표시는 해당 게시 목록 범위에만 해당한다. 한도·오류·빈 응답은 공백으로 남기고 행 부재를 규제 없음/폐지로 처리하지 않는다. 제목 힌트가 없는 후보도 검토 대기열에 보존한다. 수집 명령은 정기 예약·PDF·AI·메일을 자동 실행하지 않는다.
+
 ## 수집
 
 Python 3과 requirements.txt의 requests/beautifulsoup4/pypdf가 필요하다. sources.json과 sources-expansion-*.json은 사람이 검토한 공식 URL·문서 식별자·관할·범위를 담는다. 전국 전수 목록은 아니다. 최신 확보 범위와 보류 항목은 [수집 범위 보고서](../../docs/indonesia-policy-coverage-20261018.md)에 기록한다.
@@ -59,7 +74,7 @@ node scripts/indonesia_policy/import.cjs /ABSOLUTE/RUN-UNIQUE/collection.json \
 python3 -m unittest discover -s scripts/indonesia_policy -p 'test_*.py' -v
 npm install --prefix /tmp/idn-db-tests --save-exact --no-audit --no-fund @electric-sql/pglite@0.5.10 @electric-sql/pglite-pgvector@0.0.11
 IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
-  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs scripts/indonesia_policy/test_search.cjs scripts/indonesia_policy/test_api.mjs scripts/indonesia_policy/test_source_links.mjs scripts/indonesia_policy/test_worker.cjs scripts/indonesia_policy/test_embeddings.mjs scripts/indonesia_policy/test_vector_database.cjs
+  node --test scripts/indonesia_policy/test_database.cjs scripts/indonesia_policy/test_client.cjs scripts/indonesia_policy/test_search.cjs scripts/indonesia_policy/test_api.mjs scripts/indonesia_policy/test_source_links.mjs scripts/indonesia_policy/test_worker.cjs scripts/indonesia_policy/test_embeddings.mjs scripts/indonesia_policy/test_vector_database.cjs scripts/indonesia_policy/test_catalogue_database.cjs
 ```
 
 원문 확보와 현행 효력 확정, 관측 변경과 법적 개정은 서로 다르다. 해시 변화만으로 단계 알림이나 법적 의무를 생성하면 안 된다.
@@ -68,7 +83,7 @@ IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
 
 ## 근거 관계·사업 범위·선택 조문
 
-[근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 근거 구조 도입 시 문서는 64건이었고 후속 원문 복구로 현재 66건이다. 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
+[근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 근거 구조 도입 시 문서는 64건이었고 후속 원문 복구로 66건이 되었고 기관별 목록에서 검토한 원문2건을 추가해 현재68건이다. 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
 
 ## 문서개요 임베딩
 

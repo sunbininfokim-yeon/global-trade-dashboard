@@ -92,3 +92,7 @@ if (url.pathname.startsWith('/api/idn/')) return await handleIdnPolicy(request, 
 node scripts/indonesia_policy/preview.mjs --env-file /ABSOLUTE/PATH/TO/ENV
 # http://127.0.0.1:4317/indonesia-policy/
 ```
+
+## 공식 목록 후보 대조 API
+
+`/api/idn/catalogue-status`와 `/api/idn/catalogue-gaps?source=SOURCE_ID&limit=100&offset=0`는 법령 검색과 별도인 목록 수집·대조다. limit은1–200, offset은0–10000이다. 식별 후보를 검증된 원문으로 표시하지 않으며 목록의 열거 완료를 기관/전국 완전성으로 해석하지 않는다. 구현·운영 범위는 [목록 수집 보고서](indonesia-policy-catalogue-20261019.md)를 따른다.

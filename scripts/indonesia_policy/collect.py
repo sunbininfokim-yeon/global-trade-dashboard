@@ -110,6 +110,13 @@ def verify_identity(text, entry):
 
 
 def collect(entry, cache_dir):
+    catalogue_review = entry.get("catalogue_review")
+    if catalogue_review is not None and (not isinstance(catalogue_review, dict)
+            or not re.fullmatch(r"[a-z0-9-]{1,100}", catalogue_review.get("source_id", ""))
+            or not 1 <= len(str(catalogue_review.get("source_record_id", ""))) <= 200
+            or not official_url(catalogue_review.get("source_page", ""))
+            or catalogue_review.get("decision") != "collect_identified_official_text_not_legal_effect"):
+        raise ValueError("invalid_catalogue_review")
     data, url, raw_hash = fetch(entry["url"], cache_dir)
     is_pdf = data.startswith(b"%PDF")
     if is_pdf:
@@ -191,6 +198,7 @@ def collect(entry, cache_dir):
         "text_source_url": text_source_url, "raw_text_sha256": raw_text_sha256,
         "body_status": body_status,
         "body_fetch_blocked_host": blocked_body_host,
+        **({"catalogue_review": catalogue_review} if catalogue_review is not None else {}),
         **({"pdf_review": entry["pdf_review"]} if entry.get("pdf_review") and kind == "official_text" else {}),
         "legal_status": "unverified", "status_note": "Official source found; current legal effect and amendments require review.",
     }

@@ -99,6 +99,12 @@ export function createHandler(fetcher=fetch){
     args={p_terms:terms,p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
       p_require_all:url.searchParams.get('match')==='all',p_limit:limit,p_offset:offset,p_stream:stream,p_group:group,p_type:type,p_query_embedding:queryVector};
     rpc='idn_search_documents_v2';
+   }else if(path==='/api/idn/catalogue-status'){
+    rpc='idn_catalogue_status';args={};
+   }else if(path==='/api/idn/catalogue-gaps'){
+    const source=url.searchParams.get('source')||null,limit=Number(url.searchParams.get('limit')||100),offset=Number(url.searchParams.get('offset')||0);
+    if(source&&!/^[a-z0-9-]{1,100}$/.test(source)||!Number.isInteger(limit)||limit<1||limit>200||!Number.isInteger(offset)||offset<0||offset>10000)throw Error('목록 대조 범위를 확인하세요.');
+    rpc='idn_catalogue_gaps';args={p_source_id:source,p_limit:limit,p_offset:offset};
    }else if(path==='/api/idn/coverage'){
     const topic=url.searchParams.get('topic')||null,rawPriority=url.searchParams.get('priority');
     const priority=rawPriority===null?null:Number(rawPriority);
