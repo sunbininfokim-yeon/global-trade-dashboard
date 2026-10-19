@@ -1,0 +1,231 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "ID",
+  "cycle": 2026,
+  "source_ref": "codex/poll-national-source-coverage-20261018",
+  "source_commit": "52546e0a14efb5189dccaa93f92e849bf30480e0",
+  "config_operations": [
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "ID",
+        "reviewed_on": "2026-10-18",
+        "record_sha256": "d65dc8c9f14fba0cb72247f5a002bcaccddc469d0be0df67a4c0addecd3d1bd4",
+        "record": {
+          "id": "primary-atr-id-governor-20260916",
+          "subject": "2026 Idaho",
+          "poll_type": "governor",
+          "pollster": "Advanced Targeting Research",
+          "url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+          "start_date": "2026-09-13",
+          "end_date": "2026-09-16",
+          "created_at": "2026-09-17",
+          "population": "rv",
+          "sample_size": 700,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "seat_name": null,
+          "answers": [
+            {
+              "choice": "Brad Little",
+              "pct": 37.3
+            },
+            {
+              "choice": "Terri Pickens",
+              "pct": 27.2
+            },
+            {
+              "choice": "John Stegner",
+              "pct": 12.8
+            },
+            {
+              "choice": "Paul Sand",
+              "pct": 2.8
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+            "sha256": "c092b9411a5c97bcf7bd992846f7190a3f4aa63cecb7595e736ec27e396c5678"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-atr-id-governor-20260916"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-18",
+        "provider_record_sha256": "d65dc8c9f14fba0cb72247f5a002bcaccddc469d0be0df67a4c0addecd3d1bd4",
+        "primary_supplement_record_sha256": "d65dc8c9f14fba0cb72247f5a002bcaccddc469d0be0df67a4c0addecd3d1bd4",
+        "snapshot_sha256": "ae9977b29de8de358b62af3998946652705fa96040702a8ea284840ae0ab4dd4",
+        "sources": [
+          "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+            "sha256": "c092b9411a5c97bcf7bd992846f7190a3f4aa63cecb7595e736ec27e396c5678"
+          }
+        ],
+        "primary_toplines": {
+          "Brad Little": 37.3,
+          "Terri Pickens": 27.2,
+          "John Stegner": 12.8,
+          "Paul Sand": 2.8
+        },
+        "question_sample_n": 700,
+        "reported_precision": {
+          "kind": "margin_of_error",
+          "half_width_pp": 3.7
+        },
+        "disclosure_review": {
+          "population": "RV",
+          "sample_n": 700,
+          "field_dates": [
+            "2026-09-13",
+            "2026-09-16"
+          ],
+          "mode_pct": {
+            "text": 87.8,
+            "live_interview": 12.2
+          },
+          "question_wording_checked": false,
+          "question_scope": "four-candidate governor ballot in public memorandum",
+          "not_sure_pct": 19.9,
+          "sampling_frame": "not_disclosed",
+          "weighting": "not_disclosed",
+          "commissioner": "not_disclosed; publisher says not commissioned by a candidate",
+          "primary_published_on": "2026-09-17"
+        },
+        "ballot_format": "named_candidate_vote_intention_as_reported",
+        "sponsor_review": {
+          "primary_internal": false,
+          "commissioner": "not_disclosed"
+        },
+        "admission": {
+          "pollster": "Advanced Targeting Research",
+          "provider_url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+          "methodology_url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+          "group": "advanced_targeting_research",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "full_questionnaire_sampling_frame_weighting_and_commissioner_not_disclosed"
+          ],
+          "allow_historical_reference": false
+        },
+        "limitations_ko": "API 미수록 원문의 한 발표만 검토한 참고 자료. 최신 7일·14일 조사나 승패로 사용하지 않음. 새 URL·새 문서는 별도 검토; 동일 문서의 변경/장애에는 원래 날짜를 보존."
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-18",
+    "fetched_at": "2026-10-18T16:20:04.208175+00:00",
+    "receipt": {
+      "state": "ID",
+      "cycle": 2026,
+      "captured_at": "2026-10-18T16:20:04.208175+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
+      "capture_kind": "saved_provider_replay_with_new_primary_document_review",
+      "new_provider_collection": false,
+      "provider_records": 1,
+      "new_primary_document_checked_at": "2026-10-18T22:36:50.357103+00:00"
+    },
+    "provider_records": [
+      {
+        "id": "us-202the39a65ca5",
+        "poll_type": "us-senator",
+        "sample_size": 608,
+        "population": "lv",
+        "url": "https://www.thebullfinchgroup.com/post/for-immediate-release-independent-todd-achilles-within-4-points-among-likely-voters",
+        "created_at": "2026-08-14",
+        "start_date": "2026-08-04",
+        "end_date": "2026-08-07",
+        "pollster": "The Bullfinch Group",
+        "answers": [
+          {
+            "choice": "Jim Risch",
+            "pct": 34.0
+          },
+          {
+            "choice": "Todd Achilles",
+            "pct": 30.0
+          },
+          {
+            "choice": "Matt Loesby",
+            "pct": 4.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Idaho"
+      }
+    ],
+    "provider_records_sha256": "636cc57744f8423d809a3908f46d4a7efeda08d0e28d784643b4767e725a9b73",
+    "primary_records": [
+      {
+        "id": "primary-atr-id-governor-20260916",
+        "subject": "2026 Idaho",
+        "poll_type": "governor",
+        "pollster": "Advanced Targeting Research",
+        "url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+        "start_date": "2026-09-13",
+        "end_date": "2026-09-16",
+        "created_at": "2026-09-17",
+        "population": "rv",
+        "sample_size": 700,
+        "sponsors": [],
+        "partisan": null,
+        "internal": false,
+        "seat_name": null,
+        "answers": [
+          {
+            "choice": "Brad Little",
+            "pct": 37.3
+          },
+          {
+            "choice": "Terri Pickens",
+            "pct": 27.2
+          },
+          {
+            "choice": "John Stegner",
+            "pct": 12.8
+          },
+          {
+            "choice": "Paul Sand",
+            "pct": 2.8
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-18",
+          "checked_at": "2026-10-18T22:36:50.357103+00:00",
+          "documents": [
+            {
+              "url": "https://www.advancedtargetingresearch.com/_files/ugd/03a624_0fca9a6dd7f846f7bc96f97429561064.pdf",
+              "status": "unchanged",
+              "sha256": "c092b9411a5c97bcf7bd992846f7190a3f4aa63cecb7595e736ec27e396c5678"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      }
+    ]
+  }
+}
