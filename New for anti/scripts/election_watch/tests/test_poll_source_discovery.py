@@ -112,12 +112,13 @@ class DiscoveryTests(unittest.TestCase):
 
     def test_malformed_provider_checkpoint_does_not_discard_valid_secondary_capture(self):
         records,_=self.parse(table(row()))
-        report={'records':records,'summary':{'discovered_records':1},'status':'ok'}
+        report={'records':records,'summary':{'discovered_records':1},'status':'ok','source_health':{}}
         with tempfile.TemporaryDirectory() as tmp:
             checkpoint=Path(tmp)/'provider.json';checkpoint.write_text('{invalid')
             output=Path(tmp)/'discovery.json'
             with patch.object(sys,'argv',['discovery','--output',str(output),'--provider-capture',str(checkpoint)]), \
-                 patch.object(cli,'collect_270',return_value=report):
+                 patch.object(cli,'collect_270',return_value=report), \
+                 patch.object(cli,'collect_additional',return_value={'records':[],'commentary':[],'source_health':{}}):
                 self.assertEqual(cli.main(),0)
             saved=json.loads(output.read_text())
             self.assertEqual(saved['records'],records)

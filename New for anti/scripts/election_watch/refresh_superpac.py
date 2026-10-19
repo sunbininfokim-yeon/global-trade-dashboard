@@ -32,6 +32,9 @@ def main():
     results = []
     for cycle in cycles:
         sources = [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]
+        if cycle == 2026:
+            sources.insert(0, ('candidate_fundraising', 'refresh_candidate_fundraising.py'))
+            sources.insert(1, ('governor_context', 'refresh_governor_context.py'))
         if (ROOT / 'config/governor_ie_filers' / str(cycle) / 'NY.json').exists():
             sources.append(('NY_governor', 'build_governor_finance.py'))
         for name, script in sources:

@@ -191,12 +191,37 @@ def build_usa_state_drilldown(
         ballot_path = ROOT / 'config' / 'usa_polls' / 'ballot_reviews_2026.json'
         state_cards = attach_matchups(state_cards, load_json(matchup_path), datetime.now(timezone.utc).date().isoformat(),
                                      load_json(ballot_path) if ballot_path.exists() else None)
+    from election_watch.governor_matchups import attach_state_matchups
+    governor_roster_path = ROOT / 'config/governor_matchups/2026.json'
+    if governor_roster_path.exists():
+        state_cards = attach_state_matchups(state_cards, load_json(governor_roster_path),
+                                            datetime.now(timezone.utc).date().isoformat())
+    from election_watch.candidate_profiles import attach_profiles
+    from election_watch.state_inputs import packets
+    state_cards = attach_profiles(state_cards, packets(), datetime.now(timezone.utc).date().isoformat())
+    context_path = ROOT / 'config/usa_polls/governor_context_2026.json'
+    governor_context = None
+    if context_path.exists():
+        from election_watch.governor_context import build_context
+        inputs = load_json(context_path)
+        published_context = ROOT.parents[1] / 'public/data/usa_election_finance/2026/governor_context_inputs_v1.json'
+        if published_context.exists():
+            published = load_json(published_context)
+            # A previous generator may be newer than this process's fallback.
+            if published['source']['captured_at'] >= inputs['source']['captured_at']:
+                inputs = published
+        governor_context = build_context(inputs,
+            load_json(ROOT / 'config/usa_polls/targets_2026.json'), state_cards,
+            datetime.now(timezone.utc).date().isoformat())
+        for card in state_cards:
+            card['governor_election'] = governor_context['states'][card['id']]
     state_names = set(USA_STATE_ABBR)
     territory_names = sorted(
         {row.get("state") for row in members if row.get("state") and row.get("state") not in state_names}
     )
     return {
         "join_key": "map_feature_code ↔ admin1 feature.properties.code",
+        "governor_elections": governor_context,
         "states": state_cards,
         "territories_and_district": [
             {

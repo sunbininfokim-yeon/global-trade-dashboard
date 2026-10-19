@@ -198,6 +198,20 @@ def validate_snapshot(snapshot, cycle, as_of):
         raise SourceError('Governor roster coverage mismatch')
 
 
+def attach_state_matchups(states, snapshot, as_of):
+    """Expose the same reviewed governor roster alongside federal state cards."""
+    validate_snapshot(snapshot, 2026, as_of)
+    result = deepcopy(states)
+    for state in result:
+        contest = snapshot['contests'].get(state['id'])
+        if contest:
+            rid = f'USA:{state["id"]}:governor'
+            state.setdefault('election_matchups', {})[rid] = {
+                **deepcopy(contest), 'race_id': rid, 'office': 'governor',
+                'reviewed_on': contest.get('ballot_reviewed_on', snapshot['reviewed_on'])}
+    return result
+
+
 def apply_matchups(policy, snapshot, as_of):
     validate_snapshot(snapshot, policy['cycle'], as_of)
     selected = deepcopy(policy)
