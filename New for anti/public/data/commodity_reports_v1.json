@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-19T05:14:32.236634+00:00",
+  "generated_at": "2026-10-19T15:50:55.048765+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 42,
-    "sources_failed": 5,
-    "raw_items": 757,
-    "scored": 202,
-    "unclassified": 480,
-    "rejected": 44,
-    "published": 189,
+    "sources_ok": 45,
+    "sources_failed": 2,
+    "raw_items": 842,
+    "scored": 206,
+    "unclassified": 534,
+    "rejected": 61,
+    "published": 193,
     "commodities": 30,
     "buckets": 106
   },
@@ -37,30 +37,30 @@
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 1,
+      "error": null,
       "mode": "live",
-      "carried_over": 4
+      "archived": 4
     },
     {
       "source_id": "us_nass_asb",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_news",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 18,
+      "count": 19,
       "error": null,
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "count": 11,
       "error": null,
       "mode": "live",
-      "archived": 1
+      "archived": 3
     },
     {
       "source_id": "us_ofac_recent_actions",
@@ -224,7 +224,7 @@
       "count": 9,
       "error": null,
       "mode": "live",
-      "archived": 10
+      "archived": 11
     },
     {
       "source_id": "us_bis_press",
@@ -376,12 +376,15 @@
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 3,
-    "reused": 60,
+    "annotated": 4,
+    "reused": 62,
     "error": null
   },
   "boards": {
     "export_controls": [
+      "1d6852fde7a7bff0",
+      "93896897c8293795",
+      "308f010249757da0",
       "f433172aceb1ffed",
       "4e37ad6d9815d7ba",
       "bc7eb6bec933979d",
@@ -1189,6 +1192,44 @@
         "5f087a520744649c"
       ]
     },
+    "uranium": {
+      "USA": [
+        "7032f2bd4a7c0deb",
+        "51f7850f5e34ba32",
+        "4a341ad3a2d594e0",
+        "51e9b64989fadc3d",
+        "9fc7f595c939c5ae",
+        "3712a39225da7475",
+        "3756023f1ecf08de",
+        "7c01bc88c3ee5cf9",
+        "b9dbe511d03f6801"
+      ],
+      "FRA": [
+        "3712a39225da7475"
+      ],
+      "_global": [
+        "8f2b164b5e4ab3cf"
+      ]
+    },
+    "uranium_ore": {
+      "USA": [
+        "7032f2bd4a7c0deb",
+        "51f7850f5e34ba32",
+        "4a341ad3a2d594e0",
+        "51e9b64989fadc3d",
+        "9fc7f595c939c5ae",
+        "3712a39225da7475",
+        "3756023f1ecf08de",
+        "7c01bc88c3ee5cf9",
+        "b9dbe511d03f6801"
+      ],
+      "FRA": [
+        "3712a39225da7475"
+      ],
+      "_global": [
+        "8f2b164b5e4ab3cf"
+      ]
+    },
     "cocoa": {
       "IDN": [
         "dd5c47496ef59166",
@@ -1213,42 +1254,6 @@
       "CHN": [
         "8566a0485af28101",
         "62ac4be598c099c2"
-      ]
-    },
-    "uranium": {
-      "USA": [
-        "51f7850f5e34ba32",
-        "4a341ad3a2d594e0",
-        "51e9b64989fadc3d",
-        "9fc7f595c939c5ae",
-        "3712a39225da7475",
-        "3756023f1ecf08de",
-        "7c01bc88c3ee5cf9",
-        "b9dbe511d03f6801"
-      ],
-      "FRA": [
-        "3712a39225da7475"
-      ],
-      "_global": [
-        "8f2b164b5e4ab3cf"
-      ]
-    },
-    "uranium_ore": {
-      "USA": [
-        "51f7850f5e34ba32",
-        "4a341ad3a2d594e0",
-        "51e9b64989fadc3d",
-        "9fc7f595c939c5ae",
-        "3712a39225da7475",
-        "3756023f1ecf08de",
-        "7c01bc88c3ee5cf9",
-        "b9dbe511d03f6801"
-      ],
-      "FRA": [
-        "3712a39225da7475"
-      ],
-      "_global": [
-        "8f2b164b5e4ab3cf"
       ]
     },
     "lithium": {
@@ -1281,12 +1286,6 @@
         "75fbe378785e717c"
       ]
     },
-    "nickel": {
-      "CAN": [
-        "2b01032e6309c950",
-        "9a22d2cdf0982434"
-      ]
-    },
     "zinc": {
       "_global": [
         "959d91c46a9a7514"
@@ -1298,6 +1297,12 @@
     "lead": {
       "_global": [
         "959d91c46a9a7514"
+      ]
+    },
+    "nickel": {
+      "CAN": [
+        "2b01032e6309c950",
+        "9a22d2cdf0982434"
       ]
     },
     "chromium": {
@@ -1356,7 +1361,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.631,
+      "importance": 5.579,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1389,7 +1394,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.258,
+      "importance": 5.216,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1422,7 +1427,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.586,
+      "importance": 4.554,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1455,7 +1460,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.543,
+      "importance": 4.504,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1487,7 +1492,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.338,
+      "importance": 4.304,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1520,7 +1525,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.047,
+      "importance": 4.017,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1552,7 +1557,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.996,
+      "importance": 3.964,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1584,7 +1589,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.925,
+      "importance": 3.894,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1617,7 +1622,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.924,
+      "importance": 3.894,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1649,7 +1654,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.625,
+      "importance": 3.601,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1683,7 +1688,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.547,
+      "importance": 3.519,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1713,7 +1718,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.365,
+      "importance": 3.338,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1744,7 +1749,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.337,
+      "importance": 3.323,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1777,7 +1782,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.305,
+      "importance": 3.291,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1810,7 +1815,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.3,
+      "importance": 3.286,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1845,7 +1850,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.284,
+      "importance": 3.265,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1877,7 +1882,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.273,
+      "importance": 3.246,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1909,7 +1914,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.24,
+      "importance": 3.218,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1941,7 +1946,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.155,
+      "importance": 3.13,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1972,7 +1977,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.098,
+      "importance": 3.074,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2003,7 +2008,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.098,
+      "importance": 3.074,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2034,7 +2039,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.977,
+      "importance": 2.968,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2067,7 +2072,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.904,
+      "importance": 2.889,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -2100,7 +2105,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.89,
+      "importance": 2.869,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2133,7 +2138,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.89,
+      "importance": 2.869,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2164,7 +2169,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.89,
+      "importance": 2.869,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2195,7 +2200,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.89,
+      "importance": 2.867,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -2226,7 +2231,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.843,
+      "importance": 2.822,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2257,7 +2262,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.83,
+      "importance": 2.818,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2289,7 +2294,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.796,
+      "importance": 2.776,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2320,7 +2325,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.776,
+      "importance": 2.765,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2353,7 +2358,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.669,
+      "importance": 2.656,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2385,7 +2390,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.634,
+      "importance": 2.625,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2417,7 +2422,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.575,
+      "importance": 2.554,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2449,7 +2454,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.549,
+      "importance": 2.532,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2481,7 +2486,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.549,
+      "importance": 2.532,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2510,7 +2515,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.524,
+      "importance": 2.504,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -2724,7 +2729,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.299,
+      "importance": 2.294,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2756,56 +2761,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.248,
+      "importance": 2.229,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-09T15:32:41.344417+00:00"
-    },
-    {
-      "id": "4e37ad6d9815d7ba",
-      "title": {
-        "original": "Transaksi Emas Digital Kian Berkilau, Bappebti Perkuat Literasi Masyarakat",
-        "original_lang": "id",
-        "ko": "디지털 금 거래가 더욱 빛을 발하며, 바페프티(Bappebti)가 대중의 금융 이해력을 강화합니다.",
-        "en": "Digital Gold Transactions Shine Brighter, Bappebti Strengthens Public Literacy"
-      },
-      "summary": "Kabupaten Tangerang, 17 Oktober 2026 – Kepala Badan Pengawas Perdagangan Berjangka Komoditi (Bappebti) Kementerian Perdagangan Tirta Karma Senjaya mengatakan, nilai transaksi emas digital kian berkilau. Pada Januari–Agustus 2026, nilainya mencapai Rp299,49 triliun. Capaian tersebut meningkat 641,1 persen dibandingkan periode yang sama pada 2025 sebesar Rp40,41 triliun. Adapun volume transaksinya tercatat sebesar 115,86 ton atau naik 382,6 persen dibandingkan periode yang sama pada 2025 sebesar 24 ton. Seiring dengan pertumbuhan tersebut, Bappebti terus memperkuat literasi masyarakat mengenai…",
-      "url": "https://www.kemendag.go.id/berita/siaran-pers/transaksi-emas-digital-kian-berkilau-bappebti-perkuat-literasi-masyarakat",
-      "published_at": "2026-10-17T15:46:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.089,
-      "reasons": [
-        "has_figure"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "IDN",
-        "issuer_body": "Ministry of Trade of Indonesia",
-        "issuer_body_ko": "인도네시아 무역부",
-        "measure": "guidance",
-        "items": [],
-        "targets": [
-          "IDN"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-17T18:47:20.144283+00:00"
     },
     {
       "id": "088f09f9aa8eb7c7",
@@ -2831,7 +2793,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.08,
+      "importance": 2.076,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2839,6 +2801,49 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
+    },
+    {
+      "id": "4e37ad6d9815d7ba",
+      "title": {
+        "original": "Transaksi Emas Digital Kian Berkilau, Bappebti Perkuat Literasi Masyarakat",
+        "original_lang": "id",
+        "ko": "디지털 금 거래가 더욱 빛을 발하며, 바페프티(Bappebti)가 대중의 금융 이해력을 강화합니다.",
+        "en": "Digital Gold Transactions Shine Brighter, Bappebti Strengthens Public Literacy"
+      },
+      "summary": "Kabupaten Tangerang, 17 Oktober 2026 – Kepala Badan Pengawas Perdagangan Berjangka Komoditi (Bappebti) Kementerian Perdagangan Tirta Karma Senjaya mengatakan, nilai transaksi emas digital kian berkilau. Pada Januari–Agustus 2026, nilainya mencapai Rp299,49 triliun. Capaian tersebut meningkat 641,1 persen dibandingkan periode yang sama pada 2025 sebesar Rp40,41 triliun. Adapun volume transaksinya tercatat sebesar 115,86 ton atau naik 382,6 persen dibandingkan periode yang sama pada 2025 sebesar 24 ton. Seiring dengan pertumbuhan tersebut, Bappebti terus memperkuat literasi masyarakat mengenai…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/transaksi-emas-digital-kian-berkilau-bappebti-perkuat-literasi-masyarakat",
+      "published_at": "2026-10-17T15:46:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.07,
+      "reasons": [
+        "has_figure"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "IDN",
+        "issuer_body": "Ministry of Trade of Indonesia",
+        "issuer_body_ko": "인도네시아 무역부",
+        "measure": "guidance",
+        "items": [],
+        "targets": [
+          "IDN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-17T18:47:20.144283+00:00"
     },
     {
       "id": "4dc6df4935897046",
@@ -2863,7 +2868,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.038,
+      "importance": 2.023,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2894,7 +2899,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.015,
+      "importance": 2.002,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2926,7 +2931,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.002,
+      "importance": 1.994,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2957,12 +2962,44 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.0,
+      "importance": 1.982,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.usda.gov/",
       "first_seen_at": "2026-10-17T06:00:00.518234+00:00"
+    },
+    {
+      "id": "7032f2bd4a7c0deb",
+      "title": {
+        "original": "Centrus Announces $116 Million Acquisition Of Centrifuge Component Supplier Westerman",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "US nuclear fuel company Centrus Energy has acquired Westerman Holdings, a major supplier of components for its uranium enrichment centrifuges, for about $116m (€103m), a statement said. Centrus said the acquisition was financed through about $95m in cash and $21m in equity.",
+      "url": "https://www.nucnet.org/news/centrus-announces-usd116-million-acquisition-of-centrifuge-component-supplier-westerman-10-1-2026",
+      "published_at": "2026-10-19T13:29:26+00:00",
+      "agency": "NucNet",
+      "agency_ko": "NucNet(독립 원자력 뉴스)",
+      "source_id": "int_nucnet",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.886,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.nucnet.org/",
+      "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
     },
     {
       "id": "f8aa4f64781b6480",
@@ -2987,7 +3024,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.825,
+      "importance": 1.813,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3019,7 +3056,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.817,
+      "importance": 1.802,
       "reasons": [
         "country_in_text"
       ],
@@ -3049,7 +3086,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.792,
+      "importance": 1.776,
       "reasons": [
         "country_in_text"
       ],
@@ -3080,7 +3117,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.787,
+      "importance": 1.774,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3122,7 +3159,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.763,
+      "importance": 1.747,
       "reasons": [
         "country_in_text"
       ],
@@ -3153,7 +3190,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.746,
+      "importance": 1.73,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3185,7 +3222,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.741,
+      "importance": 1.725,
       "reasons": [
         "country_in_text"
       ],
@@ -3228,7 +3265,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.726,
+      "importance": 1.71,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -3259,126 +3296,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.701,
+      "importance": 1.691,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "c7c90cf6cc411310",
-      "title": {
-        "original": "Pelepasan Ekspor Produk Olahan Kopi PT Nestle Indonesia",
-        "original_lang": "id",
-        "ko": "PT 네슬레 인도네시아 커피 가공 제품 수출 출하",
-        "en": "Export Release of PT Nestle Indonesia Coffee Processed Products"
-      },
-      "summary": "Menteri Perdagangan, Budi Santoso bersama Ketua MPR RI, Ahmad Muzani melakukan pelepasan ekspor produk olahan kopi PT Nestle Indonesia ke Melbourne, Australia yang berlangsung di sela penyelenggaraan Trade Expo Indonesia ke-41 di BSD City, Tangerang, Banten, Kamis (15 Okt).",
-      "url": "https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia",
-      "published_at": "2026-10-15T16:04:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "IDN",
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.671,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "IDN",
-        "issuer_body": "Ministry of Trade of Indonesia",
-        "issuer_body_ko": "인도네시아 무역부",
-        "measure": "export_restriction",
-        "items": [],
-        "targets": [],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "0c511d86c84c17c2",
-      "title": {
-        "original": "Kemendag Dorong Kopi Indonesia Tembus Pasar Global melalui Penguatan Mutu dan Nilai Tambah",
-        "original_lang": "id",
-        "ko": "무역부, 품질 강화와 부가가치 제고를 통해 인도네시아 커피의 글로벌 시장 진출 장려",
-        "en": "Ministry of Trade Encourages Indonesian Coffee to Penetrate Global Market through Quality Enhancement and Added Value"
-      },
-      "summary": "Kabupaten Tangerang, 15 Oktober 2026 – Kementerian Perdagangan terus mendorong peningkatan daya saing kopi Indonesia di pasar internasional melalui pemenuhan standar mutu, pemahaman persyaratan negara tujuan, dan pengembangan produk bernilai tambah. Upaya tersebut diwujudkan melalui Forum Bisnis “Brewing Global Success: Strategi Memenuhi Standar Global dan Menciptakan Produk Kopi Bernilai Tambah Tinggi” dalam gelaran Trade Expo Indonesia (TEI) ke-41 di ICE BSD City, Kabupaten Tangerang, Banten, Kamis (15/10).Kegiatan dibuka secara resmi oleh Sekretaris Direktorat Jenderal Perlindungan…",
-      "url": "https://www.kemendag.go.id/berita/siaran-pers/kemendag-dorong-kopi-indonesia-tembus-pasar-global-melalui-penguatan-mutu-dan-nilai-tambah",
-      "published_at": "2026-10-15T15:53:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.67,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "IDN",
-        "issuer_body": "Ministry of Trade of Indonesia",
-        "issuer_body_ko": "인도네시아 무역부",
-        "measure": "guidance",
-        "items": [],
-        "targets": [],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
-    },
-    {
-      "id": "1b171ff4ac638164",
-      "title": {
-        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
-      "published_at": "2026-09-21T13:18:43+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.668,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -3462,6 +3385,120 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "1b171ff4ac638164",
+      "title": {
+        "original": "China Minmetals moves to take control of Huaxi Nonferrous",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "China Minmetals Corporation has signed a framework agreement to acquire control of Chinese tin producer Huaxi Nonferrous (SSE: 600301) through an investment in its indirect parent company. China Minmetals plans to contribute cash, or a combination of cash and non-cash assets, to Guangxi Critical Metals Industry Development Group (Guangxi Critical Metals Group) in exchange for a 51% interest… Read the full article for free by registering on Tin Desk The post China Minmetals moves to take control of Huaxi Nonferrous appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/china-minmetals-moves-to-take-control-of-huaxi-nonferrous/?utm_source=rss&utm_medium=rss&utm_campaign=china-minmetals-moves-to-take-control-of-huaxi-nonferrous",
+      "published_at": "2026-09-21T13:18:43+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.657,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "c7c90cf6cc411310",
+      "title": {
+        "original": "Pelepasan Ekspor Produk Olahan Kopi PT Nestle Indonesia",
+        "original_lang": "id",
+        "ko": "PT 네슬레 인도네시아 커피 가공 제품 수출 출하",
+        "en": "Export Release of PT Nestle Indonesia Coffee Processed Products"
+      },
+      "summary": "Menteri Perdagangan, Budi Santoso bersama Ketua MPR RI, Ahmad Muzani melakukan pelepasan ekspor produk olahan kopi PT Nestle Indonesia ke Melbourne, Australia yang berlangsung di sela penyelenggaraan Trade Expo Indonesia ke-41 di BSD City, Tangerang, Banten, Kamis (15 Okt).",
+      "url": "https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia",
+      "published_at": "2026-10-15T16:04:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "IDN",
+        "AUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.656,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "IDN",
+        "issuer_body": "Ministry of Trade of Indonesia",
+        "issuer_body_ko": "인도네시아 무역부",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
+      "id": "0c511d86c84c17c2",
+      "title": {
+        "original": "Kemendag Dorong Kopi Indonesia Tembus Pasar Global melalui Penguatan Mutu dan Nilai Tambah",
+        "original_lang": "id",
+        "ko": "무역부, 품질 강화와 부가가치 제고를 통해 인도네시아 커피의 글로벌 시장 진출 장려",
+        "en": "Ministry of Trade Encourages Indonesian Coffee to Penetrate Global Market through Quality Enhancement and Added Value"
+      },
+      "summary": "Kabupaten Tangerang, 15 Oktober 2026 – Kementerian Perdagangan terus mendorong peningkatan daya saing kopi Indonesia di pasar internasional melalui pemenuhan standar mutu, pemahaman persyaratan negara tujuan, dan pengembangan produk bernilai tambah. Upaya tersebut diwujudkan melalui Forum Bisnis “Brewing Global Success: Strategi Memenuhi Standar Global dan Menciptakan Produk Kopi Bernilai Tambah Tinggi” dalam gelaran Trade Expo Indonesia (TEI) ke-41 di ICE BSD City, Kabupaten Tangerang, Banten, Kamis (15/10).Kegiatan dibuka secara resmi oleh Sekretaris Direktorat Jenderal Perlindungan…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/kemendag-dorong-kopi-indonesia-tembus-pasar-global-melalui-penguatan-mutu-dan-nilai-tambah",
+      "published_at": "2026-10-15T15:53:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.655,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "IDN",
+        "issuer_body": "Ministry of Trade of Indonesia",
+        "issuer_body_ko": "인도네시아 무역부",
+        "measure": "guidance",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
+    },
+    {
       "id": "7c2c4d1c8844ab36",
       "title": {
         "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Postponement of Final Determination of Sales at Less-Than-Fair-Value Investigation and Extension of Provisional Measures",
@@ -3485,7 +3522,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.642,
+      "importance": 1.627,
       "reasons": [
         "country_in_text"
       ],
@@ -3516,7 +3553,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.641,
+      "importance": 1.627,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3547,42 +3584,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.586,
+      "importance": 1.572,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "2b01032e6309c950",
-      "title": {
-        "original": "Thompson Mine Complex transaction closes, helping secure a stronger future for Canadian nickel",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Today, the Honourable Wab Kinew, Premier of Manitoba; the Honourable Rebecca Chartrand, Canada’s Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency; and representatives from Exiro Minerals Corp., Orion Resource Partners and Vale Base Metals (VBM) marked the completion of Exiro Nickel’s acquisition of the Thompson Mine Complex in Manitoba, ushering in a new chapter for one of Canada’s most significant nickel mining operations.",
-      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/10/thompson-mine-complex-transaction-closes-helping-secure-a-stronger-future-for-canadian-nickel.html",
-      "published_at": "2026-10-16T12:30:00+00:00",
-      "agency": "Natural Resources Canada",
-      "agency_ko": "캐나다 천연자원부",
-      "source_id": "ca_nrcan",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.559,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://api.io.canada.ca/",
-      "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
     },
     {
       "id": "c6333ba481073b9b",
@@ -3644,6 +3651,75 @@
       "first_seen_at": "2026-09-26T13:21:12.121881+00:00"
     },
     {
+      "id": "2b01032e6309c950",
+      "title": {
+        "original": "Thompson Mine Complex transaction closes, helping secure a stronger future for Canadian nickel",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Today, the Honourable Wab Kinew, Premier of Manitoba; the Honourable Rebecca Chartrand, Canada’s Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency; and representatives from Exiro Minerals Corp., Orion Resource Partners and Vale Base Metals (VBM) marked the completion of Exiro Nickel’s acquisition of the Thompson Mine Complex in Manitoba, ushering in a new chapter for one of Canada’s most significant nickel mining operations.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/10/thompson-mine-complex-transaction-closes-helping-secure-a-stronger-future-for-canadian-nickel.html",
+      "published_at": "2026-10-16T12:30:00+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.544,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://api.io.canada.ca/",
+      "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
+    },
+    {
+      "id": "1d6852fde7a7bff0",
+      "title": {
+        "original": "Protecting American Intellectual Property Act of 2022 (PAIPA) Designations; Issuance of Associated General Licenses",
+        "original_lang": "en",
+        "ko": "2022년 미국 지식재산권 보호법(PAIPA) 지정 및 관련 일반 면허 발급",
+        "en": "Protecting American Intellectual Property Act of 2022 (PAIPA) Designations; Issuance of Associated General Licenses"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20261019",
+      "published_at": "2026-10-19T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.538,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
+    },
+    {
       "id": "bc7eb6bec933979d",
       "title": {
         "original": "Правительство выделило более 1,7 млрд рублей на поддержку региональных программ развития экспорта",
@@ -3665,7 +3741,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.498,
+      "importance": 1.484,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -3703,7 +3779,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.472,
+      "importance": 1.466,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3903,7 +3979,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.458,
+      "importance": 1.445,
       "reasons": [
         "country_in_text"
       ],
@@ -3944,7 +4020,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.433,
+      "importance": 1.429,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -3974,7 +4050,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.428,
+      "importance": 1.415,
       "reasons": [
         "country_in_text"
       ],
@@ -4017,7 +4093,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.416,
+      "importance": 1.41,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4049,7 +4125,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.403,
+      "importance": 1.399,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -4080,7 +4156,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.4,
+      "importance": 1.387,
       "reasons": [
         "country_in_text"
       ],
@@ -4124,7 +4200,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.395,
+      "importance": 1.384,
       "reasons": [
         "country_in_text"
       ],
@@ -4162,7 +4238,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.386,
+      "importance": 1.374,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
@@ -4189,7 +4265,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.372,
+      "importance": 1.36,
       "reasons": [
         "country_in_text"
       ],
@@ -4358,7 +4434,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.318,
+      "importance": 1.307,
       "reasons": [
         "country_in_text"
       ],
@@ -4389,7 +4465,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.318,
+      "importance": 1.307,
       "reasons": [
         "country_in_text"
       ],
@@ -4420,7 +4496,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.318,
+      "importance": 1.307,
       "reasons": [
         "country_in_text"
       ],
@@ -4451,7 +4527,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.305,
+      "importance": 1.294,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4488,51 +4564,84 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.302,
+      "importance": 1.292,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
     },
     {
-      "id": "38b8b7f9ad0f103f",
+      "id": "93896897c8293795",
       "title": {
-        "original": "Issuance of Russia-related General License",
-        "original_lang": "en",
-        "ko": "러시아 관련 일반 면허 발급",
-        "en": "Issuance of Russia-related General License"
+        "original": "商务部新闻发言人就盾构机等物项实施出口管制、优化调整挖泥船相关物项出口管制措施答记者问",
+        "original_lang": "zh",
+        "ko": "중국 상무부 대변인이 쉴드 기계 등 품목에 대한 수출 통제 실시 및 준설선 관련 품목 수출 통제 조치의 최적화 조정에 관해 기자들의 질문에 답함",
+        "en": "Spokesperson of the Ministry of Commerce answers reporter's questions on implementing export controls on items such as shield machines and optimizing and adjusting export control measures on related items of dredgers"
       },
       "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20261009_33",
-      "published_at": "2026-10-09T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_9761c9e2f7cb448f846703abaa7b41bb.html",
+      "published_at": "2026-10-19T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
       "commodities": [],
       "countries": [
-        "RUS"
+        "CHN"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.27,
-      "reasons": [
-        "country_in_text"
-      ],
+      "importance": 1.282,
+      "reasons": [],
       "board": "export_controls",
       "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
+        "issuer": "CHN",
+        "issuer_body": "MOFCOM Bureau of Industry Security, Import and Export Control",
+        "issuer_body_ko": "중국 상무부 산업안전·수출입통제국",
+        "measure": "export_restriction",
         "items": [],
-        "targets": [
-          "RUS"
-        ],
+        "targets": [],
         "extracted_by": "gemini"
       },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
+    },
+    {
+      "id": "308f010249757da0",
+      "title": {
+        "original": "商务部新闻发言人就优化调整无人机相关物项出口管制措施答记者问",
+        "original_lang": "zh",
+        "ko": "중국 상무부 대변인이 드론 관련 품목 수출 통제 조치의 최적화 조정에 관해 기자들의 질문에 답함",
+        "en": "Spokesperson of the Ministry of Commerce answers reporter's questions on optimizing and adjusting export control measures on drone-related items"
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_ed3383de347a4e81b316485926b7a852.html",
+      "published_at": "2026-10-19T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.282,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "CHN",
+        "issuer_body": "MOFCOM Bureau of Industry Security, Import and Export Control",
+        "issuer_body_ko": "중국 상무부 산업안전·수출입통제국",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
     },
     {
       "id": "d6be49771c7e2707",
@@ -4557,12 +4666,53 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.266,
+      "importance": 1.259,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "38b8b7f9ad0f103f",
+      "title": {
+        "original": "Issuance of Russia-related General License",
+        "original_lang": "en",
+        "ko": "러시아 관련 일반 면허 발급",
+        "en": "Issuance of Russia-related General License"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20261009_33",
+      "published_at": "2026-10-09T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.259,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "RUS"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
     },
     {
       "id": "add281ec9d9fcd56",
@@ -4587,7 +4737,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.246,
+      "importance": 1.236,
       "reasons": [
         "country_in_text"
       ],
@@ -4630,7 +4780,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.223,
+      "importance": 1.214,
       "reasons": [
         "country_in_text"
       ],
@@ -4660,43 +4810,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.223,
+      "importance": 1.214,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
-    },
-    {
-      "id": "4a341ad3a2d594e0",
-      "title": {
-        "original": "US maritime nuclear firm Bluecore Energy announces uranium purchase",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "California-based Bluecore Energy said its purchase of low-enriched uranium from WMC is one of several areas where it has made \"significant progress\" towards moving its technology from engineering and non-fuelled hardware development toward fuel fabrication, testing, validation and future deployment.",
-      "url": "https://www.world-nuclear-news.org/articles/us-maritime-nuclear-firm-bluecore-energy-announces-uranium-purchase",
-      "published_at": "2026-10-14T08:33:48+00:00",
-      "agency": "World Nuclear News",
-      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
-      "source_id": "int_wnn",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.22,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.world-nuclear-news.org/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
       "id": "11ac17f1a9aa9e08",
@@ -4849,6 +4968,37 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "4a341ad3a2d594e0",
+      "title": {
+        "original": "US maritime nuclear firm Bluecore Energy announces uranium purchase",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "California-based Bluecore Energy said its purchase of low-enriched uranium from WMC is one of several areas where it has made \"significant progress\" towards moving its technology from engineering and non-fuelled hardware development toward fuel fabrication, testing, validation and future deployment.",
+      "url": "https://www.world-nuclear-news.org/articles/us-maritime-nuclear-firm-bluecore-energy-announces-uranium-purchase",
+      "published_at": "2026-10-14T08:33:48+00:00",
+      "agency": "World Nuclear News",
+      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
+      "source_id": "int_wnn",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.209,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.world-nuclear-news.org/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
       "id": "de49cf7992871dbf",
       "title": {
         "original": "Natural Gas Monthly",
@@ -4871,7 +5021,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.202,
+      "importance": 1.194,
       "reasons": [
         "country_in_text"
       ],
@@ -4902,7 +5052,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.196,
+      "importance": 1.192,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4933,7 +5083,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.194,
+      "importance": 1.188,
       "reasons": [
         "country_in_text"
       ],
@@ -4965,7 +5115,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.188,
+      "importance": 1.181,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4996,7 +5146,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.185,
+      "importance": 1.178,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -5026,7 +5176,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.18,
+      "importance": 1.171,
       "reasons": [
         "country_in_text"
       ],
@@ -5069,7 +5219,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.165,
+      "importance": 1.157,
       "reasons": [
         "country_in_text"
       ],
@@ -5100,7 +5250,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.146,
+      "importance": 1.138,
       "reasons": [
         "country_in_text"
       ],
@@ -5131,49 +5281,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.146,
+      "importance": 1.138,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "86f680f62484ba7d",
-      "title": {
-        "original": "关于《民用航空领域相关两用物项出口凭证管理办法》公开征求意见的通知",
-        "original_lang": "zh",
-        "ko": "'민간항공 분야 관련 이중용도 품목 수출 증명서 관리 방법'에 대한 공개 의견 수렴 통지",
-        "en": "Notice on Public Solicitation of Opinions on the 'Administrative Measures for Export Certificates of Related Dual-Use Items in the Civil Aviation Field'"
-      },
-      "summary": null,
-      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_6878d2c700114ad39a0e1d3958b02ee6.html",
-      "published_at": "2026-10-13T00:00:00+00:00",
-      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
-      "agency_ko": "중국 상무부 산업안전·수출입통제국",
-      "source_id": "cn_mofcom_aqygzj",
-      "commodities": [],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.143,
-      "reasons": [],
-      "board": "export_controls",
-      "control": {
-        "issuer": "CHN",
-        "issuer_body": "MOFCOM Bureau of Industry Security, Import and Export Control",
-        "issuer_body_ko": "중국 상무부 산업안전·수출입통제국",
-        "measure": "guidance",
-        "items": [],
-        "targets": [],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://aqygzj.mofcom.gov.cn/",
-      "first_seen_at": "2026-10-13T02:13:32.410529+00:00"
     },
     {
       "id": "181e4ee82214496a",
@@ -5198,13 +5311,50 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.14,
+      "importance": 1.138,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "86f680f62484ba7d",
+      "title": {
+        "original": "关于《民用航空领域相关两用物项出口凭证管理办法》公开征求意见的通知",
+        "original_lang": "zh",
+        "ko": "'민간항공 분야 관련 이중용도 품목 수출 증명서 관리 방법'에 대한 공개 의견 수렴 통지",
+        "en": "Notice on Public Solicitation of Opinions on the 'Administrative Measures for Export Certificates of Related Dual-Use Items in the Civil Aviation Field'"
+      },
+      "summary": null,
+      "url": "https://aqygzj.mofcom.gov.cn/zhxx/art/2026/art_6878d2c700114ad39a0e1d3958b02ee6.html",
+      "published_at": "2026-10-13T00:00:00+00:00",
+      "agency": "MOFCOM Bureau of Industry Security, Import and Export Control",
+      "agency_ko": "중국 상무부 산업안전·수출입통제국",
+      "source_id": "cn_mofcom_aqygzj",
+      "commodities": [],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.133,
+      "reasons": [],
+      "board": "export_controls",
+      "control": {
+        "issuer": "CHN",
+        "issuer_body": "MOFCOM Bureau of Industry Security, Import and Export Control",
+        "issuer_body_ko": "중국 상무부 산업안전·수출입통제국",
+        "measure": "guidance",
+        "items": [],
+        "targets": [],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://aqygzj.mofcom.gov.cn/",
+      "first_seen_at": "2026-10-13T02:13:32.410529+00:00"
     },
     {
       "id": "59e92887faa59207",
@@ -5229,7 +5379,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.134,
+      "importance": 1.123,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
@@ -5257,9 +5407,37 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.127,
+      "importance": 1.121,
       "reasons": [
         "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "022ee0b6016f3dd5",
+      "title": {
+        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
+      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
+      "published_at": "2026-08-27T14:20:42+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.083,
+      "reasons": [
+        "has_figure"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -5286,7 +5464,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.089,
+      "importance": 1.081,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5302,76 +5480,6 @@
       },
       "agency_url": "http://government.ru/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
-    },
-    {
-      "id": "022ee0b6016f3dd5",
-      "title": {
-        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
-      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
-      "published_at": "2026-08-27T14:20:42+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.087,
-      "reasons": [
-        "has_figure"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "500ccb61f23619e0",
-      "title": {
-        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
-        "original_lang": "en",
-        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
-        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260930",
-      "published_at": "2026-09-30T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "LBY"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.084,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
-        "items": [],
-        "targets": [
-          "BLR",
-          "LBY"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "333bf7304a6961c5",
@@ -5396,12 +5504,54 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.082,
+      "importance": 1.077,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "500ccb61f23619e0",
+      "title": {
+        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
+        "original_lang": "en",
+        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
+        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260930",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "LBY"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.076,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "LBY"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -5426,7 +5576,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.08,
+      "importance": 1.076,
       "reasons": [
         "country_in_text"
       ],
@@ -5456,7 +5606,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.075,
+      "importance": 1.072,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5486,7 +5636,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.066,
+      "importance": 1.059,
       "reasons": [
         "country_in_text"
       ],
@@ -5529,7 +5679,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.06,
+      "importance": 1.053,
       "reasons": [
         "country_in_text"
       ],
@@ -5557,7 +5707,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.057,
+      "importance": 1.05,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -5584,7 +5734,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.055,
+      "importance": 1.046,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5598,47 +5748,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
-    },
-    {
-      "id": "846a4ec9ba0dc965",
-      "title": {
-        "original": "Issuance of Amended Venezuela General Licenses",
-        "original_lang": "en",
-        "ko": "개정 베네수엘라 일반 면허 발급",
-        "en": "Issuance of Amended Venezuela General Licenses"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260928",
-      "published_at": "2026-09-28T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "VEN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.049,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "export_restriction",
-        "items": [],
-        "targets": [
-          "VEN"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "1a5e5c6b232458f1",
@@ -5663,7 +5772,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.048,
+      "importance": 1.044,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5672,35 +5781,45 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "01399109dc789f34",
+      "id": "846a4ec9ba0dc965",
       "title": {
-        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
+        "original": "Issuance of Amended Venezuela General Licenses",
         "original_lang": "en",
-        "ko": null
+        "ko": "개정 베네수엘라 일반 면허 발급",
+        "en": "Issuance of Amended Venezuela General Licenses"
       },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
-      "url": "https://www.federalregister.gov/documents/2026/09/24/2026-19518/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
-      "published_at": "2026-09-24T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "graphite"
-      ],
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260928",
+      "published_at": "2026-09-28T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
       "countries": [
-        "CHN",
-        "USA"
+        "VEN"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.044,
+      "importance": 1.042,
       "reasons": [
         "country_in_text"
       ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "7796ff7e4f3b30ae",
@@ -6424,6 +6543,37 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "01399109dc789f34",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
+      "url": "https://www.federalregister.gov/documents/2026/09/24/2026-19518/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
+      "published_at": "2026-09-24T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.037,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
       "id": "c15a313674037476",
       "title": {
         "original": "HR CPO dan HPE Biji Kakao Naik, HPE Getah Pinus Turun, HPE Produk Kulit Tetap, HPE Produk Kayu Bervariasi pada Oktober 2026",
@@ -6449,7 +6599,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.027,
+      "importance": 1.02,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6488,7 +6638,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.008,
+      "importance": 1.001,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6525,7 +6675,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.973,
+      "importance": 0.967,
       "reasons": [
         "country_in_text"
       ],
@@ -6567,7 +6717,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.962,
+      "importance": 0.955,
       "reasons": [
         "country_in_text"
       ],
@@ -6595,39 +6745,9 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.962,
+      "importance": 0.955,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "62ac4be598c099c2",
-      "title": {
-        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
-      "published_at": "2026-08-14T07:26:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.954,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -6715,6 +6835,36 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "62ac4be598c099c2",
+      "title": {
+        "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "On June 1, ATO Beijing partnered with the Synergistic Hawaii Agricultural Council (SHAC), to host our second annual Hawaii coffee cupping event in Beijing...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/08/china-ato-beijing-supports-hawaii-specialty-coffee-expand-commercial-opportunities-premium",
+      "published_at": "2026-08-14T07:26:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.951,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "b8820250e3d215f2",
       "title": {
         "original": "Expiration of Emergency With Respect to the Situation in Ethiopia; Ethiopia-related Designations Removals; Issuance of Amended Russia-related General License and Associated Frequently Asked Questions",
@@ -6737,7 +6887,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.908,
+      "importance": 0.903,
       "reasons": [
         "country_in_text"
       ],
@@ -6780,7 +6930,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.904,
+      "importance": 0.899,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6807,7 +6957,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.896,
+      "importance": 0.891,
       "reasons": [
         "country_in_text"
       ],
@@ -6851,7 +7001,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.885,
+      "importance": 0.88,
       "reasons": [
         "country_in_text"
       ],
@@ -6892,7 +7042,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.883,
+      "importance": 0.878,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6918,7 +7068,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.878,
+      "importance": 0.873,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6947,7 +7097,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.871,
+      "importance": 0.867,
       "reasons": [
         "country_in_text"
       ],
@@ -6976,38 +7126,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.871,
+      "importance": 0.864,
       "reasons": [],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "62f11e17ce23601c",
-      "title": {
-        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
-      "published_at": "2026-09-07T15:45:14+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.865,
-      "reasons": [],
-      "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "16f99349c6e2ef80",
@@ -7032,11 +7154,39 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.865,
+      "importance": 0.862,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "62f11e17ce23601c",
+      "title": {
+        "original": "¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "La Comisión Chilena del Cobre (Cochilco) publicó el estudio “Mercado de Concentrados e Industria de Fundiciones. Reporte 2026”, que entrega una visión actualizada del mercado mundial de concentrados de cobre, la capacidad global de fundición, la evolución de los cargos de tratamiento y refinación (TC/RC) y la posición competitiva de la industria chilena. El informe[...] La entrada ¡Nuevo estudio! Mercado de concentrados e industria de fundiciones 2026 se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/nuevo-estudio-mercado-de-concentrados-e-industria-de-fundiciones-2026/",
+      "published_at": "2026-09-07T15:45:14+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.861,
+      "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
@@ -7062,7 +7212,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.863,
+      "importance": 0.859,
       "reasons": [
         "country_in_text"
       ],
@@ -7104,7 +7254,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.862,
+      "importance": 0.855,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7141,7 +7291,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.82,
+      "importance": 0.814,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7183,7 +7333,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.809,
+      "importance": 0.806,
       "reasons": [
         "country_in_text"
       ],
@@ -7212,7 +7362,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.799,
+      "importance": 0.794,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7249,7 +7399,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.759,
+      "importance": 0.754,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7287,7 +7437,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.709,
+      "importance": 0.707,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
@@ -7316,7 +7466,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.698,
+      "importance": 0.696,
       "reasons": [
         "country_in_text"
       ],
@@ -7346,7 +7496,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.683,
+      "importance": 0.682,
       "reasons": [
         "country_in_text"
       ],
@@ -7386,7 +7536,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.667,
+      "importance": 0.664,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7415,7 +7565,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.651,
+      "importance": 0.65,
       "reasons": [
         "country_in_text"
       ],
@@ -7446,7 +7596,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.651,
+      "importance": 0.65,
       "reasons": [
         "country_in_text"
       ],
@@ -7475,7 +7625,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.619,
+      "importance": 0.618,
       "reasons": [
         "country_in_text"
       ],
@@ -7588,7 +7738,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.543,
+      "importance": 0.541,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
@@ -7616,7 +7766,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.519,
+      "importance": 0.518,
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
@@ -7684,7 +7834,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.484,
+      "importance": 0.482,
       "reasons": [],
       "agency_url": "https://www.nrc.gov/",
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
@@ -7711,7 +7861,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.473,
+      "importance": 0.472,
       "reasons": [],
       "board": "export_controls",
       "control": {
