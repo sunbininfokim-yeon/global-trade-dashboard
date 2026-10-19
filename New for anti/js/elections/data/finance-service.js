@@ -47,7 +47,10 @@ const strictRace = (file) => once(`race:${file}`, () => fetchJson(file));
 // spender type unverified. Null means the contract has not shipped yet, and
 // callers fall back to the federal category alone.
 export const loadFinanceDisplayContract = () => strictIndex()
-    .then((index) => index?.display_contract || null).catch(() => null);
+    .then((index) => index?.display_contract ? { ...index.display_contract,
+        source_status: index.cycles?.['2026']?.source_status || {},
+        source_provenance: index.cycles?.['2026']?.sources || [],
+    } : null).catch(() => null);
 
 // A null amount is "not yet observed" and must never be rendered as $0 -- the
 // same index's rules_ko.

@@ -1,8 +1,8 @@
 import { senateCurrentHtml } from './usa-senate-current.js';
 import { escapeHtml } from '../../ui.js';
-import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=5';
+import { financeEvidenceHtml, pollEvidenceHtml } from './usa-election-evidence.js?v=6';
 
-import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js?v=3';
+import { candidateMatchupHtml, spendingHistoryHtml } from './usa-candidate-matchup.js?v=4';
 import { electionMatchup } from '../../data/election-matchups.js';
 
 // Every figure here is independent expenditure: money outside groups spent of
@@ -275,7 +275,7 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
         <p class="elections-spac-lede">외부 단체(슈퍼팩 등)가 특정 후보를 <strong>지지하거나 반대하려고 독자적으로 쓴 돈</strong>입니다.
             후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
-            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:governor`) : null)}
+            ${statewideBlock('주지사', governor, contract, pollBoard?.races?.[`USA:${state.id}:governor`] || pollFor(governor), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:governor`) : state.governor_election?.election_in_cycle ?? null, electionMatchup(state,`USA:${state.id}:governor`,pollFor(governor)), state)}
             ${statewideBlock('연방 상원의원', senate, contract, pollBoard?.races?.[`USA:${state.id}:senate`] || pollFor(senate), pollBoard, pollHealth, days, showPolls, contestIds ? contestIds.has(`USA:${state.id}:senate`) : null, electionMatchup(state,`USA:${state.id}:senate`,pollFor(senate)), state)}
         </section>
         <section class="elections-detail-section" data-spac-house>${usaStateSuperPacHouse(state, merged, mappedDistricts, contract, pollBoard, pollHealth, days, { showPolls })}

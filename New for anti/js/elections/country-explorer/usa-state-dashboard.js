@@ -2,11 +2,12 @@ import { pollOfficePanelsHtml } from './special/usa-poll-panels.js';
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 // ?v=7: 이전 슈퍼팩 모듈이 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
-import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=10';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=5';
-import { pollEvidenceHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=5';
-import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=3';
+import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=11';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=6';
+import { pollEvidenceHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=6';
+import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=4';
 import { electionMatchup } from '../data/election-matchups.js';
+import { ensureElectionContextStyle } from './special/usa-candidate-context.js';
 
 export const statePollEvidenceHtml = (stateId, board, health, days = 7, selectedDistrict = null, options = {}) => {
     const races = Object.values(board?.races || {}).filter((r) => r.state === stateId);
@@ -128,6 +129,7 @@ export const renderUsaStateDashboard = (root, {
     pollBoard = null, pollHealth = null, windowDays = 7, onWindowChange,
     onToggleFinance, onHighlightDistrict, loading = false, financeFailed = 0,
 }) => {
+    ensureElectionContextStyle();
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
     const members = [...(delegation.house_members || [])].sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
@@ -199,12 +201,12 @@ export const renderUsaStateDashboard = (root, {
                 <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
                 ${statePollEvidenceHtml(state.id, board, health, days, open, {open:evidenceOpen})}`;
             // 실패 안내는 접이식 섹션 **밖**에 둔다 -- 닫힌 <details> 안에 있으면 아무도 못 본다.
-            return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days })
+            return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days,financeRaces:latest.financeRaces,financeContract:latest.financeContract })
                 + failureNote(latest.financeFailed)
                 + '<p class="elections-panel-note">하원 지도: 옅은 파랑 DEM · 옅은 빨강 GOP = Cook Solid/Likely 우세 가정. 진한 색 = 최근 조사상 우세. 회색 = 미정. 선거 후에는 공식 결과만 칠합니다.</p>'
                 + '<p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>'
                 + evidenceSectionHtml('poll', '여론조사', `감시 ${polledRaces.length}개 선거 · 누적 ${observationCount}건 · 최근 ${days}일`, pollContent, evidenceOpen.poll)
-                + evidenceSectionHtml('finance', '슈퍼팩 · 외부 독립지출', '주지사·상원·하원 후보별 공시', financeSection(), evidenceOpen.finance || (open != null && !evidenceOpen.poll));
+                + evidenceSectionHtml('finance', '후보 모금 · 슈퍼팩', '개인 기부·캠프 현금과 외부 지지·반대 지출', financeSection(), evidenceOpen.finance || (open != null && !evidenceOpen.poll));
         };
 
         const paintBody = () => {

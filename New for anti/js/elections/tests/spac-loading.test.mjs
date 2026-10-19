@@ -50,7 +50,7 @@ test('geo: 국가 경계(admin1)도 실패를 캐시하지 않는다', async () 
 });
 
 const financeFixture = () => {
-    bodies.set('usa_election_finance_index_v1.json', { cycles: { 2026: { national_file: 'nat.json' } }, display_contract: { federal_superpac_categories: ['super_pac'] } });
+    bodies.set('usa_election_finance_index_v1.json', { cycles: { 2026: { national_file: 'nat.json',source_status:{candidate_fundraising:{status:'failed_last_good_preserved',last_success_as_of:'2026-10-18'}},sources:[{url:'https://www.fec.gov/files/bulk-downloads/2026/cn26.zip'}] } }, display_contract: { federal_superpac_categories: ['super_pac'] } });
     // 전국 파일은 한 번 읽으면 캐시되므로, 이후 테스트가 쓸 주(YY)까지 처음부터 담아 둔다.
     bodies.set('nat.json', { states: { ZZ: { data_file: 'zz-index.json' }, YY: { data_file: 'yy-index.json' } } });
     bodies.set('zz-index.json', { races: [{ data_file: 'r1.json' }, { data_file: 'r2.json' }, { data_file: 'r3.json' }] });
@@ -126,6 +126,14 @@ test('지도: 이미 받은 geo 를 넘기면 다시 읽지 않는다', async ()
 });
 
 // ---- 하원 구획: 도형 상태 세 가지 --------------------------------------------------------------
+test('finance contract carries original source links and fundraising failure health without replacing last-good dates',async()=>{
+    const contract=await fin.loadFinanceDisplayContract();
+    assert.equal(contract.source_status.candidate_fundraising.status,'failed_last_good_preserved');
+    assert.equal(contract.source_status.candidate_fundraising.last_success_as_of,'2026-10-18');
+    assert.equal(contract.source_provenance[0].url,'https://www.fec.gov/files/bulk-downloads/2026/cn26.zip');
+    assert.deepEqual(contract.federal_superpac_categories,['super_pac']);
+});
+
 const house = [{ race_id: 'USA:OH:house:01', office: 'house', district: '01', candidates: [] },
                { race_id: 'USA:OH:house:02', office: 'house', district: '02', candidates: [] }];
 const render = (mapped) => sp.usaStateSuperPacHouse({ id: 'OH' }, house, mapped);
