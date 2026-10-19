@@ -36,6 +36,9 @@ def validate_packet(packet, state_names):
     if receipt['state'] != state or receipt['cycle'] != 2026 or capture['fetched_at'] != receipt['captured_at']:
         raise ValueError('state input capture provenance mismatch')
     datetime.fromisoformat(capture['fetched_at'].replace('Z', '+00:00'))
+    if packet.get('candidate_profiles'):
+        from .candidate_profiles import validate_profiles
+        validate_profiles(packet['candidate_profiles'], state, packet['candidate_profiles']['reviewed_on'])
     if digest(capture['provider_records']) != capture['provider_records_sha256']:
         raise ValueError('state input provider snapshot changed')
     rows = capture['provider_records'] + capture['primary_records']

@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from election_watch.polls import atomic, read
 from election_watch.poll_source_discovery import collect_270, annotate_provider_links
+from election_watch.poll_additional_discovery import collect_additional, extend_report
 
 ROOT = Path(__file__).resolve().parent
 
@@ -18,6 +19,8 @@ def main():
     catalog = read(ROOT/'config/usa_polls/targets_2026.json')
     names = {state: entry['name'] for state, entry in catalog['states'].items()}
     result = collect_270(catalog['cycle'], args.as_of, datetime.now(timezone.utc).isoformat(), names)
+    result = extend_report(result, collect_additional(catalog['cycle'], args.as_of,
+        datetime.now(timezone.utc).isoformat(), names))
     result['provider_comparison'] = {'status': 'not_available'}
     if args.provider_capture and args.provider_capture.exists():
         try:

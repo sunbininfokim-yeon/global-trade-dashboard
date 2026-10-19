@@ -112,6 +112,10 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
             '지도는 기존 경계와 신고 선거구 코드만 연결합니다. 해당 선거의 경계 일치 여부는 미검증입니다.']}
     roster_cycles = {str(governor_rosters['cycle'])} if governor_rosters else set()
     for cycle in sorted(set(federal.get('cycles', {})) | set(governor_sources) | roster_cycles):
+        funding_path = public / 'usa_election_finance' / cycle / 'candidate_fundraising_v1.json'
+        funding = read(funding_path) if funding_path.exists() else None
+        funding_health_path = funding_path.with_name('candidate_fundraising_status_v1.json')
+        funding_health = read(funding_health_path) if funding_health_path.exists() else None
         meta = federal.get('cycles', {}).get(cycle)
         state_sources = governor_sources.get(cycle, {})
         rows, roster = [], []
@@ -154,6 +158,10 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
         source_status = {'federal': {'status': meta['status'] if meta else 'not_collected', 'last_success_at': meta['generated_at'] if meta else None,
             'last_filing_date': meta.get('coverage', {}).get('last_filing_date') if meta else None,
             'quality': meta.get('quality') if meta else None, 'notices_included': False}}
+        if funding or funding_health:
+            source_status['candidate_fundraising'] = {'status': (funding_health or {}).get('status', 'collected'),
+                'last_success_as_of': funding['as_of'] if funding else None,
+                'last_attempt': funding_health, 'amount_basis': 'candidate_campaign_summary_not_outside_spending'}
         for state, source in state_sources.items():
             source_status[state + '_governor'] = {'status': source['status'], 'last_success_at': source['generated_at'],
                 'last_filing_date': source['last_filing_date'], 'quality': source['quality'],
@@ -191,6 +199,14 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
                 'totals_by_election_type': {p: amounts(v) for p, v in group_rows(selected, 'election_type').items()},
                 'totals_by_reported_party': {p: amounts(v) for p, v in group_rows(selected, 'party').items()},
                 'candidates': candidate_cards(selected, registered)}
+            from election_watch.candidate_fundraising import for_candidate
+            if office in ('house', 'senate', 'governor'):
+                for candidate in payload['candidates']:
+                    candidate['campaign_fundraising'] = for_candidate(funding, candidate['candidate_id'],
+                        state, office, district, cycle)
+                payload['campaign_fundraising_status'] = ('state_adapter_not_connected' if office == 'governor'
+                    else 'collected' if funding else 'not_collected')
+                payload['campaign_fundraising_source_status_key'] = 'candidate_fundraising'
             if office == 'governor' and source:
                 payload['amount_basis'] = source.get('amount_basis')
                 payload['source_limitations_ko'] = source.get('limitations_ko', [])
@@ -209,6 +225,7 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
                 'totals_by_office': {office: amounts([r for r in rows if r['state'] == state and r['office'] == office])
                     for office in sorted({r['office'] for r in races})}}
         catalog['cycles'][cycle] = {'states': states, 'source_status': source_status,
+            'candidate_fundraising_file': funding_path.relative_to(public).as_posix() if funding else None,
             'sources': (meta.get('sources', []) if meta else []) + [{'url': v['source_url'], 'metadata_url': v['metadata_url']} for v in state_sources.values()],
             'limitations_ko': (meta.get('limitations_ko', []) if meta else ['연방 자료 미수집']) + [note for v in state_sources.values() for note in v['limitations_ko']],
             'unmatched_district_race_ids': [race_key(s, o, d) for s, o, d in keys if o == 'house' and (s, d) not in geometry]}
