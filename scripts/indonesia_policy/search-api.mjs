@@ -99,6 +99,10 @@ export function createHandler(fetcher=fetch){
     args={p_terms:terms,p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
       p_require_all:url.searchParams.get('match')==='all',p_limit:limit,p_offset:offset,p_stream:stream,p_group:group,p_type:type,p_query_embedding:queryVector};
     rpc='idn_search_documents_v2';
+   }else if(path==='/api/idn/legal-effect'){
+    const ids=(url.searchParams.get('ids')||'').split(',');
+    if(ids.length>50||ids.some(id=>!/^idn-[a-z0-9-]{1,160}$/.test(id)))throw Error('효력 검토 문서 범위를 확인하세요.');
+    rpc='idn_legal_effect';args={p_document_ids:ids};
    }else if(path==='/api/idn/catalogue-status'){
     rpc='idn_catalogue_status';args={};
    }else if(path==='/api/idn/catalogue-gaps'){
@@ -144,6 +148,19 @@ export function createHandler(fetcher=fetch){
      for(const item of body.items)item.matched_passages=evidence.items.filter(x=>x.document_id===item.document_id);
      body.passage_annotations_available=true;
     }catch{/* A failed evidence lookup is unavailable, never a verified empty set. */}
+   }
+   const documents=rpc==='idn_get_document'?[body]:['idn_search_documents_v2','idn_business_search'].includes(rpc)?body.items:[];
+   if(documents?.length){
+    body.legal_effect_available=false;
+    try{
+     // Bounded annotations preserve ranking, hard filters and original records on failure.
+     const notes=await fetcher(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/idn_legal_effect`,{
+      method:'POST',headers,body:JSON.stringify({p_document_ids:documents.slice(0,50).map(x=>x.document_id)}),signal:AbortSignal.timeout(12000)});
+     if(!notes.ok){await notes.body?.cancel();throw Error('Unavailable legal effect');}
+     const effects=await notes.json();if(effects.country!=='IDN'||!Array.isArray(effects.items))throw Error('Invalid legal effect');
+     for(const item of documents)item.legal_effect=effects.items.find(x=>x.document_id===item.document_id)||null;
+     body.legal_effect_available=true;
+    }catch{/* Unavailable evidence never means in force. */}
    }
    return response(body);
   }catch{return response({error:'인도네시아 검색에 연결하지 못했습니다.',unavailable:true},502);}

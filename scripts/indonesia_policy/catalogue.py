@@ -114,6 +114,33 @@ def parse_page(data, url, source):
                 detail = urljoin(url,a['href']); key=parse_qs(urlparse(detail).query)['id'][0]
                 dl=row.select_one('a[href*="download.php"]')
                 records.append(item(key,heading,url,detail,urljoin(url,dl['href']) if dl else None))
+        elif adapter == 'kemendag_pages':
+            count = re.search(r'menampilkan\s+\d+\s+dari\s+([\d,.]+)\s+peraturan', text)
+            if not count:
+                raise ValueError('catalogue_count_missing')
+            expected = int(re.sub(r'\D', '', count.group(1)))
+            for a in soup.select('h6 a[href]'):
+                target = urljoin(url, a['href'])
+                if urlparse(target).hostname != urlparse(url).hostname or not urlparse(target).path.startswith('/peraturan/'):
+                    raise ValueError('catalogue_detail_left_scope')
+                row = a.find_parent('div', class_='flex-grow-1')
+                title = row.select_one('p') if row else None
+                if not title:
+                    raise ValueError('catalogue_row_shape_changed')
+                heading = normalized(title.get_text(' ',strip=True))
+                badges = [normalized(x.get_text(' ',strip=True)) for x in row.select('.badge-status')]
+                # Truncated list titles are metadata, never a substitute for the final text.
+                records.append(item(hashlib.sha256(target.encode()).hexdigest(),heading,url,target,
+                    publisher_fields={'type':badges[0] if badges else None,
+                      'status':next((b for b in badges if b in ('Berlaku','Tidak Berlaku')),None),
+                      'record_slug':urlparse(target).path.rsplit('/',1)[-1],
+                      'title_truncated':heading.endswith(('…','...'))}))
+            for a in soup.select('.pagination a[href]'):
+                target=urljoin(url,a['href']);parsed=urlparse(target)
+                if parsed.hostname!=urlparse(url).hostname or parsed.path!='/peraturan' or not re.fullmatch(r'page=[1-9]\d*',parsed.query):
+                    raise ValueError('unhandled_ministry_pagination')
+                # The canonical entry already represents page one.
+                if parsed.query!='page=1':links.append(target)
         elif adapter == 'djbc_pages':
             scope = re.fullmatch(r'(penerbit/\d+/[^/]+/)(\d+)\.html',parse_qs(urlparse(source['url']).query).get('page',[''])[0])
             if not scope:
@@ -136,7 +163,7 @@ def parse_page(data, url, source):
         if key in unique and unique[key] != r:
             raise ValueError('conflicting_record_id')
         unique[key]=r
-    if expected is not None and expected != len(unique):
+    if expected is not None and adapter!='kemendag_pages' and expected != len(unique):
         raise ValueError('reported_count_mismatch')
     return list(unique.values()), sorted(set(links)), expected
 
@@ -167,6 +194,12 @@ def advance(snapshot, raw_dir, fetcher=fetch):
             if not official_url(target) or urlparse(target).hostname != urlparse(snapshot['source_config']['url']).hostname:
                 raise ValueError('pagination_left_registered_host')
             pending.append(target)
+    if snapshot['source_config']['adapter']=='kemendag_pages':
+        previous={p['reported_total'] for p in snapshot['pages']}
+        if previous and previous!={expected}:
+            raise ValueError('catalogue_total_changed_restart_review')
+        if len(existing)>expected or not pending and len(existing)!=expected:
+            raise ValueError('reported_count_mismatch')
     # Commit cursor and records together, after a fully validated page.
     snapshot['records']=list(existing.values());snapshot['visited_urls']=sorted(visited);snapshot['pending_urls']=pending
     snapshot['pages'].append(dict(url=url,actual_url=actual,raw_sha256=raw_hash,records=len(records),reported_total=expected,observed_at=now()))

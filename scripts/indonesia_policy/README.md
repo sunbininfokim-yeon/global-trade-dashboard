@@ -85,7 +85,11 @@ IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
 
 [근거 구조 및 인수 문서](../../docs/indonesia-policy-evidence-20261019.md)를 따른다. 기본 검토 후보 99개와 별도 참고 3개를 합친 102개 공백 목록, 원문 인용 관계 5건·사업범위 7건·선택 조문 12건이 있다. 근거 구조 도입 시 문서는 64건이었고 후속 원문 복구로 66건이 되었고 기관별 목록에서 검토한 원문2건을 추가해 현재68건이다. 현행 효력/개별 사업 적용성을 확정하지 않는다. 새 설치는 `20261019081717_indonesia_policy_review_evidence.sql`까지 순서대로 적용한다. `import-review.cjs`는 기본 미리보기이며 원문이 바뀌면 새 해시의 근거를 다시 검토해야 한다. `embed-passages.mjs`는 선택 조문만 처리하며 기존 개요와 캐시/프로필을 분리한다. UI·운영 배포는 Claude 인수 대상이다.
 
-## 문서개요 임베딩
+## 법령 효력·원 부처 연결
+
+[2026-10-20 인수 문서](../../docs/indonesia-policy-legal-effect-20261020.md)에 시행/개정/폐지/경과조치 17건, 원 부처 다섯 곳 점검 결과와 한계를 기록했다. `legal-effect-pack-20261019.json`은 `import-legal-effect.cjs`로 기본 미리보기 후 명시적 `--write`로 적용한다. 마이그레이션은 `20261019152914_indonesia_policy_legal_effect.sql`까지 순서대로 적용한다. 현재 문서 68개 전체의 유효성이 확정된 것은 아니다. 무역부 원 목록 96건은 본문 문서와 구분되는 부분 수집 메타데이터다.
+
+## 문서개요 임베딩 실행
 
 ```bash
 node scripts/indonesia_policy/embed.mjs --env-file /ABSOLUTE/SUPABASE_ENV \
