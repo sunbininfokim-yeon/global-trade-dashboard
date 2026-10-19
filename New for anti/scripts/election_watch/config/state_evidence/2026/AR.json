@@ -1,0 +1,254 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "cycle": 2026,
+  "state": "AR",
+  "source_ref": "codex/poll-national-source-coverage-20261018",
+  "source_commit": "402f054e",
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202hen5c2d9c7e"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-18",
+        "provider_record_sha256": "a404a5303393a2cb67cafeee87384d716bc6b2a572c93cb6f52c8af9d34ec52c",
+        "snapshot_sha256": "863bc38586a4bab45f5d7b2cb2dd6d279d30269b0a6d555330e1ab97be72e5aa",
+        "sources": [
+          "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+            "sha256": "0592771cbbef378393fe8baa4120b0b4844956fa50435fc409ab417854e80e59",
+            "checked_at": "2026-10-18T12:10:26.682121+00:00"
+          }
+        ],
+        "primary_toplines": {
+          "Tom Cotton": 50,
+          "Hallie Shoffner": 41,
+          "Jeff Wadlin": 4.5
+        },
+        "question_sample_n": 709,
+        "provider_answer_correction": {
+          "provider_snapshot_sha256": "a404a5303393a2cb67cafeee87384d716bc6b2a572c93cb6f52c8af9d34ec52c",
+          "overrides": {
+            "Jeff Wadlin": 4.5
+          },
+          "basis_ko": "발표 원문은 Jeff Wadlin 4.5%, API는 5%로 반올림. 원본 5%와 원문 4.5%를 함께 보존. 해당 정확한 레코드에만 보정 적용."
+        },
+        "reported_precision": {
+          "kind": "margin_of_error",
+          "half_width_pp": 5.0
+        },
+        "ballot_format": "initial_named_multicandidate_vote_intention",
+        "disclosure_review": {
+          "mode": "SMS_and_live_callers",
+          "field_start": "2026-10-08",
+          "field_end": "2026-10-13",
+          "population": "lv",
+          "sample_n": 709,
+          "weighting": "ethnicity_education_gender_geography",
+          "detailed_weighting_tables": "announced_for_later_release_not_obtained",
+          "primary_published_on": "2026-10-15",
+          "provider_record_date": "2026-10-16",
+          "undecided_pct": 4.5
+        },
+        "sponsor_review": {
+          "sponsors": [
+            "Talk Business & Politics"
+          ],
+          "primary_internal": false,
+          "analyst_affiliations_disclosed": [
+            "Republican_political_consultant",
+            "Democratic_party_active_academic"
+          ],
+          "basis": "public_media_commissioner_bipartisan_design_input_not_claimed_nonpartisan_analysts"
+        },
+        "admission": {
+          "pollster": "Hendrix College",
+          "provider_url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+          "methodology_url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+          "group": "hendrix",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "missing_fields": [
+          "detailed_weighting_tables",
+          "response_rate",
+          "full_sampling_frame"
+        ],
+        "limitations_ko": "공개 언론 의뢰 조사로 문항·수치·기간·LV·표본·조사방식·가중 항목 확인. 양당 관련 분석가 참여 명시. 상세 가중표·응답률·표집틀 미확보이며 정확도·무편향 인증 아님. 비율 MOE를 격차 유의성 또는 당선확률로 해석하지 않음. 제3후보 정당은 원문 L 표기 확인이나 전체 명부 검증 전 관측 정당 null 유지."
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-18",
+    "fetched_at": "2026-10-18T16:20:04.208175+00:00",
+    "receipt": {
+      "state": "AR",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
+      "captured_at": "2026-10-18T16:20:04.208175+00:00",
+      "capture_kind": "provider_transport_and_individual_release_review",
+      "serialized_provider_response_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937",
+      "provider_records": 5
+    },
+    "provider_records": [
+      {
+        "id": "us-202hen5c2d9c7e",
+        "poll_type": "us-senator",
+        "sample_size": 709,
+        "population": "lv",
+        "url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+        "created_at": "2026-10-16",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-13",
+        "pollster": "Hendrix College",
+        "answers": [
+          {
+            "choice": "Tom Cotton",
+            "pct": 50.0
+          },
+          {
+            "choice": "Hallie Shoffner",
+            "pct": 41.0
+          },
+          {
+            "choice": "Jeff Wadlin",
+            "pct": 5.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Talk Business & Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Arkansas"
+      },
+      {
+        "id": "us-202grae15a8aed",
+        "poll_type": "us-senator",
+        "sample_size": 550,
+        "population": "lv",
+        "url": "https://www.grayhouse.com/post/ar-senate",
+        "created_at": "2026-05-28",
+        "start_date": "2026-02-07",
+        "end_date": "2026-02-09",
+        "pollster": "GrayHouse",
+        "answers": [
+          {
+            "choice": "Tom Cotton",
+            "pct": 58.0
+          },
+          {
+            "choice": "Hallie Shoffner",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "America One Policies"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Arkansas"
+      },
+      {
+        "id": "us-202j.le2159a92",
+        "poll_type": "us-senator",
+        "sample_size": 803,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/663253f0bc87b7070102f41f/t/6a84d771481c4817e92f0eee/1787090801301/AR+Aug+26+Polling+Memo.pdf",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-14",
+        "end_date": "2026-08-18",
+        "pollster": "J.L. Partners",
+        "answers": [
+          {
+            "choice": "Tom Cotton",
+            "pct": 51.0
+          },
+          {
+            "choice": "Hallie Shoffner",
+            "pct": 35.0
+          },
+          {
+            "choice": "Jeff Wadlin",
+            "pct": 4.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Arkansas"
+      },
+      {
+        "id": "us-202hen3c891586",
+        "poll_type": "us-representative",
+        "sample_size": 1112,
+        "population": "lv",
+        "url": "https://talkbusiness.net/2026/08/poll-similar-trends-in-cd2-show-tight-race-between-hill-jones",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-13",
+        "pollster": "Hendrix College",
+        "answers": [
+          {
+            "choice": "Chris Jones",
+            "pct": 48.0
+          },
+          {
+            "choice": "French Hill",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "AR-02",
+        "sponsors": [
+          "Talk Business & Politics"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 AR-02"
+      },
+      {
+        "id": "us-202gracbfdd9ed",
+        "poll_type": "us-senator",
+        "sample_size": 550,
+        "population": "lv",
+        "url": "https://x.com/LandonWall_/status/2108601370580332749",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-30",
+        "end_date": "2026-10-04",
+        "pollster": "Grayhouse",
+        "answers": [
+          {
+            "choice": "Hallie Shoffner",
+            "pct": 40.0
+          },
+          {
+            "choice": "Tom Cotton",
+            "pct": 51.0
+          },
+          {
+            "choice": "Jeff Wadlin",
+            "pct": 4.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Arkansas"
+      }
+    ],
+    "provider_records_sha256": "4e24436a2aa9e97437affa805bbe6182683fe261a2158f35d7215e046ff39fe9",
+    "primary_records": []
+  }
+}
